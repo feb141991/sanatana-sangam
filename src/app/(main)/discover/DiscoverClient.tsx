@@ -249,16 +249,16 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
   return (
     <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden fade-in">
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-4 pt-safe pt-4 pb-2 z-10">
+      <div className="relative flex items-center px-4 pt-safe pt-4 pb-2 z-10">
         <button
           onClick={() => selectedMood ? reset() : router.back()}
           aria-label="Go back"
-          className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
+          className="absolute left-4 w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
           style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--card-border)' }}
         >
           <ChevronLeft size={18} style={{ color: 'var(--brand-primary)' }} />
         </button>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 text-center">
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
             Mood-Based Discovery
           </p>
