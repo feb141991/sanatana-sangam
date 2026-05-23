@@ -38,7 +38,7 @@ export default async function LessonPage({
     redirect('/pathshala');
   }
 
-  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string }[]).find(p => p.id === pathId);
+  const pathMeta = (SEED_PATHS as unknown as { id: string; difficulty: string; title: string }[]).find(p => p.id === pathId);
   const userIsPro = (profile as any)?.is_pro ?? false;
   if (pathMeta && pathMeta.difficulty !== 'beginner' && !userIsPro) {
     redirect('/pathshala?upgrade=1');
@@ -64,7 +64,7 @@ export default async function LessonPage({
 
   // ── Build lesson data SERVER-SIDE (keeps ~900 KB out of client bundle) ───
   const lessons = getPathLessons(pathId);
-  const pathMeta = (SEED_PATHS as unknown as { id: string; title: string }[]).find(p => p.id === pathId);
+  // pathMeta already declared above for pro-gate check
   const pathTitle = pathMeta?.title ?? pathId;
 
   return (
