@@ -76,6 +76,7 @@ export interface FestivalCalendarMeta {
   isFallback: boolean;
 }
 
+/** @deprecated Use /api/calendar/upcoming — this static list is a fallback only. Will be removed in v2. */
 export const FESTIVALS_2026: Festival[] = [
 
   // ── Hindu ──────────────────────────────────────────────────────────────────

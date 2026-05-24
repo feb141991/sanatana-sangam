@@ -39,6 +39,7 @@ interface Props {
   totalJapaSessions: number;
   nitya30dDays:     number;
   report:           ReportData;
+  sankalpas:        any[];
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -890,6 +891,7 @@ export default function MyProgressClient({
   totalJapaSessions,
   nitya30dDays,
   report,
+  sankalpas,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -1423,7 +1425,7 @@ export default function MyProgressClient({
           {/* ── Day-of-week chart ── */}
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
-            className="rounded-[1.8rem] p-5"
+            className="rounded-[1.8rem] p-5 mb-8"
             style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
               Practice Rhythm
@@ -1431,6 +1433,46 @@ export default function MyProgressClient({
             <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa (last 30 days)</p>
             <DowChart counts={dowCounts} isDark={isDark} />
           </motion.section>
+
+          {/* ── Sankalpa History ── */}
+          {sankalpas && sankalpas.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+              className="mb-8 rounded-[1.8rem] p-5"
+              style={{ 
+                background: isDark ? 'rgba(197, 160, 89, 0.05)' : 'rgba(197, 160, 89, 0.03)',
+                border: `1px solid ${isDark ? 'rgba(197, 160, 89, 0.15)' : 'rgba(197, 160, 89, 0.1)'}`,
+              }}>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--brand-primary)' }}>
+                    🌅 Sankalpa History
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {sankalpas.filter(s => s.status === 'completed').length}/{sankalpas.length} completed
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                {sankalpas.map(s => (
+                  <div key={s.id} className="flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
+                    <div className="flex-1 pr-3">
+                      <p className="text-sm font-serif line-clamp-1 theme-ink">"{s.text}"</p>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {new Date(s.start_date).toLocaleDateString()} – {new Date(s.end_date).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      {s.status === 'completed' && <span className="text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-full border border-emerald-500/20">✅ Completed</span>}
+                      {s.status === 'active' && <span className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-full border border-amber-500/20">🔥 Active</span>}
+                      {s.status === 'abandoned' && <span className="text-xs bg-black/5 dark:bg-white/5 text-muted-foreground px-2 py-1 rounded-full border border-black/10 dark:border-white/10">— Abandoned</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+          )}
 
           {/* ── Monthly Sadhana Report CTA ── */}
           <motion.section

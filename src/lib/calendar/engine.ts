@@ -121,6 +121,44 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
 
+const NANAKSHAHI_GREGORIAN_START: Record<string, { month: number; day: number }> = {
+  'Chet':    { month: 3,  day: 14 },
+  'Vaisakh': { month: 4,  day: 14 },
+  'Jeth':    { month: 5,  day: 15 },
+  'Harh':    { month: 6,  day: 15 },
+  'Sawan':   { month: 7,  day: 16 },
+  'Bhadon':  { month: 8,  day: 16 },
+  'Assu':    { month: 9,  day: 15 },
+  'Katik':   { month: 10, day: 15 },
+  'Maghar':  { month: 11, day: 14 },
+  'Poh':     { month: 12, day: 14 },
+  'Magh':    { month: 1,  day: 13 },
+  'Phagan':  { month: 2,  day: 12 },
+};
+
+export const NanakshahiHandler = {
+  evaluate(rule: ObservanceRule, year: number): string[] {
+    if (!rule.nanakshahi_month || rule.nanakshahi_day === undefined) return [];
+    const start = NANAKSHAHI_GREGORIAN_START[rule.nanakshahi_month];
+    if (!start) return [];
+
+    // Magh and Phagan fall in the next Gregorian year
+    const gregYear = (rule.nanakshahi_month === 'Magh' || rule.nanakshahi_month === 'Phagan')
+      ? year + 1 : year;
+
+    const startDate = new Date(Date.UTC(gregYear, start.month - 1, start.day));
+    const observanceDate = new Date(startDate.getTime() + (rule.nanakshahi_day - 1) * 86400000);
+
+    // Only include if the resulting date falls in the target year
+    if (observanceDate.getUTCFullYear() !== year) return [];
+
+    return [formatUtcDate(observanceDate)];
+  }
+};
+export interface RegionalCalendarRule {
+  evaluate(rule: ObservanceRule, year: number): string[];
+}
+
 /**
  * Calculates all occurrences of observances for a target Gregorian year.
  * Keeps calculation output deterministic and versionable.
@@ -137,6 +175,8 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
       occurrencesMap[rule.slug] = LunarTithiHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rule.slug] = NakshatraBasedHandler.evaluate(rule, days);
+    } else if (rule.rule_family === 'regional_calendar') {
+      occurrencesMap[rule.slug] = NanakshahiHandler.evaluate(rule, year);
     } else {
       occurrencesMap[rule.slug] = [];
     }

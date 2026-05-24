@@ -109,6 +109,19 @@ export default async function MyProgressPage() {
     return { date: dt, japa: sadhanaMap[dt] ?? false, nitya: nityaDates.has(dt) };
   });
 
+  let sankalpas: any[] = [];
+  try {
+    const { data } = await supabase
+      .from('sankalpas')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(12);
+    if (data) sankalpas = data;
+  } catch (err) {
+    // Ignore missing table gracefully
+  }
+
   // Current streak from most recent sadhana row
   const streak = (sadhana28 ?? []).sort((a, b) => b.date.localeCompare(a.date))[0]?.streak_count ?? 0;
 
@@ -184,6 +197,7 @@ export default async function MyProgressPage() {
         prevBeads,
         topMantra,
       }}
+      sankalpas={sankalpas}
     />
   );
 }

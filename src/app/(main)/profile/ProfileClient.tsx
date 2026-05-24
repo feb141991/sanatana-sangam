@@ -34,6 +34,7 @@ import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
 import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
+import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -136,6 +137,17 @@ export default function ProfileClient({
   blockedProfiles: initialBlockedProfiles,
   mutedProfiles: initialMutedProfiles,
   hiddenItems: initialHiddenItems,
+  totalBeads,
+  totalRounds,
+  totalMinutes,
+  totalSessions,
+  streak: initialHighlightsStreak,
+  topMantra,
+  nityaDays,
+  pathshalaEntries,
+  bookmarkedVerses,
+  showSadhanaHighlights: initialShowSadhanaHighlights,
+  isOwnProfile,
 }: {
   profile:     Profile | null;
   threadCount: number;
@@ -145,6 +157,17 @@ export default function ProfileClient({
   blockedProfiles: SafetyProfileSummary[];
   mutedProfiles: SafetyProfileSummary[];
   hiddenItems: HiddenContentSummary[];
+  totalBeads: number;
+  totalRounds: number;
+  totalMinutes: number;
+  totalSessions: number;
+  streak: number;
+  topMantra: string | null;
+  nityaDays: number;
+  pathshalaEntries: number;
+  bookmarkedVerses: number;
+  showSadhanaHighlights: boolean;
+  isOwnProfile: boolean;
 }) {
   const router      = useRouter();
   const supabase    = useRef(createClient()).current;
@@ -172,6 +195,7 @@ export default function ProfileClient({
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
+  const [showSadhanaHighlights, setShowSadhanaHighlights] = useState(initialShowSadhanaHighlights);
   const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
   const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
 
@@ -220,7 +244,7 @@ export default function ProfileClient({
   const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
 
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
-  const streak    = (liveProfile as any)?.shloka_streak ?? 0;
+  const streak    = initialHighlightsStreak;
   const profileCountryCode = (liveProfile as any)?.country_code ?? null;
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
   const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
@@ -677,6 +701,22 @@ export default function ProfileClient({
     }
   }
 
+  async function toggleHighlights() {
+    const next = !showSadhanaHighlights;
+    setShowSadhanaHighlights(next);
+    try {
+      const res = await fetch('/api/user/highlights-consent', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ show: next }),
+      });
+      if (!res.ok) throw new Error('Could not update highlights setting');
+    } catch (error) {
+      setShowSadhanaHighlights(!next);
+      toast.error(formatError(error));
+    }
+  }
+
   const hasSafetyItems = blockedProfiles.length > 0 || mutedProfiles.length > 0 || hiddenItems.length > 0;
   const themeIconMap = {
     system: Monitor,
@@ -934,6 +974,22 @@ export default function ProfileClient({
         transition={{ duration: 0.4, delay: 0.1 }}
         className="max-w-xl mx-auto px-5 -mt-6 space-y-5 relative z-30 pb-32"
       >
+          <SadhanaHighlightsCard
+            tradition={(liveProfile as any)?.tradition ?? 'hindu'}
+            totalBeads={totalBeads}
+            totalRounds={totalRounds}
+            totalMinutes={totalMinutes}
+            totalSessions={totalSessions}
+            streak={streak}
+            topMantra={topMantra}
+            nityaDays={nityaDays}
+            pathshalaEntries={pathshalaEntries}
+            bookmarkedVerses={bookmarkedVerses}
+            showHighlights={showSadhanaHighlights}
+            onToggleHighlights={toggleHighlights}
+            isOwnProfile={isOwnProfile}
+          />
+
           {/* Metric Row with Clay Cards */}
           {/* Metric Row (Compact Zenith) */}
           <div className="grid grid-cols-4 gap-2">

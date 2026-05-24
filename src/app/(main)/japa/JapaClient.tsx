@@ -20,8 +20,10 @@ import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import { triggerSadhanaShare } from '@/lib/share/trigger-share';
 import Link from 'next/link';
+
+const TRADITION_SYMBOLS: Record<string, string> = { hindu: '🕉️', sikh: 'ੴ', buddhist: '☸️', jain: '🤲' };
 import {
   getJapaMantrasForTradition,
   getJapaPracticeType,
@@ -32,6 +34,7 @@ import {
   type JapaMantraId,
 } from '@/lib/tradition-config';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const TOTAL_BEADS = 108;
@@ -46,7 +49,37 @@ const STORAGE_MANTRA = 'shoonaya-japa-mantra';
 const STORAGE_CUSTOM_MANTRA = 'shoonaya-japa-custom-mantra';
 const STORAGE_BG     = 'shoonaya-japa-bg';
 const STORAGE_SOUND  = 'shoonaya-japa-sound';
+const STORAGE_LIFETIME = 'shoonaya-japa-lifetime';
 const CUSTOM_MANTRA_ID = '__custom__';
+
+type JapaLifetimeData = {
+  totalBeads: number;
+  totalRounds: number;
+  lastPracticed: string | null;
+};
+
+const EMPTY_LIFETIME_DATA: JapaLifetimeData = {
+  totalBeads: 0,
+  totalRounds: 0,
+  lastPracticed: null,
+};
+
+function getMilestoneLabel(bead: number, appLanguage: string) {
+  const normalized = appLanguage === 'hi' || appLanguage === 'pa' ? appLanguage : 'en';
+  const labels = {
+    hi: { 27: '¼ माला', 54: '½ माला', 81: '¾ माला' },
+    pa: { 27: '¼ ਮਾਲਾ', 54: '½ ਮਾਲਾ', 81: '¾ ਮਾਲਾ' },
+    en: { 27: '¼ Mala', 54: '½ Mala', 81: '¾ Mala' },
+  } as const;
+  return labels[normalized][bead as 27 | 54 | 81] ?? `${bead}`;
+}
+
+function getTraditionSacredSymbol(tradition: string) {
+  if (tradition === 'sikh') return 'ੴ';
+  if (tradition === 'buddhist') return '☸';
+  if (tradition === 'jain') return '☮';
+  return 'ॐ';
+}
 
 function getSpiritualTimeWindow(date: Date) {
   const hour = date.getHours();
@@ -132,33 +165,49 @@ const BG_SCENES = [
 
 type BgSceneId = typeof BG_SCENES[number]['id'];
 
-function LotusParticles() {
+function LotusParticles({ accentColor }: { accentColor: string }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 15 }).map((_, i) => (
-        <motion.div key={`lotus-${i}`} className="absolute"
-          style={{ 
-            left: `${(i * 7.7) % 95}%`, 
-            top: `-20px`,
-            color: i % 2 === 0 ? 'rgba(255, 182, 193, 0.4)' : 'rgba(255, 215, 0, 0.3)' 
-          }}
-          initial={{ y: -20, rotate: 0, opacity: 0 }}
-          animate={{ 
-            y: '110vh', 
-            rotate: [0, 45, -45, 90],
-            x: [0, (i % 2 === 0 ? 20 : -20), 0],
-            opacity: [0, 0.8, 0.8, 0] 
-          }}
-          transition={{ 
-            duration: 10 + (i % 5) * 2, 
-            repeat: Infinity, 
-            delay: i * 0.8, 
-            ease: 'linear' 
-          }}
-        >
-          <div className="w-1 h-1 rounded-full bg-amber-500/30 blur-[1px]" />
-        </motion.div>
-      ))}
+      {Array.from({ length: 24 }).map((_, i) => {
+        const opacity = 0.25 + (i % 6) * 0.06;
+        return (
+          <motion.div
+            key={`lotus-${i}`}
+            className="absolute"
+            style={{
+              left: `${(i * 7.7) % 95}%`,
+              top: '-20px',
+            }}
+            initial={{ y: -20, rotate: 0, opacity: 0 }}
+            animate={{
+              y: '110vh',
+              rotate: [0, 45, -45, 90],
+              x: [0, (i % 2 === 0 ? 20 : -20), 0],
+              opacity: [0, 0.8, 0.8, 0],
+            }}
+            transition={{
+              duration: 10 + (i % 5) * 2,
+              repeat: Infinity,
+              delay: i * 0.8,
+              ease: 'linear',
+            }}
+          >
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: accentColor,
+                opacity,
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                filter: 'blur(1px)',
+              }}
+            />
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
@@ -488,11 +537,6 @@ function playIntervalBell() {
 // ── Target rounds ──────────────────────────────────────────────────────────────
 const TARGET_OPTIONS = [1, 3, 5, 11] as const;
 
-// ── Confetti burst on completion ───────────────────────────────────────────────
-function ConfettiShower() {
-  return <ConfettiOverlay show />;
-}
-
 function buildCustomMantraCard(custom: CustomMantra) {
   return {
     id: CUSTOM_MANTRA_ID,
@@ -511,11 +555,74 @@ function beadPos(i: number) {
   return { x: SVG_CX + RING_R * Math.cos(angle), y: SVG_CY + RING_R * Math.sin(angle) };
 }
 
+function SacredGeometry({
+  rounds,
+  tradition,
+  accentColor,
+}: {
+  rounds: number;
+  tradition: string;
+  accentColor: string;
+}) {
+  if (rounds <= 0) return null;
+
+  const opacity = rounds >= 5 ? 0.25 : rounds >= 3 ? 0.2 : 0.15;
+  const baseStroke = accentColor;
+  const triangle = `M ${SVG_CX} ${SVG_CY - 54} L ${SVG_CX - 48} ${SVG_CY + 30} L ${SVG_CX + 48} ${SVG_CY + 30} Z`;
+  const inverseTriangle = `M ${SVG_CX} ${SVG_CY + 54} L ${SVG_CX - 48} ${SVG_CY - 30} L ${SVG_CX + 48} ${SVG_CY - 30} Z`;
+  const upperLeft = `M ${SVG_CX - 24} ${SVG_CY - 58} L ${SVG_CX - 62} ${SVG_CY + 6} L ${SVG_CX + 12} ${SVG_CY + 6} Z`;
+  const upperRight = `M ${SVG_CX + 24} ${SVG_CY - 58} L ${SVG_CX - 12} ${SVG_CY + 6} L ${SVG_CX + 62} ${SVG_CY + 6} Z`;
+  const lowerLeft = `M ${SVG_CX - 24} ${SVG_CY + 58} L ${SVG_CX - 62} ${SVG_CY - 6} L ${SVG_CX + 12} ${SVG_CY - 6} Z`;
+  const lowerRight = `M ${SVG_CX + 24} ${SVG_CY + 58} L ${SVG_CX - 12} ${SVG_CY - 6} L ${SVG_CX + 62} ${SVG_CY - 6} Z`;
+  const ringOpacity = tradition === 'buddhist' ? opacity + 0.04 : opacity;
+
+  const sharedProps = {
+    fill: 'none',
+    stroke: baseStroke,
+    strokeWidth: 1.4,
+    strokeOpacity: opacity,
+    style: { transition: 'opacity 1.5s ease-out' },
+  } as const;
+
+  return (
+    <g aria-hidden="true">
+      {rounds >= 1 && <path d={triangle} {...sharedProps} />}
+      {rounds >= 2 && (
+        <circle
+          cx={SVG_CX}
+          cy={SVG_CY}
+          r={64}
+          fill="none"
+          stroke={baseStroke}
+          strokeWidth={1.2}
+          strokeOpacity={ringOpacity}
+          style={{ transition: 'opacity 1.5s ease-out' }}
+        />
+      )}
+      {rounds >= 3 && <path d={inverseTriangle} {...sharedProps} />}
+      {rounds >= 5 && (
+        <>
+          <path d={upperLeft} {...sharedProps} />
+          <path d={upperRight} {...sharedProps} />
+          <path d={lowerLeft} {...sharedProps} />
+          <path d={lowerRight} {...sharedProps} />
+        </>
+      )}
+    </g>
+  );
+}
+
 function MalaSVG({
-  malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey,
+  malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey, milestoneActive, appLanguage, tradition, isPracticing, accentColor, completedRounds,
 }: {
   malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
   flashBeadIdx: number; flashKey: number;
+  milestoneActive: number | null;
+  appLanguage: string;
+  tradition: string;
+  isPracticing: boolean;
+  accentColor: string;
+  completedRounds: number;
 }) {
   const { playHaptic } = useZenithSensory();
   const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
@@ -523,6 +630,8 @@ function MalaSVG({
   const currentBeadIdx = beadCount % TOTAL_BEADS;
   const roundComplete  = beadCount > 0 && beadCount % TOTAL_BEADS === 0;
   const countDisplay   = roundComplete ? TOTAL_BEADS : currentBeadIdx;
+  const milestoneLabel = milestoneActive ? getMilestoneLabel(milestoneActive, appLanguage) : null;
+  const sacredSymbol = getTraditionSacredSymbol(tradition);
 
   // Current bead (next to be tapped)
   const nextBeadIdx = !roundComplete && beadCount > 0 ? currentBeadIdx + 1 : -1;
@@ -533,6 +642,24 @@ function MalaSVG({
       style={{ width: '100%', maxWidth: '100%', touchAction: 'manipulation', userSelect: 'none' }}
     >
       <defs>
+        <style>
+          {`
+            @keyframes milestone-burst {
+              0% { r: 40px; opacity: 0.9; stroke-width: 3px; }
+              100% { r: 90px; opacity: 0; stroke-width: 0.5px; }
+            }
+            @keyframes breath-halo {
+              0%, 100% { r: 168px; opacity: 0.12; }
+              50% { r: 176px; opacity: 0.28; }
+            }
+            @keyframes milestone-text-fade {
+              0% { opacity: 0; transform: translateY(6px); }
+              18% { opacity: 1; transform: translateY(0); }
+              82% { opacity: 1; transform: translateY(0); }
+              100% { opacity: 0; transform: translateY(-4px); }
+            }
+          `}
+        </style>
         {/* ── Uncounted bead — 3-stop 3D gradient ── */}
         <radialGradient id={`bead-un-${malaId}`} cx="35%" cy="30%" r="65%">
           <stop offset="0%"   stopColor={c.bead} stopOpacity="1" />
@@ -547,8 +674,8 @@ function MalaSVG({
         </radialGradient>
         {/* ── Sumeru bead ── */}
         <radialGradient id={`sumeru-${malaId}`} cx="35%" cy="28%" r="65%">
-          <stop offset="0%"   stopColor={isDark ? '#4E2A12' : c.sumeru} stopOpacity="1" />
-          <stop offset="100%" stopColor={c.sumeru} stopOpacity="0.8" />
+          <stop offset="0%"   stopColor={`${accentColor}FF`} stopOpacity="1" />
+          <stop offset="100%" stopColor={`${accentColor}88`} stopOpacity="1" />
         </radialGradient>
         {/* ── Specular highlight (applied on top of each bead) ── */}
         <radialGradient id={`spec-${malaId}`} cx="32%" cy="28%" r="48%">
@@ -584,9 +711,20 @@ function MalaSVG({
       </defs>
 
       {/* Thread */}
+      {isPracticing && (
+        <circle
+          cx={SVG_CX}
+          cy={SVG_CY}
+          r={RING_R}
+          fill="none"
+          stroke={accentColor}
+          style={{ opacity: 0.18, animation: 'breath-halo 4s ease-in-out infinite' }}
+        />
+      )}
       <circle cx={SVG_CX} cy={SVG_CY} r={RING_R} fill="none" stroke={c.thread} strokeWidth="1.8" />
       {/* Center ambient glow */}
       <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 22} fill={`url(#center-glow-${malaId})`} />
+      <SacredGeometry rounds={completedRounds} tradition={tradition} accentColor={accentColor} />
 
       {/* ── 108 beads — shadow layer first, then bead, then specular ── */}
       {Array.from({ length: TOTAL_BEADS }, (_, i) => {
@@ -625,8 +763,29 @@ function MalaSVG({
             <circle
               cx={pos.x - r * 0.22} cy={pos.y - r * 0.26}
               r={r * (isSumeru ? 0.40 : 0.38)}
-              fill={`url(#spec-${malaId})`}
+              fill={isSumeru ? 'rgba(255,255,255,0.55)' : `url(#spec-${malaId})`}
             />
+            {isSumeru && (
+              <>
+                <circle
+                  cx={pos.x - 4}
+                  cy={pos.y - 4}
+                  r={3.5}
+                  fill="white"
+                  opacity={0.55}
+                />
+                <text
+                  x={pos.x}
+                  y={pos.y + 3.5}
+                  textAnchor="middle"
+                  fontSize={11}
+                  fontFamily="var(--font-devanagari), var(--font-serif), system-ui"
+                  fill={isDark ? 'rgba(255,245,232,0.9)' : 'rgba(45,31,14,0.82)'}
+                >
+                  {sacredSymbol}
+                </text>
+              </>
+            )}
             {/* Rudraksha grain lines */}
             {malaId === 'rudraksha' && !isSumeru && (
               <>
@@ -704,26 +863,54 @@ function MalaSVG({
       })()}
 
       {/* Counter */}
-      <text
-        x={SVG_CX} y={SVG_CY - 8}
-        textAnchor="middle" dominantBaseline="middle"
-        fontSize={countDisplay >= 100 ? 46 : 54}
-        fontWeight="700"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fill={isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E'}
-        letterSpacing="-2"
-      >
-        {countDisplay}
-      </text>
-      <text
-        x={SVG_CX} y={SVG_CY + 32}
-        textAnchor="middle" fontSize={14}
-        fontFamily="system-ui, -apple-system, sans-serif"
-        fill={isDark ? 'rgba(197, 160, 89,0.65)' : 'rgba(100,65,25,0.65)'}
-        letterSpacing="1"
-      >
-        / 108
-      </text>
+      {milestoneActive ? (
+        <>
+          <circle
+            cx={SVG_CX}
+            cy={SVG_CY}
+            r={40}
+            fill="none"
+            stroke={accentColor}
+            style={{ animation: 'milestone-burst 2.2s ease-out forwards' }}
+          />
+          <text
+            x={SVG_CX}
+            y={SVG_CY + 4}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize={30}
+            fontWeight="700"
+            fontFamily="var(--font-devanagari), var(--font-serif), system-ui"
+            fill={isDark ? 'rgba(245,225,185,0.98)' : '#2D1F0E'}
+            style={{ animation: 'milestone-text-fade 2.2s ease-out forwards' }}
+          >
+            {milestoneLabel}
+          </text>
+        </>
+      ) : (
+        <>
+          <text
+            x={SVG_CX} y={SVG_CY - 8}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize={countDisplay >= 100 ? 46 : 54}
+            fontWeight="700"
+            fontFamily="system-ui, -apple-system, sans-serif"
+            fill={isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E'}
+            letterSpacing="-2"
+          >
+            {countDisplay}
+          </text>
+          <text
+            x={SVG_CX} y={SVG_CY + 32}
+            textAnchor="middle" fontSize={14}
+            fontFamily="system-ui, -apple-system, sans-serif"
+            fill={isDark ? 'rgba(197, 160, 89,0.65)' : 'rgba(100,65,25,0.65)'}
+            letterSpacing="1"
+          >
+            / 108
+          </text>
+        </>
+      )}
 
       {beadCount === 0 && (
         <text
@@ -746,39 +933,52 @@ function MantraStream({
   mantra: string;
   isDark: boolean;
 }) {
-  const lines = mantra.split('\n').map((line) => line.trim()).filter(Boolean).slice(0, 4);
-  const streamLines = lines.length > 0 ? lines : [mantra];
+  const words = mantra
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(Boolean)
+    .slice(0, 10);
+  const streamWords = words.length > 0 ? words : [mantra];
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: 7 }).map((_, index) => (
-        <motion.div
-          key={`mantra-stream-${index}`}
-          className="absolute left-1/2 whitespace-nowrap"
-          style={{
-            bottom: '-8%',
-            x: '-50%',
-            fontFamily: 'var(--font-devanagari), var(--font-serif)',
-            fontSize: `${1.15 + (index % 3) * 0.18}rem`,
-            letterSpacing: '0.05em',
-            color: isDark ? 'rgba(245,210,150,0.11)' : 'rgba(122,74,30,0.10)',
-            filter: 'blur(0.4px)',
-          }}
-          animate={{
-            y: ['0%', '-118%'],
-            opacity: [0, 0.18, 0.12, 0],
-            scale: [0.98, 1.01, 1.04],
-          }}
-          transition={{
-            duration: 8.4 + index * 0.7,
-            repeat: Infinity,
-            ease: 'linear',
-            delay: index * 1.1,
-          }}
-        >
-          {streamLines[index % streamLines.length]}
-        </motion.div>
-      ))}
+      {Array.from({ length: 7 }).map((_, index) => {
+        const isLeading = index < 2;
+        const opacityPeak = isLeading ? 0.72 - index * 0.08 : 0.35 - ((index - 2) % 3) * 0.05;
+        const opacityMid = isLeading ? 0.38 : Math.max(0.2, opacityPeak - 0.07);
+        const fontSize = isLeading ? `${16 - index}px` : `${14 + (index % 2)}px`;
+
+        return (
+          <motion.div
+            key={`mantra-stream-${index}`}
+            className="absolute left-1/2 whitespace-nowrap"
+            style={{
+              bottom: '-8%',
+              x: '-50%',
+              fontFamily: 'var(--font-devanagari), var(--font-serif)',
+              fontSize,
+              letterSpacing: '0.05em',
+              color: isDark
+                ? `rgba(245,210,150,${opacityMid})`
+                : `rgba(122,74,30,${opacityMid})`,
+              filter: 'blur(0.4px)',
+            }}
+            animate={{
+              y: ['0%', '-118%'],
+              opacity: [0, opacityPeak, opacityMid, 0],
+              scale: [0.98, 1.01, 1.04],
+            }}
+            transition={{
+              duration: 8.4 + index * 0.7,
+              repeat: Infinity,
+              ease: 'linear',
+              delay: index * 1.1,
+            }}
+          >
+            {streamWords[index % streamWords.length]}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
@@ -826,7 +1026,7 @@ function TapBloom({
 
 // ── Screen 0: Ritual launcher ─────────────────────────────────────────────────
 function PracticeLauncherScreen({
-  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, onTargetChange, onStart, onCustomize, onBack,
+  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, lifetimeData, accentColor, onTargetChange, onStart, onCustomize, onBack,
 }: {
   isDark: boolean;
   traditionLabel: string;
@@ -834,6 +1034,8 @@ function PracticeLauncherScreen({
   currentMantra: MantraOption;
   targetRounds: number;
   streak: number;
+  lifetimeData: JapaLifetimeData;
+  accentColor: string;
   onTargetChange: (rounds: number) => void;
   onStart: () => void;
   onCustomize: () => void;
@@ -843,7 +1045,8 @@ function PracticeLauncherScreen({
   const card = isDark ? 'rgba(28,25,20,0.84)' : 'rgba(255,253,249,0.88)';
   const text = isDark ? 'rgba(245,232,210,0.96)' : '#2D1F0E';
   const sub = isDark ? 'rgba(205,178,130,0.68)' : 'rgba(96,66,34,0.66)';
-  const amber = isDark ? '#C5A059' : '#8A5A18';
+  const amber = accentColor;
+  const borderColor = isDark ? 'rgba(197, 160, 89,0.18)' : 'rgba(0,0,0,0.08)';
 
   return (
     <motion.div
@@ -923,6 +1126,19 @@ function PracticeLauncherScreen({
           <button onClick={onStart} className="w-full rounded-full py-4 text-[15px] font-medium transition-transform active:scale-[0.98]" style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2' }}>
             Start full focus
           </button>
+          {lifetimeData.totalBeads > 0 && (
+            <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 8, alignItems: 'stretch' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: accentColor }}>{lifetimeData.totalBeads.toLocaleString()}</div>
+                <div style={{ fontSize: 10, color: sub, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Beads</div>
+              </div>
+              <div style={{ width: 1, background: borderColor }} />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: accentColor }}>{lifetimeData.totalRounds}</div>
+                <div style={{ fontSize: 10, color: sub, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Rounds</div>
+              </div>
+            </div>
+          )}
           <button onClick={onCustomize} className="w-full rounded-full border py-3.5 text-[14px] font-medium" style={{ borderColor: `${amber}28`, color: sub, background: card }}>
             Change mala, mantra, or sanctuary
           </button>
@@ -1377,130 +1593,215 @@ function SoundsSheet({
   );
 }
 
-// ── Completion Overlay ────────────────────────────────────────────────────────
-function CompletionOverlay({
-  isDark, rounds, partialBeads, targetRounds, durationSecs, mantraName, streak, onContinue, onChangeMala, onViewInsights,
+// ── Completion Ceremony ───────────────────────────────────────────────────────
+function JapaCompletionCeremony({
+  tradition,
+  rounds,
+  totalBeads,
+  mantraName,
+  totalTimeSeconds,
+  onDismiss,
 }: {
-  isDark: boolean; rounds: number; partialBeads: number; targetRounds: number; durationSecs: number;
-  mantraName: string; streak: number; onContinue: () => void; onChangeMala: () => void; onViewInsights: () => void;
+  tradition: string;
+  rounds: number;
+  totalBeads: number;
+  mantraName: string;
+  totalTimeSeconds: number;
+  onDismiss: () => void;
 }) {
-  const mins  = Math.floor(durationSecs / 60);
-  const secs  = durationSecs % 60;
-  const bg    = isDark ? 'rgba(8,6,12,0.97)' : 'rgba(245,240,232,0.97)';
-  const text  = isDark ? 'rgba(245,225,185,0.97)' : '#2D1F0E';
-  const sub   = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
-  const amber = isDark ? '#C5A059' : '#7A4A1E';
-  const isGoalMet = rounds >= targetRounds;
-  const totalBeadsShown = rounds * TOTAL_BEADS + partialBeads;
+  const meta = getTraditionMeta(tradition);
+  const accentColor = meta.accentColour;
+  const mins = Math.floor(totalTimeSeconds / 60);
+  const secs = totalTimeSeconds % 60;
+
+  const ceremony = {
+    hindu: {
+      background: 'linear-gradient(180deg, #FF6B00 0%, #1a0a00 100%)',
+      text: 'rgba(255,244,226,0.98)',
+      sub: 'rgba(255,224,188,0.82)',
+      center: 'ॐ',
+      subtitle: 'माला पूर्ण हुई',
+    },
+    sikh: {
+      background: 'linear-gradient(180deg, #001a4d 0%, #000d26 100%)',
+      text: 'rgba(240,247,255,0.98)',
+      sub: 'rgba(197,222,255,0.82)',
+      center: 'ੴ',
+      subtitle: 'Simran Complete',
+    },
+    buddhist: {
+      background: 'linear-gradient(180deg, #2d0a1a 0%, #0d0309 100%)',
+      text: 'rgba(255,241,235,0.98)',
+      sub: 'rgba(240,211,195,0.82)',
+      center: '☸',
+      subtitle: 'Meditation Complete',
+    },
+    jain: {
+      background: 'linear-gradient(180deg, #fffdf5 0%, #f0e8d0 100%)',
+      text: '#2D1F0E',
+      sub: 'rgba(74,54,28,0.72)',
+      center: '☮',
+      subtitle: 'Japa Complete',
+    },
+  } as const;
+
+  const theme = ceremony[(tradition as keyof typeof ceremony)] ?? ceremony.hindu;
 
   return (
-    <>
-      {/* Confetti */}
-      <ConfettiShower />
+    <motion.div
+      className="fixed inset-0 z-[2200] flex flex-col items-center justify-center px-6 py-10"
+      style={{ background: theme.background }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <style>{`
+        @keyframes ceremony-ring-expand {
+          0% { transform: scale(0.82); opacity: 0.65; }
+          100% { transform: scale(1.55); opacity: 0; }
+        }
+        @keyframes dharma-wheel-rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
 
-      <motion.div
-        className="fixed inset-0 flex items-end"
-        style={{ zIndex: 61, background: 'rgba(0,0,0,0.65)' }}
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      >
-        <motion.div
-          initial={{ y: '100%' }} animate={{ y: 0 }}
-          transition={{ type: 'spring', damping: 30, stiffness: 280 }}
-          className="w-full max-w-2xl mx-auto rounded-t-3xl px-6 pt-6 space-y-5"
-          style={{
-            background: bg,
-            backdropFilter: 'blur(28px)',
-            border: `1px solid ${amber}28`,
-            borderBottom: 'none',
-            paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))',
-          }}
-        >
-          <div className="w-10 h-1 rounded-full mx-auto" style={{ background: `${amber}30` }} />
+      {tradition === 'sikh' && (
+        <div aria-hidden="true" className="absolute top-14 left-1/2 -translate-x-1/2" style={{ opacity: 0.3 }}>
+          <svg width="84" height="84" viewBox="0 0 84 84" fill="none">
+            <path d="M42 8 L46 24 L62 28 L46 32 L42 76 L38 32 L22 28 L38 24 Z" stroke="white" strokeWidth="3" />
+            <circle cx="42" cy="28" r="14" stroke="white" strokeWidth="3" />
+          </svg>
+        </div>
+      )}
 
-          <div className="text-center space-y-2">
-            <motion.div
-              className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border"
-              style={{ borderColor: `${amber}35`, background: `${amber}14` }}
-              animate={{ scale: [0.5, 1.2, 1] }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-              <Sparkles size={28} style={{ color: amber }} />
-            </motion.div>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 700, color: text, letterSpacing: '-0.01em' }}>
-              {isGoalMet ? 'Sadhana Complete' : 'Japa Complete'}
-            </h2>
-            <p style={{ color: sub, fontSize: '0.9rem' }}>
-              {rounds} mala{rounds > 1 ? 's' : ''} · {mantraName}
-            </p>
-            {isGoalMet && targetRounds > 1 && (
-              <p className="text-xs font-semibold px-3 py-1 rounded-full inline-block"
-                style={{ background: `${amber}18`, color: amber }}>
-                Goal of {targetRounds} malas achieved
-              </p>
-            )}
+      <div className="relative flex flex-col items-center justify-center text-center">
+        {tradition === 'hindu' && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {Array.from({ length: 8 }).map((_, i) => {
+              const angle = (i / 8) * Math.PI * 2;
+              const x = Math.cos(angle) * 92;
+              const y = Math.sin(angle) * 92;
+              return (
+                <motion.svg
+                  key={`lotus-petal-${i}`}
+                  width="28"
+                  height="44"
+                  viewBox="0 0 28 44"
+                  className="absolute"
+                  style={{ transform: `translate(${x}px, ${y}px) rotate(${(angle * 180) / Math.PI + 90}deg)` }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 0.6, scale: 1 }}
+                  transition={{ delay: 0.2 + i * 0.08, duration: 0.55 }}
+                >
+                  <path d="M14 2 C24 10 24 28 14 42 C4 28 4 10 14 2 Z" fill="rgba(255,245,230,0.25)" stroke="rgba(255,245,230,0.45)" />
+                </motion.svg>
+              );
+            })}
           </div>
+        )}
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { label: 'Rounds', value: rounds > 0 ? `${rounds}` : '—' },
-              { label: 'Beads',  value: `${totalBeadsShown}` },
-              { label: 'Time',   value: `${mins}m ${secs}s` },
-            ].map(s => (
-              <div key={s.label} className="rounded-2xl p-4 text-center border"
-                style={{ background: isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}1A` }}>
-                <p className="font-bold text-xl" style={{ color: amber }}>{s.value}</p>
-                <p className="text-[11px] mt-1" style={{ color: sub }}>{s.label}</p>
-              </div>
+        {tradition === 'buddhist' && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {[0, 1, 2].map((ring) => (
+              <div
+                key={`buddhist-ring-${ring}`}
+                className="absolute rounded-full border"
+                style={{
+                  width: 120 + ring * 48,
+                  height: 120 + ring * 48,
+                  borderColor: `${accentColor}55`,
+                  animation: `ceremony-ring-expand ${2.8 + ring * 0.4}s ease-out ${ring * 0.22}s infinite`,
+                }}
+              />
             ))}
           </div>
+        )}
 
-          {/* Streak */}
-          {streak > 0 && (
-            <div className="flex items-center justify-center gap-2 rounded-2xl p-3 border"
-              style={{ background: `${amber}10`, borderColor: `${amber}28` }}>
-              <Flame size={18} style={{ color: amber }} />
-              <span className="font-semibold text-sm" style={{ color: amber }}>{streak} day streak</span>
-            </div>
-          )}
-
-          {/* CTAs */}
-          <div className="space-y-2.5">
-            <motion.button
-              onClick={onContinue}
-              whileTap={{ scale: 0.97 }}
-              className="w-full py-4 rounded-2xl font-bold text-[15px]"
-              style={{
-                background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
-                color: isDark ? '#fde8c8' : '#fff8f0',
-                boxShadow: '0 4px 24px rgba(197, 160, 89,0.28)',
-              }}>
-              Continue another mala
-            </motion.button>
-
-            <button
-              onClick={onViewInsights}
-              className="w-full py-3 rounded-2xl text-sm font-semibold border"
-              style={{
-                background: 'transparent',
-                borderColor: `${amber}30`,
-                color: amber,
-              }}>
-              View Insights →
-            </button>
-            <button
-              onClick={onChangeMala}
-              className="w-full py-3 rounded-2xl text-sm font-semibold border"
-              style={{
-                background: 'transparent',
-                borderColor: `${amber}22`,
-                color: sub,
-              }}>
-              Change mala &amp; mantra
-            </button>
-          </div>
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          style={{
+            fontFamily: 'var(--font-devanagari), var(--font-serif), system-ui',
+            fontSize: tradition === 'jain' ? '5rem' : '6rem',
+            lineHeight: 1,
+            color: accentColor,
+            position: 'relative',
+            zIndex: 1,
+            animation: tradition === 'buddhist' ? 'dharma-wheel-rotate 8s linear infinite' : undefined,
+          }}
+        >
+          {theme.center}
         </motion.div>
+
+        <div className="mt-5 max-w-md relative z-10">
+          {tradition === 'sikh' && (
+            <p className="text-[1.35rem] font-semibold mb-2" style={{ color: theme.text, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>
+              ਵਾਹਿਗੁਰੂ
+            </p>
+          )}
+          <p className="text-[2rem] font-semibold" style={{ color: theme.text, fontFamily: 'var(--font-serif)' }}>
+            {theme.subtitle}
+          </p>
+        </div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8, duration: 0.6, ease: 'easeOut' }}
+        className="mt-10 w-full max-w-md rounded-[2rem] border px-5 py-5"
+        style={{
+          background: tradition === 'jain' ? 'rgba(255,255,255,0.52)' : 'rgba(8,6,10,0.28)',
+          borderColor: tradition === 'jain' ? 'rgba(45,31,14,0.12)' : 'rgba(255,255,255,0.14)',
+          backdropFilter: 'blur(20px)',
+        }}
+      >
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: 'Rounds completed', value: `${rounds}` },
+            { label: 'Total beads', value: `${totalBeads}` },
+            { label: 'Time', value: `${mins}m ${secs}s` },
+            { label: 'Mantra', value: mantraName },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-2xl px-4 py-3" style={{ background: tradition === 'jain' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.05)' }}>
+              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ color: theme.sub }}>{stat.label}</p>
+              <p className="mt-2 text-base font-semibold leading-snug" style={{ color: theme.text }}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
       </motion.div>
-    </>
+
+      <div className="mt-8 flex flex-col items-center gap-4">
+        <button
+          onClick={() => triggerSadhanaShare({
+            tradition,
+            type: 'japa',
+            symbol: TRADITION_SYMBOLS[tradition] ?? '🙏',
+            lines: [
+              { text: `${rounds} round${rounds > 1 ? 's' : ''} complete`, size: 64, weight: '700', color: theme.text },
+              { text: mantraName ?? 'Japa Mala', size: 44, weight: '400', color: 'rgba(255,255,255,0.6)' },
+              { text: `${totalBeads.toLocaleString('en-IN')} beads today`, size: 36, weight: '300', color: 'rgba(255,255,255,0.4)' },
+            ],
+          })}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px',
+            borderRadius: 999, border: `1px solid ${accentColor}44`,
+            background: `${accentColor}18`, color: accentColor, fontSize: 13, fontWeight: 600
+          }}
+        >
+          🔗 Share practice
+        </button>
+        <button
+          onClick={onDismiss}
+          className="rounded-full px-8 py-4 text-[15px] font-semibold transition-transform active:scale-[0.98]"
+          style={{ background: accentColor, color: tradition === 'jain' ? '#fffaf2' : '#160F08' }}
+        >
+          🙏 Continue
+        </button>
+      </div>
+    </motion.div>
   );
 }
 
@@ -1729,6 +2030,7 @@ export default function JapaClient({
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
+  const { lang: appLanguage } = useLanguage();
   const isDark = resolvedTheme === 'dark';
   const { playHaptic } = useZenithSensory();
   const prefersReducedMotion = useReducedMotion();
@@ -1790,6 +2092,8 @@ export default function JapaClient({
   const [flashKey,     setFlashKey]     = useState(0);
   const flashTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const beadCountRef   = useRef(0);
+  const [milestoneActive, setMilestoneActive] = useState<number | null>(null);
+  const milestoneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [floatParticles, setFloatParticles] = useState<{id: number}[]>([]);
   const floatIdRef = useRef(0);
@@ -1815,6 +2119,17 @@ export default function JapaClient({
         setMantraId(savedMantra);
       }
       if (savedBg     && BG_SCENES.find(s => s.id === savedBg))       setBgSceneId(savedBg);
+      const savedLifetime = localStorage.getItem(STORAGE_LIFETIME);
+      if (savedLifetime) {
+        try {
+          const parsed = JSON.parse(savedLifetime) as JapaLifetimeData;
+          setLifetimeData({
+            totalBeads: parsed.totalBeads ?? 0,
+            totalRounds: parsed.totalRounds ?? 0,
+            lastPracticed: parsed.lastPracticed ?? null,
+          });
+        } catch { /* ok */ }
+      }
     } catch { /* ok */ }
   }, []);
 
@@ -1853,6 +2168,7 @@ export default function JapaClient({
   const [beadCount,    setBeadCount]    = useState(0);
   const [roundsDone,   setRoundsDone]   = useState(0);
   const [totalBeads,   setTotalBeads]   = useState(0);
+  const [lifetimeData, setLifetimeData] = useState<JapaLifetimeData>(EMPTY_LIFETIME_DATA);
   const [paused,       setPaused]       = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const [showStopSheet, setShowStopSheet] = useState(false);
@@ -1879,6 +2195,9 @@ export default function JapaClient({
   }, [screen, paused, showComplete]);
 
   useEffect(() => () => { stopJapaAmbient(); }, []);
+  useEffect(() => () => {
+    if (milestoneTimerRef.current) clearTimeout(milestoneTimerRef.current);
+  }, []);
 
   const enterBrowserFullscreen = useCallback(() => {
     try {
@@ -1894,6 +2213,28 @@ export default function JapaClient({
     localStorage.setItem(STORAGE_SOUND, id);
     startJapaAmbient(id);
   }
+
+  const triggerMilestonePulse = useCallback((bead: number) => {
+    setMilestoneActive(bead);
+    if (milestoneTimerRef.current) clearTimeout(milestoneTimerRef.current);
+    milestoneTimerRef.current = setTimeout(() => setMilestoneActive(null), 2200);
+    playIntervalBell();
+  }, []);
+
+  const updateLifetimeData = useCallback((completedRounds: number) => {
+    if (completedRounds <= 0) return;
+    setLifetimeData((prev) => {
+      const next = {
+        totalBeads: prev.totalBeads + completedRounds * TOTAL_BEADS,
+        totalRounds: prev.totalRounds + completedRounds,
+        lastPracticed: new Date().toISOString(),
+      };
+      try {
+        localStorage.setItem(STORAGE_LIFETIME, JSON.stringify(next));
+      } catch { /* ok */ }
+      return next;
+    });
+  }, []);
 
   const saveCustomMantraSync = useCallback(async (value: CustomMantra) => {
     setSavingCustomMantra(true);
@@ -1933,12 +2274,17 @@ export default function JapaClient({
 
     setBeadCount(prev => {
       const next = prev + 1;
+      const milestones = [27, 54, 81];
+      if (milestones.includes(next)) {
+        triggerMilestonePulse(next);
+      }
       if (next >= TOTAL_BEADS) {
         hapticSuccess();
         playIntervalBell();
         setRoundsDone(r => {
           const newRounds = r + 1;
           setTotalBeads(t => t + next);
+          updateLifetimeData(1);
           if (newRounds >= targetRoundsRef.current) {
             stopJapaAmbient();
             setTimeout(() => setShowComplete(true), 300);
@@ -1950,7 +2296,7 @@ export default function JapaClient({
       setTotalBeads(t => t + 1);
       return next;
     });
-  }, [paused, showComplete, playHaptic]);
+  }, [paused, showComplete, playHaptic, triggerMilestonePulse, updateLifetimeData]);
 
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
     if (saved || savingSession || (completedRounds === 0 && partialBeads === 0)) return false;
@@ -2184,6 +2530,8 @@ export default function JapaClient({
           currentMantra={currentMantra}
           targetRounds={targetRounds}
           streak={streak}
+          lifetimeData={lifetimeData}
+          accentColor={meta.accentColour}
           onTargetChange={setTargetRounds}
           onStart={handleStartPractice}
           onCustomize={() => setScreen('chooseMala')}
@@ -2336,7 +2684,7 @@ export default function JapaClient({
           </motion.div>
 
           <div className="flex-1 flex flex-col items-center justify-center relative">
-            <LotusParticles />
+            <LotusParticles accentColor={meta.accentColour} />
             <MantraStream mantra={currentMantra.full} isDark={isDark} />
             <TapBloom particles={floatParticles} isDark={isDark} />
             <div className="relative z-10 w-full max-w-sm px-6">
@@ -2353,6 +2701,12 @@ export default function JapaClient({
                   pulsing={pulsing}
                   flashBeadIdx={flashBeadIdx}
                   flashKey={flashKey}
+                  milestoneActive={milestoneActive}
+                  appLanguage={appLanguage}
+                  tradition={tradition}
+                  isPracticing={screen === 'practice'}
+                  accentColor={meta.accentColour}
+                  completedRounds={roundsDone}
                 />
               </motion.div>
             </div>
@@ -2430,17 +2784,13 @@ export default function JapaClient({
           {/* ── Completion overlay ────────────────────────────────────────── */}
           <AnimatePresence>
             {showComplete && (
-              <CompletionOverlay
-                isDark={isDark}
+              <JapaCompletionCeremony
+                tradition={tradition}
                 rounds={roundsDone}
-                partialBeads={beadCount}
-                targetRounds={targetRounds}
-                durationSecs={duration}
+                totalBeads={roundsDone * TOTAL_BEADS}
                 mantraName={currentMantra.name}
-                streak={streak}
-                onContinue={handleContinueAfterComplete}
-                onChangeMala={handleChangeAfterComplete}
-                onViewInsights={handleViewInsights}
+                totalTimeSeconds={duration}
+                onDismiss={handleContinueAfterComplete}
               />
             )}
           </AnimatePresence>

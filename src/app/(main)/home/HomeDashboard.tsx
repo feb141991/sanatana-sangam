@@ -29,6 +29,7 @@ import {
 import { Sparkles, Search, Settings, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
+import { triggerSadhanaShare } from '@/lib/share/trigger-share';
 import {
   startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   eachDayOfInterval, format as fmtDate, isSameDay, isSameMonth,
@@ -60,6 +61,8 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import SankalpaBanner from '@/components/home/SankalpaBanner';
+import SetSankalpSheet from '@/components/home/SetSankalpSheet';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
@@ -74,6 +77,8 @@ import DailyMoodCard from '@/components/mood/DailyMoodCard';
 import MoodRecommendationSheet from '@/components/mood/MoodRecommendationSheet';
 import MoodFollowupSheet, { type PendingMoodFollowup } from '@/components/mood/MoodFollowupSheet';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
+import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
+import { FESTIVALS_2026 } from '@/lib/festivals';
 
 interface Panchang {
   tithi:      string;
@@ -143,6 +148,50 @@ interface Props {
   pathshalaDoneToday?: boolean;
   pathshalaLabel?:     string;
   pathshalaHref?:      string;
+}
+
+type DailyDharmaStackState = {
+  japaBeads: number;
+  japaRounds: number;
+  quizDone: boolean;
+  dharmVeerDone: boolean;
+  pathshalaProgress: number;
+};
+
+const EMPTY_DAILY_DHARMA_STACK_STATE: DailyDharmaStackState = {
+  japaBeads: 0,
+  japaRounds: 0,
+  quizDone: false,
+  dharmVeerDone: false,
+  pathshalaProgress: 0,
+};
+
+function clampDailyProgress(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function deriveHomePathshalaProgress(raw: unknown): number {
+  if (!raw || typeof raw !== 'object') return 0;
+  if (Array.isArray(raw)) {
+    return raw.reduce((max, item) => Math.max(max, deriveHomePathshalaProgress(item)), 0);
+  }
+
+  const record = raw as Record<string, unknown>;
+  const keys = ['progress', 'percentage', 'percent', 'completion', 'completionRate'];
+  let max = 0;
+
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === 'number') {
+      max = Math.max(max, clampDailyProgress(value <= 1 ? value * 100 : value));
+    }
+  }
+
+  for (const value of Object.values(record)) {
+    max = Math.max(max, deriveHomePathshalaProgress(value));
+  }
+
+  return max;
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -1009,12 +1058,50 @@ export default function HomeDashboard({
   ));
   const [heroImageFailed,   setHeroImageFailed]   = useState(false);
   const [streak,           setStreak]           = useState(initialStreak);
+  const [dailyDharmaStackState, setDailyDharmaStackState] = useState<DailyDharmaStackState>(EMPTY_DAILY_DHARMA_STACK_STATE);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
     const tz    = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
     const today = localSpiritualDate(tz, 4);
     return lastShlokaDate === today;
   });
+
+  useEffect(() => {
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      let nextState: DailyDharmaStackState = { ...EMPTY_DAILY_DHARMA_STACK_STATE };
+
+      const japaRaw = localStorage.getItem('shoonaya-japa-session-today');
+      if (japaRaw) {
+        const parsed = JSON.parse(japaRaw) as { beads?: number; rounds?: number; date?: string };
+        if (parsed.date === todayStr) {
+          nextState.japaBeads = parsed.beads ?? 0;
+          nextState.japaRounds = parsed.rounds ?? 0;
+        }
+      }
+
+      for (const key of Object.keys(localStorage)) {
+        if (key.startsWith('shoonaya-quiz-daily-answered-') && key.endsWith(todayStr)) {
+          const value = localStorage.getItem(key);
+          if (value === 'true' || value === '0' || value === '1' || value === '2' || value === '3') {
+            nextState.quizDone = true;
+            break;
+          }
+        }
+      }
+
+      nextState.dharmVeerDone = localStorage.getItem(`shoonaya-dharmveer-done-${todayStr}`) === 'true';
+
+      const pathshalaRaw = localStorage.getItem('shoonaya-pathshala-progress');
+      if (pathshalaRaw) {
+        nextState.pathshalaProgress = deriveHomePathshalaProgress(JSON.parse(pathshalaRaw));
+      }
+
+      setDailyDharmaStackState(nextState);
+    } catch {
+      setDailyDharmaStackState(EMPTY_DAILY_DHARMA_STACK_STATE);
+    }
+  }, []);
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
@@ -1025,6 +1112,8 @@ export default function HomeDashboard({
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quizDailyId, setQuizDailyId] = useState<string | null>(null);
+  const [activeSankalpa, setActiveSankalpa] = useState<any>(null);
+  const [showSankalpSheet, setShowSankalpSheet] = useState(false);
   const [quizStreak, setQuizStreak] = useState<number>(0);
   const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
 
@@ -1150,6 +1239,17 @@ export default function HomeDashboard({
   const effectiveLang       = appLanguage ?? 'en';
   const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${effectiveLang}-${todayStr}`;
   const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${effectiveLang}-${todayStr}`;
+
+  const fetchSankalpa = () => {
+    fetch('/api/sankalpa')
+      .then(res => res.ok ? res.json() : Promise.reject())
+      .then(data => setActiveSankalpa(data.sankalpa || null))
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchSankalpa();
+  }, []);
 
   useEffect(() => {
     try {
@@ -1711,11 +1811,26 @@ export default function HomeDashboard({
 
   // ── Festival Story Cards ────────────────────────────────────────────────────
   // Show "read the story" cards for ALL festivals ≤ 7 days away that have content.
-  const activeFestivalStories = festivals
+  const { observances, loading: calendarLoading, error: calendarError } = useUpcomingObservances(tradition || 'all', 30);
+
+  const apiFestivals: import('@/lib/festivals').Festival[] = calendarError 
+    ? FESTIVALS_2026.slice(0, 3) 
+    : observances.map(obs => ({
+        name: obs.display_name,
+        date: obs.date,
+        emoji: obs.emoji,
+        description: obs.description || '',
+        type: obs.kind as any,
+        tradition: obs.tradition as any,
+        route_kind: obs.route_kind as any,
+        route_slug: obs.route_slug
+      }));
+
+  const activeFestivalStories = apiFestivals
     .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
     .filter(x => x.story && x.daysLeft !== null && x.daysLeft <= 7);
 
-  const upcomingSacredObservance = festivals
+  const upcomingSacredObservance = apiFestivals
     .map(f => ({ festival: f, daysLeft: daysFromNow(f.date) }))
     .filter(x => x.daysLeft !== null && x.daysLeft > 0 && x.daysLeft <= 7)
     .sort((a, b) => a.daysLeft - b.daysLeft)[0] ?? null;
@@ -2020,9 +2135,25 @@ export default function HomeDashboard({
           japaDone={japaAlreadyDoneToday} 
           nityaDone={nityaDoneToday} 
           pathshalaDone={pathshalaDoneToday}
-          pathshalaLabel={pathshalaLabel}
-          pathshalaHref={pathshalaHref}
-          tradition={tradition}
+          japaBeads={dailyDharmaStackState.japaBeads}
+          japaRounds={dailyDharmaStackState.japaRounds}
+          quizDone={dailyDharmaStackState.quizDone}
+          dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+          pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+          tithi={panchang?.tithi}
+          tradition={tradition ?? 'hindu'}
+        />
+        
+        <SankalpaBanner
+          sankalpa={activeSankalpa}
+          onSet={() => setShowSankalpSheet(true)}
+          onComplete={() => {
+            fetch('/api/sankalpa', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
+            }).then(() => fetchSankalpa());
+          }}
         />
 
         {/* Daily Darshan — hidden until content is fully prepared */}
@@ -2031,7 +2162,9 @@ export default function HomeDashboard({
 
         {/* ── Sacred Day Pulses (Stack) ────────────────────────────────────────────── */}
         <AnimatePresence>
-          {upcomingSacredObservance && (
+          {calendarLoading ? (
+            <div className="w-full h-[72px] rounded-[1.55rem] bg-black/[0.04] dark:bg-white/[0.04] opacity-40 mb-3 animate-none" />
+          ) : upcomingSacredObservance && (
             <motion.div
               key={`upcoming-observance-${upcomingSacredObservance.festival.name}`}
               initial={{ opacity: 0, y: -10 }}
@@ -2307,7 +2440,9 @@ export default function HomeDashboard({
 
         {/* ── Festival Story Cards (Stack) ────────────────────────────────────────── */}
         <AnimatePresence>
-          {activeFestivalStories.map(({ festival: f, story, daysLeft }) => (
+          {calendarLoading ? (
+            <div className="w-full h-[72px] rounded-[1rem] bg-black/[0.04] dark:bg-white/[0.04] opacity-40 mb-3 animate-none" />
+          ) : activeFestivalStories.map(({ festival: f, story, daysLeft }) => (
             <motion.button
               key={`story-${f.name}`}
               type="button"
@@ -2968,6 +3103,34 @@ export default function HomeDashboard({
                          ? 'ਗਿਆਨ ਵੰਡਣ ਨਾਲ ਵਧਦਾ ਹੈ। ਕੱਲ੍ਹ ਇੱਕ ਨਵੀਂ ਸਪਾਰਕ ਲਈ ਆਓ।'
                          : 'Wisdom grows when shared. Come back tomorrow for a new spark.'}
                      </p>
+
+                     <div className="flex justify-center mt-6">
+                       <button
+                         onClick={() => {
+                           const correctCount = quizAnswered === quiz.answerIndex ? 1 : 0;
+                           const totalCount = 1;
+                           triggerSadhanaShare({
+                             tradition: _quizTrad,
+                             type: 'quiz',
+                             symbol: '🧠',
+                             lines: [
+                               { text: 'Quiz Complete', size: 64, weight: '700', color: '#ffffff' },
+                               { text: `${correctCount}/${totalCount} correct`, size: 52, color: 'var(--brand-primary)' },
+                               { text: `${Math.round(correctCount/totalCount*100)}% accuracy`, size: 36, color: '#ffffff66' },
+                             ],
+                           });
+                         }}
+                         className="flex items-center gap-2 px-6 py-3 rounded-full border transition-transform active:scale-95"
+                         style={{
+                           borderColor: 'rgba(197, 160, 89, 0.25)',
+                           background: 'rgba(197, 160, 89, 0.1)',
+                           color: 'var(--brand-primary)',
+                         }}
+                       >
+                         <Share2 size={16} />
+                         <span className="text-sm font-semibold">Share Result</span>
+                       </button>
+                     </div>
                    </div>
                 )}
               </div>
@@ -2976,7 +3139,18 @@ export default function HomeDashboard({
         )}
       </AnimatePresence>
 
-
+      <AnimatePresence>
+        {showSankalpSheet && (
+          <SetSankalpSheet
+            tradition={tradition ?? 'hindu'}
+            onClose={() => setShowSankalpSheet(false)}
+            onSuccess={() => {
+              setShowSankalpSheet(false);
+              fetchSankalpa();
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {selectedMoodForSheet && (
