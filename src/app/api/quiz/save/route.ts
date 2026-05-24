@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { computeQuizStreak, getStreakMilestone } from '@/lib/quiz-streak';
 
 // ─── POST /api/quiz/save ──────────────────────────────────────────────────────
 // Persists a daily quiz response. Increments karma_points on the profile.
-// Karma: +10 for correct, +2 for wrong (showing up still counts).
+// Karma: +10 for correct, +2 for wrong, plus milestone bonuses.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -16,9 +17,31 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { question, chosen_index, correct_index, is_correct, tradition, explanation } = body;
+    const { question, chosen_index, correct_index, is_correct, tradition, explanation, daily_quiz_id } = body;
+    const todayStr = new Date().toISOString().split('T')[0];
 
-    // Persist quiz response (one per day per user)
+    // a. Query past responses (last 92 days to compute streak efficiently)
+    const ninetyTwoDaysAgo = new Date();
+    ninetyTwoDaysAgo.setUTCDate(ninetyTwoDaysAgo.getUTCDate() - 92);
+    const dateLimit = ninetyTwoDaysAgo.toISOString().split('T')[0];
+
+    const { data: pastResponses } = await supabase
+      .from('quiz_responses')
+      .select('date')
+      .eq('user_id', user.id)
+      .gte('date', dateLimit)
+      .order('date', { ascending: false });
+
+    const dates = Array.from(new Set([
+      todayStr,
+      ...(pastResponses || []).map(r => r.date)
+    ]));
+    
+    // b. Call computeQuizStreak
+    const currentStreak = computeQuizStreak(dates);
+    const streak_milestone = getStreakMilestone(currentStreak);
+
+    // Persist quiz response (upsert, so we insert or update)
     const { error: insertError } = await supabase
       .from('quiz_responses')
       .upsert({
@@ -29,19 +52,34 @@ export async function POST(req: NextRequest) {
         is_correct,
         tradition,
         explanation: explanation ?? null,
-        date: new Date().toISOString().split('T')[0],
+        date: todayStr,
+        daily_quiz_id: daily_quiz_id || null,
+        streak_at_answer: currentStreak,
       }, { onConflict: 'user_id,date', ignoreDuplicates: true });
 
     if (insertError) throw insertError;
 
-    // Increment karma_points — only if this was a new insert (ignoreDuplicates means
-    // replays won't double-award, but we still attempt the increment safely)
-    const karmaGain = is_correct ? 10 : 2;
-    try {
-      await supabase.rpc('increment_karma', { p_user_id: user.id, p_amount: karmaGain });
-    } catch { /* safe — rpc not yet deployed until migration runs */ }
+    // Compute karma
+    let karmaGain = is_correct ? 10 : 2;
+    let bonusKarma = 0;
+    
+    if (streak_milestone === 'three_days') bonusKarma = 5;
+    else if (streak_milestone === 'week') bonusKarma = 15;
+    else if (streak_milestone === 'month') bonusKarma = 50;
+    else if (streak_milestone === 'century') bonusKarma = 200;
 
-    return NextResponse.json({ success: true, karma_earned: karmaGain });
+    const totalKarma = karmaGain + bonusKarma;
+
+    try {
+      await supabase.rpc('increment_karma', { p_user_id: user.id, p_amount: totalKarma });
+    } catch { /* safe */ }
+
+    return NextResponse.json({ 
+      success: true, 
+      karma_earned: totalKarma, 
+      streak: currentStreak, 
+      streak_milestone 
+    });
   } catch (err) {
     console.error('[quiz/save] Failed:', err);
     return NextResponse.json({ error: 'Failed to save response' }, { status: 500 });

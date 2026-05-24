@@ -1024,8 +1024,12 @@ export default function HomeDashboard({
   // showDeeksha / handleDeekshaComplete removed
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
+  const [quizDailyId, setQuizDailyId] = useState<string | null>(null);
+  const [quizStreak, setQuizStreak] = useState<number>(0);
+  const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
+
   const [quiz, setQuiz]               = useState<{
-    type: 'fact' | 'quiz'; question: string; options?: string[]; answerIndex?: number; explanation?: string; fact: string; source: string;
+    type: 'fact' | 'quiz'; question: string; options?: string[]; answerIndex?: number; explanation?: string; fact: string; source: string; daily_quiz_id?: string;
   } | null | 'loading' | 'error'>(null);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null); // index of chosen option
 
@@ -1142,20 +1146,25 @@ export default function HomeDashboard({
 
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
   const _quizTrad           = tradition ?? 'hindu';
-  const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}`;
-  const QUIZ_CACHE_DATE_KEY = `shoonaya-quiz-daily-date-${_quizTrad}`;
-  const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}`;
+  const todayStr            = new Date().toISOString().split('T')[0];
+  const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${todayStr}`;
+  const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${todayStr}`;
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
     try {
       // Check cache first
-      const cachedDate = localStorage.getItem(QUIZ_CACHE_DATE_KEY);
       const cachedRaw  = localStorage.getItem(QUIZ_CACHE_KEY);
-      if (cachedDate === today && cachedRaw) {
-        setQuiz(JSON.parse(cachedRaw));
+      if (cachedRaw) {
+        const parsed = JSON.parse(cachedRaw);
+        setQuiz(parsed);
+        setQuizDailyId(parsed.daily_quiz_id ?? null);
         const answered = localStorage.getItem(QUIZ_ANSWERED_KEY);
         if (answered !== null) setQuizAnswered(Number(answered));
+        
+        fetch('/api/quiz/stats')
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (data?.streak) setQuizStreak(data.streak); })
+          .catch(() => {});
         return;
       }
     } catch { /* ignore */ }
@@ -1164,13 +1173,18 @@ export default function HomeDashboard({
     setQuiz('loading');
     const trad = tradition ?? 'hindu';
     const langParam = appLanguage ? `&language=${appLanguage}` : '';
-    fetch(`/api/quiz/daily?tradition=${trad}${langParam}`)
+    fetch(`/api/quiz/daily?tradition=${trad}&date=${todayStr}${langParam}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         const quizData = { ...data, type: 'quiz' as const };
         setQuiz(quizData);
+        setQuizDailyId(data.daily_quiz_id ?? null);
         localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(quizData));
-        localStorage.setItem(QUIZ_CACHE_DATE_KEY, today);
+        
+        fetch('/api/quiz/stats')
+          .then(r => r.ok ? r.json() : null)
+          .then(data => { if (data?.streak) setQuizStreak(data.streak); })
+          .catch(() => {});
       })
       .catch(() => setQuiz('error'));
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1190,7 +1204,7 @@ export default function HomeDashboard({
 
     // Persist to DB
     try {
-      await fetch('/api/quiz/save', {
+      const resp = await fetch('/api/quiz/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1200,8 +1214,18 @@ export default function HomeDashboard({
           is_correct:    idx === quiz.answerIndex,
           tradition:     tradition ?? 'hindu',
           explanation:   quiz.explanation ?? null,
+          daily_quiz_id: quizDailyId,
         })
       });
+      if (resp.ok) {
+        const data = await resp.json();
+        setQuizStreak(data.streak ?? 0);
+        setQuizMilestone(data.streak_milestone ?? null);
+        if (data.streak_milestone) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 4000);
+        }
+      }
     } catch (err) {
       console.error('Failed to persist quiz answer:', err);
     }
@@ -1389,7 +1413,7 @@ export default function HomeDashboard({
     return () => window.clearTimeout(timer);
   }, [searchParams]);
 
-  const todayStr   = new Date().toISOString().split('T')[0];
+  // todayStr is already declared above
   const selDateStr = selectedDate.toISOString().split('T')[0];
   const isToday    = selDateStr === todayStr;
 
@@ -2362,8 +2386,15 @@ export default function HomeDashboard({
                     <h3 className="text-sm font-bold theme-ink line-clamp-1 mt-0.5">{quiz.question}</h3>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-[var(--brand-muted)] group-hover:text-[var(--brand-primary)] transition-colors">
-                  <span className="text-[10px] font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-2">
+                  {quizStreak > 1 && (
+                    <span className="flex items-center gap-0.5 text-[11px] font-bold"
+                          style={{ color: 'var(--brand-primary)' }}>
+                      🔥{quizStreak}
+                    </span>
+                  )}
+                  <span className="text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: 'var(--text-muted-warm)' }}>
                     {quizAnswered !== null ? 'Done ✓' : 'Play →'}
                   </span>
                 </div>
@@ -2890,10 +2921,52 @@ export default function HomeDashboard({
                 </div>
 
                 {quizAnswered !== null && (
-                   <div className="mt-12 text-center">
-                      <p className="text-xs text-muted-foreground">
-                        {effectiveAppLanguage === 'hi' ? 'ज्ञान बांटने से बढ़ता है। एक नई स्पार्क के लिए कल वापस आएं।' : effectiveAppLanguage === 'pa' ? 'ਗਿਆਨ ਵੰਡਣ ਨਾਲ ਵਧਦਾ ਹੈ। ਇੱਕ ਨਵੀਂ ਸਪਾਰਕ ਲਈ ਕੱਲ੍ਹ ਵਾਪਸ ਆਓ।' : 'Wisdom grows when shared. Come back tomorrow for a new spark.'}
-                      </p>
+                   <div className="mt-10 space-y-4">
+                     {/* Streak + accuracy row */}
+                     <div className="flex items-center justify-center gap-6">
+                       {quizStreak > 0 && (
+                         <div className="text-center">
+                           <p className="text-2xl font-bold" style={{ color: 'var(--brand-primary)' }}>
+                             🔥{quizStreak}
+                           </p>
+                           <p className="text-[10px] uppercase tracking-widest mt-1"
+                              style={{ color: 'var(--text-dim)' }}>
+                             {effectiveAppLanguage === 'hi' ? 'दिन की लकीर' : effectiveAppLanguage === 'pa' ? 'ਦਿਨਾਂ ਦੀ ਲੜੀ' : 'Day Streak'}
+                           </p>
+                         </div>
+                       )}
+                     </div>
+
+                     {/* Milestone badge */}
+                     {quizMilestone === 'three_days' && (
+                       <p className="text-center text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                         🥉 {effectiveAppLanguage === 'hi' ? '३ दिन पूरे! धन्य है आपकी साधना।' : '3-day milestone reached!'}
+                       </p>
+                     )}
+                     {quizMilestone === 'week' && (
+                       <p className="text-center text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                         🥈 {effectiveAppLanguage === 'hi' ? 'सात दिन की साधना पूरी!' : '7-day Sadhana streak!'}
+                       </p>
+                     )}
+                     {quizMilestone === 'month' && (
+                       <p className="text-center text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                         🏆 {effectiveAppLanguage === 'hi' ? 'एक माह की ज्ञान-यात्रा पूरी!' : '30-day Gyani streak!'}
+                       </p>
+                     )}
+                     {quizMilestone === 'century' && (
+                       <p className="text-center text-sm font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                         💎 {effectiveAppLanguage === 'hi' ? 'शत-दिवस ऋषि! अद्भुत साधना!' : '100-day Rishi streak!'}
+                       </p>
+                     )}
+
+                     {/* Come back tomorrow */}
+                     <p className="text-xs text-center" style={{ color: 'var(--text-dim)' }}>
+                       {effectiveAppLanguage === 'hi'
+                         ? 'ज्ञान बांटने से बढ़ता है। कल एक नई स्पार्क के लिए आएं।'
+                         : effectiveAppLanguage === 'pa'
+                         ? 'ਗਿਆਨ ਵੰਡਣ ਨਾਲ ਵਧਦਾ ਹੈ। ਕੱਲ੍ਹ ਇੱਕ ਨਵੀਂ ਸਪਾਰਕ ਲਈ ਆਓ।'
+                         : 'Wisdom grows when shared. Come back tomorrow for a new spark.'}
+                     </p>
                    </div>
                 )}
               </div>
