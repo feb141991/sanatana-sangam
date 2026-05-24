@@ -205,20 +205,20 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
     }
   }
 
-  // 3. Assemble and flatten results
+  // 3. Assemble results — one occurrence per rule per year.
+  // When multiple dates match (e.g. a dark-half tithi that spans two lunar months within
+  // the same solar-rashi window), pick the first match by default, or the last match when
+  // the rule explicitly sets `prefer_last_match: true`.
   const results: CalculatedOccurrence[] = [];
   for (const rule of CANONICAL_RULES) {
-    const dates = occurrencesMap[rule.slug] || [];
-    for (const date of dates) {
-      const occYear = new Date(date + 'T00:00:00Z').getUTCFullYear();
-      if (occYear === year) {
-        results.push({
-          slug: rule.slug,
-          date,
-          year,
-        });
-      }
-    }
+    const allDates = (occurrencesMap[rule.slug] || []).filter(
+      d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+    );
+    if (allDates.length === 0) continue;
+    const selectedDate = rule.prefer_last_match
+      ? allDates[allDates.length - 1]
+      : allDates[0];
+    results.push({ slug: rule.slug, date: selectedDate, year });
   }
 
   return results;

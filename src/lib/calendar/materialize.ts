@@ -95,6 +95,10 @@ export async function materializeOccurrencesForYears({
 
     const toInsert: any[] = [];
     const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+    // Track which definitions have already been processed this year to prevent
+    // duplicate inserts when a rule matches more than once (tithi can appear
+    // twice near the edge of a solar-rashi window).
+    const processedThisYear = new Set<string>();
 
     for (const occ of calculated) {
       const definitionId = definitionMap.get(occ.slug);
@@ -102,6 +106,11 @@ export async function materializeOccurrencesForYears({
         summary[year].missingDefinition += 1;
         continue;
       }
+
+      // Deduplicate: keep only the first match per (definition, year).
+      const dedupKey = `${definitionId}:${occ.year}`;
+      if (processedThisYear.has(dedupKey)) continue;
+      processedThisYear.add(dedupKey);
 
       const existing = existingByDefinitionYear.get(`${definitionId}:${occ.year}`);
       if (!existing) {

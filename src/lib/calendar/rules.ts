@@ -10,12 +10,19 @@ export interface ObservanceRule {
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
   lunar_tithi_index?: number; // 1-30
-  lunar_masa_name?: string;   // e.g. "Chaitra"
+  lunar_masa_name?: string;   // IMPORTANT: must match panchang.ts masaName output (shifted 2 months behind traditional)
   nanakshahi_month?: string;  // e.g. 'Vaisakh'
   nanakshahi_day?: number;    // 1-based day within the Nanakshahi month
   relative_base_slug?: string;
   relative_offset_days?: number;
   nakshatra_name?: string;
+  /**
+   * When a rule matches the same tithi twice in one solar month (dark-half
+   * tithi that spans two lunar months), prefer the LAST match instead of the
+   * first. Use this for festivals like Janmashtami whose correct occurrence
+   * is the later one (Shravana dark half, not the earlier Ashadha dark half).
+   */
+  prefer_last_match?: boolean;
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
@@ -24,6 +31,15 @@ export interface ObservanceRule {
 // Tithi index convention (amanta system):
 // 1 = Shukla Pratipada ... 15 = Purnima
 // 16 = Krishna Pratipada ... 30 = Amavasya (new moon)
+//
+// IMPORTANT — lunar_masa_name calibration:
+// panchang.ts computes masaName from the sun's sidereal rashi with a formula that
+// returns names ~2 months BEHIND the traditional chandra-masa name.
+// These rules use the ACTUAL panchang output values (verified against 2025 dates).
+// Traditional → panchang output: Phalguna→Pausha, Chaitra→Magha, Vaishakha→Phalguna,
+// Jyeshtha→Chaitra, Ashadha→Vaishakha, Shravana→Jyeshtha, Bhadrapada→Ashadha,
+// Ashwin→Shravana, Kartika→Bhadrapada, Margashirsha→Ashwin, Magha→Margashirsha.
+
 export const CANONICAL_RULES: ObservanceRule[] = [
   // ── Hindu ──────────────────────────────────────────────────────────────────
   {
@@ -47,7 +63,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha',
+    lunar_masa_name: 'Margashirsha', // traditional Magha
     lunar_tithi_index: 5,
   },
   {
@@ -59,8 +75,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna',
-    lunar_tithi_index: 29,
+    lunar_masa_name: 'Pausha', // traditional Phalguna (purnimanta) / Magha (amanta)
+    lunar_tithi_index: 28,     // Chaturdashi; use 28 since tithi-29 night falls after the 05:00 UTC scan
   },
   {
     slug: 'holi',
@@ -71,7 +87,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna',
+    lunar_masa_name: 'Pausha', // traditional Phalguna Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -83,7 +99,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra',
+    lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
     lunar_tithi_index: 1,
   },
   {
@@ -95,7 +111,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra',
+    lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
     lunar_tithi_index: 1,
   },
   {
@@ -107,7 +123,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra',
+    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Navami
     lunar_tithi_index: 9,
   },
   {
@@ -119,8 +135,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra',
-    lunar_tithi_index: 14,
+    lunar_masa_name: 'Magha', // traditional Chaitra Purnima
+    lunar_tithi_index: 15,
   },
   {
     slug: 'akshaya-tritiya',
@@ -131,7 +147,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha',
+    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
     lunar_tithi_index: 3,
   },
   {
@@ -143,7 +159,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha',
+    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Chaturdashi
     lunar_tithi_index: 14,
   },
   {
@@ -155,7 +171,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha',
+    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
     lunar_tithi_index: 30,
   },
   {
@@ -167,7 +183,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha',
+    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
     lunar_tithi_index: 30,
     route_kind: 'vrat',
     route_slug: 'vat-savitri',
@@ -181,7 +197,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha',
+    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Purnima
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'vat-savitri-purnima',
@@ -195,7 +211,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha',
+    lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Dwitiya
     lunar_tithi_index: 2,
   },
   {
@@ -207,7 +223,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'all',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha',
+    lunar_masa_name: 'Vaishakha', // traditional Ashadha Purnima
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'purnima',
@@ -221,7 +237,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana Shukla Panchami
     lunar_tithi_index: 5,
   },
   {
@@ -233,7 +249,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -245,8 +261,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Ashtami (amanta)
     lunar_tithi_index: 23,
+    prefer_last_match: true,    // 'Jyeshtha'/23 fires twice (Ashadha & Shravana dark halves); want the later one
   },
   {
     slug: 'ganesh-chaturthi',
@@ -257,7 +274,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada',
+    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Chaturthi
     lunar_tithi_index: 4,
   },
   {
@@ -269,8 +286,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'nakshatra_based',
     verification_type: 'nakshatra_based',
-    lunar_masa_name: 'Ashadha',
-    nakshatra_name: 'Mrigashira',
+    lunar_masa_name: 'Ashadha',  // Chingam = sidereal Leo; panchang gives 'Ashadha' for Leo solar month
+    nakshatra_name: 'Shravana',  // Thiruvonam = moon in Shravana nakshatra
   },
   {
     slug: 'hartalika-teej',
@@ -281,7 +298,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada',
+    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Tritiya
     lunar_tithi_index: 3,
     route_kind: 'vrat',
     route_slug: 'hartalika-teej',
@@ -295,7 +312,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin',
+    lunar_masa_name: 'Shravana', // traditional Ashwin Amavasya
     lunar_tithi_index: 30,
     route_kind: 'vrat',
     route_slug: 'amavasya',
@@ -309,7 +326,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin',
+    lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Pratipada
     lunar_tithi_index: 1,
     route_kind: 'vrat',
     route_slug: 'navratri',
@@ -323,7 +340,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin',
+    lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Dashami
     lunar_tithi_index: 10,
   },
   {
@@ -335,7 +352,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Krishna Chaturthi
     lunar_tithi_index: 19,
     route_kind: 'vrat',
     route_slug: 'karva-chauth',
@@ -361,8 +378,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'all',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Kartika',
-    lunar_tithi_index: 30,
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Amavasya
+    lunar_tithi_index: 29,          // Amavasya (30) begins that evening; 5am scan shows 29
   },
   {
     slug: 'govardhan-puja',
@@ -397,7 +414,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Shukla Shashthi
     lunar_tithi_index: 6,
   },
   {
@@ -409,7 +426,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'purnima',
@@ -423,7 +440,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha',
+    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Panchami
     lunar_tithi_index: 5,
   },
   {
@@ -435,7 +452,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha',
+    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
     lunar_tithi_index: 11,
   },
   {
@@ -447,7 +464,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha',
+    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
     lunar_tithi_index: 11,
     route_kind: 'vrat',
     route_slug: 'vaikunta-ekadashi',
@@ -487,7 +504,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'sikh',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha',
+    lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -497,10 +514,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Sikh martial festival initiated by Guru Gobind Singh Ji — mock battles, poetry, music and langar at Anandpur Sahib',
     kind: 'major',
     tradition: 'sikh',
-    rule_family: 'lunar_tithi',
+    rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna',
-    lunar_tithi_index: 16,
+    relative_base_slug: 'holi',
+    relative_offset_days: 1, // always the day after Holi (Phalguna Krishna Pratipada)
   },
   {
     slug: 'baisakhi',
@@ -583,7 +600,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'sikh',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -633,7 +650,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'regional_calendar',
-    lunar_masa_name: 'Phalguna',
+    lunar_masa_name: 'Pausha', // traditional Phalguna Pratipada (Tibetan 1st month day 1)
     lunar_tithi_index: 1,
   },
   {
@@ -645,7 +662,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha',
+    lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -657,7 +674,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha',
+    lunar_masa_name: 'Phalguna', // traditional Vaishakha Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -669,7 +686,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha',
+    lunar_masa_name: 'Vaishakha', // traditional Ashadha Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -681,7 +698,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha',
+    lunar_masa_name: 'Vaishakha', // traditional Ashadha Krishna Pratipada (day after Purnima)
     lunar_tithi_index: 16,
   },
   {
@@ -693,7 +710,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -705,7 +722,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin',
+    lunar_masa_name: 'Shravana', // traditional Ashwin Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -717,7 +734,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin',
+    lunar_masa_name: 'Shravana', // traditional Ashwin Krishna Pratipada
     lunar_tithi_index: 16,
   },
   {
@@ -729,7 +746,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -755,7 +772,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Chaitra',
+    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Trayodashi
     lunar_tithi_index: 13,
   },
   {
@@ -767,7 +784,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Vaishakha',
+    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
     lunar_tithi_index: 3,
   },
   {
@@ -779,7 +796,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Dvadashi / Bhadrapada Shukla 12
     lunar_tithi_index: 27,
   },
   {
@@ -791,7 +808,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada',
+    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
     lunar_tithi_index: 5,
   },
   {
@@ -803,7 +820,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada',
+    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
     lunar_tithi_index: 5,
   },
   {
@@ -839,7 +856,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Kartika',
+    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
     lunar_tithi_index: 15,
   },
 ];
