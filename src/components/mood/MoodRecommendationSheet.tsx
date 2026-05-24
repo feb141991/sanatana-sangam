@@ -105,28 +105,28 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex items-end"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       onClick={onClose}
       initial={prefersReducedMotion ? undefined : { opacity: 0 }}
       animate={prefersReducedMotion ? undefined : { opacity: 1 }}
       exit={prefersReducedMotion ? undefined : { opacity: 0 }}
     >
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-      
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+
       <motion.div
-        className="w-full rounded-t-[2rem] p-6 space-y-5 relative z-10"
+        className="w-full max-w-sm rounded-3xl p-6 space-y-5 relative z-10 overflow-y-auto"
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
-          borderTop: '1px solid rgba(197, 160, 89, 0.20)',
-          boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.4)',
+          background: 'var(--card-bg)',
+          border: '1px solid rgba(197, 160, 89, 0.22)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+          maxHeight: '90dvh',
         }}
-        initial={prefersReducedMotion ? undefined : { y: 32, opacity: 0 }}
-        animate={prefersReducedMotion ? undefined : { y: 0, opacity: 1 }}
-        exit={prefersReducedMotion ? undefined : { y: 20, opacity: 0 }}
-        transition={{ duration: 0.32, ease: [0.34, 1.26, 0.64, 1] }}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95, y: 10 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+        exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95, y: 10 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="w-10 h-1 rounded-full mx-auto mb-1" style={{ background: 'rgba(197, 160, 89, 0.28)' }} />
 
         <div className="flex items-center justify-between">
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
