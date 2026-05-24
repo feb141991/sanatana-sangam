@@ -2687,24 +2687,17 @@ window.switchShloka    = switchShloka;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SKY CANVAS — splash entry animation
-   Nebula wisps · Stars · Shooting stars · 3 bands · Rashi · 27 Nakshatras
-   Dual mandala · Floaters · Mouse parallax · Mobile-aware
+   Nebula wisps · Stars · Shooting stars · Dual mandala · Floaters · Parallax
 ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   const cv  = document.getElementById('sky-canvas');
   if (!cv) return;
   const ctx = cv.getContext('2d');
   let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
-  let stars = [], glowStars = [], planets = [], naks = [], floaters = [], meteors = [], orbitMeteors = [], galaxyDust = [];
+  let stars = [], glowStars = [], floaters = [], meteors = [];
   let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
   let nextMeteorIn = 0.35 + Math.random() * 0.9;
 
-  const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
-    'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
-    'Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
-    'Mula','P.Ashadha','U.Ashadha','Shravana','Dhanishtha',
-    'Shatabhisha','P.Bhadra','U.Bhadra','Revati'];
-  const RASHI = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
   const GPOOL = [
     { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#E8A030' },
     { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                            col:'#5BA4D4' },
@@ -2720,7 +2713,7 @@ window.switchShloka    = switchShloka;
     H = cv.height = window.innerHeight;
     cx = W / 2; cy = H / 2;
     maxR = Math.min(W, H) * 0.43;
-    buildStars(); buildGlowStars(); buildPlanets(); buildNaks(); buildFloaters(); buildOrbitMeteors(); buildGalaxyDust();
+    buildStars(); buildGlowStars(); buildFloaters();
   }
 
   function buildStars() {
@@ -2737,27 +2730,6 @@ window.switchShloka    = switchShloka;
         col: Math.random() < 0.78 ? '#FFFEF8' : (Math.random() < 0.5 ? '#FFD28A' : '#AACEFF'),
         depth: 0.3 + Math.random() * 0.7, // parallax depth layer
       });
-    }
-  }
-
-  function buildNaks() {
-    naks = [];
-    const R = maxR * 0.86;
-    for (let i = 0; i < 27; i++) {
-      const ang = (i / 27) * Math.PI * 2 - Math.PI / 2;
-      const nc  = 2 + Math.floor(sr(i * 5) * 3);
-      const pts = [];
-      for (let j = 0; j < nc; j++) {
-        pts.push({
-          dx:   (sr(i * 11 + j * 3)     - 0.5) * 28,
-          dy:   (sr(i * 11 + j * 3 + 1) - 0.5) * 28,
-          r:    0.8  + sr(i * 11 + j * 3 + 2) * 1.4,
-          base: 0.45 + sr(i * 11 + j * 3 + 3) * 0.45,
-          freq: 0.4  + sr(i * 11 + j * 3 + 4) * 0.9,
-          ph:         sr(i * 11 + j * 3 + 5) * Math.PI * 2,
-        });
-      }
-      naks.push({ ang, R, pts, name: NAKS[i] });
     }
   }
 
@@ -2780,72 +2752,28 @@ window.switchShloka    = switchShloka;
 
   function buildGlowStars() {
     glowStars = [];
-    // 14 large hero stars scattered across the sky
-    for (let i = 0; i < 14; i++) {
-      glowStars.push({
-        x: sr(i * 7 + 1) * W,
-        y: sr(i * 7 + 2) * H,
-        r: 2.5 + sr(i * 7 + 3) * 3.5,          // 2.5–6px
-        glowR: 10 + sr(i * 7 + 4) * 20,         // glow halo radius
-        base: 0.55 + sr(i * 7 + 5) * 0.35,
+    // 6 large hero stars — gradients pre-baked at build time (not recreated each frame)
+    for (let i = 0; i < 6; i++) {
+      const x     = sr(i * 7 + 1) * W;
+      const y     = sr(i * 7 + 2) * H;
+      const r     = 2.5 + sr(i * 7 + 3) * 3.5;
+      const glowR = 12 + sr(i * 7 + 4) * 18;
+      const base  = 0.55 + sr(i * 7 + 5) * 0.35;
+      const col   = i % 4 === 0 ? '#FFD28A' : i % 4 === 1 ? '#AACEFF' : i % 4 === 2 ? '#FFB8C8' : '#FFFEF8';
+      // Bake gradient once; globalAlpha scales it per frame
+      const grd = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+      grd.addColorStop(0,   `rgba(255,254,248,${(base * 0.38).toFixed(3)})`);
+      grd.addColorStop(0.4, `rgba(255,254,248,${(base * 0.13).toFixed(3)})`);
+      grd.addColorStop(1,   'rgba(255,254,248,0)');
+      glowStars.push({ x, y, r, glowR, base, col, grd,
         freq: 0.18 + sr(i * 7 + 6) * 0.55,
-        ph: sr(i * 7 + 7) * Math.PI * 2,
-        col: i % 4 === 0 ? '#FFD28A' : i % 4 === 1 ? '#AACEFF' : i % 4 === 2 ? '#FFB8C8' : '#FFFEF8',
+        ph:   sr(i * 7 + 7) * Math.PI * 2,
       });
     }
-  }
-
-  function buildGalaxyDust() {
-    galaxyDust = [];
-    const n = W < 600 ? 160 : 360;
-    for (let i = 0; i < n; i++) {
-      const along = (Math.random() - 0.5) * W * 1.55;
-      const across = (Math.random() - 0.5) * Math.min(W, H) * 0.28;
-      galaxyDust.push({
-        along,
-        across,
-        r: 0.35 + Math.random() * 1.25,
-        op: 0.05 + Math.random() * 0.18,
-        ph: Math.random() * Math.PI * 2,
-        drift: 0.15 + Math.random() * 0.35,
-        col: Math.random() < 0.10 ? '#FFD28A' : '#FFFEF8',
-      });
-    }
-  }
-
-  function buildOrbitMeteors() {
-    orbitMeteors = [];
-    const count = W < 600 ? 3 : 5;
-    for (let i = 0; i < count; i++) {
-      orbitMeteors.push({
-        a: (i / count) * Math.PI * 2,
-        speed: 0.08 + sr(i + 411) * 0.12,
-        r: maxR * (0.42 + sr(i + 421) * 0.44),
-        len: 34 + sr(i + 431) * 72,
-        op: 0.18 + sr(i + 441) * 0.24,
-      });
-    }
-  }
-
-  function buildPlanets() {
-    planets = [
-      // amber/golden — Jupiter-like, large
-      { x: W * sr(101), y: H * sr(102) * 0.6, r: 11 + sr(103) * 8, col: '#C88830', glow: '#E8A030', op: 0.55, freq: 0.12, ph: 0.0 },
-      // dusty rose — Mars-like
-      { x: W * sr(111), y: H * (0.1 + sr(112) * 0.5), r: 6 + sr(113) * 5, col: '#A0405A', glow: '#C85870', op: 0.45, freq: 0.18, ph: 1.8 },
-      // blue-indigo — Neptune-like, small
-      { x: W * (0.6 + sr(121) * 0.35), y: H * sr(122) * 0.45, r: 4 + sr(123) * 4, col: '#2A5080', glow: '#4080C0', op: 0.38, freq: 0.22, ph: 3.4 },
-    ];
-    // clamp so planets don't overlap the central mandala area
-    planets.forEach(p => {
-      if (Math.hypot(p.x - cx, p.y - cy) < maxR * 0.95) {
-        p.x = p.x < cx ? cx - maxR * 1.1 : cx + maxR * 1.1;
-      }
-    });
   }
 
   function spawnMeteor() {
-    if (meteors.length >= 14) return;
+    if (meteors.length >= 4) return;
     // always start from the right half, near the top — sweep across full width
     const startX = W * (0.45 + Math.random() * 0.55);
     const startY = H * (Math.random() * 0.58);
@@ -2870,25 +2798,21 @@ window.switchShloka    = switchShloka;
     ctx.closePath();
   }
 
-  /* ── Glowing hero stars ──────────────────────────────────────── */
+  /* ── Glowing hero stars — pre-baked gradients, no per-frame alloc ── */
   function drawGlowStars(ts) {
     for (const s of glowStars) {
       const tw = Math.sin(ts * s.freq + s.ph) * 0.35 + 0.65;
-      const op = s.base * tw;
-      // outer soft glow halo
-      const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.glowR);
-      grd.addColorStop(0,   `rgba(255,254,248,${(op * 0.35).toFixed(3)})`);
-      grd.addColorStop(0.4, `rgba(255,254,248,${(op * 0.12).toFixed(3)})`);
-      grd.addColorStop(1,   'rgba(255,254,248,0)');
-      ctx.globalAlpha = 1; ctx.fillStyle = grd;
+      // Halo: use pre-baked gradient, globalAlpha scales it
+      ctx.globalAlpha = tw;
+      ctx.fillStyle   = s.grd;
       ctx.beginPath(); ctx.arc(s.x, s.y, s.glowR, 0, Math.PI * 2); ctx.fill();
-      // bright core
-      ctx.globalAlpha = op;
-      ctx.fillStyle = s.col;
+      // Bright core
+      ctx.globalAlpha = s.base * tw;
+      ctx.fillStyle   = s.col;
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-      // cross-sparkle lines on bigger stars
+      // Cross-sparkle on bigger stars
       if (s.r > 4) {
-        ctx.globalAlpha = op * 0.55;
+        ctx.globalAlpha = s.base * tw * 0.55;
         ctx.strokeStyle = s.col; ctx.lineWidth = 0.8;
         const sl = s.r * 2.8;
         ctx.beginPath();
@@ -2897,42 +2821,6 @@ window.switchShloka    = switchShloka;
         ctx.stroke();
       }
     }
-  }
-
-  /* ── Planets ─────────────────────────────────────────────────── */
-  function drawPlanets(ts) {
-    for (const p of planets) {
-      const tw = Math.sin(ts * p.freq + p.ph) * 0.18 + 0.82;
-      const op = p.op * tw;
-      // glow aura
-      const aura = ctx.createRadialGradient(p.x, p.y, p.r * 0.4, p.x, p.y, p.r * 3.5);
-      aura.addColorStop(0,   `rgba(${hexToRgb(p.glow)},${(op * 0.30).toFixed(3)})`);
-      aura.addColorStop(0.5, `rgba(${hexToRgb(p.glow)},${(op * 0.08).toFixed(3)})`);
-      aura.addColorStop(1,   `rgba(${hexToRgb(p.glow)},0)`);
-      ctx.globalAlpha = 1; ctx.fillStyle = aura;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3.5, 0, Math.PI * 2); ctx.fill();
-      // planet disc — radial gradient for 3D feel
-      const disc = ctx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
-      disc.addColorStop(0,   lighten(p.col, 0.45));
-      disc.addColorStop(0.5, p.col);
-      disc.addColorStop(1,   darken(p.col, 0.45));
-      ctx.globalAlpha = op;
-      ctx.fillStyle = disc;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-    }
-  }
-
-  function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    return `${r},${g},${b}`;
-  }
-  function lighten(hex, amt) {
-    let [r,g,b] = [1,3,5].map(i => Math.min(255, parseInt(hex.slice(i,i+2),16) + Math.round(255*amt)));
-    return `rgba(${r},${g},${b},1)`;
-  }
-  function darken(hex, amt) {
-    let [r,g,b] = [1,3,5].map(i => Math.max(0, parseInt(hex.slice(i,i+2),16) - Math.round(255*amt)));
-    return `rgba(${r},${g},${b},1)`;
   }
 
   /* ── Nebula wisps ─────────────────────────────────────────────── */
@@ -2949,34 +2837,6 @@ window.switchShloka    = switchShloka;
       ctx.globalAlpha = 1; ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
     });
-  }
-
-  function drawMilkyWay(ts) {
-    ctx.save();
-    ctx.translate(cx + mx * 8, cy + my * 5);
-    ctx.rotate(-0.42);
-
-    const bandW = W * 1.55;
-    const bandH = Math.min(W, H) * 0.32;
-    const g = ctx.createLinearGradient(0, -bandH / 2, 0, bandH / 2);
-    g.addColorStop(0, 'rgba(255,254,248,0)');
-    g.addColorStop(0.20, 'rgba(120,95,190,0.035)');
-    g.addColorStop(0.48, 'rgba(255,236,190,0.105)');
-    g.addColorStop(0.62, 'rgba(150,185,255,0.055)');
-    g.addColorStop(1, 'rgba(255,254,248,0)');
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = g;
-    ctx.fillRect(-bandW / 2, -bandH / 2, bandW, bandH);
-
-    for (const d of galaxyDust) {
-      const tw = 0.65 + Math.sin(ts * d.drift + d.ph) * 0.35;
-      ctx.globalAlpha = d.op * tw;
-      ctx.fillStyle = d.col;
-      ctx.beginPath();
-      ctx.arc(d.along, d.across + Math.sin(ts * 0.08 + d.ph) * 2, d.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
   }
 
   /* ── Stars with parallax ─────────────────────────────────────── */
@@ -3036,34 +2896,6 @@ window.switchShloka    = switchShloka;
     ctx.lineCap = 'butt';
   }
 
-  function drawOrbitMeteors(ts) {
-    for (const m of orbitMeteors) {
-      const a = m.a + ts * m.speed;
-      const wobble = Math.sin(ts * 0.34 + m.a) * maxR * 0.025;
-      const r = m.r + wobble;
-      const x = cx + Math.cos(a) * r + mx * 12;
-      const y = cy + Math.sin(a) * r + my * 9;
-      const tailA = a - 0.34;
-      const tx = x - Math.cos(tailA) * m.len;
-      const ty = y - Math.sin(tailA) * m.len;
-
-      const trail = ctx.createLinearGradient(x, y, tx, ty);
-      trail.addColorStop(0, `rgba(255,245,214,${m.op.toFixed(3)})`);
-      trail.addColorStop(0.35, `rgba(250,199,117,${(m.op * 0.45).toFixed(3)})`);
-      trail.addColorStop(1, 'rgba(250,199,117,0)');
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = trail;
-      ctx.lineWidth = 1.15;
-      ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
-
-      ctx.globalAlpha = m.op * 1.45;
-      ctx.fillStyle = '#FFF6D9';
-      ctx.beginPath(); ctx.arc(x, y, 1.7, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.lineCap = 'butt';
-  }
-
   function drawBands() {
     [[maxR * 0.32, 0.28], [maxR * 0.62, 0.20], [maxR * 0.88, 0.14]].forEach(([R, op]) => {
       ctx.globalAlpha = op; ctx.strokeStyle = '#D88A1C'; ctx.lineWidth = 0.8;
@@ -3072,58 +2904,6 @@ window.switchShloka    = switchShloka;
       ctx.beginPath(); ctx.arc(cx, cy, R - 7, 0, Math.PI * 2); ctx.stroke();
       ctx.beginPath(); ctx.arc(cx, cy, R + 7, 0, Math.PI * 2); ctx.stroke();
     });
-  }
-
-  function drawRashi() {
-    const R = maxR * 0.62;
-    RASHI.forEach((sym, i) => {
-      const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
-      const ca  = Math.cos(ang), sa = Math.sin(ang);
-      ctx.globalAlpha = 0.50; ctx.strokeStyle = '#D4A050'; ctx.lineWidth = 1.0;
-      ctx.beginPath();
-      ctx.moveTo(cx + (R - 11) * ca, cy + (R - 11) * sa);
-      ctx.lineTo(cx + (R + 11) * ca, cy + (R + 11) * sa);
-      ctx.stroke();
-      for (let j = 1; j < 3; j++) {
-        const a2 = ang + (j / 3) * (Math.PI * 2 / 12);
-        const c2 = Math.cos(a2), s2 = Math.sin(a2);
-        ctx.globalAlpha = 0.22; ctx.lineWidth = 0.45;
-        ctx.beginPath();
-        ctx.moveTo(cx + (R - 5) * c2, cy + (R - 5) * s2);
-        ctx.lineTo(cx + (R + 5) * c2, cy + (R + 5) * s2);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 0.60; ctx.fillStyle = '#D4A850';
-      ctx.font = '13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(sym, cx + (R + 24) * ca, cy + (R + 24) * sa);
-    });
-  }
-
-  function drawNakshatras(ts) {
-    ctx.lineWidth = 0.5;
-    for (const n of naks) {
-      const bx = cx + n.R * Math.cos(n.ang);
-      const by = cy + n.R * Math.sin(n.ang);
-      if (n.pts.length >= 2) {
-        ctx.globalAlpha = 0.18; ctx.strokeStyle = '#C8E0FF';
-        ctx.beginPath(); ctx.moveTo(bx + n.pts[0].dx, by + n.pts[0].dy);
-        for (let i = 1; i < n.pts.length; i++) ctx.lineTo(bx + n.pts[i].dx, by + n.pts[i].dy);
-        ctx.stroke();
-      }
-      for (const s of n.pts) {
-        const tw = Math.sin(ts * s.freq + s.ph) * 0.25 + 0.75;
-        ctx.globalAlpha = s.base * tw;
-        ctx.fillStyle   = '#FFFEF8';
-        ctx.beginPath(); ctx.arc(bx + s.dx, by + s.dy, s.r * 1.2, 0, Math.PI * 2); ctx.fill();
-      }
-      // labels hidden on mobile / small radius
-      if (maxR > 160 && W > 520) {
-        const fs = Math.max(7, Math.min(9, maxR / 50));
-        ctx.globalAlpha = 0.24; ctx.fillStyle = '#C8A870';
-        ctx.font = `${fs}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(n.name, cx + (n.R + 22) * Math.cos(n.ang), cy + (n.R + 22) * Math.sin(n.ang));
-      }
-    }
   }
 
   /* ── Mandala with mild parallax ──────────────────────────────── */
@@ -3192,25 +2972,19 @@ window.switchShloka    = switchShloka;
     mx += (rawMX - mx) * 0.04;
     my += (rawMY - my) * 0.04;
 
-    // meteor spawn timer
+    // meteor spawn timer — one at a time, spaced out (cap is 4)
     nextMeteorIn -= dt;
     if (nextMeteorIn <= 0) {
-      const burst = Math.random() < 0.32 ? 2 + Math.floor(Math.random() * 3) : 1;
-      for (let i = 0; i < burst; i++) spawnMeteor();
-      nextMeteorIn = 0.65 + Math.random() * 1.25;
+      spawnMeteor();
+      nextMeteorIn = 1.8 + Math.random() * 2.2;
     }
 
     ctx.clearRect(0, 0, W, H);
     drawNebula();
-    drawMilkyWay(t);
-    drawPlanets(t);
     drawStars(t);
     drawGlowStars(t);
     drawMeteors(dt);
-    drawOrbitMeteors(t);
     drawBands();
-    drawRashi();
-    drawNakshatras(t);
     drawMandala(maxR * 0.27, mAng);
     drawMandala(maxR * 0.15, -mAng * 1.7);
     drawFloaters(t);
