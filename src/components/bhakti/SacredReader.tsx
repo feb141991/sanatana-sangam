@@ -1,12 +1,13 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, RotateCcw, CheckCircle2, BookOpen, Music, Loader2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, CheckCircle2, BookOpen, Music, Loader2, Languages } from 'lucide-react';
 import { useSacredSync, SyncToken } from '@/hooks/useSacredSync';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { useReaderDisplay } from '@/lib/i18n/reader-display';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 interface SacredReaderProps {
   shlokaId: string;
@@ -16,6 +17,8 @@ interface SacredReaderProps {
   tokens: SyncToken[];
   source: string;
   readableContent?: ReadableContent;
+  /** Optional localized meaning (hi/pa). When absent, falls back to `translation` (en). */
+  localizedMeaning?: string;
 }
 
 /**
@@ -24,15 +27,19 @@ interface SacredReaderProps {
  * High-fidelity recitation engine with time-synchronized word highlighting.
  * Dynamically resolves both Standard TTS and high-fidelity Pandit AI voice.
  */
-export default function SacredReader({ 
-  shlokaId, sanskrit, translation, audioUrl, tokens, source, readableContent
+export default function SacredReader({
+  shlokaId, sanskrit, translation, audioUrl, tokens, source, readableContent, localizedMeaning
 }: SacredReaderProps) {
+  const { lang: appLang } = useLanguage();
   const [isCompleted, setIsCompleted] = useState(false);
-  const [mastery, setMastery] = useState(0.65); 
+  const [mastery, setMastery] = useState(0.65);
   const [voiceQuality, setVoiceQuality] = useState<'standard' | 'pandit'>('standard');
   const [standardAudio, setStandardAudio] = useState<string | null>(audioUrl || null);
   const [panditAudio, setPanditAudio] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  // Meaning TTS state — speaks translation in user's app language
+  const [isMeaningSpeaking, setIsMeaningSpeaking] = useState(false);
+  const meaningAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const resolvedReadableContent = readableContent ?? {
     original: sanskrit,
@@ -149,6 +156,45 @@ export default function SacredReader({
     }
   };
 
+  // ── Meaning TTS — speaks the translation in the user's app language ──────────
+  // The displayed meaning text, preferring a localized version if provided
+  const displayedMeaning = (appLang === 'hi' || appLang === 'pa') && localizedMeaning
+    ? localizedMeaning
+    : translation;
+
+  const speakMeaning = async () => {
+    if (isMeaningSpeaking) {
+      meaningAudioRef.current?.pause();
+      meaningAudioRef.current = null;
+      setIsMeaningSpeaking(false);
+      return;
+    }
+    if (!resolvedReadableContent.capabilities.canGenerateTTS) return;
+    setIsMeaningSpeaking(true);
+    try {
+      // Determine TTS language from appLang — meaning is always spoken in display language
+      const ttsLang = appLang === 'hi' ? 'hi' : appLang === 'pa' ? 'pa' : 'en';
+      const audioB64 = await requestTTS(displayedMeaning, {
+        quality: 'standard',
+        language: ttsLang,
+        pipelineTags: {
+          content_type: 'sacred_verse',
+          audio_mode: 'standard',
+          tradition: resolvedReadableContent.tradition as any ?? 'hindu',
+          delivery_intent: 'live_user',
+        },
+      });
+      if (!audioB64) { setIsMeaningSpeaking(false); return; }
+      const audio = new Audio(`data:audio/mp3;base64,${audioB64}`);
+      meaningAudioRef.current = audio;
+      audio.onended = () => { setIsMeaningSpeaking(false); meaningAudioRef.current = null; };
+      audio.onerror = () => { setIsMeaningSpeaking(false); meaningAudioRef.current = null; };
+      await audio.play();
+    } catch {
+      setIsMeaningSpeaking(false);
+    }
+  };
+
   return (
     <div className="relative min-h-[60vh] rounded-[3rem] overflow-hidden border border-[var(--brand-primary-soft)] bg-[var(--surface-base)] shadow-2xl">
       
@@ -240,7 +286,7 @@ export default function SacredReader({
                 className="text-center px-4"
               >
                 <p className="text-sm md:text-lg italic theme-muted max-w-lg font-medium leading-relaxed opacity-85">
-                  &ldquo;{translation}&rdquo;
+                  &ldquo;{displayedMeaning}&rdquo;
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -314,6 +360,25 @@ export default function SacredReader({
               </div>
             </button>
           </div>
+
+          {/* Meaning listen button — appears when meaning is visible & TTS capable */}
+          {resolvedReadableContent.capabilities.canShowMeaning && resolvedReadableContent.capabilities.canGenerateTTS && (
+            <button
+              onClick={speakMeaning}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-[10px] font-bold uppercase tracking-widest ${
+                isMeaningSpeaking
+                  ? 'bg-[var(--brand-primary)] border-[var(--brand-primary)] text-[#1c1c1a]'
+                  : 'bg-transparent border-[var(--brand-primary-soft)] text-[var(--text-dim)] hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]'
+              }`}
+              title="Listen to meaning"
+            >
+              {isMeaningSpeaking
+                ? <Loader2 size={11} className="animate-spin" />
+                : <Languages size={11} />
+              }
+              {isMeaningSpeaking ? labels.listen : labels.meaning}
+            </button>
+          )}
         </div>
       </div>
 

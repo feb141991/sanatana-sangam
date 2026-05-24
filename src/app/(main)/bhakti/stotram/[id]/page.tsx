@@ -334,7 +334,49 @@ function StotramReader({ id }: { id: string }) {
   const selectedVerseIndex = activeVerse ?? 0;
   const selectedVerse = stotram?.verses?.[selectedVerseIndex] ?? null;
 
+  // ── Per-verse TTS (active when no AudioPanel track, or as supplement) ───────
+  const [ttsSpeaking,   setTtsSpeaking]   = useState(false);
+  const [ttsRate,       setTtsRate]       = useState<number>(1.0);
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  async function speakActiveVerse() {
+    if (!stotram || !selectedVerse) return;
+    // Stop any in-flight audio
+    if (ttsAudioRef.current) {
+      ttsAudioRef.current.pause();
+      ttsAudioRef.current = null;
+    }
+    if (ttsSpeaking) { setTtsSpeaking(false); return; }
+
+    setTtsSpeaking(true);
+    try {
+      const verseContent = buildVerseReadableContent(selectedVerse);
+      const audioB64 = await readerControls.handlers.requestTTS(selectedVerse.sanskrit, {
+        quality: 'pandit',
+        rate: ttsRate,
+        pipelineTags: verseContent.pipelineTags,
+      });
+      if (!audioB64) { setTtsSpeaking(false); return; }
+      const audio = new Audio(`data:audio/mp3;base64,${audioB64}`);
+      ttsAudioRef.current = audio;
+      audio.onended = () => { setTtsSpeaking(false); ttsAudioRef.current = null; };
+      audio.onerror = () => { setTtsSpeaking(false); ttsAudioRef.current = null; };
+      await audio.play();
+      trackReaderEvent('tts_requested', {
+        content_type: 'stotram',
+        source: `${stotram.title}#${selectedVerse.number}`,
+        tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+        language: lang,
+      });
+    } catch {
+      setTtsSpeaking(false);
+    }
+  }
+
   function focusVerse(index: number) {
+    // Stop any active TTS when switching verse
+    if (ttsAudioRef.current) { ttsAudioRef.current.pause(); ttsAudioRef.current = null; }
+    setTtsSpeaking(false);
     setShowAll(false);
     setActiveVerse(index);
   }
@@ -537,6 +579,11 @@ function StotramReader({ id }: { id: string }) {
           has_meaning: true,
         });
       }}
+      onTTS={speakActiveVerse}
+      isSpeaking={ttsSpeaking}
+      isTTSGenerating={readerControls.state.isGeneratingTTS}
+      ttsRate={ttsRate}
+      onTTSRateChange={setTtsRate}
       onCopy={copyFullStotram}
       isCopied={copied}
       onShare={shareStotram}

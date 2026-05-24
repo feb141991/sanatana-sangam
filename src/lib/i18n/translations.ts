@@ -35,6 +35,7 @@ export type TranslationKey =
   | 'liveDarshan' | 'sadhanaPulse' | 'mandali' | 'tirtha'
   | 'liveDarshanDesc' | 'panchangDesc' | 'sadhanaPulseDesc' | 'bhaktiDesc'
   | 'pathshalaDesc' | 'mandaliDesc' | 'kulDesc' | 'tirthaDesc'
+  | 'japaDesc' | 'morningRoutineDesc' | 'sevaHubDesc' | 'quizMasteryDesc' | 'joinDesc' | 'exploreDesc' | 'vichaarDesc'
   // Notifications & UI
   | 'notifications' | 'markAllRead' | 'allQuiet' | 'allCaughtUp' | 'unread'
   | 'join' | 'signIn' | 'joinFree' | 'welcome' | 'study' | 'circle' | 'mirror'
@@ -198,6 +199,13 @@ const en: TranslationMap = {
   mandaliDesc: 'Join satsang and community circles',
   kulDesc: 'Family, lineage and sacred sanskaras',
   tirthaDesc: 'Find temples near you',
+  japaDesc: 'Chant your ishta mantra',
+  morningRoutineDesc: 'Complete daily rhythms',
+  sevaHubDesc: 'Support sacred causes',
+  quizMasteryDesc: 'Test your dharmic knowledge',
+  joinDesc: 'Create your profile',
+  exploreDesc: 'Explore the dashboard',
+  vichaarDesc: 'Read local discussions',
   // Notifications & UI
   notifications: 'Notifications', markAllRead: 'Mark all read',
   allQuiet: 'All quiet for now', allCaughtUp: 'All caught up',
@@ -656,6 +664,13 @@ const hi: TranslationMap = {
   mandaliDesc: 'सत्संग और सामुदायिक मंडलियों में शामिल हों',
   kulDesc: 'परिवार, वंश और संस्कार',
   tirthaDesc: 'अपने आस-पास के मंदिर खोजें',
+  japaDesc: 'अपने इष्ट मंत्र का जाप करें',
+  morningRoutineDesc: 'दैनिक अनुष्ठान पूरे करें',
+  sevaHubDesc: 'पवित्र कार्यों का समर्थन करें',
+  quizMasteryDesc: 'अपने धार्मिक ज्ञान का परीक्षण करें',
+  joinDesc: 'अपनी प्रोफ़ाइल बनाएं',
+  exploreDesc: 'डैशबोर्ड खोजें',
+  vichaarDesc: 'स्थानीय चर्चाएं पढ़ें',
   // Notifications & UI
   notifications: 'सूचनाएं', markAllRead: 'सब पढ़ लिया गया',
   allQuiet: 'अभी कोई सूचना नहीं है', allCaughtUp: 'सब अपडेट है',
@@ -1112,6 +1127,13 @@ const pa: TranslationMap = {
   mandaliDesc: 'ਸਤਿਸੰਗ ਅਤੇ ਭਾਈਚਾਰਕ ਮੰਡਲੀਆਂ ਵਿਚ ਸ਼ਾਮਲ ਹੋਵੋ',
   kulDesc: 'ਪਰਿਵਾਰ, ਵੰਸ਼ ਅਤੇ ਸੰਸਕਾਰ',
   tirthaDesc: 'ਆਪਣੇ ਆਲੇ ਦੁਆਲੇ ਦੇ ਮੰਦਰ ਲੱਭੋ',
+  japaDesc: 'ਆਪਣੇ ਇਸ਼ਟ ਮੰਤਰ ਦਾ ਜਾਪ ਕਰੋ',
+  morningRoutineDesc: 'ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ ਪੂਰੇ ਕਰੋ',
+  sevaHubDesc: 'ਪਵਿੱਤਰ ਕਾਰਜਾਂ ਦਾ ਸਮਰਥਨ ਕਰੋ',
+  quizMasteryDesc: 'ਆਪਣੇ ਧਾਰਮਿਕ ਗਿਆਨ ਦੀ ਪਰਖ ਕਰੋ',
+  joinDesc: 'ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
+  exploreDesc: 'ਡੈਸ਼ਬੋਰਡ ਦੀ ਪੜਚੋਲ ਕਰੋ',
+  vichaarDesc: 'ਸਥਾਨਕ ਚਰਚਾਵਾਂ ਪੜ੍ਹੋ',
   // Notifications & UI
   notifications: 'ਸੂਚਨਾਵਾਂ', markAllRead: 'ਸਾਰੇ ਪੜ੍ਹੋ',
   allQuiet: 'ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ ਹੈ', allCaughtUp: 'ਸਭ ਅਪਡੇਟ ਹੈ',

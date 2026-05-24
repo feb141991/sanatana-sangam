@@ -1147,8 +1147,9 @@ export default function HomeDashboard({
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
   const _quizTrad           = tradition ?? 'hindu';
   const todayStr            = new Date().toISOString().split('T')[0];
-  const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${todayStr}`;
-  const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${todayStr}`;
+  const effectiveLang       = appLanguage ?? 'en';
+  const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${effectiveLang}-${todayStr}`;
+  const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${effectiveLang}-${todayStr}`;
 
   useEffect(() => {
     try {

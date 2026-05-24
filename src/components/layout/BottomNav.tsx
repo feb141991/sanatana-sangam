@@ -15,26 +15,26 @@ interface Props {
 }
 
 // ── Quick Actions for Sacred Menu ──────────────────────────────────────────────
-const QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; desc: string }> = [
-  { icon: Heart, label: 'japa', href: '/bhakti/mala', desc: 'Chant your ishta mantra' },
-  { icon: Sunrise, label: 'morningRoutine', href: '/nitya-karma', desc: 'Complete daily rhythms' },
-  { icon: Users, label: 'kul', href: '/kul', desc: 'Family lineage sadhana' },
-  { icon: MessageCircle, label: 'mandali', href: '/mandali', desc: 'Gather with your dharma circle' },
-  { icon: HandHeart, label: 'sevaHub', href: '/seva', desc: 'Support sacred causes' },
-  { icon: Activity, label: 'sadhanaPulse', href: '/my-progress', desc: 'Track your spiritual progress' },
-  { icon: Brain, label: 'quizMastery', href: '/home?focus=quiz', desc: 'Test your dharmic knowledge' },
+const QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; descKey: string }> = [
+  { icon: Heart, label: 'japa', href: '/bhakti/mala', descKey: 'japaDesc' },
+  { icon: Sunrise, label: 'morningRoutine', href: '/nitya-karma', descKey: 'morningRoutineDesc' },
+  { icon: Users, label: 'kul', href: '/kul', descKey: 'kulDesc' },
+  { icon: MessageCircle, label: 'mandali', href: '/mandali', descKey: 'mandaliDesc' },
+  { icon: HandHeart, label: 'sevaHub', href: '/seva', descKey: 'sevaHubDesc' },
+  { icon: Activity, label: 'sadhanaPulse', href: '/my-progress', descKey: 'sadhanaPulseDesc' },
+  { icon: Brain, label: 'quizMastery', href: '/quiz', descKey: 'quizMasteryDesc' },
 ];
 
-const GUEST_QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; desc: string }> = [
-  { icon: Sparkles, label: 'join', href: '/signup', desc: 'Create your profile' },
-  { icon: Home, label: 'explore', href: '/guest', desc: 'Explore the dashboard' },
-  { icon: MessageCircle, label: 'vichaar', href: '/mandali', desc: 'Read local discussions' },
+const GUEST_QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string; descKey: string }> = [
+  { icon: Sparkles, label: 'join', href: '/signup', descKey: 'joinDesc' },
+  { icon: Home, label: 'explore', href: '/guest', descKey: 'exploreDesc' },
+  { icon: MessageCircle, label: 'vichaar', href: '/mandali', descKey: 'vichaarDesc' },
 ];
 
 // Glass tokens — computed per-theme
 function useGlass(isDark: boolean) {
   return {
-    bg:     isDark ? 'rgba(14, 11, 8, 0.28)'      : 'rgba(255, 252, 248, 0.36)',
+    bg:     isDark ? 'rgba(14, 11, 8, 0.82)'      : 'rgba(255, 252, 248, 0.88)',
     border: isDark ? 'rgba(250, 238, 218, 0.16)' : 'rgba(133, 79, 11, 0.12)',
     blur:   'blur(30px) saturate(165%)',
     shadow: isDark
@@ -103,7 +103,7 @@ function FloatingQuickMenu({
                 <motion.button
                   key={action.href}
                   onClick={() => { onClose(); router.push(action.href); }}
-                  className="flex items-center gap-4 rounded-2xl p-4 text-left border border-black/[0.03] dark:border-white/[0.03] bg-black/[0.02] dark:bg-white/[0.01] hover:bg-[#C5A059]/5 dark:hover:bg-[#C5A059]/10 hover:border-[#C5A059]/30 transition-all"
+                  className="flex items-center gap-4 rounded-2xl p-4 text-left border border-black/[0.10] dark:border-white/[0.10] bg-black/[0.06] dark:bg-white/[0.06] hover:bg-[#C5A059]/5 dark:hover:bg-[#C5A059]/10 hover:border-[#C5A059]/30 transition-all"
                   whileTap={{ scale: 0.97 }}
                   initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
                   animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -117,7 +117,7 @@ function FloatingQuickMenu({
                       {t(action.label as any)}
                     </h4>
                     <p className="text-[10px] text-[var(--text-dim)] leading-tight mt-0.5">
-                      {action.desc}
+                      {t(action.descKey as any)}
                     </p>
                   </div>
                 </motion.button>

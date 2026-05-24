@@ -126,6 +126,7 @@ export default function CanonicalReader({
 
   // ── TTS ────────────────────────────────────────────────────────────────────
   const [speakingId,   setSpeakingId]   = useState<string | null>(null);
+  const [ttsRate,      setTtsRate]      = useState<number>(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
@@ -261,6 +262,7 @@ export default function CanonicalReader({
     try {
       const audioUrl = await readerControls.handlers.requestTTS(ttsText, {
         quality: 'pandit',
+        rate: ttsRate,
         pipelineTags: {
           content_type: 'sacred_verse',
           audio_mode: 'pandit'
@@ -412,6 +414,8 @@ export default function CanonicalReader({
       showTransliterationToggle={false}
       showMeaningToggle={false}
       onTTS={() => entry && speakEntry(entry)}
+      ttsRate={ttsRate}
+      onTTSRateChange={setTtsRate}
       isSpeaking={!!speakingId}
       isTTSGenerating={readerControls.state.isGeneratingTTS}
       onCopy={handleCopy}

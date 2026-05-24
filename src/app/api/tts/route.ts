@@ -204,6 +204,9 @@ export async function POST(req: NextRequest) {
 
   const { cleanedText, usesSSML } = preprocessTTS(text, quality);
 
+  // Tracks whether Sarvam was configured but failed — used to mark Google response as a fallback
+  let sarvamFailReason: string | null = null;
+
   if (sarvamKey) {
     const sarvamProfile = getSarvamVoiceConfig(text, quality);
     const sarvamText = usesSSML ? stripSSMLForPlainTTS(cleanedText) : cleanedText;
@@ -230,7 +233,7 @@ export async function POST(req: NextRequest) {
           const audioBase64 = data.audios[0];
           setCachedAudio(cacheKey, audioBase64);
           await uploadToStorage(cacheKey, audioBase64);
-          
+
           emitEvent({
             severity: 'P3',
             domain: 'tts',
@@ -256,12 +259,21 @@ export async function POST(req: NextRequest) {
             }
           });
         }
+        // Sarvam returned 200 but empty audios array — treat as degraded
+        sarvamFailReason = 'empty_payload';
+        emitError('tts', new Error('Sarvam returned empty audios payload'), 'P2', {
+          route: '/api/tts', provider: 'sarvam',
+          context: { sarvam_fail: 'empty_audios' },
+        });
+        console.warn('[TTS] Sarvam 200 but no audio content — falling back to Google');
       } else {
         const errText = await sRes.text();
+        sarvamFailReason = `http_${sRes.status}`;
         emitError('tts', new Error(`Sarvam API error: ${errText}`), 'P2', { route: '/api/tts', provider: 'sarvam' });
         console.error('[TTS] Sarvam API error:', sRes.status, errText);
       }
     } catch (err) {
+      sarvamFailReason = 'network_exception';
       emitError('tts', err, 'P2', { route: '/api/tts', provider: 'sarvam' });
       console.error('[TTS] Sarvam fetch error:', err);
     }
@@ -322,8 +334,9 @@ export async function POST(req: NextRequest) {
     setCachedAudio(cacheKey, data.audioContent);
     await uploadToStorage(cacheKey, data.audioContent);
     
+    const isSarvamFallback = !!sarvamKey && !!sarvamFailReason;
     emitEvent({
-      severity: 'P3',
+      severity: isSarvamFallback ? 'P2' : 'P3',
       domain: 'tts',
       route: '/api/tts',
       latency_ms: Date.now() - startTime,
@@ -334,17 +347,23 @@ export async function POST(req: NextRequest) {
         quality,
         text_length: text.length,
         cache_status: 'miss',
-        fallback_used: !!sarvamKey
+        fallback_used: isSarvamFallback,
+        sarvam_fail_reason: sarvamFailReason ?? 'not_configured',
       }
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       audioContent: data.audioContent,
       meta: {
         provider: 'google',
         voiceUsed: profile.name,
         qualityUsed: quality,
-        status: 'generated'
+        status: 'generated',
+        ...(isSarvamFallback && {
+          fallback_from_sarvam: true,
+          sarvam_fail_reason: sarvamFailReason,
+          degraded: true,
+        }),
       }
     });
 

@@ -19,6 +19,7 @@ export interface TTSRequestOptions {
   language?: string;
   voice?: 'male' | 'female';
   speed?: number;
+  rate?: number;
   pipelineTags?: Partial<PramanaPipelineTags>;
 }
 
@@ -127,6 +128,7 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
           language: options?.language,
           voice: options?.voice,
           speed: options?.speed,
+          rate: options?.rate,
           pipelineTags: options?.pipelineTags,
         })
       });

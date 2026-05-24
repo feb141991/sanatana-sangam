@@ -138,6 +138,7 @@ export default function KathaReaderClient({
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [ttsRate, setTtsRate] = useState<number>(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const isPanchatantra = katha.tags.includes('panchatantra');
@@ -282,6 +283,7 @@ export default function KathaReaderClient({
       const audioUrl = await readerControls.handlers.requestTTS(trimmedText, {
         quality: 'pandit',
         speed: katha.tags.includes('panchatantra') ? 0.86 : 0.78,
+        rate: ttsRate,
         pipelineTags: {
           content_type: 'katha',
           audio_mode: katha.tags.includes('panchatantra') ? 'story' : 'meditative'
@@ -315,13 +317,15 @@ export default function KathaReaderClient({
       fontPresets={fontPresets}
       fontStep={fontStep}
       setFontStep={setFontStep}
-      languages={languages.filter(l => l.code === 'en' || (l.code === 'hi' && hasHindi) || (l.code === 'pa' && hasPunjabi))}
+      languages={languages}
       currentLanguage={lang}
       setLanguage={(l) => {
         setLang(l);
         trackReaderEvent('language_toggled', { content_type: 'katha', source: `katha:${katha.id}`, tradition: katha.tradition, language: l });
       }}
       onTTS={speakKatha}
+      ttsRate={ttsRate}
+      onTTSRateChange={setTtsRate}
       isSpeaking={speaking}
       isTTSGenerating={readerControls.state.isGeneratingTTS}
       onCopy={copyToClipboard}

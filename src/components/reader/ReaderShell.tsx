@@ -45,6 +45,8 @@ export interface ReaderShellProps {
   onCopy?: () => void;
   isCopied?: boolean;
   onShare?: () => void;
+  ttsRate?: number;
+  onTTSRateChange?: (rate: number) => void;
 
   // Bottom Quick Actions (Bottom Bar layout - optional)
   bottomBar?: ReactNode;
@@ -85,6 +87,8 @@ export default function ReaderShell({
   onCopy,
   isCopied,
   onShare,
+  ttsRate,
+  onTTSRateChange,
   bottomBar,
   shellBackgroundColor,
   shellHeaderBackgroundColor,
@@ -242,6 +246,25 @@ export default function ReaderShell({
                       }}
                     >
                       {l.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {onTTS && ttsRate !== undefined && onTTSRateChange && (
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full border" style={{ background: bgSubCard, borderColor: bdr }}>
+                  {[0.75, 1.0, 1.25].map(rate => (
+                    <button
+                      key={rate}
+                      onClick={() => onTTSRateChange(rate)}
+                      className="px-2 py-1 rounded-full text-[10px] font-bold transition-all"
+                      style={{
+                        background: ttsRate === rate ? themeColor : 'transparent',
+                        color: ttsRate === rate ? (isDark ? '#000' : '#fff') : textDim,
+                        boxShadow: ttsRate === rate ? `0 2px 5px ${themeColor}40` : 'none'
+                      }}
+                    >
+                      {rate === 1.0 ? '1' : rate}×
                     </button>
                   ))}
                 </div>

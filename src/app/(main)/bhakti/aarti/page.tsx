@@ -205,6 +205,7 @@ export default function AartiPage() {
   const [dyiaLit,   setDiyaLit]  = useState(false);
   const [finished,  setFinished] = useState(false);
   const [speaking,  setSpeaking] = useState(false);
+  const [ttsRate,   setTtsRate]  = useState<number>(1.0);
   const [explainResult, setExplainResult] = useState<{
     explanation?: { meaning: string; commentary: string; daily_application: string };
     teacher?: string;
@@ -280,6 +281,7 @@ export default function AartiPage() {
     const audioUrl = await readerControls.handlers.requestTTS(currentInstruction, {
       quality: 'standard',
       language: customLang,
+      rate: ttsRate,
       pipelineTags: currentReadableContent.pipelineTags,
     });
     if (!audioUrl) return;
@@ -402,6 +404,8 @@ export default function AartiPage() {
         trackReaderEvent('language_toggled', { content_type: 'instruction', source: `aarti:${current.id}`, tradition: 'hindu', language: l });
       }}
       onTTS={speakCurrentStep}
+      ttsRate={ttsRate}
+      onTTSRateChange={setTtsRate}
       isSpeaking={speaking}
       isTTSGenerating={readerControls.state.isGeneratingTTS}
       onCopy={copyCurrentStep}
