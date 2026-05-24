@@ -228,6 +228,27 @@ export default function CanonicalReader({
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
+  // ── Reset verse + explain state when lesson (entries) changes ──────────────
+  // Without this, navigating to a new lesson keeps the stale explanation from
+  // the previous lesson because explainResult/showExplain are component state
+  // that survive prop changes.
+  useEffect(() => {
+    setVerseIndex(0);
+    setSlideDir(1);
+    setShowExplain(false);
+    setExplainResult(null);
+    stopTTS();
+  }, [entries, stopTTS]);
+
+  // ── Reset explain state when the reader language changes ───────────────────
+  // The explain button only fetches when (!showExplain && !explainResult).
+  // Without this reset, a cached explanation in the old language is shown
+  // instead of re-fetching in the newly selected language.
+  useEffect(() => {
+    setShowExplain(false);
+    setExplainResult(null);
+  }, [customLang]);
+
   async function speakEntry(e: LibraryEntry) {
     if (speakingId === e.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
     const ttsText = e.original || e.transliteration || e.fullText || '';
