@@ -1236,6 +1236,13 @@ export default function PathshalaClient({
               </div>
             )}
             <motion.div whileTap={{ scale: 0.9 }}>
+              <Link href="/pathshala/saved"
+                className="w-9 h-9 rounded-full flex items-center justify-center border"
+                style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
+                <Bookmark size={15} style={{ color: meta.accentColour }} />
+              </Link>
+            </motion.div>
+            <motion.div whileTap={{ scale: 0.9 }}>
               <Link href="/pathshala/insights"
                 className="w-9 h-9 rounded-full flex items-center justify-center border"
                 style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>

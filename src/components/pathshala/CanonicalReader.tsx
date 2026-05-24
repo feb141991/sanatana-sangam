@@ -64,6 +64,7 @@ type ExplainResult = {
   };
   tradition: string;
   teacher: string;
+  is_fallback?: boolean;
 };
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
@@ -643,6 +644,25 @@ export default function CanonicalReader({
                       transition={{ duration: 0.26 }}
                       className="overflow-hidden"
                     >
+                      {/* ── Fallback: AI unavailable — show retry card ── */}
+                      {explainResult.is_fallback ? (
+                        <div
+                          className="mt-3 rounded-2xl px-5 py-6 flex flex-col items-center gap-3 text-center"
+                          style={{ background: P.bgCard, border: `1px solid ${P.border}` }}
+                        >
+                          <span className="text-2xl">🪔</span>
+                          <p className="text-sm font-medium" style={{ color: P.ink }}>
+                            {labels.couldNotGenerateExplanation}
+                          </p>
+                          <button
+                            onClick={() => { setExplainResult(null); explainVerse(); }}
+                            className="mt-1 text-xs font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-80"
+                            style={{ background: P.accentBg, color: P.accentDeep, border: `1px solid ${P.border}` }}
+                          >
+                            ↻ {labels.askingTeacher ? 'Retry' : 'Try again'}
+                          </button>
+                        </div>
+                      ) : (
                       <div
                         className="mt-3 rounded-2xl p-5 space-y-4"
                         style={{ background: P.bgCard, border: `1px solid ${P.border}` }}
@@ -697,6 +717,7 @@ export default function CanonicalReader({
                           </p>
                         )}
                       </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>

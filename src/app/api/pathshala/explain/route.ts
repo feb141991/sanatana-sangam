@@ -143,6 +143,7 @@ export async function POST(req: Request) {
         teacher: 'Shoonaya',
         source,
         title,
+        is_fallback: true,
         ai: {
           provider: 'fallback',
           degraded: true,
