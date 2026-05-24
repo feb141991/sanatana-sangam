@@ -141,6 +141,8 @@ interface Props {
   isAdmin?:            boolean;
   sevaScore?:          number;
   pathshalaDoneToday?: boolean;
+  pathshalaLabel?:     string;
+  pathshalaHref?:      string;
 }
 
 const DEFAULT_QUICK_ACCESS = [
@@ -971,6 +973,7 @@ export default function HomeDashboard({
   customGreeting,
   coverUrl,
   showFirstTimeGuidance,
+  guidedPathProgress,
   japaStreak = 0,
   japaAlreadyDoneToday = false,
   nityaDoneToday,
@@ -981,6 +984,8 @@ export default function HomeDashboard({
   isAdmin = false,
   sevaScore = 0,
   pathshalaDoneToday = false,
+  pathshalaLabel = 'Pathshala',
+  pathshalaHref = '/pathshala',
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -1959,7 +1964,7 @@ export default function HomeDashboard({
         </div>
         
         {/* ── Zenith Transitional Shloka ── */}
-        <div className="px-5 -mt-8 relative z-20">
+        <div className="px-5 relative z-20 mb-8 mt-2">
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
@@ -1985,7 +1990,10 @@ export default function HomeDashboard({
         <DailySadhanaStrip 
           japaDone={japaAlreadyDoneToday} 
           nityaDone={nityaDoneToday} 
-          pathshalaDone={pathshalaDoneToday} 
+          pathshalaDone={pathshalaDoneToday}
+          pathshalaLabel={pathshalaLabel}
+          pathshalaHref={pathshalaHref}
+          tradition={tradition}
         />
 
         {/* Daily Darshan — hidden until content is fully prepared */}
@@ -2482,7 +2490,7 @@ export default function HomeDashboard({
                   <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
                 </button>
                 <button onClick={() => setShlokaModalOpen(false)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center"
+                  className="w-[44px] h-[44px] rounded-full flex items-center justify-center"
                   style={{ background: 'rgba(255,255,255,0.08)' }}>
                   <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
                 </button>
@@ -2686,7 +2694,7 @@ export default function HomeDashboard({
                 </div>
                 <button
                   onClick={() => setActiveStoryFestival(null)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
+                  className="w-[44px] h-[44px] rounded-full flex items-center justify-center flex-shrink-0 mt-1"
                   style={{ background: 'rgba(197, 160, 89,0.10)' }}
                   aria-label="Close"
                 >
