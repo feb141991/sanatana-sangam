@@ -327,6 +327,42 @@ export default function KathaReaderClient({
       onCopy={copyToClipboard}
       isCopied={readerControls.state.isCopied}
       onShare={shareKatha}
+      bottomBar={
+        <div className="px-5 py-4 max-w-xl mx-auto flex items-center gap-3">
+          <button
+            onClick={() => setShowPhal(s => !s)}
+            className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press shrink-0"
+            style={{ background: 'rgba(197, 160, 89, 0.08)', border: '1px solid rgba(197, 160, 89, 0.20)' }}
+            aria-label={showPhal ? labels.kathaHidePhal : labels.kathaRevealBlessing}
+          >
+            {showPhal ? <ChevronUp size={18} color={THEME.gold} /> : <Sparkles size={18} color={THEME.gold} />}
+          </button>
+          {katha.relatedJapaMantra ? (
+            <Link
+              href="/japa"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press shrink-0"
+              style={{ background: 'rgba(197, 160, 89, 0.08)', border: '1px solid rgba(197, 160, 89, 0.20)' }}
+              title={labels.startJapa}
+              aria-label={labels.startJapa}
+            >
+              <span className="text-xl">📿</span>
+            </Link>
+          ) : null}
+          <button
+            onClick={() => {
+              if (window.history.length > 2) {
+                router.back();
+              } else {
+                router.push('/bhakti/katha');
+              }
+            }}
+            className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 font-semibold transition-all motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.12)', border: '1px solid rgba(197, 160, 89, 0.24)', color: THEME.gold }}
+          >
+            <span>{labels.done}</span>
+          </button>
+        </div>
+      }
       contentClassName="px-6 space-y-6 pt-8 pb-36"
     >
         {bodyToShow.map((para, idx) => (
@@ -352,7 +388,7 @@ export default function KathaReaderClient({
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
+              className="w-[44px] h-[44px] rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
             >
               <Star size={16} color={THEME.gold} />
             </div>
@@ -397,7 +433,7 @@ export default function KathaReaderClient({
               className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
+                <div className="w-[44px] h-[44px] rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
                   📿
                 </div>
                 <div>
@@ -416,7 +452,7 @@ export default function KathaReaderClient({
             className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
           >
             <div className="flex items-center gap-4">
-              <div className="w-9 h-9 rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
+              <div className="w-[44px] h-[44px] rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
                 📚
               </div>
               <div>

@@ -129,7 +129,7 @@ export type TranslationKey =
   | 'pathCompleted' | 'lessonComplete' | 'couldNotSaveProgress' | 'nextLesson' | 'markLessonComplete' | 'nextVerse'
   | 'auto' | 'reciteFromMemory' | 'playing' | 'tapListenBack' | 'doneNextVerse'
   | 'yourRecording' | 'reRecord' | 'submitForShrutiScoring' | 'uploadingAndScoring' | 'markAndContinue' | 'scoringFailedConnection' | 'retry'
-  | 'sharedViaShoonaya' | 'kathaFruitOfKatha' | 'kathaRevealBlessing' | 'kathaPhalShruti'
+  | 'sharedViaShoonaya' | 'kathaFruitOfKatha' | 'kathaRevealBlessing' | 'kathaHidePhal' | 'kathaPhalShruti'
   | 'startJapa' | 'moreKathas' | 'exploreSacredLibrary' | 'appreciateThisKatha' | 'jaiShriHari'
   | 'startRecording' | 'stopRecording' | 'recordingTapToStop'
   | 'shrutiFeedback' | 'dismiss' | 'shrutiExcellent' | 'shrutiGood' | 'shrutiKeepPractising'
@@ -144,6 +144,8 @@ export type TranslationKey =
   | 'aartiNaivedyaTitle' | 'aartiNaivedyaTitleDeva' | 'aartiNaivedyaInstruction' | 'aartiNaivedyaAction' | 'aartiNaivedyaHint'
   | 'aartiNamaskarTitle' | 'aartiNamaskarTitleDeva' | 'aartiNamaskarInstruction' | 'aartiNamaskarAction' | 'aartiNamaskarHint'
   | 'guidedAarti' | 'aartiStepOf' | 'previous' | 'nextStep' | 'completeAarti' | 'aartiSequence' | 'aartiComplete' | 'aartiCompleteDesc' | 'aartiCompleteQuote' | 'offerAgain' | 'donePranam' | 'aartiDoneLabel'
+  // Daily Sadhana & Stotram specific
+  | 'todayPractice' | 'dailyStripDesc' | 'openStatus' | 'shareVerse' | 'openVerse' | 'exploreFullHymn'
   // Premium
   | 'premiumPreviewTitle' | 'premiumHeadline' | 'premiumSubcopy' | 'premiumFreeBadge' | 'premiumDeeperRituals' | 'premiumDeeperRitualsTagline' | 'premiumDeeperRitualsF1' | 'premiumDeeperRitualsF2' | 'premiumDeeperRitualsF3' | 'premiumPersonalisedGuidance' | 'premiumPersonalisedGuidanceTagline' | 'premiumPersonalisedGuidanceF1' | 'premiumPersonalisedGuidanceF2' | 'premiumPersonalisedGuidanceF3' | 'premiumPracticeDepth' | 'premiumPracticeDepthTagline' | 'premiumPracticeDepthF1' | 'premiumPracticeDepthF2' | 'premiumPracticeDepthF3' | 'premiumKulSanskar' | 'premiumKulSanskarTagline' | 'premiumKulSanskarF1' | 'premiumKulSanskarF2' | 'premiumKulSanskarF3' | 'premiumComingSoon' | 'premiumComingSoonTagline' | 'premiumComingSoonF1' | 'premiumComingSoonF2' | 'premiumComingSoonF3' | 'premiumInDevelopment' | 'premiumAgreementText' | 'premiumButtonActivating' | 'premiumButtonStart' | 'premiumTrustLine';
 
@@ -490,6 +492,7 @@ const en: TranslationMap = {
   sharedViaShoonaya: 'Shared via Shoonaya',
   kathaFruitOfKatha: 'Phal — Fruit of the Katha',
   kathaRevealBlessing: 'Tap to reveal the blessing and moral',
+  kathaHidePhal: 'Hide the blessing and moral',
   kathaPhalShruti: 'Phal-shruti',
   startJapa: 'Start Japa',
   moreKathas: 'More Kathas',
@@ -563,6 +566,12 @@ const en: TranslationMap = {
   offerAgain: 'Offer again',
   donePranam: 'Done 🙏',
   aartiDoneLabel: 'done',
+  todayPractice: "Today's Practice",
+  dailyStripDesc: "Keep the day moving with one small step.",
+  openStatus: "Open",
+  shareVerse: "Share Verse",
+  openVerse: "Open Verse",
+  exploreFullHymn: "Explore Full Hymn",
   // Premium
   premiumPreviewTitle: "Shoonaya Pro preview",
   premiumHeadline: "A deeper\npractice awaits",
@@ -939,6 +948,7 @@ const hi: TranslationMap = {
   sharedViaShoonaya: 'Shoonaya द्वारा साझा',
   kathaFruitOfKatha: 'फल — कथा का आशीर्वाद',
   kathaRevealBlessing: 'आशीर्वाद और संदेश देखने के लिए टैप करें',
+  kathaHidePhal: 'आशीर्वाद और संदेश छुपाएं',
   kathaPhalShruti: 'फल-श्रुति',
   startJapa: 'जप प्रारम्भ करें',
   moreKathas: 'और कथाएँ',
@@ -1009,9 +1019,15 @@ const hi: TranslationMap = {
   aartiComplete: 'आरती पूर्ण',
   aartiCompleteDesc: 'जय! आपकी आरती भक्ति के साथ अर्पित की गई है।',
   aartiCompleteQuote: 'भक्तिर्भगवतो सेवा — भक्ति ईश्वर की सेवा है।',
-  offerAgain: 'पुनः अर्पित करें',
-  donePranam: 'पूर्ण 🙏',
+  offerAgain: 'फिर से अर्पण करें',
+  donePranam: 'प्रणाम 🙏',
   aartiDoneLabel: 'पूर्ण',
+  todayPractice: 'आज का अभ्यास',
+  dailyStripDesc: 'एक छोटे कदम से दिन को आगे बढ़ाएं।',
+  openStatus: 'बाकी',
+  shareVerse: 'श्लोक साझा करें',
+  openVerse: 'श्लोक खोलें',
+  exploreFullHymn: 'पूरा स्तोत्र देखें',
   // Premium
   premiumPreviewTitle: "Shoonaya Pro पूर्वावलोकन",
   premiumHeadline: "एक गहरा\nअभ्यास आपकी प्रतीक्षा कर रहा है",
@@ -1388,6 +1404,7 @@ const pa: TranslationMap = {
   sharedViaShoonaya: 'Shoonaya ਰਾਹੀਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ',
   kathaFruitOfKatha: 'ਫਲ — ਕਥਾ ਦਾ ਅਸੀਸ',
   kathaRevealBlessing: 'ਅਸੀਸ ਅਤੇ ਸਿੱਖਿਆ ਵੇਖਣ ਲਈ ਟੈਪ ਕਰੋ',
+  kathaHidePhal: 'ਅਸੀਸ ਅਤੇ ਸਿੱਖਿਆ ਲੁਕਾਓ',
   kathaPhalShruti: 'ਫਲ-ਸ਼ਰੁਤੀ',
   startJapa: 'ਜਪ ਸ਼ੁਰੂ ਕਰੋ',
   moreKathas: 'ਹੋਰ ਕਥਾਵਾਂ',
@@ -1458,9 +1475,15 @@ const pa: TranslationMap = {
   aartiComplete: 'ਆਰਤੀ ਸੰਪੂਰਨ',
   aartiCompleteDesc: 'ਜੈ! ਤੁਹਾਡੀ ਆਰਤੀ ਸ਼ਰਧਾ ਨਾਲ ਭੇਟ ਕੀਤੀ ਗਈ ਹੈ।',
   aartiCompleteQuote: 'ਭਗਤੀ ਭਗਵਾਨ ਦੀ ਸੇਵਾ ਹੈ।',
-  offerAgain: 'ਦੁਬਾਰਾ ਭੇਟ ਕਰੋ',
-  donePranam: 'ਪੂਰਾ 🙏',
+  offerAgain: 'ਦੁਬਾਰਾ ਅਰਪਣ ਕਰੋ',
+  donePranam: 'ਪ੍ਰਣਾਮ 🙏',
   aartiDoneLabel: 'ਪੂਰਾ',
+  todayPractice: 'ਅੱਜ ਦਾ ਅਭਿਆਸ',
+  dailyStripDesc: 'ਇਕ ਛੋਟੇ ਕਦਮ ਨਾਲ ਦਿਨ ਨੂੰ ਅੱਗੇ ਵਧਾਓ।',
+  openStatus: 'ਬਾਕੀ',
+  shareVerse: 'ਸ਼ਲੋਕ ਸਾਂਝਾ ਕਰੋ',
+  openVerse: 'ਸ਼ਲੋਕ ਖੋਲ੍ਹੋ',
+  exploreFullHymn: 'ਪੂਰਾ ਸਤੋਤਰ ਦੇਖੋ',
   // Premium
   premiumPreviewTitle: "Shoonaya Pro ਪੂਰਵਦਰਸ਼ਨ",
   premiumHeadline: "ਇੱਕ ਡੂੰਘਾ\nਅਭਿਆਸ ਤੁਹਾਡੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ",

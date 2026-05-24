@@ -367,7 +367,13 @@ export default function AartiPage() {
                 style={{ background: 'rgba(197, 160, 89,0.15)', border: '1px solid rgba(197, 160, 89,0.30)', color: '#C5A059' }}>
                 {t(customLang, 'offerAgain')}
               </button>
-              <button onClick={() => router.back()}
+              <button onClick={() => {
+                if (window.history.length > 2) {
+                  router.back();
+                } else {
+                  router.push('/bhakti');
+                }
+              }}
                 className="rounded-2xl px-6 py-3 text-sm font-semibold text-white"
                 style={{ background: 'linear-gradient(135deg,#d4a645,#a07830)' }}>
                 {t(customLang, 'donePranam')}
@@ -395,6 +401,12 @@ export default function AartiPage() {
         setCustomLang(l);
         trackReaderEvent('language_toggled', { content_type: 'instruction', source: `aarti:${current.id}`, tradition: 'hindu', language: l });
       }}
+      onTTS={speakCurrentStep}
+      isSpeaking={speaking}
+      isTTSGenerating={readerControls.state.isGeneratingTTS}
+      onCopy={copyCurrentStep}
+      isCopied={readerControls.state.isCopied}
+      onShare={shareCurrentStep}
       bottomBar={
         <div className="px-6 py-3 flex justify-between items-center max-w-xl mx-auto">
           <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
@@ -459,37 +471,12 @@ export default function AartiPage() {
                 <p className="leading-relaxed" style={{ color: textS, fontSize: `${fontScale * 0.85}rem` }}>{currentInstruction}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
-                    onClick={speakCurrentStep}
-                    disabled={readerControls.state.isGeneratingTTS}
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
-                    style={{ background: `${current.color}16`, color: current.color, border: `1px solid ${current.color}24` }}
-                  >
-                    {readerControls.state.isGeneratingTTS ? <Loader2 size={12} className="animate-spin" /> : speaking ? <VolumeX size={12} /> : <Volume2 size={12} />}
-                    {speaking ? labels.stopReading : labels.listen}
-                  </button>
-                  <button
                     onClick={explainCurrentStep}
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
                     style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
                   >
                     <Sparkles size={12} />
                     {labels.explainVerse}
-                  </button>
-                  <button
-                    onClick={copyCurrentStep}
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
-                    style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
-                  >
-                    {readerControls.state.isCopied ? <Check size={12} /> : <Copy size={12} />}
-                    {labels.copy}
-                  </button>
-                  <button
-                    onClick={shareCurrentStep}
-                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold"
-                    style={{ background: `${current.color}10`, color: textH, border: `1px solid ${current.color}22` }}
-                  >
-                    <Share2 size={12} />
-                    {labels.share}
                   </button>
                 </div>
               </div>

@@ -1071,8 +1071,8 @@ export default function HomeDashboard({
       setCustomCover(publicUrl);
       localStorage.setItem('user_cover_photo', publicUrl);
       toast.success('Home sanctuary updated! 🙏');
-    } catch (err: any) {
-      toast.error(err.message || 'Upload failed');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed');
     } finally {
       setIsUploadingCover(false);
     }
@@ -1234,6 +1234,8 @@ export default function HomeDashboard({
 
   const resolvedTheme = isDark ? 'dark' : 'light';
   const MOODS = MOODS_CONFIG[resolvedTheme] || MOODS_CONFIG.dark;
+  const moodsRef = useRef(MOODS);
+  moodsRef.current = MOODS;
 
   const [backendMoodState, setBackendMoodState] = useState<{
     hasCompletedToday: boolean;
@@ -1272,7 +1274,7 @@ export default function HomeDashboard({
 
           // If they completed a session today, update mood badge
           if (data.lastCompletedMood) {
-            const moodConf = MOODS.find(m => m.key === data.lastCompletedMood);
+            const moodConf = moodsRef.current.find(m => m.key === data.lastCompletedMood);
             if (moodConf) {
               setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
             }
@@ -1284,7 +1286,9 @@ export default function HomeDashboard({
     }
     fetchMoodState();
     return () => { cancelled = true; };
-  }, [MOODS]);
+  // moodsRef.current is always up-to-date; no need to re-fetch when the theme changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Legacy local storage clean-up and fallback visual continuity
   useEffect(() => {

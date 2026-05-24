@@ -14,7 +14,7 @@ import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/co
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta, getSacredTextLabel } from '@/lib/tradition-config';
 import { LIVE_STREAMS } from '@/lib/live-streams';
-import type { GuidedPathProgressRow } from '@/lib/guided-paths';
+import { getPlanById, type GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { Database } from '@/types/database';
 
@@ -87,12 +87,11 @@ export default async function HomePage() {
     .eq('date', today)
     .single();
 
-  // 28-day practice history for Practice Pulse heatmap
   const twentyEightDaysAgo = new Date();
   twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
   const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
 
-  const [{ data: sadhanaHistory }, { data: nityaHistory }, { data: liveDarshanData }] = await Promise.all([
+  const [{ data: sadhanaHistory }, { data: nityaHistory }, { data: liveDarshanData }, { data: malaSessionsToday }] = await Promise.all([
     supabase
       .from('daily_sadhana')
       .select('date, japa_done')
@@ -109,6 +108,13 @@ export default async function HomePage() {
       .from('live_darshans')
       .select('*')
       .eq('is_active', true),
+    supabase
+      .from('mala_sessions')
+      .select('id')
+      .eq('user_id', user.id)
+      .gte('completed_at', `${today}T00:00:00Z`)
+      .lte('completed_at', `${today}T23:59:59Z`)
+      .limit(1),
   ]);
 
   const dbStreams = (liveDarshanData ?? []).map(row => ({
@@ -149,6 +155,21 @@ export default async function HomePage() {
     (p: GuidedPathProgressRow) => p.updated_at && p.updated_at.startsWith(today)
   );
 
+  const activePath = (guidedPathProgress ?? []).find((p: GuidedPathProgressRow) => p.status === 'active');
+  let pathshalaLabel = 'Pathshala';
+  let pathshalaHref = '/pathshala';
+
+  if (activePath) {
+    const plan = getPlanById(activePath.path_id);
+    if (plan) {
+      const currentDay = (activePath.current_lesson ?? 0) + 1;
+      pathshalaLabel = `${plan.title} Day ${currentDay}`;
+      pathshalaHref = pathshalaDoneToday 
+        ? `/pathshala/${activePath.path_id}`
+        : `/pathshala/${activePath.path_id}/lesson`;
+    }
+  }
+
   return (
     <HomeDashboard
       userId={user.id}
@@ -185,7 +206,7 @@ export default async function HomePage() {
       guidedPathProgress={(guidedPathProgress as GuidedPathProgressRow[]) ?? []}
       showFirstTimeGuidance={showFirstTimeGuidance}
       japaStreak={todaySadhana?.streak_count ?? 0}
-      japaAlreadyDoneToday={todaySadhana?.japa_done ?? false}
+      japaAlreadyDoneToday={(malaSessionsToday?.length ?? 0) > 0}
       nityaDoneToday={nityaDates.has(today)}
       practiceHistory={practiceHistory}
       appLanguage={(profile as any)?.app_language ?? 'en'}
@@ -196,6 +217,8 @@ export default async function HomePage() {
       isAdmin={profile?.is_admin ?? false}
       sevaScore={(profile as any)?.seva_score ?? 0}
       pathshalaDoneToday={pathshalaDoneToday}
+      pathshalaLabel={pathshalaLabel}
+      pathshalaHref={pathshalaHref}
     />
   );
 }

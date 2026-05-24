@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Play, Pause, RotateCcw, Repeat, Copy, Check, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Repeat, Copy, Check, Share2 } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
@@ -331,6 +331,13 @@ function StotramReader({ id }: { id: string }) {
   const copied = readerControls.state.isCopied;
   const shouldShowTransliteration = preferences.showTransliteration && readerControls.state.showTransliteration;
   const shouldShowMeaning = readerControls.state.showMeaning;
+  const selectedVerseIndex = activeVerse ?? 0;
+  const selectedVerse = stotram?.verses?.[selectedVerseIndex] ?? null;
+
+  function focusVerse(index: number) {
+    setShowAll(false);
+    setActiveVerse(index);
+  }
 
   useEffect(() => {
     if (!stotram) return;
@@ -475,7 +482,13 @@ function StotramReader({ id }: { id: string }) {
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
       <p className="text-4xl">🙏</p>
       <p style={{ color: textS }}>Stotram not found</p>
-      <button onClick={() => router.back()} className="text-sm font-semibold" style={{ color: accentColor }}>{t('back')}</button>
+      <button onClick={() => { 
+        if (window.history.length > 2) {
+          router.back();
+        } else {
+          router.push('/bhakti');
+        }
+      }} className="text-sm font-semibold" style={{ color: accentColor }}>{t('back')}</button>
     </div>
   );
 
@@ -527,6 +540,75 @@ function StotramReader({ id }: { id: string }) {
       onCopy={copyFullStotram}
       isCopied={copied}
       onShare={shareStotram}
+      bottomBar={
+        <div className="px-4 py-3 max-w-xl mx-auto flex items-center gap-3">
+          <button
+            onClick={() => focusVerse(Math.max(0, selectedVerseIndex - 1))}
+            disabled={showAll || selectedVerseIndex === 0}
+            className="h-12 min-w-12 px-3 rounded-2xl flex items-center justify-center gap-1.5 text-sm font-medium transition-all disabled:opacity-35"
+            style={{ background: cardBg, color: textS, border: `1px solid ${cardBdr}` }}
+            aria-label="Previous verse"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {selectedVerse ? (
+              <>
+                <button
+                  onClick={() => copyVerse(selectedVerse)}
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-95"
+                  style={{ background: cardBg, border: `1px solid ${cardBdr}` }}
+                  aria-label={`Copy verse ${selectedVerse.number}`}
+                >
+                  <Copy size={14} style={{ color: accentColor }} />
+                </button>
+                <button
+                  onClick={() => shareVerse(selectedVerse)}
+                  className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all active:scale-95"
+                  style={{ background: cardBg, border: `1px solid ${cardBdr}` }}
+                  aria-label={`Share verse ${selectedVerse.number}`}
+                >
+                  <Share2 size={14} style={{ color: accentColor }} />
+                </button>
+              </>
+            ) : null}
+          </div>
+          <button
+            onClick={() => {
+              if (stotram.verses.length === 1 && selectedVerse) {
+                shareVerse(selectedVerse);
+                return;
+              }
+              if (showAll) {
+                setShowAll(false);
+                setActiveVerse(0);
+                return;
+              }
+              if (activeVerse === null) {
+                focusVerse(0);
+                return;
+              }
+              if (selectedVerseIndex < stotram.verses.length - 1) {
+                focusVerse(selectedVerseIndex + 1);
+                return;
+              }
+              setShowAll(true);
+            }}
+            className="flex-1 h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all"
+            style={{ background: `${accentColor}14`, border: `1px solid ${accentColor}33`, color: accentColor }}
+          >
+            {stotram.verses.length === 1
+              ? t('shareVerse')
+              : showAll
+              ? t('done')
+              : activeVerse === null
+                ? t('openVerse')
+                : selectedVerseIndex < stotram.verses.length - 1
+                  ? <><span>{t('nextVerse')}</span><ChevronRight size={16} /></>
+                  : t('exploreFullHymn')}
+          </button>
+        </div>
+      }
       contentClassName="px-4 space-y-4 mt-6 pb-28"
     >
 
@@ -644,10 +726,10 @@ function StotramReader({ id }: { id: string }) {
 
                           {/* Verse Action panel */}
                           <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--divine-border)]/5">
-                            <button onClick={() => copyVerse(verse)} className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95" title="Copy Verse">
+                            <button onClick={() => copyVerse(verse)} className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95" title="Copy Verse" aria-label={`Copy verse ${verse.number}`}>
                               <Copy size={11} style={{ color: accentColor }} />
                             </button>
-                            <button onClick={() => shareVerse(verse)} className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95" title="Share Verse">
+                            <button onClick={() => shareVerse(verse)} className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95" title={t('shareVerse')} aria-label={`Share verse ${verse.number}`}>
                               <Share2 size={11} style={{ color: accentColor }} />
                             </button>
                           </div>

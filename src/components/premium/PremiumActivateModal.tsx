@@ -8,6 +8,7 @@ import { activatePro } from '@/lib/premium';
 import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { TranslationKey } from '@/lib/i18n/translations';
+import toast from 'react-hot-toast';
 
 // ─── Individual luxury benefit cards ──────────────────────────────────────────
 const LUXURY_CARDS = [
@@ -135,15 +136,18 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  function handleActivate() {
+  async function handleActivate() {
     if (!accepted) return;
     setActivating(true);
-    setTimeout(() => {
-      activatePro();
+    try {
+      await activatePro();
       setActivating(false);
       onActivated?.();
       onClose();
-    }, 700);
+    } catch (error) {
+      setActivating(false);
+      toast.error('Failed to activate Pro. Please try again.');
+    }
   }
 
   if (typeof window === 'undefined') return null;

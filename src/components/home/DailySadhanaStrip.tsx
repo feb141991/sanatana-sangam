@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { Check, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
 
 // ── Tradition-aware labels ──────────────────────────────────────────────
 
@@ -13,12 +15,14 @@ function resolveJapaLabel(tradition?: string | null, override?: string): string 
   return '108 Japa';
 }
 
-function resolveNityaLabel(tradition?: string | null, override?: string): string {
-  if (override) return override;
-  if (tradition === 'sikh')     return 'Nitnem';
-  if (tradition === 'buddhist') return 'Practice';
-  if (tradition === 'jain')     return 'Samayika';
-  return 'Nitya Karma';
+function resolveNityaLabel(tradition?: string | null, override?: string, timeOfDay?: string): string {
+  const base = override || (() => {
+    if (tradition === 'sikh')     return 'Nitnem';
+    if (tradition === 'buddhist') return 'Practice';
+    if (tradition === 'jain')     return 'Samayika';
+    return 'Nitya';
+  })();
+  return timeOfDay ? `${timeOfDay} ${base}` : base;
 }
 
 // ── Component ─────────────────────────────────────────────────────
@@ -51,6 +55,14 @@ export default function DailySadhanaStrip({
   pathshalaHref = '/pathshala',
   tradition,
 }: DailySadhanaStripProps) {
+  const { t } = useLanguage();
+  const [timeOfDay] = useState(() => {
+    const hr = new Date().getHours();
+    if (hr >= 4 && hr < 12) return 'Morning';
+    if (hr >= 12 && hr < 16) return 'Midday';
+    if (hr >= 16 && hr < 20) return 'Evening';
+    return 'Night';
+  });
 
   const pills = [
     {
@@ -62,7 +74,7 @@ export default function DailySadhanaStrip({
     },
     {
       id: 'nitya',
-      label: resolveNityaLabel(tradition, nityaLabel),
+      label: resolveNityaLabel(tradition, nityaLabel, timeOfDay),
       done: nityaDone,
       href: nityaHref,
       icon: '\u{1F305}',
@@ -83,10 +95,10 @@ export default function DailySadhanaStrip({
       <div className="flex items-center justify-between mb-3 px-1">
         <div>
           <h3 className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-dim)' }}>
-            Today&apos;s Practice
+            {t('todayPractice')}
           </h3>
           <p className="mt-1 text-[11px]" style={{ color: 'var(--text-muted-warm)' }}>
-            Keep the day moving with one small step.
+            {t('dailyStripDesc')}
           </p>
         </div>
         {completedCount === 3 && (
@@ -94,7 +106,7 @@ export default function DailySadhanaStrip({
             className="shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1 border"
             style={{ color: '#C5A059', borderColor: 'rgba(197, 160, 89, 0.22)', background: 'rgba(197, 160, 89, 0.08)' }}
           >
-            <Sparkles size={10} /> Complete
+            <Sparkles size={10} /> {t('complete')}
           </span>
         )}
       </div>
@@ -129,7 +141,7 @@ export default function DailySadhanaStrip({
                 {pill.label}
               </span>
               <span className="block mt-0.5 text-[10px] truncate" style={{ color: 'var(--text-dim)' }}>
-                {pill.done ? 'Complete' : 'Open'}
+                {pill.done ? t('complete') : t('openStatus')}
               </span>
             </div>
           </Link>

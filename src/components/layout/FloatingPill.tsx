@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { activateProLocally } from '@/lib/premium';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -116,7 +115,9 @@ export default function FloatingPill({
 
   // ── Hydrate Pro from server on mount ─────────────────────────────────────────
   useEffect(() => {
-    if (initialIsPro) activateProLocally();
+    if (initialIsPro && typeof window !== 'undefined') {
+      window.localStorage.setItem('sangam_pro_activated', 'true');
+    }
   }, [initialIsPro]);
 
   // ── Auto-save browser timezone if different from stored ──────────────────────

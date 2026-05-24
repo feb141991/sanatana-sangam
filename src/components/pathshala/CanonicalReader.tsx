@@ -395,6 +395,68 @@ export default function CanonicalReader({
       onCopy={handleCopy}
       isCopied={readerControls.state.isCopied}
       onShare={handleShare}
+      bottomBar={
+        <div className="px-5 py-4 max-w-xl mx-auto">
+          <div className="flex items-center justify-between gap-3">
+            {/* Primary CTA (Next/Complete) */}
+            <div className="flex-1">
+              {ctaConfig ? (
+                <button
+                  onClick={ctaConfig.action}
+                  disabled={ctaConfig.disabled}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md disabled:opacity-40"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  {ctaConfig.label}
+                </button>
+              ) : isLastVerse ? (
+                <button
+                  onClick={() => handleBack()}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  <CheckCircle2 size={18} />
+                  <span>{t(customLang, 'donePranam') || 'Done'}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); }}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
+                  style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
+                >
+                  <span>{t(customLang, 'nextVerse') || 'Next Verse'}</span>
+                  <ChevronRight size={18} />
+                </button>
+              )}
+            </div>
+
+            {/* Quick Actions container */}
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => entry && toggleBookmark(entry)}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Save for later"
+              >
+                <Bookmark
+                  size={20}
+                  className="transition-all"
+                  style={{ color: P.accentDeep }}
+                  fill={entry && bookmarkedIds.has(entry.id) ? P.accentDeep : 'none'}
+                />
+              </button>
+              <Link
+                href={askHref}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Ask Guruji"
+              >
+                <Sparkles size={20} style={{ color: P.accentDeep }} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      }
       contentClassName="flex-1 overflow-auto overscroll-contain"
     >
       {/* ════════════ SCROLLABLE CONTENT ════════════════════════════════════ */}
@@ -635,7 +697,7 @@ export default function CanonicalReader({
                     <button
                       key={i}
                       onClick={() => lessonsNavigation.onGoToLesson(i)}
-                      className="w-9 h-9 rounded-full text-xs font-semibold flex items-center justify-center transition-all"
+                      className="w-[44px] h-[44px] rounded-full text-xs font-semibold flex items-center justify-center transition-all"
                       style={{
                         background: current ? P.accent : done ? P.accentBg : P.bgCard,
                         color:      current ? P.btnText : done ? P.accentDeep : P.inkMuted,
@@ -651,78 +713,6 @@ export default function CanonicalReader({
           )}
         </div>
 
-
-
-      {/* ════════════ BOTTOM FIXED ACTIONS ══════════════════════════════════ */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 px-5 pb-[env(safe-area-inset-bottom)] pointer-events-none"
-      >
-        {/* Background gradient for the bottom area */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: `linear-gradient(to top, ${P.bg} 85%, transparent)` }}
-        />
-        <div className="max-w-xl mx-auto pt-8 pb-5 relative pointer-events-auto">
-          <div className="flex items-center justify-between gap-3">
-            {/* Primary CTA (Next/Complete) */}
-            <div className="flex-1">
-              {ctaConfig ? (
-                <button
-                  onClick={ctaConfig.action}
-                  disabled={ctaConfig.disabled}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md disabled:opacity-40"
-                  style={{ background: P.accent, color: P.btnText }}
-                >
-                  {ctaConfig.label}
-                </button>
-              ) : isLastVerse ? (
-                <button
-                  onClick={() => handleBack()}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md"
-                  style={{ background: P.accent, color: P.btnText }}
-                >
-                  <CheckCircle2 size={18} />
-                  <span>{t(customLang, 'donePranam') || 'Done'}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); }}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
-                  style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
-                >
-                  <span>{t(customLang, 'nextVerse') || 'Next Verse'}</span>
-                  <ChevronRight size={18} />
-                </button>
-              )}
-            </div>
-
-            {/* Quick Actions container */}
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => entry && toggleBookmark(entry)}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
-                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
-                aria-label="Save for later"
-              >
-                <Bookmark
-                  size={20}
-                  className="transition-all"
-                  style={{ color: P.accentDeep }}
-                  fill={entry && bookmarkedIds.has(entry.id) ? P.accentDeep : 'none'}
-                />
-              </button>
-              <Link
-                href={askHref}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
-                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
-                aria-label="Ask Guruji"
-              >
-                <Sparkles size={20} style={{ color: P.accentDeep }} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
     </ReaderShell>
   );
 
