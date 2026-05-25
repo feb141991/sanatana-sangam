@@ -41,11 +41,13 @@ export default function ScoreboardClient({
   weeklyUsers,
   monthlyUsers,
   currentUserId,
+  currentUserTradition,
 }: {
   initialUsers: LeaderboardUser[];
   weeklyUsers: LeaderboardUser[];
   monthlyUsers: LeaderboardUser[];
   currentUserId?: string;
+  currentUserTradition?: string | null;
 }) {
   const [period, setPeriod] = useState<LeaderboardPeriod>('all');
   const [filter, setFilter] = useState<'global' | 'tradition'>('global');
@@ -81,7 +83,7 @@ export default function ScoreboardClient({
       const matchesSearch =
         user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.username.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = filter === 'global' || Boolean(user.tradition);
+      const matchesFilter = filter === 'global' || (!!currentUserTradition && user.tradition === currentUserTradition);
       return Boolean(matchesSearch) && matchesFilter;
     });
   }, [filter, searchQuery, users]);

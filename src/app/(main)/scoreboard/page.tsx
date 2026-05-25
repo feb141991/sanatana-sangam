@@ -44,12 +44,17 @@ export default async function ScoreboardPage() {
 
   const { data: { user } } = await supabase.auth.getUser();
 
+  const { data: profile } = user
+    ? await supabase.from('profiles').select('tradition').eq('id', user.id).single()
+    : { data: null };
+
   return (
-    <ScoreboardClient 
+    <ScoreboardClient
       initialUsers={(users as LeaderboardUser[] | null) || []}
       weeklyUsers={(weeklyUsers as LeaderboardUser[] | null) || []}
       monthlyUsers={(monthlyUsers as LeaderboardUser[] | null) || []}
       currentUserId={user?.id}
+      currentUserTradition={(profile as { tradition?: string | null } | null)?.tradition ?? null}
     />
   );
 }
