@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Mi
 import toast from 'react-hot-toast';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import PageIntro from '@/components/ui/PageIntro';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReportData {
@@ -988,6 +989,14 @@ export default function MyProgressClient({
 
   return (
     <>
+      <PageIntro
+        pageKey="sankalpa"
+        steps={[
+          { emoji: '🕯️', title: 'Sankalpa', body: 'A sacred vow or intention. Set one and the app will track your journey.' },
+          { emoji: '📅', title: 'Sacred durations', body: '11, 21, 40, or 108 days — each tied to a cycle of spiritual significance.' },
+          { emoji: '🌓', title: 'Mid-point check-in', body: "At the halfway point, we'll ask how you're feeling. Your answer is private." },
+        ]}
+      />
       <div className="min-h-screen pb-28" style={{ background: pageBg }}>
         {/* Safe area */}
         <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />

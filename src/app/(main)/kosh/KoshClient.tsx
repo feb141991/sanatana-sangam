@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Lock, Star, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { SACRED_RELICS, getUnlockedRelics, type Relic } from '@/lib/relics';
+import PageIntro from '@/components/ui/PageIntro';
 
 type FilterMode = 'all' | 'unlocked' | 'locked';
 
@@ -89,6 +90,14 @@ export default function KoshClient({
 
   return (
     <div className="min-h-screen bg-[#0E0E0F] text-white/90">
+      <PageIntro
+        pageKey="kosh"
+        steps={[
+          { emoji: '🔱', title: 'Your Sacred Kosh', body: 'Relics you unlock through daily practice. Each represents a spiritual milestone.' },
+          { emoji: '✨', title: 'Equip a Relic', body: 'Tap any unlocked relic to equip it. Your active relic appears across the app.' },
+          { emoji: '🎯', title: 'Keep earning', body: 'Build your streak and seva score to unlock rarer, more powerful relics.' },
+        ]}
+      />
       <div className="mx-auto max-w-2xl px-5 pb-24 pt-6">
         <div className="flex items-start gap-3">
           <button

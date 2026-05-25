@@ -23,6 +23,7 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { triggerSadhanaShare } from '@/lib/share/trigger-share';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import PageIntro from '@/components/ui/PageIntro';
 
 const TRADITION_SYMBOLS: Record<string, string> = { hindu: '🕉️', sikh: 'ੴ', buddhist: '☸️', jain: '🤲' };
 import {
@@ -2730,8 +2731,17 @@ export default function JapaClient({
     : Math.min(100, (beadCount / 108) * 100);
 
   return (
-    <AnimatePresence mode="wait">
-      {screen === 'launcher' && (
+    <>
+      <PageIntro
+        pageKey="japa"
+        steps={[
+          { emoji: '📿', title: 'Japa Mala', body: 'Tap the central bead to begin. Each tap counts one repetition of your mantra.' },
+          { emoji: '🔄', title: 'Complete a Round', body: 'One full round = 108 beads. Complete rounds to earn Seva points.' },
+          { emoji: '🔥', title: 'Build your streak', body: 'Complete Japa daily to keep your streak alive and unlock sacred relics.' },
+        ]}
+      />
+      <AnimatePresence mode="wait">
+        {screen === 'launcher' && (
         <PracticeLauncherScreen
           key="launcher"
           isDark={isDark}
@@ -3038,5 +3048,6 @@ export default function JapaClient({
       )}
 
     </AnimatePresence>
+    </>
   );
 }

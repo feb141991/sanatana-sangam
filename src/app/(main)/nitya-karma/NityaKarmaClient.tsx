@@ -45,6 +45,7 @@ import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
+import PageIntro from '@/components/ui/PageIntro';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -1335,6 +1336,13 @@ export default function NityaKarmaClient({
 
   return (
     <div className="divine-home-shell min-h-screen pb-28 bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+      <PageIntro
+        pageKey="nitya-karma"
+        steps={[
+          { emoji: '🌅', title: 'Nitya Seva', body: 'Your morning routine. Complete each practice to earn karma and mark the day.' },
+          { emoji: '✓', title: 'Mark complete', body: 'Tap each item as you finish it. All done = strip marked complete for today.' },
+        ]}
+      />
 
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
 

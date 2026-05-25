@@ -13,6 +13,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import PageIntro from '@/components/ui/PageIntro';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -335,6 +336,13 @@ export default function QuizDashboardClient({
 
   return (
     <div className="min-h-screen pb-28 bg-[var(--divine-bg)] theme-ink">
+      <PageIntro
+        pageKey="quiz"
+        steps={[
+          { emoji: '🧠', title: 'Daily Quiz', body: 'One set of questions per day. Test your knowledge of dharmic wisdom.' },
+          { emoji: '⏰', title: 'Comes back tomorrow', body: 'Once answered, the quiz resets at dawn (4 AM). Come back daily.' },
+        ]}
+      />
       <ConfettiOverlay show={showConfetti && dailyScorePct >= 80} onComplete={() => setShowConfetti(false)} />
 
       {/* ── Back nav ─────────────────────────────────────────────────────── */}

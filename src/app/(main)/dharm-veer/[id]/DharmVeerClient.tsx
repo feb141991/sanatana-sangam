@@ -18,6 +18,7 @@ import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import PageIntro from '@/components/ui/PageIntro';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -188,6 +189,13 @@ export default function DharmVeerClient({
         fontFamily: 'var(--font-inter)'
       }}
     >
+      <PageIntro
+        pageKey="dharm-veer"
+        steps={[
+          { emoji: '⚔️', title: 'Dharm Veer', body: 'A daily story of dharmic courage. Read for 30 seconds to earn your mark.' },
+          { emoji: '⏱️', title: 'The 30-second rule', body: 'Stay on the page for 30 seconds. The strip will tick automatically.' },
+        ]}
+      />
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-4 pt-12 pb-4 flex flex-col gap-3 backdrop-blur-xl border-b" style={{ borderColor: activeTheme.border, backgroundColor: `${activeTheme.bg}d9` }}>
         <div className="flex items-center justify-between gap-3">

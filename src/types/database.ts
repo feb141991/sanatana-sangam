@@ -30,6 +30,13 @@ export interface Database {
           languages: string[];
           seeking: string[];
           seva_score: number;
+          weekly_seva: number;
+          monthly_seva: number;
+          streak_freeze_count: number;
+          last_freeze_used: string | null;
+          active_symbol_id: string | null;
+          onboarding_completed: boolean;
+          onboarding_goal: string | null;
           mandali_id: string | null;
           onesignal_player_id: string | null;
           country_code: string | null;
@@ -61,7 +68,7 @@ export interface Database {
           is_banned: boolean;
           ban_reason: string | null;
         };
-        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
+        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
       };
       mandalis: {
@@ -525,7 +532,7 @@ export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
 export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
 export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
-export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };
+export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'active_symbol_id'> };
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };
 
 export type ObservanceDefinition = Database['public']['Tables']['observance_definitions']['Row'];

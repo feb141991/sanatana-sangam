@@ -51,6 +51,7 @@ import CanonicalReader from '@/components/pathshala/CanonicalReader';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
+import PageIntro from '@/components/ui/PageIntro';
 
 // ── Difficulty badges — theme-aware so they read clearly on dark and light ─────
 function getDiffStyle(difficulty: string, isDark: boolean) {
@@ -1164,6 +1165,13 @@ export default function PathshalaClient({
   // ─────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[var(--surface-base)] -mx-3 sm:-mx-4 relative overflow-x-hidden selection:bg-[#C5A059]/30">
+      <PageIntro
+        pageKey="pathshala"
+        steps={[
+          { emoji: '📖', title: 'Pathshala', body: 'Study sacred scripture at your own pace. Progress is tracked daily.' },
+          { emoji: '📈', title: 'Reading progress', body: "Spend at least a few minutes reading to mark today's Pathshala complete." },
+        ]}
+      />
 
       {/* ── Ambient breathing glow — fixed behind everything ──────────────────── */}
       <motion.div

@@ -18,6 +18,7 @@ import TierBadge from '@/components/ui/TierBadge';
 import { getTierFromScore } from '@/lib/seva-tiers';
 import { SACRED_RELICS } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
+import PageIntro from '@/components/ui/PageIntro';
 
 type LeaderboardUser = {
   id: string;
@@ -116,6 +117,13 @@ export default function ScoreboardClient({
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 selection:bg-[#C5A059]/30">
+      <PageIntro
+        pageKey="scoreboard"
+        steps={[
+          { emoji: '🏆', title: 'Mandali Ranks', body: 'See how your sadhana compares to your spiritual community.' },
+          { emoji: '📅', title: 'Three periods', body: 'Switch between All Time, This Week, and This Month to track your consistency.' },
+        ]}
+      />
       <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197,160,89,0.15)] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
