@@ -12,8 +12,7 @@ interface Props {
 
 declare global {
   interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Razorpay: any;
+    Razorpay: unknown;
   }
 }
 
@@ -52,6 +51,8 @@ export default function RazorpayCheckout({ plan, billing, label, className }: Pr
       }
 
       // 3. Open Razorpay modal
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error — Razorpay SDK loaded dynamically, no type definitions
       const rzp = new window.Razorpay({
         key,
         subscription_id: subscriptionId,
