@@ -64,7 +64,7 @@ export default function SankalpaBanner({ sankalpa, onSet, onComplete }: Props) {
       </div>
       
       <p className="text-[15px] font-serif leading-snug line-clamp-2 theme-ink mb-4">
-        "{sankalpa.text}"
+        &ldquo;{sankalpa.text}&rdquo;
       </p>
       
       <div className="flex items-center justify-between mt-4">

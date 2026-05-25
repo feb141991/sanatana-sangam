@@ -1458,7 +1458,7 @@ export default function MyProgressClient({
                 {sankalpas.map(s => (
                   <div key={s.id} className="flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
                     <div className="flex-1 pr-3">
-                      <p className="text-sm font-serif line-clamp-1 theme-ink">"{s.text}"</p>
+                      <p className="text-sm font-serif line-clamp-1 theme-ink">&ldquo;{s.text}&rdquo;</p>
                       <p className="text-[10px] text-muted-foreground mt-1">
                         {new Date(s.start_date).toLocaleDateString()} – {new Date(s.end_date).toLocaleDateString()}
                       </p>
