@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { razorpay, PLAN_IDS } from '@/lib/razorpay';
+import { getRazorpay, PLAN_IDS } from '@/lib/razorpay';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const subscription = await razorpay.subscriptions.create({
+    const subscription = await getRazorpay().subscriptions.create({
       plan_id: planId,
       customer_notify: 1,
       quantity: 1,
