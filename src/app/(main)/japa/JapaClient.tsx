@@ -2496,6 +2496,13 @@ export default function JapaClient({
         user_id: userId, date: today, japa_done: true, streak_count: newStreak,
       }, { onConflict: 'user_id,date' });
 
+      // ── Write strip-readable key so DailySadhanaStrip updates immediately ──
+      try {
+        localStorage.setItem('shoonaya-japa-session-today', JSON.stringify({
+          date: today, beads: totalBeads, rounds: completedRounds,
+        }));
+      } catch { /* ok */ }
+
       // ── Award seva_score + karma_points for completed rounds ──────────────
       // seva_score  : +10 per completed mala round (leaderboard currency)
       // karma_points: +5  per completed mala round (daily XP)

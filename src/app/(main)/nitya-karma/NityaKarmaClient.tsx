@@ -1635,7 +1635,9 @@ export default function NityaKarmaClient({
                     ? <Loader2 size={18} className="animate-spin" style={{ color: accent }} />
                     : step.completed
                       ? <CheckCircle2 size={22} className="text-green-400" />
-                      : <SacredIcon name={step.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
+                      : /\p{Emoji}/u.test(step.icon)
+                        ? <span className="text-[20px] leading-none">{step.icon}</span>
+                        : <SacredIcon name={step.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                   }
                 </motion.div>
                 <div className="flex-1 min-w-0">
