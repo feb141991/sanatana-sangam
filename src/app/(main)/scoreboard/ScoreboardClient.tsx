@@ -348,7 +348,8 @@ export default function ScoreboardClient({
                   <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">Seva</p>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </motion.div>
         </AnimatePresence>
       </div>

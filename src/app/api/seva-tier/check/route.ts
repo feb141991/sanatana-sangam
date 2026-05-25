@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getTierFromScore } from '@/lib/seva-tiers';
-import { sendPushNotification } from '@/lib/push';
+import { sendOneSignalPush } from '@/lib/onesignal-server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     // Fetch the user's profile
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('seva_score, spiritual_level, push_token')
+      .select('seva_score, spiritual_level')
       .eq('id', user.id)
       .single();
 
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
 
-    const { seva_score, spiritual_level, push_token } = profile;
+    const { seva_score, spiritual_level } = profile;
     const newTier = getTierFromScore(seva_score || 0);
 
     // If tier has changed, update it
@@ -41,15 +41,17 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Failed to update spiritual level' }, { status: 500 });
       }
 
-      // Send promotion push notification if token exists
-      if (push_token) {
-        const title = `${newTier.emoji} Tier Promotion — ${newTier.label}!`;
-        const body = `You have risen to ${newTier.label} (${newTier.sanskrit}). Your sadhana is bearing fruit. 🙏`;
-        
-        await sendPushNotification(push_token, title, body).catch(e => {
-          console.error('Failed to send tier promotion push:', e);
-        });
-      }
+      // Send promotion push notification
+      const title = `${newTier.emoji} Tier Promotion — ${newTier.label}!`;
+      const body = `You have risen to ${newTier.label} (${newTier.sanskrit}). Your sadhana is bearing fruit. 🙏`;
+      
+      await sendOneSignalPush({
+        userIds: [user.id],
+        title,
+        body
+      }).catch(e => {
+        console.error('Failed to send tier promotion push:', e);
+      });
 
       return NextResponse.json({ 
         promoted: true, 
