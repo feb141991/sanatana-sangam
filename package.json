@@ -52,7 +52,8 @@
     "react-hot-toast": "^2.4.1",
     "react-leaflet": "^4.2.1",
     "socket.io-client": "^4.8.3",
-    "tailwind-merge": "^2.4.0"
+    "tailwind-merge": "^2.4.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@capacitor/android": "^8.0.0",
@@ -62,6 +63,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.0.1",
     "dotenv": "^17.4.2",
     "eslint": "^8",
@@ -71,7 +73,7 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.60.1",
-    "@rollup/rollup-linux-arm64-gnu": "4.60.1"
+    "@rollup/rollup-linux-arm64-gnu": "4.60.1",
+    "@rollup/rollup-linux-x64-gnu": "4.60.1"
   }
 }
