@@ -6,7 +6,7 @@ export const UJJAIN_LAT = 23.1765;
 export const UJJAIN_LON = 75.7885;
 
 // Versioning the calculation engine
-export const RULE_ENGINE_VERSION = '1.0.0';
+export const RULE_ENGINE_VERSION = '1.1.0'; // scan time corrected: 5am UTC → 1am UTC (≈ IST sunrise)
 
 export interface CalculatedOccurrence {
   slug: string;
@@ -40,7 +40,7 @@ export function precomputePanchangForYear(year: number): Array<{ dateStr: string
   const days: Array<{ dateStr: string; panchang: any }> = [];
 
   for (let i = 0; i < numDays; i++) {
-    const current = new Date(Date.UTC(year, 0, i + 1, 5, 0, 0));
+    const current = new Date(Date.UTC(year, 0, i + 1, 1, 0, 0)); // 1am UTC = ~6:30am IST ≈ Ujjain sunrise
     const panchang = calculatePanchang(current, UJJAIN_LAT, UJJAIN_LON);
     days.push({
       dateStr: formatUtcDate(current),
