@@ -23,13 +23,16 @@ export function useSacredCalendar(
   date: Date,
   lat: number,
   lon: number,
-  tradition: string = 'hindu'
+  tradition: string = 'hindu',
+  /** IANA timezone string for the user's location (e.g. "Europe/London").
+   *  Omit for India-based users — the browser's runtime timezone is used. */
+  timezone?: string,
 ): SacredCalendarData {
   const meta = useMemo(() => getTraditionMeta(tradition), [tradition]);
   const strategy = useMemo(() => CalendarFactory.getStrategy(meta.calendarType), [meta.calendarType]);
 
   const data = useMemo(() => {
-    const panchang = strategy.calculate(date, lat, lon);
+    const panchang = strategy.calculate(date, lat, lon, timezone);
     const labels = strategy.getLabels();
 
     return {
@@ -37,7 +40,7 @@ export function useSacredCalendar(
       calendarName: strategy.name,
       labels,
     };
-  }, [strategy, date, lat, lon]);
+  }, [strategy, date, lat, lon, timezone]);
 
   return data;
 }

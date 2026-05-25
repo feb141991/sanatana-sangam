@@ -38,21 +38,25 @@ export default async function PanchangPage() {
   let lon       = 77.2090;
   let city      = '';
   let tradition = 'hindu';
+  let timezone: string | undefined;
 
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, neighbourhood, tradition')
+      .select('latitude, longitude, city, neighbourhood, tradition, timezone')
       .eq('id', user.id)
       .single();
     if (profile?.latitude)  lat       = profile.latitude;
     if (profile?.longitude) lon       = profile.longitude;
     if (profile?.city)      city      = profile.neighbourhood ?? profile.city;
     if (profile?.tradition) tradition = profile.tradition;
+    if (profile?.timezone)  timezone  = profile.timezone;
   }
 
   const today = new Date();
-  const panchang = calculatePanchang(today, UJJAIN_LAT, UJJAIN_LON);
+  // Use user's location + timezone for the schema so diaspora users get accurate timings.
+  // Falls back to New Delhi coords when the user is not logged in (lat/lon defaults above).
+  const panchang = calculatePanchang(today, lat, lon, timezone);
   const panchangSchema = {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -85,7 +89,7 @@ export default async function PanchangPage() {
         ]}
       />
       <JsonLd data={panchangSchema} />
-      <PanchangClient lat={lat} lon={lon} city={city} tradition={tradition} />
+      <PanchangClient lat={lat} lon={lon} city={city} tradition={tradition} timezone={timezone} />
     </>
   );
 }

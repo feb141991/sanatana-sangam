@@ -95,6 +95,9 @@ const SAMVAT_NAMES = [
 
 const MOVABLE_KARANAS = ['Bava', 'Balava', 'Kaulava', 'Taitila', 'Gara', 'Vanija', 'Vishti'];
 const RAHU_KAAL_ORDER = [8, 2, 7, 5, 6, 4, 3];
+
+// Module-level formatters: no timeZone → uses runtime timezone (correct in browser, UTC on server).
+// calculatePanchang creates scoped timezone-aware formatters when `timezone` is supplied.
 const LOCAL_TIME_FORMAT = new Intl.DateTimeFormat('en-US', {
   hour: '2-digit',
   minute: '2-digit',
@@ -105,6 +108,33 @@ const LOCAL_DAY_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   month: 'short',
 });
+
+/**
+ * Returns the UTC offset in hours for the given IANA timezone and date.
+ * e.g. "Europe/London" → 1 (BST), "Asia/Kolkata" → 5.5
+ */
+function getUtcOffsetHours(timeZone: string, date: Date): number {
+  try {
+    // Format both in UTC and in the target timezone, then compute the diff.
+    const utcStr  = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC',      hour: 'numeric', minute: 'numeric', hour12: false }).format(date);
+    const localStr = new Intl.DateTimeFormat('en-US', { timeZone,             hour: 'numeric', minute: 'numeric', hour12: false }).format(date);
+
+    const parseHHMM = (s: string) => {
+      // Output is like "13:05" or "24:00" (midnight edge)
+      const [h, m] = s.split(':').map(Number);
+      return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
+    };
+
+    let diffMin = parseHHMM(localStr) - parseHHMM(utcStr);
+    // Handle day-boundary wrap (e.g. local midnight vs UTC 22:30 → diff −22.5h → should be +1.5h)
+    if (diffMin < -720) diffMin += 1440;
+    if (diffMin >  720) diffMin -= 1440;
+    return diffMin / 60;
+  } catch {
+    // Unknown / invalid IANA zone → fall back to runtime offset
+    return -(date.getTimezoneOffset() / 60);
+  }
+}
 
 type PanchangAstronomy = {
   jde: number;
@@ -155,12 +185,18 @@ function computeAstronomy(date: Date): PanchangAstronomy {
   };
 }
 
-function formatClock(date: Date | null): string {
+// Default (module-level) formatters — used when no timezone is supplied.
+function formatClock(date: Date | null, fmt = LOCAL_TIME_FORMAT): string {
   if (!date) return 'Unavailable';
-  return LOCAL_TIME_FORMAT.format(date);
+  return fmt.format(date);
 }
 
-function formatTransition(baseDate: Date, targetDate: Date | null): string {
+function formatTransition(
+  baseDate: Date,
+  targetDate: Date | null,
+  clockFmt = LOCAL_TIME_FORMAT,
+  dayFmt   = LOCAL_DAY_LABEL_FORMAT,
+): string {
   if (!targetDate) return 'Unavailable';
 
   const baseDay = new Date(baseDate);
@@ -168,12 +204,12 @@ function formatTransition(baseDate: Date, targetDate: Date | null): string {
   const targetDay = new Date(targetDate);
   targetDay.setHours(0, 0, 0, 0);
 
-  const timePart = formatClock(targetDate);
+  const timePart = formatClock(targetDate, clockFmt);
   if (baseDay.getTime() === targetDay.getTime()) {
     return timePart;
   }
 
-  return `${timePart}, ${LOCAL_DAY_LABEL_FORMAT.format(targetDate)}`;
+  return `${timePart}, ${dayFmt.format(targetDate)}`;
 }
 
 function subtractMinutes(date: Date | null, minutes: number): Date | null {
@@ -186,7 +222,14 @@ function addMinutes(date: Date | null, minutes: number): Date | null {
   return new Date(date.getTime() + minutes * 60_000);
 }
 
-function getApproxSunriseSunset(lat: number, lon: number, date: Date): { sunrise: Date; sunset: Date } {
+function getApproxSunriseSunset(
+  lat: number,
+  lon: number,
+  date: Date,
+  /** Explicit UTC offset in hours (e.g. 5.5 for IST, 1 for BST).
+   *  Defaults to the runtime's local offset via `getTimezoneOffset`. */
+  utcOffsetHours?: number,
+): { sunrise: Date; sunset: Date } {
   const localMidday = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
   const dayOfYear = Math.floor((localMidday.getTime() - new Date(localMidday.getFullYear(), 0, 0).getTime()) / 86_400_000);
   const latRad = (lat * Math.PI) / 180;
@@ -197,7 +240,8 @@ function getApproxSunriseSunset(lat: number, lon: number, date: Date): { sunrise
     Math.tan(latRad) * Math.tan(decRad)
   );
   const hourAngle = (Math.acos(Math.max(-1, Math.min(1, cosH))) * 180) / Math.PI;
-  const timezone = -(date.getTimezoneOffset() / 60);
+  // Use the explicitly-supplied offset when available (correct on both server and client).
+  const timezone = utcOffsetHours !== undefined ? utcOffsetHours : -(date.getTimezoneOffset() / 60);
   const equationOfTime = (() => {
     const b = (((360 / 365) * (dayOfYear - 81)) * Math.PI) / 180;
     return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
@@ -214,7 +258,12 @@ function getApproxSunriseSunset(lat: number, lon: number, date: Date): { sunrise
   };
 }
 
-function getSunriseSunset(lat: number, lon: number, date: Date): { sunrise: Date; sunset: Date; noon: Date } {
+function getSunriseSunset(
+  lat: number,
+  lon: number,
+  date: Date,
+  utcOffsetHours?: number,
+): { sunrise: Date; sunset: Date; noon: Date } {
   try {
     const calendar = new julian.CalendarGregorian(date.getFullYear(), date.getMonth() + 1, date.getDate());
     const sun = new Sunrise(calendar, lat, -lon, 0);
@@ -233,7 +282,7 @@ function getSunriseSunset(lat: number, lon: number, date: Date): { sunrise: Date
     // Fall back to the older approximation for edge locations or library failures.
   }
 
-  const fallback = getApproxSunriseSunset(lat, lon, date);
+  const fallback = getApproxSunriseSunset(lat, lon, date, utcOffsetHours);
   const noon = new Date((fallback.sunrise.getTime() + fallback.sunset.getTime()) / 2);
   return { ...fallback, noon };
 }
@@ -298,8 +347,30 @@ function solveNextBoundary(
 export function calculatePanchang(
   date: Date = new Date(),
   lat = 51.5074,
-  lon = -0.1278
+  lon = -0.1278,
+  /** IANA timezone string, e.g. "Asia/Kolkata", "Europe/London", "America/New_York".
+   *  When supplied, ALL time strings (sunrise, Rahu Kaal, etc.) are displayed in that
+   *  timezone. Diaspora users pass their local timezone; IST observers omit / pass
+   *  "Asia/Kolkata". Festival dates remain IST-canonical regardless. */
+  timezone?: string,
 ): PanchangData {
+  // ── Timezone-aware formatters ────────────────────────────────────────────────
+  // When a timezone is provided we create scoped formatters so the output is
+  // correct both in Node.js (server-side, UTC runtime) and in the browser.
+  const utcOffsetHours = timezone ? getUtcOffsetHours(timezone, date) : undefined;
+
+  const clockFmt = timezone
+    ? new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: timezone })
+    : LOCAL_TIME_FORMAT;
+
+  const dayFmt = timezone
+    ? new Intl.DateTimeFormat('en-US', { weekday: 'short', day: 'numeric', month: 'short', timeZone: timezone })
+    : LOCAL_DAY_LABEL_FORMAT;
+
+  const fc  = (d: Date | null) => formatClock(d, clockFmt);
+  const ft  = (target: Date | null) => formatTransition(date, target, clockFmt, dayFmt);
+
+  // ── Astronomical calculations (location-independent) ─────────────────────────
   const astro = computeAstronomy(date);
 
   const tithiIndex = Math.floor(astro.elongation / 12) + 1;
@@ -338,7 +409,8 @@ export function calculatePanchang(
     (candidate) => computeAstronomy(candidate).elongation
   );
 
-  const { sunrise, sunset, noon } = getSunriseSunset(lat, lon, date);
+  // ── Location-dependent timings ───────────────────────────────────────────────
+  const { sunrise, sunset, noon } = getSunriseSunset(lat, lon, date, utcOffsetHours);
   const brahmaMuhurtaStart = subtractMinutes(sunrise, 96);
   const brahmaMuhurtaEnd = subtractMinutes(sunrise, 48);
 
@@ -363,24 +435,25 @@ export function calculatePanchang(
     tithi,
     tithiIndex,
     paksha,
-    tithiUpto: formatTransition(date, nextTithi),
+    tithiUpto: ft(nextTithi),
     nakshatra: NAKSHATRAS[nakshatraIndex],
-    nakshatraUpto: formatTransition(date, nextNakshatra),
+    nakshatraUpto: ft(nextNakshatra),
     yoga: YOGAS[yogaIndex],
-    yogaUpto: formatTransition(date, nextYoga),
+    yogaUpto: ft(nextYoga),
     karana: getKaranaName(karanaIndex),
-    karanaUpto: formatTransition(date, nextKarana),
+    karanaUpto: ft(nextKarana),
     vara,
-    rahuKaal: `${formatClock(rahuStart)} – ${formatClock(rahuEnd)}`,
-    abhijitMuhurat: `${formatClock(abhijitStart)} – ${formatClock(abhijitEnd)}`,
-    sunrise: formatClock(sunrise),
-    sunset: formatClock(sunset),
-    brahmaMuhurta: `${formatClock(brahmaMuhurtaStart)} – ${formatClock(brahmaMuhurtaEnd)}`,
+    rahuKaal: `${fc(rahuStart)} – ${fc(rahuEnd)}`,
+    abhijitMuhurat: `${fc(abhijitStart)} – ${fc(abhijitEnd)}`,
+    sunrise: fc(sunrise),
+    sunset: fc(sunset),
+    brahmaMuhurta: `${fc(brahmaMuhurtaStart)} – ${fc(brahmaMuhurtaEnd)}`,
     date: date.toLocaleDateString('en-IN', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
+      ...(timezone ? { timeZone: timezone } : {}),
     }),
     masaName,
     samvatYear,

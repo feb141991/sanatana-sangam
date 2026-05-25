@@ -21,6 +21,9 @@ interface Props {
   lon:       number;
   city:      string;
   tradition?: string;
+  /** IANA timezone string for the user's location (e.g. "Europe/London", "America/New_York").
+   *  When supplied, all time strings are displayed in the user's local timezone. */
+  timezone?: string;
 }
 
 // ─── Tradition metadata ───────────────────────────────────────────────────────
@@ -382,7 +385,7 @@ function getAntardashaDates(dashaEntry: { planet: string; startDate: string; end
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: Props) {
+export default function PanchangClient({ lat, lon, city, tradition = 'hindu', timezone }: Props) {
   const { t, lang, setLang } = useLanguage();
   const { playHaptic } = useZenithSensory();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
@@ -405,7 +408,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
     birthPlace: city || '',
     lat: lat || 28.6139,
     lng: lon || 77.2090,
-    timezone: 'Asia/Kolkata',
+    timezone: timezone || 'Asia/Kolkata',
   });
   const [kundaliResult,  setKundaliResult]  = useState<KundaliResult | null>(null);
   const [kundaliLoading, setKundaliLoading] = useState(false);
@@ -448,7 +451,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu' }: 
     });
   }, [lang]);
 
-  const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition);
+  const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, timezone);
 
   // ── Web Audio Graha Beeja Resonance Synthesizer ─────────────────────────────
   const [isPlayingResonance, setIsPlayingResonance] = useState(false);
