@@ -10,9 +10,25 @@ interface Props {
   className?: string;
 }
 
+interface RazorpayOptions {
+  key: string;
+  subscription_id: string;
+  name: string;
+  description: string;
+  image: string;
+  theme: { color: string };
+  handler: (response: { razorpay_subscription_id: string }) => void;
+}
+
+interface RazorpayInstance {
+  open: () => void;
+}
+
+type RazorpayConstructor = new (options: RazorpayOptions) => RazorpayInstance;
+
 declare global {
   interface Window {
-    Razorpay: unknown;
+    Razorpay: RazorpayConstructor;
   }
 }
 
@@ -43,7 +59,7 @@ export default function RazorpayCheckout({ plan, billing, label, className }: Pr
       }
       const { subscriptionId, key } = await res.json();
 
-      // 2. Load Razorpay SDK
+      // 2. Load Razorpay SDK dynamically
       const loaded = await loadRazorpayScript();
       if (!loaded) {
         alert('Could not load payment gateway. Please check your connection.');
@@ -51,8 +67,6 @@ export default function RazorpayCheckout({ plan, billing, label, className }: Pr
       }
 
       // 3. Open Razorpay modal
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error — Razorpay SDK loaded dynamically, no type definitions
       const rzp = new window.Razorpay({
         key,
         subscription_id: subscriptionId,
