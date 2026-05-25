@@ -1604,30 +1604,20 @@ export default function HomeDashboard({
 
     // Increment seva_score by 5 — try RPC first, fall back to direct update
     try {
-      const { error: rpcError } = await supabase.rpc('increment_seva_score', { user_id: userId, points: 5 });
+      const { error: rpcError } = await supabase.rpc('increment_period_seva', { p_user_id: userId, p_points: 5 });
       if (rpcError) throw rpcError;
     } catch {
       // RPC may not exist yet — direct update fallback
-      const { data } = await supabase.from('profiles').select('seva_score').eq('id', userId).single();
+      const { data } = await supabase.from('profiles').select('seva_score, weekly_seva, monthly_seva').eq('id', userId).single();
       if (data) {
         await supabase.from('profiles')
-          .update({ seva_score: (data.seva_score ?? 0) + 5 })
+          .update({ 
+            seva_score: (data.seva_score ?? 0) + 5,
+            weekly_seva: (data.weekly_seva ?? 0) + 5,
+            monthly_seva: (data.monthly_seva ?? 0) + 5
+          })
           .eq('id', userId);
       }
-    }
-
-    try {
-      const { data } = await supabase.from('profiles').select('weekly_seva, monthly_seva').eq('id', userId).single();
-      if (data) {
-        await supabase.from('profiles')
-          .update({
-            weekly_seva: ((data as { weekly_seva?: number | null }).weekly_seva ?? 0) + 5,
-            monthly_seva: ((data as { monthly_seva?: number | null }).monthly_seva ?? 0) + 5,
-          } as never)
-          .eq('id', userId);
-      }
-    } catch {
-      // non-fatal
     }
 
     // Always show confetti + close modal for the full celebration moment

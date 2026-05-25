@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       // We don't fail the request completely, but log it
     }
 
-    const { error: sevaError } = await supabase.rpc('increment_seva_score', { user_id: userId, points: 15 });
+    const { error: sevaError } = await supabase.rpc('increment_period_seva', { p_user_id: userId, p_points: 15 });
     if (sevaError) {
       console.error('Failed to award seva for perfect day:', sevaError);
     }

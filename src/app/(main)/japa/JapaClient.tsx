@@ -2513,14 +2513,18 @@ export default function JapaClient({
 
         // seva_score — RPC with direct-update fallback
         try {
-          const { error: sevaRpcErr } = await supabase.rpc('increment_seva_score', {
-            user_id: userId, points: sevaGain,
+          const { error: sevaRpcErr } = await supabase.rpc('increment_period_seva', {
+            p_user_id: userId, p_points: sevaGain,
           });
           if (sevaRpcErr) {
-            const { data: prof } = await supabase.from('profiles').select('seva_score').eq('id', userId).single();
+            const { data: prof } = await supabase.from('profiles').select('seva_score, weekly_seva, monthly_seva').eq('id', userId).single();
             if (prof) {
               await supabase.from('profiles')
-                .update({ seva_score: (prof.seva_score ?? 0) + sevaGain })
+                .update({ 
+                  seva_score: (prof.seva_score ?? 0) + sevaGain,
+                  weekly_seva: (prof.weekly_seva ?? 0) + sevaGain,
+                  monthly_seva: (prof.monthly_seva ?? 0) + sevaGain
+                })
                 .eq('id', userId);
             }
           }
