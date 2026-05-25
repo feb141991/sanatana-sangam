@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink, Target, Flame } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
@@ -899,6 +900,36 @@ export default function MyProgressClient({
   const isDark    = resolvedTheme === 'dark';
   const [showReport, setShowReport]     = useState(false);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
+  const [midpointRefreshKey, setMidpointRefreshKey] = useState(0);
+
+  const hasMidpointReflection = useCallback((sankalpaId: string) => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`shoonaya-midpoint-${sankalpaId}`) === 'done';
+  }, []);
+
+  const handleMidpointReaction = useCallback((sankalpaId: string, mood: 'strong' | 'struggling' | 'grateful') => {
+    try {
+      localStorage.setItem(`shoonaya-midpoint-${sankalpaId}`, 'done');
+    } catch {
+      // keep UI-only fallback
+    }
+
+    setMidpointRefreshKey((current) => current + 1);
+
+    fetch('/api/sankalpa/reflection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sankalpa_id: sankalpaId, mood, reflection_type: 'midpoint' }),
+    }).catch(console.error);
+
+    const messages = {
+      strong: 'Stay the course. The divine sees your effort. 🙏',
+      struggling: 'Even struggle is sadhana. Keep going. 🌱',
+      grateful: 'Gratitude itself is the fruit. Keep walking. ✨',
+    } as const;
+
+    toast.success(messages[mood]);
+  }, []);
 
   // ── Page + shared tokens ──────────────────────────────────────────────────
   const pageBg  = isDark
@@ -1475,27 +1506,53 @@ export default function MyProgressClient({
                     progress = Math.max(0, Math.min(100, Math.round((elapsed / totalDays) * 100)));
                   }
 
-                  const isHalfway = s.status === 'active' && Math.abs(daysRemaining - Math.floor(totalDays / 2)) <= 1;
+                  const isMidpoint = s.status === 'active'
+                    && progress >= 48
+                    && progress <= 52
+                    && !hasMidpointReflection(s.id);
                   const isOverdue = s.status === 'active' && daysRemaining < 0;
+                  const shortenedText = s.text.length > 30 ? `${s.text.slice(0, 30)}...` : s.text;
 
                   return (
-                    <div key={s.id} className="relative bg-black/5 dark:bg-white/5 p-4 rounded-[2rem] overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
-                      
-                      {/* Mid-point check-in */}
-                      {isHalfway && (
-                        <div className="mb-4 p-4 rounded-[1.5rem] bg-amber-500/10 border border-amber-500/20 text-center">
-                          <p className="text-xs uppercase tracking-widest text-amber-500/80 font-bold mb-2">Mid-Point Check-in</p>
-                          <p className="text-sm font-serif text-[color:var(--brand-ink)] mb-3">You are halfway there! How are you feeling?</p>
-                          <div className="flex justify-center gap-2">
-                            {['💪 Strong', '😤 Struggling', '🙏 Grateful'].map(reaction => (
-                              <button key={reaction} onClick={() => console.log('TODO: save to sankalpa_reflections', reaction)} className="px-3 py-1.5 rounded-full text-xs font-medium bg-black/10 dark:bg-white/10 hover:bg-amber-500/20 hover:text-amber-500 transition-colors">
-                                {reaction}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                    <div key={`${s.id}-${midpointRefreshKey}`} className="space-y-3">
+                      <AnimatePresence initial={false}>
+                        {isMidpoint && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            className="rounded-2xl border p-4 mb-3"
+                            style={{ background: 'rgba(197,160,89,0.06)', borderColor: 'rgba(197,160,89,0.20)' }}
+                          >
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400/60 mb-1">
+                              Halfway ✦ {shortenedText}
+                            </p>
+                            <p className="text-sm font-medium text-white/80 mb-3">
+                              You&apos;re halfway through your sankalpa. How are you feeling?
+                            </p>
+                            <div className="flex gap-2">
+                              {[
+                                { key: 'strong', emoji: '💪', label: 'Strong' },
+                                { key: 'struggling', emoji: '😤', label: 'Struggling' },
+                                { key: 'grateful', emoji: '🙏', label: 'Grateful' },
+                              ].map(({ key, emoji, label }) => (
+                                <button
+                                  key={key}
+                                  onClick={() => handleMidpointReaction(s.id, key as 'strong' | 'struggling' | 'grateful')}
+                                  className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors"
+                                  style={{ borderColor: 'rgba(197,160,89,0.15)', background: 'rgba(255,255,255,0.03)' }}
+                                >
+                                  <span className="text-xl">{emoji}</span>
+                                  <span className="text-[10px] font-medium text-white/50">{label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
+                      <div className="relative bg-black/5 dark:bg-white/5 p-4 rounded-[2rem] overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
+                      
                       <div className="flex justify-between items-start mb-4">
                         <div className="flex-1 pr-4">
                           <p className="text-base font-serif leading-snug theme-ink font-medium">&ldquo;{s.text}&rdquo;</p>
@@ -1538,28 +1595,39 @@ export default function MyProgressClient({
 
                       {/* Timeline View */}
                       {s.status === 'active' && (
-                        <div>
-                          <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-2 text-center opacity-70">7-Day Journey (TODO: check-in tracking)</p>
-                          <div className="flex justify-between items-center px-2">
+                        <div className="mt-2">
+                          {/* TODO: connect to sankalpa_checkins once table exists */}
+                          <div className="flex items-center justify-between px-2">
                             {[...Array(7)].map((_, i) => {
-                              const isToday = i === 3; // Mocking today in the middle
+                              const todayIndex = (today.getDay() + 6) % 7;
+                              const isToday = i === todayIndex;
+                              const isPast = i < todayIndex;
+                              const checkedIn = false; // Mocked until sankalpa_checkins is added
+
                               return (
                                 <div key={i} className="flex flex-col items-center gap-1.5 relative">
-                                  {isToday && (
-                                    <motion.div 
-                                      className="absolute top-0 w-3.5 h-3.5 rounded-full border border-amber-500/50"
-                                      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                                      transition={{ duration: 2, repeat: Infinity }}
+                                  {isToday ? (
+                                    <div 
+                                      className="w-[22px] h-[22px] rounded-full border-2 border-amber-400 animate-pulse transition-all duration-300"
+                                      style={{ boxShadow: '0 0 8px rgba(197,160,89,0.5)' }}
                                     />
+                                  ) : isPast ? (
+                                    <div 
+                                      className={`w-[20px] h-[20px] rounded-full transition-all duration-300 ${
+                                        checkedIn ? 'bg-amber-500/80' : 'border border-amber-500/20 bg-transparent'
+                                      }`}
+                                    />
+                                  ) : (
+                                    <div className="w-[20px] h-[20px] rounded-full border border-amber-500/20 bg-transparent opacity-30 transition-all duration-300" />
                                   )}
-                                  <div className={`w-3.5 h-3.5 rounded-full border-2 ${isToday ? 'border-amber-500 bg-amber-500/20' : 'border-black/20 dark:border-white/20 bg-transparent'}`} />
-                                  <span className="text-[8px] uppercase tracking-tighter text-muted-foreground font-medium">{['M','T','W','T','F','S','S'][i]}</span>
+                                  <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
                                 </div>
                               );
                             })}
                           </div>
                         </div>
                       )}
+                      </div>
                     </div>
                   );
                 })}
