@@ -14,9 +14,18 @@ const TRADITION_CONTEXT: Record<string, string> = {
   all:      'the shared spiritual heritage of India — covering Hindu, Sikh, Buddhist and Jain traditions, common sacred rivers, pilgrimage sites, and inter-tradition concepts',
 };
 
-function buildPrompt(tradition: string, dateStr: string, language?: string | null): string {
+function buildPrompt(
+  tradition: string,
+  dateStr: string,
+  language?: string | null,
+  recentQuestions?: string[],
+): string {
   const ctx = TRADITION_CONTEXT[tradition] ?? TRADITION_CONTEXT.all;
   const langInstruction = getLanguageInstruction(language);
+
+  const exclusionBlock = recentQuestions && recentQuestions.length > 0
+    ? `\nIMPORTANT — Do NOT repeat or closely paraphrase any of these recently-asked questions:\n${recentQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}\nChoose a completely different topic, deity, scripture, concept, or historical event.\n`
+    : '';
 
   return `You are a precise and engaging spiritual quiz writer for a dharma app.
 
@@ -25,12 +34,13 @@ Generate ONE multiple-choice quiz question about ${ctx}.
 Language Instructions:
 ${langInstruction}
 Ensure that the "question", "options", "explanation", and "fact" fields are in the requested language.
-
+${exclusionBlock}
 Rules:
 - The question must be factual and verifiable
 - Difficulty: intermediate (not a trivial or famous fact, but not academic specialist level)
 - Use exactly 4 answer options
 - Exactly one option is correct
+- Vary the topic widely — cycle through different deities, scriptures, philosophy, festivals, geography, history, and rituals. Avoid repeating the same category two days in a row
 - The "explanation" field explains in 2-3 sentences WHY the correct answer is correct — useful for learners who chose wrong
 - The "fact" field adds a short, fascinating extra detail (1-2 sentences) that enriches the answer
 - No markdown in any field — plain text only
@@ -106,9 +116,28 @@ export async function GET(req: NextRequest) {
     }, { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } });
   }
 
-  // 2. Not found -> generate on demand
+  // 2. Not found → fetch last 7 days of questions to avoid repetition
+  const sevenDaysAgo = new Date(dateStr);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+
+  const { data: recentRows } = await supabase
+    .from('daily_quiz' as unknown as 'quiz_responses')
+    .select('question')
+    .eq('tradition', tradition)
+    .eq('language', requestedLanguage)
+    .gte('date', sevenDaysAgoStr)
+    .lt('date', dateStr)
+    .order('date', { ascending: false })
+    .limit(7);
+
+  const recentQuestions = (recentRows as unknown as { question: string }[] | null)
+    ?.map(r => r.question)
+    .filter(Boolean) ?? [];
+
+  // 3. Generate on demand
   const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
-  const prompt = buildPrompt(tradition, dateStr, requestedLanguage);
+  const prompt = buildPrompt(tradition, dateStr, requestedLanguage, recentQuestions);
   const startTime = Date.now();
 
   const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];

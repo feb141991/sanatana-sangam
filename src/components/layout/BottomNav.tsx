@@ -34,9 +34,9 @@ const GUEST_QUICK_ACTIONS: Array<{ icon: LucideIcon; label: string; href: string
 // Glass tokens — computed per-theme
 function useGlass(isDark: boolean) {
   return {
-    bg:     isDark ? 'rgba(14, 11, 8, 0.82)'      : 'rgba(255, 252, 248, 0.88)',
-    border: isDark ? 'rgba(250, 238, 218, 0.16)' : 'rgba(133, 79, 11, 0.12)',
-    blur:   'blur(30px) saturate(165%)',
+    bg:     isDark ? 'rgba(14, 11, 8, 0.52)'      : 'rgba(255, 252, 248, 0.56)',
+    border: isDark ? 'rgba(250, 238, 218, 0.14)' : 'rgba(133, 79, 11, 0.10)',
+    blur:   'blur(32px) saturate(180%)',
     shadow: isDark
       ? '0 10px 30px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.10)'
       : '0 10px 28px rgba(180,120,40,0.08), inset 0 1px 0 rgba(255,255,255,0.78)',

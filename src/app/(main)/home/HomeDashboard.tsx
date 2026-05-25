@@ -2103,6 +2103,41 @@ export default function HomeDashboard({
                 {stripGreetingIcon(greeting)},&nbsp;
                 <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
               </motion.h1>
+
+              {/* Tithi · date chip — taps to open Panchang ─────────────────── */}
+              {panchang?.tithi && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.22 }}
+                  className="mt-2"
+                >
+                  <Link
+                    href="/panchang"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
+                    style={{
+                      background: 'rgba(197,160,89,0.14)',
+                      border: '1px solid rgba(197,160,89,0.28)',
+                      backdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    <CalendarDays size={11} style={{ color: '#C5A059' }} />
+                    <span
+                      className="text-[11px] font-semibold"
+                      style={{ color: 'rgba(255,240,200,0.90)' }}
+                    >
+                      {panchang.tithi}
+                    </span>
+                    <span style={{ color: 'rgba(255,240,200,0.38)', fontSize: '10px' }}>·</span>
+                    <span
+                      className="text-[11px]"
+                      style={{ color: 'rgba(255,240,200,0.64)' }}
+                    >
+                      {fmtDate(selectedDate, 'EEE, d MMM')}
+                    </span>
+                  </Link>
+                </motion.div>
+              )}
             </div>
           </div>
         </div>

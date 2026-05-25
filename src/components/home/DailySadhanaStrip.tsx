@@ -39,154 +39,25 @@ function formatToday() {
   return new Date().toISOString().split('T')[0];
 }
 
-function formatDateLabel() {
-  return new Intl.DateTimeFormat('en-GB', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-  }).format(new Date());
-}
-
 function clampPercent(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
 
-function getTraditionSymbol(tradition?: string) {
-  if (tradition === 'sikh') return 'ੴ';
-  if (tradition === 'buddhist') return '☸';
-  if (tradition === 'jain') return '☮';
-  return 'ॐ';
-}
-
-function getStatusCircle(done: boolean, accentColor: string) {
+function StatusDot({ done, accentColor }: { done: boolean; accentColor: string }) {
   return (
     <div
-      className="flex h-6 w-6 items-center justify-center rounded-full border"
+      className="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-300"
       style={{
-        borderColor: done ? `${accentColor}66` : 'var(--card-border)',
         background: done ? `${accentColor}22` : 'transparent',
-        color: done ? accentColor : 'var(--brand-muted)',
+        border: `1.5px solid ${done ? accentColor + '88' : 'rgba(197,160,89,0.22)'}`,
       }}
     >
-      {done ? <Check size={14} strokeWidth={2.6} /> : <div className="h-2.5 w-2.5 rounded-full" style={{ background: 'var(--card-border)' }} />}
+      {done && <Check size={11} strokeWidth={2.8} style={{ color: accentColor }} />}
     </div>
   );
 }
 
-function Petal({
-  index,
-  filled,
-  accentColor,
-}: {
-  index: number;
-  filled: boolean;
-  accentColor: string;
-}) {
-  const angle = index * 72;
-  const path = 'M 60 18 Q 82 42 60 72 Q 38 42 60 18 Z';
-  return (
-    <path
-      d={path}
-      transform={`rotate(${angle} 60 60)`}
-      fill={filled ? accentColor : 'transparent'}
-      fillOpacity={filled ? 0.85 : 0}
-      stroke={filled ? accentColor : 'var(--card-border)'}
-      strokeOpacity={filled ? 0.85 : 0.5}
-      strokeWidth={1.5}
-      filter={filled ? 'url(#mandala-glow)' : undefined}
-      style={{ transition: 'fill-opacity 0.6s ease, stroke-opacity 0.6s ease' }}
-    />
-  );
-}
-
-function MandalaProgress({
-  completedCount,
-  accentColor,
-  tradition,
-}: {
-  completedCount: number;
-  accentColor: string;
-  tradition?: string;
-}) {
-  const symbol = getTraditionSymbol(tradition);
-  return (
-    <svg viewBox="0 0 120 120" className="h-[120px] w-[120px]" aria-hidden="true">
-      <defs>
-        <filter id="mandala-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={accentColor} floodOpacity="0.28" />
-        </filter>
-      </defs>
-      {Array.from({ length: 5 }, (_, index) => (
-        <Petal key={index} index={index} filled={index < completedCount} accentColor={accentColor} />
-      ))}
-      <text
-        x="60"
-        y="66"
-        textAnchor="middle"
-        fontSize="14"
-        fill={accentColor}
-        fontFamily="var(--font-devanagari), var(--font-serif), system-ui"
-      >
-        {symbol}
-      </text>
-    </svg>
-  );
-}
-
-function HavanFire({
-  completedCount,
-}: {
-  completedCount: number;
-}) {
-  const flameHeight = [0, 30, 50, 70, 78, 86][completedCount] ?? 86;
-  const showInner = completedCount >= 4;
-  const showOuterGlow = completedCount >= 5;
-  const baseY = 94;
-  const topY = baseY - flameHeight;
-  const flamePath = `M 48 ${baseY} C 28 ${baseY - 10}, 26 ${topY + 20}, 46 ${topY} C 44 ${topY + 18}, 70 ${topY + 24}, 64 ${baseY} Z`;
-  const innerPath = `M 50 ${baseY} C 40 ${baseY - 10}, 40 ${topY + 30}, 50 ${topY + 14} C 54 ${topY + 26}, 64 ${topY + 30}, 58 ${baseY} Z`;
-
-  return (
-    <div className="flex flex-col items-center justify-center">
-      <svg viewBox="0 0 96 120" className="h-[110px] w-[92px]" aria-hidden="true">
-        <defs>
-          <linearGradient id="havan-flame" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#FF6B00" />
-            <stop offset="100%" stopColor="#FFB800" />
-          </linearGradient>
-        </defs>
-        {completedCount === 0 ? (
-          <circle cx="48" cy="92" r="6" fill="#FF6B00" opacity="0.82" />
-        ) : (
-          <>
-            <path
-              d={flamePath}
-              fill="url(#havan-flame)"
-              style={{
-                transformOrigin: '48px 94px',
-                animation: 'flicker 1.8s ease-in-out infinite',
-                filter: showOuterGlow ? 'drop-shadow(0 0 8px #FFB80066)' : undefined,
-              }}
-            />
-            {showInner && (
-              <path
-                d={innerPath}
-                fill="#FFD975"
-                opacity="0.82"
-                style={{ transformOrigin: '48px 94px', animation: 'flicker 1.55s ease-in-out infinite' }}
-              />
-            )}
-          </>
-        )}
-      </svg>
-      <span className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>
-        {completedCount}/5
-      </span>
-    </div>
-  );
-}
-
-function JapaProgressArc({
+function JapaArc({
   beads,
   done,
   accentColor,
@@ -199,11 +70,10 @@ function JapaProgressArc({
   const circumference = 2 * Math.PI * radius;
   const progress = Math.max(0, Math.min(108, beads));
   const dash = (progress / 108) * circumference;
-  const ticks = [0.25, 0.5, 0.75, 1];
 
   return (
-    <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
-      <circle cx="16" cy="16" r={radius} fill="none" stroke="var(--card-border)" strokeWidth="2.5" />
+    <svg viewBox="0 0 32 32" className="h-7 w-7" aria-hidden="true">
+      <circle cx="16" cy="16" r={radius} fill="none" stroke="rgba(197,160,89,0.14)" strokeWidth="2.5" />
       <circle
         cx="16"
         cy="16"
@@ -216,14 +86,6 @@ function JapaProgressArc({
         transform="rotate(-90 16 16)"
         style={{ opacity: done ? 1 : 0.85, transition: 'stroke-dasharray 0.4s ease' }}
       />
-      {ticks.map((tick) => {
-        const angle = tick * Math.PI * 2 - Math.PI / 2;
-        const x1 = 16 + Math.cos(angle) * 12;
-        const y1 = 16 + Math.sin(angle) * 12;
-        const x2 = 16 + Math.cos(angle) * 14;
-        const y2 = 16 + Math.sin(angle) * 14;
-        return <line key={tick} x1={x1} y1={y1} x2={x2} y2={y2} stroke={accentColor} strokeOpacity="0.45" strokeWidth="1.2" />;
-      })}
     </svg>
   );
 }
@@ -300,7 +162,6 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   const tradition = props.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
   const accentColor = meta.accentColour;
-  const dateLabel = formatDateLabel();
 
   const japaBeads = props.japaBeads ?? localState.japaBeads;
   const japaRounds = props.japaRounds ?? localState.japaRounds;
@@ -313,10 +174,10 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       id: 'japa',
       icon: '📿',
       label: 'Japa Mala',
-      sublabel: `${japaBeads} beads · ${japaRounds} rounds today`,
+      sublabel: japaBeads > 0 ? `${japaBeads} beads · ${japaRounds} rounds` : 'Recite the divine name',
       done: props.japaDone,
       href: '/bhakti/mala',
-      right: <JapaProgressArc beads={japaBeads} done={props.japaDone} accentColor={accentColor} />,
+      right: <JapaArc beads={japaBeads} done={props.japaDone} accentColor={accentColor} />,
     },
     {
       id: 'nitya',
@@ -325,21 +186,21 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: props.nityaDone ? 'Morning routine done' : 'Morning practice',
       done: props.nityaDone,
       href: '/nitya-karma',
-      right: getStatusCircle(props.nityaDone, accentColor),
+      right: <StatusDot done={props.nityaDone} accentColor={accentColor} />,
     },
     {
       id: 'pathshala',
       icon: '📖',
       label: 'Pathshala',
-      sublabel: pathshalaProgress > 0 ? `${pathshalaProgress}% read` : 'Study scripture',
+      sublabel: pathshalaProgress > 0 ? `${pathshalaProgress}% read today` : 'Study scripture',
       done: props.pathshalaDone,
       href: '/pathshala',
       right: (
-        <div className="w-[60px]">
-          <div className="h-1 rounded-full" style={{ background: 'var(--card-border)' }}>
+        <div className="w-[52px]">
+          <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.14)' }}>
             <div
-              className="h-1 rounded-full"
-              style={{ width: `${pathshalaProgress}%`, background: accentColor, transition: 'width 0.4s ease' }}
+              className="h-[3px] rounded-full transition-all duration-500"
+              style={{ width: `${pathshalaProgress}%`, background: accentColor }}
             />
           </div>
         </div>
@@ -348,11 +209,11 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
     {
       id: 'quiz',
       icon: '🧠',
-      label: 'Quiz',
-      sublabel: quizDone ? 'All answered' : 'Test your knowledge',
+      label: 'Daily Quiz',
+      sublabel: quizDone ? 'All answered today' : 'Test your knowledge',
       done: quizDone,
       href: '/quiz',
-      right: getStatusCircle(quizDone, accentColor),
+      right: <StatusDot done={quizDone} accentColor={accentColor} />,
     },
     {
       id: 'dharmveer',
@@ -361,122 +222,115 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: dharmVeerDone ? 'Challenge complete' : "Today's challenge",
       done: dharmVeerDone,
       href: '/discover',
-      right: getStatusCircle(dharmVeerDone, accentColor),
+      right: <StatusDot done={dharmVeerDone} accentColor={accentColor} />,
     },
   ], [accentColor, dharmVeerDone, japaBeads, japaRounds, pathshalaProgress, props.japaDone, props.nityaDone, props.pathshalaDone, quizDone]);
 
   const completedCount = rows.filter((row) => row.done).length;
   const allDone = completedCount === 5;
-  const shouldCollapse = allDone && !isExpanded;
 
   return (
-    <div className="px-5 relative z-20 mb-6">
-      <style>{`
-        @keyframes flicker {
-          0%, 100% { transform: scaleX(1); }
-          50% { transform: scaleX(0.92) skewX(3deg); }
-        }
-      `}</style>
+    <div className="px-5 relative z-20 mb-5">
 
+      {/* ── Slim pagination progress lines ──────────────────────────────────── */}
       <div
-        className="mx-auto max-w-lg overflow-hidden rounded-[1.5rem] border"
-        style={{
-          background: 'var(--card-bg)',
-          borderColor: allDone && !isExpanded ? '#D4AF3744' : 'var(--card-border)',
-          color: 'var(--brand-ink)',
-          boxShadow: '0 8px 24px rgba(10,8,5,0.06)',
-        }}
+        className="flex items-center gap-1.5 mb-3"
+        aria-label={`${completedCount} of 5 sadhanas complete today`}
       >
-        <div
-          className="flex h-9 items-center justify-between px-4 text-[11px]"
-          style={{ borderBottom: '1px solid var(--card-border)', color: 'var(--brand-muted)' }}
-        >
-          <div className="flex items-center gap-2">
-            {props.tithi ? (
-              <>
-                <span style={{ color: accentColor }}>{getTraditionSymbol(tradition)}</span>
-                <span>{props.tithi}</span>
-              </>
-            ) : (
-              <span>{dateLabel}</span>
-            )}
-          </div>
-          <span>{dateLabel}</span>
-        </div>
-
-        <div className="flex h-[140px] items-center px-4 py-3">
-          <div className="flex w-[60%] items-center justify-center">
-            <MandalaProgress completedCount={completedCount} accentColor={accentColor} tradition={tradition} />
-          </div>
-          <div className="flex w-[40%] items-center justify-center">
-            <HavanFire completedCount={completedCount} />
-          </div>
-        </div>
-
-        <AnimatePresence initial={false}>
-          {shouldCollapse ? (
-            <motion.button
-              key="collapsed"
-              type="button"
-              onClick={() => setIsExpanded(true)}
-              className="flex h-11 w-full items-center justify-between px-4 text-left"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 44, opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="h-7 w-7">
-                  <MandalaProgress completedCount={5} accentColor={accentColor} tradition={tradition} />
-                </div>
-                <span className="text-sm font-semibold" style={{ color: 'var(--brand-ink)' }}>Sadhana Complete</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🔥</span>
-                <span className="text-sm font-semibold" style={{ color: accentColor }}>5/5</span>
-              </div>
-            </motion.button>
-          ) : (
+        {rows.map((row, i) => (
+          <div
+            key={row.id}
+            className="flex-1 h-[3px] rounded-full overflow-hidden"
+            style={{ background: 'rgba(197,160,89,0.13)' }}
+          >
             <motion.div
-              key="expanded"
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28 }}
-            >
-              {rows.map((row, index) => (
-                <Link
-                  key={row.id}
-                  href={row.href}
-                  className="flex h-[52px] items-center justify-between px-4"
-                  style={{ borderTop: index === 0 ? '1px solid var(--card-border)' : '1px solid var(--card-border)' }}
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="flex h-6 w-6 items-center justify-center text-[20px]">{row.icon}</div>
-                    <div className="min-w-0">
-                      <div className="text-[13px] font-semibold" style={{ color: 'var(--brand-ink)' }}>{row.label}</div>
-                      <div className="truncate text-[11px]" style={{ color: 'var(--brand-muted)' }}>{row.sublabel}</div>
+              className="h-full rounded-full"
+              style={{ background: row.done ? accentColor : 'transparent' }}
+              initial={{ width: '0%' }}
+              animate={{ width: row.done ? '100%' : '0%' }}
+              transition={{ duration: 0.55, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+            />
+          </div>
+        ))}
+        <span
+          className="shrink-0 text-[10px] font-bold tabular-nums ml-1"
+          style={{ color: accentColor, opacity: 0.72 }}
+        >
+          {completedCount}/5
+        </span>
+      </div>
+
+      {/* ── Activity rows — borderless, merged with page ─────────────────────── */}
+      <AnimatePresence initial={false}>
+        {(!allDone || isExpanded) ? (
+          <motion.div
+            key="expanded"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            style={{ overflow: 'hidden' }}
+          >
+            {rows.map((row, index) => (
+              <Link
+                key={row.id}
+                href={row.href}
+                className="flex h-[46px] items-center justify-between transition-opacity active:opacity-70"
+                style={{
+                  borderTop: index > 0 ? '1px solid rgba(197,160,89,0.07)' : 'none',
+                }}
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="text-[17px] shrink-0">{row.icon}</span>
+                  <div className="min-w-0">
+                    <div
+                      className="text-[13px] font-semibold leading-tight"
+                      style={{ color: 'var(--brand-ink)' }}
+                    >
+                      {row.label}
+                    </div>
+                    <div
+                      className="truncate text-[11px] leading-tight mt-[1px]"
+                      style={{ color: 'var(--brand-muted)' }}
+                    >
+                      {row.sublabel}
                     </div>
                   </div>
-                  <div className="ml-3 shrink-0">{row.right}</div>
-                </Link>
-              ))}
-              {allDone && (
-                <motion.button
-                  type="button"
-                  onClick={() => setIsExpanded(false)}
-                  className="flex h-11 w-full items-center justify-center border-t text-[12px] font-semibold"
-                  style={{ borderColor: 'var(--card-border)', color: accentColor }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  Collapse complete state
-                </motion.button>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+                </div>
+                <div className="ml-3 shrink-0">{row.right}</div>
+              </Link>
+            ))}
+
+            {allDone && (
+              <motion.button
+                type="button"
+                onClick={() => setIsExpanded(false)}
+                className="flex h-9 w-full items-center justify-center mt-2 text-[11px] font-semibold rounded-2xl"
+                style={{ color: accentColor, background: `${accentColor}0e` }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+              >
+                Collapse ↑
+              </motion.button>
+            )}
+          </motion.div>
+        ) : (
+          <motion.button
+            key="collapsed"
+            type="button"
+            onClick={() => setIsExpanded(true)}
+            className="flex h-10 w-full items-center justify-center text-[12px] font-semibold rounded-2xl"
+            style={{ color: accentColor, background: `${accentColor}0e` }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 40, opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22 }}
+          >
+            🔥 Sadhana complete — tap to expand
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
