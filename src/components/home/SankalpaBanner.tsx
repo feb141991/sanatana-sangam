@@ -8,15 +8,19 @@ interface Props {
   onComplete: () => void;
 }
 
+// 8 dots — fills proportionally to show journey progress at a glance.
+const DOT_COUNT = 8;
+
 export default function SankalpaBanner({ sankalpa, onSet, onComplete }: Props) {
+  // ── Empty state ────────────────────────────────────────────────────────────
   if (!sankalpa) {
     return (
-      <div 
+      <div
         onClick={onSet}
-        className="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer transition-transform active:scale-[0.98] mt-6"
-        style={{ 
-          background: 'rgba(197, 160, 89, 0.08)', 
-          border: '1px solid rgba(197, 160, 89, 0.2)' 
+        className="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer transition-transform active:scale-[0.98] mt-4"
+        style={{
+          background: 'rgba(197, 160, 89, 0.08)',
+          border: '1px solid rgba(197, 160, 89, 0.2)',
         }}
       >
         <div className="flex items-center gap-3">
@@ -28,58 +32,76 @@ export default function SankalpaBanner({ sankalpa, onSet, onComplete }: Props) {
     );
   }
 
-  // Calculate days elapsed and progress
-  const today = new Date();
-  const start = new Date(sankalpa.start_date);
-  const end = new Date(sankalpa.end_date);
-  
-  const totalMs = end.getTime() - start.getTime();
-  const targetDays = Math.max(1, Math.floor(totalMs / (1000 * 60 * 60 * 24)));
-  
-  const elapsedMs = today.getTime() - start.getTime();
-  const elapsedDays = Math.max(0, Math.floor(elapsedMs / (1000 * 60 * 60 * 24)));
-  
-  const remainingDays = Math.max(0, targetDays - elapsedDays);
+  // ── Progress maths ─────────────────────────────────────────────────────────
+  const today      = new Date();
+  const start      = new Date(sankalpa.start_date);
+  const end        = new Date(sankalpa.end_date);
+  const targetDays = Math.max(1, Math.floor((end.getTime() - start.getTime()) / 86_400_000));
+  const elapsedDays = Math.max(0, Math.floor((today.getTime() - start.getTime()) / 86_400_000));
+  const remainingDays   = Math.max(0, targetDays - elapsedDays);
   const progressPercent = Math.min(100, Math.max(0, (elapsedDays / targetDays) * 100));
+  const filledDots      = Math.round((progressPercent / 100) * DOT_COUNT);
 
-  const meta = getTraditionMeta(sankalpa.tradition);
+  const meta        = getTraditionMeta(sankalpa.tradition);
   const accentColor = meta?.accentColour || 'var(--brand-primary)';
 
   return (
-    <div className="rounded-3xl p-5 border shadow-sm relative overflow-hidden mt-6" 
-         style={{ background: 'var(--surface-soft)', borderColor: 'var(--border-subtle)' }}>
-      {/* Background progress bar hint */}
-      <div 
-        className="absolute bottom-0 left-0 h-1 transition-all duration-1000"
-        style={{ width: `${progressPercent}%`, background: accentColor, opacity: 0.6 }}
-      />
-      
-      <div className="flex justify-between items-start mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: accentColor }}>
-          🌅 Sankalpa
-        </span>
-        <span className="text-[10px] font-medium tracking-wide text-muted-foreground uppercase">
-          {remainingDays} days left
-        </span>
-      </div>
-      
-      <p className="text-[15px] font-serif leading-snug line-clamp-2 theme-ink mb-4">
-        &ldquo;{sankalpa.text}&rdquo;
+    // ── Compact pill — same visual weight as the empty-state row ─────────────
+    <div
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl mt-4 transition-transform active:scale-[0.98]"
+      style={{
+        background: 'rgba(197, 160, 89, 0.07)',
+        border: '1px solid rgba(197, 160, 89, 0.18)',
+      }}
+    >
+      {/* Icon */}
+      <span className="text-base shrink-0" aria-hidden="true">🌅</span>
+
+      {/* Sankalpa text — 1 line, truncated */}
+      <p
+        className="flex-1 text-[13px] font-serif truncate theme-ink min-w-0"
+        title={sankalpa.text}
+      >
+        {sankalpa.text}
       </p>
-      
-      <div className="flex items-center justify-between mt-4">
-        <div className="h-1.5 flex-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mr-4">
-          <div className="h-full rounded-full transition-all" style={{ width: `${progressPercent}%`, background: accentColor }} />
-        </div>
-        
-        <button 
-          onClick={onComplete}
-          className="px-4 py-1.5 rounded-full text-xs font-semibold border transition-transform active:scale-[0.98]"
-          style={{ borderColor: accentColor, color: accentColor, background: `${accentColor}11` }}
-        >
-          ✓ Complete
-        </button>
+
+      {/* Progress dots */}
+      <div className="flex items-center gap-[3px] shrink-0" aria-label={`${Math.round(progressPercent)}% complete`}>
+        {Array.from({ length: DOT_COUNT }).map((_, i) => (
+          <span
+            key={i}
+            className="rounded-full transition-all duration-500"
+            style={{
+              width:      i < filledDots ? '6px' : '5px',
+              height:     i < filledDots ? '6px' : '5px',
+              background: i < filledDots ? accentColor : 'rgba(197,160,89,0.22)',
+              boxShadow:  i < filledDots ? `0 0 4px ${accentColor}66` : 'none',
+            }}
+          />
+        ))}
       </div>
+
+      {/* Days remaining */}
+      <span
+        className="text-[10px] font-semibold tracking-wide shrink-0 tabular-nums"
+        style={{ color: accentColor, opacity: 0.8 }}
+      >
+        {remainingDays}d
+      </span>
+
+      {/* Complete button — icon only, minimal footprint */}
+      <button
+        onClick={e => { e.stopPropagation(); onComplete(); }}
+        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform active:scale-90"
+        style={{
+          background: `${accentColor}18`,
+          border: `1px solid ${accentColor}44`,
+        }}
+        title="Mark Sankalpa complete"
+        aria-label="Mark Sankalpa complete"
+      >
+        <span style={{ fontSize: '11px', color: accentColor }}>✓</span>
+      </button>
     </div>
   );
 }
