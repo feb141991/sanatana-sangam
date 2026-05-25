@@ -53,6 +53,7 @@
     "react-leaflet": "^4.2.1",
     "socket.io-client": "^4.8.3",
     "tailwind-merge": "^2.4.0",
+    "twilio": "^6.0.2",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

@@ -145,6 +145,12 @@ function LoginForm() {
     >
       🍎 Continue with Apple
     </button>
+    <button
+      type="button"
+      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-[#25D366] bg-[#25D366] py-3 text-sm font-medium text-white hover:bg-[#128C7E] transition-colors"
+    >
+      <span className="text-lg">💬</span> Continue with WhatsApp
+    </button>
   </div>
   <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>

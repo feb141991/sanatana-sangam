@@ -290,13 +290,20 @@ export default function SignupPage() {
       </svg>
       Continue with Google
     </button>
-    <button
-      type="button"
-      onClick={() => handleOAuth('apple')}
-      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-800 bg-black py-3 text-sm font-medium text-white hover:bg-gray-900"
-    >
-      🍎 Continue with Apple
-    </button>
+      <button
+        type="button"
+        onClick={() => handleOAuth('apple')}
+        className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-800 bg-black py-3 text-sm font-medium text-white hover:bg-gray-900"
+      >
+        🍎 Continue with Apple
+      </button>
+      <button
+        type="button"
+        onClick={() => router.push('/whatsapp-login')}
+        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#25D366] text-white py-3 text-sm font-medium hover:bg-[#128C7E] transition-colors"
+      >
+        <span className="text-lg">💬</span> Continue with WhatsApp
+      </button>
   </div>
   <div className="space-y-6">
               {step === 1 ? (

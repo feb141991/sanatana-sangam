@@ -17,7 +17,8 @@ import { AsyncStateCard, EmptyState } from '@/components/ui';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
-
+import JoinMandaliFlow from './JoinMandaliFlow';
+import SeekersNearYou from './SeekersNearYou';
 type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
 type Props = {
@@ -1124,7 +1125,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const visibleMembers = data.members.filter((member) => !hiddenAuthorIds.has(member.id));
 
   if (!liveProfile?.city || !liveProfile?.mandali_id) {
-    return <NoMandaliPrompt userId={userId} />;
+    return <JoinMandaliFlow userId={userId} />;
   }
 
   const mandali    = liveProfile?.mandalis;
@@ -1457,7 +1458,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
           {/* Nearby tab content */}
           {nearbyTab === 'members' && (
-            <MembersTab members={visibleMembers} userId={userId} />
+            <>
+              <MembersTab members={visibleMembers} userId={userId} />
+              <SeekersNearYou userId={userId} profile={liveProfile as any} />
+            </>
           )}
           {nearbyTab === 'events' && (
             <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
