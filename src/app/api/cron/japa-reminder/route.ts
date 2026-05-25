@@ -27,14 +27,14 @@ export async function GET(request: Request) {
   webpush.setVapidDetails('mailto:support@sanatansangam.com', vapidPublicKey, vapidPrivateKey);
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  // Use UTC date — cron fires at 02:00 UTC (07:30 IST, a natural morning window)
   const todayDateStr = new Date().toISOString().slice(0, 10);
-  const now = new Date();
 
   try {
-    // Fetch users with japa reminders enabled
+    // Fetch all users with japa reminders enabled
     const { data: users, error: usersError } = await supabase
       .from('profiles')
-      .select('id, timezone, japa_reminder_time, japa_reminder_enabled')
+      .select('id')
       .eq('japa_reminder_enabled', true);
 
     if (usersError) throw usersError;
@@ -42,20 +42,6 @@ export async function GET(request: Request) {
     const notified: string[] = [];
 
     for (const user of users || []) {
-      const userTimezone = user.timezone || 'UTC';
-      const [remHour] = (user.japa_reminder_time || '07:00').split(':').map(Number);
-
-      // Get current hour in user's timezone
-      let currentHour: number;
-      try {
-        const userTimeStr = now.toLocaleString('en-US', { timeZone: userTimezone });
-        currentHour = new Date(userTimeStr).getHours();
-      } catch {
-        currentHour = now.getUTCHours();
-      }
-
-      if (currentHour !== remHour) continue;
-
       // Skip if japa already done today
       const { data: sadhana } = await supabase
         .from('daily_sadhana')

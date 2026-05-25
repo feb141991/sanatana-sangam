@@ -21,6 +21,6 @@
     { "path": "/api/cron/vrat-reminder",            "schedule": "30 4 * * *"  },
     { "path": "/api/cron/materialize-occurrences", "schedule": "0 2 * * *" },
     { "path": "/api/quiz/generate-daily",          "schedule": "15 0 * * *" },
-    { "path": "/api/cron/japa-reminder", "schedule": "0 * * * *" }
+    { "path": "/api/cron/japa-reminder", "schedule": "0 2 * * *" }
   ]
 }
