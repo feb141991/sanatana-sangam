@@ -1312,6 +1312,12 @@ function ChooseMantraScreen({
   const sub   = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C5A059' : '#7A4A1E';
 
+  const isPersonalSelected = selected === CUSTOM_MANTRA_ID;
+  // Derive confirm button label
+  const confirmLabel = isPersonalSelected && !customMantra
+    ? 'Add Your Mantra →'
+    : 'Begin Practice →';
+
   return (
     <motion.div
       className="flex flex-col fixed inset-0 z-[100] overflow-y-auto"
@@ -1334,39 +1340,74 @@ function ChooseMantraScreen({
         </div>
       </div>
 
+      {/* ── Personal mantra card ─────────────────────────────────────────── */}
       <div className="px-5 pb-3">
-        <button
+        <motion.button
           type="button"
-          onClick={onOpenCustom}
-          className="w-full rounded-2xl border p-4 text-left transition-all active:scale-[0.99]"
+          whileTap={{ scale: 0.985 }}
+          onClick={() => {
+            if (customMantra) {
+              // Has a saved mantra → tap selects it
+              onSelect(CUSTOM_MANTRA_ID);
+            } else {
+              // No mantra yet → open the add sheet
+              onOpenCustom();
+            }
+          }}
+          className="w-full rounded-2xl border p-4 text-left transition-all"
           style={{
-            background: isDark ? 'rgba(197, 160, 89,0.08)' : 'rgba(122,74,30,0.06)',
-            borderColor: `${amber}35`,
+            background: isPersonalSelected
+              ? (isDark ? 'rgba(197,160,89,0.12)' : 'rgba(122,74,30,0.09)')
+              : (isDark ? 'rgba(197,160,89,0.07)' : 'rgba(122,74,30,0.05)'),
+            borderColor: isPersonalSelected ? `${amber}55` : `${amber}28`,
+            boxShadow: isPersonalSelected ? `0 0 0 1.5px ${amber}38` : 'none',
           }}
         >
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em]" style={{ color: amber }}>
-                {customMantra ? 'Edit personal mantra' : 'Add personal mantra'}
+                {customMantra ? 'Personal mantra' : 'Add personal mantra'}
               </p>
-              <p className="mt-1 text-sm font-semibold" style={{ color: text }}>
+              <p className="mt-1 text-sm font-semibold truncate" style={{ color: text }}>
                 {customMantra?.label || 'Use your own mantra in mala practice'}
               </p>
-              <p className="mt-1 text-[11px] leading-5" style={{ color: sub }}>
-                {customMantra?.text || 'Add a name and mantra text. It will animate in practice and save into your mala sessions.'}
+              <p className="mt-0.5 text-[11px] leading-5 truncate" style={{ color: sub }}>
+                {customMantra?.text || 'Tap to add a name and mantra text'}
               </p>
             </div>
-            <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ background: `${amber}18`, color: amber }}>
-              Personal
-            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              {isPersonalSelected && (
+                <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: amber }}>
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </div>
+              )}
+              {customMantra && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onOpenCustom(); }}
+                  className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                  style={{ background: `${amber}18`, color: amber }}
+                >
+                  Edit
+                </button>
+              )}
+              {!customMantra && (
+                <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold" style={{ background: `${amber}18`, color: amber }}>
+                  Personal
+                </span>
+              )}
+            </div>
           </div>
-        </button>
+        </motion.button>
       </div>
 
-      {/* Mantra list */}
+      {/* Mantra list — preset mantras only (no custom card duplication) */}
       <div className="flex-1 px-5 space-y-3 overflow-y-auto pb-6">
         {mantras.map(m => {
-          const isSelected = selected === m.id;
+          // When personal is selected, deselect all preset mantras visually
+          const isSelected = !isPersonalSelected && selected === m.id;
           return (
             <motion.button
               key={m.id}
@@ -1406,7 +1447,7 @@ function ChooseMantraScreen({
       {/* Confirm */}
       <div className="px-5 pb-16 pt-2">
         <motion.button
-          onClick={onConfirm}
+          onClick={isPersonalSelected && !customMantra ? onOpenCustom : onConfirm}
           whileTap={{ scale: 0.97 }}
           className="w-full py-4 rounded-2xl font-bold text-[15px]"
           style={{
@@ -1415,7 +1456,7 @@ function ChooseMantraScreen({
             boxShadow: '0 4px 24px rgba(197, 160, 89,0.25)',
           }}
         >
-          Begin Practice →
+          {confirmLabel}
         </motion.button>
       </div>
     </motion.div>
@@ -1594,63 +1635,60 @@ function SoundsSheet({
 }
 
 // ── Completion Ceremony ───────────────────────────────────────────────────────
+const CEREMONY_SUBTITLES: Record<string, string> = {
+  hindu: 'माला पूर्ण हुई',
+  sikh: 'Simran Complete',
+  buddhist: 'Meditation Complete',
+  jain: 'Japa Complete',
+};
+const CEREMONY_SYMBOLS: Record<string, string> = {
+  hindu: 'ॐ', sikh: 'ੴ', buddhist: '☸', jain: '☮',
+};
+
 function JapaCompletionCeremony({
   tradition,
   rounds,
   totalBeads,
   mantraName,
   totalTimeSeconds,
-  onDismiss,
+  isDark,
+  accentColor,
+  insight,
+  insightLoading,
+  onContinue,
+  onDone,
+  onShare,
 }: {
   tradition: string;
   rounds: number;
   totalBeads: number;
   mantraName: string;
   totalTimeSeconds: number;
-  onDismiss: () => void;
+  isDark: boolean;
+  accentColor: string;
+  insight: string | null;
+  insightLoading: boolean;
+  onContinue: () => void;
+  onDone: () => void;
+  onShare: () => void;
 }) {
-  const meta = getTraditionMeta(tradition);
-  const accentColor = meta.accentColour;
   const mins = Math.floor(totalTimeSeconds / 60);
   const secs = totalTimeSeconds % 60;
 
-  const ceremony = {
-    hindu: {
-      background: 'linear-gradient(180deg, #FF6B00 0%, #1a0a00 100%)',
-      text: 'rgba(255,244,226,0.98)',
-      sub: 'rgba(255,224,188,0.82)',
-      center: 'ॐ',
-      subtitle: 'माला पूर्ण हुई',
-    },
-    sikh: {
-      background: 'linear-gradient(180deg, #001a4d 0%, #000d26 100%)',
-      text: 'rgba(240,247,255,0.98)',
-      sub: 'rgba(197,222,255,0.82)',
-      center: 'ੴ',
-      subtitle: 'Simran Complete',
-    },
-    buddhist: {
-      background: 'linear-gradient(180deg, #2d0a1a 0%, #0d0309 100%)',
-      text: 'rgba(255,241,235,0.98)',
-      sub: 'rgba(240,211,195,0.82)',
-      center: '☸',
-      subtitle: 'Meditation Complete',
-    },
-    jain: {
-      background: 'linear-gradient(180deg, #fffdf5 0%, #f0e8d0 100%)',
-      text: '#2D1F0E',
-      sub: 'rgba(74,54,28,0.72)',
-      center: '☮',
-      subtitle: 'Japa Complete',
-    },
-  } as const;
+  // Stays within the app's established palette — no jarring gradient overrides
+  const bg      = isDark ? 'rgba(6,4,10,0.97)'         : 'rgba(248,244,234,0.97)';
+  const cardBg  = isDark ? 'rgba(255,255,255,0.05)'     : 'rgba(0,0,0,0.04)';
+  const border  = isDark ? 'rgba(197,160,89,0.18)'      : 'rgba(197,160,89,0.22)';
+  const text    = isDark ? 'rgba(245,232,210,0.97)'     : '#2D1F0E';
+  const sub     = isDark ? 'rgba(205,178,130,0.65)'     : 'rgba(96,66,34,0.60)';
 
-  const theme = ceremony[(tradition as keyof typeof ceremony)] ?? ceremony.hindu;
+  const centerSymbol = CEREMONY_SYMBOLS[tradition] ?? 'ॐ';
+  const subtitle     = CEREMONY_SUBTITLES[tradition]  ?? 'Practice Complete';
 
   return (
     <motion.div
-      className="fixed inset-0 z-[2200] flex flex-col items-center justify-center px-6 py-10"
-      style={{ background: theme.background }}
+      className="fixed inset-0 z-[2200] flex flex-col items-center justify-center px-6 py-10 overflow-y-auto"
+      style={{ background: bg, backdropFilter: 'blur(32px)', WebkitBackdropFilter: 'blur(32px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -1666,51 +1704,53 @@ function JapaCompletionCeremony({
         }
       `}</style>
 
-      {tradition === 'sikh' && (
-        <div aria-hidden="true" className="absolute top-14 left-1/2 -translate-x-1/2" style={{ opacity: 0.3 }}>
-          <svg width="84" height="84" viewBox="0 0 84 84" fill="none">
-            <path d="M42 8 L46 24 L62 28 L46 32 L42 76 L38 32 L22 28 L38 24 Z" stroke="white" strokeWidth="3" />
-            <circle cx="42" cy="28" r="14" stroke="white" strokeWidth="3" />
-          </svg>
-        </div>
-      )}
+      {/* Ambient accent glow behind symbol */}
+      <div
+        className="pointer-events-none absolute rounded-full blur-[80px]"
+        style={{
+          width: 260, height: 260,
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -72%)',
+          background: `${accentColor}22`,
+        }}
+      />
 
-      <div className="relative flex flex-col items-center justify-center text-center">
+      <div className="relative flex flex-col items-center justify-center text-center w-full max-w-md">
+        {/* Lotus petals for Hindu */}
         {tradition === 'hindu' && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {Array.from({ length: 8 }).map((_, i) => {
               const angle = (i / 8) * Math.PI * 2;
-              const x = Math.cos(angle) * 92;
-              const y = Math.sin(angle) * 92;
+              const x = Math.cos(angle) * 88;
+              const y = Math.sin(angle) * 88;
               return (
                 <motion.svg
                   key={`lotus-petal-${i}`}
-                  width="28"
-                  height="44"
-                  viewBox="0 0 28 44"
+                  width="24" height="38" viewBox="0 0 28 44"
                   className="absolute"
                   style={{ transform: `translate(${x}px, ${y}px) rotate(${(angle * 180) / Math.PI + 90}deg)` }}
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 0.6, scale: 1 }}
-                  transition={{ delay: 0.2 + i * 0.08, duration: 0.55 }}
+                  animate={{ opacity: 0.45, scale: 1 }}
+                  transition={{ delay: 0.2 + i * 0.07, duration: 0.5 }}
                 >
-                  <path d="M14 2 C24 10 24 28 14 42 C4 28 4 10 14 2 Z" fill="rgba(255,245,230,0.25)" stroke="rgba(255,245,230,0.45)" />
+                  <path d="M14 2 C24 10 24 28 14 42 C4 28 4 10 14 2 Z"
+                    fill={`${accentColor}30`} stroke={`${accentColor}55`} strokeWidth="1" />
                 </motion.svg>
               );
             })}
           </div>
         )}
 
+        {/* Expanding rings for Buddhist */}
         {tradition === 'buddhist' && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             {[0, 1, 2].map((ring) => (
               <div
-                key={`buddhist-ring-${ring}`}
+                key={`ring-${ring}`}
                 className="absolute rounded-full border"
                 style={{
-                  width: 120 + ring * 48,
-                  height: 120 + ring * 48,
-                  borderColor: `${accentColor}55`,
+                  width: 110 + ring * 44, height: 110 + ring * 44,
+                  borderColor: `${accentColor}44`,
                   animation: `ceremony-ring-expand ${2.8 + ring * 0.4}s ease-out ${ring * 0.22}s infinite`,
                 }}
               />
@@ -1718,89 +1758,124 @@ function JapaCompletionCeremony({
           </div>
         )}
 
+        {/* Central symbol */}
         <motion.div
-          initial={{ scale: 0.6, opacity: 0 }}
+          initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.2, ease: 'easeOut' }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           style={{
             fontFamily: 'var(--font-devanagari), var(--font-serif), system-ui',
-            fontSize: tradition === 'jain' ? '5rem' : '6rem',
+            fontSize: '5.5rem',
             lineHeight: 1,
             color: accentColor,
             position: 'relative',
             zIndex: 1,
-            animation: tradition === 'buddhist' ? 'dharma-wheel-rotate 8s linear infinite' : undefined,
+            filter: `drop-shadow(0 0 24px ${accentColor}55)`,
+            animation: tradition === 'buddhist' ? 'dharma-wheel-rotate 10s linear infinite' : undefined,
           }}
         >
-          {theme.center}
+          {centerSymbol}
         </motion.div>
 
-        <div className="mt-5 max-w-md relative z-10">
+        <motion.div
+          className="mt-4 relative z-10"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           {tradition === 'sikh' && (
-            <p className="text-[1.35rem] font-semibold mb-2" style={{ color: theme.text, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>
+            <p className="text-[1.2rem] font-semibold mb-1"
+              style={{ color: accentColor, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>
               ਵਾਹਿਗੁਰੂ
             </p>
           )}
-          <p className="text-[2rem] font-semibold" style={{ color: theme.text, fontFamily: 'var(--font-serif)' }}>
-            {theme.subtitle}
+          <p className="text-[1.75rem] font-semibold" style={{ color: text, fontFamily: 'var(--font-serif)' }}>
+            {subtitle}
           </p>
-        </div>
+        </motion.div>
       </div>
 
+      {/* Stats card */}
       <motion.div
-        initial={{ opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.6, ease: 'easeOut' }}
-        className="mt-10 w-full max-w-md rounded-[2rem] border px-5 py-5"
-        style={{
-          background: tradition === 'jain' ? 'rgba(255,255,255,0.52)' : 'rgba(8,6,10,0.28)',
-          borderColor: tradition === 'jain' ? 'rgba(45,31,14,0.12)' : 'rgba(255,255,255,0.14)',
-          backdropFilter: 'blur(20px)',
-        }}
+        transition={{ delay: 0.55, duration: 0.5 }}
+        className="mt-8 w-full max-w-md rounded-[1.75rem] border px-5 py-5"
+        style={{ background: cardBg, borderColor: border, backdropFilter: 'blur(20px)' }}
       >
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2.5 mb-4">
           {[
-            { label: 'Rounds completed', value: `${rounds}` },
-            { label: 'Total beads', value: `${totalBeads}` },
-            { label: 'Time', value: `${mins}m ${secs}s` },
+            { label: 'Rounds', value: `${rounds}` },
+            { label: 'Total beads', value: `${totalBeads.toLocaleString('en-IN')}` },
+            { label: 'Duration', value: `${mins}m ${secs < 10 ? '0' : ''}${secs}s` },
             { label: 'Mantra', value: mantraName },
           ].map((stat) => (
-            <div key={stat.label} className="rounded-2xl px-4 py-3" style={{ background: tradition === 'jain' ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.05)' }}>
-              <p className="text-[10px] uppercase tracking-[0.16em]" style={{ color: theme.sub }}>{stat.label}</p>
-              <p className="mt-2 text-base font-semibold leading-snug" style={{ color: theme.text }}>{stat.value}</p>
+            <div key={stat.label} className="rounded-2xl px-3.5 py-3" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }}>
+              <p className="text-[9px] uppercase tracking-[0.16em]" style={{ color: sub }}>{stat.label}</p>
+              <p className="mt-1.5 text-[15px] font-semibold leading-snug truncate" style={{ color: text }}>{stat.value}</p>
             </div>
           ))}
         </div>
+
+        {/* Dharma Mitra insight */}
+        <div
+          className="rounded-2xl px-4 py-3 mt-1"
+          style={{ background: `${accentColor}0d`, border: `1px solid ${accentColor}22` }}
+        >
+          <p className="text-[9px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: accentColor }}>
+            Dharma Mitra
+          </p>
+          {insightLoading ? (
+            <div className="flex items-center gap-2">
+              <motion.div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: accentColor }}
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+              />
+              <p className="text-[12px]" style={{ color: sub }}>Receiving insight…</p>
+            </div>
+          ) : insight ? (
+            <p className="text-[12px] leading-relaxed" style={{ color: text, opacity: 0.88 }}>{insight}</p>
+          ) : (
+            <p className="text-[12px] leading-relaxed" style={{ color: sub }}>
+              {rounds >= 3
+                ? `${rounds} malas — a sacred triad. The vibration of ${totalBeads.toLocaleString('en-IN')} names now lives in your breath.`
+                : `Each of your ${totalBeads.toLocaleString('en-IN')} beads was a step deeper. The mantra you carried is now woven into this moment.`}
+            </p>
+          )}
+        </div>
       </motion.div>
 
-      <div className="mt-8 flex flex-col items-center gap-4">
+      {/* Action buttons */}
+      <motion.div
+        className="mt-6 w-full max-w-md space-y-3"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.75, duration: 0.4 }}
+      >
         <button
-          onClick={() => triggerSadhanaShare({
-            tradition,
-            type: 'japa',
-            symbol: TRADITION_SYMBOLS[tradition] ?? '🙏',
-            lines: [
-              { text: `${rounds} round${rounds > 1 ? 's' : ''} complete`, size: 64, weight: '700', color: theme.text },
-              { text: mantraName ?? 'Japa Mala', size: 44, weight: '400', color: 'rgba(255,255,255,0.6)' },
-              { text: `${totalBeads.toLocaleString('en-IN')} beads today`, size: 36, weight: '300', color: 'rgba(255,255,255,0.4)' },
-            ],
-          })}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8, padding: '10px 24px',
-            borderRadius: 999, border: `1px solid ${accentColor}44`,
-            background: `${accentColor}18`, color: accentColor, fontSize: 13, fontWeight: 600
-          }}
+          onClick={onContinue}
+          className="w-full py-4 rounded-2xl font-bold text-[15px] transition-transform active:scale-[0.98]"
+          style={{ background: accentColor, color: isDark ? '#160F08' : '#fffaf2' }}
         >
-          🔗 Share practice
+          🔄 Another mala
         </button>
         <button
-          onClick={onDismiss}
-          className="rounded-full px-8 py-4 text-[15px] font-semibold transition-transform active:scale-[0.98]"
-          style={{ background: accentColor, color: tradition === 'jain' ? '#fffaf2' : '#160F08' }}
+          onClick={onDone}
+          className="w-full py-3.5 rounded-2xl font-semibold text-[14px] border transition-transform active:scale-[0.98]"
+          style={{ background: cardBg, borderColor: border, color: text }}
         >
-          🙏 Continue
+          🏠 Done for today
         </button>
-      </div>
+        <button
+          onClick={onShare}
+          className="w-full py-2.5 rounded-full text-[13px] font-semibold"
+          style={{ color: accentColor, opacity: 0.85 }}
+        >
+          🔗 Share this practice
+        </button>
+      </motion.div>
     </motion.div>
   );
 }
@@ -2172,6 +2247,9 @@ export default function JapaClient({
   const [paused,       setPaused]       = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const [showStopSheet, setShowStopSheet] = useState(false);
+  // ── Dharma Mitra completion insight ──────────────────────────────────────
+  const [completionInsight,        setCompletionInsight]        = useState<string | null>(null);
+  const [completionInsightLoading, setCompletionInsightLoading] = useState(false);
   const [soundId,      setSoundId]      = useState<SoundId>(() => {
     if (typeof window === 'undefined') return 'silence';
     return (localStorage.getItem(STORAGE_SOUND) as SoundId) || 'silence';
@@ -2182,6 +2260,36 @@ export default function JapaClient({
   const [pulsing,      setPulsing]      = useState(false);
 
   useEffect(() => { beadCountRef.current = beadCount; }, [beadCount]);
+
+  // ── Fetch Dharma Mitra insight when session completes ────────────────────
+  useEffect(() => {
+    if (!showComplete) return;
+    setCompletionInsight(null);
+    setCompletionInsightLoading(true);
+
+    const timeOfDay = getSpiritualTimeWindow(new Date());
+    const mins = Math.floor(duration / 60);
+
+    fetch('/api/japa/completion-insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tradition,
+        mantraName: currentMantra.name,
+        rounds: roundsDone,
+        totalBeads: roundsDone * TOTAL_BEADS,
+        durationMinutes: mins,
+        timeOfDay,
+      }),
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((data: { insight?: string } | null) => {
+        if (data?.insight) setCompletionInsight(data.insight);
+      })
+      .catch(() => { /* keep fallback text */ })
+      .finally(() => setCompletionInsightLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showComplete]);
 
   const [duration, setDuration] = useState(0);
   const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -2451,7 +2559,27 @@ export default function JapaClient({
 
   const handleContinueAfterComplete = async () => {
     await saveSession(roundsDone, beadCount);
+    setCompletionInsight(null);
     resetPracticeForNextRound();
+  };
+
+  const handleDoneForToday = async () => {
+    await saveSession(roundsDone, beadCount);
+    setCompletionInsight(null);
+    leavePracticeSetup();
+  };
+
+  const handleShareFromComplete = () => {
+    triggerSadhanaShare({
+      tradition,
+      type: 'japa',
+      symbol: TRADITION_SYMBOLS[tradition] ?? '🙏',
+      lines: [
+        { text: `${roundsDone} round${roundsDone > 1 ? 's' : ''} complete`, size: 64, weight: '700', color: '#F5E8D0' },
+        { text: currentMantra.name ?? 'Japa Mala', size: 44, weight: '400', color: 'rgba(255,255,255,0.6)' },
+        { text: `${(roundsDone * TOTAL_BEADS).toLocaleString('en-IN')} beads`, size: 36, weight: '300', color: 'rgba(255,255,255,0.4)' },
+      ],
+    });
   };
 
   const handleChangeAfterComplete = async () => {
@@ -2503,10 +2631,8 @@ export default function JapaClient({
     () => getJapaMantrasForTradition(tradition),
     [tradition]
   );
-  const selectableMantras = useMemo(
-    () => customMantraCard ? [customMantraCard, ...traditionMantras] : traditionMantras,
-    [customMantraCard, traditionMantras]
-  );
+  // Only show preset mantras in the list — personal card is rendered separately above the list
+  const selectableMantras = useMemo(() => traditionMantras, [traditionMantras]);
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
   const bg      = bgC.bg;
@@ -2790,7 +2916,13 @@ export default function JapaClient({
                 totalBeads={roundsDone * TOTAL_BEADS}
                 mantraName={currentMantra.name}
                 totalTimeSeconds={duration}
-                onDismiss={handleContinueAfterComplete}
+                isDark={isDark}
+                accentColor={meta.accentColour}
+                insight={completionInsight}
+                insightLoading={completionInsightLoading}
+                onContinue={handleContinueAfterComplete}
+                onDone={handleDoneForToday}
+                onShare={handleShareFromComplete}
               />
             )}
           </AnimatePresence>
