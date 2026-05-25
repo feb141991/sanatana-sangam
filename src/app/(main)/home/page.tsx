@@ -17,6 +17,7 @@ import { LIVE_STREAMS } from '@/lib/live-streams';
 import { getPlanById, type GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { Database } from '@/types/database';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 
 export default async function HomePage() {
@@ -79,13 +80,13 @@ export default async function HomePage() {
   );
 
   // Japa streak from today's daily_sadhana record
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localSpiritualDate(profile?.timezone, 4);
   const { data: todaySadhana } = await supabase
     .from('daily_sadhana')
-    .select('streak_count, japa_done')
+    .select('streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done')
     .eq('user_id', user.id)
     .eq('date', today)
-    .single();
+    .maybeSingle();
 
   const twentyEightDaysAgo = new Date();
   twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
@@ -207,7 +208,7 @@ export default async function HomePage() {
       showFirstTimeGuidance={showFirstTimeGuidance}
       japaStreak={todaySadhana?.streak_count ?? 0}
       japaAlreadyDoneToday={(malaSessionsToday?.length ?? 0) > 0}
-      nityaDoneToday={nityaDates.has(today)}
+      nityaDoneToday={Boolean(todaySadhana?.nitya_done) || nityaDates.has(today)}
       practiceHistory={practiceHistory}
       appLanguage={(profile as any)?.app_language ?? 'en'}
       meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
@@ -216,9 +217,11 @@ export default async function HomePage() {
       liveStreams={allStreams}
       isAdmin={profile?.is_admin ?? false}
       sevaScore={(profile as any)?.seva_score ?? 0}
-      pathshalaDoneToday={pathshalaDoneToday}
+      pathshalaDoneToday={Boolean(todaySadhana?.pathshala_done) || pathshalaDoneToday}
       pathshalaLabel={pathshalaLabel}
       pathshalaHref={pathshalaHref}
+      quizDoneToday={Boolean(todaySadhana?.quiz_done)}
+      dharmVeerDoneToday={Boolean(todaySadhana?.dharmveer_done)}
     />
   );
 }

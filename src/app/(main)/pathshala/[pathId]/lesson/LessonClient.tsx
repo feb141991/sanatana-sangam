@@ -11,6 +11,7 @@ import { useSadhana } from '@/contexts/EngineContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { Lesson } from '@/lib/pathshala-lessons';
 import CanonicalReader from '@/components/pathshala/CanonicalReader';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 interface Props {
   userId: string;
@@ -82,6 +83,24 @@ export default function LessonClient({
       if (error) throw error;
       setCompleted(newCompleted);
       const isPathDone = newCompleted.length === totalLessons;
+
+      const today = localSpiritualDate(
+        typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
+        4
+      );
+      void (async () => {
+        try {
+          await supabase
+            .from('daily_sadhana')
+            .upsert(
+              { user_id: userId, date: today, pathshala_done: true },
+              { onConflict: 'user_id,date' }
+            );
+        } catch {
+          // Non-fatal: lesson completion should still succeed locally and in guided progress.
+        }
+      })();
+
       toast.success(isPathDone ? (t('pathCompleted') || 'Path completed!') : (t('lessonComplete') || 'Lesson completed!'));
       if (isPathDone) setShowConfetti(true);
       if (engine) {

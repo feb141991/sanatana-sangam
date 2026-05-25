@@ -61,6 +61,7 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
 import SetSankalpSheet from '@/components/home/SetSankalpSheet';
 import { getTransliteration } from '@/lib/transliteration';
@@ -148,6 +149,8 @@ interface Props {
   pathshalaDoneToday?: boolean;
   pathshalaLabel?:     string;
   pathshalaHref?:      string;
+  quizDoneToday?:      boolean;
+  dharmVeerDoneToday?: boolean;
 }
 
 type DailyDharmaStackState = {
@@ -1035,6 +1038,8 @@ export default function HomeDashboard({
   pathshalaDoneToday = false,
   pathshalaLabel = 'Pathshala',
   pathshalaHref = '/pathshala',
+  quizDoneToday = false,
+  dharmVeerDoneToday = false,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -1069,7 +1074,11 @@ export default function HomeDashboard({
   useEffect(() => {
     try {
       const todayStr = new Date().toISOString().split('T')[0];
-      let nextState: DailyDharmaStackState = { ...EMPTY_DAILY_DHARMA_STACK_STATE };
+      let nextState: DailyDharmaStackState = {
+        ...EMPTY_DAILY_DHARMA_STACK_STATE,
+        quizDone: quizDoneToday,
+        dharmVeerDone: dharmVeerDoneToday,
+      };
 
       const japaRaw = localStorage.getItem('shoonaya-japa-session-today');
       if (japaRaw) {
@@ -1099,9 +1108,13 @@ export default function HomeDashboard({
 
       setDailyDharmaStackState(nextState);
     } catch {
-      setDailyDharmaStackState(EMPTY_DAILY_DHARMA_STACK_STATE);
+      setDailyDharmaStackState({
+        ...EMPTY_DAILY_DHARMA_STACK_STATE,
+        quizDone: quizDoneToday,
+        dharmVeerDone: dharmVeerDoneToday,
+      });
     }
-  }, []);
+  }, [dharmVeerDoneToday, quizDoneToday]);
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
@@ -1929,8 +1942,68 @@ export default function HomeDashboard({
     },
   ];
 
+  // ── Perfect Day Bonus Logic ──
+  const completedCount = 
+    (japaAlreadyDoneToday ? 1 : 0) +
+    (nityaDoneToday ? 1 : 0) +
+    (pathshalaDoneToday ? 1 : 0) +
+    (dailyDharmaStackState.quizDone ? 1 : 0) +
+    (dailyDharmaStackState.dharmVeerDone ? 1 : 0);
+
+  const [perfectDayCeremonyOpen, setPerfectDayCeremonyOpen] = useState(false);
+  const [perfectDayInsight, setPerfectDayInsight] = useState<string | null>(null);
+  const prevCompletedCountRef = useRef(completedCount);
+
+  useEffect(() => {
+    // Detect transition from 4 to 5 completions
+    if (prevCompletedCountRef.current === 4 && completedCount === 5) {
+      const awardPerfectDay = async () => {
+        try {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const res = await fetch('/api/sadhana/perfect-day', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ timeZone: tz }),
+          });
+          const data = await res.json();
+          if (data.awarded) {
+            setPerfectDayCeremonyOpen(true);
+            toast.success('+30 karma · +15 seva — Shuddha Din');
+            
+            // Fetch insight
+            const insightRes = await fetch('/api/sadhana/perfect-day-insight', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tradition: tradition,
+                japaRounds: dailyDharmaStackState.japaRounds,
+                pathshalaPct: dailyDharmaStackState.pathshalaProgress,
+                quizCorrect: 4,
+                streakDays: streak
+              }),
+            });
+            const insightData = await insightRes.json();
+            if (insightData.insight) {
+              setPerfectDayInsight(insightData.insight);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to process perfect day bonus', error);
+        }
+      };
+      awardPerfectDay();
+    }
+    prevCompletedCountRef.current = completedCount;
+  }, [completedCount, tradition, dailyDharmaStackState, streak]);
+
   return (
     <div className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+      <PerfectDayCeremony
+        isOpen={perfectDayCeremonyOpen}
+        onClose={() => setPerfectDayCeremonyOpen(false)}
+        insight={perfectDayInsight}
+        tradition={tradition ?? 'hindu'}
+      />
       <div className="relative">
 
       {/* ── Sacred confetti celebration ── */}

@@ -1095,6 +1095,19 @@ export default function NityaKarmaClient({
       // 1. Write to localStorage immediately — always works, survives navigation
       saveLocalDone(userId, today, stepId);
 
+      void (async () => {
+        try {
+          await supabase
+            .from('daily_sadhana')
+            .upsert(
+              { user_id: userId, date: today, nitya_done: true },
+              { onConflict: 'user_id,date' }
+            );
+        } catch {
+          // Non-fatal: local completion remains the source of truth for this tap.
+        }
+      })();
+
       // 2. Try Supabase (best-effort for cross-device sync).
       //    Use plain insert — upsert with onConflict requires a DB unique constraint
       //    that may not exist. insert is safe: a 23505 unique-violation just means

@@ -16,6 +16,8 @@ import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
+import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -35,6 +37,7 @@ export default function DharmVeerClient({
   meaningLanguage,
 }: DharmVeerClientProps) {
   const router = useRouter();
+  const supabase = createClient();
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const { lang: contextLang } = useLanguage();
@@ -145,6 +148,36 @@ export default function DharmVeerClient({
     
     void readerControls.handlers.share(text, hero.name, link);
   };
+
+  // Mark Dharm Veer done after 30 seconds of active reading — not on page entry.
+  // Timer clears if the user navigates away before 30s elapses.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+        const today = localSpiritualDate(tz, 4);
+        localStorage.setItem(`shoonaya-dharmveer-done-${today}`, 'true');
+        void (async () => {
+          try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+            await supabase
+              .from('daily_sadhana')
+              .upsert(
+                { user_id: user.id, date: today, dharmveer_done: true },
+                { onConflict: 'user_id,date' }
+              );
+          } catch {
+            // Non-fatal: keep local completion even if cross-device sync fails.
+          }
+        })();
+      } catch {
+        // Non-fatal: Dharm Veer progress remains local.
+      }
+    }, 30_000); // 30 s of reading = meaningful engagement
+
+    return () => clearTimeout(timer);
+  }, [supabase]);
 
   return (
     <div 

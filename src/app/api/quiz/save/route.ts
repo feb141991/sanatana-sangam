@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { computeQuizStreak, getStreakMilestone } from '@/lib/quiz-streak';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 // ─── POST /api/quiz/save ──────────────────────────────────────────────────────
 // Persists a daily quiz response. Increments karma_points on the profile.
@@ -18,7 +19,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { question, chosen_index, correct_index, is_correct, tradition, explanation, daily_quiz_id } = body;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const { data: timezoneRow } = await supabase
+      .from('profiles')
+      .select('timezone')
+      .eq('id', user.id)
+      .maybeSingle();
+    const todayStr = localSpiritualDate(timezoneRow?.timezone, 4);
 
     // a. Query past responses (last 92 days to compute streak efficiently)
     const ninetyTwoDaysAgo = new Date();
@@ -58,6 +64,17 @@ export async function POST(req: NextRequest) {
       }, { onConflict: 'user_id,date', ignoreDuplicates: true });
 
     if (insertError) throw insertError;
+
+    try {
+      await supabase
+        .from('daily_sadhana')
+        .upsert(
+          { user_id: user.id, date: todayStr, quiz_done: true },
+          { onConflict: 'user_id,date' }
+        );
+    } catch {
+      // Non-fatal: quiz save should still succeed.
+    }
 
     // Compute karma
     let karmaGain = is_correct ? 10 : 2;

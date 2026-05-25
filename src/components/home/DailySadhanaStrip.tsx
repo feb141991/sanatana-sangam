@@ -179,8 +179,8 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   const pathshalaDone = props.pathshalaDone;
   const japaBeads  = props.japaBeads ?? localState.japaBeads;
   const japaRounds = props.japaRounds ?? localState.japaRounds;
-  const quizDone   = props.quizDone ?? localState.quizDone;
-  const dharmVeerDone = props.dharmVeerDone ?? localState.dharmVeerDone;
+  const quizDone   = Boolean(props.quizDone) || localState.quizDone;
+  const dharmVeerDone = Boolean(props.dharmVeerDone) || localState.dharmVeerDone;
   const pathshalaProgress = clampPercent(props.pathshalaProgress ?? localState.pathshalaProgress);
 
   const rows = useMemo(() => [
