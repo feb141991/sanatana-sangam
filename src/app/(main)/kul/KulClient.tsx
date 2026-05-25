@@ -46,6 +46,7 @@ interface Props {
   kulEvents: KulEvent[];
   myRole: 'guardian' | 'sadhak';
   view?: KulView;
+  memberActivity?: any[];
 }
 
 export default function KulClient({
@@ -60,6 +61,7 @@ export default function KulClient({
   kulEvents: initialEvents,
   myRole: initialRole,
   view: initialView = 'hub',
+  memberActivity = [],
 }: Props) {
   const router = useRouter();
   const { t } = useLanguage();
@@ -308,6 +310,7 @@ export default function KulClient({
             isUploading={isUploading}
             userId={userId}
             onSendMessage={(content) => kulMutations.sendMessage.mutate({ kulId: data?.kul?.id ?? '', content })}
+            memberActivity={memberActivity}
           />
         );
     }

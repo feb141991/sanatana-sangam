@@ -83,11 +83,20 @@ export default async function MandaliPage() {
   // Fetch forum threads for the Sabha scope
   const { data: threadsRaw } = await supabase
     .from('forum_threads')
-    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id)')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id), thread_reactions(reaction_type)')
     .order('is_pinned', { ascending: false })
     .order('updated_at', { ascending: false })
     .limit(60);
-  const threads = filterAuthoredItems(threadsRaw ?? [], 'thread', safetyState);
+  const threads = filterAuthoredItems(threadsRaw ?? [], 'thread', safetyState).map((t: any) => {
+    const reactions: Record<string, number> = { pranam: 0, bhakti: 0, prakas: 0 };
+    t.thread_reactions?.forEach((r: any) => {
+      if (reactions[r.reaction_type] !== undefined) {
+        reactions[r.reaction_type]++;
+      }
+    });
+    const { thread_reactions, ...rest } = t;
+    return { ...rest, reactions };
+  });
   const userTradition: string | null = (profile as any)?.tradition ?? null;
 
   return (

@@ -532,7 +532,10 @@ export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
 export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
 export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
-export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'active_symbol_id'> };
+export type ThreadWithAuthor = ForumThread & {
+  profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'active_symbol_id'>;
+  reactions?: Record<string, number>;
+};
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };
 
 export type ObservanceDefinition = Database['public']['Tables']['observance_definitions']['Row'];

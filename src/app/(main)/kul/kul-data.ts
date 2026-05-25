@@ -88,6 +88,29 @@ export async function getKulPageData() {
     }
   }
 
+  let memberActivity: {
+    user_id: string;
+    japa_done: boolean;
+    nitya_done: boolean;
+    pathshala_done: boolean;
+    quiz_done: boolean;
+    dharmveer_done: boolean;
+    streak_count: number | null;
+  }[] = [];
+
+  if (members.length > 0) {
+    const memberIds = members.map((m: any) => m.user_id).filter(Boolean);
+    if (memberIds.length > 0) {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: activityRows } = await supabase
+        .from('daily_sadhana')
+        .select('user_id, japa_done, nitya_done, pathshala_done, quiz_done, dharmveer_done, streak_count')
+        .in('user_id', memberIds)
+        .eq('date', today);
+      memberActivity = activityRows ?? [];
+    }
+  }
+
   return {
     userId: user.id,
     userName: profile?.full_name ?? profile?.username ?? 'Sanatani',
@@ -99,6 +122,7 @@ export async function getKulPageData() {
     familyMembers,
     kulEvents,
     myRole,
+    memberActivity,
   };
 }
 
