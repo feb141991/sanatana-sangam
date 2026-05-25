@@ -83,7 +83,7 @@ export default async function MandaliPage() {
   // Fetch forum threads for the Sabha scope
   const { data: threadsRaw } = await supabase
     .from('forum_threads')
-    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id)')
     .order('is_pinned', { ascending: false })
     .order('updated_at', { ascending: false })
     .limit(60);

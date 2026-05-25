@@ -2,15 +2,18 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { Plus, MessageSquare, ArrowUp, CheckCircle, Search, X } from 'lucide-react';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
+import { SACRED_RELICS } from '@/lib/relics';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES } from '@/lib/utils';
 import type { ThreadWithAuthor } from '@/types/database';
 
 type FeedFilter = 'active' | 'recent' | 'popular' | 'unanswered' | 'quality';
+type RelicLookup = Record<string, (typeof SACRED_RELICS)[number]>;
 
 const FEED_FILTERS: Array<{ value: FeedFilter; label: string; desc: string }> = [
   { value: 'active',    label: 'Active',      desc: 'Recently updated threads' },
@@ -59,6 +62,10 @@ export default function VichaarClient({
 }) {
   const isGuest = !userId;
   const supabase = useMemo(() => createClient(), []);
+  const relicById = useMemo<RelicLookup>(
+    () => Object.fromEntries(SACRED_RELICS.map((relic) => [relic.id, relic])) as RelicLookup,
+    [],
+  );
   const [threads,     setThreads]     = useState(initialThreads);
   // Smart default: if the user has a tradition with a matching category that has threads, use it
   const defaultTab = useMemo(() => {
@@ -216,7 +223,7 @@ export default function VichaarClient({
         body:      form.body.trim(),
         tags:      form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       })
-      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
+      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id)')
       .single();
 
     if (error) { toast.error(error.message); }
@@ -468,6 +475,7 @@ export default function VichaarClient({
             <ThreadCard
               key={thread.id}
               thread={thread}
+              relicById={relicById}
               viewerId={userId}
               isGuest={isGuest}
               isUpvoted={upvoted.has(thread.id)}
@@ -727,6 +735,7 @@ function ComposeThreadModal({
 
 function ThreadCard({
   thread,
+  relicById,
   viewerId,
   isGuest,
   isUpvoted,
@@ -735,6 +744,7 @@ function ThreadCard({
   onHideAuthor,
 }: {
   thread: ThreadWithAuthor;
+  relicById: RelicLookup;
   viewerId: string;
   isGuest: boolean;
   isUpvoted: boolean;
@@ -744,6 +754,7 @@ function ThreadCard({
 }) {
   const cat     = FORUM_CATEGORIES.find((c) => c.value === thread.category);
   const author  = thread.profiles;
+  const relic = author?.active_symbol_id ? relicById[author.active_symbol_id] : null;
   const initials = getInitials(author?.full_name ?? 'S');
   const activityTime = thread.reply_count > 0 ? thread.updated_at : thread.created_at;
 
@@ -802,8 +813,29 @@ function ThreadCard({
         {/* Footer */}
         <div className="flex items-center justify-between pt-1 border-t border-gray-50">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
-              {initials}
+            <div className="relative shrink-0 w-9 h-9">
+              <div className="w-9 h-9 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
+                {initials}
+              </div>
+              {relic?.imageUrl && (
+                <div
+                  className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center border"
+                  style={{
+                    background: 'var(--bg-primary, #0E0E0F)',
+                    borderColor: 'rgba(197,160,89,0.30)',
+                  }}
+                >
+                  <Image
+                    src={relic.imageUrl}
+                    width={10}
+                    height={10}
+                    alt={relic.name}
+                    title={relic.name}
+                    unoptimized
+                    className="rounded-full"
+                  />
+                </div>
+              )}
             </div>
             <span className="text-xs text-[color:var(--brand-muted)]">{author?.full_name}</span>
             <span className="text-gray-300">·</span>

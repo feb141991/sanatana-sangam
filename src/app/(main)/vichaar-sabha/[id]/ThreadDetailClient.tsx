@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { ArrowLeft, CheckCircle, Send } from 'lucide-react';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
+import { SACRED_RELICS } from '@/lib/relics';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES, SPIRITUAL_LEVELS } from '@/lib/utils';
 import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
@@ -13,6 +15,8 @@ import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
 type ReplyWithAuthor = ForumReply & {
   profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'>;
 };
+
+const RELIC_BY_ID = Object.fromEntries(SACRED_RELICS.map((relic) => [relic.id, relic])) as Record<string, (typeof SACRED_RELICS)[number]>;
 
 export default function ThreadDetailClient({
   thread,
@@ -33,6 +37,7 @@ export default function ThreadDetailClient({
 
   const cat = FORUM_CATEGORIES.find((c) => c.value === threadState.category);
   const author = threadState.profiles;
+  const authorRelic = author?.active_symbol_id ? RELIC_BY_ID[author.active_symbol_id] : null;
 
   async function submitReply() {
     if (!replyBody.trim()) return;
@@ -114,8 +119,29 @@ export default function ThreadDetailClient({
         )}
 
         <div className="flex items-center gap-2 pt-2 border-t border-gray-50 text-sm text-[color:var(--brand-muted)]">
-          <div className="w-7 h-7 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-xs font-bold">
-            {getInitials(author?.full_name ?? 'S')}
+          <div className="relative shrink-0 w-9 h-9">
+            <div className="w-9 h-9 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-xs font-bold">
+              {getInitials(author?.full_name ?? 'S')}
+            </div>
+            {authorRelic?.imageUrl && (
+              <div
+                className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center border"
+                style={{
+                  background: 'var(--bg-primary, #0E0E0F)',
+                  borderColor: 'rgba(197,160,89,0.30)',
+                }}
+              >
+                <Image
+                  src={authorRelic.imageUrl}
+                  width={10}
+                  height={10}
+                  alt={authorRelic.name}
+                  title={authorRelic.name}
+                  unoptimized
+                  className="rounded-full"
+                />
+              </div>
+            )}
           </div>
           <span className="font-medium text-[color:var(--text-muted-warm)]">{author?.full_name}</span>
           <span className="text-gray-300">·</span>
