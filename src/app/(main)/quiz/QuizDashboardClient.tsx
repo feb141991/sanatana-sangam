@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { animate, AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import {
   ChevronRight, CheckCircle2, XCircle,
   Flame, Target, Trophy, Calendar, History,
   Lock, Zap, BookOpen, Star,
+  Check, Sparkles,
 } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
+import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -34,12 +37,28 @@ interface PracticeSession {
   completed_at:      string;
 }
 
+interface DailyQuiz {
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation?: string | null;
+  fact?: string | null;
+  source?: string | null;
+  tradition: string;
+  date: string;
+  daily_quiz_id?: string | null;
+  fallbackLanguage?: string;
+}
+
 interface Props {
   userId:           string;
   userName:         string;
   tradition:        string;
+  timezone:         string;
+  appLanguage:      string;
   isPro:            boolean;
   karmaPoints:      number;
+  todayResponse:    QuizResponse | null;
   initialHistory:   QuizResponse[];
   practiceSessions: PracticeSession[];
 }
@@ -103,13 +122,120 @@ const glassAmber = {
   border: '1px solid rgba(197, 160, 89,0.18)',
 } as const;
 
+const quizCardGlass = 'bg-white/[0.04] border border-white/[0.06] backdrop-blur-sm rounded-2xl';
+
+function getNextDawnCountdown(timeZone: string) {
+  const tz = resolveTimeZone(timeZone);
+  const now = new Date();
+  const currentHour = Number(
+    new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hour12: false }).format(now)
+  );
+  const localDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+
+  const next = new Date(`${localDate}T04:00:00`);
+  if (currentHour >= 4) {
+    next.setDate(next.getDate() + 1);
+  }
+  const diff = Math.max(0, next.getTime() - now.getTime());
+  const hours = Math.floor(diff / 3_600_000);
+  const minutes = Math.floor((diff % 3_600_000) / 60_000);
+  const seconds = Math.floor((diff % 60_000) / 1000);
+  return { diff, label: `${hours}h ${minutes}m ${seconds}s` };
+}
+
+function CountUpScore({ value, color }: { value: number; color: string }) {
+  const mv = useMotionValue(0);
+  const rounded = useTransform(mv, (latest) => Math.round(latest));
+
+  useEffect(() => {
+    const controls = animate(mv, value, {
+      type: 'spring',
+      stiffness: 120,
+      damping: 18,
+      mass: 0.8,
+    });
+    return () => controls.stop();
+  }, [mv, value]);
+
+  return (
+    <motion.span
+      className="text-5xl font-bold"
+      style={{ fontFamily: 'var(--font-serif)', color }}
+    >
+      {rounded}
+    </motion.span>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function QuizDashboardClient({
-  userName, tradition, isPro, karmaPoints, initialHistory, practiceSessions,
+  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, practiceSessions,
 }: Props) {
   const meta = getTraditionMeta(tradition);
   const [proModalOpen, setProModalOpen] = useState(false);
+  const [dailyQuiz, setDailyQuiz] = useState<DailyQuiz | null>(null);
+  const [dailyQuizState, setDailyQuizState] = useState<'loading' | 'error' | 'ready'>('loading');
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(todayResponse?.chosen_index ?? null);
+  const [dailyAnswered, setDailyAnswered] = useState(Boolean(todayResponse));
+  const [completedThisSession, setCompletedThisSession] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [countdownLabel, setCountdownLabel] = useState('');
+  const [quizSaveData, setQuizSaveData] = useState<{ streak?: number; streak_milestone?: string | null } | null>(null);
+  const [transitionDirection, setTransitionDirection] = useState(1);
+  const answerLockedRef = useRef(false);
+  const spiritualToday = localSpiritualDate(timezone, 4);
+  const quizAnsweredKey = `shoonaya-quiz-daily-answered-${tradition}-${appLanguage}-${spiritualToday}`;
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadDailyQuiz() {
+      try {
+        const response = await fetch(`/api/quiz/daily?tradition=${tradition}&date=${spiritualToday}&language=${appLanguage}`);
+        if (!response.ok) throw new Error('Failed to load daily quiz');
+        const data = await response.json();
+        if (!alive) return;
+        setDailyQuiz(data);
+        setDailyQuizState('ready');
+      } catch (error) {
+        console.error('[quiz] failed to load daily quiz', error);
+        if (alive) setDailyQuizState('error');
+      }
+    }
+
+    loadDailyQuiz();
+    return () => {
+      alive = false;
+    };
+  }, [appLanguage, tradition, spiritualToday]);
+
+  useEffect(() => {
+    try {
+      const answeredRaw = localStorage.getItem(quizAnsweredKey);
+      if (answeredRaw !== null && answeredRaw !== '') {
+        setSelectedAnswer(Number(answeredRaw));
+        setDailyAnswered(true);
+      }
+    } catch {
+      // fail open
+    }
+  }, [quizAnsweredKey]);
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      setCountdownLabel(getNextDawnCountdown(timezone).label);
+    };
+
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 1000);
+    return () => window.clearInterval(timer);
+  }, [timezone]);
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -142,6 +268,17 @@ export default function QuizDashboardClient({
     return { total, correct, accuracy, streak, rank, rankMeta, nextRank, practiceTotal, practiceCorrect };
   }, [initialHistory, practiceSessions]);
 
+  const displayStreak = quizSaveData?.streak ?? stats.streak;
+  const effectiveAnswered = dailyAnswered || Boolean(todayResponse);
+  const dailyScorePct = selectedAnswer === null || !dailyQuiz
+    ? (todayResponse?.is_correct ? 100 : 0)
+    : (selectedAnswer === dailyQuiz.answerIndex ? 100 : 0);
+  const resultTone = dailyScorePct >= 80
+    ? { border: 'rgba(197,160,89,0.45)', bg: 'rgba(197,160,89,0.12)', text: '#C5A059' }
+    : dailyScorePct >= 50
+      ? { border: 'rgba(122,171,122,0.40)', bg: 'rgba(122,171,122,0.10)', text: '#7aab7a' }
+      : { border: 'rgba(255,255,255,0.10)', bg: 'rgba(255,255,255,0.04)', text: 'rgba(255,255,255,0.88)' };
+
   // 28-day activity grid
   const activityGrid = useMemo(() => {
     const dateSet = new Set(initialHistory.map(h => h.date));
@@ -152,8 +289,53 @@ export default function QuizDashboardClient({
     });
   }, [initialHistory]);
 
+  async function handleDailyAnswer(idx: number) {
+    if (!dailyQuiz || effectiveAnswered || answerLockedRef.current) return;
+    answerLockedRef.current = true;
+    setSelectedAnswer(idx);
+    try {
+      localStorage.setItem(quizAnsweredKey, String(idx));
+    } catch {
+      // fail open
+    }
+
+    if (idx === dailyQuiz.answerIndex) {
+      setShowConfetti(true);
+    }
+
+    try {
+      const resp = await fetch('/api/quiz/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: dailyQuiz.question,
+          chosen_index: idx,
+          correct_index: dailyQuiz.answerIndex,
+          is_correct: idx === dailyQuiz.answerIndex,
+          tradition,
+          explanation: dailyQuiz.explanation ?? null,
+          daily_quiz_id: dailyQuiz.daily_quiz_id ?? null,
+        }),
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setQuizSaveData(data);
+      }
+    } catch (error) {
+      console.error('[quiz] failed to save daily answer', error);
+    }
+
+    window.setTimeout(() => {
+      setTransitionDirection(1);
+      setDailyAnswered(true);
+      setCompletedThisSession(true);
+      answerLockedRef.current = false;
+    }, 800);
+  }
+
   return (
     <div className="min-h-screen pb-28 bg-[var(--divine-bg)] theme-ink">
+      <ConfettiOverlay show={showConfetti && dailyScorePct >= 80} onComplete={() => setShowConfetti(false)} />
 
       {/* ── Back nav ─────────────────────────────────────────────────────── */}
       <div className="px-5 pt-safe pt-4">
@@ -165,6 +347,174 @@ export default function QuizDashboardClient({
           <ChevronRight size={12} className="rotate-180" />
           Home
         </Link>
+      </div>
+
+      <div className="px-5 mb-6">
+        <div className={`${quizCardGlass} p-5`} style={{ background: 'var(--bg-primary, #0E0E0F)' }}>
+          <div className="flex items-center justify-between mb-4">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{
+                color: displayStreak >= 7 ? '#C5A059' : 'rgba(255,255,255,0.72)',
+                border: `1px solid ${displayStreak >= 7 ? 'rgba(197,160,89,0.35)' : 'rgba(255,255,255,0.08)'}`,
+                background: displayStreak >= 7 ? 'rgba(197,160,89,0.10)' : 'rgba(255,255,255,0.03)',
+                boxShadow: displayStreak >= 7 ? '0 0 18px rgba(197,160,89,0.12)' : 'none',
+              }}
+            >
+              <Flame size={12} />
+              <span>Day {displayStreak} streak 🔥</span>
+            </div>
+            <span className="text-[10px] uppercase tracking-[0.14em] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Daily Quiz
+            </span>
+          </div>
+
+          <AnimatePresence mode="wait" initial={false}>
+            {dailyQuizState === 'loading' ? (
+              <motion.div
+                key="quiz-loading"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="space-y-3"
+              >
+                <div className="h-5 w-24 rounded-full bg-white/[0.06]" />
+                <div className="h-16 rounded-2xl bg-white/[0.05]" />
+                <div className="h-12 rounded-2xl bg-white/[0.04]" />
+                <div className="h-12 rounded-2xl bg-white/[0.04]" />
+                <div className="h-12 rounded-2xl bg-white/[0.04]" />
+                <div className="h-12 rounded-2xl bg-white/[0.04]" />
+              </motion.div>
+            ) : dailyQuizState === 'error' ? (
+              <motion.div
+                key="quiz-error"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="text-center py-10"
+              >
+                <p className="text-sm font-semibold text-white/90">Unable to load today&apos;s quiz</p>
+                <p className="text-xs mt-2 text-white/50">Try again in a moment.</p>
+              </motion.div>
+            ) : completedThisSession && dailyQuiz ? (
+              <motion.div
+                key="quiz-complete"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="text-center py-4"
+              >
+                <div
+                  className="rounded-[1.6rem] p-6"
+                  style={{
+                    background: resultTone.bg,
+                    border: `1px solid ${resultTone.border}`,
+                    boxShadow: dailyScorePct >= 80 ? '0 0 32px rgba(197,160,89,0.14)' : 'none',
+                  }}
+                >
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/50 mb-2">Today&apos;s Result</p>
+                  <CountUpScore value={dailyScorePct} color={resultTone.text} />
+                  <p className="text-sm font-semibold mt-2 text-white/90">
+                    {dailyScorePct >= 80 ? 'Well held.' : dailyScorePct >= 50 ? 'Good grasp.' : 'One true correction matters.'}
+                  </p>
+                  {dailyQuiz.explanation ? (
+                    <p className="text-xs leading-relaxed mt-4 text-white/60">{dailyQuiz.explanation}</p>
+                  ) : null}
+                </div>
+              </motion.div>
+            ) : effectiveAnswered && dailyQuiz ? (
+              <motion.div
+                key="quiz-locked"
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="text-center py-4"
+              >
+                <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style={{ border: '1.5px solid rgba(197,160,89,0.45)', background: 'rgba(197,160,89,0.10)' }}>
+                  <Check size={26} style={{ color: '#C5A059' }} />
+                </div>
+                <h2 className="text-xl font-bold text-white/90">Quiz complete for today</h2>
+                <p className="mt-2 text-sm" style={{ color: '#C5A059' }}>
+                  {todayResponse ? `${todayResponse.is_correct ? '100' : '0'}%` : 'Sadhana recorded'}
+                </p>
+                <p className="mt-2 text-xs text-white/50">Next quiz unlocks at dawn 🌅</p>
+                <p className="mt-1 text-sm font-semibold text-white/80">{countdownLabel}</p>
+                <div className="mt-5 rounded-2xl p-4 text-left bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/50 mb-2">Today&apos;s Insight</p>
+                  <p className="text-sm text-white/85">{dailyQuiz.fact || dailyQuiz.explanation || dailyQuiz.question}</p>
+                </div>
+              </motion.div>
+            ) : dailyQuiz ? (
+              <motion.div
+                key={`quiz-question-${dailyQuiz.daily_quiz_id ?? dailyQuiz.date}`}
+                initial={{ opacity: 0, x: transitionDirection > 0 ? 28 : -28 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: transitionDirection > 0 ? -28 : 28 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[10px] uppercase tracking-[0.14em] font-bold px-2 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50">
+                    Question 1 of 1
+                  </span>
+                </div>
+                <p className="text-xl font-medium leading-tight text-white/90 mb-5">{dailyQuiz.question}</p>
+                <div className="space-y-3">
+                  {dailyQuiz.options.map((opt, idx) => {
+                    const isChosen = selectedAnswer === idx;
+                    const isCorrect = idx === dailyQuiz.answerIndex;
+                    const showAnsweredState = selectedAnswer !== null;
+                    let bg = 'rgba(255,255,255,0.03)';
+                    let border = 'rgba(255,255,255,0.06)';
+                    let text = 'rgba(255,255,255,0.90)';
+                    if (showAnsweredState && isCorrect) {
+                      bg = 'rgba(60,180,110,0.14)';
+                      border = 'rgba(60,180,110,0.35)';
+                      text = '#8ce4a8';
+                    } else if (showAnsweredState && isChosen && !isCorrect) {
+                      bg = 'rgba(220,90,90,0.14)';
+                      border = 'rgba(220,90,90,0.35)';
+                      text = '#f0a0a0';
+                    }
+
+                    return (
+                      <motion.button
+                        key={idx}
+                        disabled={selectedAnswer !== null}
+                        onClick={() => handleDailyAnswer(idx)}
+                        className="w-full text-left rounded-2xl px-4 py-4 border"
+                        style={{ background: bg, borderColor: border, color: text }}
+                        whileTap={{ scale: selectedAnswer === null ? 0.985 : 1 }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border border-white/10 bg-black/10">
+                            {String.fromCharCode(65 + idx)}
+                          </span>
+                          <span className="flex-1 text-sm font-medium">{opt}</span>
+                          {showAnsweredState && isCorrect ? <CheckCircle2 size={16} /> : null}
+                          {showAnsweredState && isChosen && !isCorrect ? <XCircle size={16} /> : null}
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+                {selectedAnswer !== null && dailyQuiz.explanation ? (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 rounded-2xl p-4 bg-white/[0.03] border border-white/[0.06]"
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold text-white/50 mb-2">Explanation</p>
+                    <p className="text-sm leading-relaxed text-white/75">{dailyQuiz.explanation}</p>
+                  </motion.div>
+                ) : null}
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* ── Hero — Rank card ─────────────────────────────────────────────── */}
@@ -258,7 +608,7 @@ export default function QuizDashboardClient({
       {/* ── Stats row ────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-3 px-5 mb-6">
         {[
-          { label: 'Day Streak',     value: stats.streak,          icon: Flame,   color: '#ff7043', suffix: stats.streak > 0 ? '🔥' : '' },
+          { label: 'Day Streak',     value: displayStreak,         icon: Flame,   color: '#ff7043', suffix: displayStreak > 0 ? '🔥' : '' },
           { label: 'Accuracy',       value: `${stats.accuracy}%`,  icon: Target,  color: meta.accentColour },
           { label: 'Total Answered', value: stats.total,           icon: Trophy,  color: '#ffca28' },
         ].map((s, i) => (

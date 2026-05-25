@@ -41,26 +41,24 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
   }, []);
 
   useEffect(() => {
-    // If backend state is authoritative, use it. Otherwise, use optimistic local storage cache.
+    const today = new Date().toISOString().split('T')[0];
+    // localStorage is the source of truth for "Later" — always respect it,
+    // even when backend has loaded. The dismiss POST is fire-and-forget and
+    // can fail silently; localStorage ensures the card stays hidden for the day.
+    const localDismissed = localStorage.getItem('shoonaya_mood_dismissed') === today;
+
     if (backendState?.isLoaded) {
-      if (!backendState.hasDismissedToday) {
-        setIsVisible(true);
-        if (backendState.hasCompletedToday) {
-          setIsCheckInAgain(true);
-        } else {
-          setIsCheckInAgain(false);
-        }
-      } else {
+      if (backendState.hasDismissedToday || localDismissed) {
         setIsVisible(false);
+      } else {
+        setIsVisible(true);
+        setIsCheckInAgain(backendState.hasCompletedToday);
       }
       return;
     }
 
     // Fallback: Optimistic local state before backend resolves
-    const lastDismissed = localStorage.getItem('shoonaya_mood_dismissed');
-    const today = new Date().toISOString().split('T')[0];
-    
-    if (lastDismissed !== today) {
+    if (!localDismissed) {
       setIsVisible(true);
     }
   }, [backendState]);

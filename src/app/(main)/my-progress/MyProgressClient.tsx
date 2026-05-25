@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink, Target, Flame } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReportData {
@@ -1454,22 +1455,114 @@ export default function MyProgressClient({
                 </div>
               </div>
               
-              <div className="space-y-3">
-                {sankalpas.map(s => (
-                  <div key={s.id} className="flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-2xl">
-                    <div className="flex-1 pr-3">
-                      <p className="text-sm font-serif line-clamp-1 theme-ink">&ldquo;{s.text}&rdquo;</p>
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        {new Date(s.start_date).toLocaleDateString()} – {new Date(s.end_date).toLocaleDateString()}
-                      </p>
+              <div className="space-y-4">
+                {sankalpas.map(s => {
+                  const startDate = new Date(s.start_date);
+                  const endDate = new Date(s.end_date);
+                  const todayStr = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+                  const today = new Date(todayStr);
+                  
+                  // days elapsed and remaining
+                  const diffTime = endDate.getTime() - today.getTime();
+                  const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  const totalDays = s.target_days;
+                  
+                  let progress = 0;
+                  if (s.status === 'completed') progress = 100;
+                  else if (s.status === 'abandoned') progress = 0;
+                  else {
+                    const elapsed = totalDays - daysRemaining;
+                    progress = Math.max(0, Math.min(100, Math.round((elapsed / totalDays) * 100)));
+                  }
+
+                  const isHalfway = s.status === 'active' && Math.abs(daysRemaining - Math.floor(totalDays / 2)) <= 1;
+                  const isOverdue = s.status === 'active' && daysRemaining < 0;
+
+                  return (
+                    <div key={s.id} className="relative bg-black/5 dark:bg-white/5 p-4 rounded-[2rem] overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
+                      
+                      {/* Mid-point check-in */}
+                      {isHalfway && (
+                        <div className="mb-4 p-4 rounded-[1.5rem] bg-amber-500/10 border border-amber-500/20 text-center">
+                          <p className="text-xs uppercase tracking-widest text-amber-500/80 font-bold mb-2">Mid-Point Check-in</p>
+                          <p className="text-sm font-serif text-[color:var(--brand-ink)] mb-3">You are halfway there! How are you feeling?</p>
+                          <div className="flex justify-center gap-2">
+                            {['💪 Strong', '😤 Struggling', '🙏 Grateful'].map(reaction => (
+                              <button key={reaction} onClick={() => console.log('TODO: save to sankalpa_reflections', reaction)} className="px-3 py-1.5 rounded-full text-xs font-medium bg-black/10 dark:bg-white/10 hover:bg-amber-500/20 hover:text-amber-500 transition-colors">
+                                {reaction}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 pr-4">
+                          <p className="text-base font-serif leading-snug theme-ink font-medium">&ldquo;{s.text}&rdquo;</p>
+                          <p className="text-[11px] text-muted-foreground mt-1.5 uppercase tracking-wide">
+                            {startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          {s.status === 'completed' ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20">Completed</span>
+                          ) : s.status === 'abandoned' ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-black/5 dark:bg-white/5 text-muted-foreground px-2.5 py-1 rounded-md border border-black/10 dark:border-white/10">Abandoned</span>
+                          ) : isOverdue ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-md border border-red-500/20">Overdue</span>
+                          ) : (
+                            <div>
+                              <span className={`text-xl font-black font-serif ${daysRemaining <= 7 ? 'text-yellow-500' : 'text-amber-500/80'}`}>{daysRemaining}</span>
+                              <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-bold leading-tight">Days<br/>Left</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="mb-4">
+                        <div className="flex justify-between items-center mb-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                          <span>Progress</span>
+                          <span className="text-amber-500/80">{progress}%</span>
+                        </div>
+                        <div className="h-1 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
+                          <motion.div
+                            className="h-full rounded-full bg-amber-500"
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${progress}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Timeline View */}
+                      {s.status === 'active' && (
+                        <div>
+                          <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-2 text-center opacity-70">7-Day Journey (TODO: check-in tracking)</p>
+                          <div className="flex justify-between items-center px-2">
+                            {[...Array(7)].map((_, i) => {
+                              const isToday = i === 3; // Mocking today in the middle
+                              return (
+                                <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                  {isToday && (
+                                    <motion.div 
+                                      className="absolute top-0 w-3.5 h-3.5 rounded-full border border-amber-500/50"
+                                      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                                      transition={{ duration: 2, repeat: Infinity }}
+                                    />
+                                  )}
+                                  <div className={`w-3.5 h-3.5 rounded-full border-2 ${isToday ? 'border-amber-500 bg-amber-500/20' : 'border-black/20 dark:border-white/20 bg-transparent'}`} />
+                                  <span className="text-[8px] uppercase tracking-tighter text-muted-foreground font-medium">{['M','T','W','T','F','S','S'][i]}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      {s.status === 'completed' && <span className="text-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-1 rounded-full border border-emerald-500/20">✅ Completed</span>}
-                      {s.status === 'active' && <span className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-full border border-amber-500/20">🔥 Active</span>}
-                      {s.status === 'abandoned' && <span className="text-xs bg-black/5 dark:bg-white/5 text-muted-foreground px-2 py-1 rounded-full border border-black/10 dark:border-white/10">— Abandoned</span>}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </motion.section>
           )}

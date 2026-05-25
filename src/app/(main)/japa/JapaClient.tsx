@@ -22,6 +22,7 @@ import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { triggerSadhanaShare } from '@/lib/share/trigger-share';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 const TRADITION_SYMBOLS: Record<string, string> = { hindu: '🕉️', sikh: 'ੴ', buddhist: '☸️', jain: '🤲' };
 import {
@@ -2485,16 +2486,32 @@ export default function JapaClient({
       const yesterdayObj = new Date(today + 'T12:00:00Z');
       yesterdayObj.setUTCDate(yesterdayObj.getUTCDate() - 1);
       const yesterday = yesterdayObj.toISOString().slice(0, 10);
-      const [{ data: todayRow }, { data: yesterdayRow }] = await Promise.all([
+      const [{ data: todayRow }, { data: yesterdayRow }, { data: profileRow }, { data: latestPriorRow }] = await Promise.all([
         supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', today).maybeSingle(),
         supabase.from('daily_sadhana').select('streak_count, japa_done').eq('user_id', userId).eq('date', yesterday).maybeSingle(),
+        supabase.from('profiles').select('streak_freeze_count, last_freeze_used').eq('id', userId).maybeSingle(),
+        supabase.from('daily_sadhana').select('date, streak_count').eq('user_id', userId).lt('date', today).not('streak_count', 'is', null).order('date', { ascending: false }).limit(1).maybeSingle(),
       ]);
+      const freezeBridgesYesterday = profileRow?.last_freeze_used === today && !yesterdayRow?.japa_done;
+      const carriedStreak = yesterdayRow?.japa_done
+        ? (yesterdayRow.streak_count ?? 0)
+        : (freezeBridgesYesterday ? (yesterdayRow?.streak_count ?? latestPriorRow?.streak_count ?? 0) : 0);
       const newStreak = todayRow?.streak_count
         ? todayRow.streak_count
-        : (yesterdayRow?.japa_done ? (yesterdayRow.streak_count ?? 0) + 1 : 1);
+        : (carriedStreak > 0 ? carriedStreak + 1 : 1);
       await supabase.from('daily_sadhana').upsert({
         user_id: userId, date: today, japa_done: true, streak_count: newStreak,
       }, { onConflict: 'user_id,date' });
+
+      if (!todayRow?.streak_count && newStreak > 0 && newStreak % 7 === 0 && (profileRow?.streak_freeze_count ?? 0) < 3) {
+        const { data: freezeCount, error: freezeError } = await supabase.rpc('increment_streak_freeze', {
+          p_user_id: userId,
+          p_amount: 1,
+        });
+        if (!freezeError && typeof freezeCount === 'number') {
+          toast.success(`🧊 Streak Freeze earned! (${freezeCount}/3)`);
+        }
+      }
 
       // ── Write strip-readable key so DailySadhanaStrip updates immediately ──
       try {

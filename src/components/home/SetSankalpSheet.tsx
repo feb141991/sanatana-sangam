@@ -11,12 +11,17 @@ interface Props {
   onSuccess: () => void;
 }
 
-const DURATIONS = [7, 14, 21, 30];
+const DURATIONS = [
+  { days: 11, label: '11 days', context: 'Ekadashi cycle' },
+  { days: 21, label: '21 days', context: 'Habit formation' },
+  { days: 40, label: '40 days', context: 'Deep transformation' },
+  { days: 108, label: '108 days', context: 'Full sadhana' },
+];
 const PRACTICES = ['Japa', 'Nitya', 'Pathshala', 'All'];
 
 export default function SetSankalpSheet({ tradition, onClose, onSuccess }: Props) {
   const [text, setText] = useState('');
-  const [targetDays, setTargetDays] = useState(30);
+  const [targetDays, setTargetDays] = useState(21);
   const [relatedPractice, setRelatedPractice] = useState('All');
   const [loading, setLoading] = useState(false);
 
@@ -99,17 +104,21 @@ export default function SetSankalpSheet({ tradition, onClose, onSuccess }: Props
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Duration</p>
             <div className="flex flex-wrap gap-2">
-              {DURATIONS.map(days => (
+              {DURATIONS.map(({ days, label, context }) => (
                 <button
                   key={days}
                   onClick={() => setTargetDays(days)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors border ${
+                  className={`flex flex-col items-start px-4 py-2.5 rounded-xl transition-colors border text-left flex-1 min-w-[120px] ${
                     targetDays === days 
                       ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]' 
-                      : 'bg-transparent border-black/10 dark:border-white/10 theme-ink'
+                      : 'bg-transparent border-black/10 dark:border-white/10 theme-ink hover:border-[var(--brand-primary)]/40'
                   }`}
+                  title={context}
                 >
-                  {days} days
+                  <span className="font-bold text-[14px]">{label}</span>
+                  <span className={`text-[10px] mt-0.5 ${targetDays === days ? 'text-white/90' : 'text-muted-foreground'}`}>
+                    {context}
+                  </span>
                 </button>
               ))}
             </div>

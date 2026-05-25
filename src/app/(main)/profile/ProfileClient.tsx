@@ -199,6 +199,7 @@ export default function ProfileClient({
   const [showSadhanaHighlights, setShowSadhanaHighlights] = useState(initialShowSadhanaHighlights);
   const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
   const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
+  const [newRelicIds, setNewRelicIds] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
@@ -224,6 +225,30 @@ export default function ProfileClient({
   });
 
   const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
+  const streak    = initialHighlightsStreak;
+  const profileTradition = (liveProfile as any)?.tradition ?? 'hindu';
+  const visibleRelics = SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === profileTradition);
+  const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, profileTradition);
+  const unlockedCount = unlockedRelics.length;
+  const totalVisible = visibleRelics.length;
+  const activeRelic = SACRED_RELICS.find((relic) => relic.id === (liveProfile as any)?.active_symbol_id) ?? null;
+
+  useEffect(() => {
+    if (!koshOpen || typeof window === 'undefined') return;
+    const raw = localStorage.getItem('shoonaya_last_seen_relic_count');
+    const lastSeenCount = Number.isFinite(Number(raw)) ? Math.max(0, Number(raw)) : 0;
+    if (unlockedCount > lastSeenCount) {
+      setNewRelicIds(unlockedRelics.slice(lastSeenCount).map((relic) => relic.id));
+    } else {
+      setNewRelicIds([]);
+    }
+  }, [koshOpen, unlockedCount, unlockedRelics]);
+
+  useEffect(() => {
+    if (koshOpen || typeof window === 'undefined') return;
+    localStorage.setItem('shoonaya_last_seen_relic_count', String(unlockedCount));
+    setNewRelicIds([]);
+  }, [koshOpen, unlockedCount]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -245,7 +270,6 @@ export default function ProfileClient({
   const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
 
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
-  const streak    = initialHighlightsStreak;
   const profileCountryCode = (liveProfile as any)?.country_code ?? null;
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
   const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
@@ -955,6 +979,28 @@ export default function ProfileClient({
                     </div>
                   )}
                 </div>
+
+                {activeRelic ? (
+                  <button
+                    type="button"
+                    onClick={() => setKoshOpen(true)}
+                    className="mx-auto flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.04] border border-amber-500/20 transition-colors hover:bg-white/[0.06]"
+                    title="Open Sacred Kosh"
+                  >
+                    <div className="relative h-6 w-6 overflow-hidden rounded-full border border-amber-500/30">
+                      <Image src={activeRelic.imageUrl} alt={activeRelic.name} fill sizes="24px" className="object-contain" />
+                    </div>
+                    <span className="text-[10px] font-medium text-amber-400/70">{activeRelic.name}</span>
+                  </button>
+                ) : unlockedCount > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setKoshOpen(true)}
+                    className="mx-auto text-[10px] text-white/30 transition-colors hover:text-white/50"
+                  >
+                    Tap Kosh to equip your relic
+                  </button>
+                ) : null}
               
               {(liveProfile?.city || liveProfile?.country) && (
                 <div className="mt-4 flex items-center justify-center gap-2 text-[12px] font-medium theme-muted">
@@ -1021,15 +1067,19 @@ export default function ProfileClient({
           {/* ── Zenith Action Grid (Tightened) ── */}
           <div className="grid grid-cols-2 gap-3">
             <motion.button
-              onClick={() => setKoshOpen(true)}
-              className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
+              onClick={() => router.push('/kosh')}
+              className="clay-card relative rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
             >
+              {unlockedCount > 0 && (
+                <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-amber-400" aria-hidden="true" />
+              )}
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                 <Star className="text-[#C5A059] group-hover:animate-pulse" size={20} />
               </div>
               <div className="text-center">
                 <p className="text-base font-medium theme-ink premium-serif">Sacred kosh</p>
                 <p className="text-xs theme-muted mt-0.5">Divine relics</p>
+                <p className="text-[9px] font-bold text-amber-400/60 mt-0.5">{unlockedCount}/{totalVisible} unlocked</p>
               </div>
             </motion.button>
 
@@ -1372,66 +1422,115 @@ export default function ProfileClient({
         title="Sacred Kosh"
         description="Your treasury of divine symbols and relics."
       >
-        <div className="grid grid-cols-4 gap-5 py-6">
-          {SACRED_RELICS.map((relic) => {
-            const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
-            const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
-            const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+        {(() => {
+          const userTradition = liveProfile?.tradition ?? 'hindu';
+          const visibleRelics = SACRED_RELICS.filter(r => r.tradition === 'universal' || r.tradition === userTradition);
+          const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, userTradition);
+          const nextRelic = visibleRelics.find(r => !unlockedRelics.some(u => u.id === r.id));
+          const unlockedCount = unlockedRelics.length;
 
-            return (
-              <div key={relic.id} className="flex flex-col items-center group">
-                <button 
-                  onClick={() => {
-                    if (!isUnlocked) {
-                      toast.error(`Maintain your streak to unlock ${relic.name} 🙏`);
-                      return;
-                    }
-                    if (isActive) return;
-                    patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
-                  }}
-                  className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
-                    isActive
-                      ? 'bg-[var(--brand-primary-soft)] border border-[var(--brand-primary)] shadow-sm'
-                      : isUnlocked
-                        ? 'bg-[var(--card-bg-soft)] border border-[var(--card-border)]'
-                        : 'bg-[var(--card-bg-soft)] border border-[var(--card-border)] grayscale opacity-40'
-                  } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[var(--brand-primary)]' : ''}`}
-                >
-                  {isActive && (
-                    <div className="absolute inset-0 bg-[var(--brand-primary-soft)] animate-pulse opacity-70" />
-                  )}
-                  
-                  <div className="relative w-14 h-14 flex items-center justify-center">
-                    {relic.imageUrl ? (
-                      <Image 
-                        src={relic.imageUrl} 
-                        alt={relic.name} 
-                        fill 
-                        className={`object-contain transition-transform duration-700 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
-                      />
+          return (
+            <div className="flex flex-col w-full py-6">
+              {nextRelic && (
+                <div className="bg-white/[0.04] border border-[#C5A059]/15 rounded-2xl p-4 mb-5 flex items-center gap-4">
+                  <div className="w-14 h-14 relative flex-shrink-0 bg-[var(--card-bg-soft)] rounded-[1.25rem] border border-[var(--card-border)] overflow-hidden flex items-center justify-center grayscale opacity-40">
+                    {nextRelic.imageUrl ? (
+                      <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill className="object-contain" />
                     ) : (
-                      <span className="text-2xl">{isUnlocked ? '✨' : '🔒'}</span>
+                      <span className="text-2xl">🔒</span>
                     )}
                   </div>
-
-                  {isActive && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand-primary)] rounded-full flex items-center justify-center border-2 border-[var(--surface-raised)] z-10 shadow-lg">
-                      <Star size={10} className="text-white fill-white" />
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider mb-1.5 block">Next: {nextRelic.name}</span>
+                    <div className="w-full bg-white/[0.04] h-2.5 rounded-full overflow-hidden mb-1.5 border border-white/[0.02]">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, Math.max(0, nextRelic.milestoneType === 'streak' ? (streak / nextRelic.milestoneValue) * 100 : ((liveProfile?.seva_score ?? 0) / nextRelic.milestoneValue) * 100))}%` }}
+                        transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+                        className="h-full bg-[#C5A059] rounded-full"
+                      />
                     </div>
-                  )}
-                </button>
-                <p className={`text-xs font-medium mt-4 text-center line-clamp-1 transition-opacity ${isActive ? 'text-[var(--brand-primary-strong)]' : isUnlocked ? 'theme-ink' : 'theme-muted opacity-40'}`}>
-                  {relic.name}
-                </p>
+                    <div className="flex justify-between items-center text-[11px] text-white/40 font-medium">
+                      <span>{nextRelic.milestoneType === 'streak' ? `Day ${streak} of ${nextRelic.milestoneValue}` : `${liveProfile?.seva_score ?? 0} / ${nextRelic.milestoneValue} pts`}</span>
+                      <span>{nextRelic.milestoneType === 'streak' ? `${nextRelic.milestoneValue - streak} more days away` : `${nextRelic.milestoneValue - (liveProfile?.seva_score ?? 0)} more pts away`}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-4 gap-5">
+                {visibleRelics.map((relic) => {
+                  const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
+                  const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+                  const isNew = newRelicIds.includes(relic.id);
+
+                  return (
+                    <div key={relic.id} className="flex flex-col items-center group">
+                      <button 
+                        onClick={() => {
+                          if (!isUnlocked) {
+                            if (relic.milestoneType === 'streak') {
+                              toast.error(`${relic.milestoneValue - streak} more day${(relic.milestoneValue - streak) !== 1 ? 's' : ''} of streak to unlock ${relic.name} 🙏`);
+                            } else {
+                              toast.error(`${relic.milestoneValue - (liveProfile?.seva_score ?? 0)} more seva points to unlock ${relic.name} 🙏`);
+                            }
+                            return;
+                          }
+                          if (isActive) return;
+                          patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
+                        }}
+                        className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
+                          isActive
+                            ? 'bg-[var(--brand-primary-soft)] border border-[var(--brand-primary)] shadow-sm'
+                            : isUnlocked
+                              ? 'bg-[var(--card-bg-soft)] border border-[var(--card-border)]'
+                              : 'bg-[var(--card-bg-soft)] border border-[var(--card-border)] grayscale opacity-40'
+                        } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[var(--brand-primary)]' : ''}`}
+                      >
+                        {isActive && (
+                          <div className="absolute inset-0 bg-[var(--brand-primary-soft)] animate-pulse opacity-70" />
+                        )}
+
+                        {isNew && (
+                          <div className="absolute top-1 left-1 rounded bg-amber-400 px-1 text-[8px] font-bold uppercase text-black">
+                            New
+                          </div>
+                        )}
+                        
+                        <div className="relative w-14 h-14 flex items-center justify-center">
+                          {relic.imageUrl ? (
+                            <Image 
+                              src={relic.imageUrl} 
+                              alt={relic.name} 
+                              fill 
+                              className={`object-contain transition-transform duration-700 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
+                            />
+                          ) : (
+                            <span className="text-2xl">{isUnlocked ? '✨' : '🔒'}</span>
+                          )}
+                        </div>
+
+                        {isActive && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand-primary)] rounded-full flex items-center justify-center border-2 border-[var(--surface-raised)] z-10 shadow-lg">
+                            <Star size={10} className="text-white fill-white" />
+                          </div>
+                        )}
+                      </button>
+                      <p className={`text-xs font-medium mt-4 text-center line-clamp-1 transition-opacity ${isActive ? 'text-[var(--brand-primary-strong)]' : isUnlocked ? 'theme-ink' : 'theme-muted opacity-40'}`}>
+                        {relic.name}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-        {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
-          <div className="mt-8 p-6 rounded-[2rem] bg-[#C5A059]/5 border border-dashed border-[#C5A059]/20 text-center">
-            <p className="text-[12px] text-[#C5A059]/60 font-bold uppercase tracking-widest leading-relaxed">Continue your daily sadhana<br/>to unlock these relics 🙏</p>
-          </div>
-        )}
+              {unlockedCount === 0 && (
+                <div className="mt-8 p-6 rounded-[2rem] bg-[#C5A059]/5 border border-dashed border-[#C5A059]/20 text-center">
+                  <p className="text-[12px] text-[#C5A059]/60 font-bold uppercase tracking-widest leading-relaxed">Continue your daily sadhana<br/>to unlock these relics 🙏</p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </BottomDrawer>
 
       <BottomDrawer

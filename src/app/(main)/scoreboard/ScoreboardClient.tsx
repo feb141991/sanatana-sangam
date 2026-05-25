@@ -88,7 +88,7 @@ export default function ScoreboardClient({
       const matchesFilter = filter === 'global' || (!!currentUserTradition && user.tradition === currentUserTradition);
       return Boolean(matchesSearch) && matchesFilter;
     });
-  }, [filter, searchQuery, users]);
+  }, [filter, searchQuery, users, currentUserTradition]);
 
   const currentUserData = users.find((u) => u.id === currentUserId);
   const currentUserRank = users.findIndex((u) => u.id === currentUserId) + 1;

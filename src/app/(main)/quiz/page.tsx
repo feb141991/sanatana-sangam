@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { redirect } from 'next/navigation';
 import QuizDashboardClient from './QuizDashboardClient';
 
@@ -17,7 +18,7 @@ export default async function QuizPage() {
   const [profileResult, historyResult, sessionsResult] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, full_name, is_pro, karma_points')
+      .select('tradition, full_name, is_pro, karma_points, timezone, app_language')
       .eq('id', user.id)
       .single(),
     supabase
@@ -39,9 +40,13 @@ export default async function QuizPage() {
   const karmaPoints  = (profile as any)?.karma_points ?? 0;
   const tradition    = profile?.tradition ?? 'hindu';
   const userName     = profile?.full_name ?? 'Seeker';
+  const timezone     = (profile as { timezone?: string | null } | null)?.timezone ?? 'UTC';
+  const appLanguage  = (profile as { app_language?: string | null } | null)?.app_language ?? 'en';
+  const history = historyResult.data ?? [];
+  const todayStr     = localSpiritualDate(timezone, 4);
+  const todayResponse = history.find((item) => item.date === todayStr) ?? null;
 
   // Gate history: free = 7 days, Pro = full 50
-  const history = historyResult.data ?? [];
   const visibleHistory = isPro ? history : history.slice(0, 7);
 
   return (
@@ -49,8 +54,11 @@ export default async function QuizPage() {
       userId={user.id}
       userName={userName}
       tradition={tradition}
+      timezone={timezone}
+      appLanguage={appLanguage}
       isPro={isPro}
       karmaPoints={karmaPoints}
+      todayResponse={todayResponse}
       initialHistory={visibleHistory}
       practiceSessions={sessionsResult.data ?? []}
     />

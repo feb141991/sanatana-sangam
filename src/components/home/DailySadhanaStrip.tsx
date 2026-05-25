@@ -14,6 +14,7 @@ interface DailySadhanaStripProps {
   japaRounds?: number;
   quizDone?: boolean;
   dharmVeerDone?: boolean;
+  dharmVeerId?: string;
   pathshalaProgress?: number;
   tithi?: string;
   tradition?: string;
@@ -154,6 +155,7 @@ function JapaArc({ beads, done, accentColor }: { beads: number; done: boolean; a
 }
 
 export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
+  const dharmVeerHref = props.dharmVeerId ? `/dharm-veer/${props.dharmVeerId}` : '/dharm-veer';
   const [localState, setLocalState] = useState<LocalState>(EMPTY_LOCAL_STATE);
   const [activeIdx, setActiveIdx] = useState(0);
   const autoTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -249,10 +251,10 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       label: 'Dharm Veer',
       sublabel: dharmVeerDone ? 'Challenge complete' : "Today's challenge",
       done: dharmVeerDone,
-      href: '/discover',
+      href: dharmVeerHref,
       right: <StatusDot done={dharmVeerDone} accentColor={accentColor} />,
     },
-  ], [accentColor, dharmVeerDone, japaBeads, japaRounds, japaDone, nityaDone, pathshalaDone, pathshalaProgress, quizDone]);
+  ], [accentColor, dharmVeerHref, dharmVeerDone, japaBeads, japaRounds, japaDone, nityaDone, pathshalaDone, pathshalaProgress, quizDone]);
 
   const completedCount = rows.filter((r) => r.done).length;
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -151,6 +151,9 @@ interface Props {
   pathshalaHref?:      string;
   quizDoneToday?:      boolean;
   dharmVeerDoneToday?: boolean;
+  streakFreezeCount?:  number;
+  lastFreezeUsed?:     string | null;
+  missedYesterday?:    boolean;
 }
 
 type DailyDharmaStackState = {
@@ -1044,6 +1047,9 @@ export default function HomeDashboard({
   pathshalaHref = '/pathshala',
   quizDoneToday = false,
   dharmVeerDoneToday = false,
+  streakFreezeCount = 0,
+  lastFreezeUsed = null,
+  missedYesterday = false,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -1067,6 +1073,9 @@ export default function HomeDashboard({
   ));
   const [heroImageFailed,   setHeroImageFailed]   = useState(false);
   const [streak,           setStreak]           = useState(initialStreak);
+  const [freezeCount,      setFreezeCount]      = useState(streakFreezeCount);
+  const [freezeBannerDismissed, setFreezeBannerDismissed] = useState(false);
+  const [freezeApplying,   setFreezeApplying]   = useState(false);
   const [dailyDharmaStackState, setDailyDharmaStackState] = useState<DailyDharmaStackState>(EMPTY_DAILY_DHARMA_STACK_STATE);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -1121,6 +1130,17 @@ export default function HomeDashboard({
       });
     }
   }, [dharmVeerDoneToday, quizDoneToday]);
+  useEffect(() => {
+    setFreezeCount(streakFreezeCount);
+  }, [streakFreezeCount]);
+  useEffect(() => {
+    try {
+      const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+      setFreezeBannerDismissed(sessionStorage.getItem(`shoonaya-streak-freeze-banner-dismissed-${today}`) === 'true');
+    } catch {
+      setFreezeBannerDismissed(false);
+    }
+  }, []);
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
@@ -1644,7 +1664,7 @@ export default function HomeDashboard({
       toast((t) => (
         <button 
           onClick={() => {
-            router.push('/profile');
+            router.push('/kosh');
             toast.dismiss(t.id);
           }}
           className="flex flex-col items-start gap-1 group"
@@ -1663,7 +1683,7 @@ export default function HomeDashboard({
         title: 'New Sacred Symbol Unlocked! ✨',
         body: `You've unlocked the ${newest.name}. View it in your Kosh.`,
         icon_emoji: '🔱',
-        action_url: '/profile',
+        action_url: '/kosh',
         category: 'milestone'
       }).then(() => {
         // Refresh notifications query if needed
@@ -1981,6 +2001,10 @@ export default function HomeDashboard({
             const TRADITION_DAY_WORD: Record<string, string> = { hindu: 'Shuddha Din', sikh: 'Sacha Din', buddhist: 'Kusala Dina', jain: 'Shubha Din' };
             const dayWord = TRADITION_DAY_WORD[tradition ?? 'hindu'] ?? 'Shuddha Din';
             toast.success(`+30 karma · +15 seva — ${dayWord}`);
+            if (data.freezeAwarded && typeof data.freezesRemaining === 'number') {
+              setFreezeCount(data.freezesRemaining);
+              toast.success(`🧊 Streak Freeze earned! (${data.freezesRemaining}/3)`);
+            }
             
             // Fetch insight
             const insightRes = await fetch('/api/sadhana/perfect-day-insight', {
@@ -2007,6 +2031,46 @@ export default function HomeDashboard({
     }
     prevCompletedCountRef.current = completedCount;
   }, [completedCount, tradition, dailyDharmaStackState, streak]);
+
+  const showFreezeBanner = missedYesterday
+    && !freezeBannerDismissed
+    && freezeCount > 0
+    && japaStreak > 3
+    && lastFreezeUsed !== localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+
+  const dismissFreezeBanner = useCallback(() => {
+    try {
+      const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+      sessionStorage.setItem(`shoonaya-streak-freeze-banner-dismissed-${today}`, 'true');
+    } catch { /* ignore */ }
+    setFreezeBannerDismissed(true);
+  }, []);
+
+  const handleUseFreeze = useCallback(async () => {
+    if (freezeApplying) return;
+    setFreezeApplying(true);
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const res = await fetch('/api/sadhana/use-freeze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timeZone }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        toast.error('Could not protect the streak right now.');
+        return;
+      }
+      setFreezeCount(typeof data.freezesRemaining === 'number' ? data.freezesRemaining : Math.max(0, freezeCount - 1));
+      dismissFreezeBanner();
+      toast.success(`🧊 Streak protected. ${data.freezesRemaining}/3 freezes left.`);
+    } catch (error) {
+      console.error('Failed to use streak freeze', error);
+      toast.error('Could not protect the streak right now.');
+    } finally {
+      setFreezeApplying(false);
+    }
+  }, [dismissFreezeBanner, freezeApplying, freezeCount]);
 
   return (
     <div className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
@@ -2252,55 +2316,79 @@ export default function HomeDashboard({
 
         {/* ── Daily Sadhana Progress Strip ── */}
         <DailySadhanaStrip 
-          japaDone={japaAlreadyDoneToday} 
-          nityaDone={nityaDoneToday} 
+          japaDone={japaAlreadyDoneToday}
+          nityaDone={nityaDoneToday}
           pathshalaDone={pathshalaDoneToday}
           japaBeads={dailyDharmaStackState.japaBeads}
           japaRounds={dailyDharmaStackState.japaRounds}
           quizDone={dailyDharmaStackState.quizDone}
           dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+          dharmVeerId={dharmVeer.id}
           pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
           tithi={panchang?.tithi}
           tradition={tradition ?? 'hindu'}
         />
 
-        <div className="px-5 mb-4">
-          <p
-            className="text-[10px] uppercase tracking-widest font-bold mb-2"
-            style={{ color: 'rgba(197,160,89,0.5)' }}
-          >
-            Bonus Sadhana
-          </p>
-          <div className="flex gap-3">
-            <Link
-              href="/bhakti/stotram"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
-              style={{
-                borderColor: dailyDharmaStackState.stotramDone ? `${meta.accentColour}44` : 'rgba(197,160,89,0.15)',
-                background: dailyDharmaStackState.stotramDone ? `${meta.accentColour}11` : 'transparent',
-              }}
-            >
-              <span className="text-sm">🎵</span>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
-                Stotram {dailyDharmaStackState.stotramDone ? '✓' : ''}
-              </span>
-            </Link>
-            <Link
-              href="/bhakti/katha"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
-              style={{
-                borderColor: dailyDharmaStackState.kathaDone ? `${meta.accentColour}44` : 'rgba(197,160,89,0.15)',
-                background: dailyDharmaStackState.kathaDone ? `${meta.accentColour}11` : 'transparent',
-              }}
-            >
-              <span className="text-sm">📖</span>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
-                Katha {dailyDharmaStackState.kathaDone ? '✓' : ''}
-              </span>
-            </Link>
+        <div className="px-5 mt-3 mb-4">
+          <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--brand-muted)' }}>
+                Streak Freeze
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }} title="Streak Freeze — miss a day without losing your streak">
+                Miss one day without losing your streak
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5" title="Streak Freeze — miss a day without losing your streak">
+              {Array.from({ length: 3 }, (_, index) => {
+                const filled = index < freezeCount;
+                return (
+                  <div
+                    key={`freeze-slot-${index}`}
+                    className="flex h-5 w-5 items-center justify-center rounded-full border text-[11px]"
+                    style={{
+                      borderColor: filled ? '#7DD3FC66' : 'rgba(125,211,252,0.18)',
+                      background: filled ? 'rgba(125,211,252,0.16)' : 'transparent',
+                      color: filled ? '#7DD3FC' : 'rgba(125,211,252,0.35)',
+                    }}
+                  >
+                    {filled ? '🧊' : '○'}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-        
+
+        {showFreezeBanner && (
+          <div className="px-5 mb-4">
+            <div className="rounded-2xl p-4" style={{ background: 'rgba(23,37,84,0.40)', border: '1px solid rgba(96,165,250,0.20)' }}>
+              <p className="text-sm font-semibold text-white/90">
+                Yesterday&apos;s sadhana was incomplete. Use a Streak Freeze? 🧊 ({freezeCount} remaining)
+              </p>
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleUseFreeze}
+                  disabled={freezeApplying}
+                  className="rounded-full px-4 py-2 text-xs font-semibold transition-opacity disabled:opacity-60"
+                  style={{ background: '#7DD3FC', color: '#082f49' }}
+                >
+                  {freezeApplying ? 'Protecting…' : 'Use Freeze'}
+                </button>
+                <button
+                  type="button"
+                  onClick={dismissFreezeBanner}
+                  className="rounded-full border px-4 py-2 text-xs font-semibold text-white/80"
+                  style={{ borderColor: 'rgba(125,211,252,0.20)' }}
+                >
+                  Let it reset
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <SankalpaBanner
           sankalpa={activeSankalpa}
           tradition={tradition ?? 'hindu'}

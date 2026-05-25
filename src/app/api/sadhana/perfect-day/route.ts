@@ -15,6 +15,12 @@ export async function POST(req: NextRequest) {
     const spiritualDate = localSpiritualDate(timeZone);
     const userId = session.user.id;
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('streak_freeze_count')
+      .eq('id', userId)
+      .maybeSingle();
+
     // Fetch today's sadhana record
     const { data: sadhana, error } = await supabase
       .from('daily_sadhana')
@@ -68,7 +74,22 @@ export async function POST(req: NextRequest) {
       }).catch(() => {}); // non-fatal
     }
 
-    return NextResponse.json({ awarded: true, karma: 30, seva: 15 });
+    let freezeAwarded = false;
+    let freezesRemaining = profile?.streak_freeze_count ?? 0;
+    if ((profile?.streak_freeze_count ?? 0) < 3) {
+      const { data: freezeCount, error: freezeError } = await supabase.rpc('increment_streak_freeze', {
+        p_user_id: userId,
+        p_amount: 1,
+      });
+      if (freezeError) {
+        console.error('Failed to award streak freeze for perfect day:', freezeError);
+      } else if (typeof freezeCount === 'number') {
+        freezeAwarded = freezeCount > (profile?.streak_freeze_count ?? 0);
+        freezesRemaining = freezeCount;
+      }
+    }
+
+    return NextResponse.json({ awarded: true, karma: 30, seva: 15, freezeAwarded, freezesRemaining });
 
   } catch (error) {
     console.error('Error in /api/sadhana/perfect-day:', error);

@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Text must be between 10 and 200 characters' }, { status: 400 });
     }
     const days = Number(target_days);
-    if (![7, 14, 21, 30].includes(days)) {
-      return NextResponse.json({ error: 'target_days must be one of 7, 14, 21, 30' }, { status: 400 });
+    if (![11, 21, 40, 108].includes(days)) {
+      return NextResponse.json({ error: 'target_days must be one of 11, 21, 40, 108' }, { status: 400 });
     }
 
     const today = new Date();
