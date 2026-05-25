@@ -2146,6 +2146,7 @@ export default function HomeDashboard({
         
         <SankalpaBanner
           sankalpa={activeSankalpa}
+          tradition={tradition ?? 'hindu'}
           onSet={() => setShowSankalpSheet(true)}
           onComplete={() => {
             fetch('/api/sankalpa', {
