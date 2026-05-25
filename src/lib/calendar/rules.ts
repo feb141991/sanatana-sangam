@@ -23,6 +23,15 @@ export interface ObservanceRule {
    * is the later one (Shravana dark half, not the earlier Ashadha dark half).
    */
   prefer_last_match?: boolean;
+  /**
+   * When the target tithi moves fast enough to be fully contained between two
+   * consecutive 5am UTC scans, it appears "skipped" in the engine's day-by-day
+   * data (prev day = T-1, next day = T+1). This flag enables detection of such
+   * skipped tithis: the day AFTER the skip (where tithiIndex === target+1) is
+   * treated as the observance date, which matches the tithi's IST-sunrise
+   * prevalence. Use for Shukla tithis 1-14 that can be fast-moving.
+   */
+  allow_skipped_tithi?: boolean;
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
@@ -125,6 +134,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Shukla Navami
     lunar_tithi_index: 9,
+    allow_skipped_tithi: true, // Navami can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
   {
     slug: 'hanuman-jayanti',
@@ -149,6 +159,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
     lunar_tithi_index: 3,
+    allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
   {
     slug: 'narasimha-jayanti',
@@ -338,10 +349,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Victory of Rama over Ravana — triumph of good over evil',
     kind: 'major',
     tradition: 'hindu',
-    rule_family: 'lunar_tithi',
+    rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Dashami
-    lunar_tithi_index: 10,
+    relative_base_slug: 'navratri-begins',
+    relative_offset_days: 10, // Vijaya Dashami = 10th day after Navratri Pratipada
   },
   {
     slug: 'karva-chauth',
@@ -424,10 +435,13 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Full moon of Kartik month — extremely auspicious for bathing',
     kind: 'vrat',
     tradition: 'hindu',
-    rule_family: 'lunar_tithi',
+    // Kartika Purnima = Purnima after Diwali (Kartika Amavasya). The panchang masaName
+    // for this Purnima shifts between years (Bhadrapada vs Ashwin), and the tithi can be
+    // too short to capture at 5am UTC. Relative rule is more reliable.
+    rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
-    lunar_tithi_index: 15,
+    relative_base_slug: 'diwali',
+    relative_offset_days: 16, // Kartika Purnima ≈ 16 calendar days after Diwali (Amavasya)
     route_kind: 'vrat',
     route_slug: 'purnima',
   },
@@ -598,10 +612,12 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Prakash Utsav of Guru Nanak Dev Ji — founder of Sikhism. The most important Sikh celebration, marked by Akhand Path, nagar kirtan and langar.',
     kind: 'major',
     tradition: 'sikh',
-    rule_family: 'lunar_tithi',
+    // Observed on Kartika Purnima — same day as kartik-purnima. Using relative rule
+    // because the Purnima masaName shifts between years and can be missed by the 5am scan.
+    rule_family: 'relative_to_other_observance',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
-    lunar_tithi_index: 15,
+    relative_base_slug: 'diwali',
+    relative_offset_days: 16, // Kartika Purnima = 16 calendar days after Diwali (Kartika Amavasya)
   },
   {
     slug: 'guru-tegh-bahadur-martyrdom',
@@ -744,10 +760,11 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Buddhist Sangha Day — celebration of the spiritual community. Coincides with Loy Krathong in Thailand, where lotus-shaped lanterns are floated on water.',
     kind: 'major',
     tradition: 'buddhist',
-    rule_family: 'lunar_tithi',
+    // Observed on Kartika Purnima — relative rule more reliable across years
+    rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
-    lunar_tithi_index: 15,
+    relative_base_slug: 'diwali',
+    relative_offset_days: 16,
   },
   {
     slug: 'bodhi-day',
@@ -786,6 +803,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'historical_commemoration',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
     lunar_tithi_index: 3,
+    allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
   {
     slug: 'paryushana-parva-begins',
@@ -854,9 +872,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Sacred full moon — commemorates the Nirvana of Bhagwan Rishabhanatha (Adinath), the first Tirthankara. A day for fasting and pilgrimage.',
     kind: 'major',
     tradition: 'jain',
-    rule_family: 'lunar_tithi',
+    // Observed on Kartika Purnima — relative rule more reliable across years
+    rule_family: 'relative_to_other_observance',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Purnima
-    lunar_tithi_index: 15,
+    relative_base_slug: 'diwali',
+    relative_offset_days: 16,
   },
 ];

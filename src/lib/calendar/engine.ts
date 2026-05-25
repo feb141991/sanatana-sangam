@@ -80,15 +80,45 @@ export const LunarTithiHandler = {
     if (!rule.lunar_masa_name || rule.lunar_tithi_index === undefined) {
       return [];
     }
+    const target = rule.lunar_tithi_index;
     const matchedDates: string[] = [];
+    const matchedSet = new Set<string>();
+
+    // Primary scan: exact tithi match
     for (const d of days) {
       if (
         d.panchang.masaName === rule.lunar_masa_name &&
-        d.panchang.tithiIndex === rule.lunar_tithi_index
+        d.panchang.tithiIndex === target
       ) {
-        matchedDates.push(d.dateStr);
+        if (!matchedSet.has(d.dateStr)) {
+          matchedDates.push(d.dateStr);
+          matchedSet.add(d.dateStr);
+        }
       }
     }
+
+    // Secondary scan: detect tithis that the 5am UTC scan misses because the
+    // tithi is fast-moving and fully contained within a single 24h window.
+    // When prev.tithiIndex === T-1 and curr.tithiIndex === T+1 (with curr in
+    // the target masa), the target tithi was present at IST sunrise on curr's
+    // date but had already advanced by the 5am UTC scan time. Observe on curr.
+    if (rule.allow_skipped_tithi && target > 1 && target < 15) {
+      for (let i = 1; i < days.length; i++) {
+        const prev = days[i - 1].panchang;
+        const curr = days[i].panchang;
+        if (
+          curr.masaName === rule.lunar_masa_name &&
+          prev.tithiIndex === target - 1 &&
+          curr.tithiIndex === target + 1
+        ) {
+          if (!matchedSet.has(days[i].dateStr)) {
+            matchedDates.push(days[i].dateStr);
+            matchedSet.add(days[i].dateStr);
+          }
+        }
+      }
+    }
+
     return matchedDates;
   }
 };
