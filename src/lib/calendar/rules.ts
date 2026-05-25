@@ -321,10 +321,14 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Day to offer prayers to ancestors (Pitru Paksha ends)',
     kind: 'vrat',
     tradition: 'hindu',
-    rule_family: 'lunar_tithi',
+    // Mahalaya Amavasya is definitionally the last day of Pitru Paksha — the day
+    // immediately before Navratri (Ashwin Shukla Pratipada). Using a relative rule
+    // is more reliable than detecting the Amavasya tithi directly, which wraps from
+    // tithi 30 → 1 and is easily missed by the 5am UTC scan in some years.
+    rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana', // traditional Ashwin Amavasya
-    lunar_tithi_index: 30,
+    relative_base_slug: 'navratri-begins',
+    relative_offset_days: -1,
     route_kind: 'vrat',
     route_slug: 'amavasya',
   },
