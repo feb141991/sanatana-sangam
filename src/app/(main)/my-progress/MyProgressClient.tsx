@@ -2,7 +2,7 @@
 
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -903,6 +903,59 @@ export default function MyProgressClient({
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
   const [midpointRefreshKey, setMidpointRefreshKey] = useState(0);
 
+  const [checkinMap, setCheckinMap] = useState<Map<string, Set<string>>>(new Map());
+
+  useEffect(() => {
+    const activeSankalpas = sankalpas.filter((s) => s.status === 'active');
+    if (activeSankalpas.length === 0) return;
+
+    async function fetchCheckins() {
+      try {
+        const promises = activeSankalpas.map(async (s) => {
+          const res = await fetch(`/api/sankalpa/checkin?sankalpa_id=${s.id}`);
+          if (!res.ok) throw new Error(`Failed to fetch checkin for sankalpa ${s.id}`);
+          const data = await res.json();
+          return { id: s.id, dates: new Set<string>(data.checkins || []) };
+        });
+
+        const results = await Promise.all(promises);
+        setCheckinMap((prev) => {
+          const next = new Map(prev);
+          for (const res of results) {
+            next.set(res.id, res.dates);
+          }
+          return next;
+        });
+      } catch (err) {
+        console.error('[MyProgressClient] load checkins failed:', err);
+      }
+    }
+
+    fetchCheckins();
+  }, [sankalpas]);
+
+  const handleCheckin = useCallback(async (sankalpaId: string) => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    setCheckinMap((prev) => {
+      const next = new Map(prev);
+      const set = new Set(next.get(sankalpaId) ?? []);
+      set.add(todayStr);
+      next.set(sankalpaId, set);
+      return next;
+    });
+
+    try {
+      await fetch('/api/sankalpa/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sankalpa_id: sankalpaId }),
+      });
+      toast.success('Checked in! 🙏');
+    } catch (err) {
+      console.error('[sankalpa/checkin] Failed to checkin:', err);
+    }
+  }, []);
+
   const hasMidpointReflection = useCallback((sankalpaId: string) => {
     if (typeof window === 'undefined') return false;
     return localStorage.getItem(`shoonaya-midpoint-${sankalpaId}`) === 'done';
@@ -1605,31 +1658,67 @@ export default function MyProgressClient({
                       {/* Timeline View */}
                       {s.status === 'active' && (
                         <div className="mt-2">
-                          {/* TODO: connect to sankalpa_checkins once table exists */}
                           <div className="flex items-center justify-between px-2">
                             {[...Array(7)].map((_, i) => {
                               const todayIndex = (today.getDay() + 6) % 7;
                               const isToday = i === todayIndex;
                               const isPast = i < todayIndex;
-                              const checkedIn = false; // Mocked until sankalpa_checkins is added
+                              
+                              const dayOffset = i - todayIndex;
+                              const circleDate = new Date(today);
+                              circleDate.setDate(circleDate.getDate() + dayOffset);
+                              const yyyy = circleDate.getFullYear();
+                              const mm = String(circleDate.getMonth() + 1).padStart(2, '0');
+                              const dd = String(circleDate.getDate()).padStart(2, '0');
+                              const dateStr = `${yyyy}-${mm}-${dd}`;
 
+                              const checkedIn = checkinMap.get(s.id)?.has(dateStr) ?? false;
+
+                              if (checkedIn) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <div 
+                                      className="w-[20px] h-[20px] rounded-full flex items-center justify-center bg-[#C5A059] text-white text-[10px] font-bold shadow-lg shadow-black/20 select-none"
+                                    >
+                                      ✓
+                                    </div>
+                                    <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              if (isToday) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <button
+                                      onClick={() => handleCheckin(s.id)}
+                                      className="w-[20px] h-[20px] rounded-full border-2 border-[#C5A059] animate-pulse transition-all duration-300 cursor-pointer bg-transparent"
+                                      style={{ boxShadow: '0 0 8px rgba(197,160,89,0.4)' }}
+                                      title="Tap to check-in today"
+                                    />
+                                    <span className="text-[8px] text-[#C5A059] font-bold">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              if (isPast) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <div 
+                                      className="w-[20px] h-[20px] rounded-full border border-[#C5A059]/20 bg-transparent opacity-60"
+                                    />
+                                    <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              // isFuture
                               return (
                                 <div key={i} className="flex flex-col items-center gap-1.5 relative">
-                                  {isToday ? (
-                                    <div 
-                                      className="w-[22px] h-[22px] rounded-full border-2 border-amber-400 animate-pulse transition-all duration-300"
-                                      style={{ boxShadow: '0 0 8px rgba(197,160,89,0.5)' }}
-                                    />
-                                  ) : isPast ? (
-                                    <div 
-                                      className={`w-[20px] h-[20px] rounded-full transition-all duration-300 ${
-                                        checkedIn ? 'bg-amber-500/80' : 'border border-amber-500/20 bg-transparent'
-                                      }`}
-                                    />
-                                  ) : (
-                                    <div className="w-[20px] h-[20px] rounded-full border border-amber-500/20 bg-transparent opacity-30 transition-all duration-300" />
-                                  )}
-                                  <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
+                                  <div 
+                                    className="w-[20px] h-[20px] rounded-full border border-[#C5A059]/20 bg-transparent opacity-30"
+                                  />
+                                  <span className="text-[8px] text-black/20 dark:text-white/10">{['M','T','W','T','F','S','S'][i]}</span>
                                 </div>
                               );
                             })}
