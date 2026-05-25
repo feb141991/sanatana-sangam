@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendShoonayaEmail } from '@/lib/email';
 import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 
 export const dynamic = 'force-dynamic';
@@ -97,7 +98,7 @@ export async function GET(request: Request) {
   try {
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone, onesignal_player_id')
+      .select('id, tradition, timezone, onesignal_player_id, email, email_newsletter, unsubscribe_token')
       .not('onesignal_player_id', 'is', null);
 
     if (profilesError) {
@@ -189,6 +190,21 @@ export async function GET(request: Request) {
             throw new Error('Push not sent');
           }
 
+          // Send email digest — only to users who opted in and have an email
+          if ((user as any).email_newsletter && (user as any).email) {
+            const unsubUrl = `https://shoonaya.app/api/unsubscribe?token=${(user as any).unsubscribe_token}`;
+            await sendShoonayaEmail({
+              to: (user as any).email,
+              subject: TITLE,
+              shloka: '',
+              meaning: '',
+              title: TITLE,
+              body,
+              ctaText: 'Open App',
+              ctaUrl: 'https://shoonaya.app/home',
+              unsubUrl,
+            });
+          }
           return { userId: user.id, sent: true };
         } catch (error) {
           console.error('[weekly-summary] user failed', user.id, error);

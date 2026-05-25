@@ -294,6 +294,22 @@ export default function AIChatClient({
   const [responseLanguage, setResponseLanguage] = useState<string>(() =>
     resolveChatResponseLanguage(appLanguage ?? 'en', initialPrompt ?? '')
   );
+  const [usageData, setUsageData] = useState<{ used: number; limit: number } | null>(null);
+  const [limitReached, setLimitReached] = useState(false);
+
+  // Fetch usage on mount and after each message
+  const refreshUsage = async () => {
+    try {
+      const res = await fetch('/api/ai/chat/usage');
+      if (res.ok) {
+        const data = await res.json();
+        setUsageData({ used: data.used, limit: data.limit });
+        if (data.used >= data.limit && !data.isPro) setLimitReached(true);
+      }
+    } catch { /* silent */ }
+  };
+
+  useEffect(() => { refreshUsage(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
@@ -387,14 +403,18 @@ export default function AIChatClient({
         }),
       });
       const data = await res.json();
-      if (data.limitReached && !data.isPro) {
-        setShowPremiumModal(true);
+      if (res.status === 429 && data.error === 'daily_limit_reached') {
+        setLimitReached(true);
+        setLoading(false);
+        return;
       }
       if (!res.ok) {
         toast.error(data.error ?? 'Something went wrong');
         setLoading(false);
         return;
       }
+      // Refresh usage count after successful message
+      refreshUsage();
       const modelMsg: Message = {
         id:        newId(),
         role:      'model',
@@ -548,6 +568,23 @@ export default function AIChatClient({
           </div>
         )}
 
+        {/* ── Daily limit reached card ─────────────────────────────────── */}
+        {limitReached && !isPro && (
+          <div className="mb-3 p-4 rounded-2xl border" style={{ background: 'rgba(26,20,14,0.95)', borderColor: 'rgba(197,160,89,0.3)' }}>
+            <p className="font-display font-bold text-[#C5A059] text-sm mb-1">You&apos;ve reached your daily limit</p>
+            <p className="text-xs text-white/60 leading-relaxed mb-3">
+              Free seekers get 5 conversations a day. Upgrade to Shoonaya Zenith for unlimited daily guidance.
+            </p>
+            <a
+              href="/pricing"
+              className="inline-block bg-[#C5A059] text-white text-xs font-bold px-4 py-2 rounded-xl tracking-wide hover:opacity-90 transition"
+            >
+              Unlock Zenith →
+            </a>
+            <p className="text-[10px] text-white/30 mt-2">Resets at midnight · 5 free conversations tomorrow</p>
+          </div>
+        )}
+
         <div className="flex items-end gap-2">
           <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)' }}>
             <textarea
@@ -575,6 +612,34 @@ export default function AIChatClient({
             <Send size={16} />
           </button>
         </div>
+
+        {/* ── Usage bar (free users only) ──────────────────────────────── */}
+        {!isPro && usageData && (
+          <div className="mt-2 space-y-1">
+            <div className="flex justify-between items-center">
+              <div className="h-1 flex-1 rounded-full overflow-hidden mr-3" style={{ background: 'rgba(197,160,89,0.12)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min((usageData.used / usageData.limit) * 100, 100)}%`,
+                    background: '#C5A059',
+                    boxShadow: usageData.used >= usageData.limit - 1 ? '0 0 6px rgba(197,160,89,0.6)' : 'none',
+                  }}
+                />
+              </div>
+              <span
+                className="text-[10px] flex-shrink-0"
+                style={{
+                  color: '#C5A059',
+                  fontWeight: usageData.used >= usageData.limit - 1 ? 700 : 400,
+                }}
+              >
+                {usageData.used} / {usageData.limit} today
+              </span>
+            </div>
+          </div>
+        )}
+
         <p className="text-[10px] text-[color:var(--text-dim)] text-center mt-2">
           Dharma Mitra can make mistakes. Verify important information.
         </p>

@@ -9,7 +9,7 @@ import { emitEvent, emitError } from '@/lib/monitoring/events';
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
 // Uses the Pramana provider stack (Gemini by default, self-hosted when available).
 
-const FREE_DAILY_LIMIT = 20;   // raised from 5 — enough for a meaningful daily practice
+const FREE_DAILY_LIMIT = 5;   // reduced free daily limit to 5
 const PRO_DAILY_LIMIT  = 200;  // raised from 100 — suits deep daily sadhana conversations
 
 async function isDailyLimitReached(
@@ -67,15 +67,11 @@ export async function POST(req: NextRequest) {
 
   // Daily limit check (Supabase-backed, survives cold starts)
   if (await isDailyLimitReached(supabase, user.id, isPro)) {
-    const limitMsg = isPro
-      ? "🙏 You've had a rich conversation with Dharma Mitra today! Your daily limit (200 messages) has been reached. Come back tomorrow for more guidance."
-      : "🙏 You've used your 20 free messages for today. Upgrade to Shoonaya Pro for 200 daily messages and deeper guidance!";
-    
-    return NextResponse.json({
-      reply: limitMsg,
-      limitReached: true,
-      isPro
-    });
+    const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
+    return NextResponse.json(
+      { error: 'daily_limit_reached', limit, isPro },
+      { status: 429 }
+    );
   }
 
   let body: {
