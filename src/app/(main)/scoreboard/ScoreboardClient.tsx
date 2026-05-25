@@ -16,6 +16,7 @@ import { getInitials } from '@/lib/utils';
 import { shareScoreToWhatsApp } from '@/lib/whatsapp';
 import TierBadge from '@/components/ui/TierBadge';
 import { getTierFromScore } from '@/lib/seva-tiers';
+import { SACRED_RELICS } from '@/lib/relics';
 
 type LeaderboardUser = {
   id: string;
@@ -105,6 +106,7 @@ export default function ScoreboardClient({
 
   const topThree = filteredUsers.slice(0, 3);
   const others = filteredUsers.slice(3);
+  const getRelic = (activeSymbolId?: string | null) => SACRED_RELICS.find((relic) => relic.id === activeSymbolId) ?? null;
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 selection:bg-[#C5A059]/30">
@@ -173,7 +175,20 @@ export default function ScoreboardClient({
                   2nd
                 </div>
               </div>
-              <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[1].full_name || topThree[1].username}</p>
+              <div className="mt-0.5 flex items-center justify-center gap-1">
+                <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[1].full_name || topThree[1].username}</p>
+                {getRelic(topThree[1].active_symbol_id) && (
+                  <Image
+                    src={getRelic(topThree[1].active_symbol_id)!.imageUrl}
+                    alt={getRelic(topThree[1].active_symbol_id)!.name}
+                    title={getRelic(topThree[1].active_symbol_id)!.name}
+                    width={14}
+                    height={14}
+                    unoptimized
+                    className="rounded-full opacity-80"
+                  />
+                )}
+              </div>
               <div className="mt-1">
                 <TierBadge sevaScore={topThree[1].seva_score || 0} size="sm" />
               </div>
@@ -200,7 +215,20 @@ export default function ScoreboardClient({
                   1st
                 </div>
               </div>
-              <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[0].full_name || topThree[0].username}</p>
+              <div className="mt-0.5 flex items-center justify-center gap-1">
+                <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[0].full_name || topThree[0].username}</p>
+                {getRelic(topThree[0].active_symbol_id) && (
+                  <Image
+                    src={getRelic(topThree[0].active_symbol_id)!.imageUrl}
+                    alt={getRelic(topThree[0].active_symbol_id)!.name}
+                    title={getRelic(topThree[0].active_symbol_id)!.name}
+                    width={14}
+                    height={14}
+                    unoptimized
+                    className="rounded-full opacity-80"
+                  />
+                )}
+              </div>
               <div className="mt-1">
                 <TierBadge sevaScore={topThree[0].seva_score || 0} size="sm" />
               </div>
@@ -224,7 +252,20 @@ export default function ScoreboardClient({
                   3rd
                 </div>
               </div>
-              <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[2].full_name || topThree[2].username}</p>
+              <div className="mt-0.5 flex items-center justify-center gap-1">
+                <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[2].full_name || topThree[2].username}</p>
+                {getRelic(topThree[2].active_symbol_id) && (
+                  <Image
+                    src={getRelic(topThree[2].active_symbol_id)!.imageUrl}
+                    alt={getRelic(topThree[2].active_symbol_id)!.name}
+                    title={getRelic(topThree[2].active_symbol_id)!.name}
+                    width={14}
+                    height={14}
+                    unoptimized
+                    className="rounded-full opacity-80"
+                  />
+                )}
+              </div>
               <div className="mt-1">
                 <TierBadge sevaScore={topThree[2].seva_score || 0} size="sm" />
               </div>
@@ -335,7 +376,17 @@ export default function ScoreboardClient({
                 <div className="flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-bold theme-ink">{user.full_name || user.username}</p>
-                    {user.active_symbol_id && <span className="text-xs" title={user.active_symbol_id}>✨</span>}
+                    {getRelic(user.active_symbol_id) && (
+                      <Image
+                        src={getRelic(user.active_symbol_id)!.imageUrl}
+                        alt={getRelic(user.active_symbol_id)!.name}
+                        title={getRelic(user.active_symbol_id)!.name}
+                        width={14}
+                        height={14}
+                        unoptimized
+                        className="rounded-full opacity-80"
+                      />
+                    )}
                     {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
                   </div>
                   <div className="mt-0.5">

@@ -8,7 +8,7 @@ export async function getKulPageData() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, kul_id, tradition, sampradaya, shloka_streak, spiritual_level')
+    .select('full_name, username, avatar_url, active_symbol_id, kul_id, tradition, sampradaya, shloka_streak, spiritual_level')
     .eq('id', user.id)
     .single();
 
@@ -50,7 +50,7 @@ export async function getKulPageData() {
     const [kulRes, membersRes, tasksRes, msgsRes, familyRes, eventsRes] = await Promise.all([
       adminSupabase.from('kuls').select('*').eq('id', kulId).maybeSingle(),
       adminSupabase.from('kul_members')
-        .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata)')
+        .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, active_symbol_id, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata)')
         .eq('kul_id', kulId),
       adminSupabase.from('kul_tasks')
         .select('*, assigned_by_profile:profiles!kul_tasks_assigned_by_fkey(full_name, username), assigned_to_profile:profiles!kul_tasks_assigned_to_fkey(full_name, username, avatar_url)')

@@ -11,12 +11,13 @@ type LeaderboardUser = {
   monthly_seva: number | null;
   tradition: string | null;
   is_pro: boolean;
+  active_symbol_id?: string | null;
 };
 
 export default async function ScoreboardPage() {
   const supabase = await createServerSupabaseClient();
 
-  const baseSelect = 'id, full_name, username, avatar_url, seva_score, weekly_seva, monthly_seva, tradition, is_pro';
+  const baseSelect = 'id, full_name, username, avatar_url, seva_score, weekly_seva, monthly_seva, tradition, is_pro, active_symbol_id';
   const [{ data: users, error }, { data: weeklyUsers, error: weeklyError }, { data: monthlyUsers, error: monthlyError }] = await Promise.all([
     supabase
       .from('profiles')

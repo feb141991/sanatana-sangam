@@ -21,6 +21,7 @@ export type KulMemberRow = {
     full_name: string | null;
     username: string | null;
     avatar_url: string | null;
+    active_symbol_id?: string | null;
     tradition: string | null;
     sampradaya: string | null;
     shloka_streak: number | null;
@@ -157,7 +158,7 @@ export async function fetchKulData(userId: string): Promise<KulData> {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, kul_id, tradition, sampradaya, shloka_streak, spiritual_level, is_banned, ban_reason')
+    .select('full_name, username, avatar_url, active_symbol_id, kul_id, tradition, sampradaya, shloka_streak, spiritual_level, is_banned, ban_reason')
     .eq('id', userId)
     .single();
 
@@ -193,7 +194,7 @@ export async function fetchKulData(userId: string): Promise<KulData> {
     const [kulRes, membersRes, tasksRes, msgsRes, familyRes, eventsRes] = await Promise.all([
       supabase.from('kuls').select('*').eq('id', kulId).single(),
       supabase.from('kul_members')
-        .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata, is_banned, ban_reason)')
+        .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, active_symbol_id, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata, is_banned, ban_reason)')
         .eq('kul_id', kulId),
       supabase.from('kul_tasks')
         .select('*, assigned_by_profile:profiles!kul_tasks_assigned_by_fkey(full_name, username), assigned_to_profile:profiles!kul_tasks_assigned_to_fkey(full_name, username, avatar_url)')

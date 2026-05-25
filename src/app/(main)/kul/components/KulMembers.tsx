@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { UserPlus, Crown, Mail } from 'lucide-react';
 import { MemberRow } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { SACRED_RELICS } from '@/lib/relics';
 
 export function KulMembers({
   members,
@@ -43,6 +44,7 @@ export function KulMembers({
         {members.map((member) => {
           const profile = member.profiles;
           const name = profile?.full_name || profile?.username || t('kulFamilyMemberDefault');
+          const relic = SACRED_RELICS.find((item) => item.id === profile?.active_symbol_id) ?? null;
           return (
             <motion.div
               key={member.id}
@@ -60,7 +62,20 @@ export function KulMembers({
               </div>
               
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold theme-ink truncate">{name}</h3>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <h3 className="font-bold theme-ink truncate">{name}</h3>
+                  {relic && (
+                    <Image
+                      src={relic.imageUrl}
+                      alt={relic.name}
+                      title={relic.name}
+                      width={14}
+                      height={14}
+                      unoptimized
+                      className="rounded-full opacity-80 flex-shrink-0"
+                    />
+                  )}
+                </div>
                 <p className="text-[10px] uppercase tracking-widest theme-muted font-semibold mt-0.5">
                   {member.role}
                 </p>
