@@ -1616,6 +1616,20 @@ export default function HomeDashboard({
       }
     }
 
+    try {
+      const { data } = await supabase.from('profiles').select('weekly_seva, monthly_seva').eq('id', userId).single();
+      if (data) {
+        await supabase.from('profiles')
+          .update({
+            weekly_seva: ((data as { weekly_seva?: number | null }).weekly_seva ?? 0) + 5,
+            monthly_seva: ((data as { monthly_seva?: number | null }).monthly_seva ?? 0) + 5,
+          } as never)
+          .eq('id', userId);
+      }
+    } catch {
+      // non-fatal
+    }
+
     // Always show confetti + close modal for the full celebration moment
     setShowConfetti(true);
     setShlokaModalOpen(false);
@@ -1968,7 +1982,9 @@ export default function HomeDashboard({
           const data = await res.json();
           if (data.awarded) {
             setPerfectDayCeremonyOpen(true);
-            toast.success('+30 karma · +15 seva — Shuddha Din');
+            const TRADITION_DAY_WORD: Record<string, string> = { hindu: 'Shuddha Din', sikh: 'Sacha Din', buddhist: 'Kusala Dina', jain: 'Shubha Din' };
+            const dayWord = TRADITION_DAY_WORD[tradition ?? 'hindu'] ?? 'Shuddha Din';
+            toast.success(`+30 karma · +15 seva — ${dayWord}`);
             
             // Fetch insight
             const insightRes = await fetch('/api/sadhana/perfect-day-insight', {
