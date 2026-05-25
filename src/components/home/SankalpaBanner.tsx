@@ -4,6 +4,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 
 interface Props {
   sankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string } | null;
+  tradition?: string;
   onSet: () => void;
   onComplete: () => void;
 }
@@ -11,7 +12,7 @@ interface Props {
 // 8 dots — fills proportionally to show journey progress at a glance.
 const DOT_COUNT = 8;
 
-export default function SankalpaBanner({ sankalpa, onSet, onComplete }: Props) {
+export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete }: Props) {
   // ── Empty state ────────────────────────────────────────────────────────────
   if (!sankalpa) {
     return (
