@@ -2495,6 +2495,47 @@ export default function JapaClient({
       await supabase.from('daily_sadhana').upsert({
         user_id: userId, date: today, japa_done: true, streak_count: newStreak,
       }, { onConflict: 'user_id,date' });
+
+      // ── Award seva_score + karma_points for completed rounds ──────────────
+      // seva_score  : +10 per completed mala round (leaderboard currency)
+      // karma_points: +5  per completed mala round (daily XP)
+      // Only full rounds count — partialBeads alone awards nothing.
+      if (completedRounds > 0) {
+        const sevaGain  = completedRounds * 10;
+        const karmaGain = completedRounds * 5;
+
+        // seva_score — RPC with direct-update fallback
+        try {
+          const { error: sevaRpcErr } = await supabase.rpc('increment_seva_score', {
+            user_id: userId, points: sevaGain,
+          });
+          if (sevaRpcErr) {
+            const { data: prof } = await supabase.from('profiles').select('seva_score').eq('id', userId).single();
+            if (prof) {
+              await supabase.from('profiles')
+                .update({ seva_score: (prof.seva_score ?? 0) + sevaGain })
+                .eq('id', userId);
+            }
+          }
+        } catch { /* non-fatal */ }
+
+        // karma_points — RPC with direct-update fallback
+        try {
+          const { error: karmaRpcErr } = await supabase.rpc('increment_karma', {
+            p_user_id: userId, p_amount: karmaGain,
+          });
+          if (karmaRpcErr) {
+            const { data: prof } = await supabase.from('profiles').select('karma_points').eq('id', userId).single();
+            if (prof) {
+              await supabase.from('profiles')
+                .update({ karma_points: ((prof as { karma_points?: number }).karma_points ?? 0) + karmaGain })
+                .eq('id', userId);
+            }
+          }
+        } catch { /* non-fatal */ }
+      }
+      // ─────────────────────────────────────────────────────────────────────
+
       setStreak(newStreak);
       setSaved(true);
       return true;
