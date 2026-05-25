@@ -26,6 +26,7 @@ type LocalState = {
   nityaDone: boolean;
   quizDone: boolean;
   dharmVeerDone: boolean;
+  pathshalaDone: boolean;
   pathshalaProgress: number;
 };
 
@@ -36,6 +37,7 @@ const EMPTY_LOCAL_STATE: LocalState = {
   nityaDone: false,
   quizDone: false,
   dharmVeerDone: false,
+  pathshalaDone: false,
   pathshalaProgress: 0,
 };
 
@@ -100,6 +102,8 @@ function readLocalState(): LocalState {
       next.pathshalaProgress = derivePathshalaProgress(JSON.parse(pathshalaRaw));
     }
 
+    next.pathshalaDone = localStorage.getItem(`shoonaya-pathshala-done-${todayStr}`) === 'true';
+
     return next;
   } catch {
     return EMPTY_LOCAL_STATE;
@@ -109,10 +113,10 @@ function readLocalState(): LocalState {
 function StatusDot({ done, accentColor }: { done: boolean; accentColor: string }) {
   return (
     <div
-      className="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-300"
+      className="flex h-6 w-6 items-center justify-center rounded-full transition-all duration-300"
       style={{
         background: done ? `${accentColor}22` : 'transparent',
-        border: `1.5px solid ${done ? accentColor + '88' : 'rgba(197,160,89,0.22)'}`,
+        border: `1.5px solid ${done ? accentColor + '88' : 'rgba(197,160,89,0.40)'}`,
       }}
     >
       {done && <Check size={11} strokeWidth={2.8} style={{ color: accentColor }} />}
@@ -126,16 +130,26 @@ function JapaArc({ beads, done, accentColor }: { beads: number; done: boolean; a
   const progress = Math.max(0, Math.min(108, beads % 109 || (done ? 108 : 0)));
   const dash = (progress / 108) * circumference;
   return (
-    <svg viewBox="0 0 32 32" className="h-7 w-7" aria-hidden="true">
-      <circle cx="16" cy="16" r={radius} fill="none" stroke="rgba(197,160,89,0.14)" strokeWidth="2.5" />
-      <circle
-        cx="16" cy="16" r={radius} fill="none"
-        stroke={accentColor} strokeWidth="2.5" strokeLinecap="round"
-        strokeDasharray={`${dash} ${circumference - dash}`}
-        transform="rotate(-90 16 16)"
-        style={{ opacity: done ? 1 : 0.85, transition: 'stroke-dasharray 0.4s ease' }}
-      />
-    </svg>
+    <div className="relative flex items-center justify-center h-7 w-7">
+      <svg viewBox="0 0 32 32" className="h-7 w-7 absolute inset-0" aria-hidden="true">
+        <circle cx="16" cy="16" r={radius} fill="none" stroke="rgba(197,160,89,0.14)" strokeWidth="2.5" />
+        <circle
+          cx="16" cy="16" r={radius} fill="none"
+          stroke={accentColor} strokeWidth="2.5" strokeLinecap="round"
+          strokeDasharray={`${dash} ${circumference - dash}`}
+          transform="rotate(-90 16 16)"
+          style={{ opacity: done ? 1 : 0.85, transition: 'stroke-dasharray 0.4s ease' }}
+        />
+      </svg>
+      {done && (
+        <Check
+          size={11}
+          strokeWidth={2.8}
+          style={{ color: accentColor }}
+          className="relative z-10"
+        />
+      )}
+    </div>
   );
 }
 
@@ -176,7 +190,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   // but if localStorage says done (just completed this session), honour that too.
   const japaDone   = props.japaDone || localState.japaDone;
   const nityaDone  = props.nityaDone || localState.nityaDone;
-  const pathshalaDone = props.pathshalaDone;
+  const pathshalaDone = props.pathshalaDone || localState.pathshalaDone;
   const japaBeads  = props.japaBeads ?? localState.japaBeads;
   const japaRounds = props.japaRounds ?? localState.japaRounds;
   const quizDone   = Boolean(props.quizDone) || localState.quizDone;
@@ -209,14 +223,16 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: pathshalaProgress > 0 ? `${pathshalaProgress}% read today` : 'Study scripture',
       done: pathshalaDone,
       href: '/pathshala',
-      right: (
-        <div className="w-[52px]">
-          <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.14)' }}>
-            <div className="h-[3px] rounded-full transition-all duration-500"
-              style={{ width: `${pathshalaProgress}%`, background: accentColor }} />
-          </div>
-        </div>
-      ),
+      right: pathshalaDone
+        ? <StatusDot done={true} accentColor={accentColor} />
+        : (
+            <div className="w-[52px]">
+              <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.14)' }}>
+                <div className="h-[3px] rounded-full transition-all duration-500"
+                  style={{ width: `${pathshalaProgress}%`, background: accentColor }} />
+              </div>
+            </div>
+          ),
     },
     {
       id: 'quiz',

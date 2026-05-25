@@ -88,6 +88,9 @@ export default function LessonClient({
         typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
         4
       );
+      // Write immediately so DailySadhanaStrip updates in real-time via storage event
+      try { localStorage.setItem(`shoonaya-pathshala-done-${today}`, 'true'); } catch { /* non-fatal */ }
+
       void (async () => {
         try {
           await supabase
