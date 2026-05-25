@@ -60,6 +60,12 @@ export async function POST(req: NextRequest) {
     const { error: sevaError } = await supabase.rpc('increment_period_seva', { p_user_id: userId, p_points: 15 });
     if (sevaError) {
       console.error('Failed to award seva for perfect day:', sevaError);
+    } else {
+      // PART C - fire-and-forget tier check
+      fetch(new URL('/api/seva-tier/check', req.url).toString(), { 
+        method: 'POST', 
+        headers: { Cookie: req.headers.get('cookie') ?? '' } 
+      }).catch(() => {}); // non-fatal
     }
 
     return NextResponse.json({ awarded: true, karma: 30, seva: 15 });

@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import { shareScoreToWhatsApp } from '@/lib/whatsapp';
+import TierBadge from '@/components/ui/TierBadge';
+import { getTierFromScore } from '@/lib/seva-tiers';
 
 type LeaderboardUser = {
   id: string;
@@ -158,7 +160,7 @@ export default function ScoreboardClient({
           {topThree[1] && (
             <div className="flex flex-col items-center">
               <div className="relative mb-2">
-                <div className="w-14 h-14 rounded-full border-2 border-slate-300 overflow-hidden bg-[var(--surface-soft)] relative">
+                <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/40 overflow-hidden bg-[var(--surface-soft)] relative">
                   {topThree[1].avatar_url ? (
                     <Image src={topThree[1].avatar_url} alt={topThree[1].username} fill className="object-cover" />
                   ) : (
@@ -167,11 +169,14 @@ export default function ScoreboardClient({
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-slate-300 text-slate-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white/20">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--surface-raised)] text-[#C5A059] text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-[#C5A059]/40">
                   2nd
                 </div>
               </div>
               <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[1].full_name || topThree[1].username}</p>
+              <div className="mt-1">
+                <TierBadge sevaScore={topThree[1].seva_score || 0} size="sm" />
+              </div>
               <p className="text-[9px] text-[#C5A059] font-bold mt-0.5">{getScoreForPeriod(topThree[1], period)} pts</p>
             </div>
           )}
@@ -196,6 +201,9 @@ export default function ScoreboardClient({
                 </div>
               </div>
               <p className="text-xs font-bold theme-ink text-center line-clamp-1 w-20">{topThree[0].full_name || topThree[0].username}</p>
+              <div className="mt-1">
+                <TierBadge sevaScore={topThree[0].seva_score || 0} size="sm" />
+              </div>
               <p className="text-[10px] text-[#C5A059] font-bold mt-0.5">{getScoreForPeriod(topThree[0], period)} pts</p>
             </div>
           )}
@@ -203,7 +211,7 @@ export default function ScoreboardClient({
           {topThree[2] && (
             <div className="flex flex-col items-center">
               <div className="relative mb-2">
-                <div className="w-14 h-14 rounded-full border-2 border-amber-600 overflow-hidden bg-[var(--surface-soft)] relative">
+                <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/60 overflow-hidden bg-[var(--surface-soft)] relative">
                   {topThree[2].avatar_url ? (
                     <Image src={topThree[2].avatar_url} alt={topThree[2].username} fill className="object-cover" />
                   ) : (
@@ -212,11 +220,14 @@ export default function ScoreboardClient({
                     </div>
                   )}
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-white/20">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[var(--surface-raised)] text-[#C5A059] text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-[#C5A059]/60">
                   3rd
                 </div>
               </div>
               <p className="text-[11px] font-bold theme-ink text-center line-clamp-1 w-16">{topThree[2].full_name || topThree[2].username}</p>
+              <div className="mt-1">
+                <TierBadge sevaScore={topThree[2].seva_score || 0} size="sm" />
+              </div>
               <p className="text-[9px] text-[#C5A059] font-bold mt-0.5">{getScoreForPeriod(topThree[2], period)} pts</p>
             </div>
           )}
@@ -284,20 +295,28 @@ export default function ScoreboardClient({
             transition={{ duration: 0.22 }}
             className="space-y-2"
           >
-            {others.map((user, idx) => (
+            {others.map((user, idx) => {
+              const tier = getTierFromScore(user.seva_score || 0);
+              const isHighTier = tier.key === 'rishi' || tier.key === 'mahatma';
+              
+              return (
               <motion.div
                 key={user.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="group flex items-center gap-4 p-3 rounded-2xl bg-[var(--surface-soft)] border border-black/[0.03] hover:border-[#C5A059]/30 transition-all cursor-pointer"
+                className={`group flex items-center gap-4 p-3 rounded-2xl bg-[var(--surface-soft)] border transition-all cursor-pointer ${
+                  isHighTier ? 'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:border-amber-500/60' : 'border-black/[0.03] hover:border-[#C5A059]/30'
+                }`}
               >
                 <div className="w-8 text-center text-xs font-bold text-[var(--text-dim)]">
                   {idx + 4}
                 </div>
 
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full overflow-hidden bg-white/10 border border-black/5 shadow-inner relative">
+                  <div className={`w-10 h-10 rounded-full overflow-hidden bg-white/10 shadow-inner relative ${
+                    isHighTier ? 'border-2 border-amber-500/50' : 'border border-black/5'
+                  }`}>
                     {user.avatar_url ? (
                       <Image src={user.avatar_url} alt={user.username} fill className="object-cover" />
                     ) : (
@@ -319,9 +338,9 @@ export default function ScoreboardClient({
                     {user.active_symbol_id && <span className="text-xs" title={user.active_symbol_id}>✨</span>}
                     {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
                   </div>
-                  <p className="text-[10px] text-[var(--text-muted-warm)] uppercase tracking-wider font-bold">
-                    {user.tradition || 'Sadhak'}
-                  </p>
+                  <div className="mt-0.5">
+                    <TierBadge sevaScore={user.seva_score || 0} size="sm" />
+                  </div>
                 </div>
 
                 <div className="text-right">

@@ -716,7 +716,7 @@ function AncestralScrollView({
       <div className="absolute right-3 top-0 h-full w-5 bg-[linear-gradient(90deg,#8b6238,#c9a35b,#8b6238)] shadow-[0_8px_20px_rgba(62,42,31,0.20)] sm:right-6" />
       <div className="absolute inset-x-10 top-0 bottom-0 border-x border-dashed border-[#c9a35b]/32 sm:inset-x-20" />
       <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3 sm:left-6 sm:right-6 sm:top-5">
-        <div className="max-w-[72%] rounded-[1.75rem] border border-[#c9a35b]/20 bg-[#fffdf9]/62 px-4 py-3 backdrop-blur-xl dark:bg-[#333330]/62">
+        <div className="max-w-[72%] rounded-[1.75rem] border border-[#C5A059]/15 bg-[#fffdf9]/62 px-4 py-3 backdrop-blur-xl dark:bg-[#333330]/62">
           <div className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FAEEDA]/78 text-[#854F0B]">
               <ScrollText size={16} />
@@ -748,7 +748,7 @@ function AncestralScrollView({
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {members.map((member) => (
-                <button key={member.id} type="button" onClick={() => onSelect(member)} className="group flex items-center gap-3 rounded-[1.35rem] border border-[#c9a35b]/20 bg-[#fffdf9]/76 p-3 text-left shadow-[0_10px_30px_rgba(62,42,31,0.06)] backdrop-blur-md transition hover:-translate-y-0.5 dark:bg-[#333330]/74">
+                <button key={member.id} type="button" onClick={() => onSelect(member)} className="group flex items-center gap-3 rounded-[1.35rem] border border-[#C5A059]/15 bg-[var(--surface-soft)] p-3 text-left shadow-[0_10px_30px_rgba(62,42,31,0.06)] backdrop-blur-md transition hover:-translate-y-0.5 ">
                   <MemberAvatar member={member} size="xs" />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-lg font-medium text-[#3E2A1F] premium-serif dark:text-[#f0ede6]">{member.name}</span>

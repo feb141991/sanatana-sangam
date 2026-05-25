@@ -21,6 +21,7 @@ import type { AppLang } from '@/lib/i18n/translations';
 import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { ageToAshrama, ageFromDob, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
+import TierBadge from '@/components/ui/TierBadge';
 import { MetricTile, SurfaceSection } from '@/components/ui';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
@@ -963,6 +964,9 @@ export default function ProfileClient({
                   <div className="w-8 h-px bg-gradient-to-l from-transparent to-[#C5A059]/30" />
                 </div>
               )}
+              <div className="mt-6 flex justify-center">
+                <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="lg" showProgress={true} />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -1129,6 +1133,13 @@ export default function ProfileClient({
               <div className="space-y-1">
                 <h2 className="text-2xl font-medium theme-ink premium-serif">Personal details</h2>
                 <p className="text-sm theme-muted">Update your spiritual identity</p>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-xs font-medium theme-muted">Spiritual Level</label>
+                <div className="pt-1">
+                  <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="md" />
+                </div>
               </div>
 
               {/* ── Tradition — locked ── */}

@@ -48,12 +48,12 @@ export function KulMembers({
               key={member.id}
               whileHover={{ y: -2 }}
               onClick={() => onMemberClick(member)}
-              className="group glass-panel rounded-[2rem] p-4 flex items-center gap-4 border border-white/5 hover:border-white/10 cursor-pointer transition-all shadow-sm"
+              className="group glass-panel rounded-[2rem] p-4 flex items-center gap-4 border border-[#C5A059]/15 hover:border-[#C5A059]/15 cursor-pointer transition-all shadow-sm"
             >
               <div className="relative">
                 <Avatar name={name} url={profile?.avatar_url} size={12} />
                 {member.role === 'guardian' && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center text-[10px] shadow-sm border border-white/20">
+                  <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center text-[10px] shadow-sm border border-[#C5A059]/15">
                     <Crown size={10} className="text-yellow-900" />
                   </div>
                 )}
@@ -66,7 +66,7 @@ export function KulMembers({
                 </p>
               </div>
 
-              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5 border border-white/5 text-[color:var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--surface-soft)] border border-[#C5A059]/15 text-[color:var(--brand-muted)] opacity-0 group-hover:opacity-100 transition-opacity">
                 <ChevronRight size={14} />
               </div>
             </motion.div>
@@ -81,7 +81,7 @@ function Avatar({ name, url, size }: { name: string; url: string | null | undefi
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   return (
     <div 
-      className="rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 border border-white/20 shadow-inner"
+      className="rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 border border-[#C5A059]/15 shadow-inner"
       style={{ width: size * 4, height: size * 4 }}
     >
       {url ? (

@@ -158,6 +158,8 @@ type DailyDharmaStackState = {
   japaRounds: number;
   quizDone: boolean;
   dharmVeerDone: boolean;
+  stotramDone: boolean;
+  kathaDone: boolean;
   pathshalaProgress: number;
 };
 
@@ -166,6 +168,8 @@ const EMPTY_DAILY_DHARMA_STACK_STATE: DailyDharmaStackState = {
   japaRounds: 0,
   quizDone: false,
   dharmVeerDone: false,
+  stotramDone: false,
+  kathaDone: false,
   pathshalaProgress: 0,
 };
 
@@ -1100,6 +1104,8 @@ export default function HomeDashboard({
       }
 
       nextState.dharmVeerDone = localStorage.getItem(`shoonaya-dharmveer-done-${todayStr}`) === 'true';
+      nextState.stotramDone = localStorage.getItem(`shoonaya-stotram-done-${todayStr}`) === 'true';
+      nextState.kathaDone = localStorage.getItem(`shoonaya-katha-done-${todayStr}`) === 'true';
 
       const pathshalaRaw = localStorage.getItem('shoonaya-pathshala-progress');
       if (pathshalaRaw) {
@@ -2257,6 +2263,43 @@ export default function HomeDashboard({
           tithi={panchang?.tithi}
           tradition={tradition ?? 'hindu'}
         />
+
+        <div className="px-5 mb-4">
+          <p
+            className="text-[10px] uppercase tracking-widest font-bold mb-2"
+            style={{ color: 'rgba(197,160,89,0.5)' }}
+          >
+            Bonus Sadhana
+          </p>
+          <div className="flex gap-3">
+            <Link
+              href="/bhakti/stotram"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
+              style={{
+                borderColor: dailyDharmaStackState.stotramDone ? `${meta.accentColour}44` : 'rgba(197,160,89,0.15)',
+                background: dailyDharmaStackState.stotramDone ? `${meta.accentColour}11` : 'transparent',
+              }}
+            >
+              <span className="text-sm">🎵</span>
+              <span className="text-[11px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
+                Stotram {dailyDharmaStackState.stotramDone ? '✓' : ''}
+              </span>
+            </Link>
+            <Link
+              href="/bhakti/katha"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border"
+              style={{
+                borderColor: dailyDharmaStackState.kathaDone ? `${meta.accentColour}44` : 'rgba(197,160,89,0.15)',
+                background: dailyDharmaStackState.kathaDone ? `${meta.accentColour}11` : 'transparent',
+              }}
+            >
+              <span className="text-sm">📖</span>
+              <span className="text-[11px] font-semibold" style={{ color: 'var(--brand-ink)' }}>
+                Katha {dailyDharmaStackState.kathaDone ? '✓' : ''}
+              </span>
+            </Link>
+          </div>
+        </div>
         
         <SankalpaBanner
           sankalpa={activeSankalpa}

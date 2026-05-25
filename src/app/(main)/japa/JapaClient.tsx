@@ -2528,6 +2528,8 @@ export default function JapaClient({
                 .eq('id', userId);
             }
           }
+          // PART C - fire-and-forget tier check
+          fetch('/api/seva-tier/check', { method: 'POST' }).catch(() => {}); // non-fatal, fire-and-forget
         } catch { /* non-fatal */ }
 
         // karma_points — RPC with direct-update fallback

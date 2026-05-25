@@ -82,16 +82,16 @@ export function KulSabha({
   }, []);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[550px] glass-panel rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl relative">
+    <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[550px] glass-panel rounded-[2.5rem] overflow-hidden border border-[#C5A059]/15 shadow-2xl relative">
       {/* Background Sacred Geometry Watermark */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden">
         <div className="text-[400px] select-none font-bold">🕉️</div>
       </div>
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/8 bg-white/10 backdrop-blur-md flex items-center justify-between z-10">
+      <div className="px-6 py-4 border-b border-white/8 bg-[var(--surface-soft)] backdrop-blur-md flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400/20 to-orange-600/20 flex items-center justify-center text-xl shadow-inner border border-white/10">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400/20 to-orange-600/20 flex items-center justify-center text-xl shadow-inner border border-[#C5A059]/15">
             💬
           </div>
           <div>
@@ -119,7 +119,7 @@ export function KulSabha({
             </motion.div>
           ))}
           {members.length > 5 && (
-            <div className="w-9 h-9 rounded-full border-2 border-[var(--surface-soft)] bg-white/10 backdrop-blur-md flex items-center justify-center text-[10px] font-bold theme-ink shadow-md">
+            <div className="w-9 h-9 rounded-full border-2 border-[var(--surface-soft)] bg-[var(--surface-soft)] backdrop-blur-md flex items-center justify-center text-[10px] font-bold theme-ink shadow-md">
               +{members.length - 5}
             </div>
           )}
@@ -174,7 +174,7 @@ export function KulSabha({
                 className={`flex items-end gap-3 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}
               >
                 {!isMe && (
-                  <div className="w-9 h-9 rounded-2xl overflow-hidden flex-shrink-0 bg-white/20 backdrop-blur-md border border-white/10 shadow-sm">
+                  <div className="w-9 h-9 rounded-2xl overflow-hidden flex-shrink-0 bg-[var(--surface-soft)] backdrop-blur-md border border-[#C5A059]/15 shadow-sm">
                     {showAvatar && (
                       msg.profiles?.avatar_url ? (
                         <Image width={120} height={120} src={msg.profiles.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -198,7 +198,7 @@ export function KulSabha({
                     className={`px-5 py-3 rounded-2xl text-sm shadow-md leading-relaxed ${
                       isMe 
                         ? 'bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-white rounded-br-none' 
-                        : 'bg-white/40 backdrop-blur-xl border border-white/20 theme-ink rounded-bl-none'
+                        : 'bg-white/40 backdrop-blur-xl border border-[#C5A059]/15 theme-ink rounded-bl-none'
                     } ${isTemp ? 'opacity-70 animate-pulse' : ''}`}
                   >
                     {msg.content}
@@ -214,7 +214,7 @@ export function KulSabha({
       </div>
 
       {/* Sacred Emoji Bar */}
-      <div className="px-6 py-2 bg-white/5 border-t border-white/5 flex items-center gap-4 z-10">
+      <div className="px-6 py-2 bg-[var(--surface-soft)] border-t border-[#C5A059]/15 flex items-center gap-4 z-10">
         <p className="text-[9px] font-bold theme-muted uppercase tracking-widest whitespace-nowrap">Sacred Reactions</p>
         <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
           {SACRED_EMOJIS.map(emoji => (
@@ -232,11 +232,11 @@ export function KulSabha({
       </div>
 
       {/* Input Area */}
-      <div className="p-5 bg-white/10 backdrop-blur-2xl border-t border-white/10 z-10">
+      <div className="p-5 bg-[var(--surface-soft)] backdrop-blur-2xl border-t border-[#C5A059]/15 z-10">
         <div className="flex gap-4 items-center">
            <button 
              onClick={() => setShowPrompts(!showPrompts)}
-             className={`p-2.5 rounded-xl transition-all ${showPrompts ? 'bg-orange-100 text-orange-600 shadow-inner' : 'bg-white/5 text-[color:var(--brand-muted)] hover:bg-white/10'}`}
+             className={`p-2.5 rounded-xl transition-all ${showPrompts ? 'bg-orange-100 text-orange-600 shadow-inner' : 'bg-[var(--surface-soft)] text-[color:var(--brand-muted)] hover:bg-[var(--surface-soft)]'}`}
            >
               <Lightbulb size={20} />
            </button>
@@ -246,7 +246,7 @@ export function KulSabha({
                onChange={e => setContent(e.target.value)}
                onKeyDown={e => e.key === 'Enter' && handleSend()}
                placeholder={t('kulSabhaPlaceholder')}
-               className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 focus:border-[var(--brand-primary)]/40 focus:bg-white/10 outline-none text-sm theme-ink transition-all placeholder:text-[color:var(--brand-muted)] shadow-inner"
+               className="w-full px-6 py-4 rounded-2xl bg-[var(--surface-soft)] border border-[#C5A059]/15 focus:border-[var(--brand-primary)]/40 focus:bg-[var(--surface-soft)] outline-none text-sm theme-ink transition-all placeholder:text-[color:var(--brand-muted)] shadow-inner"
              />
              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                <Sparkles size={16} className="text-[color:var(--brand-primary)] opacity-40 group-focus-within:opacity-100 transition-opacity" />

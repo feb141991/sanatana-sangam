@@ -11,6 +11,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Suspense, use } from 'react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { resolveReadablePreferences, type ReadablePreferences } from '@/lib/readable-preferences';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
@@ -131,8 +132,8 @@ function getVerseMeaning(stotramId: string, verseIdx: number, enMeaning: string,
 }
 
 // ─── Improved audio player with seek + loop ───────────────────────────────────
-function AudioPanel({ trackId, autoplay, accentColor }: {
-  trackId: string; autoplay: boolean; accentColor: string;
+function AudioPanel({ trackId, autoplay, accentColor, onFinished }: {
+  trackId: string; autoplay: boolean; accentColor: string; onFinished?: () => void;
 }) {
   const track = DEVOTIONAL_STARTER_TRACKS.find(t => t.id === trackId);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -147,7 +148,11 @@ function AudioPanel({ trackId, autoplay, accentColor }: {
     audio.src = track.audioUrl;
     const onMeta  = () => setDuration(audio.duration || 0);
     const onTime  = () => setCurrent(audio.currentTime);
-    const onEnded = () => { setPlaying(false); setCurrent(0); };
+    const onEnded = () => {
+      setPlaying(false);
+      setCurrent(0);
+      onFinished?.();
+    };
     audio.addEventListener('loadedmetadata', onMeta);
     audio.addEventListener('timeupdate', onTime);
     audio.addEventListener('ended', onEnded);
@@ -157,7 +162,7 @@ function AudioPanel({ trackId, autoplay, accentColor }: {
       audio.removeEventListener('timeupdate', onTime);
       audio.removeEventListener('ended', onEnded);
     };
-  }, [track, autoplay]);
+  }, [track, autoplay, onFinished]);
 
   useEffect(() => {
     if (audioRef.current) audioRef.current.loop = loop;
@@ -333,6 +338,34 @@ function StotramReader({ id }: { id: string }) {
   const shouldShowMeaning = readerControls.state.showMeaning;
   const selectedVerseIndex = activeVerse ?? 0;
   const selectedVerse = stotram?.verses?.[selectedVerseIndex] ?? null;
+  const completionMarkedRef = useRef(false);
+
+  async function markStotramDone() {
+    if (!stotram || completionMarkedRef.current) return;
+    completionMarkedRef.current = true;
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+      const today = localSpiritualDate(tz, 4);
+      localStorage.setItem(`shoonaya-stotram-done-${today}`, 'true');
+      void (async () => {
+        try {
+          await supabase
+            .from('daily_sadhana')
+            .upsert(
+              { user_id: user.id, date: today, stotram_done: true },
+              { onConflict: 'user_id,date' }
+            );
+        } catch {
+          // Non-fatal bonus tracking.
+        }
+      })();
+    } catch {
+      // Non-fatal bonus tracking.
+    }
+  }
 
   // ── Per-verse TTS (active when no AudioPanel track, or as supplement) ───────
   const [ttsSpeaking,   setTtsSpeaking]   = useState(false);
@@ -627,6 +660,7 @@ function StotramReader({ id }: { id: string }) {
                 return;
               }
               if (showAll) {
+                void markStotramDone();
                 setShowAll(false);
                 setActiveVerse(0);
                 return;
@@ -639,6 +673,7 @@ function StotramReader({ id }: { id: string }) {
                 focusVerse(selectedVerseIndex + 1);
                 return;
               }
+              void markStotramDone();
               setShowAll(true);
             }}
             className="flex-1 h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all"
@@ -685,7 +720,7 @@ function StotramReader({ id }: { id: string }) {
 
         {/* Audio player */}
         {stotram.audioTrackId && (
-          <AudioPanel trackId={stotram.audioTrackId} autoplay={autoplay} accentColor={accentColor} />
+          <AudioPanel trackId={stotram.audioTrackId} autoplay={autoplay} accentColor={accentColor} onFinished={markStotramDone} />
         )}
 
         {/* Verses */}

@@ -96,7 +96,7 @@ export function KulTasks({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="text-center py-16 glass-panel rounded-[2.5rem] border border-dashed border-black/10 bg-white/5"
+              className="text-center py-16 glass-panel rounded-[2.5rem] border border-dashed border-black/10 bg-[var(--surface-soft)]"
             >
               <div className="w-16 h-16 rounded-full bg-slate-100/50 flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">✨</div>
               <p className="text-sm theme-muted font-medium">{t('kulNoTasksFound')}</p>
@@ -110,7 +110,7 @@ export function KulTasks({
                 className={`group relative overflow-hidden rounded-[2rem] p-5 flex gap-5 transition-all border ${
                   task.completed 
                     ? 'bg-green-50/30 border-green-100/20 opacity-70' 
-                    : 'glass-panel border-white/5 hover:border-white/20 hover:shadow-xl hover:-translate-y-0.5'
+                    : 'glass-panel border-[#C5A059]/15 hover:border-[#C5A059]/15 hover:shadow-xl hover:-translate-y-0.5'
                 }`}
               >
                 {/* Visual Accent */}
@@ -124,7 +124,7 @@ export function KulTasks({
                   className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 transition-all shadow-sm ${
                     task.completed 
                       ? 'bg-green-500 text-white shadow-green-200' 
-                      : 'bg-white/10 border border-white/10 group-hover:border-[var(--brand-primary)]/40 group-hover:bg-[var(--brand-primary)]/5'
+                      : 'bg-[var(--surface-soft)] border border-[#C5A059]/15 group-hover:border-[var(--brand-primary)]/40 group-hover:bg-[var(--brand-primary)]/5'
                   }`}
                 >
                   {task.completed ? <Sparkles size={24} /> : '📋'}

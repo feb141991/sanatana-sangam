@@ -153,7 +153,7 @@ export default function QuizDashboardClient({
   }, [initialHistory]);
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: '#0a0a08', color: 'var(--text-cream)' }}>
+    <div className="min-h-screen pb-28 bg-[var(--divine-bg)] theme-ink">
 
       {/* ── Back nav ─────────────────────────────────────────────────────── */}
       <div className="px-5 pt-safe pt-4">

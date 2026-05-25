@@ -88,9 +88,9 @@ export function NoKulPrompt({
 
               <button
                 onClick={() => setMode('join')}
-                className="group flex items-center gap-4 p-5 rounded-[2rem] glass-panel border border-white/5 hover:border-white/10 transition-all text-left"
+                className="group flex items-center gap-4 p-5 rounded-[2rem] glass-panel border border-[#C5A059]/15 hover:border-[#C5A059]/15 transition-all text-left"
               >
-                <div className="w-12 h-12 rounded-2xl bg-white/10 text-[var(--brand-primary)] flex items-center justify-center text-xl border border-white/10">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--surface-soft)] text-[var(--brand-primary)] flex items-center justify-center text-xl border border-[#C5A059]/15">
                   <UserPlus size={24} />
                 </div>
                 <div className="flex-1">
@@ -134,7 +134,7 @@ export function NoKulPrompt({
                       placeholder="e.g. Sharma Parivar"
                       value={kulName}
                       onChange={e => setKulName(e.target.value)}
-                      className="w-full px-5 py-4 rounded-[1.8rem] bg-white/5 border border-white/10 focus:border-[var(--brand-primary)]/40 outline-none text-lg theme-ink"
+                      className="w-full px-5 py-4 rounded-[1.8rem] bg-[var(--surface-soft)] border border-[#C5A059]/15 focus:border-[var(--brand-primary)]/40 outline-none text-lg theme-ink"
                     />
                   </div>
                 </div>
@@ -175,7 +175,7 @@ export function NoKulPrompt({
                   placeholder="CODE123"
                   value={inviteCode}
                   onChange={e => setInviteCode(e.target.value.toUpperCase())}
-                  className="w-full px-5 py-5 rounded-[1.8rem] bg-white/5 border border-white/10 focus:border-[var(--brand-primary)]/40 outline-none text-3xl font-bold text-center tracking-[0.2em] theme-ink uppercase"
+                  className="w-full px-5 py-5 rounded-[1.8rem] bg-[var(--surface-soft)] border border-[#C5A059]/15 focus:border-[var(--brand-primary)]/40 outline-none text-3xl font-bold text-center tracking-[0.2em] theme-ink uppercase"
                 />
 
                 <button

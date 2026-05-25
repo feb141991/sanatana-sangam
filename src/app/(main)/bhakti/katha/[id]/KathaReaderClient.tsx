@@ -8,6 +8,8 @@ import {
   Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, Copy, Check
 } from 'lucide-react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import type { Katha } from '@/lib/katha-library';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
@@ -140,6 +142,7 @@ export default function KathaReaderClient({
   const [speaking, setSpeaking] = useState(false);
   const [ttsRate, setTtsRate] = useState<number>(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const completionMarkedRef = useRef(false);
 
   const isPanchatantra = katha.tags.includes('panchatantra');
   const isHero = katha.tradition !== 'sikh' &&
@@ -215,6 +218,33 @@ export default function KathaReaderClient({
         : transliterateDevanagariToGurmukhi(katha.titleHi ?? katha.title)
     ) :
     katha.title;
+
+  const markKathaDone = useCallback(async () => {
+    if (completionMarkedRef.current) return;
+    completionMarkedRef.current = true;
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+      const today = localSpiritualDate(tz, 4);
+      localStorage.setItem(`shoonaya-katha-done-${today}`, 'true');
+      void (async () => {
+        try {
+          await supabase
+            .from('daily_sadhana')
+            .upsert(
+              { user_id: user.id, date: today, katha_done: true },
+              { onConflict: 'user_id,date' }
+            );
+        } catch {
+          // Non-fatal bonus tracking.
+        }
+      })();
+    } catch {
+      // Non-fatal bonus tracking.
+    }
+  }, []);
 
   const hasAnyLocal = hasHindi || hasPunjabi;
 
@@ -295,6 +325,7 @@ export default function KathaReaderClient({
       audio.onended = () => {
         setSpeaking(false);
         audioRef.current = null;
+        void markKathaDone();
       };
       audio.onerror = () => {
         setSpeaking(false);
@@ -354,6 +385,7 @@ export default function KathaReaderClient({
           ) : null}
           <button
             onClick={() => {
+              void markKathaDone();
               if (window.history.length > 2) {
                 router.back();
               } else {

@@ -524,7 +524,7 @@ function NityaCustomSheet({
 function StreakCard({ streak, accent }: { streak: NityaKarmaStreak; accent: string }) {
   return (
     <div
-      className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-black/5 dark:border-white/6"
+      className="rounded-2xl px-4 py-3 flex items-center gap-3 border border-[#C5A059]/15 dark:border-[#C5A059]/15"
       style={{ background: `${accent}08` }}
     >
       <Trophy size={18} style={{ color: accent }} />
@@ -569,7 +569,7 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
       >
         {/* Handle + close */}
         <div className="flex items-center justify-between">
-          <div className="w-10 h-1 rounded-full bg-white/15 mx-auto" />
+          <div className="w-10 h-1 rounded-full bg-[var(--surface-soft)] mx-auto" />
           <button onClick={onClose} className="absolute right-5 top-5 w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: 'rgba(255,255,255,0.08)' }}>
             <X size={16} className="text-white/50" />
@@ -589,7 +589,7 @@ function ProUpgradeSheet({ onClose, accent }: { onClose: () => void; accent: str
         {/* Features */}
         <div className="space-y-2">
           {PRO_FEATURES.map(f => (
-            <div key={f} className="flex items-center gap-3 rounded-xl px-3 py-2.5 border border-white/5"
+            <div key={f} className="flex items-center gap-3 rounded-xl px-3 py-2.5 border border-[#C5A059]/15"
               style={{ background: `${accent}0a` }}>
               <span className="text-sm text-[color:var(--brand-ink)]">{f}</span>
             </div>
@@ -1284,7 +1284,7 @@ export default function NityaKarmaClient({
       <div className="flex items-center gap-3 px-4 pt-4 pb-3">
         <button
           onClick={onBack}
-          className="w-11 h-11 rounded-full glass-panel border border-white/10 flex items-center justify-center"
+          className="w-11 h-11 rounded-full bg-[var(--surface-soft)] border border-[#C5A059]/15 flex items-center justify-center"
          aria-label="Go back">
           <ChevronLeft size={20} style={{ color: accent }} />
         </button>
@@ -1294,7 +1294,7 @@ export default function NityaKarmaClient({
         </div>
         <div className="flex items-center gap-2">
           {streak && streak.current_streak > 0 && isPro && (
-            <div className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-white/10"
+            <div className="flex items-center gap-1 rounded-xl px-3 py-1.5 border border-[#C5A059]/15"
               style={{ background: `${accent}14` }}>
               <Flame size={14} style={{ color: accent }} />
               <span className="text-xs font-semibold" style={{ color: accent }}>{streak.current_streak}d</span>
@@ -1303,7 +1303,7 @@ export default function NityaKarmaClient({
           {isPro ? (
             <>
               <Link href="/nitya-karma/insights"
-                className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
+                className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
                 style={{ background: `${accent}14` }}
                 title="Sadhana Insights"
               >
@@ -1311,7 +1311,7 @@ export default function NityaKarmaClient({
               </Link>
               {nityaScreen === 'dincharya' && (
                 <button onClick={() => setShowCustom(true)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center border border-white/10"
+                  className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
                   style={{ background: `${accent}14` }}>
                   <Settings2 size={15} style={{ color: accent }} />
                 </button>
@@ -1352,7 +1352,7 @@ export default function NityaKarmaClient({
             {/* Header Overlay */}
             <div className="absolute top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 pt-4 pb-3 pointer-events-none">
               <button onClick={() => router.back()}
-                className="w-9 h-9 rounded-full glass-panel border flex items-center justify-center pointer-events-auto"
+                className="w-9 h-9 rounded-full bg-[var(--surface-soft)] border flex items-center justify-center pointer-events-auto"
                 style={{ borderColor: 'var(--border-subtle)', color: 'var(--brand-ink)' }}>
                 <ChevronLeft size={20} />
               </button>
@@ -1363,14 +1363,14 @@ export default function NityaKarmaClient({
               </div>
               <div className="pointer-events-auto">
                 {isPro ? (
-                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border glass-panel backdrop-blur-md"
+                  <div className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border bg-[var(--surface-soft)] backdrop-blur-md"
                     style={{ borderColor: 'var(--border-subtle)' }}>
                     <Star size={12} style={{ color: accent, fill: accent }} />
                     <span className="text-[10px] font-bold" style={{ color: accent }}>PRO</span>
                   </div>
                 ) : (
                   <button onClick={() => setShowProSheet(true)}
-                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border glass-panel backdrop-blur-md"
+                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 border bg-[var(--surface-soft)] backdrop-blur-md"
                     style={{ borderColor: 'var(--border-subtle)' }}>
                     <Star size={11} className="text-[color:var(--brand-muted)]" />
                     <span className="text-[10px] font-semibold text-[color:var(--brand-muted)]">Pro</span>
@@ -1477,7 +1477,7 @@ export default function NityaKarmaClient({
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05, duration: 0.35 }}
-                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 bg-[var(--surface-soft)]"
                 style={{ borderColor: `${accent}28` }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
@@ -1512,7 +1512,7 @@ export default function NityaKarmaClient({
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.10, duration: 0.35 }}
-                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 bg-[var(--surface-soft)]"
                 style={{ borderColor: isPro ? `${accent}28` : 'rgba(251,191,36,0.18)' }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
@@ -1545,7 +1545,7 @@ export default function NityaKarmaClient({
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.35 }}
-                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 glass-panel"
+                className="w-full text-left rounded-[1.4rem] border p-5 flex items-center gap-4 bg-[var(--surface-soft)]"
                 style={{ borderColor: isPro ? (localLifeStage ? `${(_stageMeta?.accent ?? accent)}28` : `${accent}28`) : 'rgba(251,191,36,0.18)' }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
@@ -1579,7 +1579,7 @@ export default function NityaKarmaClient({
               </motion.button>
 
               {/* Engine info */}
-              <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">
+              <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 px-4 py-3 flex items-start gap-2.5">
                 <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
                 <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
                   Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
@@ -1632,7 +1632,7 @@ export default function NityaKarmaClient({
                 transition={{ delay: idx * 0.06, duration: 0.4 }}
                 whileTap={!step.completed && !isBusy ? { scale: 0.97 } : {}}
                 className={`w-full text-left rounded-2xl border p-4 flex items-center gap-4 ${
-                  step.completed ? 'border-white/6' : 'glass-panel border-white/8'
+                  step.completed ? 'border-[#C5A059]/15' : 'bg-[var(--surface-soft)] border-[#C5A059]/15'
                 }`}
                 style={{
                   ...(step.completed ? { background: `${accent}08` } : {}),
@@ -1721,7 +1721,7 @@ export default function NityaKarmaClient({
           {allDone && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              className="rounded-3xl p-6 text-center space-y-3 border border-white/10"
+              className="rounded-3xl p-6 text-center space-y-3 border border-[#C5A059]/15"
               style={{ background: `linear-gradient(135deg, ${accent}20, ${accent}10)` }}
             >
               <motion.div className="text-5xl" animate={{ scale: [0.8, 1.15, 1] }} transition={{ duration: 0.5 }}>🙏</motion.div>
@@ -1910,7 +1910,7 @@ export default function NityaKarmaClient({
 
               {/* Guided Plans card */}
               <Link href="/nitya-karma/plans"
-                className="block rounded-[1.4rem] border px-5 py-4 flex items-center gap-4 glass-panel active:scale-[0.98] transition-transform"
+                className="block rounded-[1.4rem] border px-5 py-4 flex items-center gap-4 bg-[var(--surface-soft)] active:scale-[0.98] transition-transform"
                 style={{ borderColor: `${accent}28` }}
               >
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shrink-0"
@@ -1925,7 +1925,7 @@ export default function NityaKarmaClient({
               </Link>
 
               {/* 30-day calendar */}
-              <div className="glass-panel rounded-2xl border border-white/8 overflow-hidden">
+              <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 overflow-hidden">
                 <div className="px-4 pt-4 pb-3 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
@@ -1976,17 +1976,17 @@ export default function NityaKarmaClient({
                     ))}
                   </div>
                   {streak && (
-                    <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-around">
+                    <div className="mt-3 pt-3 border-t border-[#C5A059]/15 flex items-center justify-around">
                       <div className="text-center">
                         <p className="text-lg font-bold" style={{ color: accent }}>{streak.current_streak}</p>
                         <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
                       </div>
-                      <div className="w-px h-8 bg-white/10" />
+                      <div className="w-px h-8 bg-[var(--surface-soft)]" />
                       <div className="text-center">
                         <p className="text-lg font-bold" style={{ color: accent }}>{streak.longest_streak}</p>
                         <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
                       </div>
-                      <div className="w-px h-8 bg-white/10" />
+                      <div className="w-px h-8 bg-[var(--surface-soft)]" />
                       <div className="text-center">
                         <p className="text-lg font-bold" style={{ color: accent }}>
                           {dayRecords.filter(d => d.count > 0).length}
@@ -1999,7 +1999,7 @@ export default function NityaKarmaClient({
               </div>
 
               {/* Engine note */}
-              <div className="glass-panel rounded-2xl border border-white/6 px-4 py-3 flex items-start gap-2.5">
+              <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 px-4 py-3 flex items-start gap-2.5">
                 <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
                 <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
                   Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
