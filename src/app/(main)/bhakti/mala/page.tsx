@@ -10,7 +10,7 @@ export default async function MalaPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition')
+    .select('full_name, username, tradition, active_symbol_id')
     .eq('id', user.id)
     .single();
 
@@ -42,6 +42,7 @@ export default async function MalaPage() {
       currentStreak={sadhana?.streak_count ?? 0}
       japaAlreadyDoneToday={sadhana?.japa_done ?? false}
       history={(history ?? []).map(h => ({ date: h.date, done: h.japa_done }))}
+      activeSymbolId={profile?.active_symbol_id ?? null}
     />
   );
 }

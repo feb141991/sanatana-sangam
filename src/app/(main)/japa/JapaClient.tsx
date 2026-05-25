@@ -34,6 +34,7 @@ import {
   type JapaMalaId,
   type JapaMantraId,
 } from '@/lib/tradition-config';
+import { getMalaSkin } from '@/lib/mala-skins';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 
@@ -614,7 +615,7 @@ function SacredGeometry({
 }
 
 function MalaSVG({
-  malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey, milestoneActive, appLanguage, tradition, isPracticing, accentColor, completedRounds,
+  malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey, milestoneActive, appLanguage, tradition, isPracticing, accentColor, completedRounds, activeSymbolId,
 }: {
   malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
   flashBeadIdx: number; flashKey: number;
@@ -624,10 +625,12 @@ function MalaSVG({
   isPracticing: boolean;
   accentColor: string;
   completedRounds: number;
+  activeSymbolId?: string | null;
 }) {
   const { playHaptic } = useZenithSensory();
   const mala = MALAS.find(m => m.id === malaId) ?? MALAS[0];
   const c = isDark ? mala.dark : mala.light;
+  const malaSkin = getMalaSkin(activeSymbolId);
   const currentBeadIdx = beadCount % TOTAL_BEADS;
   const roundComplete  = beadCount > 0 && beadCount % TOTAL_BEADS === 0;
   const countDisplay   = roundComplete ? TOTAL_BEADS : currentBeadIdx;
@@ -663,20 +666,20 @@ function MalaSVG({
         </style>
         {/* ── Uncounted bead — 3-stop 3D gradient ── */}
         <radialGradient id={`bead-un-${malaId}`} cx="35%" cy="30%" r="65%">
-          <stop offset="0%"   stopColor={c.bead} stopOpacity="1" />
-          <stop offset="55%"  stopColor={c.bead} stopOpacity="0.82" />
-          <stop offset="100%" stopColor={c.bead} stopOpacity="0.45" />
+          <stop offset="0%"   stopColor={malaSkin.beadColor} stopOpacity="1" />
+          <stop offset="55%"  stopColor={malaSkin.beadColor} stopOpacity="0.82" />
+          <stop offset="100%" stopColor={malaSkin.beadColor} stopOpacity="0.45" />
         </radialGradient>
         {/* ── Counted bead — warm gold glow ── */}
         <radialGradient id={`bead-done-${malaId}`} cx="35%" cy="30%" r="65%">
-          <stop offset="0%"   stopColor={isDark ? '#F6D070' : c.counted} stopOpacity="1" />
-          <stop offset="50%"  stopColor={isDark ? '#D4A040' : c.counted} stopOpacity="0.95" />
-          <stop offset="100%" stopColor={c.counted} stopOpacity="0.75" />
+          <stop offset="0%"   stopColor={malaSkin.glowColor} stopOpacity="1" />
+          <stop offset="50%"  stopColor={malaSkin.beadColor} stopOpacity="0.95" />
+          <stop offset="100%" stopColor={malaSkin.beadColor} stopOpacity="0.75" />
         </radialGradient>
         {/* ── Sumeru bead ── */}
         <radialGradient id={`sumeru-${malaId}`} cx="35%" cy="28%" r="65%">
-          <stop offset="0%"   stopColor={`${accentColor}FF`} stopOpacity="1" />
-          <stop offset="100%" stopColor={`${accentColor}88`} stopOpacity="1" />
+          <stop offset="0%"   stopColor={malaSkin.glowColor} stopOpacity="1" />
+          <stop offset="100%" stopColor={malaSkin.beadColor} stopOpacity="0.88" />
         </radialGradient>
         {/* ── Specular highlight (applied on top of each bead) ── */}
         <radialGradient id={`spec-${malaId}`} cx="32%" cy="28%" r="48%">
@@ -706,8 +709,8 @@ function MalaSVG({
         )}
         {/* ── Center ambient glow ── */}
         <radialGradient id={`center-glow-${malaId}`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor={c.glow} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={c.glow} stopOpacity="0" />
+          <stop offset="0%"   stopColor={malaSkin.glowColor} stopOpacity="0.22" />
+          <stop offset="100%" stopColor={malaSkin.glowColor} stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -718,11 +721,19 @@ function MalaSVG({
           cy={SVG_CY}
           r={RING_R}
           fill="none"
-          stroke={accentColor}
+          stroke={malaSkin.glowColor}
           style={{ opacity: 0.18, animation: 'breath-halo 4s ease-in-out infinite' }}
         />
       )}
-      <circle cx={SVG_CX} cy={SVG_CY} r={RING_R} fill="none" stroke={c.thread} strokeWidth="1.8" />
+      <circle
+        cx={SVG_CX}
+        cy={SVG_CY}
+        r={RING_R}
+        fill="none"
+        stroke={malaSkin.threadColor}
+        strokeWidth="1.8"
+        style={{ transition: 'fill 0.5s ease, stroke 0.5s ease' }}
+      />
       {/* Center ambient glow */}
       <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 22} fill={`url(#center-glow-${malaId})`} />
       <SacredGeometry rounds={completedRounds} tradition={tradition} accentColor={accentColor} />
@@ -750,11 +761,10 @@ function MalaSVG({
               fill={fill}
               filter={isCurrent ? 'url(#bead-glow)' : 'url(#bead-shadow)'}
               stroke={
-                isCurrent ? c.glow
-                : isDone   ? (isDark ? 'rgba(240,180,60,0.40)' : 'rgba(100,60,20,0.35)')
-                : (isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)')
+                isCurrent ? malaSkin.glowColor : malaSkin.beadBorder
               }
               strokeWidth={isCurrent ? 1.8 : isDone ? 0.9 : 0.5}
+              style={{ transition: 'fill 0.5s ease, stroke 0.5s ease' }}
             />
             {/* Crystal inner glow */}
             {malaId === 'crystal' && (
@@ -816,7 +826,7 @@ function MalaSVG({
             {/* Inner glow ring */}
             <motion.circle
               cx={pos.x} cy={pos.y}
-              fill={c.glow}
+              fill={malaSkin.glowColor}
               animate={{ r: [BEAD_R * 1.15, BEAD_R * 1.35, BEAD_R * 1.15], opacity: [0.35, 0.10, 0.35] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
             />
@@ -824,7 +834,7 @@ function MalaSVG({
             <motion.circle
               cx={pos.x} cy={pos.y}
               fill="none"
-              stroke={c.glow}
+              stroke={malaSkin.glowColor}
               strokeWidth={2}
               animate={{ r: [BEAD_R * 1.55, BEAD_R * 2.1, BEAD_R * 1.55], opacity: [0.70, 0.12, 0.70] }}
               transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
@@ -842,7 +852,7 @@ function MalaSVG({
             <motion.circle
               key={`flash-inner-${flashKey}`}
               cx={pos.x} cy={pos.y}
-              fill={c.glow}
+              fill={malaSkin.glowColor}
               filter="url(#flash-glow)"
               initial={{ r: BEAD_R * 1.0, opacity: 0.95 }}
               animate={{ r: BEAD_R * 2.8, opacity: 0 }}
@@ -853,7 +863,7 @@ function MalaSVG({
               key={`flash-outer-${flashKey}`}
               cx={pos.x} cy={pos.y}
               fill="none"
-              stroke={c.glow}
+              stroke={malaSkin.glowColor}
               strokeWidth={2.5}
               initial={{ r: BEAD_R * 1.2, opacity: 0.80 }}
               animate={{ r: BEAD_R * 4.5, opacity: 0 }}
@@ -2099,10 +2109,11 @@ interface Props {
   currentStreak: number;
   japaAlreadyDoneToday: boolean;
   history: { date: string; done: boolean }[];
+  activeSymbolId?: string | null;
 }
 
 export default function JapaClient({
-  userId, tradition, currentStreak,
+  userId, tradition, currentStreak, activeSymbolId = null,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -2112,6 +2123,7 @@ export default function JapaClient({
   const prefersReducedMotion = useReducedMotion();
 
   const meta = getTraditionMeta(tradition);
+  const malaSkin = getMalaSkin(activeSymbolId);
   const defaultMantraId: MantraId = meta.japaDefaultMantra as MantraId;
 
   // ── Screen + selection state ─────────────────────────────────────────────
@@ -2650,6 +2662,7 @@ export default function JapaClient({
         { text: currentMantra.name ?? 'Japa Mala', size: 44, weight: '400', color: 'rgba(255,255,255,0.6)' },
         { text: `${(roundsDone * TOTAL_BEADS).toLocaleString('en-IN')} beads`, size: 36, weight: '300', color: 'rgba(255,255,255,0.4)' },
       ],
+      activeSymbolId,
     });
   };
 
@@ -2904,6 +2917,7 @@ export default function JapaClient({
                   isPracticing={screen === 'practice'}
                   accentColor={meta.accentColour}
                   completedRounds={roundsDone}
+                  activeSymbolId={activeSymbolId}
                 />
               </motion.div>
             </div>
@@ -2922,7 +2936,10 @@ export default function JapaClient({
                   {streak > 0 ? `${streak} day streak` : 'Start your streak'}
                 </span>
               </div>
-              <span className="text-[11px]" style={{ color: sub }}>Tap beads to count</span>
+              <div className="text-right">
+                <span className="block text-[11px]" style={{ color: sub }}>Tap beads to count</span>
+                <span className="block text-[10px] text-white/30">{malaSkin.label} Mala</span>
+              </div>
             </div>
 
             {/* Floating controls */}

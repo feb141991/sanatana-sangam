@@ -17,6 +17,7 @@ import { shareScoreToWhatsApp } from '@/lib/whatsapp';
 import TierBadge from '@/components/ui/TierBadge';
 import { getTierFromScore } from '@/lib/seva-tiers';
 import { SACRED_RELICS } from '@/lib/relics';
+import { getRelicFrame } from '@/lib/relic-frames';
 
 type LeaderboardUser = {
   id: string;
@@ -37,6 +38,11 @@ function getScoreForPeriod(user: LeaderboardUser, period: LeaderboardPeriod) {
   if (period === 'weekly') return user.weekly_seva ?? 0;
   if (period === 'monthly') return user.monthly_seva ?? 0;
   return user.seva_score ?? 0;
+}
+
+function getListRelicBorder(activeSymbolId: string | null | undefined) {
+  const frame = getRelicFrame(activeSymbolId);
+  return frame?.border ?? '1px solid rgba(197,160,89,0.18)';
 }
 
 export default function ScoreboardClient({
@@ -162,7 +168,14 @@ export default function ScoreboardClient({
           {topThree[1] && (
             <div className="flex flex-col items-center">
               <div className="relative mb-2">
-                <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/40 overflow-hidden bg-[var(--surface-soft)] relative">
+                <div
+                  className="w-14 h-14 rounded-full overflow-hidden bg-[var(--surface-soft)] relative"
+                  style={{
+                    border: getRelicFrame(topThree[1].active_symbol_id)?.border ?? '2px solid rgba(197,160,89,0.40)',
+                    boxShadow: getRelicFrame(topThree[1].active_symbol_id)?.shadow ?? 'none',
+                    transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                  }}
+                >
                   {topThree[1].avatar_url ? (
                     <Image src={topThree[1].avatar_url} alt={topThree[1].username} fill className="object-cover" />
                   ) : (
@@ -202,7 +215,14 @@ export default function ScoreboardClient({
                 <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-5 left-1/2 -translate-x-1/2 text-yellow-500">
                   <Crown size={22} fill="currentColor" strokeWidth={1} />
                 </motion.div>
-                <div className="w-16 h-16 rounded-full border-4 border-yellow-500 overflow-hidden bg-[var(--surface-soft)] shadow-2xl shadow-yellow-500/20 relative">
+                <div
+                  className="w-16 h-16 rounded-full overflow-hidden bg-[var(--surface-soft)] relative"
+                  style={{
+                    border: getRelicFrame(topThree[0].active_symbol_id)?.border ?? '4px solid rgba(234,179,8,0.9)',
+                    boxShadow: getRelicFrame(topThree[0].active_symbol_id)?.shadow ?? '0 0 16px rgba(234,179,8,0.2)',
+                    transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                  }}
+                >
                   {topThree[0].avatar_url ? (
                     <Image src={topThree[0].avatar_url} alt={topThree[0].username} fill className="object-cover" />
                   ) : (
@@ -239,7 +259,14 @@ export default function ScoreboardClient({
           {topThree[2] && (
             <div className="flex flex-col items-center">
               <div className="relative mb-2">
-                <div className="w-14 h-14 rounded-full border-2 border-[#C5A059]/60 overflow-hidden bg-[var(--surface-soft)] relative">
+                <div
+                  className="w-14 h-14 rounded-full overflow-hidden bg-[var(--surface-soft)] relative"
+                  style={{
+                    border: getRelicFrame(topThree[2].active_symbol_id)?.border ?? '2px solid rgba(197,160,89,0.60)',
+                    boxShadow: getRelicFrame(topThree[2].active_symbol_id)?.shadow ?? 'none',
+                    transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                  }}
+                >
                   {topThree[2].avatar_url ? (
                     <Image src={topThree[2].avatar_url} alt={topThree[2].username} fill className="object-cover" />
                   ) : (
@@ -355,9 +382,13 @@ export default function ScoreboardClient({
                 </div>
 
                 <div className="relative">
-                  <div className={`w-10 h-10 rounded-full overflow-hidden bg-white/10 shadow-inner relative ${
-                    isHighTier ? 'border-2 border-amber-500/50' : 'border border-black/5'
-                  }`}>
+                  <div
+                    className="w-10 h-10 rounded-full overflow-hidden bg-white/10 shadow-inner relative"
+                    style={{
+                      border: getListRelicBorder(user.active_symbol_id),
+                      transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                    }}
+                  >
                     {user.avatar_url ? (
                       <Image src={user.avatar_url} alt={user.username} fill className="object-cover" />
                     ) : (

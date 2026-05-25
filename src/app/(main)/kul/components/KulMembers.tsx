@@ -6,6 +6,7 @@ import { UserPlus, Crown, Mail } from 'lucide-react';
 import { MemberRow } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { SACRED_RELICS } from '@/lib/relics';
+import { getRelicFrame } from '@/lib/relic-frames';
 
 export function KulMembers({
   members,
@@ -53,7 +54,7 @@ export function KulMembers({
               className="group glass-panel rounded-[2rem] p-4 flex items-center gap-4 border border-[#C5A059]/15 hover:border-[#C5A059]/15 cursor-pointer transition-all shadow-sm"
             >
               <div className="relative">
-                <Avatar name={name} url={profile?.avatar_url} size={12} />
+                <Avatar name={name} url={profile?.avatar_url} size={12} activeSymbolId={profile?.active_symbol_id} />
                 {member.role === 'guardian' && (
                   <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center text-[10px] shadow-sm border border-[#C5A059]/15">
                     <Crown size={10} className="text-yellow-900" />
@@ -92,12 +93,18 @@ export function KulMembers({
   );
 }
 
-function Avatar({ name, url, size }: { name: string; url: string | null | undefined; size: number }) {
+function Avatar({ name, url, size, activeSymbolId }: { name: string; url: string | null | undefined; size: number; activeSymbolId?: string | null }) {
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  const frame = getRelicFrame(activeSymbolId);
   return (
     <div 
       className="rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 border border-[#C5A059]/15 shadow-inner"
-      style={{ width: size * 4, height: size * 4 }}
+      style={{
+        width: size * 4,
+        height: size * 4,
+        border: frame?.border ?? '1px solid rgba(197,160,89,0.15)',
+        transition: 'border 0.4s ease, box-shadow 0.4s ease',
+      }}
     >
       {url ? (
         <Image width={120} height={120} src={url} alt={name} className="w-full h-full object-cover" />

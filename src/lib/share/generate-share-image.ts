@@ -1,15 +1,19 @@
+import { SACRED_RELICS } from '@/lib/relics';
+
 export async function generateSadhanaShareImage({
   tradition,
   accentColor,
   type,
   lines,
   symbol,
+  activeSymbolId,
 }: {
   tradition: string;
   accentColor: string;
   type: string;
   lines: Array<{ text: string; size: number; weight?: string; color?: string }>;
   symbol: string;
+  activeSymbolId?: string | null;
 }): Promise<Blob | null> {
   if (typeof document === 'undefined') return null;
 
@@ -69,6 +73,29 @@ export async function generateSadhanaShareImage({
     ctx.moveTo(200, 950);
     ctx.lineTo(880, 950);
     ctx.stroke();
+
+    // Draw active relic badge
+    if (activeSymbolId) {
+      const relic = SACRED_RELICS.find((r) => r.id === activeSymbolId);
+      if (relic?.imageUrl) {
+        const relicImg = new Image();
+        relicImg.src = relic.imageUrl;
+        await new Promise((resolve) => { relicImg.onload = resolve; });
+        // Draw in bottom-right corner of the card, 32×32px, with circular clip:
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(1080 - 80, 1080 - 80, 32, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(relicImg, 1080 - 112, 1080 - 112, 64, 64);
+        ctx.restore();
+        // Draw amber ring around it:
+        ctx.strokeStyle = 'rgba(197,160,89,0.6)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(1080 - 80, 1080 - 80, 34, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   } catch (error) {

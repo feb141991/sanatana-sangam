@@ -44,7 +44,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, streak_freeze_count, last_freeze_used')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, streak_freeze_count, last_freeze_used, active_symbol_id')
     .eq('id', user.id)
     .single();
 
@@ -261,6 +261,7 @@ export default async function HomePage() {
       streakFreezeCount={(profile as { streak_freeze_count?: number | null })?.streak_freeze_count ?? 0}
       lastFreezeUsed={(profile as { last_freeze_used?: string | null })?.last_freeze_used ?? null}
       missedYesterday={missedYesterday}
+      activeSymbolId={(profile as any)?.active_symbol_id ?? null}
     />
   );
 }

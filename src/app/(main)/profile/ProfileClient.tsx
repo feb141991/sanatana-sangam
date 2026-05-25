@@ -35,6 +35,7 @@ import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
 import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
+import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
@@ -232,6 +233,7 @@ export default function ProfileClient({
   const unlockedCount = unlockedRelics.length;
   const totalVisible = visibleRelics.length;
   const activeRelic = SACRED_RELICS.find((relic) => relic.id === (liveProfile as any)?.active_symbol_id) ?? null;
+  const relicFrame = getRelicFrame((liveProfile as any)?.active_symbol_id);
 
   useEffect(() => {
     if (!koshOpen || typeof window === 'undefined') return;
@@ -928,6 +930,12 @@ export default function ProfileClient({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                 className="sacred-seal-ring !w-32 !h-32"
+                style={{
+                  borderRadius: '50%',
+                  border: relicFrame?.border ?? '2px solid rgba(197,160,89,0.2)',
+                  boxShadow: relicFrame?.shadow ?? 'none',
+                  transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                }}
               >
                 <button
                   type="button"

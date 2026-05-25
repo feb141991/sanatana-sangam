@@ -186,7 +186,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
 
   const tradition = props.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
-  const accentColor = meta.accentColour;
+  const accentColor = `var(--relic-accent, ${meta.accentColour})`;
 
   // Server props win for japa/nitya/pathshala (DB-authoritative),
   // but if localStorage says done (just completed this session), honour that too.

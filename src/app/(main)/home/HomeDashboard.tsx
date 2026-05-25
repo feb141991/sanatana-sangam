@@ -70,6 +70,7 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { getRelicAccent } from '@/lib/relic-accents';
 // DivineDiya removed — Prāthanā card removed from home
 
 import { useThemePreference } from '@/components/providers/ThemeProvider';
@@ -154,6 +155,7 @@ interface Props {
   streakFreezeCount?:  number;
   lastFreezeUsed?:     string | null;
   missedYesterday?:    boolean;
+  activeSymbolId?:     string | null;
 }
 
 type DailyDharmaStackState = {
@@ -1050,6 +1052,7 @@ export default function HomeDashboard({
   streakFreezeCount = 0,
   lastFreezeUsed = null,
   missedYesterday = false,
+  activeSymbolId = null,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -2071,9 +2074,17 @@ export default function HomeDashboard({
       setFreezeApplying(false);
     }
   }, [dismissFreezeBanner, freezeApplying, freezeCount]);
+  const relicAccent = getRelicAccent(activeSymbolId);
 
   return (
-    <div className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30">
+    <div 
+      className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30"
+      style={{
+        '--relic-accent':      relicAccent.primary,
+        '--relic-accent-soft': relicAccent.soft,
+        '--relic-accent-glow': relicAccent.glow,
+      } as React.CSSProperties}
+    >
       <PerfectDayCeremony
         isOpen={perfectDayCeremonyOpen}
         onClose={() => setPerfectDayCeremonyOpen(false)}
@@ -3364,6 +3375,7 @@ export default function HomeDashboard({
                                { text: `${correctCount}/${totalCount} correct`, size: 52, color: 'var(--brand-primary)' },
                                { text: `${Math.round(correctCount/totalCount*100)}% accuracy`, size: 36, color: '#ffffff66' },
                              ],
+                             activeSymbolId,
                            });
                          }}
                          className="flex items-center gap-2 px-6 py-3 rounded-full border transition-transform active:scale-95"

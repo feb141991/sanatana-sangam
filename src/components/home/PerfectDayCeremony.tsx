@@ -52,8 +52,9 @@ export default function PerfectDayCeremony({ isOpen, onClose, insight, tradition
 
         {/* Confetti / Glow effects */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <motion.div 
-            className="absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500/20 blur-[100px]"
+          <motion.div
+            className="absolute top-1/2 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px]"
+            style={{ background: 'var(--relic-accent-soft, rgba(197,160,89,0.20))' }}
             animate={{ 
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.6, 0.3] 
@@ -68,13 +69,14 @@ export default function PerfectDayCeremony({ isOpen, onClose, insight, tradition
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
         >
-          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-amber-500/20 border border-amber-500/30">
-            <Trophy className="h-12 w-12 text-amber-400" />
+          <div className="flex h-24 w-24 items-center justify-center rounded-full border"
+            style={{ background: 'var(--relic-accent-soft, rgba(197,160,89,0.20))', borderColor: 'var(--relic-accent-soft, rgba(197,160,89,0.30))' }}>
+            <Trophy className="h-12 w-12" style={{ color: 'var(--relic-accent, #C5A059)' }} />
           </div>
 
           <div className="space-y-2">
             <h2 className="text-3xl font-serif text-amber-50">{dayWord}</h2>
-            <div className="flex items-center justify-center space-x-2 text-amber-400">
+            <div className="flex items-center justify-center space-x-2" style={{ color: 'var(--relic-accent, #C5A059)' }}>
               <Sparkles className="h-4 w-4" />
               <span className="font-medium uppercase tracking-widest text-sm">+30 Karma · +15 Seva</span>
               <Sparkles className="h-4 w-4" />
@@ -91,7 +93,8 @@ export default function PerfectDayCeremony({ isOpen, onClose, insight, tradition
 
           <button
             onClick={onClose}
-            className="mt-8 rounded-full bg-amber-500/20 px-8 py-3 font-medium text-amber-300 hover:bg-amber-500/30 transition-colors border border-amber-500/30"
+            className="mt-8 rounded-full px-8 py-3 font-medium transition-colors border"
+            style={{ background: 'var(--relic-accent-soft, rgba(197,160,89,0.20))', color: 'var(--relic-accent, #C5A059)', borderColor: 'var(--relic-accent-soft, rgba(197,160,89,0.30))' }}
           >
             Continue Journey
           </button>

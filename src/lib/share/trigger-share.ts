@@ -6,11 +6,13 @@ export async function triggerSadhanaShare({
   type,
   lines,
   symbol,
+  activeSymbolId,
 }: {
   tradition: string;
   type: string;
   lines: Array<{ text: string; size: number; weight?: string; color?: string }>;
   symbol: string;
+  activeSymbolId?: string | null;
 }): Promise<void> {
   try {
     const meta = getTraditionMeta(tradition);
@@ -20,6 +22,7 @@ export async function triggerSadhanaShare({
       type,
       lines,
       symbol,
+      activeSymbolId,
     });
     
     if (!blob) return;
