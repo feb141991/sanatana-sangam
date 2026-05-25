@@ -42,6 +42,7 @@ import {
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
+import { getTodayShloka } from '@/lib/shlokas';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
@@ -354,33 +355,6 @@ function ScriptureTab({
           </span>
         </div>
 
-        {sectionDetail && (
-          <div
-            className="rounded-[1.6rem] p-4 space-y-2.5"
-            style={{ background: trustBg, border: `1px solid ${cardBorder}` }}
-          >
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: mutedColor }}>
-                Launch scope
-              </p>
-              <span
-                className="text-[10px] font-bold rounded-full px-2.5 py-1"
-                style={{ background: `${accentColour}15`, color: accentColour }}
-              >
-                {sectionDetail.corpusState}
-              </span>
-            </div>
-            <p className="text-xs leading-relaxed" style={{ color: inkColor }}>
-              {sectionDetail.liveScope}
-            </p>
-            <p className="text-[11px] leading-relaxed" style={{ color: mutedColor }}>
-              Next: {sectionDetail.completeTextGoal}
-            </p>
-            <p className="text-[10px] leading-relaxed" style={{ color: mutedColor }}>
-              Sources: {sectionDetail.sourceTargets.slice(0, 2).join(' · ')}
-            </p>
-          </div>
-        )}
 
         {/* Search toggle (not for epic viewers) */}
         {drillSection !== 'ramayana' && drillSection !== 'bhagavatam' && (
@@ -623,7 +597,8 @@ export default function PathshalaClient({
   }, [initialEntryId]);
 
   // ── Typewriter verse reveal ───────────────────────────────────────────────────
-  const verseText = meta.dailyVersePrompt.verse;
+  const todayShloka = getTodayShloka();
+  const verseText = todayShloka.sanskrit;
   useEffect(() => {
     if (prefersReducedMotion) { setDisplayedVerse(verseText); return; }
     setDisplayedVerse('');
@@ -988,8 +963,7 @@ export default function PathshalaClient({
     );
   }
 
-  // ── Shloka-of-day placeholder ─────────────────────────────────────────────────
-  // (Engine shloka-of-day wired separately; show a motivational prompt for now)
+  // ── Aaj ka Shloka — rotates daily with Chanakya Niti priority ────────────────
   function DailyVersePrompt() {
     return (
       <Link href="/pathshala?tab=scripture" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
@@ -1004,15 +978,15 @@ export default function PathshalaClient({
             </div>
           )}
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
-            {meta.sacredTextLabel} · {t('today')}
+            {todayShloka.source} · {t('today')}
           </p>
           <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
-            {meta.dailyVersePrompt.verse}
+            {todayShloka.sanskrit}
           </p>
         </div>
         <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
-            {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
+            {pulse ? pulse.description : todayShloka.meaning}
           </p>
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
             {t('explore')} {meta.navLibraryLabel} →
@@ -1309,7 +1283,7 @@ export default function PathshalaClient({
               <div className="rounded-2xl p-4 mb-5 border"
                 style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                  {pulse ? pulse.description : meta.dailyVersePrompt.meaning}
+                  {pulse ? pulse.description : todayShloka.meaning}
                 </p>
               </div>
 

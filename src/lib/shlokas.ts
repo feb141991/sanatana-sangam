@@ -777,6 +777,129 @@ export const SHLOKAS: Shloka[] = [
  * @param timezone  IANA timezone string (e.g. "Europe/London"). Defaults to
  *                  the browser/server local timezone when omitted.
  */
+// ── Chanakya Niti — priority pool for Pathshala daily verse ─────────────────
+export const CHANAKYA_SHLOKAS: Shloka[] = [
+  {
+    id: 201,
+    sanskrit: "विद्या ददाति विनयं, विनयाद् याति पात्रताम्।\nपात्रत्वाद् धनमाप्नोति, धनाद् धर्मं ततः सुखम्॥",
+    transliteration: "Vidyā dadāti vinayaṃ, vinayād yāti pātratām,\npātratvadd dhanam āpnoti, dhanād dharmaṃ tataḥ sukham.",
+    meaning: "Knowledge gives humility; from humility comes worthiness; from worthiness comes wealth; from wealth comes dharma; and from dharma comes happiness.",
+    source: "Chanakya Nīti",
+  },
+  {
+    id: 202,
+    sanskrit: "सुखस्य मूलं धर्मः। धर्मस्य मूलं अर्थः।\nअर्थस्य मूलं राज्यम्। राज्यस्य मूलं इन्द्रियजयः॥",
+    transliteration: "Sukhasya mūlaṃ dharmaḥ. Dharmasya mūlaṃ arthaḥ.\nArthasya mūlaṃ rājyam. Rājyasya mūlaṃ indriyajayaḥ.",
+    meaning: "The root of happiness is dharma; the root of dharma is wealth rightly earned; the root of wealth is a well-governed state; and the root of good governance is mastery over the senses.",
+    source: "Chanakya Nīti",
+  },
+  {
+    id: 203,
+    sanskrit: "पृथिव्यां त्रीणि रत्नानि जलमन्नं सुभाषितम्।\nमूढैः पाषाणखण्डेषु रत्नसंज्ञा विधीयते॥",
+    transliteration: "Pṛthivyāṃ trīṇi ratnāni jalam annaṃ subhāṣitam,\nmūḍhaiḥ pāṣāṇakhaṇḍeṣu ratna-saṃjñā vidhīyate.",
+    meaning: "There are three true gems on this earth — water, food, and wise words. Fools call mere stones 'gems'.",
+    source: "Chanakya Nīti 1.3",
+  },
+  {
+    id: 204,
+    sanskrit: "आपदि कर्म समर्थस्य, शत्रौ सन्धिविग्रहौ।\nगुरौ शुश्रूषणं शिष्यस्य, दानधर्मो मनीषिणः॥",
+    transliteration: "Āpadi karma samarthasya, śatrau sandhiviṃgrahau,\ngurau śuśrūṣaṇaṃ śiṣyasya, dānadharmo manīṣiṇaḥ.",
+    meaning: "In adversity, the capable one acts; with an enemy, one negotiates or fights as required; for a student, service to the guru; for the wise, dana and dharma.",
+    source: "Chanakya Nīti",
+  },
+  {
+    id: 205,
+    sanskrit: "न कश्चित् कस्यचिन्मित्रं, न कश्चित् कस्यचिद्रिपुः।\nव्यवहारेण जायन्ते मित्राणि रिपवस्तथा॥",
+    transliteration: "Na kaścit kasyacinmitraṃ, na kaścit kasyacidripuḥ,\nvyavahāreṇa jāyante mitrāṇi ripavastathā.",
+    meaning: "No one is born another's friend or enemy — it is conduct and dealings that make them so.",
+    source: "Chanakya Nīti",
+  },
+  {
+    id: 206,
+    sanskrit: "अनालोच्य व्ययं कर्तुं, अनाहूतस्य गमनम्।\nअविश्वस्ते रहस्योक्तिः, त्रयोऽपि दुःखहेतवः॥",
+    transliteration: "Anālocya vyayaṃ kartuṃ, anāhūtasya gamanam,\naviśvaste rahasyoktiḥ, trayo'pi duḥkhahetavaḥ.",
+    meaning: "Spending without thinking, going where you are not invited, and sharing secrets with one who cannot be trusted — these three bring suffering.",
+    source: "Chanakya Nīti 2.11",
+  },
+  {
+    id: 207,
+    sanskrit: "एकमेवाद्वितीयं ब्रह्म, एको विद्वान् परः पुमान्।\nएको अग्निः बहुधा समिद्धः, एकः सूर्यः सर्वलोकस्य॥",
+    transliteration: "Ekam evādvitīyaṃ brahma, eko vidvān paraḥ pumān,\neko agniḥ bahudhā samiddhaḥ, ekaḥ sūryaḥ sarvalokaḥ.",
+    meaning: "Brahman is one without a second; the truly learned one stands supreme among persons; fire is one though it burns in many forms; the sun is one yet illuminates all worlds.",
+    source: "Chanakya Nīti 4.17",
+  },
+  {
+    id: 208,
+    sanskrit: "कौटिल्यं त्रिषु धर्मेषु बुद्धिमान् नावसीदति।\nस्वकर्मणि विधाता स्यात्, सेवया पालयेत् परान्॥",
+    transliteration: "Kauṭilyaṃ triṣu dharmeṣu buddhimān nāvasīdati,\nsvakarmāṇi vidhātā syāt, sevayā pālayet parān.",
+    meaning: "The wise one does not sink into three dharmas [body, mind, wealth] through cleverness alone — fulfil your own duties rightly, and sustain others through service.",
+    source: "Arthaśāstra — Kautilya",
+  },
+  {
+    id: 209,
+    sanskrit: "यस्य नास्ति स्वयं प्रज्ञा, शास्त्रं तस्य करोति किम्।\nलोचनाभ्यां विहीनस्य, दर्पणः किं करिष्यति॥",
+    transliteration: "Yasya nāsti svayaṃ prajñā, śāstraṃ tasya karoti kim,\nlocanābhyāṃ vihīnasya, darpaṇaḥ kiṃ kariṣyati.",
+    meaning: "What can scripture do for one who has no wisdom of their own? What does a mirror do for someone who has no eyes?",
+    source: "Chanakya Nīti 7.14",
+  },
+  {
+    id: 210,
+    sanskrit: "दुर्जनः परिहर्तव्यो विद्ययाऽलंकृतोऽपि सन्।\nमणिना भूषितः सर्पः किमसौ न भयंकरः॥",
+    transliteration: "Durjanaḥ parihartavyo vidyayā'laṃkṛto'pi san,\nmaṇinā bhūṣitaḥ sarpaḥ kim asau na bhayaṃkaraḥ.",
+    meaning: "A wicked person should be avoided even if they are adorned with learning — is a serpent adorned with a jewel not still dangerous?",
+    source: "Chanakya Nīti 1.13",
+  },
+  {
+    id: 211,
+    sanskrit: "उद्योगे नास्ति दारिद्र्यं, जपतो नास्ति पातकम्।\nमौने च कलहो नास्ति, जागृतस्य च न भयम्॥",
+    transliteration: "Udyoge nāsti dāridryaṃ, japato nāsti pātakam,\nmaurne ca kalaho nāsti, jāgṛtasya ca na bhayam.",
+    meaning: "There is no poverty for one who works diligently; no sin for one who does japa; no quarrel for one who stays silent; no fear for the one who is awake and alert.",
+    source: "Chanakya Nīti 3.2",
+  },
+  {
+    id: 212,
+    sanskrit: "सर्वस्य लोचनं शास्त्रं, यस्य नास्ति तु नेत्रवान्।\nशास्त्रचक्षुः समादाय, विचरन्ति तु पण्डिताः॥",
+    transliteration: "Sarvasya locanaṃ śāstraṃ, yasya nāsti tu netravān,\nśāstracakṣuḥ samādāya, vicaranti tu paṇḍitāḥ.",
+    meaning: "Scripture is the eye of all; one without it is truly blind. The wise move through the world with the eye of sacred knowledge.",
+    source: "Chanakya Nīti",
+  },
+  {
+    id: 213,
+    sanskrit: "एको राजा, न द्वितीयः। एको गुरुः, न द्वितीयः।\nएका भार्या, न द्वितीया। एका माता, न द्वितीया॥",
+    transliteration: "Eko rājā, na dvitīyaḥ. Eko guruḥ, na dvitīyaḥ.\nekā bhāryā, na dvitīyā. Ekā mātā, na dvitīyā.",
+    meaning: "One king — not a second. One teacher — not a second. One wife — not a second. One mother — there is none other.",
+    source: "Chanakya Nīti 2.1",
+  },
+  {
+    id: 214,
+    sanskrit: "कः कालः कानि मित्राणि, को देशः को व्ययागमौ।\nकश्चाहं का च मे शक्तिः, इति चिन्त्यं मुहुर्मुहुः॥",
+    transliteration: "Kaḥ kālaḥ kāni mitrāṇi, ko deśaḥ ko vyayāgamau,\nkaś cāhaṃ kā ca me śaktiḥ, iti cintyaṃ muhurmuhuḥ.",
+    meaning: "What is the time? Who are my true friends? What is my place? What are my expenses and income? Who am I, and what is my strength? — Reflect on these again and again.",
+    source: "Chanakya Nīti 4.18",
+  },
+  {
+    id: 215,
+    sanskrit: "न चोरहार्यं न च राजहार्यं, न भ्रातृभाज्यं न च भारकारि।\nव्यये कृते वर्धत एव नित्यं, विद्याधनं सर्वधनप्रधानम्॥",
+    transliteration: "Na corahāryaṃ na ca rājahāryaṃ, na bhrātṛbhājyaṃ na ca bhārakāri,\nvyaye kṛte vardhata eva nityaṃ, vidyādhanaṃ sarvadhana-pradhānam.",
+    meaning: "It cannot be stolen by thieves, taken by kings, divided among brothers, nor does it burden the bearer. It grows the more it is spent — the wealth of knowledge is the greatest of all wealth.",
+    source: "Chanakya Nīti",
+  },
+];
+
+// ── Non-Gita pool for variety ─────────────────────────────────────────────────
+const NON_GITA_SHLOKAS = SHLOKAS.filter(
+  s => !s.source.includes('Bhagavad Gita') && !s.source.includes('Gītā')
+);
+
+/**
+ * Returns today's shloka with source diversity priority:
+ *   day % 4 === 0  → Chanakya Niti (practical wisdom)
+ *   day % 4 === 1  → Non-Gita pool (Upanishads, Puranas, etc.)
+ *   day % 4 === 2  → Non-Gita pool (different rotation)
+ *   day % 4 === 3  → Full pool (includes Gita)
+ *
+ * @param timezone  IANA timezone string. Defaults to local timezone.
+ */
 export function getTodayShloka(timezone?: string): Shloka {
   const tz = resolveTimeZone(timezone ?? (
     typeof Intl !== 'undefined'
@@ -789,5 +912,14 @@ export function getTodayShloka(timezone?: string): Shloka {
   const startOfYear = new Date(year, 0, 0); // Dec 31 of previous year
   const oneDay      = 1000 * 60 * 60 * 24;
   const dayOfYear   = Math.floor((dateObj.getTime() - startOfYear.getTime()) / oneDay);
+
+  const bucket = dayOfYear % 4;
+  if (bucket === 0) {
+    return CHANAKYA_SHLOKAS[dayOfYear % CHANAKYA_SHLOKAS.length];
+  }
+  if (bucket === 1 || bucket === 2) {
+    const pool = NON_GITA_SHLOKAS.length > 0 ? NON_GITA_SHLOKAS : SHLOKAS;
+    return pool[dayOfYear % pool.length];
+  }
   return SHLOKAS[dayOfYear % SHLOKAS.length];
 }
