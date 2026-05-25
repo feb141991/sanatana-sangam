@@ -156,6 +156,7 @@ interface Props {
   lastFreezeUsed?:     string | null;
   missedYesterday?:    boolean;
   activeSymbolId?:     string | null;
+  activeSankalpa?:     { id: string; title: string; duration_days: number; start_date: string } | null;
 }
 
 type DailyDharmaStackState = {
@@ -1053,6 +1054,7 @@ export default function HomeDashboard({
   lastFreezeUsed = null,
   missedYesterday = false,
   activeSymbolId = null,
+  activeSankalpa: initialActiveSankalpa = null,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -1154,7 +1156,7 @@ export default function HomeDashboard({
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quizDailyId, setQuizDailyId] = useState<string | null>(null);
-  const [activeSankalpa, setActiveSankalpa] = useState<any>(null);
+  const [activeSankalpa, setActiveSankalpa] = useState<any>(initialActiveSankalpa);
   const [showSankalpSheet, setShowSankalpSheet] = useState(false);
   const [quizStreak, setQuizStreak] = useState<number>(0);
   const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
@@ -1285,7 +1287,18 @@ export default function HomeDashboard({
   const fetchSankalpa = () => {
     fetch('/api/sankalpa')
       .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => setActiveSankalpa(data.sankalpa || null))
+      .then(data => {
+        if (data.sankalpa) {
+          setActiveSankalpa({
+            id: data.sankalpa.id,
+            title: data.sankalpa.text,
+            duration_days: data.sankalpa.target_days,
+            start_date: data.sankalpa.start_date,
+          });
+        } else {
+          setActiveSankalpa(null);
+        }
+      })
       .catch(() => {});
   };
 
@@ -1584,6 +1597,34 @@ export default function HomeDashboard({
     ? localGreeting
     : null;
   const greeting     = compatibleLocalGreeting ?? timeGreeting ?? autoGreeting;
+
+  const contextLine = (() => {
+    // Priority 1: japa already done today
+    if (japaAlreadyDoneToday) {
+      return { text: 'Sadhana complete · rest in the glow 🌸', href: null };
+    }
+    // Priority 2: active sankalpa with days remaining
+    if (activeSankalpa) {
+      const start = new Date(activeSankalpa.start_date + 'T00:00:00Z');
+      const endMs = start.getTime() + activeSankalpa.duration_days * 86400000;
+      const daysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000));
+      if (daysLeft > 0) {
+        return {
+          text: `${daysLeft}d left in your Sankalpa`,
+          href: '/my-progress',
+        };
+      }
+    }
+    // Priority 3: streak motivation (after day 2)
+    if (japaStreak > 2) {
+      return { text: `🔥 ${japaStreak}-day streak — keep going`, href: null };
+    }
+    // Priority 4: first visit
+    if (showFirstTimeGuidance) {
+      return { text: 'Your dharmic journey begins today 🙏', href: null };
+    }
+    return null;
+  })();
   const greetingMode = compatibleLocalGreeting
     ? 'Custom greeting saved'
     : isWelcomeBack
@@ -2263,6 +2304,33 @@ export default function HomeDashboard({
                 {stripGreetingIcon(greeting)},&nbsp;
                 <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
               </motion.h1>
+
+              {contextLine && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18 }}
+                  className="mt-1"
+                >
+                  {contextLine.href ? (
+                    <Link
+                      href={contextLine.href}
+                      className="inline-flex items-center gap-1 text-[12px] font-medium"
+                      style={{ color: 'rgba(197,160,89,0.85)' }}
+                    >
+                      {contextLine.text}
+                      <ChevronRight size={11} style={{ color: 'rgba(197,160,89,0.65)' }} />
+                    </Link>
+                  ) : (
+                    <p
+                      className="text-[12px] font-medium"
+                      style={{ color: 'rgba(255,240,200,0.60)' }}
+                    >
+                      {contextLine.text}
+                    </p>
+                  )}
+                </motion.div>
+              )}
 
               {/* Tithi · date chip — taps to open Panchang ─────────────────── */}
               {panchang?.tithi && (

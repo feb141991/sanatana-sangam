@@ -154,6 +154,21 @@ export default async function HomePage() {
       .limit(1),
   ]);
 
+  let activeSankalpa: { id: string; title: string; duration_days: number; start_date: string } | null = null;
+  try {
+    const { data: sankalpaRow } = await supabase
+      .from('sankalpas')
+      .select('id, title:text, duration_days:target_days, start_date')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    activeSankalpa = sankalpaRow ?? null;
+  } catch {
+    // table may not exist yet — ignore
+  }
+
   const dbStreams = (liveDarshanData ?? []).map(row => ({
     id: row.id,
     title: row.title,
@@ -264,6 +279,7 @@ export default async function HomePage() {
       lastFreezeUsed={(profile as { last_freeze_used?: string | null })?.last_freeze_used ?? null}
       missedYesterday={missedYesterday}
       activeSymbolId={(profile as any)?.active_symbol_id ?? null}
+      activeSankalpa={activeSankalpa}
     />
   );
 }
