@@ -1178,6 +1178,19 @@ export default function HomeDashboard({
     }
   }, [coverUrl]);
 
+  const [showProfileNudge, setShowProfileNudge] = useState(false);
+  
+  useEffect(() => {
+    if (avatarUrl && savedCity) return;
+    try {
+      const visits = parseInt(localStorage.getItem('shoonaya-home-visits') ?? '0');
+      if (visits < 3) {
+        setShowProfileNudge(true);
+        localStorage.setItem('shoonaya-home-visits', String(visits + 1));
+      }
+    } catch {}
+  }, []);
+
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -2329,6 +2342,28 @@ export default function HomeDashboard({
                       {contextLine.text}
                     </p>
                   )}
+                </motion.div>
+              )}
+
+              {showProfileNudge && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium border"
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    borderColor: 'rgba(255,255,255,0.12)',
+                    color: 'rgba(255,240,200,0.55)',
+                    backdropFilter: 'blur(8px)',
+                  }}
+                >
+                  <Link href="/profile" className="flex items-center gap-1.5">
+                    <span>Complete your profile</span>
+                    <span style={{ color: 'rgba(197,160,89,0.7)' }}>
+                      {!avatarUrl ? '· add photo' : '· add city'}
+                    </span>
+                  </Link>
                 </motion.div>
               )}
 

@@ -22,7 +22,9 @@ export type MemberRow = {
     tradition: string | null; 
     sampradaya: string | null; 
     shloka_streak: number | null; 
-    spiritual_level: string | null; 
+    spiritual_level: string | null;
+    karma_points?: number | null;
+    weekly_seva?: number | null;
     bio?: string | null; 
     city?: string | null; 
     country?: string | null; 

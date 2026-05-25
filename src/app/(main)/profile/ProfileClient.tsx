@@ -38,6 +38,19 @@ import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
   switch (tradition) {
@@ -201,6 +214,122 @@ export default function ProfileClient({
   const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
   const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
   const [newRelicIds, setNewRelicIds] = useState<string[]>([]);
+
+  const [reminderEnabled, setReminderEnabled] = useState<boolean>(
+    (profile as any)?.japa_reminder_enabled ?? false
+  );
+  const [reminderTime, setReminderTime] = useState<string>(
+    (profile as any)?.japa_reminder_time ?? '07:00'
+  );
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+      console.warn('NEXT_PUBLIC_VAPID_PUBLIC_KEY environment variable is not set. Japa Reminders will be hidden.');
+    }
+  }, []);
+
+  async function handleToggleReminder() {
+    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!vapidKey) return;
+
+    if (!reminderEnabled) {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          toast.error('Enable notifications in browser settings');
+          return;
+        }
+
+        if (!('serviceWorker' in navigator)) {
+          toast.error('Push notifications are not supported in this browser.');
+          return;
+        }
+
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        });
+
+        const p256dh = subscription.getKey('p256dh');
+        const auth = subscription.getKey('auth');
+
+        const p256dhStr = p256dh ? btoa(String.fromCharCode(...new Uint8Array(p256dh))) : '';
+        const authStr = auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : '';
+
+        const subRes = await fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            endpoint: subscription.endpoint,
+            p256dh: p256dhStr,
+            auth: authStr,
+          }),
+        });
+
+        if (!subRes.ok) throw new Error('Failed to save push subscription');
+
+        const prefRes = await fetch('/api/push/preferences', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ japa_reminder_enabled: true }),
+        });
+
+        if (!prefRes.ok) throw new Error('Failed to save push preferences');
+
+        setReminderEnabled(true);
+        toast.success('Japa reminder enabled 🙏');
+      } catch (err: any) {
+        console.error('Failed to enable japa reminder:', err);
+        toast.error(err.message || 'Failed to enable japa reminder');
+      }
+    } else {
+      try {
+        const prefRes = await fetch('/api/push/preferences', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ japa_reminder_enabled: false }),
+        });
+
+        if (!prefRes.ok) throw new Error('Failed to save push preferences');
+
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.getSubscription();
+          if (subscription) {
+            await fetch('/api/push/subscribe', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ endpoint: subscription.endpoint }),
+            }).catch(() => {});
+            
+            await subscription.unsubscribe().catch(() => {});
+          }
+        }
+
+        setReminderEnabled(false);
+        toast.success('Japa reminder disabled');
+      } catch (err: any) {
+        console.error('Failed to disable japa reminder:', err);
+        toast.error(err.message || 'Failed to disable japa reminder');
+      }
+    }
+  }
+
+  async function handleTimeChange(newTime: string) {
+    setReminderTime(newTime);
+    try {
+      const res = await fetch('/api/push/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ japa_reminder_time: newTime }),
+      });
+      if (!res.ok) throw new Error('Failed to update reminder time');
+      toast.success(`Reminder time set to ${newTime} 🙏`);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update reminder time');
+    }
+  }
 
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
@@ -1694,6 +1823,45 @@ export default function ProfileClient({
                   );
                 })}
              </div>
+
+             {/* Japa Daily Reminder Section */}
+             {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && (
+               <div className="space-y-3 pt-2">
+                 <div className="flex items-center justify-between px-5 py-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] shadow-sm">
+                   <div>
+                     <p className="text-sm font-medium theme-ink">Japa Reminder</p>
+                     <p className="text-xs theme-muted mt-0.5">Daily nudge if you haven&apos;t done Japa</p>
+                   </div>
+                   <button
+                     type="button"
+                     onClick={handleToggleReminder}
+                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                       reminderEnabled ? 'bg-[var(--brand-primary)]' : 'bg-[var(--text-dim)]/30'
+                     }`}
+                     aria-label="Toggle Japa Reminder"
+                   >
+                     <span
+                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                         reminderEnabled ? 'translate-x-5' : 'translate-x-0'
+                       }`}
+                     />
+                   </button>
+                 </div>
+
+                 {reminderEnabled && (
+                   <div className="flex items-center justify-between px-5 py-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] shadow-sm">
+                     <span className="text-sm font-medium theme-ink">Remind me at</span>
+                     <input
+                       type="time"
+                       value={reminderTime}
+                       onChange={(e) => handleTimeChange(e.target.value)}
+                       className="rounded-lg border border-[var(--brand-primary)] bg-transparent px-3 py-1.5 text-sm theme-ink outline-none focus:ring-1 focus:ring-[var(--brand-primary)]"
+                     />
+                   </div>
+                 )}
+               </div>
+             )}
+
              <button
                onClick={sendTestNotification}
                disabled={sendingTestNotification}

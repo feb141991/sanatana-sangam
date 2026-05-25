@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
       tradition?: string;
       goal?: string;
       name?: string;
+      life_stage?: string;
+      gender?: string;
+      interests?: string[];
     } | null;
 
     const tradition = body?.tradition?.trim();
@@ -33,6 +36,9 @@ export async function POST(req: NextRequest) {
       onboarding_completed: boolean;
       onboarding_goal?: string | null;
       full_name?: string;
+      life_stage?: string;
+      gender_context?: string;
+      seeking?: string[];
     } = {
       onboarding_completed: true,
     };
@@ -40,6 +46,9 @@ export async function POST(req: NextRequest) {
     if (tradition) updatePayload.tradition = tradition;
     if (goal) updatePayload.onboarding_goal = goal;
     if (name && name !== existingProfile?.full_name) updatePayload.full_name = name;
+    if (body?.life_stage) updatePayload.life_stage = body.life_stage;
+    if (body?.gender) updatePayload.gender_context = body.gender;
+    if (body?.interests) updatePayload.seeking = body.interests;
 
     const { error } = await supabase
       .from('profiles')

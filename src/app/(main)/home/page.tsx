@@ -48,7 +48,13 @@ export default async function HomePage() {
     .eq('id', user.id)
     .single();
 
-  if (!profile?.onboarding_completed) redirect('/onboarding');
+  // Only redirect new users — existing users with real data skip onboarding
+  const needsOnboarding = profile?.onboarding_completed === false
+    && !profile?.tradition      // no tradition set
+    && !profile?.karma_points   // never earned karma
+    && (profile?.shloka_streak ?? 0) === 0; // never done japa
+    
+  if (needsOnboarding) redirect('/onboarding');
 
   const { data: guidedPathProgress } = await supabase
     .from('guided_path_progress')

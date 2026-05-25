@@ -1,0 +1,4 @@
+[functions.japa-reminder]
+# Schedule via Supabase Dashboard → Edge Functions → japa-reminder → Add Schedule
+# Cron: "0 * * * *"  (every hour on the hour)
+

@@ -67,6 +67,8 @@ export interface Database {
           date_of_birth: string | null;
           is_banned: boolean;
           ban_reason: string | null;
+          japa_reminder_enabled?: boolean;
+          japa_reminder_time?: string;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;

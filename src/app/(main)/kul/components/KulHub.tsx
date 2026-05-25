@@ -24,6 +24,7 @@ import { daysUntilNextOccurrence } from '../utils';
 import { KulSectionTiles } from './KulSectionTiles';
 import { useMemo, useRef, useState } from 'react';
 import { getRelicFrame } from '@/lib/relic-frames';
+import { KulLeaderboard } from './KulLeaderboard';
 
 function getDisplayName(member?: MemberRow) {
   return member?.profiles?.full_name || member?.profiles?.username || 'Family';
@@ -449,6 +450,8 @@ export function KulHub({
           </div>
         )}
       </section>
+
+      <KulLeaderboard members={members} userId={userId} />
 
       <KulSabhaPreview
         messages={messages}

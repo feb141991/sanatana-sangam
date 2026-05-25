@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import PageIntro from '@/components/ui/PageIntro';
+import SankalpaCompletionCeremony from '@/components/home/SankalpaCompletionCeremony';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReportData {
@@ -882,6 +883,7 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function MyProgressClient({
   userName,
+  tradition,
   isPro,
   streak,
   heatmap,
@@ -902,6 +904,12 @@ export default function MyProgressClient({
   const [showReport, setShowReport]     = useState(false);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
   const [midpointRefreshKey, setMidpointRefreshKey] = useState(0);
+
+  const [completionCeremony, setCompletionCeremony] = useState<{
+    open: boolean;
+    title: string;
+    durationDays: number;
+  }>({ open: false, title: '', durationDays: 0 });
 
   const [checkinMap, setCheckinMap] = useState<Map<string, Set<string>>>(new Map());
 
@@ -933,6 +941,25 @@ export default function MyProgressClient({
 
     fetchCheckins();
   }, [sankalpas]);
+
+  function hasFiredCompletion(id: string) {
+    try { return localStorage.getItem(`shoonaya-sankalpa-completed-${id}`) === 'true'; }
+    catch { return false; }
+  }
+
+  async function handleComplete(id: string, title: string, durationDays: number) {
+    try {
+      localStorage.setItem(`shoonaya-sankalpa-completed-${id}`, 'true');
+    } catch {}
+    
+    setCompletionCeremony({ open: true, title, durationDays });
+    
+    fetch('/api/sankalpa/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sankalpa_id: id }),
+    }).catch(console.error);
+  }
 
   const handleCheckin = useCallback(async (sankalpaId: string) => {
     const todayStr = new Date().toISOString().slice(0, 10);
@@ -1573,6 +1600,7 @@ export default function MyProgressClient({
                     && progress <= 52
                     && !hasMidpointReflection(s.id);
                   const isOverdue = s.status === 'active' && daysRemaining < 0;
+                  const isComplete = s.status === 'active' && daysRemaining <= 0;
                   const shortenedText = s.text.length > 30 ? `${s.text.slice(0, 30)}...` : s.text;
 
                   return (
@@ -1725,6 +1753,16 @@ export default function MyProgressClient({
                           </div>
                         </div>
                       )}
+
+                      {isComplete && !hasFiredCompletion(s.id) && (
+                        <button
+                          onClick={() => handleComplete(s.id, s.text, s.target_days)}
+                          className="w-full mt-3 rounded-full py-3 font-bold text-black text-sm cursor-pointer transition-transform active:scale-95"
+                          style={{ background: '#C5A059' }}
+                        >
+                          Mark as Fulfilled ✨
+                        </button>
+                      )}
                       </div>
                     </div>
                   );
@@ -1774,6 +1812,17 @@ export default function MyProgressClient({
           />
         )}
       </AnimatePresence>
+
+      <SankalpaCompletionCeremony
+        isOpen={completionCeremony.open}
+        onClose={() => {
+          setCompletionCeremony(prev => ({ ...prev, open: false }));
+          router.refresh();
+        }}
+        sankalpaTitle={completionCeremony.title}
+        durationDays={completionCeremony.durationDays}
+        tradition={tradition ?? 'hindu'}
+      />
     </>
   );
 }
