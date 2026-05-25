@@ -23,6 +23,7 @@ type LocalState = {
   japaDone: boolean;
   japaBeads: number;
   japaRounds: number;
+  nityaDone: boolean;
   quizDone: boolean;
   dharmVeerDone: boolean;
   pathshalaProgress: number;
@@ -32,6 +33,7 @@ const EMPTY_LOCAL_STATE: LocalState = {
   japaDone: false,
   japaBeads: 0,
   japaRounds: 0,
+  nityaDone: false,
   quizDone: false,
   dharmVeerDone: false,
   pathshalaProgress: 0,
@@ -78,6 +80,8 @@ function readLocalState(): LocalState {
         next.japaDone = (parsed.rounds ?? 0) >= 1;
       }
     }
+
+    next.nityaDone = localStorage.getItem(`shoonaya-nitya-done-${todayStr}`) === 'true';
 
     for (const key of Object.keys(localStorage)) {
       if (key.startsWith('shoonaya-quiz-daily-answered-') && key.endsWith(todayStr)) {
@@ -171,7 +175,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   // Server props win for japa/nitya/pathshala (DB-authoritative),
   // but if localStorage says done (just completed this session), honour that too.
   const japaDone   = props.japaDone || localState.japaDone;
-  const nityaDone  = props.nityaDone;
+  const nityaDone  = props.nityaDone || localState.nityaDone;
   const pathshalaDone = props.pathshalaDone;
   const japaBeads  = props.japaBeads ?? localState.japaBeads;
   const japaRounds = props.japaRounds ?? localState.japaRounds;

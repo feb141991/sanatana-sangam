@@ -192,6 +192,8 @@ function saveLocalDone(userId: string, date: string, stepId: string) {
     const existing = getLocalDone(userId, date);
     existing.add(stepId);
     localStorage.setItem(localKey(userId, date), JSON.stringify([...existing]));
+    // Also write a strip-readable key (pattern: shoonaya-nitya-done-YYYY-MM-DD)
+    localStorage.setItem(`shoonaya-nitya-done-${date}`, 'true');
   } catch {}
 }
 
