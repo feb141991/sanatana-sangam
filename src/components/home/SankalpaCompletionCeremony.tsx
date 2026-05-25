@@ -71,7 +71,7 @@ export default function SankalpaCompletionCeremony({ isOpen, onClose, sankalpaTi
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm space-y-2">
             <p className="text-xs uppercase tracking-widest text-amber-400/60">{durationDays} days held</p>
-            <p className="text-lg font-serif text-amber-100/90 italic">"{sankalpaTitle}"</p>
+            <p className="text-lg font-serif text-amber-100/90 italic">&ldquo;{sankalpaTitle}&rdquo;</p>
             <p className="text-sm text-amber-100/60 leading-relaxed mt-3">{copy.body}</p>
           </div>
 

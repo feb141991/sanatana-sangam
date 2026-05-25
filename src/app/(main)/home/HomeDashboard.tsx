@@ -1189,6 +1189,7 @@ export default function HomeDashboard({
         localStorage.setItem('shoonaya-home-visits', String(visits + 1));
       }
     } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

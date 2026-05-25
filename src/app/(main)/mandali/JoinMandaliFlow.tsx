@@ -51,7 +51,7 @@ export default function JoinMandaliFlow({ userId }: Props) {
 
   return (
     <div className="glass-panel rounded-2xl border border-white/10 p-5 max-w-sm mx-auto space-y-4" style={{ background: 'var(--brand-primary-soft)' }}>
-      <h2 className="font-display font-bold text-lg" style={{ color: 'var(--text-cream)' }}>You haven't joined a Mandali yet</h2>
+      <h2 className="font-display font-bold text-lg" style={{ color: 'var(--text-cream)' }}>You haven&apos;t joined a Mandali yet</h2>
       <div className="flex gap-2">
         <input
           type="text"
