@@ -1,11 +1,28 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useMemo, useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+
+// ── Celebration particle ──────────────────────────────────────────────────────
+function Particle({ delay, colour }: { delay: number; colour: string }) {
+  const angle = Math.random() * 360;
+  const dist  = 60 + Math.random() * 60;
+  const x = Math.cos((angle * Math.PI) / 180) * dist;
+  const y = Math.sin((angle * Math.PI) / 180) * dist;
+  return (
+    <motion.span
+      className="absolute w-2 h-2 rounded-full pointer-events-none"
+      style={{ background: colour, top: '50%', left: '50%', marginLeft: -4, marginTop: -4 }}
+      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+      animate={{ x, y, opacity: 0, scale: 0 }}
+      transition={{ duration: 0.9 + Math.random() * 0.4, delay, ease: 'easeOut' }}
+    />
+  );
+}
 
 export interface PendingMoodFollowup {
   checkinId: string;
@@ -26,6 +43,8 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [reflectionNote, setReflectionNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [savedMood, setSavedMood] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const { resolvedTheme } = useThemePreference();
   const MOODS = MOODS_CONFIG[resolvedTheme] || MOODS_CONFIG.dark;
@@ -33,6 +52,20 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
   const initialMoodLabel = useMemo(() => {
     return MOODS.find(option => option.key === pending.mood)?.label || pending.mood;
   }, [pending.mood, MOODS]);
+
+  const afterMoodConf = useMemo(() => {
+    return savedMood ? MOODS.find(m => m.key === savedMood) : null;
+  }, [savedMood, MOODS]);
+
+  // Auto-dismiss the celebration and complete the cycle after 2.8 s
+  useEffect(() => {
+    if (!showCelebration || !savedMood) return;
+    const timer = setTimeout(() => {
+      setShowCelebration(false);
+      onCompleted(savedMood);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, [showCelebration, savedMood, onCompleted]);
 
   const handleSave = async () => {
     if (!selectedMood || isSaving) return;
@@ -52,11 +85,10 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to save mood follow-up');
-      }
+      if (!response.ok) throw new Error('Failed to save mood follow-up');
 
-      onCompleted(selectedMood);
+      setSavedMood(selectedMood);
+      setShowCelebration(true);
     } catch (error) {
       console.error(error);
     } finally {
@@ -64,7 +96,74 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
     }
   };
 
+  // ── Celebration overlay — replaces the modal after reflection is saved ──────
+  const celebrationView = (
+    <AnimatePresence>
+      {showCelebration && afterMoodConf && (
+        <motion.div
+          className="fixed inset-0 z-[120] flex flex-col items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(12px)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => { setShowCelebration(false); onCompleted(savedMood!); }}
+        >
+          <div className="relative flex flex-col items-center gap-5 text-center px-8">
+            {/* Burst particles */}
+            {!prefersReducedMotion && Array.from({ length: 14 }).map((_, i) => (
+              <Particle key={i} delay={i * 0.04} colour={afterMoodConf.colour} />
+            ))}
+
+            {/* Glowing mood circle */}
+            <motion.div
+              className="w-24 h-24 rounded-full flex items-center justify-center text-5xl relative"
+              style={{
+                background: `radial-gradient(circle, ${afterMoodConf.colour}33, transparent 70%)`,
+                border: `2px solid ${afterMoodConf.colour}55`,
+                boxShadow: `0 0 48px ${afterMoodConf.colour}44`,
+              }}
+              initial={prefersReducedMotion ? undefined : { scale: 0.4, opacity: 0 }}
+              animate={prefersReducedMotion ? undefined : { scale: 1, opacity: 1 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 20 }}
+            >
+              🙏
+            </motion.div>
+
+            {/* Message */}
+            <motion.div
+              initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-cream)' }}>
+                Practice complete 🌟
+              </h2>
+              <p className="mt-2 text-sm" style={{ color: 'var(--text-muted-warm)', lineHeight: 1.6 }}>
+                You started <span style={{ color: afterMoodConf.colour, fontWeight: 600 }}>{initialMoodLabel.toLowerCase()}</span>{' '}
+                and you&apos;re feeling{' '}
+                <span style={{ color: afterMoodConf.colour, fontWeight: 600 }}>{afterMoodConf.label.toLowerCase()}</span> now.{' '}
+                Your reflection has been saved. 🙏
+              </p>
+            </motion.div>
+
+            <motion.p
+              className="text-[11px] mt-2"
+              style={{ color: 'var(--text-dim)' }}
+              initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+              animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              Tap anywhere to continue
+            </motion.p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+
   return (
+    <>
+    {celebrationView}
     <motion.div
       className="fixed inset-0 z-[110] flex items-center justify-center p-4"
       onClick={onClose}
@@ -179,5 +278,6 @@ export default function MoodFollowupSheet({ pending, onClose, onCompleted }: Moo
         </div>
       </motion.div>
     </motion.div>
+    </>
   );
 }
