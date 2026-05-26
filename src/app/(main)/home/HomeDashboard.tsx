@@ -2734,57 +2734,62 @@ export default function HomeDashboard({
           ))}
         </AnimatePresence>
 
-        {/* ── Dharm Veer Card ──────────────────────────────────────────────── */}
-        <motion.div
-          key="dharm-veer-card"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
-          style={{
-            background: isDark ? 'linear-gradient(145deg, #1C150A, #1A1208)' : 'linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(255, 253, 248, 0.94))',
-            border: isDark ? '1px solid rgba(197,160,89,0.15)' : '1px solid rgba(157, 100, 60, 0.15)',
-            borderRadius: '16px',
-            margin: '0 16px 10px',
-            boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.25)' : '0 8px 32px rgba(157, 100, 60, 0.05)',
-          }}
-        >
-          <Link 
-            href={`/dharm-veer/${dharmVeer.id}`}
-            className="flex items-center gap-3 w-full px-4 py-3.5 pr-6 text-left no-underline"
-            onClick={() => playHaptic('light')}
-          >
-            <span aria-hidden="true" className="text-[26px] leading-none shrink-0">
-              <SacredIcon name="sparkles" size={18} />
-            </span>
-            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-              <span className="font-serif tracking-[0.01em]" style={{ fontSize: '15px', fontWeight: 700, color: isDark ? '#F0EDE6' : '#1a140e' }}>
-                {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
-              </span>
-              <span className="line-clamp-1" style={{ fontSize: '12px', lineHeight: 1.45, color: isDark ? 'rgba(240,220,180,0.55)' : 'rgba(60, 45, 28, 0.75)' }}>
-                {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
-              </span>
-            </div>
-            <ChevronRight size={16} color="#C5A059" className="shrink-0" aria-hidden="true" />
-          </Link>
-        </motion.div>
-        
-        {/* ── Do You Know? Daily Quiz Spark Teaser ─────────────────────────── */}
+        {/* ── Dharm Veer Card — hidden once completed today ────────────────── */}
         <AnimatePresence>
-          {quiz && quiz !== 'loading' && quiz !== 'error' && (
+          {!dailyDharmaStackState.dharmVeerDone && (
+            <motion.div
+              key="dharm-veer-card"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              className="group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+              style={{
+                background: isDark ? 'linear-gradient(145deg, #1C150A, #1A1208)' : 'linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(255, 253, 248, 0.94))',
+                border: isDark ? '1px solid rgba(197,160,89,0.15)' : '1px solid rgba(157, 100, 60, 0.15)',
+                borderRadius: '16px',
+                margin: '0 16px 10px',
+                boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.25)' : '0 8px 32px rgba(157, 100, 60, 0.05)',
+              }}
+            >
+              <Link
+                href={`/dharm-veer/${dharmVeer.id}`}
+                className="flex items-center gap-3 w-full px-4 py-3.5 pr-6 text-left no-underline"
+                onClick={() => playHaptic('light')}
+              >
+                <span aria-hidden="true" className="text-[26px] leading-none shrink-0">
+                  <SacredIcon name="sparkles" size={18} />
+                </span>
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  <span className="font-serif tracking-[0.01em]" style={{ fontSize: '15px', fontWeight: 700, color: isDark ? '#F0EDE6' : '#1a140e' }}>
+                    {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
+                  </span>
+                  <span className="line-clamp-1" style={{ fontSize: '12px', lineHeight: 1.45, color: isDark ? 'rgba(240,220,180,0.55)' : 'rgba(60, 45, 28, 0.75)' }}>
+                    {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
+                  </span>
+                </div>
+                <ChevronRight size={16} color="#C5A059" className="shrink-0" aria-hidden="true" />
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Do You Know? Daily Quiz Spark Teaser — hidden once answered ── */}
+        <AnimatePresence>
+          {quiz && quiz !== 'loading' && quiz !== 'error' && quizAnswered === null && (
             <motion.div
               key="quiz-spark-teaser"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
               transition={{ duration: 0.38 }}
               className="quiz-spark-card compact cursor-pointer group"
               onClick={() => setQuizModalOpen(true)}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[rgba(197, 160, 89,0.12)] flex items-center justify-center text-lg">
-                    🧠
+                  <div className="w-8 h-8 rounded-lg bg-[rgba(197,160,89,0.12)] flex items-center justify-center">
+                    <SacredIcon name="brain" size={16} />
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] opacity-80">
@@ -2795,14 +2800,12 @@ export default function HomeDashboard({
                 </div>
                 <div className="flex items-center gap-2">
                   {quizStreak > 1 && (
-                    <span className="flex items-center gap-0.5 text-[11px] font-bold"
-                          style={{ color: 'var(--brand-primary)' }}>
-                      🔥{quizStreak}
+                    <span className="flex items-center gap-0.5 text-[11px] font-bold" style={{ color: 'var(--brand-primary)' }}>
+                      <SacredIcon name="flame" size={11} />{quizStreak}
                     </span>
                   )}
-                  <span className="text-[10px] font-bold uppercase tracking-widest"
-                        style={{ color: 'var(--text-muted-warm)' }}>
-                    {quizAnswered !== null ? 'Done ✓' : 'Play →'}
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted-warm)' }}>
+                    Play →
                   </span>
                 </div>
               </div>
