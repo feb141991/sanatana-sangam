@@ -29,7 +29,7 @@ export default async function MainLayout({
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, onboarding_completed, app_language, is_banned')
+      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, app_language, is_banned')
       .eq('id', user.id)
       .single();
 
@@ -38,10 +38,10 @@ export default async function MainLayout({
       redirect('/banned');
     }
 
-    // New users who haven't completed onboarding go there first
-    if (profile && !profile.onboarding_completed) {
-      redirect('/onboarding');
-    }
+    // NOTE: onboarding redirect intentionally removed from layout.
+    // The layout wraps /onboarding itself — redirecting here caused an
+    // infinite loop (layout → redirect /onboarding → layout → repeat).
+    // Onboarding gate lives in home/page.tsx only.
 
     savedLat         = profile?.latitude     ?? null;
     savedLon         = profile?.longitude    ?? null;
