@@ -125,6 +125,14 @@ function StatusDot({ done, accentColor }: { done: boolean; accentColor: string }
   );
 }
 
+function CompletedRing({ accentColor }: { accentColor: string }) {
+  return (
+    <div className="flex h-6 w-6 items-center justify-center rounded-full" style={{ background: `${accentColor}15`, border: `1.5px solid ${accentColor}` }}>
+      <Check size={11} strokeWidth={3} style={{ color: accentColor }} />
+    </div>
+  );
+}
+
 function JapaArc({ beads, done, accentColor }: { beads: number; done: boolean; accentColor: string }) {
   const radius = 10;
   const circumference = 2 * Math.PI * radius;
@@ -207,7 +215,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: japaBeads > 0 ? `${japaRounds} round${japaRounds !== 1 ? 's' : ''} · ${japaBeads} beads` : 'Recite the divine name',
       done: japaDone,
       href: '/bhakti/mala',
-      right: <JapaArc beads={japaBeads} done={japaDone} accentColor={accentColor} />,
+      right: japaDone ? <CompletedRing accentColor={accentColor} /> : <JapaArc beads={japaBeads} done={japaDone} accentColor={accentColor} />,
     },
     {
       id: 'nitya',
@@ -216,7 +224,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: nityaDone ? 'Morning routine done' : 'Morning practice',
       done: nityaDone,
       href: '/nitya-karma',
-      right: <StatusDot done={nityaDone} accentColor={accentColor} />,
+      right: nityaDone ? <CompletedRing accentColor={accentColor} /> : <StatusDot done={false} accentColor={accentColor} />,
     },
     {
       id: 'pathshala',
@@ -226,7 +234,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       done: pathshalaDone,
       href: '/pathshala',
       right: pathshalaDone
-        ? <StatusDot done={true} accentColor={accentColor} />
+        ? <CompletedRing accentColor={accentColor} />
         : (
             <div className="w-[52px]">
               <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.14)' }}>
@@ -243,7 +251,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: quizDone ? 'All answered today' : 'Test your knowledge',
       done: quizDone,
       href: '/quiz',
-      right: <StatusDot done={quizDone} accentColor={accentColor} />,
+      right: quizDone ? <CompletedRing accentColor={accentColor} /> : <StatusDot done={false} accentColor={accentColor} />,
     },
     {
       id: 'dharmveer',
@@ -252,13 +260,12 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       sublabel: dharmVeerDone ? 'Challenge complete' : "Today's challenge",
       done: dharmVeerDone,
       href: dharmVeerHref,
-      right: <StatusDot done={dharmVeerDone} accentColor={accentColor} />,
+      right: dharmVeerDone ? <CompletedRing accentColor={accentColor} /> : <StatusDot done={false} accentColor={accentColor} />,
     },
   ], [accentColor, dharmVeerHref, dharmVeerDone, japaBeads, japaRounds, japaDone, nityaDone, pathshalaDone, pathshalaProgress, quizDone]);
 
   const completedCount = rows.filter((r) => r.done).length;
 
-  // ── Auto-advance carousel every 3s, pause on interaction ─────────────────
   const resetTimer = useCallback(() => {
     if (autoTimer.current) clearInterval(autoTimer.current);
     autoTimer.current = setInterval(() => {

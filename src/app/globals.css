@@ -2793,3 +2793,17 @@ body::after {
   0%, 100% { opacity: 0.6; transform: scale(0.97); }
   50%       { opacity: 1;   transform: scale(1);    }
 }
+
+/* Dark-mode text safety net */
+.dark-surface p, .dark-surface span, .dark-surface label,
+.dark-surface h1, .dark-surface h2, .dark-surface h3 {
+  color: inherit;
+}
+
+/* Force readable muted text on dark surfaces */
+[data-theme='dark'] .text-muted,
+[data-theme='dark'] .text-gray-500,
+[data-theme='dark'] .text-gray-600 {
+  color: rgba(240, 220, 180, 0.6) !important;
+}
+
