@@ -2785,24 +2785,11 @@ body::after {
   }
 }
 
-/* Pre‑hydration splash */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: #0E0E0F;
-  z-index: 9999;
-  animation: splash-fade 0.8s ease-out 0.6s forwards;
-  opacity: 1;
-}
-@keyframes splash-fade {
-  to { opacity: 0; pointer-events: none; }
-}
-/* Loading pulse animation */
+/* Loading pulse animation — slow breathe, not a blink */
 .loading-pulse {
-  animation: pulse 2s ease-in-out infinite;
+  animation: pulse 3s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.6; transform: scale(0.97); }
+  50%       { opacity: 1;   transform: scale(1);    }
 }
