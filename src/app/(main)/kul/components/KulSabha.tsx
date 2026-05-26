@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Smile, Sparkles, MessageSquare, Heart, Lightbulb } from 'lucide-react';
 import { MessageRow, MemberRow } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import SacredIcon from '@/components/ui/SacredIcon';
 
 const SACRED_EMOJIS = ['🙏', '🕉️', '📿', '🪔', '🌸', '🥥', '🐚', '🕯️'];
 
@@ -85,14 +86,14 @@ export function KulSabha({
     <div className="flex flex-col h-[calc(100vh-12rem)] min-h-[550px] glass-panel rounded-[2.5rem] overflow-hidden border border-[#C5A059]/15 shadow-2xl relative">
       {/* Background Sacred Geometry Watermark */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] flex items-center justify-center overflow-hidden">
-        <div className="text-[400px] select-none font-bold">🕉️</div>
+        <div className="text-[400px] select-none font-bold"><span aria-hidden="true"> </span></div>
       </div>
 
       {/* Header */}
       <div className="px-6 py-4 border-b border-white/8 bg-[var(--surface-soft)] backdrop-blur-md flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400/20 to-orange-600/20 flex items-center justify-center text-xl shadow-inner border border-[#C5A059]/15">
-            💬
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-orange-400/20 to-orange-600/20 flex items-center justify-center shadow-inner border border-[#C5A059]/15">
+            <SacredIcon name="mandali" size={20} />
           </div>
           <div>
             <h2 className="text-lg font-bold theme-ink premium-serif leading-none">{t('kulSabhaTitle')}</h2>

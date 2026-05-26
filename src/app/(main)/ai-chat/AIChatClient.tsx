@@ -10,6 +10,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
+import SacredIcon from '@/components/ui/SacredIcon';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ScriptureRef {
@@ -119,7 +120,7 @@ function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transli
           ? 'bg-[rgba(200,100,60,0.30)] text-[var(--text-cream)]'
           : 'bg-gradient-to-br from-[var(--brand-primary)] to-orange-500 text-white'
       }`}>
-        {isUser ? '🙏' : '✨'}
+        {isUser ? <SacredIcon name="flower" size={16} /> : <SacredIcon name="sparkles" size={16} />}
       </div>
 
       {/* Bubble */}
@@ -175,7 +176,10 @@ function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transli
                 borderColor: 'var(--card-border)',
               }}
             >
-              📖 Dharma-sourced
+              <span className="inline-flex items-center gap-1">
+                <SacredIcon name="book" size={10} />
+                Dharma-sourced
+              </span>
             </span>
           )}
         </div>
@@ -189,7 +193,7 @@ function TypingIndicator() {
   return (
     <div className="flex gap-2 mb-4">
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
-        ✨
+        <SacredIcon name="sparkles" size={14} />
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
         <div className="flex gap-1 items-center h-5">
@@ -314,12 +318,12 @@ export default function AIChatClient({
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
   const greetingMap: Record<string, string> = {
-    hindu:    'Hari Om 🕉️',
-    sikh:     'Sat Sri Akal ☬',
-    buddhist: 'Namo Buddhaya ☸️',
-    jain:     'Jai Jinendra 🤲',
+    hindu:    'Hari Om',
+    sikh:     'Sat Sri Akal',
+    buddhist: 'Namo Buddhaya',
+    jain:     'Jai Jinendra',
   };
-  const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste 🙏';
+  const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -465,7 +469,7 @@ export default function AIChatClient({
           </button>
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
             style={{ background: 'var(--brand-primary-soft)' }}>
-            ✨
+            <SacredIcon name="sparkles" size={20} />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -518,9 +522,9 @@ export default function AIChatClient({
           <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-6">
             {/* Welcome */}
             <div className="space-y-2">
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-4xl"
+              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-inner"
                 style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
-                🙏
+                <SacredIcon name="flower" size={36} />
               </div>
               <h2 className="font-display font-bold text-xl text-[color:var(--text-cream)]">
                 {greeting}, {userName}

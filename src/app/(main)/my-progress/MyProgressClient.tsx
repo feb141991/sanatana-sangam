@@ -42,6 +42,10 @@ interface Props {
   dowCounts:        number[];
   totalJapaSessions: number;
   nitya30dDays:     number;
+  sevaScore?:       number;
+  weeklySevaScore?: number;
+  mandaliPostCount?: number;
+  kulTasksDone?:    number;
   report:           ReportData;
   sankalpas:        any[];
 }
@@ -210,9 +214,9 @@ function InteractiveCalendar({
         </span>
         <br />
         <span style={{ color: isDark ? 'rgba(245,210,130,0.65)' : 'rgba(100,55,10,0.65)' }}>
-          {d?.japa ? '📿 Japa' : ''}
+          {d?.japa ? 'Japa' : ''}
           {d?.japa && d?.nitya ? ' · ' : ''}
-          {d?.nitya ? '🌅 Nitya' : ''}
+          {d?.nitya ? 'Nitya' : ''}
           {!hasAny ? 'Rest day' : ''}
         </span>
       </motion.div>
@@ -368,6 +372,11 @@ function Trend({ cur, prev }: { cur: number; prev: number }) {
 }
 
 // ── Achievement Shields ───────────────────────────────────────────────────────
+const shieldIconMap: Record<string, SacredIconName> = {
+  '🔥': 'flame', '🪔': 'flame', '🌟': 'star', '📿': 'japa', '🙏': 'flower', '🌱': 'tree',
+  '🌕': 'moon', '⚡': 'sparkles', '🔆': 'sun', '💎': 'shield', '🕯️': 'flame', '☀️': 'sun'
+};
+
 const STREAK_SHIELDS = [
   { threshold: 7,   name: 'Saptāha',    emoji: '🔥', desc: '7-day streak'    },
   { threshold: 9,   name: 'Navarātri',  emoji: '🪔', desc: '9-day streak'    },
@@ -462,7 +471,7 @@ function ShieldBadgesPreview({
                   filter: earned ? 'none' : 'grayscale(1) opacity(0.2)',
                 }}
               >
-                {shield.emoji}
+                <SacredIcon name={shieldIconMap[shield.emoji]} size={16} />
                 {earned && isMilestone && (
                   <motion.div 
                     className="absolute inset-0"
@@ -702,7 +711,9 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => japaAi.explain(`This user's japa practice this month: ${report.curSessions} sessions, ${report.curRounds} rounds, ${report.curBeads} beads${report.topMantra ? `, favourite mantra: ${report.topMantra}` : ''}. Last month was ${report.prevSessions} sessions, ${report.prevRounds} rounds, ${report.prevBeads} beads. Current streak: ${streak} days. Interpret this data as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🪷 Japa Practice</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(197, 160, 89,0.7)' }}>
+                  <SacredIcon name="japa" size={14} /> Japa Practice
+                </p>
                 <div className="flex items-center gap-2">
                   <Link href="/bhakti/mala/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
@@ -762,7 +773,9 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => nityaAi.explain(`This user completed Nitya Karma (daily dharmic duties) on ${report.curNityaDays} out of ${report.curDaysElapsed} days this month (${nityaRate}% completion rate). Their overall streak is ${streak} days. Interpret this as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🌅 Nitya Karma</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(197, 160, 89,0.7)' }}>
+                  <SacredIcon name="sunrise" size={14} /> Nitya Karma
+                </p>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
@@ -895,6 +908,10 @@ export default function MyProgressClient({
   dowCounts,
   totalJapaSessions,
   nitya30dDays,
+  sevaScore,
+  weeklySevaScore,
+  mandaliPostCount,
+  kulTasksDone,
   report,
   sankalpas,
 }: Props) {
@@ -1167,6 +1184,23 @@ export default function MyProgressClient({
 
         <div className="px-4 space-y-4">
 
+          {/* ── Signal Summary ── */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+            {[
+              { label: 'Streak', val: `${streak}d`, icon: 'flame' as SacredIconName },
+              { label: 'Seva Points', val: sevaScore ?? 0, icon: 'heart' as SacredIconName },
+              { label: 'Posts', val: mandaliPostCount ?? 0, icon: 'mandali' as SacredIconName },
+              { label: 'Kul Tasks', val: kulTasksDone ?? 0, icon: 'kul' as SacredIconName },
+            ].map(item => (
+              <div key={item.label} className="rounded-2xl px-4 py-3 flex-col flex-shrink-0 flex items-center justify-center min-w-[80px]"
+                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(197,160,89,0.12)' }}>
+                <SacredIcon name={item.icon} size={14} style={{ color: '#C5A059' }} className="mb-1" />
+                <span className="text-xl font-bold" style={{ color: 'var(--divine-text)' }}>{item.val}</span>
+                <span className="text-[10px] uppercase tracking-widest mt-1" style={{ color: 'rgba(197,160,89,0.55)' }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+
           {/* ── 9-Day Rhythm Card — Premium Addition ── */}
           <motion.section
             initial={{ opacity: 0, x: -20 }}
@@ -1431,6 +1465,27 @@ export default function MyProgressClient({
                 <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
               </Link>
             </div>
+            {/* Kul + Mandali mini cards */}
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <Link href="/kul"
+                className="block rounded-[1.6rem] p-4"
+                style={{ background: cardPathBg, border: `1px solid ${cardPathBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(197,160,89,0.55)' }} />
+                <span className="block mb-2"><SacredIcon name="kul" size={20} /></span>
+                <p className="text-sm font-semibold" style={{ color: h1 }}>Kul</p>
+                <p className="text-[10px] mt-0.5" style={{ color: muted }}>{kulTasksDone ?? 0} tasks done</p>
+                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(197,160,89,0.70)' }}>Open →</p>
+              </Link>
+              <Link href="/mandali"
+                className="block rounded-[1.6rem] p-4"
+                style={{ background: cardBhaktiBg, border: `1px solid ${cardBhaktiBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(196,120,154,0.55)' }} />
+                <span className="block mb-2"><SacredIcon name="mandali" size={20} /></span>
+                <p className="text-sm font-semibold" style={{ color: h1 }}>Mandali</p>
+                <p className="text-[10px] mt-0.5" style={{ color: muted }}>{mandaliPostCount ?? 0} posts</p>
+                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
+              </Link>
+            </div>
           </motion.section>
 
           {/* ── Quiz Mastery ── */}
@@ -1448,8 +1503,8 @@ export default function MyProgressClient({
               >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: '#9575cd' }}>
-                      🧠 Quiz Mastery
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: '#9575cd' }}>
+                      <SacredIcon name="brain" size={14} /> Quiz Mastery
                     </p>
                     <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
                       Track your spiritual knowledge
@@ -1498,8 +1553,8 @@ export default function MyProgressClient({
               >
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: '#10b981' }}>
-                      🧘 Mood Insights
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: '#10b981' }}>
+                      <SacredIcon name="flower" size={14} /> Mood Insights
                     </p>
                     <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
                       Track your emotional journey

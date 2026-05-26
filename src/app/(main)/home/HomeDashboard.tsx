@@ -156,7 +156,7 @@ interface Props {
   lastFreezeUsed?:     string | null;
   missedYesterday?:    boolean;
   activeSymbolId?:     string | null;
-  activeSankalpa?:     { id: string; title: string; duration_days: number; start_date: string } | null;
+  activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string } | null;
 }
 
 type DailyDharmaStackState = {
@@ -1303,11 +1303,15 @@ export default function HomeDashboard({
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => {
         if (data.sankalpa) {
+          const targetDays = data.sankalpa.target_days ?? 30;
+          const startMs = new Date(data.sankalpa.start_date + 'T00:00:00Z').getTime();
+          const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
           setActiveSankalpa({
             id: data.sankalpa.id,
-            title: data.sankalpa.text,
-            duration_days: data.sankalpa.target_days,
+            text: data.sankalpa.text,
             start_date: data.sankalpa.start_date,
+            end_date: endDate,
+            tradition: data.sankalpa.tradition ?? tradition ?? 'hindu',
           });
         } else {
           setActiveSankalpa(null);
@@ -1619,8 +1623,7 @@ export default function HomeDashboard({
     }
     // Priority 2: active sankalpa with days remaining
     if (activeSankalpa) {
-      const start = new Date(activeSankalpa.start_date + 'T00:00:00Z');
-      const endMs = start.getTime() + activeSankalpa.duration_days * 86400000;
+      const endMs = new Date(activeSankalpa.end_date + 'T00:00:00Z').getTime();
       const daysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000));
       if (daysLeft > 0) {
         return {
@@ -2769,7 +2772,7 @@ export default function HomeDashboard({
                     )}
                     <div className="flex-1 min-w-0">
                       <span
-                        className="block font-serif text-[0.92rem] leading-snug truncate"
+                        className="block font-serif text-[1.02rem] leading-tight truncate"
                         style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}
                       >
                         {pulseName}

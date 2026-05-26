@@ -25,6 +25,7 @@ import { KulSectionTiles } from './KulSectionTiles';
 import { useMemo, useRef, useState } from 'react';
 import { getRelicFrame } from '@/lib/relic-frames';
 import { KulLeaderboard } from './KulLeaderboard';
+import SacredIcon from '@/components/ui/SacredIcon';
 
 function getDisplayName(member?: MemberRow) {
   return member?.profiles?.full_name || member?.profiles?.username || 'Family';
@@ -396,7 +397,7 @@ export function KulHub({
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
-              <span className="text-lg">🔥</span>
+              <span aria-hidden="true" className="flex items-center justify-center"><SacredIcon name="flame" size={20} /></span>
             </div>
             <div>
               <p className="text-[15px] font-medium theme-ink premium-serif">Today&apos;s Practice</p>
@@ -406,8 +407,9 @@ export function KulHub({
         </div>
 
         {isActivityEmpty ? (
-          <div className="rounded-2xl border border-dashed border-[var(--card-border)] px-4 py-6 text-center">
-            <p className="text-[13px] theme-ink">No practices logged yet today — be the first 🙏</p>
+          <div className="rounded-2xl border border-dashed border-[var(--card-border)] px-4 py-6 text-center flex items-center justify-center gap-1.5">
+            <p className="text-[13px] theme-ink">No practices logged yet today — be the first</p>
+            <SacredIcon name="flower" size={14} className="theme-ink" />
           </div>
         ) : (
           <div className="space-y-3">
@@ -424,8 +426,8 @@ export function KulHub({
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-[13px] font-medium theme-ink truncate">{name}</span>
                       {streak !== null && streak > 2 && (
-                        <span className="inline-flex items-center gap-0.5 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-bold text-amber-500" title={`Active streak: ${streak} days`}>
-                          🔥 {streak}
+                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-bold text-amber-500" title={`Active streak: ${streak} days`}>
+                          <SacredIcon name="flame" size={10} /> {streak}
                         </span>
                       )}
                     </div>

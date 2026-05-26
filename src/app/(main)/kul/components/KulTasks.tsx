@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, CheckSquare, Clock, User, ChevronRight, Sparkles } from 'lucide-react';
 import { TaskRow, MemberRow } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import SacredIcon from '@/components/ui/SacredIcon';
 
 export function KulTasks({
   tasks,
@@ -98,7 +99,7 @@ export function KulTasks({
               exit={{ opacity: 0, scale: 0.95 }}
               className="text-center py-16 glass-panel rounded-[2.5rem] border border-dashed border-black/10 bg-[var(--surface-soft)]"
             >
-              <div className="w-16 h-16 rounded-full bg-slate-100/50 flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">✨</div>
+              <div className="w-16 h-16 rounded-full bg-slate-100/50 flex items-center justify-center mx-auto mb-4 shadow-inner"><SacredIcon name="sparkles" size={24} /></div>
               <p className="text-sm theme-muted font-medium">{t('kulNoTasksFound')}</p>
             </motion.div>
           ) : (
@@ -127,7 +128,7 @@ export function KulTasks({
                       : 'bg-[var(--surface-soft)] border border-[#C5A059]/15 group-hover:border-[var(--brand-primary)]/40 group-hover:bg-[var(--brand-primary)]/5'
                   }`}
                 >
-                  {task.completed ? <Sparkles size={24} /> : '📋'}
+                  {task.completed ? <Sparkles size={24} /> : <SacredIcon name="scroll" size={22} />}
                 </button>
 
                 <div className="flex-1 min-w-0 py-1">

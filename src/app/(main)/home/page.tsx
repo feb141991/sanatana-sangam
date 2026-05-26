@@ -160,17 +160,28 @@ export default async function HomePage() {
       .limit(1),
   ]);
 
-  let activeSankalpa: { id: string; title: string; duration_days: number; start_date: string } | null = null;
+  let activeSankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string } | null = null;
   try {
     const { data: sankalpaRow } = await supabase
       .from('sankalpas')
-      .select('id, title:text, duration_days:target_days, start_date')
+      .select('id, text, start_date, target_days, tradition')
       .eq('user_id', user.id)
       .eq('status', 'active')
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    activeSankalpa = sankalpaRow ?? null;
+    if (sankalpaRow) {
+      const targetDays = sankalpaRow.target_days ?? 30;
+      const startMs = new Date(sankalpaRow.start_date + 'T00:00:00Z').getTime();
+      const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
+      activeSankalpa = {
+        id: sankalpaRow.id,
+        text: sankalpaRow.text,
+        start_date: sankalpaRow.start_date,
+        end_date: endDate,
+        tradition: sankalpaRow.tradition ?? tradition ?? 'hindu',
+      };
+    }
   } catch {
     // table may not exist yet — ignore
   }

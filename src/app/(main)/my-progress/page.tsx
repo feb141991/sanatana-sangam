@@ -50,10 +50,12 @@ export default async function MyProgressPage() {
     { data: nityaLog },
     { data: sadhana28 },
     { count: allTimeSessions },
+    { count: mandaliPosts },
+    { count: kulTasksCount },
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, is_pro')
+      .select('full_name, username, tradition, is_pro, seva_score, weekly_seva, monthly_seva')
       .eq('id', user.id)
       .single(),
 
@@ -95,6 +97,19 @@ export default async function MyProgressPage() {
       .from('mala_sessions')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id),
+
+    // Mandali contribution count
+    supabase
+      .from('mandali_posts')
+      .select('id', { count: 'exact', head: true })
+      .eq('author_id', user.id),
+
+    // Kul tasks completed
+    supabase
+      .from('kul_tasks')
+      .select('id', { count: 'exact', head: true })
+      .eq('assigned_to', user.id)
+      .eq('completed', true),
   ]);
 
   // Build 28-day heatmap
@@ -172,6 +187,10 @@ export default async function MyProgressPage() {
       isPro={(profile as any)?.is_pro ?? false}
       streak={streak}
       heatmap={heatmap}
+      sevaScore={profile?.seva_score}
+      weeklySevaScore={profile?.weekly_seva}
+      mandaliPostCount={mandaliPosts ?? 0}
+      kulTasksDone={kulTasksCount ?? 0}
       // Japa — 30d dashboard
       japa30dSessions={totalSessions}
       japa30dRounds={totalRounds}
