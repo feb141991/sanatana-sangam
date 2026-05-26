@@ -104,7 +104,7 @@ export default function SubscriptionClient({
               <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
                 <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
                 <p className="text-xs text-amber-500/90 leading-relaxed">
-                  Manage your subscription through your device's app store settings.
+                  Manage your subscription through your device&apos;s app store settings.
                 </p>
               </div>
             )}

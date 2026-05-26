@@ -2247,6 +2247,8 @@ export default function JapaClient({
         } catch { /* ok */ }
       }
     } catch { /* ok */ }
+  // initialMantraId is a URL param set once on mount — intentionally excluded
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
