@@ -5,22 +5,15 @@ type BrandMarkProps = {
   size?: 'sm' | 'md' | 'lg';
 };
 
-const sizeMap = {
-  sm: 32,
-  md: 40,
-  lg: 56,
-} as const;
-
-const radiusMap = {
-  sm: 14,
-  md: 18,
-  lg: 22,
-} as const;
+const sizeMap    = { sm: 32, md: 40, lg: 56 } as const;
+const radiusMap  = { sm: 14, md: 18, lg: 22 } as const;
 
 /**
- * Shankha (sacred conch) brand mark.
- * The shankha is one of the four attributes of Vishnu and is used
- * at the opening of puja across all Sanatana dharmic traditions.
+ * Shoonaya brand mark — the lemniscate (∞) with a bindu (·) at the crossing.
+ *
+ * Symbolism:
+ *   ∞  Shunya (शून्य) — void, zero, infinity
+ *   ·  Bindu           — the point of pure consciousness within the void
  */
 export default function BrandMark({ className, size = 'md' }: BrandMarkProps) {
   const px = sizeMap[size];
@@ -30,76 +23,72 @@ export default function BrandMark({ className, size = 'md' }: BrandMarkProps) {
     <span
       aria-hidden="true"
       className={cn(
-        'brand-mark-pulse relative inline-flex items-center justify-center overflow-hidden border border-white/50 shadow-[0_8px_24px_rgba(108,56,36,0.28),inset_0_1px_0_rgba(255,255,255,0.22)]',
+        'brand-mark-pulse relative inline-flex items-center justify-center overflow-hidden',
+        'border border-white/20',
+        'shadow-[0_8px_24px_rgba(197,160,89,0.18),inset_0_1px_0_rgba(255,255,255,0.10)]',
         className,
       )}
       style={{
-        width:  px,
+        width: px,
         height: px,
         borderRadius: rx,
-        background: 'linear-gradient(145deg, rgba(34,22,8,0.96), rgba(68,40,12,0.92))',
+        background: 'linear-gradient(145deg, rgba(16,10,2,0.98), rgba(46,28,6,0.96))',
         flexShrink: 0,
       }}
     >
-      {/* Shankha SVG — hand-tuned to sit centred at each size */}
+      {/*
+       * SVG viewBox 32×32. Lemniscate centred at (16,16).
+       * Left peak (4,16) · Right peak (28,16).
+       *
+       * Path: left peak → upper-left curve → centre → lower-right curve →
+       *       right peak → upper-right curve → centre → lower-left curve → left peak
+       */}
       <svg
-        viewBox="0 0 24 24"
-        width={px * 0.62}
-        height={px * 0.62}
+        viewBox="0 0 32 32"
+        width={px * 0.76}
+        height={px * 0.76}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ filter: 'drop-shadow(0 0 3px rgba(212,168,24,0.55))' }}
       >
-        {/* Conch body */}
-        <path
-          d="M12 3C9.2 3 7 5.0 7 7.5c0 1.4.6 2.7 1.6 3.6L7.5 13H9l.5-1.5c.8.3 1.6.5 2.5.5s1.7-.2 2.5-.5L15 13h1.5l-1.1-1.9C16.4 10.2 17 8.9 17 7.5 17 5.0 14.8 3 12 3z"
-          fill="url(#sg)"
-          opacity="0.95"
-        />
-        {/* Conch tip / spire */}
-        <path
-          d="M12 3 C13.5 3 15 4 15.5 5.2 C14.5 4.5 13.3 4.1 12 4.1 C10.7 4.1 9.5 4.5 8.5 5.2 C9 4 10.5 3 12 3Z"
-          fill="#fff8e1"
-          opacity="0.6"
-        />
-        {/* Handle / stem */}
-        <path
-          d="M10.2 13 L10 17 Q10 19 12 19 Q14 19 14 17 L13.8 13"
-          stroke="url(#sg)"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.9"
-        />
-        {/* Mouth rim */}
-        <ellipse cx="12" cy="13" rx="2.5" ry="0.8"
-          fill="url(#sg)" opacity="0.7" />
-        {/* Spiral lines on body */}
-        <path
-          d="M9 8.5 Q11 7.5 14.5 9"
-          stroke="#fce38a"
-          strokeWidth="0.7"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.55"
-        />
-        <path
-          d="M9.5 10 Q11.5 9.2 14 10.5"
-          stroke="#fce38a"
-          strokeWidth="0.55"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.4"
-        />
-        {/* Glow dot at tip */}
-        <circle cx="12" cy="3.4" r="0.7" fill="#fff8e1" opacity="0.7" />
         <defs>
-          <linearGradient id="sg" x1="7" y1="3" x2="17" y2="19" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"  stopColor="#f0c040" />
-            <stop offset="55%" stopColor="#d4a818" />
-            <stop offset="100%" stopColor="#a07010" />
+          <linearGradient id="bm-gold" x1="4" y1="10" x2="28" y2="22" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stopColor="#f5d070" />
+            <stop offset="50%"  stopColor="#C5A059" />
+            <stop offset="100%" stopColor="#8a6520" />
           </linearGradient>
+          <filter id="bm-glow" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="bm-bindu-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
+
+        {/* Lemniscate — two cubic-bezier loops meeting at the centre crossing */}
+        <path
+          d="M 4,16 C 4,9 10,9 16,16 C 22,23 28,23 28,16 C 28,9 22,9 16,16 C 10,23 4,23 4,16 Z"
+          stroke="url(#bm-gold)"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          filter="url(#bm-glow)"
+        />
+
+        {/* Bindu glow halo */}
+        <circle cx="16" cy="16" r="3" fill="#C5A059" opacity="0.3" filter="url(#bm-bindu-glow)" />
+        {/* Bindu main */}
+        <circle cx="16" cy="16" r="2" fill="url(#bm-gold)" />
+        {/* Bindu inner highlight — pearl quality */}
+        <circle cx="15.2" cy="15.2" r="0.7" fill="#fffde0" opacity="0.8" />
       </svg>
     </span>
   );
