@@ -2252,18 +2252,34 @@ export default function HomeDashboard({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.18 }}
               >
-                <Link href="/discover" className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface-soft)] dark:bg-black/15 border border-black/5 dark:border-white/10 backdrop-blur-md shadow-lg" aria-label="Open mood discovery">
+                <Link
+                  href="/discover"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md shadow-lg"
+                  style={{
+                    background: isDark ? 'rgba(0,0,0,0.40)' : 'rgba(255,255,255,0.72)',
+                    border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
+                  }}
+                  aria-label="Open mood discovery"
+                >
                   {moodToday ? (
                     <>
                       <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--divine-text)] dark:text-white/90">
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-wider"
+                        style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,20,5,0.80)' }}
+                      >
                         {t('feelingPrefix')} {t((`mood${moodToday.key.charAt(0).toUpperCase()}${moodToday.key.slice(1)}`) as any)}
                       </span>
                     </>
                   ) : (
                     <>
-                      <Sparkles size={12} className="text-[#F2EAD6] opacity-70" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#F2EAD6] opacity-80">{t('moodChip')}</span>
+                      <Sparkles size={12} style={{ color: isDark ? 'rgba(245,220,160,0.75)' : 'rgba(100,60,10,0.60)' }} />
+                      <span
+                        className="text-[10px] font-bold uppercase tracking-wider"
+                        style={{ color: isDark ? 'rgba(245,220,160,0.80)' : 'rgba(100,60,10,0.70)' }}
+                      >
+                        {t('moodChip')}
+                      </span>
                     </>
                   )}
                 </Link>
@@ -2448,29 +2464,36 @@ export default function HomeDashboard({
         />
 
         <div className="px-5 mt-3 mb-4">
-          <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+          <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
+            background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
+            borderColor: isDark ? 'rgba(125,211,252,0.18)' : 'rgba(96,165,250,0.22)',
+          }}>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--brand-muted)' }}>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: isDark ? '#7DD3FC' : '#2563EB' }}>
                 Streak Freeze
               </p>
-              <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }} title="Streak Freeze — miss a day without losing your streak">
+              <p className="text-xs mt-1" style={{ color: isDark ? 'rgba(185,220,255,0.65)' : 'rgba(37,99,235,0.65)' }}>
                 Miss one day without losing your streak
               </p>
             </div>
-            <div className="flex items-center gap-1.5" title="Streak Freeze — miss a day without losing your streak">
+            <div className="flex items-center gap-2">
               {Array.from({ length: 3 }, (_, index) => {
                 const filled = index < freezeCount;
                 return (
                   <div
                     key={`freeze-slot-${index}`}
-                    className="flex h-5 w-5 items-center justify-center rounded-full border text-[11px]"
+                    className="flex h-6 w-6 items-center justify-center rounded-full"
                     style={{
-                      borderColor: filled ? '#7DD3FC66' : 'rgba(125,211,252,0.18)',
-                      background: filled ? 'rgba(125,211,252,0.16)' : 'transparent',
-                      color: filled ? '#7DD3FC' : 'rgba(125,211,252,0.35)',
+                      border: `1.5px solid ${filled ? '#7DD3FC' : (isDark ? 'rgba(125,211,252,0.30)' : 'rgba(96,165,250,0.35)')}`,
+                      background: filled ? 'rgba(125,211,252,0.20)' : 'transparent',
                     }}
+                    title={filled ? 'Freeze token available' : 'Freeze token used'}
                   >
-                    {filled ? '🧊' : '○'}
+                    {filled ? (
+                      <span style={{ fontSize: 13, lineHeight: 1 }}>🧊</span>
+                    ) : (
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'block', background: isDark ? 'rgba(125,211,252,0.20)' : 'rgba(96,165,250,0.18)' }} />
+                    )}
                   </div>
                 );
               })}
@@ -2524,232 +2547,80 @@ export default function HomeDashboard({
       </div>
 
 
-        {/* ── Sacred Day Pulses (Stack) ────────────────────────────────────────────── */}
-        <AnimatePresence>
-          {calendarLoading ? (
-            <div className="w-full h-[72px] rounded-[1.55rem] bg-black/[0.04] dark:bg-white/[0.04] opacity-40 mb-3 animate-none" />
-          ) : upcomingSacredObservance && (
+        {/* ── Sacred Days — unified strip ───────────────────────────────────────── */}
+        {(() => {
+          const totalSacredCount = (upcomingSacredObservance ? 1 : 0) + sacredPulses.length;
+          const cardBg = isDark
+            ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+            : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))';
+          const cardBorder = isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)';
+          const dividerColor = isDark ? 'rgba(197,160,89,0.10)' : 'rgba(197,160,89,0.15)';
+          const nameColor = isDark ? '#f5dfa0' : '#1a0a02';
+          const descColor = isDark ? 'rgba(245,223,160,0.50)' : 'rgba(80,45,10,0.55)';
+          const badgeBg = isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)';
+          const badgeColor = isDark ? '#F6E2AE' : '#A0622A';
+
+          if (calendarLoading) {
+            return (
+              <div className="mb-3 h-[72px] rounded-[1.55rem] animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
+            );
+          }
+          if (totalSacredCount === 0) return null;
+
+          return (
             <motion.div
-              key={`upcoming-observance-${upcomingSacredObservance.festival.name}`}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-3"
-            >
-              {upcomingObservanceHref ? (
-                <Link
-                  href={`/vrat/${encodeURIComponent(upcomingObservanceHref)}`}
-                  className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
-                  style={{
-                    background: isDark
-                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
-                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
-                    boxShadow: isDark
-                      ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
-                      : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
-                    backdropFilter: 'blur(20px) saturate(130%)',
-                    WebkitBackdropFilter: 'blur(20px) saturate(130%)',
-                  }}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 opacity-80"
-                    style={{
-                      background: isDark
-                        ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
-                        : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-                    }}
-                  />
-                  <div className="relative flex items-center gap-3.5">
-                    <div
-                      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
-                      style={{
-                        background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
-                        borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
-                        boxShadow: isDark
-                          ? '0 10px 18px rgba(0,0,0,0.16)'
-                          : '0 10px 18px rgba(197,160,89,0.10)',
-                      }}
-                    >
-                      <SacredIcon name="calendar" size={18} />
-                      <span
-                        className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
-                        style={{
-                          background: '#F7D484',
-                          boxShadow: '0 0 10px rgba(247,212,132,0.95)',
-                        }}
-                      />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                          {t('upcomingSacredTime')}
-                        </span>
-                        <span
-                          className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
-                          style={{
-                            color: isDark ? '#F6E2AE' : '#A0622A',
-                            background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
-                          }}
-                        >
-                          {upcomingSacredObservanceLabel}
-                        </span>
-                      </div>
-                      {(() => {
-                        const vData = getVratData(upcomingSacredObservance.festival.name);
-                        const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
-                        const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
-                        return (
-                          <>
-                            <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
-                              {upcomingName}
-                            </p>
-                            <p className="mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
-                              {upcomingDesc}
-                            </p>
-                          </>
-                        );
-                      })()}
-                    </div>
-
-                    <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
-                      <span>{t('viewBtn')}</span>
-                      <ChevronRight size={14} color="#C5A059" />
-                    </div>
-                  </div>
-                </Link>
-              ) : (
-              <div
-                className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-                    : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
-                  borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
-                  boxShadow: isDark
-                    ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
-                    : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
-                  backdropFilter: 'blur(20px) saturate(130%)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(130%)',
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 opacity-80"
-                  style={{
-                    background: isDark
-                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
-                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-                  }}
-                />
-                <div className="relative flex items-center gap-3.5">
-                  <div
-                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
-                    style={{
-                      background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
-                      borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
-                      boxShadow: isDark
-                        ? '0 10px 18px rgba(0,0,0,0.16)'
-                        : '0 10px 18px rgba(197,160,89,0.10)',
-                    }}
-                  >
-                    <SacredIcon name="calendar" size={18} />
-                    <span
-                      className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
-                      style={{
-                        background: '#F7D484',
-                        boxShadow: '0 0 10px rgba(247,212,132,0.95)',
-                      }}
-                    />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                        {t('upcomingSacredTime')}
-                      </span>
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
-                        style={{
-                          color: isDark ? '#F6E2AE' : '#A0622A',
-                          background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
-                        }}
-                      >
-                        {upcomingSacredObservanceLabel}
-                      </span>
-                    </div>
-                    {(() => {
-                      const vData = getVratData(upcomingSacredObservance.festival.name);
-                      const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
-                      const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
-                      return (
-                        <>
-                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
-                            {upcomingName}
-                          </p>
-                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
-                            {upcomingDesc}
-                          </p>
-                        </>
-                      );
-                    })()}
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
-                    <span>Prepare</span>
-                  </div>
-                </div>
-              </div>
-              )}
-            </motion.div>
-          )}
-
-          {sacredPulses.length > 0 && (
-            <motion.div
-              key="sacred-pulses-strip"
+              key="sacred-days-unified"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-2 overflow-hidden rounded-[1.55rem] border"
-              style={{
-                background: isDark
-                  ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-                  : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
-                borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
-              }}
+              className="mb-3 overflow-hidden rounded-[1.55rem] border relative"
+              style={{ background: cardBg, borderColor: cardBorder }}
             >
               {/* Gold glow */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-80"
-                style={{
-                  background: isDark
-                    ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
-                    : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-                }}
-              />
-              {/* Strip header */}
-              <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-80" style={{
+                background: 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
+              }} />
+
+              {/* Header */}
+              <div className="px-4 pt-3 pb-1.5 flex items-center gap-2 relative">
                 <SacredIcon name="calendar" size={13} />
                 <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                  {effectiveAppLanguage === 'hi' ? 'आज के पवित्र दिन' : effectiveAppLanguage === 'pa' ? 'ਅੱਜ ਦੇ ਪਵਿੱਤਰ ਦਿਨ' : 'Sacred Days Today'}
+                  {effectiveAppLanguage === 'hi' ? 'पवित्र दिन' : effectiveAppLanguage === 'pa' ? 'ਪਵਿੱਤਰ ਦਿਨ' : 'Sacred Days'}
                 </span>
-                <span
-                  className="ml-auto rounded-full px-2 py-0.5 text-[9px] font-semibold"
-                  style={{
-                    color: isDark ? '#F6E2AE' : '#A0622A',
-                    background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
-                  }}
-                >
-                  {sacredPulses.length}
+                <span className="ml-auto rounded-full px-2 py-0.5 text-[9px] font-semibold" style={{ color: badgeColor, background: badgeBg }}>
+                  {totalSacredCount}
                 </span>
               </div>
 
-              {/* Compact rows */}
+              {/* Upcoming festival row */}
+              {upcomingSacredObservance && (() => {
+                const vData = getVratData(upcomingSacredObservance.festival.name);
+                const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
+                const href = upcomingObservanceHref ? `/vrat/${encodeURIComponent(upcomingObservanceHref)}` : null;
+                const rowContent = (
+                  <div className="relative flex items-center gap-3 px-4 py-3">
+                    <div className="flex-1 min-w-0">
+                      <span className="block font-serif text-[1.02rem] leading-tight truncate" style={{ color: nameColor, fontFamily: 'var(--font-serif)' }}>
+                        {upcomingName}
+                      </span>
+                    </div>
+                    <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] shrink-0" style={{ color: badgeColor, background: badgeBg }}>
+                      {upcomingSacredObservanceLabel}
+                    </span>
+                    {href && <ChevronRight size={14} className="shrink-0" color="#C5A059" />}
+                  </div>
+                );
+                return href ? (
+                  <Link key="upcoming-row" href={href} className="block transition-colors hover:bg-white/5">{rowContent}</Link>
+                ) : <div key="upcoming-row">{rowContent}</div>;
+              })()}
+
+              {/* Divider between upcoming and today rows */}
+              {upcomingSacredObservance && sacredPulses.length > 0 && (
+                <span className="block mx-4 h-px" style={{ background: dividerColor }} />
+              )}
+
+              {/* Today's sacred pulse rows */}
               {sacredPulses.map((pulse, idx) => {
                 const pulseVratData = getVratData(pulse.label);
                 const pulseHref = resolveVratSlug(pulse.label);
@@ -2763,59 +2634,37 @@ export default function HomeDashboard({
 
                 const rowContent = (
                   <div className="relative flex items-center gap-3 px-4 py-3">
-                    {/* Divider — skip on first row */}
                     {idx > 0 && (
-                      <span
-                        className="absolute top-0 left-4 right-4 h-px"
-                        style={{ background: isDark ? 'rgba(197,160,89,0.10)' : 'rgba(197,160,89,0.15)' }}
-                      />
+                      <span className="absolute top-0 left-4 right-4 h-px" style={{ background: dividerColor }} />
                     )}
                     <div className="flex-1 min-w-0">
-                      <span
-                        className="block font-serif text-[1.02rem] leading-tight truncate"
-                        style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}
-                      >
+                      <span className="block font-serif text-[1.02rem] leading-tight truncate" style={{ color: nameColor, fontFamily: 'var(--font-serif)' }}>
                         {pulseName}
                       </span>
                       {pulseDescText && (
-                        <span
-                          className="block mt-0.5 text-[10.5px] leading-relaxed truncate"
-                          style={{ color: isDark ? 'rgba(245,223,160,0.50)' : 'rgba(80,45,10,0.55)' }}
-                        >
+                        <span className="block mt-0.5 text-[10.5px] leading-relaxed truncate" style={{ color: descColor }}>
                           {pulseDescText}
                         </span>
                       )}
                     </div>
-                    {pulseHref && (
-                      <ChevronRight size={14} className="shrink-0" color="#C5A059" />
-                    )}
+                    {pulseHref && <ChevronRight size={14} className="shrink-0" color="#C5A059" />}
                   </div>
                 );
 
                 return pulseHref ? (
-                  <Link
-                    key={`pulse-${pulse.label}-${idx}`}
-                    href={`/vrat/${encodeURIComponent(pulseHref)}`}
-                    className={`block transition-colors hover:bg-white/5 ${isLast ? 'pb-1' : ''}`}
-                    role="status"
-                    aria-live="polite"
-                  >
+                  <Link key={`pulse-${pulse.label}-${idx}`} href={`/vrat/${encodeURIComponent(pulseHref)}`} className={`block transition-colors hover:bg-white/5 ${isLast ? 'pb-1' : ''}`}>
                     {rowContent}
                   </Link>
                 ) : (
-                  <div
-                    key={`pulse-${pulse.label}-${idx}`}
-                    className={isLast ? 'pb-1' : ''}
-                    role="status"
-                    aria-live="polite"
-                  >
+                  <div key={`pulse-${pulse.label}-${idx}`} className={isLast ? 'pb-1' : ''}>
                     {rowContent}
                   </div>
                 );
               })}
             </motion.div>
-          )}
-        </AnimatePresence>
+          );
+        })()}
+
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
         <AnimatePresence>

@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { Check, ChevronRight } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { useRouter } from 'next/navigation';
 
 interface DailySadhanaStripProps {
   japaDone: boolean;
@@ -163,6 +163,7 @@ function JapaArc({ beads, done, accentColor }: { beads: number; done: boolean; a
 }
 
 export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
+  const router = useRouter();
   const dharmVeerHref = props.dharmVeerId ? `/dharm-veer/${props.dharmVeerId}` : '/dharm-veer';
   const [localState, setLocalState] = useState<LocalState>(EMPTY_LOCAL_STATE);
   const [activeIdx, setActiveIdx] = useState(0);
@@ -333,12 +334,12 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
             dragElastic={0.12}
             style={{ x: dragX }}
             onDragEnd={handleDragEnd}
+            onTap={() => router.push(activeRow.href)}
+            className="cursor-pointer"
           >
-            <Link
-              href={activeRow.href}
-              className="flex h-[52px] items-center justify-between transition-opacity active:opacity-70"
-              draggable={false}
-            >
+            {/* div instead of Link — onTap on the motion.div handles navigation
+                so drag gestures don't cancel the click on mobile */}
+            <div className="flex h-[52px] items-center justify-between transition-opacity active:opacity-70">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="text-[20px] shrink-0">{activeRow.icon}</span>
                 <div className="min-w-0">
@@ -357,7 +358,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
                 {activeRow.right}
                 <ChevronRight size={14} style={{ color: 'rgba(197,160,89,0.4)' }} />
               </div>
-            </Link>
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>

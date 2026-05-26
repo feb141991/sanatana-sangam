@@ -243,6 +243,7 @@ export default function VratClient({
       if (!audioUrl) return;
 
       const audio = new Audio(audioUrl);
+      audio.playbackRate = 0.78; // Slower, meditative pace for Sanskrit mantras
       audioRef.current = audio;
       audio.onended = () => setSpeaking(false);
       audio.onerror = () => setSpeaking(false);
