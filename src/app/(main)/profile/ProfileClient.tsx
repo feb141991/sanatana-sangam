@@ -1677,6 +1677,36 @@ export default function ProfileClient({
         description="Personalize your spiritual experience."
       >
         <div className="space-y-8 py-6">
+
+          {/* Subscription & Billing */}
+          <div>
+            <p className="text-sm font-medium text-[var(--brand-primary)] mb-3">Plan & Billing</p>
+            <Link
+              href="/settings/subscription"
+              onClick={() => setSettingsOpen(false)}
+              className="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border transition-all"
+              style={{
+                background: 'rgba(197,160,89,0.06)',
+                borderColor: 'rgba(197,160,89,0.18)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197,160,89,0.12)' }}>
+                  <span style={{ color: '#C5A059', fontSize: 14 }}>✦</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--divine-text)' }}>
+                    {isPro ? 'Zenith Plan' : 'Seeker (Free)'}
+                  </p>
+                  <p className="text-[11px]" style={{ color: 'rgba(197,160,89,0.6)' }}>
+                    {isPro ? 'Manage, cancel or change plan' : 'Upgrade to Zenith'}
+                  </p>
+                </div>
+              </div>
+              <span style={{ color: '#C5A059', fontSize: 18 }}>›</span>
+            </Link>
+          </div>
+
           {/* Theme */}
           <div className="space-y-4">
             <p className="text-sm font-medium text-[var(--brand-primary)]">Visual theme</p>
