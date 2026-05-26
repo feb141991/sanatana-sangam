@@ -1,9 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { CheckCircle2, ChevronLeft, CreditCard, Sparkles, AlertTriangle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CheckCircle2, ChevronLeft, CreditCard, Sparkles, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
+
+interface Invoice {
+  id: string;
+  date: string;
+  amount: number;
+  currency: string;
+  status: string;
+  invoiceUrl: string | null;
+}
 
 interface SubscriptionClientProps {
   status: 'free' | 'pro' | 'grace' | 'expired';
@@ -24,6 +34,26 @@ export default function SubscriptionClient({
 }: SubscriptionClientProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [history, setHistory] = useState<Invoice[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const res = await fetch('/api/payment/subscription/history');
+        if (res.ok) {
+          const data = await res.json();
+          setHistory(data);
+        }
+      } catch (err) {
+        // silently ignore
+      } finally {
+        setHistoryLoading(false);
+      }
+    }
+    fetchHistory();
+  }, []);
 
   // Derive Plan Name
   let planName = 'Seeker (Free)';
@@ -35,6 +65,7 @@ export default function SubscriptionClient({
 
   // Derive Status details
   const getStatusDetails = () => {
+    if (isCancelling) return { label: 'Cancelling', color: 'text-amber-400', bg: 'bg-amber-400/10' };
     switch (status) {
       case 'pro': return { label: 'Active', color: 'text-green-400', bg: 'bg-green-400/10' };
       case 'grace': return { label: 'Grace Period', color: 'text-amber-400', bg: 'bg-amber-400/10' };
@@ -51,13 +82,29 @@ export default function SubscriptionClient({
   const isAppStore = entitlementSource === 'app_store' || entitlementSource === 'play_store';
 
   const handleManageBilling = async () => {
-    alert('Redirecting to billing portal...');
+    if (!window.confirm(`Cancel your subscription? You'll keep access until ${renewalDate}.`)) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/payment/subscription/cancel', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Subscription will cancel at end of billing period`);
+        setIsCancelling(true);
+      } else {
+        toast.error(data.error || 'Failed to cancel subscription');
+      }
+    } catch (err: unknown) {
+      const error = err as Error;
+      toast.error(error.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubscribe = async (planType: 'monthly' | 'annual') => {
-    setLoading(true);
-    alert(`Triggering Razorpay for ${planType} plan...`);
-    setLoading(false);
+    router.push('/pricing');
   };
 
   return (
@@ -206,6 +253,48 @@ export default function SubscriptionClient({
             </div>
           </section>
         )}
+
+        {/* Billing History */}
+        <section>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-[#C5A059] mb-4">Billing History</h2>
+          <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden">
+            {historyLoading ? (
+              <div className="p-4 space-y-3">
+                <div className="rounded-xl h-12 bg-white/5 animate-pulse" />
+                <div className="rounded-xl h-12 bg-white/5 animate-pulse" />
+                <div className="rounded-xl h-12 bg-white/5 animate-pulse" />
+              </div>
+            ) : history.length === 0 ? (
+              <div className="p-6 text-center text-white/50 text-sm">
+                No billing history yet
+              </div>
+            ) : (
+              <div className="divide-y divide-white/10">
+                {history.map((invoice) => (
+                  <div key={invoice.id} className="p-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-white/90">{format(new Date(invoice.date), 'dd MMM yyyy')}</p>
+                      <p className="text-xs text-white/50 uppercase tracking-wider">{invoice.currency} {invoice.amount}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full ${
+                        invoice.status === 'paid' ? 'bg-green-400/10 text-green-400' : 
+                        invoice.status === 'failed' ? 'bg-red-400/10 text-red-400' : 'bg-amber-400/10 text-amber-400'
+                      }`}>
+                        {invoice.status}
+                      </span>
+                      {invoice.invoiceUrl && (
+                        <a href={invoice.invoiceUrl} target="_blank" rel="noopener noreferrer" className="text-[#C5A059] hover:text-[#d6b471] transition-colors p-1">
+                          <ExternalLink size={14} />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

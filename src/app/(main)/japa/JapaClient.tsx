@@ -1476,6 +1476,11 @@ function ChooseMantraScreen({
             </motion.button>
           );
         })}
+        <div className="text-center pt-2 pb-1">
+          <Link href="/mantras" className="text-[11px] font-semibold transition-opacity hover:opacity-100 inline-block" style={{ color: amber, opacity: 0.7 }}>
+            Browse all mantras →
+          </Link>
+        </div>
       </div>
 
       {/* Confirm */}
