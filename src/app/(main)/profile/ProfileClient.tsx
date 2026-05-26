@@ -1546,7 +1546,7 @@ export default function ProfileClient({
               ))}
             </div>
             <p className="text-[9px] text-white/10 font-medium">
-              Sanatan Sangam · Built with 🙏
+              Shoonaya · Built with 🙏
             </p>
           </div>
         </motion.div>
@@ -1673,7 +1673,7 @@ export default function ProfileClient({
       <BottomDrawer
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title="Sanatan Settings"
+        title="Shoonaya Settings"
         description="Personalize your spiritual experience."
       >
         <div className="space-y-8 py-6">

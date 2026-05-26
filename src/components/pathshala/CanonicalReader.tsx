@@ -27,9 +27,25 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 // ─── Parchment palette — solid, no opacity tricks ────────────────────────────
-const P = {
+const getPalette = (isDark: boolean) => isDark ? {
+  bg:          '#0E0E0F',
+  bgCard:      'rgba(255,255,255,0.05)',
+  bgAccent:    'rgba(197,160,89,0.12)',
+  border:      'rgba(197,160,89,0.15)',
+  borderSoft:  'rgba(197,160,89,0.12)',
+  ink:         '#F0EDE6',
+  inkMuted:    'rgba(197,160,89,0.6)',
+  sanskrit:    '#F0EDE6',
+  translit:    'rgba(240,220,180,0.5)',
+  accent:      '#C5A059',
+  accentDeep:  '#C5A059',
+  accentBg:    'rgba(197,160,89,0.12)',
+  white:       '#0E0E0F',
+  btnText:     '#1C150A',
+} : {
   bg:          '#F7EDD8',   // warm parchment
   bgCard:      '#FFFDF6',   // near-white card
   bgAccent:    '#FFF4E0',   // soft amber card
@@ -38,12 +54,13 @@ const P = {
   ink:         '#2C1A0E',   // deep brown — body text
   inkMuted:    '#7A5C3A',   // mid-brown — secondary text
   sanskrit:    '#8B3A0F',   // deep terracotta — Sanskrit text
+  translit:    '#2C1A0E',
   accent:      '#C5A059',   // amber — buttons, chips
   accentDeep:  '#9B6B2A',   // darker amber for icons on light bg
   accentBg:    '#F2D9A8',   // amber chip background
   white:       '#FFFDF6',
   btnText:     '#FFFDF6',   // text on filled amber button
-} as const;
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getEntryText(entry: LibraryEntry, meaningLabel: string) {
@@ -114,6 +131,10 @@ export default function CanonicalReader({
   ctaConfig,
   lessonsNavigation,
 }: CanonicalReaderProps) {
+  const { resolvedTheme } = useThemePreference();
+  const isDark = resolvedTheme === 'dark';
+  const P = getPalette(isDark);
+
   const supabase = useRef(createClient()).current;
   const totalVerses = entries.length;
 
@@ -588,7 +609,7 @@ export default function CanonicalReader({
                   </p>
                   <p
                     className="italic leading-relaxed"
-                    style={{ color: P.ink, fontSize: `${fontScale * 0.95}rem` }}
+                    style={{ color: P.translit, fontSize: `${fontScale * 0.95}rem` }}
                   >
                     {translitText}
                   </p>

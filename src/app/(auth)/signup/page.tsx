@@ -241,7 +241,7 @@ export default function SignupPage() {
         />
         <div className="relative z-10 w-full flex flex-col items-center">
           <div className="mb-2 text-4xl font-serif font-bold text-[var(--brand-primary-strong)] tracking-tighter">Shoonaya</div>
-          <div className="text-[10px] uppercase tracking-[0.4em] text-[var(--brand-muted)] font-bold mb-8">Sanatan Sangam</div>
+          <div className="text-[10px] uppercase tracking-[0.4em] text-[var(--brand-muted)] font-bold mb-8">Shoonaya</div>
           <TraditionSignages activeIdx={quoteIdx % TRADITION_SIGNS.length} />
         </div>
         <div className="relative z-10 w-full max-w-lg space-y-12 text-center">

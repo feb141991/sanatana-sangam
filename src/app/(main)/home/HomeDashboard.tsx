@@ -2535,97 +2535,97 @@ export default function HomeDashboard({
               className="mb-3"
             >
               {upcomingObservanceHref ? (
-              <Link
-                href={`/vrat/${encodeURIComponent(upcomingObservanceHref)}`}
-                className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(135deg, rgba(32,24,15,0.72), rgba(62,41,18,0.36))'
-                    : 'linear-gradient(135deg, rgba(255,252,246,0.82), rgba(248,225,182,0.40))',
-                  borderColor: isDark ? 'rgba(235,205,150,0.16)' : 'rgba(197,160,89,0.20)',
-                  boxShadow: isDark
-                    ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
-                    : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
-                  backdropFilter: 'blur(20px) saturate(130%)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(130%)',
-                }}
-              >
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 opacity-80"
+                <Link
+                  href={`/vrat/${encodeURIComponent(upcomingObservanceHref)}`}
+                  className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
                   style={{
                     background: isDark
-                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.14), transparent 28%)'
-                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.16), transparent 26%)',
+                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
+                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
+                    boxShadow: isDark
+                      ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
+                      : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
+                    backdropFilter: 'blur(20px) saturate(130%)',
+                    WebkitBackdropFilter: 'blur(20px) saturate(130%)',
                   }}
-                />
-                <div className="relative flex items-center gap-3.5">
-                  <div
-                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 opacity-80"
                     style={{
-                      background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
-                      borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
-                      boxShadow: isDark
-                        ? '0 10px 18px rgba(0,0,0,0.16)'
-                        : '0 10px 18px rgba(197,160,89,0.10)',
+                      background: isDark
+                        ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
+                        : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
                     }}
-                  >
-                    <SacredIcon name="calendar" size={18} />
-                    <span
-                      className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
+                  />
+                  <div className="relative flex items-center gap-3.5">
+                    <div
+                      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] border"
                       style={{
-                        background: '#F7D484',
-                        boxShadow: '0 0 10px rgba(247,212,132,0.95)',
+                        background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.62)',
+                        borderColor: isDark ? 'rgba(250,238,218,0.10)' : 'rgba(197,160,89,0.16)',
+                        boxShadow: isDark
+                          ? '0 10px 18px rgba(0,0,0,0.16)'
+                          : '0 10px 18px rgba(197,160,89,0.10)',
                       }}
-                    />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                        {t('upcomingSacredTime')}
-                      </span>
+                    >
+                      <SacredIcon name="calendar" size={18} />
                       <span
-                        className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
+                        className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full"
                         style={{
-                          color: isDark ? '#F6E2AE' : '#A0622A',
-                          background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
+                          background: '#F7D484',
+                          boxShadow: '0 0 10px rgba(247,212,132,0.95)',
                         }}
-                      >
-                        {upcomingSacredObservanceLabel}
-                      </span>
+                      />
                     </div>
-                    {(() => {
-                      const vData = getVratData(upcomingSacredObservance.festival.name);
-                      const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
-                      const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
-                      return (
-                        <>
-                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
-                            {upcomingName}
-                          </p>
-                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
-                            {upcomingDesc}
-                          </p>
-                        </>
-                      );
-                    })()}
-                  </div>
 
-                  <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
-                    <span>{t('viewBtn')}</span>
-                    <ChevronRight size={14} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
+                          {t('upcomingSacredTime')}
+                        </span>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em]"
+                          style={{
+                            color: isDark ? '#F6E2AE' : '#A0622A',
+                            background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
+                          }}
+                        >
+                          {upcomingSacredObservanceLabel}
+                        </span>
+                      </div>
+                      {(() => {
+                        const vData = getVratData(upcomingSacredObservance.festival.name);
+                        const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
+                        const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
+                        return (
+                          <>
+                            <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
+                              {upcomingName}
+                            </p>
+                            <p className="mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
+                              {upcomingDesc}
+                            </p>
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-1 text-[11px] font-semibold" style={{ color: '#C5A059' }}>
+                      <span>{t('viewBtn')}</span>
+                      <ChevronRight size={14} color="#C5A059" />
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
               ) : (
               <div
                 className="group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
                 style={{
                   background: isDark
-                    ? 'linear-gradient(135deg, rgba(32,24,15,0.72), rgba(62,41,18,0.36))'
-                    : 'linear-gradient(135deg, rgba(255,252,246,0.82), rgba(248,225,182,0.40))',
-                  borderColor: isDark ? 'rgba(235,205,150,0.16)' : 'rgba(197,160,89,0.20)',
+                    ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+                    : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
+                  borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
                   boxShadow: isDark
                     ? '0 18px 42px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.05)'
                     : '0 18px 34px rgba(197,160,89,0.12), inset 0 1px 0 rgba(255,255,255,0.74)',
@@ -2638,8 +2638,8 @@ export default function HomeDashboard({
                   className="pointer-events-none absolute inset-0 opacity-80"
                   style={{
                     background: isDark
-                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.14), transparent 28%)'
-                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 22%, rgba(197,160,89,0.16), transparent 26%)',
+                      ? 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.18), transparent 32%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
+                      : 'radial-gradient(circle at 12% 18%, rgba(247,212,132,0.26), transparent 34%), radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
                   }}
                 />
                 <div className="relative flex items-center gap-3.5">
@@ -2684,10 +2684,10 @@ export default function HomeDashboard({
                       const upcomingDesc = (effectiveAppLanguage !== 'en' && vData?.taglineLocal) ? vData.taglineLocal : t('festivalPrepDesc');
                       return (
                         <>
-                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: 'var(--divine-text)' }}>
+                          <p className="mt-1 font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
                             {upcomingName}
                           </p>
-                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: heroSecondaryText }}>
+                          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
                             {upcomingDesc}
                           </p>
                         </>
@@ -2722,36 +2722,70 @@ export default function HomeDashboard({
                 {pulseHref ? (
                 <Link 
                   href={`/vrat/${encodeURIComponent(pulseHref)}`}
-                  className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+                  className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
+                  style={{
+                    background: isDark
+                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
+                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
+                  }}
                   role="status"
                   aria-live="polite"
                 >
-                  <div className="flex items-center gap-3 w-full pr-6">
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 opacity-80"
+                    style={{
+                      background: isDark
+                        ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
+                        : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
+                    }}
+                  />
+                  <div className="relative flex items-center gap-3 w-full pr-6">
                     <span className="sacred-pulse-emoji" aria-hidden="true">
                       <SacredIcon name="calendar" size={18} />
                     </span>
                     <div className="sacred-pulse-body flex-1 min-w-0">
-                      <span className="sacred-pulse-label">
+                      <span className="sacred-pulse-label block font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
                         {pulseLabelText}
                       </span>
-                      <span className="sacred-pulse-desc">
+                      <span className="sacred-pulse-desc block mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
                         {pulseDescText} {t('viewDetails')}
                       </span>
                     </div>
-                    <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" />
+                    <ChevronRight size={16} className="shrink-0" color="#C5A059" />
                   </div>
                 </Link>
                 ) : (
-                <div className="sacred-pulse-banner group relative block overflow-hidden" role="status" aria-live="polite">
-                  <div className="flex items-center gap-3 w-full pr-6">
+                <div 
+                  className="sacred-pulse-banner group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
+                  style={{
+                    background: isDark
+                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
+                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
+                  }}
+                  role="status" 
+                  aria-live="polite"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 opacity-80"
+                    style={{
+                      background: isDark
+                        ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
+                        : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
+                    }}
+                  />
+                  <div className="relative flex items-center gap-3 w-full pr-6">
                     <span className="sacred-pulse-emoji" aria-hidden="true">
                       <SacredIcon name="calendar" size={18} />
                     </span>
                     <div className="sacred-pulse-body flex-1 min-w-0">
-                      <span className="sacred-pulse-label">
+                      <span className="sacred-pulse-label block font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
                         {pulseLabelText}
                       </span>
-                      <span className="sacred-pulse-desc">
+                      <span className="sacred-pulse-desc block mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
                         {pulseDescText}
                       </span>
                     </div>
@@ -2837,25 +2871,32 @@ export default function HomeDashboard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-          className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+          className="group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
+          style={{
+            background: isDark ? 'linear-gradient(145deg, #1C150A, #1A1208)' : 'linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(255, 253, 248, 0.94))',
+            border: isDark ? '1px solid rgba(197,160,89,0.15)' : '1px solid rgba(157, 100, 60, 0.15)',
+            borderRadius: '16px',
+            margin: '0 16px 10px',
+            boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.25)' : '0 8px 32px rgba(157, 100, 60, 0.05)',
+          }}
         >
           <Link 
             href={`/dharm-veer/${dharmVeer.id}`}
-            className="flex items-center gap-3 w-full pr-6 text-left no-underline"
+            className="flex items-center gap-3 w-full px-4 py-3.5 pr-6 text-left no-underline"
             onClick={() => playHaptic('light')}
           >
-            <span className="sacred-pulse-emoji" aria-hidden="true">
+            <span aria-hidden="true" className="text-[26px] leading-none shrink-0">
               <SacredIcon name="sparkles" size={18} />
             </span>
-            <div className="sacred-pulse-body flex-1 min-w-0">
-              <span className="sacred-pulse-label">
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              <span className="font-serif tracking-[0.01em]" style={{ fontSize: '15px', fontWeight: 700, color: isDark ? '#F0EDE6' : '#1a140e' }}>
                 {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
               </span>
-              <span className="sacred-pulse-desc line-clamp-1">
+              <span className="line-clamp-1" style={{ fontSize: '12px', lineHeight: 1.45, color: isDark ? 'rgba(240,220,180,0.55)' : 'rgba(60, 45, 28, 0.75)' }}>
                 {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
               </span>
             </div>
-            <ChevronRight size={16} className="text-[#A0622A]/80 shrink-0" aria-hidden="true" />
+            <ChevronRight size={16} color="#C5A059" className="shrink-0" aria-hidden="true" />
           </Link>
         </motion.div>
         

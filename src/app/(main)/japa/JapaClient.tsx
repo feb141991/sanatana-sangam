@@ -31,10 +31,32 @@ import {
   getJapaPracticeType,
   getTraditionMeta,
   JAPA_MALAS as MALAS,
-  JAPA_MANTRAS as MANTRAS,
   type JapaMalaId,
   type JapaMantraId,
 } from '@/lib/tradition-config';
+import { MANTRAS as DATA_MANTRAS } from '@/data/mantras';
+
+interface JapaMantraEntry {
+  id: string;
+  name: string;
+  devanagari: string;
+  tradition: string;
+  description: string;
+  full: string;
+  tradColor: string;
+  transliteration: string;
+}
+
+const MANTRAS: JapaMantraEntry[] = DATA_MANTRAS.map(m => ({
+  id: m.id,
+  name: m.nameEn,
+  devanagari: m.nameLocal,
+  tradition: m.tradition,
+  description: m.textMeaning,
+  full: m.textSanskrit || m.nameLocal,
+  tradColor: '#C5A059',
+  transliteration: m.textTransliteration,
+}));
 import { getMalaSkin } from '@/lib/mala-skins';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -94,7 +116,7 @@ function getSpiritualTimeWindow(date: Date) {
 }
 
 type MalaId = JapaMalaId;
-type MantraId = JapaMantraId;
+type MantraId = string;
 type SelectedMantraId = MantraId | typeof CUSTOM_MANTRA_ID;
 type CustomMantra = {
   label: string;
@@ -2111,10 +2133,11 @@ interface Props {
   japaAlreadyDoneToday: boolean;
   history: { date: string; done: boolean }[];
   activeSymbolId?: string | null;
+  initialMantraId?: string;
 }
 
 export default function JapaClient({
-  userId, tradition, currentStreak, activeSymbolId = null,
+  userId, tradition, currentStreak, activeSymbolId = null, initialMantraId,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -2136,6 +2159,7 @@ export default function JapaClient({
   const [savingCustomMantra, setSavingCustomMantra] = useState(false);
   const [bgSceneId, setBgSceneId] = useState<BgSceneId>('midnight');
   const [targetRounds, setTargetRounds] = useState(1);
+  const [hasStoredMantra, setHasStoredMantra] = useState(false);
   const targetRoundsRef = useRef(1);
   useEffect(() => { targetRoundsRef.current = targetRounds; }, [targetRounds]);
 
@@ -2194,6 +2218,7 @@ export default function JapaClient({
       const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
       const savedMantra = localStorage.getItem(STORAGE_MANTRA) as SelectedMantraId | null;
       const savedCustomMantra = localStorage.getItem(STORAGE_CUSTOM_MANTRA);
+      setHasStoredMantra(!!savedMantra);
       const savedBg     = localStorage.getItem(STORAGE_BG)     as BgSceneId | null;
       if (savedMala   && MALAS.find(m => m.id === savedMala))         setMalaId(savedMala);
       if (savedCustomMantra) {
@@ -2202,7 +2227,9 @@ export default function JapaClient({
           if (parsed?.text) setCustomMantra(parsed);
         } catch { /* ok */ }
       }
-      if (savedMantra === CUSTOM_MANTRA_ID) {
+      if (initialMantraId) {
+        setMantraId(initialMantraId as SelectedMantraId);
+      } else if (savedMantra === CUSTOM_MANTRA_ID) {
         setMantraId(CUSTOM_MANTRA_ID);
       } else if (savedMantra && MANTRAS.find(m => m.id === savedMantra)) {
         setMantraId(savedMantra);
@@ -2713,7 +2740,10 @@ export default function JapaClient({
   const currentMala   = MALAS.find(m => m.id === malaId)      ?? MALAS[0];
   const currentBgScene = BG_SCENES.find(s => s.id === bgSceneId) ?? BG_SCENES[0];
   const traditionMantras = useMemo(
-    () => getJapaMantrasForTradition(tradition),
+    () => {
+      if (tradition === 'all' || tradition === 'other') return MANTRAS;
+      return MANTRAS.filter(m => m.tradition === tradition || m.tradition === 'all');
+    },
     [tradition]
   );
   // Only show preset mantras in the list — personal card is rendered separately above the list
@@ -2852,14 +2882,27 @@ export default function JapaClient({
               style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
               <X size={17} style={{ color: amber }} />
             </button>
-            <div className="text-center flex-1 px-3">
+            <button
+              onClick={() => {
+                if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+                setScreen('chooseMantra');
+              }}
+              className="text-center flex-1 px-3 py-1.5 mx-2 rounded-full border transition-colors"
+              style={{
+                borderColor: `${amber}30`,
+                background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
+              }}
+            >
               <p className="text-[10px] tracking-widest uppercase font-semibold" style={{ color: sub }}>
-                {currentMantra.tradition}
+                {initialMantraId && !hasStoredMantra ? 'Select Mantra' : currentMantra.tradition}
               </p>
-              <p className="text-[13px] font-semibold leading-tight" style={{ color: text }}>
-                {currentMantra.name}
+              <p className="text-[13px] font-semibold leading-tight flex items-center justify-center gap-1.5" style={{ color: text }}>
+                <span style={{ fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif' }}>
+                  {initialMantraId && !hasStoredMantra ? '' : currentMantra.devanagari}
+                </span>
+                <span>{initialMantraId && !hasStoredMantra ? 'Choose...' : currentMantra.name}</span>
               </p>
-            </div>
+            </button>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSettings(true)}
@@ -2898,6 +2941,11 @@ export default function JapaClient({
               </p>
               <p className="text-[10px]" style={{ color: sub }}>
                 Target {targetRounds}×
+              </p>
+            </div>
+            <div className="text-center mt-3 opacity-80 max-w-xs mx-auto">
+              <p style={{ fontSize: '11px', fontStyle: 'italic', color: sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {'transliteration' in currentMantra ? currentMantra.transliteration : ''}
               </p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Moon, Sun, Type, Share2, ArrowRight, X } from 'lucide-react';
 import type { ReadableCapabilities } from '@/lib/readable-content';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface IntroStep {
   target: string; // CSS selector
@@ -48,6 +49,9 @@ interface ReaderIntroProps {
 }
 
 export function ReaderIntro({ capabilities }: ReaderIntroProps) {
+  const { resolvedTheme } = useThemePreference();
+  const isDark = resolvedTheme === 'dark';
+
   // Filter steps: keep steps with no gate, or whose gate is satisfied
   const steps = ALL_STEPS.filter(step => {
     if (!step.capabilityGate) return true;
@@ -140,8 +144,9 @@ export function ReaderIntro({ capabilities }: ReaderIntroProps) {
           key={currentStep}
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          className="absolute pointer-events-auto w-[280px] p-6 rounded-[2rem] bg-white shadow-2xl border border-[var(--brand-primary-soft)]"
+          className="absolute pointer-events-auto w-[280px] p-6 rounded-[2rem] shadow-2xl border border-[var(--brand-primary-soft)]"
           style={{
+            background: isDark ? '#0E0E0F' : '#ffffff',
             top: targetPos.top > window.innerHeight / 2 ? targetPos.top - 200 : targetPos.top + targetPos.height + 20,
             left: Math.min(Math.max(20, targetPos.left - 120), window.innerWidth - 300)
           }}
@@ -155,8 +160,8 @@ export function ReaderIntro({ capabilities }: ReaderIntroProps) {
             </button>
           </div>
 
-          <h4 className="text-lg font-bold text-[#1A140E] mb-2">{step.title}</h4>
-          <p className="text-sm text-[#4D4035] leading-relaxed mb-6">
+          <h4 className="text-lg font-bold mb-2" style={{ color: isDark ? '#F0EDE6' : '#1A140E' }}>{step.title}</h4>
+          <p className="text-sm leading-relaxed mb-6" style={{ color: isDark ? 'rgba(197,160,89,0.6)' : '#4D4035' }}>
             {step.description}
           </p>
 
