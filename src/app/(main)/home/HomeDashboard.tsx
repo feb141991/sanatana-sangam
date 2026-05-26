@@ -2704,97 +2704,114 @@ export default function HomeDashboard({
             </motion.div>
           )}
 
-          {sacredPulses.map((pulse, idx) => {
-            const pulseVratData = getVratData(pulse.label);
-            const pulseHref = resolveVratSlug(pulse.label);
-            const pulseName = (effectiveAppLanguage !== 'en' && pulseVratData?.nameLocal) ? pulseVratData.nameLocal : (pulse.translationKey ? t(pulse.translationKey as any) : pulse.label);
-            const pulseLabelText = effectiveAppLanguage === 'hi' ? `आज ${pulseName} है` : effectiveAppLanguage === 'pa' ? `ਅੱਜ ${pulseName} ਹੈ` : `${pulseName} Today`;
-            const pulseDescText = (effectiveAppLanguage !== 'en' && pulseVratData?.taglineLocal) ? pulseVratData.taglineLocal : (pulse.descKey ? t(pulse.descKey as any) : pulse.description);
-            return (
-              <motion.div
-                key={`pulse-${pulse.label}-${idx}`}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.4, delay: idx * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-2"
-              >
-                {pulseHref ? (
-                <Link 
-                  href={`/vrat/${encodeURIComponent(pulseHref)}`}
-                  className="sacred-pulse-banner group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
+          {sacredPulses.length > 0 && (
+            <motion.div
+              key="sacred-pulses-strip"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-2 overflow-hidden rounded-[1.55rem] border"
+              style={{
+                background: isDark
+                  ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
+                  : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
+                borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
+              }}
+            >
+              {/* Gold glow */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 opacity-80"
+                style={{
+                  background: isDark
+                    ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
+                    : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
+                }}
+              />
+              {/* Strip header */}
+              <div className="px-4 pt-3 pb-1.5 flex items-center gap-2">
+                <SacredIcon name="calendar" size={13} />
+                <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
+                  {effectiveAppLanguage === 'hi' ? 'आज के पवित्र दिन' : effectiveAppLanguage === 'pa' ? 'ਅੱਜ ਦੇ ਪਵਿੱਤਰ ਦਿਨ' : 'Sacred Days Today'}
+                </span>
+                <span
+                  className="ml-auto rounded-full px-2 py-0.5 text-[9px] font-semibold"
                   style={{
-                    background: isDark
-                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
-                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
+                    color: isDark ? '#F6E2AE' : '#A0622A',
+                    background: isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)',
                   }}
-                  role="status"
-                  aria-live="polite"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 opacity-80"
-                    style={{
-                      background: isDark
-                        ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
-                        : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-                    }}
-                  />
-                  <div className="relative flex items-center gap-3 w-full pr-6">
-                    <span className="sacred-pulse-emoji" aria-hidden="true">
-                      <SacredIcon name="calendar" size={18} />
-                    </span>
-                    <div className="sacred-pulse-body flex-1 min-w-0">
-                      <span className="sacred-pulse-label block font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
-                        {pulseLabelText}
+                  {sacredPulses.length}
+                </span>
+              </div>
+
+              {/* Compact rows */}
+              {sacredPulses.map((pulse, idx) => {
+                const pulseVratData = getVratData(pulse.label);
+                const pulseHref = resolveVratSlug(pulse.label);
+                const pulseName = (effectiveAppLanguage !== 'en' && pulseVratData?.nameLocal)
+                  ? pulseVratData.nameLocal
+                  : (pulse.translationKey ? t(pulse.translationKey as any) : pulse.label);
+                const pulseDescText = (effectiveAppLanguage !== 'en' && pulseVratData?.taglineLocal)
+                  ? pulseVratData.taglineLocal
+                  : (pulse.descKey ? t(pulse.descKey as any) : pulse.description);
+                const isLast = idx === sacredPulses.length - 1;
+
+                const rowContent = (
+                  <div className="relative flex items-center gap-3 px-4 py-3">
+                    {/* Divider — skip on first row */}
+                    {idx > 0 && (
+                      <span
+                        className="absolute top-0 left-4 right-4 h-px"
+                        style={{ background: isDark ? 'rgba(197,160,89,0.10)' : 'rgba(197,160,89,0.15)' }}
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <span
+                        className="block font-serif text-[0.92rem] leading-snug truncate"
+                        style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}
+                      >
+                        {pulseName}
                       </span>
-                      <span className="sacred-pulse-desc block mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
-                        {pulseDescText} {t('viewDetails')}
-                      </span>
+                      {pulseDescText && (
+                        <span
+                          className="block mt-0.5 text-[10.5px] leading-relaxed truncate"
+                          style={{ color: isDark ? 'rgba(245,223,160,0.50)' : 'rgba(80,45,10,0.55)' }}
+                        >
+                          {pulseDescText}
+                        </span>
+                      )}
                     </div>
-                    <ChevronRight size={16} className="shrink-0" color="#C5A059" />
+                    {pulseHref && (
+                      <ChevronRight size={14} className="shrink-0" color="#C5A059" />
+                    )}
                   </div>
-                </Link>
+                );
+
+                return pulseHref ? (
+                  <Link
+                    key={`pulse-${pulse.label}-${idx}`}
+                    href={`/vrat/${encodeURIComponent(pulseHref)}`}
+                    className={`block transition-colors hover:bg-white/5 ${isLast ? 'pb-1' : ''}`}
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {rowContent}
+                  </Link>
                 ) : (
-                <div 
-                  className="sacred-pulse-banner group relative block overflow-hidden rounded-[1.55rem] border px-4 py-3.5"
-                  style={{
-                    background: isDark
-                      ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-                      : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))',
-                    borderColor: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)',
-                  }}
-                  role="status" 
-                  aria-live="polite"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 opacity-80"
-                    style={{
-                      background: isDark
-                        ? 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)'
-                        : 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-                    }}
-                  />
-                  <div className="relative flex items-center gap-3 w-full pr-6">
-                    <span className="sacred-pulse-emoji" aria-hidden="true">
-                      <SacredIcon name="calendar" size={18} />
-                    </span>
-                    <div className="sacred-pulse-body flex-1 min-w-0">
-                      <span className="sacred-pulse-label block font-serif text-[1.02rem] leading-tight" style={{ color: isDark ? '#f5dfa0' : '#1a0a02', fontFamily: 'var(--font-serif)' }}>
-                        {pulseLabelText}
-                      </span>
-                      <span className="sacred-pulse-desc block mt-1 text-[11px] leading-relaxed" style={{ color: isDark ? 'rgba(245,223,160,0.55)' : 'rgba(80,45,10,0.60)' }}>
-                        {pulseDescText}
-                      </span>
-                    </div>
+                  <div
+                    key={`pulse-${pulse.label}-${idx}`}
+                    className={isLast ? 'pb-1' : ''}
+                    role="status"
+                    aria-live="polite"
+                  >
+                    {rowContent}
                   </div>
-                </div>
-                )}
-              </motion.div>
-            );
-          })}
+                );
+              })}
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
