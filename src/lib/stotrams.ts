@@ -752,13 +752,142 @@ export const STOTRAMS: Stotram[] = [
     source: 'Composed by Goswami Tulsidas',
     description: 'The most beloved forty-verse prayer dedicated to Lord Hanuman, sung worldwide for courage, health, protection, and devotion.',
     verses: [
+      // ── Opening Dohas ─────────────────────────────────────────────────────
       {
         number: 1,
-        sanskrit: 'श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि ।\nबरनऊँ रघुबर बिमल जसु जो दायकु फल चारि ॥\nबुद्धिहीन तनु जानिके सुमिरौ पवन-कुमार ।\nबल बुधि बिद्या देहु मोहि हरहु कलेस बिकार ॥',
-        transliteration: 'Śrīguru carana saroja raja nija manu mukuru sudhāri\nbaranaūṅ raghubara bimala jasu jo dāyaku phala cāri\nbuddhihīna tanu jānike sumirau pavana-kumāra\nbala budhi bidyā dehu mohi harahu kalesa bkāra',
-        meaning: 'Cleansing the mirror of my mind with the dust of my Guru\'s lotus feet, I sing the pure glory of Sri Ram, which bestows the four fruits of life. Knowing myself to be ignorant, I meditate on Hanuman, the son of the wind. Grant me strength, wisdom, and knowledge, and remove all my sufferings and impurities.',
-        startSecs: 0
-      }
+        sanskrit: 'श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि ।\nबरनऊँ रघुबर बिमल जसु जो दायकु फल चारि ॥\nबुद्धिहीन तनु जानिके सुमिरौ पवन-कुमार ।\nबल बुधि बिद्या देहु मोहिं हरहु कलेस बिकार ॥',
+        transliteration: 'Śrīguru carana saroja raja nija manu mukuru sudhāri,\nbaranaūṃ raghubara bimala jasu jo dāyaku phala cāri.\nBuddhihīna tanu jānike sumirau pavana-kumāra,\nbala budhi bidyā dehu mohiṃ harahu kalesa bikāra.',
+        meaning: 'Cleansing the mirror of my mind with the dust of my Guru\'s lotus feet, I sing the pure glory of Sri Ram, which bestows the four fruits of life. Knowing myself to be of weak intellect, I contemplate Hanuman, son of the wind — grant me strength, wisdom, and knowledge, and remove all my afflictions and impurities.',
+        startSecs: 0,
+      },
+      // ── Chaupais 1–40 (displayed as 20 stanzas of 4 lines each) ───────────
+      {
+        number: 2,
+        sanskrit: 'जय हनुमान ज्ञान गुन सागर । जय कपीस तिहुँ लोक उजागर ॥\nरामदूत अतुलित बल धामा । अंजनि-पुत्र पवनसुत नामा ॥',
+        transliteration: 'Jaya Hanumāna jñāna guṇa sāgara, jaya kapīśa tihuṃ loka ujāgara.\nRāmadūta atulita bala dhāmā, aṃjani-putra pavanasuta nāmā.',
+        meaning: 'Victory to Hanuman, the ocean of wisdom and virtue! Victory to the Lord of monkeys who illumines all three worlds. O messenger of Ram, dwelling-place of incomparable strength — son of Anjani, known as the son of the wind.',
+      },
+      {
+        number: 3,
+        sanskrit: 'महावीर विक्रम बजरंगी । कुमति निवार सुमति के संगी ॥\nकंचन वरन विराज सुवेसा । कानन कुंडल कुंचित केसा ॥',
+        transliteration: 'Mahāvīra vikrama bajaraṃgī, kumati nivāra sumati ke saṃgī.\nKañcana varana virāja suveśā, kānana kuṃḍala kuṃcita keśā.',
+        meaning: 'Great hero, mighty as a thunderbolt, dispeller of evil thoughts and companion of the wise. You shine with a golden complexion, adorned in beautiful robes, ear-rings of gold, and curly locks of hair.',
+      },
+      {
+        number: 4,
+        sanskrit: 'हाथ बज्र औ ध्वजा बिराजे । काँधे मूँज जनेऊ साजे ॥\nशंकर सुवन केसरीनंदन । तेज प्रताप महा जग वंदन ॥',
+        transliteration: 'Hātha bajra au dhvajā birāje, kāṃdhe mūṃja janeu sāje.\nŚaṃkara suvana kesarīnaṃdana, teja pratāpa mahā jaga vaṃdana.',
+        meaning: 'In your hands gleam a thunderbolt and a victory banner; on your shoulder shines the sacred Munja-grass thread. O offspring of Shankara (Vayu), O son of Kesari — your splendour and glory are worshipped throughout the world.',
+      },
+      {
+        number: 5,
+        sanskrit: 'विद्यावान गुनी अति चातुर । राम काज करिबे को आतुर ॥\nप्रभु चरित्र सुनिबे को रसिया । राम लखन सीता मन बसिया ॥',
+        transliteration: 'Vidyāvāna guṇī ati cātura, rāma kāja karibe ko ātura.\nPrabhu caritra sunibe ko rasiyā, rāma lakhana sītā mana basiyā.',
+        meaning: 'You are supremely learned, virtuous, and wise — always eager to serve Lord Ram. You delight in hearing the Lord\'s glorious deeds, and Ram, Lakshman, and Sita ever dwell in your heart.',
+      },
+      {
+        number: 6,
+        sanskrit: 'सूक्ष्म रूप धरि सियहिं दिखावा । विकट रूप धरि लंक जरावा ॥\nभीम रूप धरि असुर सँहारे । रामचंद्र के काज सँवारे ॥',
+        transliteration: 'Sūkṣma rūpa dhari siyahiṃ dikhāvā, vikaṭa rūpa dhari laṃka jarāvā.\nBhīma rūpa dhari asura saṃhāre, rāmacaṃdra ke kāja saṃvāre.',
+        meaning: 'You appeared before Sita in a tiny form, took a terrifying form to burn Lanka, and in a colossal form slew the demons — thereby accomplishing all the missions of Lord Ram.',
+      },
+      {
+        number: 7,
+        sanskrit: 'लाय सजीवन लखन जियाये । श्रीरघुबीर हरषि उर लाये ॥\nरघुपति कीन्हीं बहुत बड़ाई । तुम मम प्रिय भरतहि सम भाई ॥',
+        transliteration: 'Lāya sajīvana lakhana jiyāye, śrīraghubīra haraṣi ura lāye.\nRaghupati kīnhīṃ bahuta baṛāī, tuma mama priya bharatahi sama bhāī.',
+        meaning: 'You brought the Sanjivani herb and revived Lakshman — and Sri Raghuveer (Ram) embraced you with great joy. The Lord of the Raghus praised you greatly, saying: "You are as dear to me as my own brother Bharat."',
+      },
+      {
+        number: 8,
+        sanskrit: 'सहस बदन तुम्हरो जस गावैं । अस कहि श्रीपति कंठ लगावैं ॥\nसनकादिक ब्रह्मादि मुनीसा । नारद-सारद सहित अहीसा ॥',
+        transliteration: 'Sahasa badana tumharo jasa gāvaiṃ, asa kahi śrīpati kaṃṭha lagāvaiṃ.\nSanakādika brahmādi munīśā, nārada-sārada sahita ahīśā.',
+        meaning: '"A thousand mouths sing your glory" — saying this, the Lord of Lakshmi (Vishnu) embraced you. Sages like Sanaka, Lord Brahma, and the great seers, Narada, Saraswati, and the Lord of serpents — all praise your glory.',
+      },
+      {
+        number: 9,
+        sanskrit: 'जम कुबेर दिगपाल जहाँ ते । कवि कोबिद कहि सकैं कहाँ ते ॥\nतुम उपकार सुग्रीवहिं कीन्हा । राम मिलाय राजपद दीन्हा ॥',
+        transliteration: 'Jama kubera digapāla jahāṃ te, kavi kobida kahi sakaiṃ kahāṃ te.\nTuma upakāra sugrīvahiṃ kīnhā, rāma milāya rājapada dīnhā.',
+        meaning: 'Yama, Kubera, and all the guardians of the eight directions — even the greatest poets and scholars cannot fully describe your glory. You rendered a great service to Sugriva: you united him with Ram and restored his royal throne.',
+      },
+      {
+        number: 10,
+        sanskrit: 'तुम्हरो मंत्र विभीषण माना । लंकेश्वर भये सब जग जाना ॥\nजुग सहस्र जोजन पर भानू । लीन्हो ताहि मधुर फल जानू ॥',
+        transliteration: 'Tumharo maṃtra vibhīṣaṇa mānā, laṃkeśvara bhaye saba jaga jānā.\nJuga sahasra jojana para bhānū, līnho tāhi madhura phala jānū.',
+        meaning: 'Vibhishana accepted your counsel and became the ruler of Lanka — the whole world knows this. The sun, thousands of yuga-yojanas away, you swallowed as a child thinking it was a sweet fruit.',
+      },
+      {
+        number: 11,
+        sanskrit: 'प्रभु मुद्रिका मेलि मुख माहीं । जलधि लाँघि गये अचरज नाहीं ॥\nदुर्गम काज जगत के जेते । सुगम अनुग्रह तुम्हरे तेते ॥',
+        transliteration: 'Prabhu mudrikā meli mukha māhīṃ, jaladhi lāṃghi gaye acaraja nāhīṃ.\nDurgama kāja jagata ke jete, sugama anugraha tumhare tete.',
+        meaning: 'Holding the Lord\'s ring in your mouth, you leaped across the ocean — there is no wonder in this for one like you. All the most difficult tasks in the world become easy through your grace and blessing.',
+      },
+      {
+        number: 12,
+        sanskrit: 'राम दुआरे तुम रखवारे । होत न आज्ञा बिनु पैसारे ॥\nसब सुख लहैं तुम्हारी सरना । तुम रच्छक काहू को डरना ॥',
+        transliteration: 'Rāma duāre tuma rakhavāre, hota na ājñā binu paisāre.\nSaba sukha lahai tumhārī saranā, tuma racchaka kāhū ko ḍaranā.',
+        meaning: 'You are the guardian of Ram\'s divine threshold — none may enter without your permission. All comforts are obtained under your shelter, and with you as protector one need fear nothing and no one.',
+      },
+      {
+        number: 13,
+        sanskrit: 'आपन तेज सम्हारो आपे । तीनों लोक हाँक तें काँपे ॥\nभूत पिसाच निकट नहिं आवैं । महावीर जब नाम सुनावैं ॥',
+        transliteration: 'Āpana teja samhāro āpe, tīnoṃ loka hāṃka teṃ kāṃpe.\nBhūta piśāca nikaṭa nahiṃ āvaiṃ, mahāvīra jaba nāma sunāvaiṃ.',
+        meaning: 'You alone can contain your own immense radiance; all three worlds tremble at a single roar from you. Ghosts and evil spirits dare not come near to those who chant the name of the great hero Hanuman.',
+      },
+      {
+        number: 14,
+        sanskrit: 'नासै रोग हरैं सब पीरा । जपत निरंतर हनुमत बीरा ॥\nसंकट तें हनुमान छुड़ावैं । मन क्रम बचन ध्यान जो लावैं ॥',
+        transliteration: 'Nāsai roga harai saba pīrā, japata niraṃtara hanumata bīrā.\nSaṃkaṭa teṃ hanumāna chuṛāvaiṃ, mana krama bacana dhyāna jo lāvaiṃ.',
+        meaning: 'Diseases are destroyed and all pain removed for those who continually chant the name of the brave Hanuman. Hanuman delivers from all troubles those who contemplate him in thought, deed, and word.',
+      },
+      {
+        number: 15,
+        sanskrit: 'सब पर राम तपस्वी राजा । तिन के काज सकल तुम साजा ॥\nऔर मनोरथ जो कोई लावे । सोइ अमित जीवन फल पावे ॥',
+        transliteration: 'Saba para rāma tapasvi rājā, tina ke kāja sakala tuma sājā.\nAura manoaratha jo koī lāve, soi amita jīvana phala pāve.',
+        meaning: 'Ram the ascetic king reigns over all, and you accomplish all his missions to perfection. Whoever brings any wish or prayer before you receives the boundless fruit of life.',
+      },
+      {
+        number: 16,
+        sanskrit: 'चारों जुग परताप तुम्हारा । है परसिद्ध जगत उजियारा ॥\nसाधु-संत के तुम रखवारे । असुर निकंदन राम दुलारे ॥',
+        transliteration: 'Cāroṃ juga paratāpa tumhārā, hai parasiddha jagata ujiyārā.\nSādhu-saṃta ke tuma rakhavāre, asura nikaṃdana rāma dulāre.',
+        meaning: 'Your glory shines resplendent through all four ages and is famed throughout the illumined world. You are the protector of saints and sages, the destroyer of demons, and the beloved of Ram.',
+      },
+      {
+        number: 17,
+        sanskrit: 'अष्ट सिद्धि नव निधि के दाता । अस बर दीन जानकी माता ॥\nराम रसायन तुम्हरे पासा । सदा रहो रघुपति के दासा ॥',
+        transliteration: 'Aṣṭa siddhi nava nidhi ke dātā, asa bara dīna jānakī mātā.\nRāma rasāyana tumhare pāsā, sadā raho raghupati ke dāsā.',
+        meaning: 'You are the bestower of the eight mystic powers and the nine divine treasures — such a boon was granted to you by Mother Janaki (Sita). You hold the supreme elixir of devotion to Ram; may you ever dwell as a faithful servant of the Lord of the Raghus.',
+      },
+      {
+        number: 18,
+        sanskrit: 'तुम्हरे भजन राम को पावैं । जनम-जनम के दुख बिसरावैं ॥\nअन्तकाल रघुबर पुर जाई । जहाँ जन्म हरि-भक्त कहाई ॥',
+        transliteration: 'Tumhare bhajana rāma ko pāvaiṃ, janama-janama ke dukha bisarāvaiṃ.\nAntakāla raghubara pura jāī, jahāṃ janma hari-bhakta kahāī.',
+        meaning: 'Through devotion to you one attains Ram and forgets the sorrows accumulated over many lifetimes. At the time of death one departs to Ram\'s celestial abode, and wherever one is reborn, one is known as a devotee of Hari.',
+      },
+      {
+        number: 19,
+        sanskrit: 'और देवता चित्त न धरई । हनुमत सेइ सर्व सुख करई ॥\nसंकट कटै मिटैं सब पीरा । जो सुमिरैं हनुमत बलबीरा ॥',
+        transliteration: 'Aura devatā citta na dharaī, hanumata sei sarva sukha karaī.\nSaṃkaṭa kaṭai miṭaiṃ saba pīrā, jo sumaraiṃ hanumata balabīrā.',
+        meaning: 'One need not fix the mind on any other deity — serving Hanuman alone bestows all happiness. All obstacles are removed and all pain vanishes for one who remembers the mighty hero Hanuman.',
+      },
+      {
+        number: 20,
+        sanskrit: 'जय जय जय हनुमान गोसाईं । कृपा करहु गुरुदेव की नाईं ॥\nजो सत बार पाठ कर कोई । छूटहि बंदि महा सुख होई ॥',
+        transliteration: 'Jaya jaya jaya hanumāna gosāīṃ, kṛpā karahu gurudeva kī nāīṃ.\nJo sata bāra pāṭha kara koī, chuṭahi baṃdi mahā sukha hoī.',
+        meaning: 'Victory, victory, victory to you, O Lord Hanuman! Bestow your grace upon me as a compassionate Guru. Whoever recites this prayer a hundred times is freed from all bondage and attains supreme happiness.',
+      },
+      {
+        number: 21,
+        sanskrit: 'जो यह पढ़ैं हनुमान चालीसा । होय सिद्धि साखी गौरीसा ॥\nतुलसीदास सदा हरि चेरा । कीजैं नाथ हृदय महँ डेरा ॥',
+        transliteration: 'Jo yaha paṛhaiṃ hanumāna cālīsā, hoya siddhi sākhī gaurīśā.\nTulasīdāsa sadā hari cerā, kījai nātha hṛdaya mahaṃ ḍerā.',
+        meaning: 'Whoever reads this Hanuman Chalisa attains perfection in all endeavours — Lord Shiva (Gaureesh) himself is the witness to this truth. Tulsidas, ever a humble servant of Hari, prays: O Lord, make your divine abode in my heart.',
+      },
+      // ── Closing Doha ──────────────────────────────────────────────────────
+      {
+        number: 22,
+        sanskrit: 'पवनतनय संकट हरन, मंगल मूरति रूप ।\nराम लखन सीता सहित, हृदय बसहु सुर भूप ॥',
+        transliteration: 'Pavanatanaya saṃkaṭa harana, maṃgala mūrti rūpa.\nRāma lakhana sītā sahita, hṛdaya basahu sura bhūpa.',
+        meaning: 'O Son of the Wind, remover of all difficulties, embodiment of auspiciousness and grace — together with Ram, Lakshman, and Sita, O King of the gods, dwell forever in my heart.',
+      },
     ]
   },
   // ── Bajrang Baan ───────────────────────────────────────────────────────────
