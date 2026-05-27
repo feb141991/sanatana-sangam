@@ -29,7 +29,7 @@ interface Message {
   timestamp:  Date;
   /** Scripture verses returned by RAG (only on model messages) */
   verses?:    ScriptureRef[];
-  /** Whether this reply came from scripture RAG vs plain Gemini */
+  /** Whether this reply came from scripture RAG vs plain Sarvam */
   fromRag?:   boolean;
 }
 
@@ -347,7 +347,7 @@ export default function AIChatClient({
     playHaptic('light');
 
     // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
-    // Uses pgvector to find relevant scripture chunks, then Gemini explains them.
+    // Uses pgvector to find relevant scripture chunks, then Sarvam explains them.
     // Falls through to Path B if engine not ready or user has no scripture indexed.
     if (resolvedResponseLanguage === 'en' && isReady && engine) {
       try {
@@ -385,7 +385,7 @@ export default function AIChatClient({
       }
     }
 
-    // ── Path B: Fallback — tradition-aware Gemini via API route ─────────────
+    // ── Path B: Fallback — tradition-aware Sarvam via API route ─────────────
     // Used when: corpus not yet seeded, engine not ready, or RAG returned empty answer.
     const history = messages.map(m => ({ role: m.role, text: m.text }));
     try {

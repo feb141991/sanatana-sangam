@@ -1,6 +1,6 @@
 // ============================================================
 // Edge Function: ai-nudge
-// Generates adaptive streak recovery and reminder messages via Gemini.
+// Generates adaptive streak recovery and reminder messages via Sarvam.
 // Optionally delivers them as OneSignal push notifications.
 //
 // POST body (streak recovery):

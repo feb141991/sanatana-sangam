@@ -3,7 +3,7 @@
 //
 // Generates a structured 7-day sadhana plan using the user's
 // profile, active sankalpas, current streak, and weekly panchang.
-// Powered by the ai-practice-plan Edge Function + Gemini Flash.
+// Powered by the ai-practice-plan Edge Function + Sarvam.
 //
 // Usage:
 //   const planner = new PracticePlan(supabase, config);

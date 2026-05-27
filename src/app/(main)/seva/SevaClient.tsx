@@ -233,14 +233,15 @@ export default function SevaClient({
       });
 
       if (error) throw error;
-    } catch (error) {
-      console.error('[seva] failed to persist seva log', error);
-    } finally {
       setMonthlyCount((current) => current + 1);
       setNote('');
       setSevaType('Annadaan');
-      setSubmitting(false);
       toast.success('Seva logged for today.');
+    } catch (error) {
+      console.error('[seva] failed to persist seva log', error);
+      toast.error('Could not log seva right now. Check your connection and try again.');
+    } finally {
+      setSubmitting(false);
     }
   }
 

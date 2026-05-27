@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       `- ${s.type}: "${s.description}" — day ${s.current_streak}/${s.target_days}`
     ).join('\n') || 'None active';
 
-    // Fallback plan (no Gemini)
+    // Fallback plan (no Sarvam)
     const fallbackPlan = weekPanchang.map((p, i) => ({
       date:       p.date,
       vaara:      p.vaara,

@@ -1,6 +1,6 @@
 // ============================================================
 // Edge Function: ai-kul-summary
-// Weekly kul digest — Gemini generates a personalised summary
+// Weekly kul digest — Sarvam generates a personalised summary
 // of how the kul practiced this week, sent to each member.
 //
 // Can be called:
@@ -116,7 +116,7 @@ async function processKul(
     .order('event_date', { ascending: true })
     .limit(3);
 
-  // ── Generate Gemini digest ──
+  // ── Generate Sarvam digest ──
   const digest = await generateWeeklyDigest({
     kulName:          stats.kul_name,
     kulEmoji:         stats.avatar_emoji ?? '🙏',
@@ -169,7 +169,7 @@ async function processKul(
   };
 }
 
-// ── Generate weekly digest via Gemini ──
+// ── Generate weekly digest via Sarvam ──
 
 async function generateWeeklyDigest(opts: {
   kulName: string;

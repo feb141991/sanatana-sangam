@@ -119,7 +119,8 @@
       "Bash(grep -c \"bodyHi: \\\\`\\\\`\" \"/Users/Business\\(C\\)/Sanatan Sangam/Shoonaya/src/lib/katha-library.ts\")",
       "Bash(grep -n \"bodyHi: \\\\`[^\\\\`]\" \"/Users/Business\\(C\\)/Sanatan Sangam/Shoonaya/src/lib/katha-library.ts\")",
       "Bash(git commit -m 'fix\\(pwa\\): remove dangling icon/splash declarations that 404 *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(grep -rn \"catch.*{$\\\\|catch \\(err\" src/app/api/ --include=\"*.ts\")"
     ]
   }
 }

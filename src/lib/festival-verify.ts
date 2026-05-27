@@ -7,7 +7,7 @@
  *   1. LUNAR_FESTIVAL_RULES — the tithi rule for each festival (source of truth
  *      for *what to check*, e.g. "Jyeshtha Krishna Amavasya")
  *   2. verifyFestivalDatesWithAI() — sends the rules + stored dates to a
- *      dedicated festival-audit provider policy (Gemini-first, then fallback).
+ *      dedicated festival-audit provider policy (Sarvam-first, then fallback).
  *      The AI cross-checks each date
  *      and flags mismatches with a suggested correction and confidence level.
  *

@@ -77,7 +77,7 @@ export class ShrutiEngine {
   /**
    * Trigger AI scoring for an uploaded recording.
    * Calls the ai-recitation-score Edge Function.
-   * The function downloads the audio, runs Groq Whisper + Gemini, stores the review.
+   * The function downloads the audio, runs Sarvam ASR + Sarvam, stores the review.
    */
   async score(recordingId: string): Promise<RecitationResult> {
     const { data, error } = await this.supabase.functions.invoke('ai-recitation-score', {

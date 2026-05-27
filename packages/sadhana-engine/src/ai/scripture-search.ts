@@ -4,7 +4,7 @@
 // Client-side module. Sends the user's question to the
 // ai-ask-scripture Edge Function, which does:
 //   1. pgvector similarity search across scripture_chunks
-//   2. Gemini Flash explanation contextualised to user profile
+//   2. Sarvam explanation contextualised to user profile
 //
 // Usage:
 //   const search = new ScriptureSearch(supabase, config);
@@ -23,12 +23,12 @@ export interface AskScriptureOptions {
   matchCount?: number;       // how many verses to retrieve (default 5)
   matchThreshold?: number;   // similarity threshold 0-1 (default 0.3)
   textIds?: string[];        // limit to specific texts e.g. ['gita']
-  withExplanation?: boolean; // call Gemini for explanation (default true)
+  withExplanation?: boolean; // call Sarvam for explanation (default true)
 }
 
 export interface AskScriptureResponse {
   question: string;
-  answer: string;            // Gemini-generated explanation
+  answer: string;            // Sarvam-generated explanation
   verses: ScriptureSearchResult[];
   source_texts: string[];
   generated_at: string;
@@ -78,7 +78,7 @@ export class ScriptureSearch {
     return result;
   }
 
-  // ── Local similarity search (no Gemini) — for autocomplete / suggestions ──
+  // ── Local similarity search (no Sarvam) — for autocomplete / suggestions ──
   // Calls the match_scriptures postgres function directly
 
   async similarVerses(

@@ -125,7 +125,7 @@ serve(async (req: Request) => {
     const kulName = kul?.name ?? 'your kul';
     const kulEmoji = kul?.avatar_emoji ?? '🙏';
 
-    // ── 5. Generate community nudge message via Gemini ──
+    // ── 5. Generate community nudge message via Sarvam ──
     const message = await generateKulNudge({
       kulName,
       kulEmoji,
@@ -196,7 +196,7 @@ async function generateKulNudge(opts: {
 
   const { kulName, kulEmoji, membersCount, totalJapa, tradition, deity } = opts;
 
-  // Fallback if no Gemini key
+  // Fallback if no Sarvam key
   if (!sarvamKey) {
     const count = membersCount === 1 ? '1 member' : `${membersCount} members`;
     return {

@@ -9,7 +9,7 @@ import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, b
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
 // Checks the recommendations cache first; generates via the active Pramana provider if stale.
 
-// Curated fallback shlokas (tradition-neutral; used when Gemini is unavailable)
+// Curated fallback shlokas (tradition-neutral; used when Sarvam is unavailable)
 const FALLBACK_SHLOKAS = [
   {
     text:    'योगः कर्मसु कौशलम्',

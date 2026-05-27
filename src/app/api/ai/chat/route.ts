@@ -7,7 +7,7 @@ import { emitEvent, emitError } from '@/lib/monitoring/events';
 // ─── General AI Chat Route ────────────────────────────────────────────────────
 // POST /api/ai/chat
 // Body: { message: string; tradition?: string | null; history: { role: 'user' | 'model'; text: string }[] }
-// Uses the Pramana provider stack (Gemini by default, self-hosted when available).
+// Uses the Pramana provider stack (Sarvam by default, self-hosted when available).
 
 const FREE_DAILY_LIMIT = 5;   // reduced free daily limit to 5
 const PRO_DAILY_LIMIT  = 200;  // raised from 100 — suits deep daily sadhana conversations

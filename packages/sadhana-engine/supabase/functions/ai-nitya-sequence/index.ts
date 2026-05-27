@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
     const deity      = profile?.preferred_deity ?? 'Ishvara';
     const tradGuide  = traditionGuidance[tradition] ?? traditionGuidance.general;
 
-    // Build Gemini prompt
+    // Build Sarvam prompt
     const panchangLine = [
       `Today is ${panchang.vaara}, ${panchang.paksha} ${panchang.tithi}`,
       panchang.vrata && `Vrata: ${panchang.vrata}`,

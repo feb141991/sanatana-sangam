@@ -157,7 +157,7 @@ function wordDiff(expected: string, transcript: string, language: string): WordD
   return diffs;
 }
 
-// ── Score calculation from diff + Gemini response ─────────────────────────────
+// ── Score calculation from diff + Sarvam response ─────────────────────────────
 
 interface RecitationScore {
   uccharan:   number | null;

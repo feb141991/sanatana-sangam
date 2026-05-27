@@ -255,7 +255,7 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'no scripture chunks found' }), { status: 404 });
     }
 
-    // ── 7. Generate personalised reflection via Gemini ─────────────────────────
+    // ── 7. Generate personalised reflection via Sarvam ─────────────────────────
     const prompt = `You are a warm, knowledgeable spiritual guide in the ${tradition} tradition.
 
 Today is ${panchang.vaara}, ${panchang.tithi} (${panchang.paksha}).

@@ -1551,7 +1551,7 @@ export default function HomeDashboard({
     });
   }, [selectedDate, lat, lon]);
 
-  // Fetch personalised daily content from Gemini-backed API.
+  // Fetch personalised daily content from Sarvam-backed API.
   // Cache result in localStorage keyed to today's date — so on repeat visits
   // the suggestion renders immediately from cache (no blank-space wait).
   // The fetch always runs in background to refresh stale cache from yesterday.

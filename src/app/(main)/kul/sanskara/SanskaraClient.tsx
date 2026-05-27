@@ -937,7 +937,7 @@ export default function SanskaraClient({
         )}
       </AnimatePresence>
 
-      {/* AI nudge — shown when Gemini has a suggestion */}
+      {/* AI nudge — shown when AI has a suggestion */}
       {aiNudge && !selectedMember && (
         <AiNudgeCard
           message={aiNudge.message}
