@@ -794,21 +794,10 @@ const _WEEKDAY_DEITIES: Record<string, string> = {
 };
 
 export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangInfo {
-  const date = (() => {
-    if (dateInput) return dateInput;
-    if (timezone) {
-      // Get the current local date-time in the user's timezone, then construct a
-      // Date object at that local wall-clock time so tithi is computed for their
-      // actual calendar day (not server-UTC which may already be tomorrow).
-      const localStr = new Intl.DateTimeFormat('en-CA', {
-        timeZone: timezone,
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit',
-      }).format(new Date());
-      return new Date(localStr.replace(', ', 'T'));
-    }
-    return new Date();
-  })();
+  // Astronomical calculations always use the real current UTC instant —
+  // the moon's position is time-dependent and doesn't care about timezone.
+  const now  = new Date();
+  const date = dateInput ?? now;
 
   // Days since J2000.0
   const jd = date.getTime() / 86_400_000 + 2_440_587.5;
@@ -839,9 +828,21 @@ export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangI
     tithiName = TITHIS[tithiInPaksha - 1] ?? 'Pratipada';
   }
 
-  // Weekday
+  // Weekday — must reflect the user's LOCAL calendar day, not server UTC.
+  // Use the 'sv' (Swedish) locale which always emits YYYY-MM-DD with no
+  // AM/PM or locale-specific separators — safe to parse as a Date.
+  const weekdayIndex = (() => {
+    if (timezone) {
+      // e.g. "2026-05-27" in the user's local date
+      const localIso = new Intl.DateTimeFormat('sv', { timeZone: timezone }).format(now);
+      // Append noon UTC so getDay() returns the right calendar day regardless of server tz
+      return new Date(`${localIso}T12:00:00Z`).getDay();
+    }
+    return date.getDay();
+  })();
+
   const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const weekday      = weekdays[date.getDay()] ?? 'Sunday';
+  const weekday      = weekdays[weekdayIndex] ?? 'Wednesday';
   const weekdayDeity = _WEEKDAY_DEITIES[weekday] ?? 'Shiva';
 
   // Indicators
