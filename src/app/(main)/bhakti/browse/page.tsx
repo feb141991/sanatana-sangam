@@ -51,7 +51,7 @@ function BrowseInner() {
     return STOTRAMS.filter(s => {
       const traditionOk = tradition === 'all' || s.tradition === tradition || s.tradition === 'all';
       const deityOk     = deity === 'all' || s.deity === deity || s.deity === 'universal';
-      const moodOk      = mood === 'all';  // mood filtering not in stotrams data yet — show all
+      const moodOk      = mood === 'all' || s.mood === mood;
       const typeOk      = type === 'all' || s.type === type;
       return traditionOk && deityOk && moodOk && typeOk;
     });
@@ -120,10 +120,9 @@ function BrowseInner() {
         <PillRow
           items={TYPES.map(t => ({ id: t.id, label: t.label }))}
           active={type} onSelect={setType} title="Type" />
-        {/* Mood filter hidden — mood field not yet populated in stotrams data */}
-        {/* <PillRow
+        <PillRow
           items={MOODS.map(m => ({ id: m.id, label: m.label, emoji: m.emoji }))}
-          active={mood} onSelect={setMood} title="Mood" /> */}
+          active={mood} onSelect={setMood} title="Mood" />
       </div>
 
       {/* Results count */}
