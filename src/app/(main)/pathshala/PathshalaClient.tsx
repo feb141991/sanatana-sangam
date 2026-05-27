@@ -42,7 +42,7 @@ import {
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
-import { getTodayShloka } from '@/lib/shlokas';
+import { getTodayShloka, getShlokaByLanguage } from '@/lib/shlokas';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getTransliteration } from '@/lib/transliteration';
@@ -966,6 +966,7 @@ export default function PathshalaClient({
 
   // ── Aaj ka Shloka — rotates daily with Chanakya Niti priority ────────────────
   function DailyVersePrompt() {
+    const shlokaMeaning = getShlokaByLanguage(todayShloka, appLanguage ?? 'en');
     return (
       <Link href="/pathshala?tab=scripture" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
         style={cardStyle}>
@@ -987,7 +988,7 @@ export default function PathshalaClient({
         </div>
         <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
           <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
-            {pulse ? pulse.description : todayShloka.meaning}
+            {pulse ? pulse.description : shlokaMeaning}
           </p>
           <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
             {t('explore')} {meta.navLibraryLabel} →
@@ -1291,7 +1292,7 @@ export default function PathshalaClient({
               <div className="rounded-2xl p-4 mb-5 border"
                 style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                  {pulse ? pulse.description : todayShloka.meaning}
+                  {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
                 </p>
               </div>
 

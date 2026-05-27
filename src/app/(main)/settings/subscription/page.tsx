@@ -16,6 +16,10 @@ export default async function SubscriptionPage() {
     .eq('id', user.id)
     .single();
 
+  const { headers } = await import('next/headers');
+  const headersList = await headers();
+  const country = headersList.get('x-vercel-ip-country') ?? 'IN';
+
   return (
     <SubscriptionClient 
       status={profile?.subscription_status || 'free'}
@@ -24,6 +28,7 @@ export default async function SubscriptionPage() {
       expiresAt={profile?.subscription_expires_at || null}
       entitlementSource={profile?.entitlement_source || null}
       tradition={profile?.tradition || null}
+      country={country}
     />
   );
 }

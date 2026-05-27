@@ -117,11 +117,12 @@ export default function KathaReaderClient({
     meaningLanguage,
   }), [appLanguage, meaningLanguage]);
   const resolvedLanguage = useMemo<AppContentLanguage>(() => {
+    if (appLanguage === 'hi' && hasHindi) return 'hi';
     if (!readablePreferences.preferLocalLanguage) return 'en';
     if (hasHindi) return 'hi';
     if (hasPunjabi) return 'pa';
     return 'en';
-  }, [hasHindi, hasPunjabi, readablePreferences.preferLocalLanguage]);
+  }, [appLanguage, hasHindi, hasPunjabi, readablePreferences.preferLocalLanguage]);
 
   const {
     language: lang,
@@ -348,7 +349,11 @@ export default function KathaReaderClient({
       fontPresets={fontPresets}
       fontStep={fontStep}
       setFontStep={setFontStep}
-      languages={languages}
+      languages={languages.filter(l => {
+        if (l.code === 'hi') return hasHindi;
+        if (l.code === 'pa') return nativePaBody && nativePaBody.length > 0;
+        return true;
+      })}
       currentLanguage={lang}
       setLanguage={(l) => {
         setLang(l);

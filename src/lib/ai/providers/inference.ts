@@ -39,11 +39,13 @@ type InferenceProviderOverride =
 export function getInferenceProviders(
   providerOverride?: InferenceProviderOverride
 ): PramanaInferenceProvider[] {
+  if (providerOverride === 'sarvam-hosted') {
+    // Sarvam-only — no Gemini fallback
+    const providers = selectProviders({ ...readEnvConfig(), activeProvider: 'sarvam-hosted' });
+    return providers.filter(p => p.info.id === 'sarvam-hosted');
+  }
   if (providerOverride) {
-    return selectProviders({
-      ...readEnvConfig(),
-      activeProvider: providerOverride,
-    });
+    return selectProviders({ ...readEnvConfig(), activeProvider: providerOverride });
   }
 
   if (!_cachedProviders) {
@@ -86,7 +88,7 @@ export async function generateWithProvider(
     responseFormat: options?.responseFormat,
   };
 
-  const breakerConfig = { failureThreshold: 3, cooldownMs: 30000 };
+  const breakerConfig = { failureThreshold: 5, cooldownMs: 60000 };
   let lastError: Error | null = null;
 
   const isProviderFailure = (err: any) => {

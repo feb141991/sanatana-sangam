@@ -35,7 +35,7 @@ import {
   eachDayOfInterval, format as fmtDate, isSameDay, isSameMonth,
   isToday as isDayToday, addMonths, subMonths,
 } from 'date-fns';
-import type { Shloka } from '@/lib/shlokas';
+import { type Shloka, getShlokaByLanguage } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulses } from '@/lib/panchang';
@@ -1298,7 +1298,7 @@ export default function HomeDashboard({
   const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${effectiveLang}-${todayStr}`;
   const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${effectiveLang}-${todayStr}`;
 
-  const fetchSankalpa = () => {
+  const fetchSankalpa = useCallback(() => {
     fetch('/api/sankalpa')
       .then(res => res.ok ? res.json() : Promise.reject())
       .then(data => {
@@ -1318,11 +1318,11 @@ export default function HomeDashboard({
         }
       })
       .catch(() => {});
-  };
+  }, [tradition]);
 
   useEffect(() => {
     fetchSankalpa();
-  }, []);
+  }, [fetchSankalpa]);
 
   useEffect(() => {
     try {
@@ -1802,7 +1802,7 @@ export default function HomeDashboard({
       sacredText ? sacredText.transliteration : shloka.transliteration,
       transliterationLanguage ?? 'en'
     ),
-    meaning: sacredText ? sacredText.meaning : shloka.meaning,
+    meaning: sacredText ? sacredText.meaning : getShlokaByLanguage(shloka, appLanguage ?? 'en'),
     actionLabel: sacredTextMeta.label,
     streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
   };

@@ -7,6 +7,7 @@ export interface Shloka {
   sanskrit: string;
   transliteration: string;
   meaning: string;
+  meaning_hi?: string;
   source: string;
 }
 
@@ -16,6 +17,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
     transliteration: "Karmaṇyevādhikāraste mā phaleṣu kadācana,\nmā karmaphalaheturbhūr mā te saṅgo'stvakarmaṇi.",
     meaning: "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself the cause of the results of your activities, and never be attached to not doing your duty.",
+    meaning_hi: "तुम्हारा कर्म करने में ही अधिकार है, फलों में कभी नहीं। स्वयं को कर्मों के फल का कारण मत मानो, और कर्म न करने में भी आसक्ति न रखो।",
     source: "Bhagavad Gita 2.47",
   },
   {
@@ -23,6 +25,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय।\nसिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते॥",
     transliteration: "Yogasthaḥ kuru karmāṇi saṅgaṃ tyaktvā dhanañjaya,\nsiddhyasiddhyoḥ samo bhūtvā samatvaṃ yoga ucyate.",
     meaning: "Be steadfast in yoga, O Arjuna. Perform your duty and abandon all attachment to success or failure. Such equanimity is called yoga.",
+    meaning_hi: "हे अर्जुन, योग में स्थित होकर कर्म करो, सफलता या विफलता की आसक्ति को त्याग कर। यह समभाव ही योग कहलाता है।",
     source: "Bhagavad Gita 2.48",
   },
   {
@@ -30,6 +33,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "श्रद्धावान्लभते ज्ञानं तत्परः संयतेन्द्रियः।\nज्ञानं लब्ध्वा परां शान्तिमचिरेणाधिगच्छति॥",
     transliteration: "Śraddhāvān labhate jñānaṃ tatparaḥ saṃyatendriyaḥ,\njñānaṃ labdhvā parāṃ śāntim acireṇādhigacchati.",
     meaning: "A faithful man who is dedicated to transcendental knowledge and who subdues his senses is eligible to achieve such knowledge, and having achieved it, he quickly attains the supreme spiritual peace.",
+    meaning_hi: "श्रद्धावान व्यक्ति जो ज्ञान के प्रति समर्पित है और अपनी इंद्रियों को वश में रखता है, वह ज्ञान प्राप्त करता है और शीघ्र ही परम शांति को प्राप्त होता है।",
     source: "Bhagavad Gita 4.39",
   },
   {
@@ -37,6 +41,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज।\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः॥",
     transliteration: "Sarvadharmān parityajya mām ekaṃ śaraṇaṃ vraja,\nahaṃ tvāṃ sarvapāpebhyo mokṣayiṣyāmi mā śucaḥ.",
     meaning: "Abandon all varieties of religion and just surrender unto Me. I shall deliver you from all sinful reactions. Do not fear.",
+    meaning_hi: "सभी प्रकार के धर्मों का परित्याग करो और केवल मेरी शरण में आओ। मैं तुम्हें सभी पापों से मुक्त कर दूंगा। डरो मत।",
     source: "Bhagavad Gita 18.66",
   },
   {
@@ -44,6 +49,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "ॐ असतो मा सद्गमय।\nतमसो मा ज्योतिर्गमय।\nमृत्योर्मा अमृतं गमय।\nॐ शान्तिः शान्तिः शान्तिः॥",
     transliteration: "Oṃ asato mā sadgamaya,\ntamaso mā jyotirgamaya,\nmṛtyormā amṛtaṃ gamaya,\noṃ śāntiḥ śāntiḥ śāntiḥ.",
     meaning: "Lead me from the unreal to the real, from darkness to light, from death to immortality. Om, peace, peace, peace.",
+    meaning_hi: "मुझे असत्य से सत्य की ओर ले चलें, अंधकार से प्रकाश की ओर, मृत्यु से अमरता की ओर। ॐ, शांति, शांति, शांति।",
     source: "Bṛhadāraṇyaka Upaniṣad 1.3.28",
   },
   {
@@ -51,6 +57,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "ॐ सह नाववतु। सह नौ भुनक्तु।\nसह वीर्यं करवावहै।\nतेजस्वि नावधीतमस्तु मा विद्विषावहै।\nॐ शान्तिः शान्तिः शान्तिः॥",
     transliteration: "Oṃ saha nāvavatu, saha nau bhunaktu,\nsaha vīryaṃ karavāvahai,\ntejasvi nāvadhītamastu mā vidviṣāvahai,\noṃ śāntiḥ śāntiḥ śāntiḥ.",
     meaning: "May we both (teacher and student) be protected together, may we both be nourished together, may we work together with great vigor, may our study be enlightening, may there be no hate between us.",
+    meaning_hi: "हम दोनों (गुरु और शिष्य) की एक साथ रक्षा हो, हम एक साथ पोषित हों, हम महान ऊर्जा के साथ मिलकर काम करें, हमारा अध्ययन ज्ञानवर्धक हो, हमारे बीच कोई द्वेष न हो।",
     source: "Taittirīya Upaniṣad 2.2.2",
   },
   {
@@ -58,6 +65,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "वसुधैव कुटुम्बकम्।",
     transliteration: "Vasudhaiva kuṭumbakam.",
     meaning: "The whole world is one family.",
+    meaning_hi: "पूरी दुनिया एक परिवार है।",
     source: "Mahopaniṣad 6.72",
   },
   {
@@ -65,6 +73,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "अहिंसा परमो धर्मः।",
     transliteration: "Ahiṃsā paramo dharmaḥ.",
     meaning: "Non-violence is the highest dharma.",
+    meaning_hi: "अहिंसा परम धर्म है।",
     source: "Mahābhārata",
   },
   {
@@ -72,6 +81,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "सत्यमेव जयते नानृतं\nसत्येन पन्था विततो देवयानः।",
     transliteration: "Satyameva jayate nānṛtaṃ\nsatyena panthā vitato devayānaḥ.",
     meaning: "Truth alone triumphs, not falsehood. Through truth, the divine path is spread out.",
+    meaning_hi: "सत्य की ही जीत होती है, झूठ की नहीं। सत्य के द्वारा ही देवों का मार्ग प्रशस्त होता है।",
     source: "Muṇḍaka Upaniṣad 3.1.6",
   },
   {
@@ -79,6 +89,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "तमसो मा ज्योतिर्गमय।",
     transliteration: "Tamaso mā jyotirgamaya.",
     meaning: "Lead me from darkness to light.",
+    meaning_hi: "मुझे अंधकार से प्रकाश की ओर ले चलें।",
     source: "Bṛhadāraṇyaka Upaniṣad",
   },
   {
@@ -86,6 +97,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "यत्र नार्यस्तु पूज्यन्ते रमन्ते तत्र देवताः।\nयत्रैतास्तु न पूज्यन्ते सर्वास्तत्राफलाः क्रियाः॥",
     transliteration: "Yatra nāryastu pūjyante ramante tatra devatāḥ,\nyatraitāstu na pūjyante sarvāstatrāphalāḥ kriyāḥ.",
     meaning: "Where women are honored, there the gods rejoice. Where they are not honored, all actions remain fruitless.",
+    meaning_hi: "जहाँ स्त्रियों का सम्मान होता है, वहाँ देवता प्रसन्न होते हैं। जहाँ उनका सम्मान नहीं होता, वहाँ सारे कार्य निष्फल हो जाते हैं।",
     source: "Manusmṛti 3.56",
   },
   {
@@ -93,6 +105,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "आत्मा वा अरे द्रष्टव्यः श्रोतव्यो मन्तव्यो निदिध्यासितव्यः।",
     transliteration: "Ātmā vā are draṣṭavyaḥ śrotavyo mantavyo nididhyāsitavyaḥ.",
     meaning: "The Self is to be seen, to be heard, to be reflected upon, to be meditated upon.",
+    meaning_hi: "आत्मा देखने, सुनने, मनन करने और ध्यान करने योग्य है।",
     source: "Bṛhadāraṇyaka Upaniṣad 2.4.5",
   },
   {
@@ -100,6 +113,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "अहं ब्रह्मास्मि।",
     transliteration: "Ahaṃ brahmāsmi.",
     meaning: "I am Brahman (the Absolute Reality).",
+    meaning_hi: "मैं ब्रह्म (परम सत्य) हूँ।",
     source: "Bṛhadāraṇyaka Upaniṣad 1.4.10",
   },
   {
@@ -107,6 +121,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "तत्त्वमसि।",
     transliteration: "Tat tvam asi.",
     meaning: "Thou art That (You are the Absolute).",
+    meaning_hi: "तुम वही हो (तुम ही परम सत्य हो)।",
     source: "Chāndogya Upaniṣad 6.8.7",
   },
   {
@@ -114,6 +129,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "प्रज्ञानं ब्रह्म।",
     transliteration: "Prajñānaṃ brahma.",
     meaning: "Consciousness is Brahman.",
+    meaning_hi: "चेतना ही ब्रह्म है।",
     source: "Aitareya Upaniṣad 3.3",
   },
   {
@@ -121,6 +137,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "अयमात्मा ब्रह्म।",
     transliteration: "Ayam ātmā brahma.",
     meaning: "This Self is Brahman.",
+    meaning_hi: "यह आत्मा ब्रह्म है।",
     source: "Māṇḍūkya Upaniṣad 1.2",
   },
   {
@@ -128,6 +145,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "सर्वे भवन्तु सुखिनः। सर्वे सन्तु निरामयाः।\nसर्वे भद्राणि पश्यन्तु। मा कश्चिद् दुःखभाग् भवेत्॥",
     transliteration: "Sarve bhavantu sukhinaḥ, sarve santu nirāmayāḥ,\nsarve bhadrāṇi paśyantu, mā kaścid duḥkhabhāg bhavet.",
     meaning: "May all be happy, may all be free from illness, may all see auspiciousness, may no one suffer.",
+    meaning_hi: "सभी सुखी हों, सभी रोगमुक्त हों, सभी मंगलमय देखें, किसी को दुख न हो।",
     source: "Bṛhadāraṇyaka Upaniṣad",
   },
   {
@@ -135,6 +153,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "ॐ नमः शिवाय।",
     transliteration: "Oṃ namaḥ śivāya.",
     meaning: "Om, salutation to Shiva (the auspicious one, the one who is peace).",
+    meaning_hi: "ॐ, शिव को नमस्कार (जो मंगलकारी हैं, जो शांति हैं)।",
     source: "Kṛṣṇa Yajurveda",
   },
   {
@@ -142,6 +161,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "ॐ नमो भगवते वासुदेवाय।",
     transliteration: "Oṃ namo bhagavate vāsudevāya.",
     meaning: "Om, salutation to Lord Vasudeva (Krishna).",
+    meaning_hi: "ॐ, भगवान वासुदेव (कृष्ण) को नमस्कार।",
     source: "Viṣṇu Purāṇa",
   },
   {
@@ -149,6 +169,7 @@ export const SHLOKAS: Shloka[] = [
     sanskrit: "हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे।\nहरे राम हरे राम राम राम हरे हरे॥",
     transliteration: "Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare,\nHare Rāma Hare Rāma Rāma Rāma Hare Hare.",
     meaning: "O Hari, O Krishna, O Rama — the Maha Mantra that invokes the divine names of the Supreme Lord.",
+    meaning_hi: "हे हरि, हे कृष्ण, हे राम - महामंत्र जो भगवान के दिव्य नामों का आह्वान करता है।",
     source: "Kali-santarana Upaniṣad",
   },
   {
@@ -784,6 +805,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "विद्या ददाति विनयं, विनयाद् याति पात्रताम्।\nपात्रत्वाद् धनमाप्नोति, धनाद् धर्मं ततः सुखम्॥",
     transliteration: "Vidyā dadāti vinayaṃ, vinayād yāti pātratām,\npātratvadd dhanam āpnoti, dhanād dharmaṃ tataḥ sukham.",
     meaning: "Knowledge gives humility; from humility comes worthiness; from worthiness comes wealth; from wealth comes dharma; and from dharma comes happiness.",
+    meaning_hi: "विद्या विनय देती है; विनय से पात्रता आती है; पात्रता से धन प्राप्त होता है; धन से धर्म; और धर्म से सुख मिलता है।",
     source: "Chanakya Nīti",
   },
   {
@@ -791,6 +813,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "सुखस्य मूलं धर्मः। धर्मस्य मूलं अर्थः।\nअर्थस्य मूलं राज्यम्। राज्यस्य मूलं इन्द्रियजयः॥",
     transliteration: "Sukhasya mūlaṃ dharmaḥ. Dharmasya mūlaṃ arthaḥ.\nArthasya mūlaṃ rājyam. Rājyasya mūlaṃ indriyajayaḥ.",
     meaning: "The root of happiness is dharma; the root of dharma is wealth rightly earned; the root of wealth is a well-governed state; and the root of good governance is mastery over the senses.",
+    meaning_hi: "सुख का मूल धर्म है; धर्म का मूल धन है; धन का मूल राज्य है; और राज्य का मूल इंद्रियों पर विजय है।",
     source: "Chanakya Nīti",
   },
   {
@@ -798,6 +821,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "पृथिव्यां त्रीणि रत्नानि जलमन्नं सुभाषितम्।\nमूढैः पाषाणखण्डेषु रत्नसंज्ञा विधीयते॥",
     transliteration: "Pṛthivyāṃ trīṇi ratnāni jalam annaṃ subhāṣitam,\nmūḍhaiḥ pāṣāṇakhaṇḍeṣu ratna-saṃjñā vidhīyate.",
     meaning: "There are three true gems on this earth — water, food, and wise words. Fools call mere stones 'gems'.",
+    meaning_hi: "पृथ्वी पर तीन सच्चे रत्न हैं — जल, अन्न, और सुभाषित। मूर्ख लोग पत्थरों को 'रत्न' कहते हैं।",
     source: "Chanakya Nīti 1.3",
   },
   {
@@ -805,6 +829,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "आपदि कर्म समर्थस्य, शत्रौ सन्धिविग्रहौ।\nगुरौ शुश्रूषणं शिष्यस्य, दानधर्मो मनीषिणः॥",
     transliteration: "Āpadi karma samarthasya, śatrau sandhiviṃgrahau,\ngurau śuśrūṣaṇaṃ śiṣyasya, dānadharmo manīṣiṇaḥ.",
     meaning: "In adversity, the capable one acts; with an enemy, one negotiates or fights as required; for a student, service to the guru; for the wise, dana and dharma.",
+    meaning_hi: "आपत्ति में समर्थ व्यक्ति कार्य करता है; शत्रु के साथ संधि या युद्ध; शिष्य का धर्म गुरु की सेवा है; और विद्वानों का धर्म दान और ज्ञान है।",
     source: "Chanakya Nīti",
   },
   {
@@ -812,6 +837,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "न कश्चित् कस्यचिन्मित्रं, न कश्चित् कस्यचिद्रिपुः।\nव्यवहारेण जायन्ते मित्राणि रिपवस्तथा॥",
     transliteration: "Na kaścit kasyacinmitraṃ, na kaścit kasyacidripuḥ,\nvyavahāreṇa jāyante mitrāṇi ripavastathā.",
     meaning: "No one is born another's friend or enemy — it is conduct and dealings that make them so.",
+    meaning_hi: "कोई जन्म से किसी का मित्र या शत्रु नहीं होता — यह आचरण और व्यवहार ही है जो मित्र या शत्रु बनाता है।",
     source: "Chanakya Nīti",
   },
   {
@@ -819,6 +845,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "अनालोच्य व्ययं कर्तुं, अनाहूतस्य गमनम्।\nअविश्वस्ते रहस्योक्तिः, त्रयोऽपि दुःखहेतवः॥",
     transliteration: "Anālocya vyayaṃ kartuṃ, anāhūtasya gamanam,\naviśvaste rahasyoktiḥ, trayo'pi duḥkhahetavaḥ.",
     meaning: "Spending without thinking, going where you are not invited, and sharing secrets with one who cannot be trusted — these three bring suffering.",
+    meaning_hi: "बिना सोचे-समझे खर्च करना, बिना बुलाए जाना, और अविश्वासी को रहस्य बताना — ये तीनों दुख के कारण हैं।",
     source: "Chanakya Nīti 2.11",
   },
   {
@@ -826,6 +853,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "एकमेवाद्वितीयं ब्रह्म, एको विद्वान् परः पुमान्।\nएको अग्निः बहुधा समिद्धः, एकः सूर्यः सर्वलोकस्य॥",
     transliteration: "Ekam evādvitīyaṃ brahma, eko vidvān paraḥ pumān,\neko agniḥ bahudhā samiddhaḥ, ekaḥ sūryaḥ sarvalokaḥ.",
     meaning: "Brahman is one without a second; the truly learned one stands supreme among persons; fire is one though it burns in many forms; the sun is one yet illuminates all worlds.",
+    meaning_hi: "ब्रह्म एक और अद्वितीय है; विद्वान पुरुषों में श्रेष्ठ है; अग्नि कई रूपों में जलती है फिर भी एक है; सूर्य एक है फिर भी सभी लोकों को प्रकाशित करता है।",
     source: "Chanakya Nīti 4.17",
   },
   {
@@ -833,6 +861,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "कौटिल्यं त्रिषु धर्मेषु बुद्धिमान् नावसीदति।\nस्वकर्मणि विधाता स्यात्, सेवया पालयेत् परान्॥",
     transliteration: "Kauṭilyaṃ triṣu dharmeṣu buddhimān nāvasīdati,\nsvakarmāṇi vidhātā syāt, sevayā pālayet parān.",
     meaning: "The wise one does not sink into three dharmas [body, mind, wealth] through cleverness alone — fulfil your own duties rightly, and sustain others through service.",
+    meaning_hi: "बुद्धिमान व्यक्ति केवल शरीर, मन और धन के आधार पर नष्ट नहीं होता — वह अपने कर्तव्यों का पालन करता है और सेवा से दूसरों की रक्षा करता है।",
     source: "Arthaśāstra — Kautilya",
   },
   {
@@ -840,6 +869,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "यस्य नास्ति स्वयं प्रज्ञा, शास्त्रं तस्य करोति किम्।\nलोचनाभ्यां विहीनस्य, दर्पणः किं करिष्यति॥",
     transliteration: "Yasya nāsti svayaṃ prajñā, śāstraṃ tasya karoti kim,\nlocanābhyāṃ vihīnasya, darpaṇaḥ kiṃ kariṣyati.",
     meaning: "What can scripture do for one who has no wisdom of their own? What does a mirror do for someone who has no eyes?",
+    meaning_hi: "जिसके पास स्वयं का ज्ञान नहीं है, उसके लिए शास्त्र क्या कर सकते हैं? जिसके पास आँखें नहीं हैं, उसके लिए दर्पण क्या करेगा?",
     source: "Chanakya Nīti 7.14",
   },
   {
@@ -847,6 +877,7 @@ export const CHANAKYA_SHLOKAS: Shloka[] = [
     sanskrit: "दुर्जनः परिहर्तव्यो विद्ययाऽलंकृतोऽपि सन्।\nमणिना भूषितः सर्पः किमसौ न भयंकरः॥",
     transliteration: "Durjanaḥ parihartavyo vidyayā'laṃkṛto'pi san,\nmaṇinā bhūṣitaḥ sarpaḥ kim asau na bhayaṃkaraḥ.",
     meaning: "A wicked person should be avoided even if they are adorned with learning — is a serpent adorned with a jewel not still dangerous?",
+    meaning_hi: "दुष्ट व्यक्ति से बचना चाहिए, भले ही वह विद्या से सुशोभित हो — क्या मणि से सजा हुआ साँप खतरनाक नहीं होता?",
     source: "Chanakya Nīti 1.13",
   },
   {
@@ -922,4 +953,10 @@ export function getTodayShloka(timezone?: string): Shloka {
     return pool[dayOfYear % pool.length];
   }
   return SHLOKAS[dayOfYear % SHLOKAS.length];
+}
+
+
+export function getShlokaByLanguage(shloka: Shloka, language: string): string {
+  if (language === 'hi' && shloka.meaning_hi) return shloka.meaning_hi;
+  return shloka.meaning; // fallback to English
 }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, X, ChevronLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { MANTRAS, Mantra } from '@/data/mantras';
@@ -21,7 +21,6 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
   const isDark = resolvedTheme === 'dark';
 
   const [activeTab, setActiveTab] = useState<TabType>('all');
-  const [selectedMantra, setSelectedMantra] = useState<Mantra | null>(null);
 
   // Capitalize tradition for display
   const displayTradition = tradition.charAt(0).toUpperCase() + tradition.slice(1);
@@ -54,7 +53,7 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
       });
       return;
     }
-    setSelectedMantra(mantra);
+    router.push(`/bhakti/mala?mantraId=${mantra.id}`);
   };
 
   return (
@@ -111,9 +110,13 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
                 opacity: isLocked ? 0.6 : 1,
               }}
             >
-              {isLocked && (
+              {isLocked ? (
                 <div className="absolute bottom-4 right-4 text-[#C5A059]">
                   <Lock size={18} />
+                </div>
+              ) : (
+                <div className="absolute bottom-4 right-4" style={{ color: 'var(--text-dim)' }}>
+                  <ChevronRight size={18} />
                 </div>
               )}
               <h3 className="text-lg font-bold font-serif mb-1" style={{ color: 'var(--text-base)' }}>{mantra.nameEn}</h3>
@@ -139,72 +142,6 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
         })}
       </div>
 
-      {/* Detail Sheet */}
-      <AnimatePresence>
-        {selectedMantra && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedMantra(null)}
-              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-[110] rounded-t-3xl p-6 md:p-8 max-h-[90vh] overflow-y-auto"
-              style={{ backgroundColor: isDark ? '#0E0E0F' : '#FAF6EF', borderTop: `1px solid ${cardBorder}` }}
-            >
-              <button
-                onClick={() => setSelectedMantra(null)}
-                className="absolute top-6 right-6 w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}` }}
-              >
-                <X size={16} color="var(--text-dim)" />
-              </button>
-
-              <h2 className="text-2xl font-bold font-serif mb-6 pr-12" style={{ color: 'var(--text-base)' }}>
-                {selectedMantra.nameEn}
-              </h2>
-
-              <div className="space-y-6">
-                {selectedMantra.textSanskrit && (
-                  <div>
-                    <p className="text-2xl leading-relaxed text-center" style={{ color: 'var(--divine-text, #C5A059)', fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>
-                      {selectedMantra.textSanskrit}
-                    </p>
-                  </div>
-                )}
-                
-                <div className="text-center">
-                  <p className="italic text-sm leading-relaxed" style={{ color: 'rgba(197,160,89,0.8)' }}>
-                    {selectedMantra.textTransliteration}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl" style={{ backgroundColor: cardBg, border: `1px solid ${cardBorder}` }}>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-base)' }}>
-                    {selectedMantra.textMeaning}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <button
-                  onClick={() => router.push(`/bhakti/mala?mantraId=${selectedMantra.id}`)}
-                  className="w-full py-4 rounded-xl font-bold transition-transform active:scale-95 text-[#0E0E0F]"
-                  style={{ backgroundColor: '#C5A059', boxShadow: '0 4px 14px rgba(197,160,89,0.3)' }}
-                >
-                  Start Japa
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

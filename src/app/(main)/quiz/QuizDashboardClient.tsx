@@ -358,7 +358,7 @@ export default function QuizDashboardClient({
       </div>
 
       <div className="px-5 mb-6">
-        <div className={`${quizCardGlass} p-5`} style={{ background: 'var(--bg-primary, #0E0E0F)' }}>
+        <div className={`${quizCardGlass} p-5`} style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
           <div className="flex items-center justify-between mb-4">
             <div
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.14em]"
@@ -403,8 +403,8 @@ export default function QuizDashboardClient({
                 transition={{ duration: 0.25, ease: 'easeOut' }}
                 className="text-center py-10"
               >
-                <p className="text-sm font-semibold text-white/90">Unable to load today&apos;s quiz</p>
-                <p className="text-xs mt-2 text-white/50">Try again in a moment.</p>
+                <p className="text-sm font-semibold text-[var(--brand-ink)]">Unable to load today&apos;s quiz</p>
+                <p className="text-xs mt-2 text-[var(--brand-muted)]">Try again in a moment.</p>
               </motion.div>
             ) : completedThisSession && dailyQuiz ? (
               <motion.div
@@ -423,13 +423,13 @@ export default function QuizDashboardClient({
                     boxShadow: dailyScorePct >= 80 ? '0 0 32px rgba(197,160,89,0.14)' : 'none',
                   }}
                 >
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/50 mb-2">Today&apos;s Result</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[var(--brand-muted)] mb-2">Today&apos;s Result</p>
                   <CountUpScore value={dailyScorePct} color={resultTone.text} />
-                  <p className="text-sm font-semibold mt-2 text-white/90">
+                  <p className="text-sm font-semibold mt-2 text-[var(--brand-ink)]">
                     {dailyScorePct >= 80 ? 'Well held.' : dailyScorePct >= 50 ? 'Good grasp.' : 'One true correction matters.'}
                   </p>
                   {dailyQuiz.explanation ? (
-                    <p className="text-xs leading-relaxed mt-4 text-white/60">{dailyQuiz.explanation}</p>
+                    <p className="text-xs leading-relaxed mt-4 text-[var(--brand-muted)]">{dailyQuiz.explanation}</p>
                   ) : null}
                 </div>
               </motion.div>
@@ -445,15 +445,15 @@ export default function QuizDashboardClient({
                 <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style={{ border: '1.5px solid rgba(197,160,89,0.45)', background: 'rgba(197,160,89,0.10)' }}>
                   <Check size={26} style={{ color: '#C5A059' }} />
                 </div>
-                <h2 className="text-xl font-bold text-white/90">Quiz complete for today</h2>
+                <h2 className="text-xl font-bold text-[var(--brand-ink)]">Quiz complete for today</h2>
                 <p className="mt-2 text-sm" style={{ color: '#C5A059' }}>
                   {todayResponse ? `${todayResponse.is_correct ? '100' : '0'}%` : 'Sadhana recorded'}
                 </p>
-                <p className="mt-2 text-xs text-white/50">Next quiz unlocks at dawn 🌅</p>
-                <p className="mt-1 text-sm font-semibold text-white/80">{countdownLabel}</p>
+                <p className="mt-2 text-xs text-[var(--brand-muted)]">Next quiz unlocks at dawn 🌅</p>
+                <p className="mt-1 text-sm font-semibold text-[var(--brand-ink)]">{countdownLabel}</p>
                 <div className="mt-5 rounded-2xl p-4 text-left bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/50 mb-2">Today&apos;s Insight</p>
-                  <p className="text-sm text-white/85">{dailyQuiz.fact || dailyQuiz.explanation || dailyQuiz.question}</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[var(--brand-muted)] mb-2">Today&apos;s Insight</p>
+                  <p className="text-sm text-[var(--brand-ink)]/85">{dailyQuiz.fact || dailyQuiz.explanation || dailyQuiz.question}</p>
                 </div>
               </motion.div>
             ) : dailyQuiz ? (
@@ -465,11 +465,11 @@ export default function QuizDashboardClient({
                 transition={{ duration: 0.25, ease: 'easeOut' }}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] uppercase tracking-[0.14em] font-bold px-2 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-white/50">
+                  <span className="text-[10px] uppercase tracking-[0.14em] font-bold px-2 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[var(--brand-muted)]">
                     Question 1 of 1
                   </span>
                 </div>
-                <p className="text-xl font-medium leading-tight text-white/90 mb-5">{dailyQuiz.question}</p>
+                <p className="text-xl font-medium leading-tight text-[var(--brand-ink)] mb-5">{dailyQuiz.question}</p>
                 <div className="space-y-3">
                   {dailyQuiz.options.map((opt, idx) => {
                     const isChosen = selectedAnswer === idx;
@@ -498,7 +498,7 @@ export default function QuizDashboardClient({
                         whileTap={{ scale: selectedAnswer === null ? 0.985 : 1 }}
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border border-white/10 bg-black/10">
+                          <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border border-[var(--card-border)] bg-black/10">
                             {String.fromCharCode(65 + idx)}
                           </span>
                           <span className="flex-1 text-sm font-medium">{opt}</span>
@@ -515,8 +515,8 @@ export default function QuizDashboardClient({
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4 rounded-2xl p-4 bg-white/[0.03] border border-white/[0.06]"
                   >
-                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold text-white/50 mb-2">Explanation</p>
-                    <p className="text-sm leading-relaxed text-white/75">{dailyQuiz.explanation}</p>
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold text-[var(--brand-muted)] mb-2">Explanation</p>
+                    <p className="text-sm leading-relaxed text-[var(--brand-ink)]/75">{dailyQuiz.explanation}</p>
                   </motion.div>
                 ) : null}
               </motion.div>

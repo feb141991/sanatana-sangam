@@ -200,8 +200,16 @@ export async function GET(req: NextRequest) {
   const startTime = Date.now();
   const requestedLanguage = normalizeContentLanguage(rawLanguage);
   const langFallbacks = PRACTICE_FALLBACKS[requestedLanguage] ?? PRACTICE_FALLBACKS['en'];
-  const fallbackQuestions = (langFallbacks[topic]?.[tradition] ?? langFallbacks[topic]?.hindu ?? PRACTICE_FALLBACKS['en'][topic]?.hindu ?? []).slice(0, 5);
-  
+  // Try topic-exact match first, then any topic in same tradition, then base en/scriptures/hindu
+  const fallbackPool =
+    langFallbacks[topic]?.[tradition] ??
+    langFallbacks[topic]?.hindu ??
+    PRACTICE_FALLBACKS['en'][topic]?.hindu ??
+    PRACTICE_FALLBACKS['en'].scriptures?.hindu ??
+    PRACTICE_FALLBACKS['en'].philosophy?.hindu ??
+    [];
+  const fallbackQuestions = fallbackPool.slice(0, 5);
+
   const hasLangFallback = PRACTICE_FALLBACKS[requestedLanguage] && (langFallbacks[topic]?.[tradition] || langFallbacks[topic]?.hindu);
   const fallbackLanguage = hasLangFallback ? undefined : 'en';
 
@@ -215,7 +223,7 @@ export async function GET(req: NextRequest) {
         user: prompt,
         temperature: 0.4,
         reasoningEffort: 'none',
-        maxOutputTokens: 2200,
+        maxOutputTokens: 3500,
       },
       { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );
@@ -275,10 +283,7 @@ export async function GET(req: NextRequest) {
   } catch (err: any) {
     emitError('ai', err, 'P2', { route: '/api/quiz/practice', latency_ms: Date.now() - startTime });
     console.error('[quiz/practice] Provider generation failed:', err);
-    if (fallbackQuestions.length > 0) {
-      return NextResponse.json({ questions: fallbackQuestions, tradition, topic, difficulty, fallbackLanguage, ai: { provider: 'fallback', degraded: true } });
-    }
-    return NextResponse.json({ error: 'AI unavailable' }, { status: 503 });
+    return NextResponse.json({ questions: fallbackQuestions, tradition, topic, difficulty, fallbackLanguage, ai: { provider: 'fallback', degraded: true } });
   }
 }
 

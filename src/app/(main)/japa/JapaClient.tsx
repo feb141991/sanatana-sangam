@@ -24,6 +24,7 @@ import { triggerSadhanaShare } from '@/lib/share/trigger-share';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import PageIntro from '@/components/ui/PageIntro';
+import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
 const TRADITION_SYMBOLS: Record<string, string> = { hindu: '🕉️', sikh: 'ੴ', buddhist: '☸️', jain: '🤲' };
 import {
@@ -67,8 +68,8 @@ const SVG_W = 400;          // ↑ larger canvas so beads fill more screen
 const SVG_CX = SVG_W / 2;
 const SVG_CY = SVG_W / 2;
 const RING_R = 170;         // ↑ wider ring
-const BEAD_R = 10.5;        // ↑ significantly bigger beads (was 7.0)
-const SUMERU_R = 16;        // ↑ bigger sumeru bead (was 11)
+const BEAD_R = 13;        // ↑ significantly bigger beads        // ↑ significantly bigger beads (was 7.0)
+const SUMERU_R = 20;        // ↑ bigger sumeru bead        // ↑ bigger sumeru bead (was 11)
 const STORAGE_MALA   = 'shoonaya-japa-mala';
 const STORAGE_MANTRA = 'shoonaya-japa-mantra';
 const STORAGE_CUSTOM_MANTRA = 'shoonaya-japa-custom-mantra';
@@ -685,13 +686,17 @@ function MalaSVG({
               82% { opacity: 1; transform: translateY(0); }
               100% { opacity: 0; transform: translateY(-4px); }
             }
+            @keyframes current-pulse {
+              0% { opacity: 0.8; r: ${BEAD_R + 3}px; }
+              100% { opacity: 0; r: ${BEAD_R + 8}px; }
+            }
           `}
         </style>
         {/* ── Uncounted bead — 3-stop 3D gradient ── */}
         <radialGradient id={`bead-un-${malaId}`} cx="35%" cy="30%" r="65%">
           <stop offset="0%"   stopColor={malaSkin.beadColor} stopOpacity="1" />
-          <stop offset="55%"  stopColor={malaSkin.beadColor} stopOpacity="0.82" />
-          <stop offset="100%" stopColor={malaSkin.beadColor} stopOpacity="0.45" />
+          <stop offset="55%"  stopColor={malaSkin.beadColor} stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#888888" stopOpacity="0.15" />
         </radialGradient>
         {/* ── Counted bead — warm gold glow ── */}
         <radialGradient id={`bead-done-${malaId}`} cx="35%" cy="30%" r="65%">
@@ -712,6 +717,9 @@ function MalaSVG({
         {/* ── Drop shadow filter ── */}
         <filter id="bead-shadow" x="-40%" y="-40%" width="180%" height="180%">
           <feDropShadow dx="1.2" dy="1.8" stdDeviation="1.4" floodColor="#000" floodOpacity="0.45" />
+        </filter>
+        <filter id="bead-done-glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={malaSkin.glowColor} floodOpacity="0.70" />
         </filter>
         {/* ── Glow filter for current bead ── */}
         <filter id="bead-glow" x="-80%" y="-80%" width="260%" height="260%">
@@ -745,7 +753,7 @@ function MalaSVG({
           r={RING_R}
           fill="none"
           stroke={malaSkin.glowColor}
-          style={{ opacity: 0.18, animation: 'breath-halo 4s ease-in-out infinite' }}
+          style={{ opacity: 0.35, animation: 'breath-halo 4s ease-in-out infinite' }}
         />
       )}
       <circle
@@ -753,9 +761,9 @@ function MalaSVG({
         cy={SVG_CY}
         r={RING_R}
         fill="none"
-        stroke={malaSkin.threadColor}
-        strokeWidth="1.8"
-        style={{ transition: 'fill 0.5s ease, stroke 0.5s ease' }}
+        stroke={malaSkin.glowColor}
+        strokeWidth="2.2"
+        style={{ opacity: isPracticing ? 0.35 : 0.18, transition: 'fill 0.5s ease, stroke 0.5s ease, opacity 0.5s ease' }}
       />
       {/* Center ambient glow */}
       <circle cx={SVG_CX} cy={SVG_CY} r={RING_R - 22} fill={`url(#center-glow-${malaId})`} />
@@ -776,13 +784,21 @@ function MalaSVG({
 
         return (
           <g key={i}>
+            {/* Current bead pulse ring */}
+            {isCurrent && (
+              <circle
+                cx={pos.x} cy={pos.y}
+                fill="none" stroke={malaSkin.glowColor} strokeWidth="1.5"
+                style={{ animation: 'current-pulse 1.2s infinite' }}
+              />
+            )}
             {/* Shadow */}
             <circle cx={pos.x + 1.2} cy={pos.y + 1.8} r={r * 0.92} fill="black" opacity="0.38" />
             {/* Main bead */}
             <circle
               cx={pos.x} cy={pos.y} r={r}
               fill={fill}
-              filter={isCurrent ? 'url(#bead-glow)' : 'url(#bead-shadow)'}
+              filter={isCurrent ? 'url(#bead-glow)' : isDone ? 'url(#bead-done-glow)' : 'url(#bead-shadow)'}
               stroke={
                 isCurrent ? malaSkin.glowColor : malaSkin.beadBorder
               }
@@ -1060,7 +1076,7 @@ function TapBloom({
 
 // ── Screen 0: Ritual launcher ─────────────────────────────────────────────────
 function PracticeLauncherScreen({
-  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, lifetimeData, accentColor, onTargetChange, onStart, onCustomize, onBack,
+  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, lifetimeData, accentColor, onTargetChange, onStart, onCustomize, onBack, japaAlreadyDoneToday,
 }: {
   isDark: boolean;
   traditionLabel: string;
@@ -1074,6 +1090,7 @@ function PracticeLauncherScreen({
   onStart: () => void;
   onCustomize: () => void;
   onBack: () => void;
+  japaAlreadyDoneToday?: boolean;
 }) {
   const bg = isDark ? '#06060A' : '#F7F0E6';
   const card = isDark ? 'rgba(28,25,20,0.84)' : 'rgba(255,253,249,0.88)';
@@ -1090,6 +1107,24 @@ function PracticeLauncherScreen({
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
       <div className="relative mx-auto flex min-h-[calc(100dvh-5rem)] max-w-xl flex-col">
+        {japaAlreadyDoneToday && (
+          <div className="absolute top-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
+            <div className="text-[#160F08] px-4 py-2 rounded-full font-semibold text-sm flex items-center gap-2 shadow-[0_4px_24px_rgba(197,160,89,0.4)]" 
+                 style={{ 
+                   background: 'linear-gradient(90deg, #C5A059 0%, #E8D09A 50%, #C5A059 100%)',
+                   backgroundSize: '200% auto',
+                   animation: 'shimmer 2.5s linear infinite' 
+                 }}>
+              Japa complete for today 🙏
+            </div>
+            <style>{`
+              @keyframes shimmer {
+                0% { background-position: -200% center; }
+                100% { background-position: 200% center; }
+              }
+            `}</style>
+          </div>
+        )}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -right-24 top-10 h-64 w-64 rounded-full" style={{ background: `${amber}10` }} />
           <div className="absolute -left-20 bottom-10 h-52 w-52 rounded-full border" style={{ borderColor: `${amber}18` }} />
@@ -1711,6 +1746,7 @@ function JapaCompletionCeremony({
   onDone: () => void;
   onShare: () => void;
 }) {
+  const [showConfetti, setShowConfetti] = useState(true);
   const mins = Math.floor(totalTimeSeconds / 60);
   const secs = totalTimeSeconds % 60;
 
@@ -1732,6 +1768,20 @@ function JapaCompletionCeremony({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
+      <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+      {/* Golden ripple burst */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={`golden-ripple-${i}`}
+            className="absolute rounded-full border border-[color:var(--accent-color)]"
+            style={{ '--accent-color': accentColor } as any}
+            initial={{ scale: 0, opacity: 0.8 }}
+            animate={{ scale: 4, opacity: 0 }}
+            transition={{ delay: i * 0.15, duration: 1.2, ease: "easeOut" }}
+          />
+        ))}
+      </div>
       <style>{`
         @keyframes ceremony-ring-expand {
           0% { transform: scale(0.82); opacity: 0.65; }
@@ -2142,7 +2192,7 @@ interface Props {
 }
 
 export default function JapaClient({
-  userId, tradition, currentStreak, activeSymbolId = null, initialMantraId,
+  userId, tradition, currentStreak, japaAlreadyDoneToday, activeSymbolId = null, initialMantraId,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -2793,6 +2843,7 @@ export default function JapaClient({
           onStart={handleStartPractice}
           onCustomize={() => setScreen('chooseMala')}
           onBack={() => router.back()}
+          japaAlreadyDoneToday={japaAlreadyDoneToday}
         />
       )}
 
@@ -2876,19 +2927,30 @@ export default function JapaClient({
             </motion.button>
           )}
 
+          {/* ── Persistent X — always visible, not tied to controlsVisible ── */}
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowStopSheet(true); }}
+            className="w-11 h-11 rounded-full flex items-center justify-center border"
+            aria-label="Stop session"
+            style={{
+              position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 52px)', left: '20px',
+              zIndex: 20,
+              background: isDark ? 'rgba(8,6,4,0.50)' : 'rgba(255,253,248,0.65)',
+              borderColor: `${amber}30`,
+              backdropFilter: 'blur(18px)',
+              WebkitBackdropFilter: 'blur(18px)',
+            }}>
+            <X size={17} style={{ color: amber }} />
+          </button>
+
           <motion.div
             animate={{ opacity: controlsVisible ? 1 : 0 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}
           >
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
-            <button
-              onClick={() => setShowStopSheet(true)}
-              className="w-11 h-11 rounded-full flex items-center justify-center border"
-              aria-label="Stop session"
-              style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
-              <X size={17} style={{ color: amber }} />
-            </button>
+            {/* Spacer — X button is now always-visible above, keep layout balanced */}
+            <div className="w-11 h-11" />
             <button
               onClick={() => {
                 if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
@@ -3003,7 +3065,7 @@ export default function JapaClient({
               </div>
               <div className="text-right">
                 <span className="block text-[11px]" style={{ color: sub }}>Tap beads to count</span>
-                <span className="block text-[10px] text-white/30">{malaSkin.label} Mala</span>
+                <span className="block text-[10px]" style={{ color: sub }}>{malaSkin.label} Mala</span>
               </div>
             </div>
 
