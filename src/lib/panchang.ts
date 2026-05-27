@@ -428,7 +428,10 @@ export function calculatePanchang(
   const masaName = MASA_NAMES[masaIndex];
 
   const gregYear = date.getFullYear();
-  const samvatYear = gregYear + 57;
+  // Vikrama Samvat increases by 1 at Chaitra Shukla Pratipada (~late March/early April).
+  // We use April 1 as the approximate cutover — accurate to ±14 days for display purposes.
+  const samvatCutover = new Date(gregYear, 3, 1); // April 1 (month is 0-indexed)
+  const samvatYear = date >= samvatCutover ? gregYear + 57 : gregYear + 56;
   const samvatName = SAMVAT_NAMES[(samvatYear - 1) % 60] ?? '';
 
   return {
@@ -760,4 +763,97 @@ export function getTodaySpiritualPulses(
   }
 
   return pulses;
+}
+
+// ─── PanchangInfo / getTodayPanchang ─────────────────────────────────────────
+// Lightweight interface used by the daily-digest API route.  It intentionally
+// stays independent of the heavier `PanchangData` (which needs a lat/lon and
+// uses the astronomia library).  Jean Meeus low-precision formulas, ±1 tithi.
+
+export interface PanchangInfo {
+  tithi: number;          // 1–30 (lunar day, Shukla 1–15, Krishna 1–15)
+  tithiName: string;      // 'Pratipada', 'Dwitiya' … 'Purnima', 'Amavasya'
+  paksha: 'Shukla' | 'Krishna';
+  weekday: string;        // 'Monday' … 'Sunday'
+  weekdayDeity: string;   // 'Shiva', 'Mangal', 'Vishnu', 'Guru', 'Shukra', 'Shani', 'Surya'
+  isEkadashi: boolean;
+  isPurnima: boolean;
+  isAmavasya: boolean;
+  isPradosh: boolean;     // Trayodashi (13th tithi)
+  nakshatra?: string;     // optional, approximate
+}
+
+const _WEEKDAY_DEITIES: Record<string, string> = {
+  'Sunday':    'Surya',
+  'Monday':    'Shiva',
+  'Tuesday':   'Mangal',
+  'Wednesday': 'Vishnu',
+  'Thursday':  'Guru',
+  'Friday':    'Shukra',
+  'Saturday':  'Shani',
+};
+
+export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangInfo {
+  const date = (() => {
+    if (dateInput) return dateInput;
+    if (timezone) {
+      // Get the current local date-time in the user's timezone, then construct a
+      // Date object at that local wall-clock time so tithi is computed for their
+      // actual calendar day (not server-UTC which may already be tomorrow).
+      const localStr = new Intl.DateTimeFormat('en-CA', {
+        timeZone: timezone,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit',
+      }).format(new Date());
+      return new Date(localStr.replace(', ', 'T'));
+    }
+    return new Date();
+  })();
+
+  // Days since J2000.0
+  const jd = date.getTime() / 86_400_000 + 2_440_587.5;
+  const d  = jd - 2_451_545.0;
+
+  // Sun — mean longitude + equation of centre
+  const L_sun  = (280.466 + 0.985_647_4 * d) % 360;
+  const g_sun  = (357.528 + 0.985_600_3 * d) % 360;
+  const λ_sun  = ((L_sun + 1.915 * Math.sin(g_sun * Math.PI / 180) +
+                  0.02 * Math.sin(2 * g_sun * Math.PI / 180)) + 360) % 360;
+
+  // Moon — mean longitude + largest correction
+  const L_moon = (218.316 + 13.176_396 * d) % 360;
+  const M_moon = (134.963 + 13.064_993 * d) % 360;
+  const λ_moon = ((L_moon + 6.289 * Math.sin(M_moon * Math.PI / 180)) + 360) % 360;
+
+  // Tithi
+  const elongation  = ((λ_moon - λ_sun) + 360) % 360;
+  const tithiRaw    = Math.floor(elongation / 12) + 1;
+  const tithi       = Math.max(1, Math.min(30, tithiRaw));
+  const paksha: 'Shukla' | 'Krishna' = tithi <= 15 ? 'Shukla' : 'Krishna';
+  const tithiInPaksha = tithi <= 15 ? tithi : tithi - 15;
+
+  let tithiName: string;
+  if (tithiInPaksha === 15) {
+    tithiName = paksha === 'Shukla' ? 'Purnima' : 'Amavasya';
+  } else {
+    tithiName = TITHIS[tithiInPaksha - 1] ?? 'Pratipada';
+  }
+
+  // Weekday
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const weekday      = weekdays[date.getDay()] ?? 'Sunday';
+  const weekdayDeity = _WEEKDAY_DEITIES[weekday] ?? 'Shiva';
+
+  // Indicators
+  const isEkadashi = tithiInPaksha === 11;
+  const isPurnima  = tithi === 15;
+  const isAmavasya = tithi === 30;
+  const isPradosh  = tithiInPaksha === 13;
+
+  // Approximate nakshatra (27 divisions of the ecliptic)
+  const nakshatraIdx = Math.floor(((λ_moon % 360) + 360) % 360 / (360 / 27));
+  const nakshatra    = NAKSHATRAS[Math.max(0, Math.min(26, nakshatraIdx))];
+
+  return { tithi, tithiName, paksha, weekday, weekdayDeity,
+           isEkadashi, isPurnima, isAmavasya, isPradosh, nakshatra };
 }

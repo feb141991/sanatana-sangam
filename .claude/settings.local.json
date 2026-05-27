@@ -111,7 +111,10 @@
       "Bash(git commit -m 'fix: 6 home screen issues — vrat merge, click, mood chip, freeze dots, TTS *)",
       "Bash(git commit -m 'feat: hide Dharm Veer and Quiz cards once completed for the day *)",
       "Bash(ls -la /Users/)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(git restore *)",
+      "Bash(grep -rn \"validatePipelineTags\\\\|logValidationResult\" src/app/api/tts/ --include=\"*.ts\")",
+      "Bash(grep -rn \"No tags\\\\|validatePipelineTags\\\\|logValidation\" src/app/api/tts/ --include=\"*.ts\")"
     ]
   }
 }

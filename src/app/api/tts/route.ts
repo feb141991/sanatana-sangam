@@ -121,7 +121,9 @@ export async function POST(req: NextRequest) {
 
     // Validate and normalize incoming pipeline tags
     const tagValidation = validatePipelineTags(body.pipelineTags ?? body.tags, { context: 'tts_request' });
-    logValidationResult(tagValidation, 'TTS');
+    // Only log actual tag errors — the "no tags provided" info case is expected
+    // for callers that don't carry pipelineTags and is silenced here to reduce noise.
+    if (tagValidation.errors.length > 0) logValidationResult(tagValidation, 'TTS');
     const providedTags = tagValidation.tags;
 
     // Merge with defaults

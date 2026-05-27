@@ -143,22 +143,51 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
         </div>
 
         {step === 'need' && (
-          <div className="grid grid-cols-2 gap-3 pb-6">
-            {['calm', 'clarity', 'devotion', 'focus', 'comfort'].map(option => (
-              <button
-                key={option}
-                onClick={() => handleNeedSelect(option)}
-                className="p-4 rounded-2xl border text-sm font-medium motion-press capitalize"
-                style={{ 
-                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
-                  borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
-                  color: 'var(--text-cream)'
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3 pb-6">
+              {['calm', 'clarity', 'devotion', 'focus', 'comfort'].map(option => (
+                <button
+                  key={option}
+                  onClick={() => handleNeedSelect(option)}
+                  className="p-4 rounded-2xl border text-sm font-medium motion-press capitalize"
+                  style={{ 
+                    background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
+                    borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
+                    color: 'var(--text-cream)'
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={async () => {
+                fetch('/api/mood/checkin', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    before_mood: mood,
+                    source_surface: 'home_dashboard',
+                  }),
+                }).catch(console.error);
+                onClose();
+                router.push('/home');
+              }}
+              style={{
+                width: '100%',
+                padding: '0.65rem',
+                borderRadius: '0.75rem',
+                fontSize: '0.82rem',
+                color: 'var(--text-muted-warm)',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'center',
+              }}
+            >
+              Just set my mood · go home →
+            </button>
+          </>
         )}
 
         {step === 'time' && (

@@ -85,7 +85,7 @@ function resolveMaxTokens(
   requestedTokens: number | undefined,
   effort: 'none' | 'low' | 'medium' | 'high' | undefined
 ): number {
-  const base = requestedTokens ?? 800;
+  const base = Math.max(requestedTokens ?? 800, 400);
   switch (effort) {
     case 'none':
       return base;

@@ -61,6 +61,7 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import DailyDigestCard from '@/components/home/DailyDigestCard';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
 import SetSankalpSheet from '@/components/home/SetSankalpSheet';
@@ -735,7 +736,10 @@ function CalendarModal({
   onDateSelect?: (date: Date) => void;
 }) {
   const prefersReducedMotion = useReducedMotion();
-  const todayStr = new Date().toISOString().split('T')[0];
+  const browserTz = typeof Intl !== 'undefined'
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+    : 'Asia/Kolkata';
+  const todayStr = localSpiritualDate(browserTz, 4);
   const upcoming = festivals.filter(f => f.date >= todayStr);
   const past     = festivals.filter(f => f.date <  todayStr);
 
@@ -1093,7 +1097,8 @@ export default function HomeDashboard({
 
   useEffect(() => {
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const todayStr = localSpiritualDate(browserTz, 4);
       let nextState: DailyDharmaStackState = {
         ...EMPTY_DAILY_DHARMA_STACK_STATE,
         quizDone: quizDoneToday,
@@ -1250,7 +1255,8 @@ export default function HomeDashboard({
 
   useEffect(() => {
     const lastDarshanDate = localStorage.getItem('last_darshan_date');
-    const todayStr = new Date().toISOString().split('T')[0];
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const todayStr = localSpiritualDate(browserTz, 4);
 
     if (lastDarshanDate !== todayStr) {
       // Show prompt after a short delay instead of full screen
@@ -1264,13 +1270,15 @@ export default function HomeDashboard({
   const handleOpenDarshan = () => {
     setDarshanOpen(true);
     setDarshanPromptVisible(false);
-    const todayStr = new Date().toISOString().split('T')[0];
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const todayStr = localSpiritualDate(browserTz, 4);
     localStorage.setItem('last_darshan_date', todayStr);
   };
 
   const handleDismissPrompt = () => {
     setDarshanPromptVisible(false);
-    const todayStr = new Date().toISOString().split('T')[0];
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const todayStr = localSpiritualDate(browserTz, 4);
     localStorage.setItem('last_darshan_date', todayStr);
   };
   // Personalised content
@@ -1284,7 +1292,8 @@ export default function HomeDashboard({
     if (typeof window === 'undefined') return null;
     try {
       const cacheDate = localStorage.getItem(PERSONAL_CACHE_DATE_KEY);
-      const today     = new Date().toISOString().split('T')[0];
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const today = localSpiritualDate(browserTz, 4);
       if (cacheDate === today) {
         const raw = localStorage.getItem(PERSONAL_CACHE_KEY);
         return raw ? JSON.parse(raw) : null;
@@ -1363,7 +1372,7 @@ export default function HomeDashboard({
           .catch(() => {});
       })
       .catch(() => setQuiz('error'));
-  }, [tradition, appLanguage, todayStr]);
+  }, [tradition, appLanguage, todayStr, QUIZ_ANSWERED_KEY, QUIZ_CACHE_KEY]);
 
   async function handleQuizAnswer(idx: number) {
     if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
@@ -2774,6 +2783,11 @@ export default function HomeDashboard({
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* ── Daily Dharmic Digest ────────────────────────────────────────── */}
+        <div className="px-4 mb-3">
+          <DailyDigestCard isDark={isDark} />
+        </div>
 
         {/* ── Do You Know? Daily Quiz Spark Teaser — hidden once answered ── */}
         <AnimatePresence>

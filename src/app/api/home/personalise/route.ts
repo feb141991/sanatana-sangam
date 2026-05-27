@@ -94,7 +94,10 @@ export async function GET() {
     const seeking   = (profile?.seeking as string[])?.join(', ') ?? '';
     const name      = profile?.full_name ?? profile?.username ?? 'Seeker';
 
-    const dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+    const dayOfWeek = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      timeZone: tzRow?.timezone ?? 'Asia/Kolkata',
+    }).format(new Date());
     const startTime = Date.now();
 
     const prompt = `You are a warm, wise spiritual guide. Generate a personalised daily practice suggestion for ${name}.
@@ -163,7 +166,8 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
     }
 
     if (!raw) {
-      const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
+      const dayNum = parseInt(today.split('-')[2] ?? '1', 10);
+      const fallback = FALLBACK_SHLOKAS[dayNum % FALLBACK_SHLOKAS.length];
       return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
     }
     const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
@@ -173,7 +177,8 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
     }
 
     if (!parsed?.suggestion) {
-      const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
+      const dayNum = parseInt(today.split('-')[2] ?? '1', 10);
+      const fallback = FALLBACK_SHLOKAS[dayNum % FALLBACK_SHLOKAS.length];
       parsed = { suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice' };
     }
 
