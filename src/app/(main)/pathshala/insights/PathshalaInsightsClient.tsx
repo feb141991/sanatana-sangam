@@ -24,6 +24,8 @@ interface Props {
     unique_verses_attempted: number;
     certified_count: number;
   } | null;
+  communityRank?: number;
+  totalReciters?: number;
 }
 
 // Path metadata derived from central SEED_PATHS
@@ -148,7 +150,7 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function PathshalaInsightsClient({ progress, tradition, shrutiStats }: Props) {
+export default function PathshalaInsightsClient({ progress, tradition, shrutiStats, communityRank, totalReciters }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
@@ -244,27 +246,51 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
             detail={stats.active.length > 0 ? `${stats.active.length} path${stats.active.length !== 1 ? 's' : ''} in progress. Continue your studies daily.` : 'No active paths — start a new study journey.'} />
         </div>
 
-        {shrutiStats && shrutiStats.total_recordings > 0 && (
+        {shrutiStats && shrutiStats.scored_count >= 1 && (
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1"
               style={{ color: `${amber}80` }}>
-              🎤 Voice Recitation (Shruti)
+              🎙️ Shruti Recitation
             </p>
             <div className="grid grid-cols-2 gap-3">
               <StatCard
-                label="Avg Shruti Score"
-                value={shrutiStats.avg_overall_score
-                  ? `${Math.round(shrutiStats.avg_overall_score * 20)}/100`  // convert 1-5 scale to 0-100
-                  : '—'}
-                icon="sparkles" sub={sub} isDark={isDark} amber={amber}
-                detail="Your average pronunciation and fluency score across all recitations."
+                label="Shruti Score"
+                value={`${Math.round((shrutiStats.avg_overall_score ?? 0) * 20)} / 100`}
+                icon="sparkles"
+                sub={`${shrutiStats.scored_count} recording${shrutiStats.scored_count !== 1 ? 's' : ''} scored`}
+                isDark={isDark}
+                amber={amber}
+                detail="Your Shruti score averages pronunciation (uccharan), rhythm (laya), sandhi accuracy, and fluency across all your scored recitations."
               />
+
+              <StatCard
+                label="Community Rank"
+                value={communityRank && communityRank > 0 ? `#${communityRank}` : '—'}
+                icon="star"
+                sub={`of ${totalReciters ?? 0} active reciters`}
+                isDark={isDark}
+                amber={amber}
+                detail="Rank is based on average score across all reciters with 3+ recordings."
+              />
+
               <StatCard
                 label="Verses Attempted"
                 value={String(shrutiStats.unique_verses_attempted)}
-                icon="book" sub={sub} isDark={isDark} amber={amber}
+                icon="book"
+                sub={`${shrutiStats.certified_count} certified`}
+                isDark={isDark}
+                amber={amber}
                 detail={`${shrutiStats.total_recordings} total recordings across ${shrutiStats.unique_verses_attempted} verses.`}
               />
+            </div>
+            <div className="mt-3">
+              <button
+                onClick={() => router.push('/scoreboard?tab=shruti')}
+                className="w-full text-xs font-semibold py-2 rounded-xl transition-opacity hover:opacity-80"
+                style={{ backgroundColor: `${amber}20`, color: amber }}
+              >
+                See Shruti Leaderboard →
+              </button>
             </div>
           </div>
         )}

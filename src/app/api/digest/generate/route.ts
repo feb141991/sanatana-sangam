@@ -44,27 +44,32 @@ function buildPrompt(
   level: string,
   panchang: ReturnType<typeof getTodayPanchang>,
 ): string {
-  const { tithi, tithiName, paksha, weekday, weekdayDeity, isEkadashi } = panchang;
-  return `Generate a daily dharmic digest for a ${tradition} practitioner (${level}).
-Today's panchang: tithi=${tithiName}, paksha=${paksha}, weekday=${weekday}, deity of the day=${weekdayDeity}. ${isEkadashi ? 'Today is Ekadashi.' : ''}
+  const { tithi, tithiName, paksha, weekday, weekdayDeity, isEkadashi, isPurnima, isAmavasya, nakshatra } = panchang;
+  return `You are a precise dharmic scholar. Generate a daily digest for a ${tradition} practitioner (${level}).
 
-Return JSON only:
+PANCHANG TODAY:
+- Tithi: ${tithiName} (${paksha} Paksha, day ${tithi} of 30)
+- Nakshatra: ${nakshatra ?? 'unknown'}
+- Weekday: ${weekday} — deity: ${weekdayDeity}
+${isEkadashi ? '- ⚠️ TODAY IS EKADASHI — the most important fasting tithi of the fortnight' : ''}
+${isPurnima ? '- ⚠️ TODAY IS PURNIMA — full moon' : ''}
+${isAmavasya ? '- ⚠️ TODAY IS AMAVASYA — new moon, ancestor remembrance' : ''}
+
+REQUIREMENTS (follow exactly):
+1. "headline": Name the specific tithi + ONE concrete significance. Max 8 words. Example: "Tritiya — Goddess Gauri's Auspicious Third Tithi"
+2. "body": 2 sentences max. Sentence 1: What THIS tithi specifically means in ${tradition} tradition — name the deity, story, or vrata if one exists. Sentence 2: One concrete practice for today.
+3. "fact": One surprising fact that most people don't know about ${weekdayDeity} or ${tithiName}. Must be specific — no generic statements about "the lunar cycle" or "spiritual energy."
+4. "action": Route to a relevant section (/pathshala, /bhakti/mala, /japa, /bhakti/stotram, /panchang, /vrat).
+
+FORBIDDEN phrases: "lunar cycle carries", "spiritual energy", "ancient wisdom", "connect with", "unique qualities", "sacred time", "dharmic journey".
+
+Return ONLY this JSON:
 {
-  "headline": "<tithi + key significance, max 8 words>",
-  "body": "<2-3 sentences — what this day means, a relevant myth or practice>",
-  "fact": "<One surprising lesser-known fact about this tithi or deity>",
-  "action": {
-    "label": "<CTA>",
-    "href": "<internal route>",
-    "type": "link" | "primary"
-  },
-  "panchang": {
-    "tithi": ${tithi},
-    "tithiName": "${tithiName}",
-    "paksha": "${paksha}",
-    "weekday": "${weekday}",
-    "weekdayDeity": "${weekdayDeity}"
-  }
+  "headline": "...",
+  "body": "...",
+  "fact": "...",
+  "action": { "label": "...", "href": "/...", "type": "primary" },
+  "panchang": { "tithi": ${tithi}, "tithiName": "${tithiName}", "paksha": "${paksha}", "weekday": "${weekday}", "weekdayDeity": "${weekdayDeity}" }
 }`;
 }
 
@@ -73,7 +78,15 @@ function buildFallback(panchang: ReturnType<typeof getTodayPanchang>): DigestPay
   return {
     headline: `${tithiName} of ${paksha} Paksha`,
     body: `Today is ${tithiName} during the ${paksha} phase of the moon, falling on a ${weekday}. It is a perfect day to connect with Lord ${weekdayDeity} and reflect on your dharmic journey.`,
-    fact: 'Each day of the lunar cycle carries unique qualities that support self-reflection and spiritual discipline.',
+    fact: `${weekdayDeity} is worshipped on ${weekday}s — ${
+  weekdayDeity === 'Shiva' ? "Mondays are sacred to Shiva because the Shiva Purana says the moon (Soma) rests on Shiva's matted hair" :
+  weekdayDeity === 'Surya' ? "Sunday worship of Surya with Arghya (water offering at sunrise) is said to dispel eye ailments in the Aditya Hridayam" :
+  weekdayDeity === 'Vishnu' ? "Wednesday (Budhavara) is linked to Vishnu in many regional traditions — the Vishnu Sahasranama is traditionally recited today" :
+  weekdayDeity === 'Mangal' ? "Tuesday is sacred to Hanuman in the Vaishnava tradition and to Kartikeya in the Shaiva tradition" :
+  weekdayDeity === 'Guru' ? "Thursdays honour the Guru lineage — many traditions begin new learning only on Thursday (Guruvara)" :
+  weekdayDeity === 'Shukra' ? "Friday is auspicious for Lakshmi and Santoshi Mata — Fridays see the most temple visits in India" :
+  "Saturday is sacred to Shani (Saturn) — the Shani Stotra is recited to neutralise difficult planetary transits"
+}.`,
     action: { label: 'Go to Pathshala', href: '/pathshala', type: 'primary' },
     panchang: { tithi, tithiName, paksha, weekday, weekdayDeity },
   };

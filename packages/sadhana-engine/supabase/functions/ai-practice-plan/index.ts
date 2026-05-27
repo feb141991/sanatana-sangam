@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
       suggested_text: 'gita',
     }));
 
-    if (!geminiKey) {
+    if (!sarvamKey) {
       return new Response(JSON.stringify({
         plan:            fallbackPlan,
         week_intention:  `A week of steady ${tradition} sadhana. Current streak: ${currentStreak} days.`,

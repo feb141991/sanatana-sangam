@@ -43,13 +43,7 @@ export function detectConfigDrift(): ConfigDriftWarning[] {
     });
   }
 
-  if (primaryProvider === 'gemini-hosted' && !process.env.GEMINI_API_KEY) {
-    warnings.push({
-      severity: 'P1',
-      issue: 'GEMINI_API_KEY is missing, but PRAMANA_INFERENCE_PROVIDER is set to gemini-hosted.',
-      recommendation: 'Provide the Gemini API key.'
-    });
-  }
+
 
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || !process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
     warnings.push({

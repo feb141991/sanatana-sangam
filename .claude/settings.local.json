@@ -114,7 +114,10 @@
       "Bash(git rm *)",
       "Bash(git restore *)",
       "Bash(grep -rn \"validatePipelineTags\\\\|logValidationResult\" src/app/api/tts/ --include=\"*.ts\")",
-      "Bash(grep -rn \"No tags\\\\|validatePipelineTags\\\\|logValidation\" src/app/api/tts/ --include=\"*.ts\")"
+      "Bash(grep -rn \"No tags\\\\|validatePipelineTags\\\\|logValidation\" src/app/api/tts/ --include=\"*.ts\")",
+      "Bash(git commit -m 'fix\\(panchang\\): weekday always returning Sunday — en-CA AM/PM Invalid Date bug *)",
+      "Bash(grep -c \"bodyHi: \\\\`\\\\`\" \"/Users/Business\\(C\\)/Sanatan Sangam/Shoonaya/src/lib/katha-library.ts\")",
+      "Bash(grep -n \"bodyHi: \\\\`[^\\\\`]\" \"/Users/Business\\(C\\)/Sanatan Sangam/Shoonaya/src/lib/katha-library.ts\")"
     ]
   }
 }

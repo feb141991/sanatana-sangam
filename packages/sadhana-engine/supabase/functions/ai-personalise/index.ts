@@ -17,7 +17,7 @@
 // Deploy:
 //   supabase functions deploy ai-personalise
 // Secrets needed:
-//   supabase secrets set GEMINI_API_KEY=AIza...
+//   supabase secrets set SARVAM_API_KEY=AIza...
 // ============================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -153,7 +153,7 @@ serve(async (req: Request) => {
     const shlokaRef = `Gita ${shloka.chapter}.${shloka.verse}`;
 
     // ── 10. Call Gemini ──
-    const content = await callGemini({
+    const content = await callSarvam({
       profileSummary,
       shlokaRef,
       shlokaText: shloka.translation,
@@ -343,7 +343,7 @@ function computeAstroPanchang(date: Date = new Date()): {
 
 // ── Gemini call ──
 
-interface GeminiInput {
+interface SarvamInput {
   profileSummary: string;
   shlokaRef: string;
   shlokaText: string;
@@ -354,13 +354,13 @@ interface GeminiInput {
   nudgeStyle: string;
 }
 
-async function callGemini(
-  input: GeminiInput
+async function callSarvam(
+  input: SarvamInput
 ): Promise<{ greeting: string; shloka_context: string; practice_suggestion: string; nudge?: string }> {
 
   const { panchang, shlokaRef, shlokaText, currentStreak, nudgeStyle } = input;
 
-  if (!geminiKey) {
+  if (!sarvamKey) {
     return {
       greeting: `Jai Shri Krishna. ${panchang.vrata_emoji} Today is ${panchang.vrata || panchang.tithi}. May your practice be blessed.`,
       shloka_context: shlokaText,
@@ -405,28 +405,6 @@ Generate a JSON object (pure JSON, no markdown) with exactly these keys:
 }`;
 
       const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
-  if (!resp.ok) {
-    console.error('Gemini error:', await resp.text());
-    return {
-      greeting: `${panchang.vrata_emoji} Jai Shri Krishna. Today is ${panchang.vrata || panchang.tithi}.`,
-      shloka_context: shlokaText,
-      practice_suggestion: `Begin with 4 rounds of your mantra, then read ${shlokaRef} with quiet contemplation.`,
-    };
-  }
-
-  const json = await resp.json();
-  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return {
-      greeting: `Jai Shri Krishna. Today is ${panchang.tithi}.`,
-      shloka_context: shlokaText,
-      practice_suggestion: 'Begin with your mantra practice at this auspicious hour.',
-    };
-  }
-}
 
 function errorResponse(message: string, status: number) {
   return new Response(JSON.stringify({ error: message }), {

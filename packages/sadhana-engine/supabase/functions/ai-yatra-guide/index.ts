@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       generated_at: new Date().toISOString(),
     };
 
-    if (!geminiKey) {
+    if (!sarvamKey) {
       return new Response(JSON.stringify(fallbackGuide), {
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       });

@@ -494,6 +494,8 @@ interface Props {
   transliterationLanguage?: string;
   showTransliteration?: boolean;
   isPro: boolean;
+  shrutiStats?: any;
+  communityRank?: number;
 }
 
 // ── Active enrollment record ───────────────────────────────────────────────────
@@ -518,6 +520,8 @@ export default function PathshalaClient({
   transliterationLanguage,
   showTransliteration = true,
   isPro,
+  shrutiStats,
+  communityRank,
 }: Props) {
   const router        = useRouter();
   const searchParams  = useSearchParams();
@@ -1297,7 +1301,7 @@ export default function PathshalaClient({
               </div>
 
               {/* CTA row */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <motion.button
                   whileTap={{ scale: 0.96 }}
                   onClick={() => scriptureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -1314,6 +1318,15 @@ export default function PathshalaClient({
                 >
                   <GraduationCap size={13} /> Paths
                 </motion.button>
+                
+                {shrutiStats && shrutiStats.scored_count >= 3 && communityRank !== undefined && (
+                  <Link
+                    href="/pathshala/insights"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-[10px] font-bold text-amber-600 dark:text-amber-400 transition-all hover:bg-amber-500/15"
+                  >
+                    <Mic size={10} /> Your Shruti: {shrutiStats.avg_overall_score}/100 · #{communityRank} community
+                  </Link>
+                )}
               </div>
             </div>
           </motion.section>

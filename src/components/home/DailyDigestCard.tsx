@@ -46,11 +46,10 @@ function DigestSkeleton({ isDark }: { isDark: boolean }) {
       <div className="w-32 h-4 rounded-full animate-pulse" style={{ background: base }} />
       {/* Headline skeleton */}
       <div className="w-3/4 h-5 rounded-lg animate-pulse" style={{ background: base }} />
-      {/* Body skeleton — 3 lines */}
+      {/* Body skeleton — 2 lines */}
       <div className="space-y-1.5">
         <div className="w-full h-3.5 rounded animate-pulse" style={{ background: base }} />
         <div className="w-full h-3.5 rounded animate-pulse" style={{ background: base }} />
-        <div className="w-5/6 h-3.5 rounded animate-pulse" style={{ background: base }} />
       </div>
     </div>
   );
@@ -119,6 +118,9 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
 
   const { tithiName, paksha } = data.panchang;
 
+  // Ensure AI-generated href is an internal route — never an external URL or blank
+  const safeHref = data.action?.href?.startsWith('/') ? data.action.href : '/home';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -126,6 +128,7 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
       transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
       className="rounded-[1.45rem] overflow-hidden"
       style={{
+        position: 'relative',
         background: cardBg,
         border: `1px solid ${cardBorder}`,
         // Soft radial glow in top-right corner — pandit warmth
@@ -143,7 +146,7 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
         }}
       />
 
-      <div className="relative px-4 pt-4 pb-5 space-y-3">
+      <div className="relative px-4 pt-3 pb-3 space-y-3">
 
         {/* ── Header: lunar icon + tithi chip ─────────────────────────────── */}
         <div className="flex items-center gap-2">
@@ -175,7 +178,7 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
           className="leading-snug"
           style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '1.05rem',
+            fontSize: '0.95rem',
             fontWeight: 700,
             color: headlineColor,
             letterSpacing: '-0.01em',
@@ -186,15 +189,15 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
 
         {/* ── Body ─────────────────────────────────────────────────────────── */}
         <p
-          className="text-[13px] leading-[1.65]"
-          style={{ color: bodyColor }}
+          className="text-[13px] leading-[1.55]"
+          style={{ color: bodyColor, WebkitLineClamp: 3, overflow: 'hidden', display: '-webkit-box', WebkitBoxOrient: 'vertical' }}
         >
           {data.body}
         </p>
 
         {/* ── Fact — blockquote style ───────────────────────────────────────── */}
         <div
-          className="rounded-r-xl pl-3.5 pr-3 py-2.5 text-[12px] leading-[1.6]"
+          className="rounded-r-xl pl-3.5 pr-3 py-2 text-[12px] leading-[1.6]"
           style={{
             borderLeft: `2.5px solid ${factBorderColor}`,
             background: factBg,
@@ -212,8 +215,8 @@ export default function DailyDigestCard({ isDark }: DailyDigestCardProps) {
 
         {/* ── CTA ──────────────────────────────────────────────────────────── */}
         <Link
-          href={data.action.href}
-          className="flex items-center justify-center gap-1.5 w-full rounded-xl py-2.5 text-[12px] font-semibold no-underline motion-press"
+          href={safeHref}
+          className="flex items-center justify-center gap-1.5 w-full rounded-xl py-2 text-[12px] font-semibold no-underline motion-press"
           style={{
             background: ctaBg,
             border: `1px solid ${ctaBorder}`,

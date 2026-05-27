@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
 
     let greeting    = `Hari Om. ${panchangLine}. Begin your sadhana with devotion.`;
 
-    if (geminiKey) {
+    if (sarvamKey) {
       const prompt = `You are a Vedic spiritual guide. Write a warm, personalised morning greeting (2-3 sentences) for a devotee starting their nitya karma (daily ritual) right now.
 
 Devotee profile:

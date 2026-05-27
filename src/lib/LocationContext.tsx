@@ -19,6 +19,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { API, LOCATION } from '@/lib/config';
+import PermissionSheet from '@/components/ui/PermissionSheet';
 
 export interface Coords {
   lat: number;
@@ -33,6 +34,9 @@ interface LocationState {
   loading:     boolean;
   error:       string | null;
   refresh:     () => void;
+  showLocationSheet: boolean;
+  confirmLocationRequest: () => void;
+  dismissLocationSheet: () => void;
 }
 
 const LocationContext = createContext<LocationState>({
@@ -43,6 +47,9 @@ const LocationContext = createContext<LocationState>({
   loading:     false,
   error:       null,
   refresh:     () => {},
+  showLocationSheet: false,
+  confirmLocationRequest: () => {},
+  dismissLocationSheet: () => {},
 });
 
 export function useLocation() {
@@ -108,6 +115,7 @@ export function LocationProvider({
   const [countryCode, setCountryCode] = useState<string>(savedCountryCode);
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
 
   const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile';
 
@@ -151,9 +159,14 @@ export function LocationProvider({
     const shouldSkipForCooldown = lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS;
     if (shouldSkipForCooldown) return;
 
-    const run = () => {
+    const run = async () => {
       window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
-      requestLocation();
+      const existingPerm = await navigator.permissions.query({ name: 'geolocation' }).catch(() => null);
+      if (existingPerm?.state === 'granted') {
+        requestLocation();
+      } else if (existingPerm?.state === 'prompt') {
+        setShowLocationSheet(true);
+      }
     };
 
     const browserWindow = window as Window & typeof globalThis & {
@@ -180,11 +193,27 @@ export function LocationProvider({
     };
   }, [requestLocation, savedLat, savedLon, shouldAutoLocate]);
 
+  const confirmLocationRequest = useCallback(() => {
+    setShowLocationSheet(false);
+    requestLocation();
+  }, [requestLocation]);
+
+  const dismissLocationSheet = useCallback(() => {
+    setShowLocationSheet(false);
+  }, []);
+
   return (
     <LocationContext.Provider value={{
       coords, city, country, countryCode, loading, error, refresh: requestLocation,
+      showLocationSheet, confirmLocationRequest, dismissLocationSheet
     }}>
       {children}
+      <PermissionSheet
+        type="location"
+        open={showLocationSheet}
+        onAllow={confirmLocationRequest}
+        onDeny={dismissLocationSheet}
+      />
     </LocationContext.Provider>
   );
 }

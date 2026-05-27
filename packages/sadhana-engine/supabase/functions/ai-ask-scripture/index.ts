@@ -13,7 +13,7 @@
 // Deploy:
 //   supabase functions deploy ai-ask-scripture
 // Secrets needed:
-//   supabase secrets set GEMINI_API_KEY=AIza...
+//   supabase secrets set SARVAM_API_KEY=AIza...
 // ============================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -146,7 +146,7 @@ async function generateExplanation(
   verses: Array<{ text_id: string; chapter: number; verse: number; translation: string; transliteration: string }>,
   profile: Record<string, unknown> | null
 ): Promise<string> {
-  if (!geminiKey) return verses.map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}: ${v.translation}`).join('\n\n');
+  if (!sarvamKey) return verses.map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}: ${v.translation}`).join('\n\n');
 
   const tradition = profile?.tradition ?? 'general';
   const depth = profile?.content_depth ?? 'intermediate';
@@ -176,7 +176,7 @@ Write in a warm, scholarly tone — like a trusted guru speaking directly to the
 
       const text = await generateText(prompt, { temperature: 0.4, maxTokens: 400 });
   if (!resp.ok) {
-    console.error('Gemini error:', await resp.text());
+    console.error('Sarvam error:', await resp.text());
     return verses[0]?.translation ?? '';
   }
 

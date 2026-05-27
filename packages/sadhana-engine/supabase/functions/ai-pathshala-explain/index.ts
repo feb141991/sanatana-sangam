@@ -209,7 +209,7 @@ Structure your response as a JSON object:
 ${langInstruct}
 Return ONLY the JSON object.`;
 
-          const geminiText = await generateText(prompt, { temperature: 0.5, maxTokens: 1200 });
+          const sarvamText = await generateText(prompt, { temperature: 0.5, maxTokens: 1200 });
             const jsonMatch   = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
       const parsed      = jsonMatch ? (() => { try { return JSON.parse(jsonMatch[1]); } catch { return null; } })() : null;
 

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
   Crown,
+  Mic,
   Search,
   Share2,
   Star,
@@ -33,7 +34,22 @@ type LeaderboardUser = {
   active_symbol_id?: string | null;
 };
 
-type LeaderboardPeriod = 'all' | 'weekly' | 'monthly';
+type ShrutiLeaderboardUser = {
+  id: string;
+  full_name: string | null;
+  username: string;
+  avatar_url: string | null;
+  tradition: string | null;
+  is_pro: boolean;
+  active_symbol_id?: string | null;
+  avg_score_100: number;
+  total_recordings: number;
+  scored_count: number;
+  unique_verses_attempted: number;
+  certified_count: number;
+};
+
+type LeaderboardPeriod = 'all' | 'weekly' | 'monthly' | 'shruti';
 
 function getScoreForPeriod(user: LeaderboardUser, period: LeaderboardPeriod) {
   if (period === 'weekly') return user.weekly_seva ?? 0;
@@ -46,16 +62,46 @@ function getListRelicBorder(activeSymbolId: string | null | undefined) {
   return frame?.border ?? '1px solid rgba(197,160,89,0.18)';
 }
 
+function scoreColor(score: number): string {
+  if (score >= 80) return '#22c55e';
+  if (score >= 60) return '#f59e0b';
+  return 'rgba(148, 163, 184, 0.75)';
+}
+
+function getTraditionEmoji(tradition: string | null | undefined): string {
+  switch (tradition) {
+    case 'hindu':
+      return '🕉️';
+    case 'sikh':
+      return '☬';
+    case 'buddhist':
+      return '☸️';
+    case 'jain':
+      return '🤲';
+    default:
+      return '';
+  }
+}
+
+function getRankTone(index: number): string {
+  if (index === 0) return 'text-yellow-500';
+  if (index === 1) return 'text-slate-400';
+  if (index === 2) return 'text-amber-700 dark:text-amber-500';
+  return 'text-[var(--text-dim)]';
+}
+
 export default function ScoreboardClient({
   initialUsers,
   weeklyUsers,
   monthlyUsers,
+  shrutiUsers,
   currentUserId,
   currentUserTradition,
 }: {
   initialUsers: LeaderboardUser[];
   weeklyUsers: LeaderboardUser[];
   monthlyUsers: LeaderboardUser[];
+  shrutiUsers: ShrutiLeaderboardUser[];
   currentUserId?: string;
   currentUserTradition?: string | null;
 }) {
@@ -64,12 +110,41 @@ export default function ScoreboardClient({
   const [searchQuery, setSearchQuery] = useState('');
   const [communityInsight, setCommunityInsight] = useState<string | null>(null);
   const [insightLoading, setInsightLoading] = useState(true);
+  const [shrutiCache, setShrutiCache] = useState<ShrutiLeaderboardUser[] | null>(null);
+  const [shrutiLoading, setShrutiLoading] = useState(false);
 
   const users = period === 'weekly'
     ? weeklyUsers
     : period === 'monthly'
       ? monthlyUsers
       : initialUsers;
+
+  useEffect(() => {
+    if (period !== 'shruti' || shrutiCache) return;
+    if (shrutiUsers.length > 0) {
+      setShrutiCache(shrutiUsers);
+      return;
+    }
+
+    let cancelled = false;
+    async function fetchShruti() {
+      setShrutiLoading(true);
+      try {
+        const res = await fetch('/api/scoreboard/shruti');
+        const data = await res.json();
+        if (!cancelled) {
+          setShrutiCache(Array.isArray(data?.users) ? data.users : []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch shruti scoreboard:', err);
+        if (!cancelled) setShrutiCache([]);
+      } finally {
+        if (!cancelled) setShrutiLoading(false);
+      }
+    }
+    fetchShruti();
+    return () => { cancelled = true; };
+  }, [period, shrutiCache, shrutiUsers]);
 
   useEffect(() => {
     async function fetchInsight() {
@@ -98,8 +173,24 @@ export default function ScoreboardClient({
     });
   }, [filter, searchQuery, users, currentUserTradition]);
 
+  const currentShrutiUsers = useMemo(
+    () => shrutiCache ?? (period === 'shruti' ? shrutiUsers : []),
+    [period, shrutiCache, shrutiUsers],
+  );
+  const filteredShrutiUsers = useMemo(() => {
+    return currentShrutiUsers.filter((user) => {
+      const matchesSearch =
+        user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = filter === 'global' || (!!currentUserTradition && user.tradition === currentUserTradition);
+      return Boolean(matchesSearch) && matchesFilter;
+    });
+  }, [currentShrutiUsers, currentUserTradition, filter, searchQuery]);
+
   const currentUserData = users.find((u) => u.id === currentUserId);
   const currentUserRank = users.findIndex((u) => u.id === currentUserId) + 1;
+  const currentUserShrutiData = currentShrutiUsers.find((u) => u.id === currentUserId);
+  const currentUserShrutiRank = currentShrutiUsers.findIndex((u) => u.id === currentUserId) + 1;
 
   const handleShare = () => {
     if (!currentUserData) return;
@@ -114,6 +205,8 @@ export default function ScoreboardClient({
   const topThree = filteredUsers.slice(0, 3);
   const others = filteredUsers.slice(3);
   const getRelic = (activeSymbolId?: string | null) => SACRED_RELICS.find((relic) => relic.id === activeSymbolId) ?? null;
+  const shrutiCurrentData = currentUserShrutiData;
+  const shrutiCurrentRank = currentUserShrutiRank;
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 selection:bg-[#C5A059]/30">
@@ -152,7 +245,7 @@ export default function ScoreboardClient({
           ) : null}
         </div>
 
-        {currentUserData && (
+        {period !== 'shruti' && currentUserData && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -172,6 +265,25 @@ export default function ScoreboardClient({
           </motion.div>
         )}
 
+        {period === 'shruti' && shrutiCurrentData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-[#C5A059]/10 via-[#C5A059]/5 to-transparent border border-[#C5A059]/20 flex items-center justify-between"
+          >
+            <div>
+              <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-widest mb-1">Your Shruti Standing</p>
+              <h2 className="text-lg font-serif theme-ink">Ranked #{shrutiCurrentRank}</h2>
+              <p className="text-xs text-[var(--text-muted-warm)] mt-1">{shrutiCurrentData.avg_score_100}/100 average</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold theme-ink">{shrutiCurrentData.scored_count} scored</p>
+              <p className="text-[10px] text-[var(--text-muted-warm)]">{shrutiCurrentData.unique_verses_attempted} verses</p>
+            </div>
+          </motion.div>
+        )}
+
+        {period !== 'shruti' && (
         <div className="flex items-end justify-center gap-4 mb-12 pt-8">
           {topThree[1] && (
             <div className="flex flex-col items-center">
@@ -308,6 +420,7 @@ export default function ScoreboardClient({
             </div>
           )}
         </div>
+        )}
 
         <div className="space-y-4 mb-6">
           <div className="flex bg-[var(--surface-raised)] rounded-2xl p-1 border border-black/5 dark:border-white/5 shadow-sm">
@@ -315,6 +428,7 @@ export default function ScoreboardClient({
               { value: 'all' as const, label: 'All Time' },
               { value: 'weekly' as const, label: 'This Week' },
               { value: 'monthly' as const, label: 'This Month' },
+              { value: 'shruti' as const, label: '🎙 Shruti' },
             ].map((tab) => (
               <button
                 key={tab.value}
@@ -334,6 +448,14 @@ export default function ScoreboardClient({
               </button>
             ))}
           </div>
+
+          {period === 'shruti' && (
+            <div className="px-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[rgba(197,160,89,0.55)]">
+                Rank based on 3+ scored recitations
+              </p>
+            </div>
+          )}
 
           <div className="flex bg-[var(--surface-raised)] rounded-2xl p-1 border border-black/5 dark:border-white/5 shadow-sm">
             <button
@@ -371,7 +493,115 @@ export default function ScoreboardClient({
             transition={{ duration: 0.22 }}
             className="space-y-2"
           >
-            {others.map((user, idx) => {
+            {period === 'shruti' && shrutiLoading && (
+              <div className="rounded-2xl border border-[rgba(197,160,89,0.16)] bg-[var(--surface-soft)] p-6 text-center text-sm text-[var(--text-muted-warm)]">
+                Loading Shruti ranks…
+              </div>
+            )}
+
+            {period === 'shruti' && !shrutiLoading && filteredShrutiUsers.length === 0 && (
+              <div className="rounded-2xl border border-[rgba(197,160,89,0.16)] bg-[var(--surface-soft)] p-6 text-center">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[rgba(197,160,89,0.10)]">
+                  <Mic size={18} className="text-[#C5A059]" />
+                </div>
+                <p className="text-sm font-medium theme-ink">No Shruti scores yet. Complete 3+ recitations to appear here.</p>
+                <Link
+                  href="/pathshala"
+                  className="mt-4 inline-flex items-center rounded-xl bg-[var(--surface-raised)] px-4 py-2 text-xs font-bold theme-ink border border-black/5 dark:border-white/5 hover:border-[#C5A059]/30 transition-colors"
+                >
+                  Go to Pathshala
+                </Link>
+              </div>
+            )}
+
+            {period === 'shruti' && !shrutiLoading && filteredShrutiUsers.map((user, idx) => {
+              const relic = getRelic(user.active_symbol_id);
+              const highlightCurrent = user.id === currentUserId;
+              const barColor = scoreColor(user.avg_score_100);
+              const traditionEmoji = getTraditionEmoji(user.tradition);
+              const targetUrl = highlightCurrent ? '/pathshala/insights' : `/profile/${user.username}`;
+              return (
+                <Link key={user.id} href={targetUrl} className="block">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.03 }}
+                  className={`flex items-center gap-3 rounded-2xl border p-3 transition-all hover:border-[#C5A059]/30 ${
+                    highlightCurrent
+                      ? 'border-[#C5A059]/40 bg-gradient-to-r from-[#C5A059]/10 via-[#C5A059]/5 to-transparent'
+                      : 'border-black/[0.03] bg-[var(--surface-soft)]'
+                  }`}
+                >
+                  <div className={`w-8 text-center text-xs font-bold ${getRankTone(idx)}`}>
+                    #{idx + 1}
+                  </div>
+
+                  <div className="relative">
+                    <div
+                      className="relative h-10 w-10 overflow-hidden rounded-full bg-white/10 shadow-inner"
+                      style={{
+                        border: getListRelicBorder(user.active_symbol_id),
+                        transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                      }}
+                    >
+                      {user.avatar_url ? (
+                        <Image src={user.avatar_url} alt={user.username} fill className="object-cover" />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-[10px] font-bold text-[var(--text-dim)]">
+                          {getInitials(user.full_name || user.username)}
+                        </div>
+                      )}
+                    </div>
+                    {user.is_pro && (
+                      <div className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-yellow-500">
+                        <Star size={8} className="text-white" fill="currentColor" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <p className="truncate text-sm font-bold theme-ink">{user.full_name || user.username}</p>
+                      <span className="shrink-0 text-[11px] opacity-80">{traditionEmoji}</span>
+                      {relic && (
+                        <Image
+                          src={relic.imageUrl}
+                          alt={relic.name}
+                          title={relic.name}
+                          width={14}
+                          height={14}
+                          unoptimized
+                          className="rounded-full opacity-80"
+                        />
+                      )}
+                    </div>
+                    <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted-warm)]">
+                      @{user.username}
+                    </p>
+                    <div className="mt-1 flex items-center gap-3">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/8">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${Math.max(0, Math.min(100, user.avg_score_100))}%`, background: barColor }}
+                        />
+                      </div>
+                      <span className="shrink-0 text-sm font-bold text-[#C5A059]">{user.avg_score_100} / 100</span>
+                    </div>
+                    <p className="mt-1 text-[10px] text-[var(--text-muted-warm)]">
+                      {user.scored_count} recordings · {user.unique_verses_attempted} verses
+                    </p>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#C5A059]">Avg Shruti Score</p>
+                    <p className="mt-1 text-[10px] text-[var(--text-muted-warm)]">{user.certified_count} certified</p>
+                  </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
+
+            {period !== 'shruti' && others.map((user, idx) => {
               const tier = getTierFromScore(user.seva_score || 0);
               const isHighTier = tier.key === 'rishi' || tier.key === 'mahatma';
               

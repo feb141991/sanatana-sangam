@@ -23,6 +23,7 @@ import { usePathshala, useSadhana } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import PermissionSheet from '@/components/ui/PermissionSheet';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
@@ -214,6 +215,7 @@ export default function ReciteClient({
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showMicSheet, setShowMicSheet] = useState(false);
 
   // TTS state
   const [isSpeaking,  setIsSpeaking]  = useState(false);
@@ -521,7 +523,7 @@ export default function ReciteClient({
       toast.error(err?.message?.slice(0, 80) ?? labels.scoringFailed);
       setRecordState('error');
     }
-  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson, labels.practiceRecordedOffline, labels.scoringFailed, labels.shrutiScore]);
+  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson, labels.scoringFailed, labels.shrutiScore]);
 
   // Timer
   useEffect(() => {
@@ -576,10 +578,7 @@ export default function ReciteClient({
   }
 
   // ── Shruti recording ─────────────────────────────────────────────────────────
-  const startRecording = useCallback(async () => {
-    if (!verse) return;
-    setLastResult(null);
-
+  const performMicRequestAndStart = useCallback(async () => {
     try {
       const permGranted = await nativeAudio.requestPermission();
       if (!permGranted) {
@@ -597,7 +596,19 @@ export default function ReciteClient({
       toast.error(`${labels.micAccessError}: ` + (err?.message ?? 'Unknown error'));
       setRecordState('idle');
     }
-  }, [verse, nativeAudio, labels.micAccessDenied, labels.micAccessError]);
+  }, [nativeAudio, labels.micAccessDenied, labels.micAccessError]);
+
+  const startRecording = useCallback(async () => {
+    if (!verse) return;
+    setLastResult(null);
+
+    const existingPerm = await navigator.permissions.query({ name: 'microphone' as PermissionName }).catch(() => null);
+    if (existingPerm?.state === 'granted') {
+      await performMicRequestAndStart();
+    } else {
+      setShowMicSheet(true);
+    }
+  }, [verse, performMicRequestAndStart]);
 
   const stopRecording = useCallback(async () => {
     const blob = await nativeAudio.stop();
@@ -638,6 +649,12 @@ export default function ReciteClient({
   return (
     <div className="min-h-screen pb-28 flex flex-col">
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
+      <PermissionSheet
+        type="microphone"
+        open={showMicSheet}
+        onAllow={async () => { setShowMicSheet(false); await performMicRequestAndStart(); }}
+        onDeny={() => setShowMicSheet(false)}
+      />
 
       {/* Header */}
       <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3 flex flex-col gap-2">

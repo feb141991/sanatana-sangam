@@ -8,7 +8,6 @@ import { emitError } from '@/lib/monitoring/events';
 // App-facing inference adapter
 // ---------------------------------------------------------------------------
 
-let _cachedProviders: PramanaInferenceProvider[] | null = null;
 
 /**
  * Reads provider configuration from environment variables.
@@ -17,7 +16,7 @@ let _cachedProviders: PramanaInferenceProvider[] | null = null;
 function readEnvConfig() {
   return {
     activeProvider: process.env.PRAMANA_INFERENCE_PROVIDER?.trim() || 'sarvam-hosted',
-    geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
+
     sarvamApiKey: process.env.SARVAM_API_KEY?.trim() || undefined,
     sarvamModel: process.env.PRAMANA_SARVAM_MODEL?.trim() || undefined,
     selfHostedUrl: process.env.PRAMANA_SELF_HOSTED_URL?.trim() || undefined,
@@ -27,7 +26,6 @@ function readEnvConfig() {
 }
 
 type InferenceProviderOverride =
-  | 'gemini-hosted'
   | 'sarvam-hosted'
   | 'self-hosted';
 
@@ -39,19 +37,7 @@ type InferenceProviderOverride =
 export function getInferenceProviders(
   providerOverride?: InferenceProviderOverride
 ): PramanaInferenceProvider[] {
-  if (providerOverride === 'sarvam-hosted') {
-    // Sarvam-only — no Gemini fallback
-    const providers = selectProviders({ ...readEnvConfig(), activeProvider: 'sarvam-hosted' });
-    return providers.filter(p => p.info.id === 'sarvam-hosted');
-  }
-  if (providerOverride) {
-    return selectProviders({ ...readEnvConfig(), activeProvider: providerOverride });
-  }
-
-  if (!_cachedProviders) {
-    _cachedProviders = selectProviders(readEnvConfig());
-  }
-  return _cachedProviders;
+  return selectProviders({ ...readEnvConfig(), ...(providerOverride ? { activeProvider: providerOverride } : {}) });
 }
 
 /**
@@ -65,7 +51,7 @@ export function getInferenceProvider(): PramanaInferenceProvider {
  * Reset the cached provider (useful for testing or config reload).
  */
 export function resetInferenceProvider(): void {
-  _cachedProviders = null;
+  // no-op for backward compatibility
 }
 
 /**

@@ -32,11 +32,26 @@ export default async function PathshalaInsightsPage() {
       .maybeSingle(),
   ]);
 
+  const { count: betterCount } = await supabase
+    .from('pathshala_recitation_stats')
+    .select('*', { count: 'exact', head: true })
+    .gt('avg_overall_score', shrutiStats?.avg_overall_score ?? 0)
+    .gte('scored_count', 3);
+
+  const communityRank = (betterCount ?? 0) + 1;
+
+  const { count: totalReciters } = await supabase
+    .from('pathshala_recitation_stats')
+    .select('*', { count: 'exact', head: true })
+    .gte('scored_count', 3);
+
   return (
     <PathshalaInsightsClient
       progress={progress ?? []}
       tradition={profile?.tradition ?? 'hindu'}
       shrutiStats={shrutiStats}
+      communityRank={communityRank}
+      totalReciters={totalReciters ?? 0}
     />
   );
 }

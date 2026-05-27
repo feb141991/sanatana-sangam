@@ -197,7 +197,7 @@ async function generateKulNudge(opts: {
   const { kulName, kulEmoji, membersCount, totalJapa, tradition, deity } = opts;
 
   // Fallback if no Gemini key
-  if (!geminiKey) {
+  if (!sarvamKey) {
     const count = membersCount === 1 ? '1 member' : `${membersCount} members`;
     return {
       message: `${count} of ${kulName} already practiced today${totalJapa > 0 ? ` (${totalJapa.toLocaleString()} japa)` : ''}. Join them.`,
@@ -220,24 +220,7 @@ Return JSON only:
   "call_to_action": "Button text (max 25 characters)"
 }`;
 
-      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 120 });
-  if (!resp.ok) {
-    return {
-      message: `${membersCount} member(s) of ${kulName} have practiced today. Come join them.`,
-      call_to_action: 'Join my kul',
-    };
-  }
-
-  const json = await resp.json();
-  try {
-    return JSON.parse(json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}');
-  } catch {
-    return {
-      message: `${membersCount} member(s) of ${kulName} have already practiced today.`,
-      call_to_action: 'Begin my practice',
-    };
-  }
-}
+      const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
 
 // ── OneSignal push ──
 

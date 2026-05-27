@@ -50,7 +50,7 @@ export function getSadhanaEngine(): SadhanaEngine {
   _sadhana = createSadhanaEngine({
     supabaseUrl,
     supabaseAnonKey,
-    aiProvider:               'gemini',
+    aiProvider:               'sarvam',
     enableOfflineQueue:       true,
     enablePushNotifications:  false,
     debug:                    process.env.NODE_ENV === 'development',

@@ -116,7 +116,7 @@ function resolveMaxTokens(
  * - Per-request reasoning effort via prompt.reasoningEffort → thinking param
  * - Automatic single retry with reasoning disabled on no-final-answer condition
  * - Typed errors (PramanaNoFinalAnswerError / PramanaOutputTruncatedError)
- *   so inference.ts can classify and fall through to Gemini
+ *   so inference.ts can classify and fall through to the next provider
  */
 export class SarvamProvider implements PramanaInferenceProvider {
   readonly info: InferenceProviderInfo = {
@@ -175,12 +175,11 @@ export class SarvamProvider implements PramanaInferenceProvider {
           );
           return retryResult;
         } catch (retryErr) {
-          // Retry also failed — re-throw the original typed error so
-          // inference.ts can fall through to the Gemini fallback.
+          // Retry also failed — re-throw so inference.ts can fall through to the next available provider.
           console.warn(
             `[${this.info.id}] retry_failed: ` +
             `second attempt also failed to produce a complete final answer. ` +
-            `Falling through to next provider.`
+            `Re-throwing for caller to handle failover.`
           );
           throw err;
         }
@@ -236,8 +235,9 @@ export class SarvamProvider implements PramanaInferenceProvider {
     // ── Build payload ──────────────────────────────────────────────────────
     const thinking = buildThinkingParam(effort);
     const maxTokens = effortOverride === 'none'
-      // Retry path: use the raw requested budget (no reasoning headroom needed)
-      ? (request.prompt.maxOutputTokens ?? 800)
+      // Retry path: no reasoning headroom needed, but still apply the 400-token floor
+      // so a route that passed a tiny budget doesn't truncate on the retry either.
+      ? Math.max(request.prompt.maxOutputTokens ?? 800, 400)
       : resolveMaxTokens(request.prompt.maxOutputTokens, effort);
 
     const payload: Record<string, unknown> = {

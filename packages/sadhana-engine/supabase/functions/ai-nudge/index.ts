@@ -28,7 +28,7 @@
 // Deploy:
 //   supabase functions deploy ai-nudge
 // Secrets needed:
-//   supabase secrets set GEMINI_API_KEY=AIza...
+//   supabase secrets set SARVAM_API_KEY=AIza...
 //   supabase secrets set ONESIGNAL_APP_ID=your-app-id
 //   supabase secrets set ONESIGNAL_REST_API_KEY=your-rest-api-key
 // ============================================================
@@ -342,7 +342,7 @@ async function generateStreakRecovery(
     unknown: 'Gentle and inviting. Keep it brief.',
   };
 
-  if (!geminiKey) {
+  if (!sarvamKey) {
     const fallbacks: Record<string, { message: string; call_to_action: string }> = {
       gentle: {
         message: daysMissed === 1
@@ -383,20 +383,7 @@ Write a push notification (JSON, no markdown):
 
 Important: Keep it brief — this is a mobile push notification, not an essay.`;
 
-      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 150 });
-  if (!resp.ok) {
-    return { message: "Your practice is waiting. Come back today.", call_to_action: "Open Sangam" };
-  }
-
-  const json = await resp.json();
-  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { message: "Your practice is waiting.", call_to_action: "Open Sangam" };
-  }
-}
+      const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
 
 // ── Vrata reminder ──
 
@@ -406,7 +393,7 @@ async function generateVrataReminder(
   tithi: string
 ): Promise<{ message: string; call_to_action: string }> {
 
-  if (!geminiKey) {
+  if (!sarvamKey) {
     return {
       message: `Tomorrow is ${vrataName} (${tithi}). Prepare yourself for this auspicious fast.`,
       call_to_action: `See ${vrataName} guide`,

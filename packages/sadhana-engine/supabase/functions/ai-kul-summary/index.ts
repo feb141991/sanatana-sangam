@@ -192,7 +192,7 @@ async function generateWeeklyDigest(opts: {
   const participationPct = Math.round((activeMembers / totalMembers) * 100);
 
   // Fallback
-  if (!geminiKey) {
+  if (!sarvamKey) {
     return {
       kul_message: `This week ${activeMembers}/${totalMembers} members practiced. Combined japa: ${totalJapa.toLocaleString()}. Top streak: ${topStreak} days. Keep going! 🙏`,
       member_notification: `${kulEmoji} ${kulName}: ${activeMembers} of ${totalMembers} members practiced this week. Total japa: ${totalJapa.toLocaleString()}.`,
@@ -223,24 +223,7 @@ Generate two things (JSON, no markdown):
   "member_notification": "A short push notification body (max 100 chars) teasing the weekly summary. Should make members want to open the app and see full stats."
 }`;
 
-      const text = await generateText(prompt, { temperature: 0.7, maxTokens: 300 });
-  if (!resp.ok) {
-    return {
-      kul_message: `${activeMembers} of ${totalMembers} members practiced this week with ${totalJapa.toLocaleString()} total japa. ${topStreak > 0 ? `Best streak: ${topStreak} days.` : ''} Keep going! 🙏`,
-      member_notification: `${kulEmoji} ${kulName}: ${activeMembers}/${totalMembers} members practiced this week.`,
-    };
-  }
-
-  const json = await resp.json();
-  try {
-    return JSON.parse(json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}');
-  } catch {
-    return {
-      kul_message: `This week ${activeMembers}/${totalMembers} members practiced. Combined japa: ${totalJapa.toLocaleString()}. 🙏`,
-      member_notification: `${kulEmoji} ${kulName} weekly summary is ready.`,
-    };
-  }
-}
+      const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
 
 // ── Week key helper: "2026-W15" format ──
 function getWeekKey(): string {

@@ -1,5 +1,4 @@
 import type { PramanaInferenceProvider } from '@sangam/pramana-core';
-import { HostedGeminiProvider } from './providers/hosted-gemini';
 import { SelfHostedProvider } from './providers/self-hosted';
 import { SarvamProvider } from './providers/sarvam';
 
@@ -11,17 +10,15 @@ import { SarvamProvider } from './providers/sarvam';
  * Configuration for the Pramana inference provider selector.
  *
  * At the app layer, resolve from environment variables:
- *   PRAMANA_INFERENCE_PROVIDER  — "gemini-hosted" (default) | "self-hosted"
+ *   PRAMANA_INFERENCE_PROVIDER  — "sarvam-hosted" (default) | "self-hosted"
  *   PRAMANA_SELF_HOSTED_URL     — base URL of the private runtime
  *   PRAMANA_SELF_HOSTED_MODEL   — model identifier for the private runtime
  *   PRAMANA_SELF_HOSTED_API_KEY — optional auth token for the private runtime
- *   GEMINI_API_KEY              — API key for the hosted Gemini provider
+ *   SARVAM_API_KEY              — API key for the hosted Sarvam provider
  */
 export interface ProviderSelectorConfig {
-  /** Active provider identifier. Default: "gemini-hosted". */
+  /** Active provider identifier. Default: "sarvam-hosted". */
   activeProvider: string;
-  /** API key for hosted Gemini provider. */
-  geminiApiKey?: string;
   /** API key for hosted Sarvam provider. */
   sarvamApiKey?: string;
   /** Hosted Sarvam model override. */
@@ -42,11 +39,6 @@ export function buildProviderRegistry(
   config: ProviderSelectorConfig
 ): Map<string, PramanaInferenceProvider> {
   const registry = new Map<string, PramanaInferenceProvider>();
-
-  // Always register the hosted Gemini provider
-  registry.set('gemini-hosted', new HostedGeminiProvider({
-    apiKey: config.geminiApiKey,
-  }));
 
   // Register the Sarvam hosted provider
   registry.set('sarvam-hosted', new SarvamProvider({
@@ -77,7 +69,7 @@ export function buildProviderRegistry(
  *
  * Resolution order:
  *   1. Requested provider ID from config.activeProvider
- *   2. Fallback to "gemini-hosted" if the requested provider is unavailable
+ *   2. Fallback to "sarvam-hosted" if the requested provider is unavailable
  */
 export function selectProvider(
   config: ProviderSelectorConfig
@@ -109,13 +101,11 @@ export function selectProviders(
 
   addProvider(config.activeProvider);
 
-  const fallbackOrder = config.activeProvider === 'gemini-hosted'
-    ? ['sarvam-hosted', 'self-hosted']
-    : config.activeProvider === 'sarvam-hosted'
-      ? ['gemini-hosted', 'self-hosted']
-      : config.activeProvider === 'self-hosted'
-        ? ['sarvam-hosted', 'gemini-hosted']
-        : ['gemini-hosted', 'sarvam-hosted', 'self-hosted'];
+  const fallbackOrder = config.activeProvider === 'sarvam-hosted'
+    ? ['self-hosted']
+    : config.activeProvider === 'self-hosted'
+      ? ['sarvam-hosted']
+      : ['sarvam-hosted', 'self-hosted'];
 
   for (const id of fallbackOrder) {
     addProvider(id);
@@ -125,7 +115,7 @@ export function selectProviders(
     throw new Error(
       `No available Pramana inference provider. ` +
       `Requested: "${config.activeProvider}". ` +
-      `Ensure geminiApiKey or selfHostedUrl is configured.`
+      `Ensure SARVAM_API_KEY or selfHostedUrl is configured.`
     );
   }
 

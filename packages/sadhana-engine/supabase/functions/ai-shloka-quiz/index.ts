@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'verse not found' }), { status: 404 });
     }
 
-    if (!geminiKey) {
+    if (!sarvamKey) {
       return new Response(JSON.stringify(buildFallbackQuiz(chunk, mode as QuizMode)), {
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       });

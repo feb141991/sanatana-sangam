@@ -74,14 +74,14 @@ export async function GET() {
         : `Key body is only ${keyBodyLen} chars — may be truncated (should be ~1700+)`,
   });
 
-  // ── 5. GEMINI_API_KEY ────────────────────────────────────────────────────────
-  const geminiKey = process.env.GEMINI_API_KEY ?? '';
+  // ── 5. SARVAM_API_KEY ────────────────────────────────────────────────────────
+  const sarvamKey = process.env.SARVAM_API_KEY ?? '';
   checks.push({
-    name:   'GEMINI_API_KEY',
-    passed: geminiKey.length > 10,
-    detail: geminiKey.length > 10
-      ? `Set — ${geminiKey.slice(0, 4)}…${geminiKey.slice(-4)} (${geminiKey.length} chars)`
-      : 'NOT SET — AI features will use fallback content',
+    name:   'SARVAM_API_KEY',
+    passed: sarvamKey.length > 10,
+    detail: sarvamKey.length > 10
+      ? `Set — ${sarvamKey.slice(0, 4)}…${sarvamKey.slice(-4)} (${sarvamKey.length} chars)`
+      : 'NOT SET — Sarvam TTS and AI inference will be unavailable',
   });
 
   const allPassed = checks.every(c => c.passed);

@@ -42,23 +42,40 @@ const fontVars = [
 
 export const metadata: Metadata = {
   title:       'Shoonaya — Find your infinite.',
-  description: 'Ancient wisdom for seekers. Hindu, Sikh, Buddhist, and Jain dharma breathe together in one sacred space — community, scripture, and daily practice.',
-  keywords:    ['Hindu', 'Sikh', 'Buddhist', 'Jain', 'dharma', 'community', 'mandali', 'bhakti', 'śūnya', 'Shoonaya', 'ancient wisdom', 'seekers'],
+  description: 'Ancient wisdom for modern seekers. Daily Panchang, Sanskrit recitation with AI scoring (Shruti), Japa, Pathshala study, and Kul family spaces — for Hindu, Sikh, Buddhist, and Jain traditions.',
+  keywords:    ['panchang', 'japa', 'mantra', 'Sanskrit', 'bhakti', 'dharma', 'Hindu', 'Sikh', 'Buddhist', 'Jain', 'meditation', 'sadhana', 'kirtan', 'Vedanta', 'spiritual'],
   manifest:    '/manifest.json',
   icons: {
-    icon:  '/icons/icon-192.png',
-    apple: '/icons/icon-192.png',
+    icon:  '/icons/icon-192x192.png',
+    apple: '/icons/icon-192x192.png',
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Shoonaya',
+    startupImage: [
+      { url: '/splash/splash-1170x2532.png', media: '(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)' },
+      { url: '/splash/splash-1290x2796.png', media: '(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)' },
+      { url: '/splash/splash-1125x2436.png', media: '(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)' },
+      { url: '/splash/splash-828x1792.png', media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)' },
+    ],
   },
   openGraph: {
-    title:       'Shoonaya',
-    description: 'Find your infinite. Ancient wisdom for seekers — Hindu · Sikh · Buddhist · Jain',
-    type:        'website',
-    locale:      'en_GB',
+    title: 'Shoonaya — Find Your Infinite',
+    description: 'Daily Panchang · Sanskrit Recitation · Japa · Pathshala · Kul',
+    siteName: 'Shoonaya',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Shoonaya' }],
+    type: 'website',
+    locale: 'en_GB',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Shoonaya — Find Your Infinite',
+    description: 'Ancient wisdom for modern seekers across all dharmic traditions.',
+    images: ['/og-image.png'],
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
 };
 

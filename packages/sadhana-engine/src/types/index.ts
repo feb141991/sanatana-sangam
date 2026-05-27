@@ -215,7 +215,7 @@ export interface ScriptureSearchResult {
 export interface SadhanaEngineConfig {
   supabaseUrl: string;
   supabaseAnonKey: string;
-  aiProvider: 'gemini' | 'claude' | 'ollama';
+  aiProvider: 'sarvam' | 'claude' | 'ollama';
   aiApiKey?: string;
   aiBaseUrl?: string; // for ollama: 'http://localhost:11434'
   enableOfflineQueue: boolean;

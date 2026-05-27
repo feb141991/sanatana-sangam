@@ -75,6 +75,24 @@ type PracticeQuestion = {
 
 const PRACTICE_FALLBACKS: Record<string, Record<string, Record<string, PracticeQuestion[]>>> = {
   en: {
+    deities: {
+      hindu: [
+        { question: 'Which god is known as the Destroyer in the Hindu Trinity?', options: ['Shiva', 'Brahma', 'Vishnu', 'Indra'], answerIndex: 0, explanation: 'In the Trimurti, Shiva holds the role of dissolution and regeneration. His tandava dance symbolizes cosmic cycles.', fact: 'Shiva\'s thousand names include Mahakala — master of time.', source: 'Shiva Purana' },
+        { question: 'What is the vehicle (vahana) of Goddess Saraswati?', options: ['Swan', 'Tiger', 'Lion', 'Peacock'], answerIndex: 0, explanation: 'The swan (Hamsa) represents discrimination between the real and unreal, reflecting Saraswati\'s role as goddess of wisdom.', fact: 'The swan can supposedly separate milk from water — a metaphor for discernment.', source: 'Devi Bhagavata Purana' },
+        { question: 'Which avatar of Vishnu lifted the earth from the cosmic ocean?', options: ['Varaha', 'Matsya', 'Kurma', 'Narasimha'], answerIndex: 0, explanation: 'Varaha, the boar avatar, dived to the bottom of the cosmic ocean and rescued the earth on his tusks from the demon Hiranyaksha.', fact: 'The Varaha Purana records the philosophical dialogue that followed this rescue.', source: 'Bhagavata Purana' },
+        { question: 'Which goddess is worshipped on Navratri\'s ninth day?', options: ['Siddhidatri', 'Durga', 'Kali', 'Lakshmi'], answerIndex: 0, explanation: 'Siddhidatri, giver of all siddhis (powers), is honoured on the ninth night. She is shown on a lotus.', fact: 'Even Shiva is said to have attained his siddhis by worshipping her.', source: 'Devi Mahatmya' },
+        { question: 'What does the conch (shankha) held by Vishnu represent?', options: ['The primordial sound of Om', 'Victory in battle', 'The ocean of creation', 'Wealth and fortune'], answerIndex: 0, explanation: 'The Panchajanya shankha blown by Vishnu represents the primordial sound from which creation emerged.', fact: 'Krishna\'s conch Panchajanya was retrieved from the demon Panchajana at the bottom of the ocean.', source: 'Bhagavata Purana' },
+      ]
+    },
+    festivals: {
+      hindu: [
+        { question: 'Which festival celebrates the defeat of Narakasura by Krishna?', options: ['Diwali', 'Holi', 'Navratri', 'Makar Sankranti'], answerIndex: 0, explanation: 'Naraka Chaturdashi, celebrated on the day before Diwali, marks Krishna\'s victory over the demon Narakasura.', fact: 'In South India this day (not Diwali night) is the primary celebration.', source: 'Bhagavata Purana' },
+        { question: 'On which river\'s banks is the Kumbh Mela held at Prayagraj?', options: ['At the Triveni Sangam of Ganga, Yamuna and Saraswati', 'Only the Ganga', 'Only the Yamuna', 'The Godavari'], answerIndex: 0, explanation: 'The Prayagraj Kumbh is held at the Triveni Sangam, the confluence of three rivers — the Saraswati is believed to flow invisibly.', fact: 'The Maha Kumbh occurs every 12 years; the Ardh Kumbh every 6 years.', source: 'Skanda Purana' },
+        { question: 'What does "Holi" celebrate according to the Bhagavata Purana?', options: ['Prahlada\'s survival and Holika\'s burning', 'The spring harvest', 'Radha and Krishna\'s love', 'The defeat of Kamsa'], answerIndex: 0, explanation: 'Holika Dahan marks the burning of Holika who tried to kill Prahlada, demonstrating that devotion to Vishnu is indestructible.', fact: 'The name "Holi" derives from Holika. The fire is lit on the full moon of Phalguna.', source: 'Bhagavata Purana' },
+        { question: 'Which festival marks the sun\'s transition into Capricorn (Makara)?', options: ['Makar Sankranti', 'Pongal', 'Both are the same celestial event', 'Ugadi'], answerIndex: 2, explanation: 'Makar Sankranti (North India) and Pongal (Tamil Nadu) both celebrate the same solar event — Uttarayana, the sun\'s northward journey.', fact: 'Bhishma Pitamah waited for Uttarayana to leave his body, indicating its spiritual importance.', source: 'Mahabharata' },
+        { question: 'How many nights does Navratri last?', options: ['9', '7', '11', '8'], answerIndex: 0, explanation: 'Navratri means "nine nights" — each night honours a different form of Devi, culminating in Vijaya Dashami.', fact: 'There are four Navratris per year; the Sharada Navratri (October) is the most widely observed.', source: 'Devi Mahatmya' },
+      ]
+    },
     scriptures: {
       hindu: [
         { question: 'Which text is called the "Gitopanishad"?', options: ['Bhagavad Gita', 'Yoga Sutras', 'Isha Upanishad', 'Vishnu Purana'], answerIndex: 0, explanation: 'The Bhagavad Gita is often described as the Gitopanishad because it condenses major Upanishadic teachings into a dialogue format.', fact: 'It appears in the Bhishma Parva of the Mahabharata.', source: 'Bhagavad Gita' },
@@ -124,6 +142,10 @@ function buildPracticePrompt(tradition: string, topic: string, difficulty: strin
 Generate EXACTLY 5 multiple-choice questions about: ${topicCtx}
 
 Difficulty: ${difficultyCtx}
+
+Conciseness rule: "explanation" must be 1-2 sentences only (max 30 words).
+"fact" must be 1 sentence only (max 20 words). "source" max 5 words.
+Total output must be valid JSON under 1600 tokens.
 
 Language Instructions:
 ${langInstruction}
@@ -223,7 +245,7 @@ export async function GET(req: NextRequest) {
         user: prompt,
         temperature: 0.4,
         reasoningEffort: 'none',
-        maxOutputTokens: 3500,
+        maxOutputTokens: 1800,
       },
       { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );

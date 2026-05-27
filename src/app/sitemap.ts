@@ -6,12 +6,13 @@ import { SEED_PATHS } from '@/lib/pathshala-paths';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: 'https://shoonaya.com', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: 'https://shoonaya.com/bhakti', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: 'https://shoonaya.com/panchang', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: 'https://shoonaya.com/pathshala', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: 'https://shoonaya.com/japa', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
-    { url: 'https://shoonaya.com/quiz', lastModified: new Date(), changeFrequency: 'daily', priority: 1.0 },
+    { url: 'https://shoonaya.com', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/bhakti', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/pathshala', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/japa', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/discover', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/panchang', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.com/pricing', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
   ];
 
   const vratRoutes: MetadataRoute.Sitemap = Object.keys(VRAT_DATABASE).map(slug => ({
