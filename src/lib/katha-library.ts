@@ -309,6 +309,7 @@ export const HINDU_KATHAS: Katha[] = [
     title: 'Janmashtami Katha — Krishna\'s Divine Birth',
     titleHi: 'जन्माष्टमी कथा — कृष्ण जन्म',
     preview: 'In the prison cell of Mathura, the wicked king Kamsa had imprisoned his own sister Devaki and her husband Vasudeva after a divine prophecy declared that Devaki\'s eighth child would slay Kamsa. Six children had been killed at birth. On the eighth night of the dark fortnight of Shravan, in the darkest hour, Lord Vishnu Himself descended as the eighth son — Lord Krishna — and the world was flooded with divine light.',
+    previewHi: 'भगवान श्रीकृष्ण के जन्म की पावन कथा — कंस का वध और देवकी-वसुदेव की मुक्ति।',
     body: [
       'The demon-king Kamsa of Mathura was proud and powerful. On the day of his sister Devaki\'s wedding to the noble Vasudeva, a divine voice from the sky declared: "O Kamsa, the eighth son of this woman you celebrate shall be your end."',
       'Kamsa, gripped by terror and selfishness, immediately imprisoned both Devaki and Vasudeva in a stone cell. He killed each of their children as they were born — six sons were murdered at Kamsa\'s hands. The seventh — Balarama — was secretly transferred to Rohini\'s womb by divine arrangement and survived.',
@@ -317,8 +318,17 @@ export const HINDU_KATHAS: Katha[] = [
       'The Lord then transformed into an infant and instructed Vasudeva: "Take me across the Yamuna to Gokula. Place me with Nanda and Yashoda\'s daughter who was born at this same moment. Bring her back. The guards will sleep, the prison doors will open, and the Yamuna will make way."',
       'Vasudeva lifted the infant in a basket on his head and crossed the stormy Yamuna. The river parted for the Lord. He reached Gokula, exchanged the children, and returned. The newborn girl cried, waking the guards. When Kamsa seized her to kill her, she slipped from his hands, rose into the sky, and declared: "Your destroyer has already been born, O Kamsa!" The world rejoiced, for the Lord had come.',
     ],
+    bodyHi: [
+      'कथा: जन्माष्टमी',
+      'द्वापर युग में मथुरा नगरी में कंस नाम का अत्याचारी राजा राज करता था। देवकी और वसुदेव का विवाह हुआ। आकाशवाणी हुई: "देवकी का आठवाँ पुत्र तुझे मारेगा।" कंस ने अपनी बहन देवकी और वसुदेव को कारागार में डाल दिया।',
+      'देवकी के एक-एक संतान को कंस मारता रहा। सातवाँ पुत्र (बलराम) योगमाया की कृपा से नंद-यशोदा के घर सुरक्षित पहुँचा।',
+      'भाद्रपद कृष्ण पक्ष की अष्टमी को, रोहिणी नक्षत्र में, मध्यरात्रि में — भगवान विष्णु ने देवकी के गर्भ से अवतार लिया। चारों दिशाओं में प्रकाश फैल गया। वसुदेव को दर्शन दिए — चतुर्भुज रूप में। वसुदेव नमस्कार करने लगे।',
+      'भगवान ने कहा: "मुझे नंद के घर गोकुल ले जाओ। वहाँ यशोदा के यहाँ कन्या जन्मी है — उसे लेकर लौट आना।" जेल के ताले खुल गए, प्रहरी सो गए। वसुदेव बालक को टोकरी में रखकर यमुना पार करने निकले। यमुना नदी में बाढ़ थी — परंतु जैसे ही श्रीकृष्ण के चरण जल को स्पर्श करने लगे, यमुना ने मार्ग दे दिया।',
+      'गोकुल में वसुदेव ने श्रीकृष्ण को यशोदा के पास सुला दिया और कन्या को लेकर लौट आए। कंस ने कन्या को मारने की कोशिश की — वह आकाश में उड़ गई और बोली: "तुझे मारने वाला जन्म ले चुका है।"',
+      'कंस का अंत: कृष्ण ने कंस के सभी अत्याचार सहे, उसके कई राक्षस सेनापतियों को मारा — अंत में मथुरा आकर कंस का वध किया और माता-पिता को कारागार से मुक्त किया।'
+    ],
     phal: 'Fasting on Janmashtami and hearing the story of the Lord\'s birth grants one freedom from sin, fulfillment of desires, and ultimately liberation. The Lord declares in the Gita: "One who knows My divine birth and activities, after leaving the body, comes to Me — he is never born again."',
-    phalHi: 'जन्माष्टमी का व्रत करने और भगवान कृष्ण के जन्म की कथा सुनने से पापों का नाश होता है, इच्छाएं पूर्ण होती हैं और अंत में मोक्ष की प्राप्ति होती है।',
+    phalHi: 'जो भक्त जन्माष्टमी पर उपवास रखे, श्रीकृष्ण की कथा सुने और भजन करे — उसके सभी पाप नष्ट होते हैं, घर में सुख-शांति आती है और भगवान की कृपा सदा बनी रहती है।',
     durationMin: 10,
     tags: ['janmashtami', 'krishna', 'birth', 'vishnu', 'kamsa', 'liberation'],
     relatedJapaMantra: 'Om Namo Bhagavate Vasudevaya',
@@ -333,6 +343,7 @@ export const HINDU_KATHAS: Katha[] = [
     title: 'Ram Navami Katha — Sri Rama\'s Advent',
     titleHi: 'राम नवमी कथा — श्रीराम का प्राकट्य',
     preview: 'In the Treta Yuga, the demon Ravana\'s terror had grown so great that the gods themselves were threatened. The earth goddess, Bhumi Devi, disguised as a cow, approached Lord Brahma weeping. Brahma led all the gods to Vaikuntha to pray to Lord Vishnu. Moved by their plea, Lord Vishnu promised to descend in the kingdom of Kosala as the son of King Dasharatha — as Sri Rama — on the Navami tithi of Chaitra Shukla Paksha.',
+    previewHi: 'मर्यादा पुरुषोत्तम श्रीराम के जन्म और दशरथ की पुत्रेष्टि यज्ञ की कथा।',
     body: [
       'In the Treta Yuga, the ten-headed demon Ravana had performed intense tapas and received boons of near-invincibility from Lord Brahma. He terrorised the three worlds, attacked the gods, disrupted sacred yajnas, and reduced the Rishis to despair. Even Indra, the king of gods, was defeated.',
       'The Earth, Bhumi Devi, could bear her suffering no more. She took the form of a cow and, accompanied by sages and gods, approached Lord Brahma. With tears flowing, she described the atrocities being committed by Ravana and his demons.',
@@ -341,8 +352,16 @@ export const HINDU_KATHAS: Katha[] = [
       'In Ayodhya, King Dasharatha — who had long grieved his childlessness — performed the Putrakameshti Yajna under the sage\'s guidance. From the sacred fire emerged a divine being carrying a golden vessel of kheer. The three queens consumed the prasad.',
       'On the Navami tithi of Chaitra Shukla Paksha — Ram Navami — as the Pushya Nakshatra rose and five planets aligned in their most auspicious positions, Queen Kaushalya gave birth to a son of incomparable radiance. The child smiled with four arms holding conch, chakra, lotus, and mace — then transformed into a beautiful infant boy. The entire kingdom of Ayodhya erupted in celebration. The Lord had come.',
     ],
+    bodyHi: [
+      'कथा: राम नवमी',
+      'त्रेता युग में अयोध्या के राजा दशरथ की तीन रानियाँ थीं — कौशल्या, कैकेयी, सुमित्रा। परंतु उनकी कोई संतान नहीं थी। राजा ने महर्षि वशिष्ठ से मार्गदर्शन माँगा। वशिष्ठ जी ने महर्षि ऋष्यश्रृंग से पुत्रेष्टि यज्ञ कराने को कहा।',
+      'यज्ञ हुआ। यज्ञकुंड से एक दिव्य पुरुष प्रकट हुआ — खीर का पात्र लेकर। दशरथ ने यह खीर तीनों रानियों को बाँट दी।',
+      'चैत्र शुक्ल नवमी को, पुनर्वसु नक्षत्र में, कर्क लग्न में — कौशल्या के गर्भ से श्रीराम का जन्म हुआ। भगवान विष्णु ने मानव रूप में अवतार लिया था। उसी समय भरत, लक्ष्मण और शत्रुघ्न का भी जन्म हुआ।',
+      'पूरी अयोध्या में उत्सव मनाया गया। देवता पुष्पवर्षा करने लगे। महर्षि वशिष्ठ ने सबका नामकरण किया — राम (जो सबको आनंद दे), भरत (जो भरण-पोषण करे), लक्ष्मण (शुभलक्षणों वाले), शत्रुघ्न (शत्रुओं का नाश करने वाले)।',
+      'श्रीराम ने आगे चलकर ताड़का, सुबाहु का वध किया, अहल्या का उद्धार किया, सीता से विवाह किया, वनवास में रावण का नाश करके धर्म की स्थापना की।'
+    ],
     phal: 'Fasting on Ram Navami and hearing the story of Lord Rama\'s divine birth is equal to performing hundreds of Ashwamedha Yajnas. Rama\'s name is the greatest mantra — even its inadvertent utterance destroys sins accumulated over many lifetimes.',
-    phalHi: 'राम नवमी का व्रत करने और श्रीराम के जन्म की कथा सुनने से सैकड़ों अश्वमेध यज्ञों का पुण्य मिलता है। श्रीराम के नाम जप से जन्म-जन्मांतर के पाप नष्ट होते हैं।',
+    phalHi: 'राम नवमी पर उपवास रखकर श्रीराम की कथा सुनने और "श्री राम जय राम जय जय राम" का जाप करने से समस्त पापों का नाश होता है और मनोकामनाएँ पूर्ण होती हैं।',
     durationMin: 9,
     tags: ['ramnavami', 'rama', 'birth', 'vishnu', 'chaitra', 'dharma'],
     relatedJapaMantra: 'Om Sri Ramaya Namah',
@@ -357,6 +376,7 @@ export const HINDU_KATHAS: Katha[] = [
     title: 'Ganesh Chaturthi Katha — Ganesha\'s Creation',
     titleHi: 'गणेश चतुर्थी कथा — गणेश जन्म',
     preview: 'While Lord Shiva was away, Goddess Parvati fashioned a beautiful boy from the turmeric paste on her body and asked him to guard her door. When Shiva returned, the boy — not knowing Shiva — prevented His entry. An enraged Shiva beheaded the boy. Parvati was devastated. To console her, Shiva ordered His ganas to bring the head of the first living being they found facing north — an elephant. Shiva placed the head on the boy\'s body and restored him to life as Ganesha.',
+    previewHi: 'गणेश चतुर्थी की पावन कथा — गणपति के जन्म और चंद्रमा के श्राप की कहानी।',
     body: [
       'One day, Goddess Parvati wished to bathe without disturbance on Mount Kailash. Lord Shiva was away on one of His long cosmic wanderings, and there was no one to guard Her door.',
       'Parvati took some turmeric paste — which She used for bathing — and shaped it into the form of a beautiful, strong boy. She breathed life into him and said: "You are my son. Guard this door. Do not let anyone enter, no matter who they are."',
@@ -365,8 +385,15 @@ export const HINDU_KATHAS: Katha[] = [
       'When Parvati emerged and saw Her son lying headless, Her grief turned to rage. She threatened to destroy the entire creation. The gods were terrified. Brahma and Vishnu approached Her with folded hands and asked what would pacify Her. "Restore my son to life," She commanded.',
       'Shiva, moved by love for Parvati and recognising the justice of the boy\'s loyalty, instructed His Ganas: "Go north and bring the head of the first living creature you find facing that direction." They returned with the head of an elephant. Shiva placed it on the boy\'s body, breathed divine life into him, and declared: "Henceforth, this child shall be worshipped first in all ceremonies. He shall be called Ganesha — the Lord of all my Ganas." Thus Ganesha received his elephant head and his supreme boon of first worship.',
     ],
+    bodyHi: [
+      'कथा: गणेश चतुर्थी',
+      'एक बार माता पार्वती ने अपने शरीर के उबटन से एक पुतला बनाया और उसमें प्राण फूँक दिए। यह बालक बहुत तेजस्वी था। पार्वती ने उसे द्वार पर बिठाया और कहा: "किसी को भी अंदर मत आने देना।"',
+      'भगवान शिव आए। बालक ने उन्हें रोक दिया। क्रोध में शिव ने अपने त्रिशूल से उसका मस्तक काट दिया। पार्वती को जब पता चला तो वे विलाप करने लगीं। तब शिव ने गणों को उत्तर दिशा में जाकर जो पहला जीव मिले उसका सिर लाने को कहा। हाथी का सिर मिला। शिव ने उसे बालक के धड़ पर लगा दिया और उसे जीवन दिया।',
+      'इसी पुत्र को गणपति, विनायक, गजानन नाम मिले। शिव ने वरदान दिया: "यह सभी देवताओं में प्रथम पूज्य होगा — किसी भी शुभ कार्य की शुरुआत इनसे होगी।"',
+      'चंद्रमा का प्रसंग: एक बार गणेश जी मूषक पर सवार होकर जा रहे थे, मोदक खाते हुए। चंद्रमा ने उन्हें देखकर हँसी उड़ाई। गणेश जी क्रोधित हुए और चंद्रमा को श्राप दिया: "आज से जो तुम्हारा दर्शन करेगा उस पर झूठा कलंक लगेगा।" चंद्रमा ने क्षमा माँगी। गणेश जी ने श्राप में संशोधन किया: "भाद्रपद शुक्ल चतुर्थी को जो तुम्हारे दर्शन करेगा, उस पर मिथ्या कलंक लगेगा।" इसीलिए गणेश चतुर्थी को चंद्रमा को नहीं देखते।'
+    ],
     phal: 'Worshipping Lord Ganesha on Ganesh Chaturthi removes all obstacles from one\'s path. The devotee who observes the fast, performs the puja, and hears the katha will find their endeavors blessed with success and their life free from unnecessary hardship.',
-    phalHi: 'गणेश चतुर्थी पर भगवान गणेश की पूजा करने से जीवन की सभी बाधाएं दूर होती हैं और कार्यों में सफलता मिलती है।',
+    phalHi: 'गणेश चतुर्थी पर गणपति की पूजा करने, कथा सुनने और मोदक का भोग लगाने से सभी विघ्न दूर होते हैं, बुद्धि और समृद्धि की प्राप्ति होती है।',
     durationMin: 8,
     tags: ['ganesh-chaturthi', 'ganesha', 'shiva', 'parvati', 'creation', 'first-worship'],
     relatedJapaMantra: 'Om Gam Ganapataye Namah',
@@ -381,6 +408,7 @@ export const HINDU_KATHAS: Katha[] = [
     title: 'Karva Chauth Katha — Veervati\'s Devotion',
     titleHi: 'करवा चौथ कथा — वीरवती की भक्ति',
     preview: 'Queen Veervati, having fasted all day for Karva Chauth, broke her fast when her brothers — unable to bear her hunger — tricked her with a lamp behind a sieve resembling the moon. That same night, her husband the king died. Inconsolable, she observed the fast with absolute purity the following year, and Yama was compelled to restore her husband\'s life. Her steadfast love became the symbol of this great vrat.',
+    previewHi: 'वीरवती की कथा — पहली करवा चौथ पर धैर्य और प्रेम की अमर कहानी।',
     body: [
       'Long ago, there lived a beautiful queen named Veervati who had seven devoted brothers. On the occasion of Karva Chauth, she fasted from sunrise, following tradition, with prayers for her husband\'s long life and prosperity.',
       'By evening, the fast had been long and Veervati was weak with hunger. Her brothers could not bear to see their beloved sister suffer. As she waited for the moon to rise to break her fast, the brothers devised a plan. They held a lamp behind a sieve and created a glow that resembled the moon rising.',
@@ -389,8 +417,16 @@ export const HINDU_KATHAS: Katha[] = [
       'Her prayers and fast were so powerful that Yama — the god of death — was compelled to return her husband\'s soul. The king revived. The couple were reunited, and their life together was long, joyful, and prosperous.',
       'From that day, Karva Chauth became established as the great vrat for married women — a day of fasting, devotion, and the deep bond of love and prayer for one\'s husband\'s wellbeing. The fast must always be broken only upon seeing the actual moon.',
     ],
+    bodyHi: [
+      'कथा: करवा चौथ — वीरवती की कथा',
+      'एक नगर में एक ब्राह्मण के सात पुत्र और एक पुत्री थी। पुत्री का नाम वीरवती था। वह अत्यंत सुंदर और गुणवती थी। उसका विवाह हुआ।',
+      'पहली करवा चौथ पर वीरवती मायके में थी। उसने निर्जला व्रत रखा। उसके सात भाई उसकी भूख-प्यास देखकर व्याकुल हो गए। उन्होंने पीपल के पेड़ पर दीपक जलाकर उसे चलनी से दिखाया और बोले: "देखो बहन, चाँद निकल आया।" वीरवती ने भाइयों के बनाए चाँद को देखकर व्रत तोड़ लिया।',
+      'उसी समय उसके पति की मृत्यु हो गई। वीरवती अपने पति के शव के पास बैठकर रोती रही। तब देवी पार्वती प्रकट हुईं और बोलीं: "तुमने असली चाँद देखे बिना व्रत तोड़ा — इसीलिए ऐसा हुआ।"',
+      'वीरवती ने क्षमा माँगी। देवी ने उपाय बताया: "अगले वर्ष विधिपूर्वक करवा चौथ का व्रत करना। चन्द्रमा उदय होने के बाद ही जल ग्रहण करना।"',
+      'वीरवती ने पूरे एक वर्ष पति की सेवा-सुश्रुषा की। अगले वर्ष विधिपूर्वक व्रत किया, चन्द्रोदय पर अर्घ्य दिया — और उसके पति जीवित हो उठे। तब से करवा चौथ का व्रत सुहागन स्त्रियाँ अपने पति की दीर्घायु के लिए रखती हैं।'
+    ],
     phal: 'A wife who observes Karva Chauth with complete faith and devotion — fasting from sunrise to moonrise — is blessed with her husband\'s long life, health, and prosperity. The love of a devoted wife is said to even move the gods.',
-    phalHi: 'जो पत्नी करवा चौथ का व्रत पूर्ण श्रद्धा से करती है, उसके पति को दीर्घायु, स्वास्थ्य और सुख की प्राप्ति होती है।',
+    phalHi: 'जो स्त्री करवा चौथ का व्रत श्रद्धा और पूर्ण विधि से रखे, उसके पति को दीर्घायु और स्वास्थ्य मिलता है तथा दांपत्य जीवन में सुख-समृद्धि बनी रहती है।',
     durationMin: 9,
     tags: ['karva-chauth', 'women', 'devotion', 'husband', 'moon', 'marriage'],
   },
@@ -449,6 +485,7 @@ export const HINDU_KATHAS: Katha[] = [
     title: 'Diwali Katha — Lakshmi Puja and the Return of Rama',
     titleHi: 'दिवाली कथा — लक्ष्मी पूजा और राम का आगमन',
     preview: 'Diwali marks Lord Rama\'s return to Ayodhya after 14 years of exile and His victory over Ravana. The people of Ayodhya lit thousands of lamps to guide their beloved prince home through the dark Amavasya night. On this same night, the goddess Lakshmi — born from the churning of the cosmic ocean — traverses the earth and enters only those homes that are clean, well-lit, and filled with devotion.',
+    previewHi: 'दिवाली की पावन कथा — श्रीराम की अयोध्या वापसी और लक्ष्मी पूजन की महिमा।',
     body: [
       'On the Amavasya of the Kartik month, two of the most auspicious events in sacred history coincided: the return of Lord Rama to Ayodhya after 14 years of exile, and the emergence of Goddess Lakshmi from the churning of the cosmic ocean, Samudra Manthan.',
       'When Lord Rama defeated Ravana and rescued Sita on Vijaya Dashami — Dussehra — He began the journey home. But the route back to Ayodhya was long, and His arrival was on the darkest night of the month — the new moon of Kartik.',
@@ -457,8 +494,16 @@ export const HINDU_KATHAS: Katha[] = [
       'On this same Amavasya, Goddess Lakshmi — who was born from the Samudra Manthan and chose Lord Vishnu as Her consort — is believed to roam the earth in the night. She pauses at each home and enters only where there is cleanliness, light, order, and heartfelt devotion.',
       'Families clean their homes, draw rangoli at the doorstep, light diyas, and perform Lakshmi Puja at midnight. Offerings of sweets, incense, and flowers are made. Business account books are blessed. The Goddess bestows Her grace of prosperity, wealth, and abundance for the year ahead.',
     ],
+    bodyHi: [
+      'कथा: दिवाली — लक्ष्मी पूजन और श्रीराम का आगमन',
+      'कार्तिक अमावस्या को दो महान घटनाएँ एक साथ मनाई जाती हैं।',
+      'श्रीराम की अयोध्या वापसी: चौदह वर्ष के वनवास के बाद, लंका-विजय के पश्चात, कार्तिक अमावस्या की रात श्रीराम, सीता और लक्ष्मण अयोध्या लौटे। अयोध्यावासियों ने घर-घर दीपक जलाए — जिससे अमावस्या की काली रात दीपों से जगमगा उठी। तब से दिवाली का पर्व प्रचलित हुआ।',
+      'लक्ष्मी जी की कथा: समुद्र-मंथन के समय जब चौदह रत्न निकले, उनमें से एक थीं माँ लक्ष्मी — हाथों में कमल लेकर, रेशमी वस्त्र पहने। वे श्रीविष्णु की पत्नी बनीं।',
+      'एक बार लक्ष्मी जी रूठकर चली गईं। घर-घर में दरिद्रता फैल गई। इंद्र ने क्षमा याचना की। तब ऋषियों ने बताया: "कार्तिक अमावस्या को घर की सफाई करो, दीपक जलाओ, लक्ष्मी पूजन करो — माँ लक्ष्मी प्रसन्न होकर वापस आएँगी।" तभी से इस रात्रि को लक्ष्मी पूजन का विधान है।',
+      'विधि: सूर्यास्त के बाद गणेश-लक्ष्मी की पूजा करें। घर के सभी कोनों में दीपक जलाएँ। लक्ष्मी जी को खीर, मिठाई और कमल का फूल अर्पित करें। "ॐ श्री महालक्ष्म्यै नमः" का जाप करें।'
+    ],
     phal: 'Worshipping Goddess Lakshmi on Diwali Amavasya with a pure heart, clean home, and lit lamps invites Her enduring presence. Prosperity, abundance, and auspiciousness dwell in homes where Lakshmi is honoured with sincere devotion.',
-    phalHi: 'दिवाली की रात श्रद्धापूर्वक लक्ष्मी पूजा करने से माँ लक्ष्मी का घर में वास होता है और वर्षभर सुख-समृद्धि बनी रहती है।',
+    phalHi: 'दिवाली पर विधिपूर्वक लक्ष्मी पूजन और कथा श्रवण करने से घर में सुख-समृद्धि आती है, दरिद्रता दूर होती है और माँ लक्ष्मी की कृपा सदा बनी रहती है।',
     durationMin: 8,
     tags: ['diwali', 'lakshmi', 'rama', 'kartik', 'prosperity', 'light'],
     relatedJapaMantra: 'Om Shreem Mahalakshmiyei Namah',
@@ -1187,6 +1232,7 @@ export const SIKH_SAKHIS: Katha[] = [
     title: 'Sacha Sauda — The True Bargain',
     titlePa: 'ਸੱਚਾ ਸੌਦਾ',
     preview: 'Guru Nanak Dev Ji\'s father gave young Nanak twenty rupees and asked him to buy goods to trade for profit — his first business venture. On the way to the market, Nanak encountered a group of starving sadhus. Without hesitation, he spent all twenty rupees feeding them, then returned home saying he had made the best bargain possible — a sacha sauda, a true deal.',
+    previewHi: 'गुरु नानक देव जी की साची सौदे की साखी — जहाँ सच्चा व्यापार यही है कि दूसरों की सेवा करो।',
     previewPa: 'ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੇ ਪਿਤਾ ਮਹਿਤਾ ਕਾਲੂ ਜੀ ਨੇ ਨੌਜਵਾਨ ਨਾਨਕ ਨੂੰ ਵੀਹ ਰੁਪਏ ਦੇ ਕੇ ਵਪਾਰ ਲਈ ਭੇਜਿਆ। ਰਸਤੇ ਵਿੱਚ ਭੁੱਖੇ ਸਾਧੂਆਂ ਨੂੰ ਦੇਖ ਕੇ ਨਾਨਕ ਨੇ ਸਾਰੇ ਪੈਸੇ ਉਨ੍ਹਾਂ ਦੀ ਸੇਵਾ ਵਿੱਚ ਲਗਾ ਦਿੱਤੇ ਅਤੇ ਕਿਹਾ ਕਿ ਇਹੀ ਸੱਚਾ ਸੌਦਾ ਹੈ।',
     body: [
       'When Guru Nanak Dev Ji was a young man, his father Mehta Kalu Ji decided it was time his son learned about commerce and trade. He gave Nanak twenty rupees and instructed him to go to the market town, buy goods, trade them for a profit, and return home. This was to be Nanak\'s initiation into the world of business.',
@@ -1195,6 +1241,12 @@ export const SIKH_SAKHIS: Katha[] = [
       'Nanak returned home with no goods and no money — only a heart full of joy. His father was furious. "Where are the goods? Where is the money?" Nanak smiled and said, "Baba Ji, I made a sacha sauda — a true bargain. I invested your twenty rupees in feeding starving souls. No better return exists in this world or the next."',
       'His father, though angry, was silenced by the profound logic. This story became one of the most beloved in Sikh tradition — a perfect illustration of Guru Nanak\'s teaching that seva (selfless service) to humanity is the highest form of worship. Feeding the hungry is feeding God.',
       '"Ghaal khaae kichhu hathho dae. Nanak raahu pachhaanahi sae." — One who eats from their own labour and gives from their hands — O Nanak, this is the true path. The Sacha Sauda episode set the tone for Guru Nanak\'s entire mission: that genuine spirituality is inseparable from service to fellow human beings.',
+    ],
+    bodyHi: [
+      'साखी: साचा सौदा',
+      'पिता कालू जी ने गुरु नानक को बीस रुपये देकर व्यापार करने भेजा। रास्ते में गुरु नानक ने भूखे साधु-संतों का समूह देखा। उन्होंने सोचा: "इनकी सेवा करने से बड़ा कोई व्यापार नहीं।" उन्होंने सारे रुपये साधु-संतों को भोजन कराने में लगा दिए।',
+      'खाली हाथ घर लौटे। पिता ने पूछा: "व्यापार कहाँ है?" गुरु नानक ने कहा: "पिताजी, यही साचा सौदा है — भूखों को खाना खिलाना।" पिता क्रोधित हुए।',
+      'परंतु गुरुजी ने शांति से कहा: "जो धन सेवा में लगे, वही सच्चा धन है। जो संचय किया जाए, वह यहीं रह जाता है।" आगे चलकर यह "साचा सौदा" स्थान सिखों का पवित्र तीर्थ बना।'
     ],
     bodyPa: [
       'ਜਦੋਂ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਜਵਾਨ ਹੋਏ, ਉਨ੍ਹਾਂ ਦੇ ਪਿਤਾ ਮਹਿਤਾ ਕਾਲੂ ਜੀ ਨੇ ਸੋਚਿਆ ਕਿ ਪੁੱਤਰ ਨੂੰ ਵਪਾਰ ਸਿੱਖਣਾ ਚਾਹੀਦਾ ਹੈ। ਉਨ੍ਹਾਂ ਨੇ ਨਾਨਕ ਨੂੰ ਵੀਹ ਰੁਪਏ ਦੇ ਕੇ ਕਿਹਾ ਕਿ ਬਾਜ਼ਾਰ ਜਾ ਕੇ ਸੌਦਾ ਖਰੀਦੋ ਅਤੇ ਮੁਨਾਫ਼ੇ ਨਾਲ ਵੇਚ ਕੇ ਆਉ।',
@@ -1205,6 +1257,7 @@ export const SIKH_SAKHIS: Katha[] = [
       '"ਘਾਲਿ ਖਾਇ ਕਿਛੁ ਹਥਹੁ ਦੇਇ॥ ਨਾਨਕ ਰਾਹੁ ਪਛਾਣਹਿ ਸੇਇ॥" — ਜੋ ਆਪਣੀ ਮਿਹਨਤ ਦੀ ਕਮਾਈ ਖਾਂਦੇ ਅਤੇ ਹੱਥੀਂ ਦੂਜਿਆਂ ਨੂੰ ਵੰਡਦੇ ਹਨ, ਨਾਨਕ ਕਹਿੰਦੇ ਹਨ ਕਿ ਉਹੀ ਸੱਚੇ ਰਾਹ ਨੂੰ ਪਛਾਣਦੇ ਹਨ।',
     ],
     phal: 'The Sacha Sauda teaches that selfless service — particularly feeding the hungry — is the highest trade one can make. Whatever is offered to the needy in the spirit of seva reaches the Divine directly. True wealth is measured in hearts served, not coins accumulated.',
+    phalHi: 'यह साखी सिखाती है कि सेवा ही सच्चा व्यापार है। जो निःस्वार्थ सेवा करे, वाहेगुरु उसे हर जगह आशीर्वाद देते हैं।',
     phalPa: 'ਸੱਚਾ ਸੌਦਾ ਸਾਨੂੰ ਸਿਖਾਉਂਦਾ ਹੈ ਕਿ ਭੁੱਖੇ ਨੂੰ ਭੋਜਨ ਦੇਣਾ ਅਤੇ ਨਿਰਸਵਾਰਥ ਸੇਵਾ ਕਰਨਾ ਸਭ ਤੋਂ ਵੱਡਾ ਸੌਦਾ ਹੈ। ਜੋ ਲੋੜਵੰਦਾਂ ਦੀ ਸੇਵਾ ਵਿੱਚ ਅਰਪਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਉਹ ਸਿੱਧਾ ਪਰਮਾਤਮਾ ਤੱਕ ਪਹੁੰਚਦਾ ਹੈ।',
     durationMin: 8,
     tags: ['guru-nanak', 'seva', 'langar', 'compassion', 'sacha-sauda'],
@@ -1252,6 +1305,7 @@ export const SIKH_SAKHIS: Katha[] = [
     title: 'Guru Tegh Bahadur Ji — Hind Di Chadar',
     titlePa: 'ਗੁਰੂ ਤੇਗ਼ ਬਹਾਦਰ ਜੀ — ਹਿੰਦ ਦੀ ਚਾਦਰ',
     preview: 'When Kashmiri Pandits came to Guru Tegh Bahadur Ji weeping that the Mughal emperor Aurangzeb was forcing them to convert to Islam under threat of death, the Guru — knowing it would cost him his life — stood up for their freedom of faith. He was arrested in Delhi, tortured for days, and ultimately beheaded at Chandni Chowk rather than renounce his faith or allow another\'s religious persecution.',
+    previewHi: 'गुरु तेग बहादुर जी के बलिदान की साखी — हिंद की चादर जिन्होंने धर्म की रक्षा के लिए प्राण दिए।',
     body: [
       'It was the year 1675. Aurangzeb, the Mughal emperor, had issued a decree that the Kashmiri Pandits — Hindus living in the Kashmir valley — must convert to Islam or face death. Thousands of Pandits were terrified, their temples destroyed, their sacred texts burned.',
       'A delegation of Kashmiri Pandits, led by Pandit Kirpa Ram, walked hundreds of miles to Anandpur Sahib to seek the help of Guru Tegh Bahadur Ji, the ninth Sikh Guru. They wept before him, describing their helpless situation.',
@@ -1260,7 +1314,15 @@ export const SIKH_SAKHIS: Katha[] = [
       'In Delhi, the Guru and three of his devoted Sikhs were subjected to terrible torture for days, designed to break their will. One companion was sawn alive. Another was boiled in hot water. Another was burned alive. None renounced their faith. The Guru watched this with steadfast calm, praying and chanting Waheguru.',
       'On 24 November 1675, at Chandni Chowk in Delhi, Guru Tegh Bahadur Ji was publicly beheaded. He died protecting the religious freedom of those not even of his own faith — he was called "Hind Di Chadar" — the Shield of India. The place of his martyrdom is now the sacred Gurudwara Sis Ganj Sahib in Delhi.',
     ],
+    bodyHi: [
+      'साखी: हिंद दी चादर — गुरु तेग बहादुर जी',
+      'औरंगज़ेब के शासन में कश्मीरी पंडितों पर अत्यंत अत्याचार हो रहे थे। इस्लाम न अपनाने पर उन्हें यातनाएँ दी जा रही थीं। कश्मीरी पंडित आनंदपुर साहिब आए और गुरु तेग बहादुर जी की शरण में गए।',
+      'गुरु जी ने अपने पुत्र गोबिंद राय (भविष्य के गुरु गोबिंद सिंह जी) से पूछा: "इस संकट में क्या करना चाहिए?" बालक गोबिंद राय ने कहा: "इस समय किसी महापुरुष के बलिदान से ही धर्म बचेगा।"',
+      'गुरु जी दिल्ली गए। औरंगज़ेब ने तीन शर्तें रखीं — इस्लाम अपनाएँ, या चमत्कार दिखाएँ, या मृत्यु स्वीकार करें। गुरु जी ने इस्लाम नहीं अपनाया। तीन सिखों — भाई मति दास, भाई सती दास, भाई दयाला — को गुरु के सामने यातनाएँ देकर शहीद किया गया।',
+      '24 नवंबर 1675 को चाँदनी चौक में गुरु तेग बहादुर जी का शीश काट दिया गया। उन्होंने धर्म की रक्षा के लिए प्राण दिए। गुरु गोबिंद सिंह जी ने उन्हें "हिंद दी चादर" — हिंदुस्तान की रक्षा की चादर — कहा।'
+    ],
     phal: 'Guru Tegh Bahadur Ji\'s martyrdom teaches that religious freedom is a universal human right worth dying for. Remembering his sacrifice strengthens one\'s own resolve to live with integrity and courage. His Bani teaches: "Bhai kaahu ko det nahi, nahi bhai manat aan" — Fear no one, intimidate no one.',
+    phalHi: 'यह साखी हमें धर्म और न्याय के लिए निडरता से खड़े रहने की प्रेरणा देती है। जो दूसरों की रक्षा के लिए बलिदान दे, वह अमर हो जाता है।',
     durationMin: 10,
     tags: ['guru-tegh-bahadur', 'martyrdom', 'courage', 'religious-freedom', 'hind-di-chadar', 'heroes', 'sacrifice'],
   },
@@ -1270,6 +1332,7 @@ export const SIKH_SAKHIS: Katha[] = [
     occasion: 'general',
     title: 'Bhai Kanhaiya — Serving the Wounded Without Distinction',
     preview: 'During a fierce battle, Bhai Kanhaiya was observed moving across the battlefield giving water not only to wounded Sikh soldiers but also to wounded enemy soldiers. Sikh soldiers complained to Guru Gobind Singh Ji. When the Guru questioned Bhai Kanhaiya, his answer became one of the most profound declarations of human equality in Sikh history.',
+    previewHi: 'भाई कन्हैया जी की साखी — युद्ध में शत्रु और मित्र दोनों को समान भाव से सेवा देने की कथा।',
     body: [
       'During the time of Guru Gobind Singh Ji, there were several fierce battles against Mughal and hill-king forces. In one such battle, Bhai Kanhaiya — a devoted Sikh who had taken a vow of service — moved across the battlefield with a water-skin, offering water and first aid to the wounded.',
       'Sikh soldiers watching him grew frustrated. They saw him offering water equally to their own wounded brothers and to the enemy soldiers who had just been fighting against them. Some soldiers complained to Guru Gobind Singh Ji: "Guru Ji, Bhai Kanhaiya is helping our enemies! He gives them water and relief — they may recover and fight us again!"',
@@ -1278,7 +1341,16 @@ export const SIKH_SAKHIS: Katha[] = [
       'Guru Gobind Singh Ji was deeply moved. He embraced Bhai Kanhaiya and said to the watching Sikhs: "Bhai Kanhaiya has truly understood my teachings. He has truly understood the Gurbani." The Guru then gave Bhai Kanhaiya ointments and medications and asked him to extend his service to full medical care of all wounded.',
       'Bhai Kanhaiya is considered the founder of the spirit of humanitarian aid in the Sikh tradition, and his service is seen as the precursor to the modern Red Cross philosophy — no distinction in the care of the wounded based on which side they fought on.',
     ],
+    bodyHi: [
+      'साखी: भाई कन्हैया — निःस्वार्थ सेवा',
+      'अनंदपुर साहिब के युद्ध में भाई कन्हैया जी को देखा गया कि वे घायल मुगल सैनिकों को भी उतनी ही श्रद्धा से जल पिला रहे हैं जितनी सिख सैनिकों को। सिख सैनिकों ने शिकायत की।',
+      'गुरु गोबिंद सिंह जी ने भाई कन्हैया को बुलाया और पूछा: "क्या यह सच है?"',
+      'भाई कन्हैया ने कहा: "हाँ गुरुजी। आपने तो सिखाया है कि हर इंसान में वाहेगुरु का नूर है। जब मैंने घायलों के चेहरे देखे, मुझे सब में आप ही दिखे। मैं भला किसे मना करता?"',
+      'गुरु गोबिंद सिंह जी मुस्कुराए और बोले: "तुमने सच्ची गुरमत समझी है।" उन्होंने भाई कन्हैया को मलहम-पट्टी की दवाइयाँ भी दीं और कहा: "जाओ, और अच्छे से सेवा करो।"',
+      'यही घटना आज की रेड क्रॉस सेवा की प्रेरणा मानी जाती है।'
+    ],
     phal: 'True spirituality sees the Divine in every being without distinction of friend, foe, caste, or creed. The greatest form of worship is to serve the suffering selflessly. One who truly walks the Guru\'s path sees only the Guru\'s face everywhere.',
+    phalHi: 'यह साखी सिखाती है कि परमात्मा सबमें है — शत्रु-मित्र का भेद भूलकर सेवा करना ही सच्ची भक्ति है।',
     durationMin: 8,
     tags: ['bhai-kanhaiya', 'seva', 'equality', 'humanitarian', 'guru-gobind-singh', 'battlefield'],
   },
@@ -1289,6 +1361,7 @@ export const SIKH_SAKHIS: Katha[] = [
     title: 'Bhai Lalo and Malik Bhago',
     titlePa: 'ਭਾਈ ਲਾਲੋ ਅਤੇ ਮਲਿਕ ਭਾਗੋ',
     preview: 'During his travels, Guru Nanak Dev Ji chose to stay at the humble hut of a poor carpenter, Bhai Lalo, rejecting the grand feast of a wealthy but corrupt official, Malik Bhago. When questioned, Guru Ji squeezed the bread of both men to reveal the truth behind their wealth.',
+    previewHi: 'भाई लालो और मलिक भागो की साखी — ईमानदार मेहनत की रोटी और अत्याचार से कमाई दौलत का फर्क।',
     previewPa: 'ਆਪਣੀਆਂ ਯਾਤਰਾਵਾਂ ਦੌਰਾਨ, ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਨੇ ਇੱਕ ਗਰੀਬ ਤਰਖਾਣ ਭਾਈ ਲਾਲੋ ਦੀ ਝੌਂਪੜੀ ਵਿੱਚ ਰੁਕਣ ਦਾ ਫੈਸला ਕੀਤਾ, ਅਤੇ ਮਲਿਕ ਭਾਗੋ ਦੇ ਸ਼ਾਹੀ ਭੋਜਨ ਨੂੰ ਠੁਕਰਾ ਦਿੱਤਾ।',
     body: [
       'When Guru Nanak Dev Ji arrived in Saidpur, he bypassed the mansions of the wealthy and knocked on the door of Bhai Lalo, a poor but honest carpenter. Bhai Lalo was overjoyed and served Guru Ji a simple meal of coarse bread and wild spinach.',
@@ -1298,6 +1371,15 @@ export const SIKH_SAKHIS: Katha[] = [
       'Guru Nanak explained, "Lalo\'s bread was earned through honest, hard labor (Kirat Karni), and thus it is pure like milk. Your wealth, Bhago, was extorted from the poor and the weak, so your food is tainted with their blood."',
       'Malik Bhago fell at the Guru\'s feet, realizing that true spiritual merit cannot be bought with ill-gotten wealth. He distributed his wealth to the poor and began a life of honest labor.'
     ],
+    bodyHi: [
+      'साखी: भाई लालो और मलिक भागो',
+      'गुरु नानक देव जी एमनाबाद पहुँचे। वहाँ दो आमंत्रण आए — एक धनी जमींदार मलिक भागो का भव्य भंडारा था, और दूसरा गरीब बढ़ई भाई लालो का साधारण घर।',
+      'गुरु नानक ने भाई लालो के साथ रहना चुना और उनकी रोटी खाई।',
+      'मलिक भागो क्रोधित हुआ। उसने पूछा: "आने मेरे भव्य भंडारे को ठुकराकर इस गरीब की रोटी क्यों खाई?"',
+      'गुरु नानक ने भाई लालो की रोटी एक हाथ में और मलिक भागो का भोजन दूसरे हाथ में लिया। जब दबाया — भाई लालो की रोटी से दूध टपका और मलिक भागो के भोजन से खून।',
+      'गुरु जी ने कहा: "भाई लालो की रोटी ईमानदार परिश्रम से कमाई है — इसमें दूध है। तुम्हारा भोजन गरीबों के शोषण से कमाया है — इसमें खून है। परमात्मा ईमानदार रोटी ही स्वीकार करते हैं।"',
+      'मलिक भागो को अपनी गलती का एहसास हुआ और उसने क्षमा माँगी।'
+    ],
     bodyPa: [
       'ਜਦੋਂ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਸੈਦਪੁਰ ਪਹੁੰਚੇ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਭਾਈ ਲਾਲੋ ਨਾਮਕ ਇੱਕ ਗਰੀਬ ਪਰ ਇਮਾਨਦਾਰ ਤਰਖਾਣ ਦੇ ਘਰ ਰਹਿਣ ਦਾ ਫੈਸਲਾ ਕੀਤਾ। ਭਾਈ ਲਾਲੋ ਨੇ ਗੁਰੂ ਜੀ ਨੂੰ ਸਾਦਾ ਭੋਜਨ ਛਕਾਇਆ।',
       'ਉਸੇ ਸ਼ਹਿਰ ਵਿੱਚ ਮਲਿਕ ਭਾਗੋ ਨਾਮ ਦਾ ਇੱਕ ਅਮੀਰ ਅਤੇ ਭ੍ਰਿਸ਼ਟ ਅਧਿਕਾਰੀ ਰਹਿੰਦਾ ਸੀ। ਉਸਨੇ ਸਾਧੂਆਂ ਲਈ ਇੱਕ ਵੱਡੇ ਭੋਜ ਦਾ ਆਯੋਜਨ ਕੀਤਾ। ਗੁਰੂ ਜੀ ਨੇ ਉਸਦੇ ਭੋਜ ਵਿੱਚ ਜਾਣ ਤੋਂ ਇਨਕਾਰ ਕਰ ਦਿੱਤਾ।',
@@ -1306,6 +1388,7 @@ export const SIKH_SAKHIS: Katha[] = [
       'ਗੁਰੂ ਜੀ ਨੇ ਸਮਝਾਇਆ ਕਿ ਲਾਲੋ ਦੀ ਰੋਟੀ ਇਮਾਨਦਾਰੀ ਦੀ ਕਮਾਈ ਦੀ ਹੈ, ਜਦਕਿ ਭਾਗੋ ਦੀ ਰੋਟੀ ਗਰੀਬਾਂ ਦਾ ਖੂਨ ਚੂਸ ਕੇ ਬਣਾਈ ਗਈ ਹੈ।'
     ],
     phal: 'Honest labor (Kirat Karni) is a fundamental pillar of Sikhism. Wealth earned through corruption or exploitation brings no spiritual peace, while simple food earned honestly is pure and blessed.',
+    phalHi: 'यह साखी सिखाती है कि ईमानदारी से कमाई रोटी ही परमात्मा को प्रिय है। हमेशा नेक कमाई करो और ज़रूरतमंदों को बाँटो।',
     durationMin: 6,
     tags: ['guru-nanak', 'honesty', 'kirat-karni', 'equality', 'bhai-lalo'],
   },
@@ -1371,6 +1454,7 @@ export const SIKH_SAKHIS: Katha[] = [
     title: 'Mai Bhago — The Lioness of Punjab',
     titlePa: 'ਮਾਈ ਭਾਗੋ — ਪੰਜਾਬ ਦੀ ਸ਼ੇਰਨੀ',
     preview: 'During the siege of Anandpur Sahib, forty Sikhs abandoned Guru Gobind Singh Ji out of hardship. When they returned home, Mai Bhago shamed them for their cowardice, wore armor herself, and led them back into battle to seek martyrdom and forgiveness.',
+    previewHi: 'माई भागो की साखी — वीरांगना जिन्होंने चमकौर के भागे हुए सिखों को वापस युद्ध में लाया।',
     previewPa: 'ਆਨੰਦਪੁਰ ਸਾਹਿਬ ਦੀ ਘੇराबੰਦੀ ਦੌਰਾਨ, ਚਾਲੀ ਸਿੱਖ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੂੰ ਛੱਡ ਕੇ ਘਰ ਪਰਤ ਆਏ। ਮਾਈ ਭਾਗੋ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਲਾਹਨਤ ਪਾਈ ਅਤੇ ਖੁਦ ਹਥਿਆਰ ਚੁੱਕ ਕੇ ਉਨ੍ਹਾਂ ਨੂੰ ਵਾਪਸ ਲੜਾਈ ਵਿੱਚ ਲੈ ਗਈ।',
     body: [
       'In 1704, the fort of Anandpur Sahib was besieged by a massive alliance of Mughal and Hill Rajput armies. The Sikhs inside faced severe starvation. Unable to bear the hardship, forty Sikhs wrote a disclaimer (Bedawa) stating they were no longer the Guru\'s Sikhs, and abandoned Guru Gobind Singh Ji to return to their villages in the Majha region.',
@@ -1380,6 +1464,14 @@ export const SIKH_SAKHIS: Katha[] = [
       'They caught up with the pursuing Mughal army at the pool of Khidrana (now Muktsar). Under Mai Bhago\'s fierce leadership, the forty Sikhs fought a desperate holding action against thousands of enemy soldiers, fighting until their last breath to protect the Guru.',
       'Guru Gobind Singh Ji arrived at the battlefield and found the leader, Mahan Singh, dying. The Guru tore the disclaimer (Bedawa) and blessed the forty men as the "Chali Mukte" (Forty Liberated Ones). Mai Bhago, severely wounded but alive, remained with the Guru as a devoted warrior for the rest of her life.'
     ],
+    bodyHi: [
+      'साखी: माई भागो — पंजाब की वीरांगना',
+      'मुक्तसर के युद्ध (1705) में कुछ सिख सैनिकों ने गुरु गोबिंद सिंह जी को बेदावा (त्याग-पत्र) देकर छोड़ दिया था।',
+      'उस क्षेत्र में माई भागो नाम की एक वीरांगना रहती थीं। जब उन्हें पता चला कि सिख भाई युद्ध से भाग रहे हैं, तो वे क्रोधित हुईं। उन्होंने उन भागे हुए सिखों को ललकारा: "क्या तुम वाकई गुरु के सिख हो? जबकि गुरुजी कम सैनिकों के साथ लड़ रहे हैं, तुम यहाँ छुप रहे हो?"',
+      'माई भागो ने खुद कवच पहना, शस्त्र उठाया और युद्धभूमि की ओर चल पड़ीं। शर्म से भरे चालीस सिख भी उनके साथ चल पड़े।',
+      'खिदराना (मुक्तसर) के पास मुगल सेना से लोहा लिया। चालीसों सिख वीरगति को प्राप्त हुए। माई भागो गंभीर रूप से घायल हुईं परंतु बचीं।',
+      'गुरु गोबिंद सिंह जी ने उन चालीस सिखों को "चालीह मुक्ते" (चालीस मुक्त आत्माएँ) का दर्जा दिया और उनका बेदावा स्वयं फाड़ दिया।'
+    ],
     bodyPa: [
       'ਆਨੰਦਪੁਰ ਸਾਹਿਬ ਦੀ ਘੇਰਾਬੰਦੀ ਦੌਰਾਨ ਭੁੱਖ ਅਤੇ ਮੁਸ਼ਕਲਾਂ ਕਾਰਨ ਚਾਲੀ ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਨੂੰ ਬੇਦਾਵਾ ਲਿਖ ਕੇ ਦੇ ਦਿੱਤਾ ਅਤੇ ਘਰ ਪਰਤ ਆਏ।',
       'ਜਦੋਂ ਉਹ ਆਪਣੇ ਪਿੰਡ ਪਹੁੰਚੇ, ਤਾਂ ਮਾਈ ਭਾਗੋ ਨੇ ਉਨ੍ਹਾਂ ਦੀ ਕਾਇਰਤਾ ਤੇ ਲਾਹਨਤ ਪਾਈ। ਉਸਨੇ ਕਿਹਾ, "ਤੁਸੀਂ ਚੂੜੀਆਂ ਪਾ ਕੇ ਘਰ ਬੈਠੋ, ਅਸੀਂ ਔਰਤਾਂ ਗੁਰੂ ਲਈ ਲੜਾਂਗੀਆਂ।"',
@@ -1388,6 +1480,7 @@ export const SIKH_SAKHIS: Katha[] = [
       'ਗੁਰੂ ਜੀ ਨੇ ਮਹਾਂ ਸਿੰਘ ਦੀ ਬੇਨਤੀ ਤੇ ਬੇਦਾਵਾ ਪਾੜ ਦਿੱਤਾ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ "ਚਾਲੀ ਮੁਕਤੇ" ਦਾ ਖਿਤਾਬ ਦਿੱਤਾ। ਮਾਈ ਭਾਗੋ ਗੁਰੂ ਜੀ ਦੇ ਨਾਲ ਇੱਕ ਯੋਧੇ ਵਜੋਂ ਰਹੇ।'
     ],
     phal: 'Mistakes and moments of weakness can be redeemed through profound courage and sincere repentance. True courage (Surme) is genderless; devotion to the Guru overcomes all fears.',
+    phalHi: 'माई भागो की साखी हमें सिखाती है कि धर्म के लिए वीरता दिखाना पुरुष और स्त्री दोनों का कर्तव्य है। गुरु के प्रेम में कभी पीछे नहीं हटना चाहिए।',
     durationMin: 7,
     tags: ['mai-bhago', 'courage', 'guru-gobind-singh', 'muktsar', 'martyrdom'],
   },

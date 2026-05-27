@@ -99,7 +99,19 @@
       "Bash(npx web-push *)",
       "Bash(supabase secrets *)",
       "Bash(supabase functions *)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('bg:', d.get\\('background_color'\\), 'theme:', d.get\\('theme_color'\\)\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('bg:', d.get\\('background_color'\\), 'theme:', d.get\\('theme_color'\\)\\)\")",
+      "Bash(git commit -m 'fix\\(cron\\): daily schedule for Vercel Hobby plan, remove timezone hour-match *)",
+      "Bash(git commit -m 'feat: WhatsApp OTP, comm prefs migration, mandali join+nearby; fix broken verify flow *)",
+      "Bash(git commit -m 'fix\\(build\\): remove invalid eslint-disable rule in RazorpayCheckout *)",
+      "Bash(git commit -m 'fix\\(build\\): type Razorpay window global properly, remove all eslint-disable comments *)",
+      "Bash(git commit -m 'fix\\(build\\): lazy-init Razorpay client to avoid build-time crash *)",
+      "Bash(git commit -m 'fix\\(ux\\): remove self-fade timer from loading.tsx, redesign BrandMark as ∞ + bindu *)",
+      "Bash(git commit -m 'fix\\(critical\\): remove onboarding redirect from \\(main\\) layout — infinite loop *)",
+      "Bash(git commit -m 'fix: NaN days left, vrat typography, SacredIcon sweep *)",
+      "Bash(git commit -m 'fix: 6 home screen issues — vrat merge, click, mood chip, freeze dots, TTS *)",
+      "Bash(git commit -m 'feat: hide Dharm Veer and Quiz cards once completed for the day *)",
+      "Bash(ls -la /Users/)",
+      "Bash(git rm *)"
     ]
   }
 }

@@ -35,7 +35,11 @@ export interface SacredContentItem {
 }
 
 function normalizeTradition(tradition: LibraryTradition | KathaTradition | Stotram['tradition'] | DevotionalTrack['tradition']): SacredContentTradition {
-  return tradition === 'all' ? 'all' : tradition;
+  if (tradition === 'all') return 'all';
+  if (tradition === 'vaishnava' || tradition === 'shaiva' || tradition === 'shakta') {
+    return 'hindu';
+  }
+  return tradition;
 }
 
 export function libraryEntryToSacredContent(entry: LibraryEntry): SacredContentItem {
@@ -72,7 +76,7 @@ export function kathaToSacredContent(katha: Katha): SacredContentItem {
 
 export function stotramToSacredContent(stotram: Stotram): SacredContentItem {
   const kind: SacredContentKind =
-    stotram.type === 'kirtan' || stotram.type === 'simran' || stotram.type === 'bhajan'
+    stotram.type === 'kirtan' || stotram.type === 'simran' || stotram.type === 'bhajan' || stotram.type === 'aarti'
       ? 'chant'
       : stotram.type === 'dhyana'
         ? 'practice'

@@ -31,7 +31,7 @@ export class ShrutiEngine {
     const ext       = options.audioBlob.type.includes('mp4') ? 'mp4'
                     : options.audioBlob.type.includes('ogg') ? 'ogg'
                     : 'webm';
-    const audioPath = `${userId}/${options.chunkId}/${timestamp}.${ext}`;
+    const audioPath = `${userId}/${options.chunkId ?? options.verseRef ?? 'unspecified'}/${timestamp}.${ext}`;
 
     // Upload to Supabase Storage
     const { error: uploadErr } = await this.supabase.storage
@@ -51,7 +51,8 @@ export class ShrutiEngine {
       .from('pathshala_recordings')
       .insert({
         user_id:       userId,
-        chunk_id:      options.chunkId,
+        chunk_id:      options.chunkId ?? null,
+        verse_ref:     options.verseRef ?? null,
         enrollment_id: options.enrollmentId ?? null,
         audio_url:     audioPath,
         audio_bucket:  'pathshala-recordings',

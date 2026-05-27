@@ -13,7 +13,18 @@ interface ProgressRow {
   path_id: string; status: string; completed_at: string | null;
   current_lesson: number; completed_lessons: number[]; created_at: string; updated_at: string;
 }
-interface Props { progress: ProgressRow[]; tradition: string; }
+
+interface Props {
+  progress: ProgressRow[];
+  tradition: string;
+  shrutiStats?: {
+    total_recordings: number;
+    scored_count: number;
+    avg_overall_score: number | null;
+    unique_verses_attempted: number;
+    certified_count: number;
+  } | null;
+}
 
 // Path metadata derived from central SEED_PATHS
 const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number }>(
@@ -137,7 +148,7 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function PathshalaInsightsClient({ progress }: Props) {
+export default function PathshalaInsightsClient({ progress, tradition, shrutiStats }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
@@ -232,6 +243,31 @@ export default function PathshalaInsightsClient({ progress }: Props) {
           <StatCard label="Active Paths" value={String(stats.active.length)} icon="book" sub={sub} isDark={isDark} amber={amber}
             detail={stats.active.length > 0 ? `${stats.active.length} path${stats.active.length !== 1 ? 's' : ''} in progress. Continue your studies daily.` : 'No active paths — start a new study journey.'} />
         </div>
+
+        {shrutiStats && shrutiStats.total_recordings > 0 && (
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1"
+              style={{ color: `${amber}80` }}>
+              🎤 Voice Recitation (Shruti)
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard
+                label="Avg Shruti Score"
+                value={shrutiStats.avg_overall_score
+                  ? `${Math.round(shrutiStats.avg_overall_score * 20)}/100`  // convert 1-5 scale to 0-100
+                  : '—'}
+                icon="sparkles" sub={sub} isDark={isDark} amber={amber}
+                detail="Your average pronunciation and fluency score across all recitations."
+              />
+              <StatCard
+                label="Verses Attempted"
+                value={String(shrutiStats.unique_verses_attempted)}
+                icon="book" sub={sub} isDark={isDark} amber={amber}
+                detail={`${shrutiStats.total_recordings} total recordings across ${shrutiStats.unique_verses_attempted} verses.`}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Path list — active/completed first, dismissed at bottom */}
         {progress.length > 0 ? (

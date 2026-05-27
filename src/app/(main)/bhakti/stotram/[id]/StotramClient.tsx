@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Repeat, Copy, Check, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Repeat, Copy, Check, Share2, Square, Loader2, SkipBack } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
@@ -95,8 +95,12 @@ const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: stri
   }
 };
 
-function getVerseMeaning(stotramId: string, verseIdx: number, enMeaning: string, targetLang: 'en' | 'hi' | 'pa'): string {
+function getVerseMeaning(stotramId: string, verseIdx: number, enMeaning: string, targetLang: 'en' | 'hi' | 'pa', verseMeaningHi?: string): string {
   if (targetLang === 'en') return enMeaning;
+  
+  if (targetLang === 'hi' && verseMeaningHi) {
+    return verseMeaningHi;
+  }
   
   const curated = STOTRAM_TRANSLATIONS[stotramId]?.[verseIdx];
   if (curated && curated[targetLang]) {
@@ -247,6 +251,7 @@ function StotramReader({ id }: { id: string }) {
   const stotram = getStotramById(id);
   const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
   const accentColor = deityMeta?.color ?? '#C5A059';
+  const amber = accentColor;
   const { t, lang: contextLang } = useLanguage();
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
@@ -305,18 +310,25 @@ function StotramReader({ id }: { id: string }) {
     };
   }, [contextLang]);
 
+  const stotramTradition = stotram?.tradition;
+  const mappedTradition = stotramTradition === 'all'
+    ? 'generic'
+    : (stotramTradition === 'vaishnava' || stotramTradition === 'shaiva' || stotramTradition === 'shakta')
+      ? 'hindu'
+      : stotramTradition;
+
   const baseReadableContent: ReadableContent = {
     original: stotram?.verses?.[0]?.sanskrit ?? '',
     transliteration: stotram?.verses?.[0]?.transliteration,
-    meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang) : '',
+    meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang, stotram.verses?.[0]?.meaning_hi) : '',
     sourceLabel: stotram?.title,
-    tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition,
+    tradition: mappedTradition,
     language: 'sa',
     script: 'devanagari',
     pipelineTags: {
       content_type: 'stotram',
       audio_mode: 'standard',
-      tradition: stotram?.tradition === 'all' ? 'generic' : stotram?.tradition,
+      tradition: mappedTradition,
       script: 'devanagari',
       response_mode: 'extractive',
       delivery_intent: 'recitation',
@@ -324,7 +336,7 @@ function StotramReader({ id }: { id: string }) {
     capabilities: buildReadableCapabilities({
       original: stotram?.verses?.[0]?.sanskrit ?? '',
       transliteration: stotram?.verses?.[0]?.transliteration,
-      meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang) : '',
+      meaning: stotram ? getVerseMeaning(stotram.id, 0, stotram.verses?.[0]?.meaning ?? '', lang, stotram.verses?.[0]?.meaning_hi) : '',
       script: 'devanagari',
       pipelineTags: {
         content_type: 'stotram',
@@ -371,6 +383,12 @@ function StotramReader({ id }: { id: string }) {
   const [ttsSpeaking,   setTtsSpeaking]   = useState(false);
   const [ttsRate,       setTtsRate]       = useState<number>(1.0);
   const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+  const verseRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [autoPlayMode,    setAutoPlayMode]    = useState(false);
+  const [autoPlayVerse,   setAutoPlayVerse]   = useState(0);   // 0-based index
+  const [autoPlayLoading, setAutoPlayLoading] = useState(false);
+  const autoPlayRef = useRef(false); // track cancellation
 
   async function speakActiveVerse() {
     if (!stotram || !selectedVerse) return;
@@ -406,7 +424,68 @@ function StotramReader({ id }: { id: string }) {
     }
   }
 
+  async function startAutoPlay(fromIndex = 0) {
+    if (!stotram?.verses?.length) return;
+    // Stop any single-verse TTS
+    if (ttsAudioRef.current) { ttsAudioRef.current.pause(); ttsAudioRef.current = null; }
+    setTtsSpeaking(false);
+
+    autoPlayRef.current = true;
+    setAutoPlayMode(true);
+    setAutoPlayVerse(fromIndex);
+
+    for (let i = fromIndex; i < stotram.verses.length; i++) {
+      if (!autoPlayRef.current) break;
+      const verse = stotram.verses[i];
+      setAutoPlayVerse(i);
+      setActiveVerse(i);
+      setAutoPlayLoading(true);
+
+      // Scroll the verse into view
+      verseRefs.current[i]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      try {
+        const audioB64 = await readerControls.handlers.requestTTS(verse.sanskrit, {
+          quality: 'pandit',
+          rate: ttsRate,
+        });
+        setAutoPlayLoading(false);
+        if (!audioB64 || !autoPlayRef.current) break;
+
+        await new Promise<void>((resolve) => {
+          const audio = new Audio(`data:audio/mp3;base64,${audioB64}`);
+          ttsAudioRef.current = audio;
+          audio.onended = () => { ttsAudioRef.current = null; resolve(); };
+          audio.onerror = () => { ttsAudioRef.current = null; resolve(); };
+          if (!autoPlayRef.current) { resolve(); return; }
+          audio.play().catch(() => resolve());
+        });
+      } catch {
+        setAutoPlayLoading(false);
+        break;
+      }
+
+      // 1.2s pause between verses
+      if (autoPlayRef.current && i < stotram.verses.length - 1) {
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    }
+
+    autoPlayRef.current = false;
+    setAutoPlayMode(false);
+    setAutoPlayLoading(false);
+    ttsAudioRef.current = null;
+  }
+
+  function stopAutoPlay() {
+    autoPlayRef.current = false;
+    if (ttsAudioRef.current) { ttsAudioRef.current.pause(); ttsAudioRef.current = null; }
+    setAutoPlayMode(false);
+    setAutoPlayLoading(false);
+  }
+
   function focusVerse(index: number) {
+    stopAutoPlay();
     // Stop any active TTS when switching verse
     if (ttsAudioRef.current) { ttsAudioRef.current.pause(); ttsAudioRef.current = null; }
     setTtsSpeaking(false);
@@ -419,17 +498,17 @@ function StotramReader({ id }: { id: string }) {
     trackReaderEvent('reader_opened', {
       content_type: 'stotram',
       source: stotram.title,
-      tradition: stotram.tradition === 'all' ? 'generic' : stotram.tradition,
+      tradition: mappedTradition,
       language: lang,
       has_transliteration: !!stotram.verses?.[0]?.transliteration,
       has_meaning: true,
     });
-  }, [lang, stotram]);
+  }, [lang, stotram, mappedTradition]);
 
   // ── Build ReadableContent for each verse ────────────────────────────────────
   function buildVerseReadableContent(verse: any): ReadableContent {
-    const verseMeaning = getVerseMeaning(stotram!.id, verse.number - 1, verse.meaning, lang);
-    const tradition = stotram!.tradition === 'all' ? 'generic' : stotram!.tradition;
+    const verseMeaning = getVerseMeaning(stotram!.id, verse.number - 1, verse.meaning, lang, verse.meaning_hi);
+    const tradition = mappedTradition;
     return {
       original: verse.sanskrit,
       meaning: verseMeaning,
@@ -491,7 +570,7 @@ function StotramReader({ id }: { id: string }) {
 
   function copyFullStotram() {
     const versesText = stotram!.verses.map(v => 
-      `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang)}`
+      `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang, v.meaning_hi)}`
     ).join('\n\n');
     const textToCopy = `${stotram!.title} (${stotram!.titleDevanagari})\n${stotram!.description}\n\n${versesText}`;
     readerControls.handlers.copyText(textToCopy, 'Stotram');
@@ -504,7 +583,7 @@ function StotramReader({ id }: { id: string }) {
   }
 
   function copyVerse(v: any) {
-    const textToCopy = `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang)}`;
+    const textToCopy = `Verse ${v.number}\n${v.sanskrit}\n${v.transliteration}\nMeaning: ${getVerseMeaning(stotram!.id, v.number - 1, v.meaning, lang, v.meaning_hi)}`;
     readerControls.handlers.copyText(textToCopy, `Verse ${v.number}`);
     trackReaderEvent('content_copied', {
       content_type: 'stotram',
@@ -654,6 +733,27 @@ function StotramReader({ id }: { id: string }) {
             ) : null}
           </div>
           <button
+            onClick={() => autoPlayMode ? stopAutoPlay() : startAutoPlay(0)}
+            disabled={autoPlayLoading && !autoPlayMode}
+            aria-label={autoPlayMode ? 'Stop auto-play' : 'Play all verses'}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 14px', borderRadius: 20,
+              background: autoPlayMode ? `${amber}22` : isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+              border: `1px solid ${amber}40`,
+              color: amber,
+              fontSize: 13, fontWeight: 500,
+              cursor: (autoPlayLoading && !autoPlayMode) ? 'not-allowed' : 'pointer',
+              transition: 'background 0.2s',
+            }}
+          >
+            {autoPlayMode
+              ? <><Square size={13} fill={amber} /> Stop</>
+              : autoPlayLoading
+                ? <><Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> Loading…</>
+                : <><Play size={13} /> Play All</>}
+          </button>
+          <button
             onClick={() => {
               if (stotram.verses.length === 1 && selectedVerse) {
                 shareVerse(selectedVerse);
@@ -740,11 +840,23 @@ function StotramReader({ id }: { id: string }) {
               <motion.div key={verse.number}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06 }}>
-                <div className="rounded-[1.5rem] overflow-hidden"
-                  style={{ background: cardBg, border: `1px solid ${isActive ? accentColor + '35' : cardBdr}` }}>
+                <div 
+                  ref={(el) => { verseRefs.current[i] = el; }}
+                  className="rounded-[1.5rem] overflow-hidden"
+                  style={{ 
+                    background: cardBg, 
+                    border: `1px solid ${isActive ? accentColor + '35' : cardBdr}`,
+                    borderLeft: autoPlayMode && i === autoPlayVerse
+                      ? `3px solid ${amber}`
+                      : '3px solid transparent',
+                    transition: 'border-color 0.3s ease',
+                  }}>
                   {/* Verse header */}
                   <button
-                    onClick={() => setActiveVerse(isActive ? null : i)}
+                    onClick={() => {
+                      if (autoPlayMode) stopAutoPlay();
+                      setActiveVerse(isActive ? null : i);
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-left"
                     disabled={stotram.verses.length === 1}>
                     <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
@@ -801,7 +913,7 @@ function StotramReader({ id }: { id: string }) {
                                   color: textS,
                                   fontSize: `${fontScale * 0.8}rem`
                                 }}>
-                              {getVerseMeaning(stotram.id, verse.number - 1, verse.meaning, lang)}
+                              {getVerseMeaning(stotram.id, verse.number - 1, verse.meaning, lang, verse.meaning_hi)}
                             </p>
                           </div>
                           ) : null}
@@ -830,6 +942,99 @@ function StotramReader({ id }: { id: string }) {
           {stotram.source}
         </p>
       </div>
+
+      {autoPlayMode && stotram && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 'calc(env(safe-area-inset-bottom, 0px) + 64px)',
+            left: '50%', transform: 'translateX(-50%)',
+            width: 'min(420px, calc(100vw - 32px))',
+            zIndex: 50,
+            background: isDark ? 'rgba(18,14,10,0.92)' : 'rgba(255,253,248,0.95)',
+            border: `1px solid ${amber}30`,
+            borderRadius: 16,
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            padding: '10px 16px',
+            display: 'flex', alignItems: 'center', gap: 10,
+            boxShadow: `0 4px 24px rgba(0,0,0,0.18), 0 0 0 1px ${amber}18`,
+          }}
+        >
+          {/* Track info */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)', marginBottom: 1 }}>
+              {stotram.title}
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              {autoPlayLoading && <Loader2 size={11} style={{ animation: 'spin 1s linear infinite', color: amber }} />}
+              Verse {autoPlayVerse + 1}
+              <span style={{ color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)', fontWeight: 400 }}>
+                of {stotram.verses.length}
+              </span>
+            </div>
+            {/* Progress dots */}
+            <div style={{ display: 'flex', gap: 3, marginTop: 5, flexWrap: 'wrap' }}>
+              {stotram.verses.map((_, i) => (
+                <div
+                  key={i}
+                  onClick={() => { stopAutoPlay(); setTimeout(() => startAutoPlay(i), 100); }}
+                  style={{
+                    width: i === autoPlayVerse ? 16 : 5,
+                    height: 5, borderRadius: 3,
+                    background: i < autoPlayVerse
+                      ? amber
+                      : i === autoPlayVerse
+                        ? amber
+                        : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {/* Previous verse */}
+            <button
+              onClick={() => { stopAutoPlay(); setTimeout(() => startAutoPlay(Math.max(0, autoPlayVerse - 1)), 100); }}
+              disabled={autoPlayVerse === 0}
+              style={{ background: 'none', border: 'none', padding: 6, cursor: autoPlayVerse === 0 ? 'not-allowed' : 'pointer',
+                color: autoPlayVerse === 0 ? (isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)') : amber }}
+              aria-label="Previous verse"
+            >
+              <SkipBack size={16} />
+            </button>
+
+            {/* Pause/Resume — pause current audio, keep state */}
+            <button
+              onClick={() => {
+                if (ttsAudioRef.current?.paused === false) {
+                  ttsAudioRef.current.pause();
+                } else if (ttsAudioRef.current?.paused) {
+                  ttsAudioRef.current.play();
+                }
+              }}
+              style={{ background: `${amber}18`, border: `1px solid ${amber}40`, borderRadius: 20,
+                padding: '6px 12px', cursor: 'pointer', color: amber, display: 'flex', alignItems: 'center', gap: 4 }}
+              aria-label="Pause"
+            >
+              <Pause size={14} />
+            </button>
+
+            {/* Stop */}
+            <button
+              onClick={stopAutoPlay}
+              style={{ background: 'none', border: 'none', padding: 6, cursor: 'pointer', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)' }}
+              aria-label="Stop"
+            >
+              <Square size={15} fill="currentColor" />
+            </button>
+          </div>
+        </div>
+      )}
     </ReaderShell>
   );
 }

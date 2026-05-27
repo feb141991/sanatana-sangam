@@ -9,7 +9,7 @@ export default async function PathshalaInsightsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/');
 
-  const [{ data: progress }, { data: profile }] = await Promise.all([
+  const [{ data: progress }, { data: profile }, { data: shrutiStats }] = await Promise.all([
     // Scoped to PATHSHALA_PATH_IDS so we never pull in NityaKarma guided-plan rows
     // (brahma-muhurta-7, japa-foundation-7…) which share the same table.
     supabase
@@ -24,12 +24,19 @@ export default async function PathshalaInsightsPage() {
       .select('tradition')
       .eq('id', user.id)
       .single(),
+
+    supabase
+      .from('pathshala_recitation_stats')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle(),
   ]);
 
   return (
     <PathshalaInsightsClient
       progress={progress ?? []}
       tradition={profile?.tradition ?? 'hindu'}
+      shrutiStats={shrutiStats}
     />
   );
 }

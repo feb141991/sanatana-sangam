@@ -249,6 +249,7 @@ export default async function HomePage() {
       city={profile?.city ?? ''}
       savedLat={profile?.latitude  ?? null}
       savedLon={profile?.longitude ?? null}
+      timezone={profile?.timezone ?? 'UTC'}
       shloka={shloka}
       sacredText={sacredText}
       sacredTextMeta={{

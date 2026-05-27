@@ -141,7 +141,12 @@ export async function GET(req: NextRequest) {
   const startTime = Date.now();
 
   const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];
-  const fallbackQuiz = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+  const fallbackPool = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
+  const fallbackArr = Array.isArray(fallbackPool) ? fallbackPool : [fallbackPool];
+  const fallbackQuiz = fallbackArr[dayOfYear % fallbackArr.length];
   const fallbackLanguage = DAILY_FALLBACK_QUIZ[requestedLanguage] && (langFallbacks[tradition] || langFallbacks['all']) ? undefined : 'en';
 
   try {

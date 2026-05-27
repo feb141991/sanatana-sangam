@@ -252,25 +252,57 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'audio download failed' }), { status: 500 });
     }
 
-    // ── 3. Groq Whisper transcription ─────────────────────────────────────────
+    // ── 3. ASR transcription (Sarvam saarika:v2 with Groq fallback) ───────────
     let transcript = '';
-    if (GROQ_API_KEY) {
-      const formData = new FormData();
-      formData.append('file', new Blob([await audioData.arrayBuffer()], { type: 'audio/webm' }), 'recording.webm');
-      formData.append('model', 'whisper-large-v3');
-      formData.append('language', language === 'awa' ? 'hi' : language); // Awadhi → Hindi STT
-      formData.append('response_format', 'verbose_json');
-      formData.append('temperature', '0');
+    let asrProvider: 'sarvam' | 'groq' = 'sarvam';
+    const SARVAM_API_KEY = Deno.env.get('SARVAM_API_KEY') ?? '';
 
-      const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-        method:  'POST',
-        headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
-        body:    formData,
-      });
+    if (SARVAM_API_KEY) {
+      try {
+        const formData = new FormData();
+        formData.append('file', new Blob([await audioData.arrayBuffer()], { type: 'audio/webm' }), 'recording.webm');
+        formData.append('model', 'saarika:v2');
+        formData.append('language_code', 'sa-IN');
+        formData.append('with_timestamps', 'false');
+        formData.append('with_disfluencies', 'false');
 
-      if (groqRes.ok) {
-        const groqData = await groqRes.json();
-        transcript = groqData.text ?? '';
+        const sarvamRes = await fetch('https://api.sarvam.ai/speech-to-text', {
+          method: 'POST',
+          headers: { 'api-subscription-key': SARVAM_API_KEY },
+          body: formData,
+        });
+
+        if (sarvamRes.ok) {
+          const sarvamData = await sarvamRes.json();
+          transcript = sarvamData.transcript ?? '';
+        }
+      } catch (err) {
+        console.error('[shruti] Sarvam ASR exception:', err);
+      }
+    }
+
+    if (!transcript) {
+      console.warn('[shruti] Sarvam ASR failed, falling back to Groq');
+      asrProvider = 'groq';
+
+      if (GROQ_API_KEY) {
+        const formData = new FormData();
+        formData.append('file', new Blob([await audioData.arrayBuffer()], { type: 'audio/webm' }), 'recording.webm');
+        formData.append('model', 'whisper-large-v3');
+        formData.append('language', language === 'awa' ? 'hi' : language); // Awadhi → Hindi STT
+        formData.append('response_format', 'verbose_json');
+        formData.append('temperature', '0');
+
+        const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+          method:  'POST',
+          headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
+          body:    formData,
+        });
+
+        if (groqRes.ok) {
+          const groqData = await groqRes.json();
+          transcript = groqData.text ?? '';
+        }
       }
     }
 
@@ -278,7 +310,7 @@ Deno.serve(async (req: Request) => {
       await supabase.from('pathshala_recordings')
         .update({ status: 'error', error_message: 'STT transcription failed' })
         .eq('id', recording_id);
-      return new Response(JSON.stringify({ error: 'transcription failed — check GROQ_API_KEY' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'transcription failed — both Sarvam and Groq failed' }), { status: 500 });
     }
 
     // ── 4. Word-level diff ────────────────────────────────────────────────────
@@ -378,6 +410,7 @@ Feedback: be encouraging — address the student as a sincere practitioner. Note
       JSON.stringify({
         recording_id,
         transcript,
+        asr_provider: asrProvider,
         scores: {
           uccharan: scores.uccharan,
           sandhi:   scores.sandhi,

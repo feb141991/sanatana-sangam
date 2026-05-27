@@ -130,6 +130,7 @@ interface Props {
   sampradaya:        string | null;
   ishtaDevata:       string | null;
   appLanguage?:      string;
+  timezone:          string;
   meaningLanguage?:  string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
@@ -1028,6 +1029,7 @@ export default function HomeDashboard({
   sampradaya,
   ishtaDevata,
   appLanguage,
+  timezone,
   meaningLanguage,
   spiritualLevel,
   seeking,
@@ -1293,7 +1295,7 @@ export default function HomeDashboard({
 
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
   const _quizTrad           = tradition ?? 'hindu';
-  const todayStr            = new Date().toISOString().split('T')[0];
+  const todayStr            = localSpiritualDate(timezone, 4);
   const effectiveLang       = appLanguage ?? 'en';
   const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${effectiveLang}-${todayStr}`;
   const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${effectiveLang}-${todayStr}`;
@@ -1361,8 +1363,7 @@ export default function HomeDashboard({
           .catch(() => {});
       })
       .catch(() => setQuiz('error'));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tradition, appLanguage]);
+  }, [tradition, appLanguage, todayStr]);
 
   async function handleQuizAnswer(idx: number) {
     if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
