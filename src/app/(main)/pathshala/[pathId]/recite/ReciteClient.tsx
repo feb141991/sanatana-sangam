@@ -219,9 +219,9 @@ export default function ReciteClient({
 
   // TTS state
   const [isSpeaking,  setIsSpeaking]  = useState(false);
-  const [ttsRate,     setTtsRate]     = useState<0.5 | 0.75 | 1 | 1.25>(0.75);
+  const [ttsRate,     setTtsRate]     = useState<0.5 | 0.75 | 1 | 1.25>(1);
   const [autoPlay,    setAutoPlay]    = useState(false);
-  const ttsRateRef    = useRef<number>(0.75);
+  const ttsRateRef    = useRef<number>(1);
   const autoPlayRef   = useRef(false);
   const audioRef      = useRef<HTMLAudioElement | null>(null);
 
