@@ -250,6 +250,9 @@ function StotramReader({ id }: { id: string }) {
 
   const stotram = getStotramById(id);
   const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
+  // Pass language hint to TTS so Sanskrit goes to Bhashini sa-m1 voice and
+  // Hindi / Awadhi / other Devanagari languages go to Sarvam hi-IN.
+  const ttsLanguageHint = stotram?.language?.toLowerCase().startsWith('sanskrit') ? 'sa' : 'hi';
   const accentColor = deityMeta?.color ?? '#C5A059';
   const amber = accentColor;
   const { t, lang: contextLang } = useLanguage();
@@ -405,6 +408,7 @@ function StotramReader({ id }: { id: string }) {
       const audioB64 = await readerControls.handlers.requestTTS(selectedVerse.sanskrit, {
         quality: 'pandit',
         rate: ttsRate,
+        language: ttsLanguageHint,
         pipelineTags: verseContent.pipelineTags,
       });
       if (!audioB64) { setTtsSpeaking(false); return; }
@@ -448,6 +452,7 @@ function StotramReader({ id }: { id: string }) {
         const audioB64 = await readerControls.handlers.requestTTS(verse.sanskrit, {
           quality: 'pandit',
           rate: ttsRate,
+          language: ttsLanguageHint,
         });
         setAutoPlayLoading(false);
         if (!audioB64 || !autoPlayRef.current) break;

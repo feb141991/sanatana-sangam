@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
   let requestedRate: number | null = null;
   const startTime = Date.now();
 
+  let textLanguage: string | null = null; // 'sa' = Sanskrit, 'hi' = Hindi, null = auto-detect
+
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
@@ -41,6 +43,9 @@ export async function POST(req: NextRequest) {
       : body.speed
         ? Number(body.speed)
         : null;
+    // Optional caller hint: 'sa' routes Devanagari to Bhashini Sanskrit voice,
+    // anything else (e.g. 'hi', 'awa') routes Devanagari to Sarvam hi-IN.
+    textLanguage = typeof body.language === 'string' ? body.language.trim() : null;
 
     const tagValidation = validatePipelineTags(
       body.pipelineTags ?? body.tags, { context: 'tts_request' }
@@ -63,15 +68,20 @@ export async function POST(req: NextRequest) {
   const sarvamKey = process.env.SARVAM_API_KEY?.trim();
   const isDevanagari = hasDevanagari(text);
 
-  const effectiveRate = isDevanagari
+  // Only route to Bhashini (Sanskrit sa-m1 voice) when caller explicitly marks
+  // language as 'sa' (Sanskrit). Hindi, Awadhi and other Devanagari scripts go
+  // to Sarvam hi-IN — sending non-Sanskrit to sa-m1 produces wrong output.
+  const isSanskrit = isDevanagari && textLanguage === 'sa';
+
+  const effectiveRate = isSanskrit
     ? 1.0
     : requestedRate ?? 0.75;
 
   const sarvamProfile = getSarvamVoiceConfig(text, quality);
-  const providerLabel = isDevanagari ? 'bhashini'
+  const providerLabel = isSanskrit ? 'bhashini'
     : sarvamKey ? 'sarvam'
       : 'sarvam';
-  const voiceLabel = isDevanagari ? 'sa-m1' : sarvamProfile.speaker;
+  const voiceLabel = isSanskrit ? 'sa-m1' : sarvamProfile.speaker;
 
   const cacheKey = generateTTSCacheKey(text, providerLabel, voiceLabel, effectiveRate, quality);
 
@@ -118,7 +128,7 @@ export async function POST(req: NextRequest) {
 
   const { cleanedText, usesSSML } = preprocessTTS(text, quality);
 
-  if (isDevanagari) {
+  if (isSanskrit) {
     let bhashiniFailReason: string | null = null;
     try {
       const style = quality === 'pandit' ? 'Book' : 'Neutral';
