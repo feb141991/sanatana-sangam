@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     text = String(body.text ?? '').trim();
     quality = body.quality === 'pandit' ? 'pandit' : (body.quality === 'akash' ? 'akash' : 'standard');
-    requestedRate = body.rate ? Number(body.rate) : null;
+    requestedRate = body.rate ? Number(body.rate) : body.speed ? Number(body.speed) : null;
 
     // Validate and normalize incoming pipeline tags
     const tagValidation = validatePipelineTags(body.pipelineTags ?? body.tags, { context: 'tts_request' });
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
   const sarvamKey = process.env.SARVAM_API_KEY?.trim();
   const providerLabel = sarvamKey ? 'sarvam' : 'google';
   const effectiveProfileName = sarvamKey ? getSarvamVoiceConfig(text, quality).speaker : getVoiceConfig(text, quality).name;
-  const effectiveRate = requestedRate ?? (sarvamKey ? 1.0 : getVoiceConfig(text, quality).rate);
+  const effectiveRate = requestedRate ?? (sarvamKey ? 0.75 : getVoiceConfig(text, quality).rate);
 
   const cacheKey = generateTTSCacheKey(text, providerLabel, effectiveProfileName, effectiveRate, quality);
   
