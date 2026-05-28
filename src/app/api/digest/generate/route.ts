@@ -106,7 +106,7 @@ async function generateDigest(
         user: buildPrompt(tradition, level, panchang),
         temperature: 0.7,
         reasoningEffort: 'none',
-        maxOutputTokens: 1200,
+        maxOutputTokens: 4096,
       },
       {
         responseFormat: 'json',

@@ -235,9 +235,11 @@ export class SarvamProvider implements PramanaInferenceProvider {
     // ── Build payload ──────────────────────────────────────────────────────
     const thinking = buildThinkingParam(effort);
     const maxTokens = effortOverride === 'none'
-      // Retry path: no reasoning headroom needed, but still apply the 400-token floor
-      // so a route that passed a tiny budget doesn't truncate on the retry either.
-      ? Math.max(request.prompt.maxOutputTokens ?? 800, 400)
+      // Retry path: thinking is disabled so no reasoning headroom needed,
+      // but if we got here because of OUTPUT_TRUNCATED the caller's budget
+      // was too small — double it (floor 2048) so the retry actually has a
+      // chance of succeeding instead of truncating a second time.
+      ? Math.max((request.prompt.maxOutputTokens ?? 800) * 2, 2048)
       : resolveMaxTokens(request.prompt.maxOutputTokens, effort);
 
     const payload: Record<string, unknown> = {

@@ -54,7 +54,7 @@ export async function GET() {
       system: systemPrompt,
       user: userPrompt,
       temperature: 0.7,
-      maxOutputTokens: 200,
+      maxOutputTokens: 1024,
       reasoningEffort: 'none',
     }, { responseFormat: 'text' });
 

@@ -53,7 +53,7 @@ Data: ${JSON.stringify(summaryPayload)}
       const aiResponse = await generateWithProvider({
         user: prompt,
         temperature: 0.7,
-        maxOutputTokens: 500,
+        maxOutputTokens: 2048,
         reasoningEffort: 'none'
       }, {
         responseFormat: 'text'

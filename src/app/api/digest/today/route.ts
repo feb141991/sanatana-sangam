@@ -107,7 +107,7 @@ Return ONLY this JSON:
           user: prompt,
           temperature: 0.7,
           reasoningEffort: 'none',
-          maxOutputTokens: 1200,
+          maxOutputTokens: 4096,
         },
         {
           responseFormat: 'json',

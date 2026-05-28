@@ -472,7 +472,7 @@ export async function verifyFestivalDatesWithAI(
       const prompt = buildVerificationPrompt(year, batch);
       try {
         const response = await generateWithProvider(
-          { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 1200 },
+          { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 4096 },
           { responseFormat: 'json', providerOverride: 'sarvam-hosted' },
         );
 

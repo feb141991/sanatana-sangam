@@ -88,7 +88,7 @@ Respond in this exact JSON format: {"message": "...", "urgency": "now|soon|later
         user: userPrompt,
         temperature: 0.7,
         reasoningEffort: 'none',
-        maxOutputTokens: 500,
+        maxOutputTokens: 2048,
       },
       { responseFormat: 'json' },
     );

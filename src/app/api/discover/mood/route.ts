@@ -96,7 +96,7 @@ Return: ["insight1", "insight2", ...]`;
         user: insightPrompt,
         temperature: 0.55,
         reasoningEffort: 'none',
-        maxOutputTokens: 500,
+        maxOutputTokens: 2048,
       },
       { responseFormat: 'json' },
     );

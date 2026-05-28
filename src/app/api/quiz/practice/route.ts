@@ -245,7 +245,7 @@ export async function GET(req: NextRequest) {
         user: prompt,
         temperature: 0.4,
         reasoningEffort: 'none',
-        maxOutputTokens: 1800,
+        maxOutputTokens: 6000,
       },
       { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );

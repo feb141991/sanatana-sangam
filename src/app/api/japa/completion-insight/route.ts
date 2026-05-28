@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         user: prompt,
         temperature: 0.72,
         reasoningEffort: 'none',
-        maxOutputTokens: 450,
+        maxOutputTokens: 2048,
       },
       { responseFormat: 'text' }
     );
