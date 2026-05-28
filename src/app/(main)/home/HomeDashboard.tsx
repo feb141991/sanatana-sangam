@@ -2784,10 +2784,8 @@ export default function HomeDashboard({
           )}
         </AnimatePresence>
 
-        {/* ── Daily Dharmic Digest ────────────────────────────────────────── */}
-        <div className="px-4 mb-3">
-          <DailyDigestCard isDark={isDark} />
-        </div>
+        {/* ── Daily Dharmic Digest — re-enable post-launch ────────────────── */}
+        {/* <div className="px-4 mb-3"><DailyDigestCard isDark={isDark} /></div> */}
 
         {/* ── Do You Know? Daily Quiz Spark Teaser — hidden once answered ── */}
         <AnimatePresence>
