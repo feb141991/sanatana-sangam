@@ -5,10 +5,15 @@ export async function synthesizeBhashini(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20_000);
 
+  // Support optional API key — add BHASHINI_API_KEY to Vercel env when available
+  const apiKey = process.env.BHASHINI_API_KEY?.trim();
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
   try {
     const response = await fetch('https://tts.bhashini.ai/v1/synthesize', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         text,
         language: 'Sanskrit',

@@ -46,8 +46,13 @@ export const metadata: Metadata = {
   keywords:    ['panchang', 'japa', 'mantra', 'Sanskrit', 'bhakti', 'dharma', 'Hindu', 'Sikh', 'Buddhist', 'Jain', 'meditation', 'sadhana', 'kirtan', 'Vedanta', 'spiritual'],
   manifest:    '/manifest.json',
   icons: {
-    icon:  '/icons/icon-192x192.png',
-    apple: '/icons/icon-192x192.png',
+    icon:        [
+      { url: '/favicon.ico',           sizes: 'any' },
+      { url: '/icons/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icons/icon-512x512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple:       '/icons/icon-192x192.png',
+    shortcut:    '/favicon.ico',
   },
   appleWebApp: {
     capable: true,

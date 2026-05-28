@@ -66,11 +66,15 @@ export default async function HomePage() {
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
 
+  // Only fetch upcoming observances (from yesterday onward) so we don't pull
+  // historical rows on every render. 90 rows covers ~3 months of daily festivals.
+  const calendarFromDate = shiftIsoDate(new Date().toISOString().slice(0, 10), -1);
   const { data: calendarRows } = await supabase
     .from('observance_occurrences')
     .select('*, observance_definitions(*)')
+    .gte('date', calendarFromDate)
     .order('date', { ascending: true })
-    .limit(160);
+    .limit(90);
 
   // Tradition-aware daily sacred text.
   // Explicit Hindu uses shlokas.ts; Sikh/Buddhist/Jain/exploring use sacred-texts.ts.

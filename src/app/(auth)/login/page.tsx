@@ -77,7 +77,7 @@ function LoginForm() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success('Jai Shri Ram! Welcome back 🙏');
+      toast.success('Welcome back, Seeker 🙏');
       router.push('/home');
       router.refresh();
     }
