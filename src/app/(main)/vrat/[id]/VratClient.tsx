@@ -3,16 +3,16 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, Settings, Sun, Moon, 
+import {
+  ChevronLeft, Settings, Sun, Moon,
   Book, Flame, Share2, Info, Copy, Check,
-  Volume2, VolumeX, Loader2
+  Volume2, VolumeX, Loader2, CheckCircle2
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
-import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
@@ -24,6 +24,7 @@ type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 interface VratClientProps {
   vrat: VratData;
   originalSlug: string;
+  isAuthenticated?: boolean;
   appLanguage?: string;
   meaningLanguage?: string;
   transliterationLanguage?: string;
@@ -34,6 +35,7 @@ interface VratClientProps {
 export default function VratClient({
   vrat,
   originalSlug,
+  isAuthenticated = false,
   appLanguage,
   meaningLanguage,
   transliterationLanguage,
@@ -207,6 +209,54 @@ export default function VratClient({
   const activeTheme = themeColors[theme];
 
   const readerControls = useReaderControls(mantraContent.capabilities);
+
+  // ── Vrat observation tracker ──────────────────────────────────────────────
+  const [observedToday,    setObservedToday]    = useState(false);
+  const [observeCount,     setObserveCount]     = useState(0);
+  const [observeLoading,   setObserveLoading]   = useState(false);
+  const [observeStatusLoaded, setObserveStatusLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    fetch(`/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setObservedToday(data.observed_today);
+          setObserveCount(data.total_count);
+        }
+      })
+      .catch(() => { /* silently ignore — tracker is non-critical */ })
+      .finally(() => setObserveStatusLoaded(true));
+  }, [isAuthenticated, vrat.id]);
+
+  async function handleObserve() {
+    if (observedToday || observeLoading) return;
+    setObserveLoading(true);
+    try {
+      const res = await fetch('/api/vrat/observe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vrat_id: vrat.id, vrat_name: vrat.name }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setObservedToday(true);
+        setObserveCount(c => c + (data.already_observed ? 0 : 1));
+        if (!data.already_observed && data.karma_earned > 0) {
+          toast.success(`🙏 Vrat observed! +${data.karma_earned} karma`, { duration: 3000 });
+        } else {
+          toast.success('🙏 Vrat marked as observed', { duration: 2000 });
+        }
+      } else {
+        toast.error(data?.error ?? 'Could not record observation');
+      }
+    } catch {
+      toast.error('Could not record observation');
+    } finally {
+      setObserveLoading(false);
+    }
+  }
 
   // ── TTS playback ──
   const [speaking, setSpeaking] = useState(false);
@@ -437,12 +487,61 @@ export default function VratClient({
 
         </section>
 
-        {/* Share Button */}
-        <div className="flex justify-center pt-12">
-          <button 
+        {/* CTA Buttons */}
+        <div className="flex flex-col items-center gap-4 pt-12">
+
+          {/* ── Mark as Observed (authenticated users only) ── */}
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="w-full max-w-sm"
+            >
+              {observedToday ? (
+                <div
+                  className="flex items-center justify-center gap-2.5 w-full rounded-full py-4 font-bold text-sm"
+                  style={{ background: 'rgba(134,187,110,0.15)', border: '1.5px solid rgba(134,187,110,0.45)', color: '#5aaa38' }}
+                >
+                  <CheckCircle2 size={18} />
+                  Observed today ✓
+                  {observeCount > 1 && (
+                    <span className="ml-1 text-xs font-normal opacity-70">({observeCount}× total)</span>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={handleObserve}
+                  disabled={observeLoading || !observeStatusLoaded}
+                  className="w-full flex items-center justify-center gap-2.5 rounded-full py-4 font-bold text-sm transition active:scale-95 disabled:opacity-60"
+                  style={{ background: 'rgba(197,160,89,0.92)', color: '#1c1208', boxShadow: '0 4px 20px rgba(197,160,89,0.25)' }}
+                >
+                  {observeLoading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <>
+                      🙏 Mark as Observed
+                      {observeCount > 0 && (
+                        <span className="ml-1 text-xs font-semibold opacity-70">({observeCount}× before)</span>
+                      )}
+                    </>
+                  )}
+                </button>
+              )}
+              <p className="text-center text-[11px] mt-2 opacity-40">
+                {observedToday ? 'Your practice is recorded' : `Earn ${25} karma for completing this vrat`}
+              </p>
+            </motion.div>
+          )}
+
+          {/* Share Button */}
+          <button
             onClick={handleShare}
-            className="share-button flex items-center gap-2 px-8 py-4 rounded-full text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
-            style={{ backgroundColor: 'var(--brand-primary)' }}
+            className="share-button flex items-center gap-2 px-8 py-4 rounded-full font-bold shadow-xl hover:scale-105 transition active:scale-95"
+            style={{
+              backgroundColor: isAuthenticated ? activeTheme.border : 'var(--brand-primary)',
+              color: isAuthenticated ? activeTheme.text : '#1c1208',
+            }}
           >
             <Share2 size={18} />
             {translateFn(effectiveLang, 'shareObservance')}

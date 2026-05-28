@@ -222,7 +222,9 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
         const message = typeof data?.error === 'string'
           ? data.error
           : `Explain request failed: ${res.status}`;
-        throw new Error(message);
+        const err = new Error(message) as Error & { upgrade_required?: boolean };
+        if (data?.upgrade_required) err.upgrade_required = true;
+        throw err;
       }
 
       if (typeof data?.error === 'string') {

@@ -559,6 +559,11 @@ This observance is best treated as a named Vishnu festival, not merely a generic
 This is not merely a festival — it is a cosmic recalibration. The nine nights mark transitional seasons when earth's energies are most potent for spiritual practice. What you plant in prayer during Navratri — intention, discipline, surrender — takes root at a deeper level.
 
 The Devi Mahatmya (Durga Saptashati) describes how Devi annihilated Mahishasura, the buffalo demon of ego and delusion. The real battle is inner: Navratri is an invitation to let the Mother destroy what no longer serves.`,
+    significanceLocal: `नवरात्रि — नौ पवित्र रातें — शक्ति की अंधकार पर विजय का उत्सव है। भारत भर में देवी दुर्गा के नौ स्वरूपों (नवदुर्गा) की पूजा होती है: शैलपुत्री, ब्रह्मचारिणी, चंद्रघंटा, कुष्मांडा, स्कंदमाता, कात्यायनी, कालरात्रि, महागौरी और सिद्धिदात्री।
+
+यह केवल एक उत्सव नहीं — यह एक ब्रह्मांडीय पुनर्संतुलन है। ये नौ रातें वे संक्रांति-काल हैं जब धरती की ऊर्जाएँ आध्यात्मिक साधना के लिए सर्वाधिक सक्रिय होती हैं। नवरात्रि में जो संकल्प, अनुशासन और समर्पण बोया जाता है, वह गहरी जड़ें पकड़ता है।
+
+देवी महात्म्य (दुर्गा सप्तशती) बताती है कि देवी ने महिषासुर — अहंकार और भ्रम के रूपक — का वध कैसे किया। वास्तविक युद्ध भीतर है: नवरात्रि माँ को आमंत्रित करने का अवसर है — वह जो अनावश्यक को भस्म करती है।`,
     practice: `Begin with sankalpa (intention setting) on the first day. Light an akhand diya (continuously burning lamp) for all nine days if possible.
 
 Fast according to your capacity — sattvic foods, fruits, or nirjala on key days. Recite or listen to the Durga Saptashati, Devi Stotras, or the names of the nine Durgas.
@@ -566,7 +571,15 @@ Fast according to your capacity — sattvic foods, fruits, or nirjala on key day
 Visit a Devi temple, especially on Ashtami and Navami — the most sacred days. Perform kanya puja (worship of young girls as manifestations of Devi) on Ashtami or Navami.
 
 Participate in Garba or Dandiya (a dance offering to the Divine Mother) if your tradition includes it. Conclude with Dussehra / Vijayadashami — the day Devi triumphed.`,
+    practiceLocal: `पहले दिन संकल्प (मनोकामना की घोषणा) से आरंभ करें। यदि संभव हो तो नौ दिनों के लिए अखंड दीपक जलाएं।
+
+अपनी क्षमता के अनुसार उपवास रखें — सात्विक भोजन, फल-फूल, या प्रमुख दिनों पर निर्जला। दुर्गा सप्तशती, देवी स्तोत्र, या नवदुर्गा के नामों का जाप करें।
+
+अष्टमी और नवमी — सबसे पवित्र दिनों — पर विशेष रूप से देवी मंदिर जाएँ। अष्टमी या नवमी पर कन्या पूजन करें।
+
+यदि परंपरा हो तो गरबा या डांडिया में भाग लें। दशमी (विजयादशमी/दशहरा) पर — देवी की विजय के दिन — उत्सव का समापन करें।`,
     mantra: 'ॐ दुं दुर्गायै नमः | या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता',
+    mantraLocal: 'ॐ दुं दुर्गायै नमः | या देवी सर्वभूतेषु शक्तिरूपेण संस्थिता',
     fastingType: 'sattvic',
     breakFastTime: 'After Navami puja on the 9th day',
     dos: ['Light an akhand diya for nine days', 'Recite Durga Saptashati or Devi names', 'Offer red flowers to Devi', 'Perform kanya puja on Ashtami or Navami', 'Wear traditional colours for each day'],
@@ -586,12 +599,23 @@ Participate in Garba or Dandiya (a dance offering to the Divine Mother) if your 
 For Vaishnavites, it is also the day Krishna annihilated the demon Narakasura. For Jains, it marks Mahavira's Nirvana. For Sikhs, it is Bandi Chhor Divas — the day Guru Hargobind ji was released from imprisonment, arriving in Amritsar on this night.
 
 The outer celebration — lamps, sweets, fireworks — mirrors an inner aspiration: may I illuminate every dark corner of my own mind with the light of awareness.`,
+    significanceLocal: `दीपावली — "दीपों की पंक्ति" — भगवान राम के 14 वर्षों के वनवास के बाद अयोध्या लौटने और रावण के वध की स्मृति में मनाई जाती है। प्रत्येक प्रज्वलित दीप एक प्रार्थना है: प्रकाश अंधकार को जीते, सत्य असत्य को, जीवन मृत्यु को।
+
+वैष्णवों के लिए यह वह दिन है जब कृष्ण ने नरकासुर का वध किया। जैनों के लिए यह महावीर निर्वाण की वेला है। सिखों के लिए यह बंदी छोड़ दिवस है — जब गुरु हरगोबिंद जी बंदीगृह से मुक्त हुए।
+
+बाहरी उत्सव — दीप, मिठाइयाँ, आतिशबाजी — एक आंतरिक आकांक्षा का प्रतिबिंब है: मेरे मन का हर अंधकोण चेतना के प्रकाश से आलोकित हो जाए।`,
     practice: `Clean and purify the home thoroughly before Diwali — this creates space for Lakshmi's arrival. Light diyas (earthen lamps) around your home and in the four directions.
 
 On Lakshmi Puja (the main evening), bathe, wear fresh clothes, and arrange the puja thali. Invoke Lakshmi, Ganesha, and Saraswati. Offer lotus flowers, white sweets, incense, and gold or silver.
 
 Light the lamps at dusk and keep them burning through the night. Share sweets with family and neighbours. Recite Lakshmi Stotra, Shri Sukta, or Mahalakshmi Ashtakam.`,
+    practiceLocal: `दीपावली से पहले घर की पूरी तरह सफाई और शुद्धि करें — यह लक्ष्मीजी के आगमन के लिए स्थान बनाता है। घर के चारों दिशाओं में मिट्टी के दीये जलाएँ।
+
+लक्ष्मी पूजन (मुख्य संध्या) पर स्नान करें, नवीन वस्त्र धारण करें और पूजा की थाली सजाएँ। लक्ष्मी, गणेश और सरस्वती का आह्वान करें। कमल, सफेद मिठाइयाँ, अगरबत्ती और सोना-चाँदी अर्पण करें।
+
+सूर्यास्त के बाद दीप जलाएँ और उन्हें रात भर जलते रहने दें। परिवार और पड़ोसियों में मिठाइयाँ बाँटें। लक्ष्मी स्तोत्र, श्री सूक्त, या महालक्ष्मी अष्टकम का पाठ करें।`,
     mantra: 'ॐ श्रीं ह्रीं श्रीं कमले कमलालये प्रसीद प्रसीद श्रीं ह्रीं श्रीं महालक्ष्म्यै नमः',
+    mantraLocal: 'ॐ श्रीं ह्रीं श्रीं कमले कमलालये प्रसीद प्रसीद श्रीं ह्रीं श्रीं महालक्ष्म्यै नमः',
     fastingType: 'none',
     dos: ['Clean and decorate the home', 'Light diyas and keep them burning overnight', 'Perform Lakshmi-Ganesha puja in the evening', 'Share sweets and gifts with neighbours', 'Wear new or fresh clothes'],
     donts: ['Do not sleep during Lakshmi Puja time', 'Avoid gambling excessively (a distortion of the tradition)', 'Do not leave the home in darkness', 'Avoid harsh speech and disputes on this day'],
@@ -610,11 +634,21 @@ Light the lamps at dusk and keep them burning through the night. Share sweets wi
 Krishna's birth was not a coincidence. It was cosmic intervention: Kamsa's reign of darkness had grown unbearable, and the universe called for a force of love, wisdom, and dharma to restore balance. The Bhagavad Gita that emerged from Krishna's life remains the most direct map of the human soul ever given.
 
 To observe Janmashtami is to welcome the inner Krishna — the one who plays the flute of the present moment, who dances on the serpent of ego, who says: "Give up all dharmas, take refuge in me alone, and I shall free you from all sins."`,
+    significanceLocal: `जन्माष्टमी भगवान कृष्ण के जन्म का उत्सव है — विष्णु के आठवें अवतार, जो भाद्रपद कृष्ण अष्टमी की मध्यरात्रि को मथुरा के कारागार में प्रकट हुए।
+
+कृष्ण का जन्म संयोग नहीं था — यह एक दैवीय हस्तक्षेप था। कंस के अत्याचार से जगत त्रस्त था, और ब्रह्मांड ने प्रेम, ज्ञान और धर्म की एक शक्ति को पुकारा। कृष्ण के जीवन से उद्भूत भगवद्गीता आज भी मानव आत्मा का सबसे सीधा नक्शा है।
+
+जन्माष्टमी मनाना आंतरिक कृष्ण का स्वागत है — वे जो वर्तमान क्षण की बाँसुरी बजाते हैं, अहंकार-सर्प पर नृत्य करते हैं, और कहते हैं: "सब धर्म छोड़ो, केवल मेरी शरण आओ — मैं तुम्हें सब पापों से मुक्त करूंगा।"`,
     practice: `Fast until midnight — the sacred birth hour. Chant Krishna's names throughout the day: Hare Krishna, Govinda, Gopala, Madhava.
 
 At midnight, bathe the Krishna idol or image (abhisheka) with panchamrit (milk, curd, honey, ghee, sugar). Dress the idol, offer tulsi leaves, makhan (butter), and flute — symbols of Krishna's life.
 
 Break your fast only after midnight puja is complete. Sing bhajans, kirtans, and the Hare Krishna mahamantra. Read from the Bhagavad Gita or Bhagavata Purana. Celebrate with joy — for Krishna's nature is ananda.`,
+    practiceLocal: `मध्यरात्रि — पवित्र जन्म-वेला — तक उपवास रखें। दिन भर कृष्ण के नाम जपें: हरे कृष्ण, गोविंद, गोपाल, माधव।
+
+मध्यरात्रि को कृष्ण की मूर्ति का पंचामृत (दूध, दही, शहद, घी, शक्कर) से अभिषेक करें। मूर्ति को सजाएँ, तुलसी पत्र, माखन और बाँसुरी अर्पण करें — कृष्ण के जीवन के प्रतीक।
+
+मध्यरात्रि पूजन के बाद ही व्रत खोलें। भजन, कीर्तन और हरे कृष्ण महामंत्र गाएँ। भगवद्गीता या भागवत पुराण का पाठ करें। आनंद के साथ उत्सव मनाएँ — क्योंकि कृष्ण का स्वभाव ही आनंद है।`,
     mantra: 'हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे | हरे राम हरे राम राम राम हरे हरे',
     mantraLocal: 'हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे | हरे राम हरे राम राम राम हरे हरे',
     fastingType: 'nirjala',
@@ -630,6 +664,7 @@ Break your fast only after midnight puja is complete. Sing bhajans, kirtans, and
     name: 'Holi',
     nameLocal: 'होली',
     tagline: 'Colour the world as God colours the dawn — with abandon and joy.',
+    taglineLocal: 'रंगों से जगत को रंगो जैसे ईश्वर भोर को — उमंग और आनंद के साथ।',
     significance: `Holi celebrates the triumph of devotion over tyranny. Prahlada, a young devotee of Vishnu, survived every attempt by his demon king father Hiranyakashipu to kill him — protected by divine grace. When Holika (Hiranyakashipu's sister, immune to fire) tried to burn Prahlada alive, she perished and he emerged unharmed. The bonfire of Holika Dahan the night before Holi commemorates this victory.
 
 The next day, in an explosion of colour, Holi expresses what Prahlada embodied: that divine love transcends all divisions. On this one day, all social barriers dissolve — colour touches everyone equally, and the boundary between self and other blurs in laughter and play.
@@ -640,7 +675,18 @@ Holi is also associated with Radha and Krishna's love — the spring festival of
 On Holi day: play with natural colours (gulal made from flowers). Drink thandai (a traditional drink with milk and spices) — avoid substances that harm the body.
 
 Sing songs of Krishna and Radha. Visit family and elders. Offer forgiveness to all and seek it from those you have wronged. The spirit of Holi is radical inclusion: let down every wall.`,
+    significanceLocal: `होली भक्ति की अत्याचार पर विजय का उत्सव है। प्रह्लाद — विष्णु के बालभक्त — अपने दैत्य-राज पिता हिरण्यकश्यपु के हर प्रयास से बचे, दैवी कृपा से सुरक्षित। जब होलिका (हिरण्यकश्यपु की बहन, जिसे अग्नि जला नहीं सकती थी) ने प्रह्लाद को जीवित जलाने का प्रयास किया, तो वह स्वयं नष्ट हो गई और प्रह्लाद अक्षत निकले। होलिका दहन की अग्नि इसी विजय की स्मृति है।
+
+अगले दिन रंगों के उत्सव में होली वही प्रकट करती है जो प्रह्लाद ने जिया: दिव्य प्रेम सभी भेदों को पार कर जाता है। इस एक दिन सभी सामाजिक दीवारें गिर जाती हैं — रंग सबको समान रूप से रंगता है, और हँसी-खेल में स्व और पर का भेद मिट जाता है।
+
+होली राधा और कृष्ण के प्रेम से भी जुड़ी है — वसंत का यह रंग-उत्सव स्वयं कृष्ण की वृंदावन में की गई लीला माना जाता है।`,
+    practiceLocal: `होलिका दहन की रात: होलिका जलाएँ, तीन बार परिक्रमा करें, अहंकार, द्वेष और पुरानी पीड़ाओं के भस्म होने की प्रार्थना करें। अग्नि में नारियल, गेहूँ की बालियाँ और पवित्र लकड़ी अर्पित करें।
+
+होली के दिन: फूलों से बने प्राकृतिक रंग (गुलाल) से खेलें। ठंडाई (दूध और मसालों का पारंपरिक पेय) पिएं — शरीर को हानि पहुँचाने वाले पदार्थों से बचें।
+
+कृष्ण और राधा के भजन गाएं। परिवार और बड़ों से मिलें। सबको क्षमा करें और जिनसे भूल हुई हो उनसे क्षमा माँगें। होली की भावना है पूर्ण समावेश — हर दीवार को गिरा दो।`,
     mantra: 'ॐ नमो भगवते वासुदेवाय। राधे राधे गोविन्द गोपाल।',
+    mantraLocal: 'ॐ नमो भगवते वासुदेवाय। राधे राधे गोविन्द गोपाल।',
     fastingType: 'none',
     dos: ['Play with natural, flower-based colours', 'Perform Holika Dahan puja the night before', 'Visit elders and seek blessings', 'Share sweets — gujiya, puran poli, thandai', 'Offer forgiveness and reconcile broken relationships'],
     donts: ['Avoid synthetic chemical colours that harm skin and eyes', 'Do not force colour on those who decline', 'Avoid excessive alcohol', 'Do not disrespect temples or places of worship during play'],
@@ -663,6 +709,16 @@ Gurpurab is not merely a birthday celebration. It is a remembrance of what one h
 Visit the Gurdwara for kirtan (continuous singing of shabads). Listen to the akhand path (48-hour continuous reading of Guru Granth Sahib), or join for any portion. Participate in langar — the free community kitchen that embodies Guru Nanak's principle of equality.
 
 At home: light a diya, recite Japji Sahib (especially at dawn), and sing or listen to gurbani. Reflect on the Guru's life and what one teaching you will carry forward. Serve — volunteering at langar is considered seva of the highest order.`,
+    significanceLocal: `ਗੁਰਪੁਰਬ ਦਸ ਸਿੱਖ ਗੁਰੂਆਂ ਦੇ ਜਨਮ-ਦਿਹਾੜੇ ਅਤੇ ਹੋਰ ਪਵਿੱਤਰ ਦਿਨਾਂ ਦੀ ਯਾਦਗਾਰ ਹੈ। ਸਭ ਤੋਂ ਵੱਡਾ ਗੁਰਪੁਰਬ ਗੁਰੂ ਨਾਨਕ ਜਯੰਤੀ ਹੈ — ਸਿੱਖ ਧਰਮ ਦੇ ਬਾਨੀ ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦਾ ਪ੍ਰਕਾਸ਼ ਦਿਹਾੜਾ।
+
+ਗੁਰੂ ਨਾਨਕ ਜੀ ਦਾ ਜੀਵਨ ਹਰ ਦੀਵਾਰ ਢਾਉਣ ਦਾ ਅਮਲ ਸੀ: ਹਿੰਦੂ ਅਤੇ ਮੁਸਲਮਾਨ ਵਿਚਕਾਰ, ਅਮੀਰ ਅਤੇ ਗ਼ਰੀਬ ਵਿਚਕਾਰ, ਧਾਰਮਿਕ ਅਤੇ ਸੰਸਾਰਕ ਵਿਚਕਾਰ। ਉਨ੍ਹਾਂ ਦੀਆਂ ਤਿੰਨ ਮੂਲ ਸਿੱਖਿਆਵਾਂ — ਨਾਮ ਜਪਣਾ, ਕਿਰਤ ਕਰਨੀ, ਵੰਡ ਛਕਣਾ — ਜੀਵਨ ਲਈ ਪੂਰਨ ਧਰਮ ਹਨ।
+
+ਗੁਰਪੁਰਬ ਕੇਵਲ ਜਨਮਦਿਨ ਦਾ ਜਸ਼ਨ ਨਹੀਂ। ਇਹ ਉਸ ਦੀ ਯਾਦ ਹੈ ਜੋ ਇੱਕ ਇਨਸਾਨੀ ਜ਼ਿੰਦਗੀ ਉਦੋਂ ਕਰ ਸਕਦੀ ਹੈ ਜਦੋਂ ਉਹ ਪੂਰੀ ਤਰ੍ਹਾਂ ਪਰਮਾਤਮਾ ਦੇ ਨਾਮ ਨੂੰ ਸਮਰਪਿਤ ਹੋ ਜਾਂਦੀ ਹੈ।`,
+    practiceLocal: `ਗੁਰਪੁਰਬ ਪ੍ਰਭਾਤ ਫੇਰੀ ਨਾਲ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ — ਸਵੇਰੇ ਤੜਕੇ ਮੁਹੱਲੇ ਵਿੱਚ ਗੁਰਬਾਣੀ ਗਾਉਂਦੇ ਹੋਏ ਜਲੂਸ।
+
+ਕੀਰਤਨ ਲਈ ਗੁਰਦੁਆਰੇ ਜਾਓ। ਅਖੰਡ ਪਾਠ (ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਦਾ 48 ਘੰਟੇ ਦਾ ਲਗਾਤਾਰ ਪਾਠ) ਸੁਣੋ ਜਾਂ ਕਿਸੇ ਵੀ ਹਿੱਸੇ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ। ਲੰਗਰ ਵਿੱਚ ਹਿੱਸਾ ਲਓ — ਉਹ ਮੁਫ਼ਤ ਸਾਂਝਾ ਰਸੋਈਘਰ ਜੋ ਗੁਰੂ ਨਾਨਕ ਜੀ ਦੀ ਬਰਾਬਰੀ ਦੀ ਭਾਵਨਾ ਨੂੰ ਜ਼ਿੰਦਾ ਰੱਖਦਾ ਹੈ।
+
+ਘਰ ਵਿੱਚ: ਦੀਵਾ ਜਲਾਓ, ਜਪੁਜੀ ਸਾਹਿਬ ਦਾ ਪਾਠ ਕਰੋ (ਖਾਸ ਕਰਕੇ ਸਵੇਰੇ), ਅਤੇ ਗੁਰਬਾਣੀ ਗਾਓ ਜਾਂ ਸੁਣੋ। ਗੁਰੂ ਜੀ ਦੇ ਜੀਵਨ ਬਾਰੇ ਸੋਚੋ ਅਤੇ ਇੱਕ ਸਿੱਖਿਆ ਚੁਣੋ ਜੋ ਤੁਸੀਂ ਅੱਗੇ ਲੈ ਜਾਓਗੇ। ਸੇਵਾ ਕਰੋ — ਲੰਗਰ ਵਿੱਚ ਸੇਵਾਦਾਰੀ ਸਭ ਤੋਂ ਉੱਚੀ ਸੇਵਾ ਮੰਨੀ ਜਾਂਦੀ ਹੈ।`,
     mantra: 'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ',
     mantraLocal: 'ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ ਵਾਹਿਗੁਰੂ',
     fastingType: 'none',

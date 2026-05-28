@@ -519,6 +519,281 @@ function ShieldBadgesPreview({
   );
 }
 
+// ── Advanced Analytics (Zenith) ───────────────────────────────────────────────
+interface AdvancedData {
+  quiz:  { total_answered: number; accuracy_pct: number; by_tradition: { tradition: string; answered: number; accuracy_pct: number }[] };
+  mood:  { total_checkins: number; most_frequent_mood: string | null; mood_frequency: { mood: string; count: number }[]; action_rate_pct: number };
+  vrat:  { total_observed: number; unique_vratas: number; last_30_days: number; recent: { vrat_id: string; vrat_name: string; date: string; karma_earned: number }[] };
+  karma: { current_total: number; seva_score: number; last_30_days_earned: number; breakdown: { reason: string; total: number }[] };
+}
+
+const MOOD_EMOJI: Record<string, string> = {
+  peaceful: '🕊️', grateful: '🙏', focused: '🎯', energised: '⚡',
+  anxious: '😰', sad: '😔', distracted: '🌀', angry: '🔥',
+  neutral: '😐', hopeful: '🌱', joyful: '😊', tired: '😴',
+};
+
+const KARMA_REASON_LABELS: Record<string, string> = {
+  japa_complete:       'Japa',
+  quiz_complete:       'Quiz',
+  nitya_karma:         'Nitya Karma',
+  pathshala_lesson:    'Pathshala',
+  sankalpa_complete:   'Sankalpa',
+  vrat_complete:       'Vrat',
+  mala_session:        'Mala Session',
+  streak_milestone:    'Streak',
+  profile_complete:    'Profile',
+  seva:                'Seva',
+  referral:            'Referral',
+  kul_event:           'Kul Event',
+};
+
+function AdvancedAnalyticsSection({ isPro, isDark }: { isPro: boolean; isDark: boolean }) {
+  const [data, setData]       = useState<AdvancedData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState<string | null>(null);
+
+  const h1    = isDark ? '#f5dfa0' : '#1a0a02';
+  const muted = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const amber = 'rgba(197,160,89,';
+  const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.92)';
+  const cardBdr = isDark ? 'rgba(197,160,89,0.14)' : 'rgba(180,120,40,0.14)';
+
+  useEffect(() => {
+    if (!isPro) return;
+    setLoading(true);
+    fetch('/api/analytics/advanced')
+      .then(r => r.json())
+      .then(d => { if (d.error) setError(d.error); else setData(d); })
+      .catch(() => setError('Could not load analytics'))
+      .finally(() => setLoading(false));
+  }, [isPro]);
+
+  // ── Locked preview for non-pro users ─────────────────────────────────────
+  if (!isPro) {
+    return (
+      <motion.section
+        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+        className="mb-8 relative overflow-hidden rounded-[1.8rem]"
+        style={{ background: isDark ? 'rgba(197,160,89,0.06)' : 'rgba(197,160,89,0.04)', border: `1px solid rgba(197,160,89,0.22)` }}
+      >
+        {/* Blurred preview */}
+        <div className="p-5 blur-[5px] pointer-events-none select-none">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: `${amber}0.70)` }}>
+            ✦ Advanced Analytics
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {['Quiz Accuracy', 'Mood Pattern', 'Vrat Practice', 'Karma Flow'].map(label => (
+              <div key={label} className="rounded-xl p-3" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+                <div className="h-8 w-12 rounded-full mb-2" style={{ background: `${amber}0.15)` }} />
+                <p className="text-xs font-medium" style={{ color: h1 }}>{label}</p>
+                <p className="text-[10px]" style={{ color: muted }}>—</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Lock overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6">
+          <Lock size={22} style={{ color: `${amber}0.80)` }} />
+          <div className="text-center">
+            <p className="font-serif text-base font-semibold" style={{ color: h1 }}>Advanced Analytics</p>
+            <p className="text-xs mt-1" style={{ color: muted }}>Quiz accuracy, mood patterns, vrat history, karma flow — all in one place.</p>
+          </div>
+          <Link
+            href="/settings/subscription"
+            className="px-6 py-2.5 rounded-full text-xs font-bold transition-opacity hover:opacity-90"
+            style={{ background: `${amber}0.90)`, color: '#1c1208' }}
+          >
+            Upgrade to Zenith →
+          </Link>
+        </div>
+      </motion.section>
+    );
+  }
+
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <motion.section
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="mb-8 rounded-[1.8rem] p-5"
+        style={{ background: cardBg, border: `1px solid ${cardBdr}` }}
+      >
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-4" style={{ color: `${amber}0.70)` }}>
+          ✦ Advanced Analytics
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="rounded-xl p-3 animate-pulse" style={{ background: `${amber}0.07)`, border: `1px solid ${amber}0.10)` }}>
+              <div className="h-14 rounded-lg" style={{ background: `${amber}0.10)` }} />
+            </div>
+          ))}
+        </div>
+      </motion.section>
+    );
+  }
+
+  if (error || !data) return null;
+
+  const { quiz, mood, vrat, karma } = data;
+
+  // Quiz accuracy ring (SVG)
+  const R = 28, CX = 36, CY = 36;
+  const circ = 2 * Math.PI * R;
+  const quizDash = (quiz.accuracy_pct / 100) * circ;
+
+  // Mood frequency bars
+  const topMoods = mood.mood_frequency.slice(0, 4);
+  const maxMoodCount = topMoods[0]?.count || 1;
+
+  // Karma breakdown bars
+  const topKarma = karma.breakdown.slice(0, 4);
+  const maxKarma = topKarma[0]?.total || 1;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+      className="mb-8 rounded-[1.8rem] overflow-hidden"
+      style={{ background: isDark ? 'rgba(197,160,89,0.04)' : 'rgba(255,253,245,0.96)', border: `1px solid rgba(197,160,89,0.20)` }}
+    >
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: `${amber}0.80)` }}>
+          ✦ Advanced Analytics
+        </p>
+        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${amber}0.12)`, color: `${amber}0.85)` }}>
+          Zenith
+        </span>
+      </div>
+
+      <div className="px-5 pb-5 grid grid-cols-2 gap-3">
+
+        {/* ── Quiz accuracy ring ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: `${amber}0.65)` }}>Quiz</p>
+          <div className="flex items-center gap-3">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx={CX} cy={CY} r={R} fill="none" stroke={`${amber}0.12)`} strokeWidth="7" />
+              <circle cx={CX} cy={CY} r={R} fill="none"
+                stroke={quiz.total_answered > 0 ? `${amber}0.85)` : `${amber}0.15)`}
+                strokeWidth="7" strokeLinecap="round"
+                strokeDasharray={`${quizDash} ${circ - quizDash}`}
+                strokeDashoffset={circ / 4}
+                style={{ transition: 'stroke-dasharray 0.9s ease' }}
+              />
+              <text x={CX} y={CY + 5} textAnchor="middle" fontSize="12" fontWeight="700" fill={quiz.total_answered > 0 ? (isDark ? '#f5dfa0' : '#1a0a02') : `${amber}0.30)`}>
+                {quiz.total_answered > 0 ? `${quiz.accuracy_pct}%` : '—'}
+              </text>
+            </svg>
+            <div>
+              <p className="text-xs font-semibold" style={{ color: h1 }}>
+                {quiz.total_answered > 0 ? 'Accuracy' : 'No data yet'}
+              </p>
+              <p className="text-[10px] mt-0.5" style={{ color: muted }}>{quiz.total_answered} answered</p>
+              {quiz.by_tradition.length > 0 && (
+                <p className="text-[9px] mt-1" style={{ color: muted }}>
+                  Best: {quiz.by_tradition.sort((a, b) => b.accuracy_pct - a.accuracy_pct)[0]?.tradition ?? '—'}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Mood frequency ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#10b981' }}>Mood</p>
+          {mood.total_checkins === 0 ? (
+            <div className="flex items-center justify-center h-14">
+              <p className="text-[10px]" style={{ color: muted }}>No check-ins yet</p>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {topMoods.slice(0, 3).map(({ mood: m, count }) => (
+                <div key={m} className="flex items-center gap-1.5">
+                  <span className="text-[12px] w-4">{MOOD_EMOJI[m] ?? '🫧'}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(16,185,129,0.12)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: 'rgba(16,185,129,0.70)' }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((count / maxMoodCount) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                  <span className="text-[9px] w-3 text-right" style={{ color: muted }}>{count}</span>
+                </div>
+              ))}
+              <p className="text-[9px] mt-1" style={{ color: muted }}>{mood.action_rate_pct}% acted on mood</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Vrat practice ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#9575cd' }}>Vrat</p>
+          {vrat.total_observed === 0 ? (
+            <div>
+              <p className="text-[10px]" style={{ color: muted }}>No vratas recorded</p>
+              <Link href="/vrat/ekadashi" className="text-[9px] mt-1 block" style={{ color: `${amber}0.75)` }}>
+                Start with Ekadashi →
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <p className="text-2xl font-bold font-serif" style={{ color: h1 }}>{vrat.total_observed}</p>
+              <p className="text-[10px]" style={{ color: muted }}>total observations</p>
+              <p className="text-[9px] mt-1" style={{ color: muted }}>
+                {vrat.unique_vratas} unique · {vrat.last_30_days} this month
+              </p>
+              {vrat.recent[0] && (
+                <p className="text-[9px] mt-1.5 truncate" style={{ color: `${amber}0.70)` }}>
+                  Last: {vrat.recent[0].vrat_name}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── Karma breakdown ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: `${amber}0.70)` }}>Karma</p>
+          {karma.last_30_days_earned === 0 && topKarma.length === 0 ? (
+            <div>
+              <p className="text-2xl font-bold font-serif" style={{ color: h1 }}>{karma.current_total}</p>
+              <p className="text-[10px]" style={{ color: muted }}>total points</p>
+              <p className="text-[9px] mt-1" style={{ color: muted }}>Seva: {karma.seva_score}</p>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {topKarma.slice(0, 3).map(({ reason, total }) => (
+                <div key={reason} className="flex items-center gap-1.5">
+                  <span className="text-[9px] w-14 truncate" style={{ color: muted }}>
+                    {KARMA_REASON_LABELS[reason] ?? reason}
+                  </span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}0.10)` }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: `${amber}0.75)` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((total / maxKarma) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                  <span className="text-[9px]" style={{ color: muted }}>{total}</span>
+                </div>
+              ))}
+              {karma.last_30_days_earned > 0 && (
+                <p className="text-[9px] mt-0.5" style={{ color: muted }}>+{karma.last_30_days_earned} this month</p>
+              )}
+            </div>
+          )}
+        </div>
+
+      </div>
+    </motion.section>
+  );
+}
+
 // ── AI explanation hook ────────────────────────────────────────────────────────
 function useAiExplain() {
   const [loading, setLoading] = useState(false);
@@ -1487,6 +1762,9 @@ export default function MyProgressClient({
               </Link>
             </div>
           </motion.section>
+
+          {/* ── Advanced Analytics (Zenith) ── */}
+          <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />
 
           {/* ── Quiz Mastery ── */}
           <motion.section

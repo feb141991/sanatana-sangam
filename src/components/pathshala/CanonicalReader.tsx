@@ -151,9 +151,10 @@ export default function CanonicalReader({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
-  const [showExplain,    setShowExplain]    = useState(false);
-  const [explainLoading, setExplainLoading] = useState(false);
-  const [explainResult,  setExplainResult]  = useState<ExplainResult | null>(null);
+  const [showExplain,          setShowExplain]          = useState(false);
+  const [explainLoading,       setExplainLoading]       = useState(false);
+  const [explainResult,        setExplainResult]        = useState<ExplainResult | null>(null);
+  const [explainUpgradeNeeded, setExplainUpgradeNeeded] = useState(false);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const entry       = entries[verseIndex];
@@ -260,6 +261,7 @@ export default function CanonicalReader({
     setSlideDir(1);
     setShowExplain(false);
     setExplainResult(null);
+    setExplainUpgradeNeeded(false);
     stopTTS();
   }, [entries, stopTTS]);
 
@@ -270,6 +272,7 @@ export default function CanonicalReader({
   useEffect(() => {
     setShowExplain(false);
     setExplainResult(null);
+    setExplainUpgradeNeeded(false);
   }, [customLang]);
 
   async function speakEntry(e: LibraryEntry) {
@@ -332,6 +335,7 @@ export default function CanonicalReader({
   async function explainVerse() {
     if (!entry || explainLoading) return;
     setExplainResult(null);
+    setExplainUpgradeNeeded(false);
     setExplainLoading(true);
     try {
       const explainText = entry.original || entry.transliteration || entry.fullText || '';
@@ -348,9 +352,14 @@ export default function CanonicalReader({
       else {
         toast.error(labels.couldNotGenerateExplanation);
       }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : labels.couldNotGenerateExplanation;
-      toast.error(msg);
+    } catch (err: any) {
+      if (err?.upgrade_required) {
+        setExplainUpgradeNeeded(true);
+        setShowExplain(true); // Keep the panel open to show upgrade card
+      } else {
+        const msg = err instanceof Error ? err.message : labels.couldNotGenerateExplanation;
+        toast.error(msg);
+      }
     } finally {
       setExplainLoading(false);
     }
@@ -363,6 +372,7 @@ export default function CanonicalReader({
       setVerseIndex(v => v + 1);
       setShowExplain(false);
       setExplainResult(null);
+      setExplainUpgradeNeeded(false);
     }
   }
 
@@ -372,6 +382,7 @@ export default function CanonicalReader({
       setVerseIndex(v => v - 1);
       setShowExplain(false);
       setExplainResult(null);
+      setExplainUpgradeNeeded(false);
     }
   }
 
@@ -467,7 +478,7 @@ export default function CanonicalReader({
                 </button>
               ) : (
                 <button
-                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); }}
+                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); setExplainUpgradeNeeded(false); }}
                   className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
                   style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
                 >
@@ -519,6 +530,7 @@ export default function CanonicalReader({
                   setVerseIndex(i);
                   setShowExplain(false);
                   setExplainResult(null);
+                  setExplainUpgradeNeeded(false);
                 }}
                 aria-label={`Go to verse ${i + 1}`}
                 style={{
@@ -659,6 +671,38 @@ export default function CanonicalReader({
                       : <><Sparkles size={14} /> {labels.explainVerse}</>
                   }
                 </button>
+
+                <AnimatePresence>
+                  {showExplain && explainUpgradeNeeded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.26 }}
+                      className="overflow-hidden"
+                    >
+                      <div
+                        className="mt-3 rounded-2xl px-5 py-6 flex flex-col items-center gap-3 text-center"
+                        style={{ background: 'rgba(197,160,89,0.07)', border: `1px solid rgba(197,160,89,0.25)` }}
+                      >
+                        <span className="text-2xl">✨</span>
+                        <p className="text-sm font-semibold" style={{ color: P.ink }}>
+                          AI verse explanations are a Zenith feature
+                        </p>
+                        <p className="text-xs" style={{ color: P.inkMuted }}>
+                          Upgrade to unlock deep, tradition-aware explanations for every verse.
+                        </p>
+                        <a
+                          href="/settings/subscription"
+                          className="mt-1 text-xs font-bold px-5 py-2.5 rounded-full transition-opacity hover:opacity-80"
+                          style={{ background: 'rgba(197,160,89,0.90)', color: '#1c1208' }}
+                        >
+                          Upgrade to Zenith →
+                        </a>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <AnimatePresence>
                   {showExplain && explainResult && (
