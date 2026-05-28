@@ -3021,7 +3021,12 @@ export default function HomeDashboard({
                   {(personalContent as any).action && (
                     <div className="mt-3">
                       <Link
-                        href={(personalContent as any).action.href}
+                        href={
+                          // Client-side guard: only allow exact known internal routes to prevent AI hallucination 404s
+                          ['/pathshala', '/bhakti', '/bhakti/mala', '/japa', '/bhakti/stotram', '/panchang', '/vrat', '/quiz'].includes((personalContent as any).action.href)
+                            ? (personalContent as any).action.href
+                            : '/pathshala'
+                        }
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors"
                         style={{
                           background: (personalContent as any).action.type === 'primary' ? 'var(--brand-primary)' : 'rgba(197, 160, 89,0.12)',

@@ -126,6 +126,7 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
           <button
             key={mood.key}
             onClick={() => {
+              setIsVisible(false); // hide this card immediately — recommendation sheet takes over
               onSelectMood(mood.key);
             }}
             className="flex items-center gap-2 px-3 py-2 rounded-2xl border motion-press transition-colors"

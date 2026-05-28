@@ -88,8 +88,16 @@ export default function KoshClient({
     }
   }
 
+  // ── Themed CSS var shorthands ────────────────────────────────────────────────
+  const cardBg     = 'var(--card-bg, rgba(255,255,255,0.04))';
+  const cardBorder = 'var(--card-border, rgba(255,255,255,0.08))';
+  const inkColor   = 'var(--brand-ink, rgba(255,255,255,0.95))';
+  const mutedColor = 'var(--text-muted-warm, rgba(255,255,255,0.5))';
+  const dimColor   = 'var(--text-dim, rgba(255,255,255,0.35))';
+  const goldColor  = 'var(--brand-primary, #C5A059)';
+
   return (
-    <div className="min-h-screen bg-[#0E0E0F] text-white/90">
+    <div className="min-h-screen" style={{ background: 'var(--divine-bg)', color: inkColor }}>
       <PageIntro
         pageKey="kosh"
         steps={[
@@ -103,30 +111,33 @@ export default function KoshClient({
           <button
             type="button"
             onClick={() => router.back()}
-            className="mt-1 flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm"
+            className="mt-1 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-sm"
+            style={{ border: `1px solid ${cardBorder}`, background: cardBg, color: inkColor }}
           >
             <ChevronLeft size={18} />
           </button>
           <div className="min-w-0">
-            <h1 className="font-serif text-3xl text-white/95">Sacred Kosh</h1>
-            <p className="mt-1 text-sm text-[#C5A059]/60">{unlockedCount} of {totalVisible} relics unlocked</p>
+            <h1 className="font-serif text-3xl" style={{ color: inkColor }}>Sacred Kosh</h1>
+            <p className="mt-1 text-sm" style={{ color: goldColor, opacity: 0.65 }}>
+              {unlockedCount} of {totalVisible} relics unlocked
+            </p>
           </div>
         </div>
 
         {nextRelic && (
-          <div className="mt-6 rounded-3xl border border-white/[0.06] bg-white/[0.04] p-4 backdrop-blur-sm">
+          <div className="mt-6 rounded-3xl p-4 backdrop-blur-sm" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
             <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-white/[0.06] opacity-50 grayscale">
+              <div className="relative h-16 w-16 overflow-hidden rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}` }}>
                 <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill sizes="64px" className="object-contain" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#C5A059]/70">Next unlock</p>
-                <h2 className="mt-1 font-serif text-lg text-white/95">{nextRelic.name}</h2>
-                <p className="mt-1 text-xs text-white/50">{getRequirementCopy(nextRelic, streak, sevaScore)}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
+                <h2 className="mt-1 font-serif text-lg" style={{ color: inkColor }}>{nextRelic.name}</h2>
+                <p className="mt-1 text-xs" style={{ color: mutedColor }}>{getRequirementCopy(nextRelic, streak, sevaScore)}</p>
               </div>
             </div>
             <div className="mt-4">
-              <div className="h-2 overflow-hidden rounded-full bg-white/[0.05]">
+              <div className="h-2 overflow-hidden rounded-full" style={{ background: 'rgba(197,160,89,0.10)' }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{
@@ -141,10 +152,11 @@ export default function KoshClient({
                     )}%`,
                   }}
                   transition={{ type: 'spring', stiffness: 90, damping: 20 }}
-                  className="h-full rounded-full bg-[#C5A059]"
+                  className="h-full rounded-full"
+                  style={{ background: goldColor }}
                 />
               </div>
-              <div className="mt-2 flex justify-between text-[11px] text-white/45">
+              <div className="mt-2 flex justify-between text-[11px]" style={{ color: dimColor }}>
                 <span>{nextRelic.milestoneType === 'streak' ? `${streak}/${nextRelic.milestoneValue} days` : `${sevaScore}/${nextRelic.milestoneValue} points`}</span>
                 <span>{nextRelic.milestoneType === 'streak' ? 'Streak relic' : 'Seva relic'}</span>
               </div>
@@ -152,7 +164,7 @@ export default function KoshClient({
           </div>
         )}
 
-        <div className="mt-6 flex gap-2 rounded-full border border-white/[0.06] bg-white/[0.04] p-1 backdrop-blur-sm">
+        <div className="mt-6 flex gap-2 rounded-full p-1 backdrop-blur-sm" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
           {([
             ['all', 'All'],
             ['unlocked', 'Unlocked'],
@@ -170,29 +182,30 @@ export default function KoshClient({
                   <motion.span
                     layoutId="kosh-filter-pill"
                     transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                    className="absolute inset-0 rounded-full bg-[#C5A059] shadow-[0_0_0_1px_rgba(197,160,89,0.35)]"
+                    className="absolute inset-0 rounded-full shadow-[0_0_0_1px_rgba(197,160,89,0.35)]"
+                    style={{ background: goldColor }}
                   />
                 )}
-                <span className={`relative ${active ? 'text-black' : 'text-white/65'}`}>{label}</span>
+                <span className="relative" style={{ color: active ? '#1c1208' : mutedColor }}>{label}</span>
               </button>
             );
           })}
         </div>
 
         {filter === 'unlocked' && unlockedCount === 0 ? (
-          <div className="mt-8 rounded-3xl border border-white/[0.06] bg-white/[0.04] p-8 text-center backdrop-blur-sm">
-            <p className="font-serif text-2xl text-white/90">Your Kosh awaits 🔱</p>
-            <p className="mt-2 text-sm text-white/45">Complete daily sadhana to unlock sacred relics</p>
+          <div className="mt-8 rounded-3xl p-8 text-center backdrop-blur-sm" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
+            <p className="font-serif text-2xl" style={{ color: inkColor }}>Your Kosh awaits 🔱</p>
+            <p className="mt-2 text-sm" style={{ color: dimColor }}>Complete daily sadhana to unlock sacred relics</p>
             {nextRelic && (
-              <div className="mt-6 rounded-2xl border border-white/[0.06] bg-black/20 p-4 text-left">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#C5A059]/70">Next unlock</p>
+              <div className="mt-6 rounded-2xl p-4 text-left" style={{ border: `1px solid ${cardBorder}`, background: 'var(--card-bg-soft, rgba(197,160,89,0.06))' }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="relative h-14 w-14 overflow-hidden rounded-2xl border border-white/[0.06] opacity-50 grayscale">
+                  <div className="relative h-14 w-14 overflow-hidden rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}` }}>
                     <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill sizes="56px" className="object-contain" />
                   </div>
                   <div>
-                    <p className="font-medium text-white/90">{nextRelic.name}</p>
-                    <p className="text-xs text-white/45">{getRequirementCopy(nextRelic, streak, sevaScore)}</p>
+                    <p className="font-medium" style={{ color: inkColor }}>{nextRelic.name}</p>
+                    <p className="text-xs" style={{ color: dimColor }}>{getRequirementCopy(nextRelic, streak, sevaScore)}</p>
                   </div>
                 </div>
               </div>
@@ -216,28 +229,37 @@ export default function KoshClient({
                       }
                       setLockedHintId((current) => current === relic.id ? null : relic.id);
                     }}
-                    className="relative flex h-[100px] w-full items-center justify-center overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.04] backdrop-blur-sm transition-transform hover:scale-[1.02]"
-                    style={active ? { boxShadow: '0 0 0 2px rgba(197,160,89,0.8)' } : undefined}
+                    className="relative flex h-[100px] w-full items-center justify-center overflow-hidden rounded-2xl backdrop-blur-sm transition-transform hover:scale-[1.02]"
+                    style={{
+                      border: `1px solid ${cardBorder}`,
+                      background: cardBg,
+                      boxShadow: active ? `0 0 0 2px ${goldColor}` : undefined,
+                    }}
                   >
                     <div className={`relative h-16 w-16 ${unlocked ? '' : 'grayscale opacity-40'}`}>
                       <Image src={relic.imageUrl} alt={relic.name} fill sizes="64px" className="object-contain" />
                     </div>
                     {!unlocked && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/15">
-                        <div className="rounded-full border border-white/10 bg-black/35 p-2">
-                          <Lock size={14} className="text-white/70" />
+                      <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
+                        <div className="rounded-full p-2" style={{ border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(0,0,0,0.35)' }}>
+                          <Lock size={14} style={{ color: mutedColor }} />
                         </div>
                       </div>
                     )}
                     {active && (
-                      <div className="absolute top-2 right-2 rounded-full bg-[#C5A059] p-1">
+                      <div className="absolute top-2 right-2 rounded-full p-1" style={{ background: goldColor }}>
                         <Star size={10} className="fill-black text-black" />
                       </div>
                     )}
                   </button>
-                  <p className={`mt-2 text-center text-xs font-medium ${unlocked ? 'text-white/85' : 'text-white/35'}`}>{relic.name}</p>
+                  <p className="mt-2 text-center text-xs font-medium" style={{ color: unlocked ? inkColor : dimColor }}>
+                    {relic.name}
+                  </p>
                   {lockedHintId === relic.id && !unlocked && (
-                    <div className="absolute inset-x-0 -top-10 z-10 rounded-xl border border-white/[0.06] bg-[#161617] px-3 py-2 text-center text-[11px] text-white/70 shadow-2xl">
+                    <div
+                      className="absolute inset-x-0 -top-10 z-10 rounded-xl px-3 py-2 text-center text-[11px] shadow-2xl"
+                      style={{ border: `1px solid ${cardBorder}`, background: 'var(--card-bg, #161617)', color: mutedColor }}
+                    >
                       {requirementCopy}
                     </div>
                   )}
@@ -262,14 +284,15 @@ export default function KoshClient({
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-              className="w-full rounded-t-[2rem] border border-white/[0.06] bg-[#121214] p-5 backdrop-blur-sm"
+              className="w-full rounded-t-[2rem] p-5 backdrop-blur-sm"
+              style={{ border: `1px solid ${cardBorder}`, background: 'var(--divine-bg)' }}
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-white/10" />
+              <div className="mx-auto mb-4 h-1.5 w-14 rounded-full" style={{ background: cardBorder }} />
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-serif text-2xl text-white/95">{selectedRelic.name}</p>
-                  <p className="mt-2 text-sm text-white/50">
+                  <p className="font-serif text-2xl" style={{ color: inkColor }}>{selectedRelic.name}</p>
+                  <p className="mt-2 text-sm" style={{ color: mutedColor }}>
                     {selectedRelic.milestoneType === 'streak'
                       ? `${selectedRelic.milestoneValue}-day streak required`
                       : `${selectedRelic.milestoneValue} seva points required`}
@@ -278,20 +301,24 @@ export default function KoshClient({
                 <button
                   type="button"
                   onClick={() => setSelectedRelic(null)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.04]"
+                  className="flex h-10 w-10 items-center justify-center rounded-full"
+                  style={{ border: `1px solid ${cardBorder}`, background: cardBg, color: inkColor }}
                 >
                   <X size={18} />
                 </button>
               </div>
               <div className="mt-6 flex justify-center">
-                <div className="relative h-[120px] w-[120px] overflow-hidden rounded-[2rem] border border-white/[0.06] bg-white/[0.04]">
+                <div className="relative h-[120px] w-[120px] overflow-hidden rounded-[2rem]" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
                   <Image src={selectedRelic.imageUrl} alt={selectedRelic.name} fill sizes="120px" className="object-contain" />
                 </div>
               </div>
-              <p className="mt-6 text-sm leading-6 text-white/75">{selectedRelic.description}</p>
+              <p className="mt-6 text-sm leading-6" style={{ color: mutedColor }}>{selectedRelic.description}</p>
               <div className="mt-6">
                 {activeRelicId === selectedRelic.id ? (
-                  <div className="w-full rounded-2xl border border-[#C5A059]/25 bg-[#C5A059]/10 px-4 py-3 text-center text-sm font-semibold text-[#C5A059]">
+                  <div
+                    className="w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold"
+                    style={{ border: `1px solid rgba(197,160,89,0.25)`, background: 'rgba(197,160,89,0.10)', color: goldColor }}
+                  >
                     Currently Active ✓
                   </div>
                 ) : (
@@ -300,7 +327,7 @@ export default function KoshClient({
                     disabled={saving}
                     onClick={() => setActiveRelic(selectedRelic)}
                     className="w-full rounded-2xl px-4 py-3 text-sm font-semibold text-black transition-opacity disabled:opacity-60"
-                    style={{ background: '#C5A059' }}
+                    style={{ background: goldColor }}
                   >
                     {saving ? 'Saving…' : 'Set as Active Symbol'}
                   </button>

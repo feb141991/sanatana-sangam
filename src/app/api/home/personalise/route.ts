@@ -112,11 +112,11 @@ Return ONLY this JSON (no markdown fences, no extra keys):
 {
   "suggestion": "<A specific, actionable practice for today. 2-3 short sentences.>",
   "nudge": "<One short warm sentence of encouragement>",
-  "context_label": "<A 2-4 word label>",
+  "context_label": "<A 2-4 word label for the day — e.g. 'Thursday Practice', 'Morning Sadhana'>",
   "action": {
-    "label": "<Short CTA label>",
-    "href": "<A valid internal route>",
-    "type": "<'link' | 'primary'>"
+    "label": "<Short CTA label, max 4 words>",
+    "href": "<MUST be one of exactly: /pathshala, /bhakti, /bhakti/mala, /japa, /bhakti/stotram, /panchang, /vrat, /quiz>",
+    "type": "primary"
   }
 }
 
@@ -180,6 +180,14 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
       const dayNum = parseInt(today.split('-')[2] ?? '1', 10);
       const fallback = FALLBACK_SHLOKAS[dayNum % FALLBACK_SHLOKAS.length];
       parsed = { suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice' };
+    }
+
+    // Validate the AI-generated action href against the known route whitelist.
+    // Prevents hallucinated paths like /pathshala/bhagavad-gita causing 404s.
+    const VALID_ACTION_HREFS = new Set(['/pathshala', '/bhakti', '/bhakti/mala', '/japa', '/bhakti/stotram', '/panchang', '/vrat', '/quiz']);
+    const action = (parsed as any).action;
+    if (action?.href && !VALID_ACTION_HREFS.has(action.href)) {
+      action.href = '/pathshala'; // safe fallback
     }
 
     // ── 4. Cache result ──────────────────────────────────────────────────────────

@@ -170,8 +170,10 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
                     source_surface: 'home_dashboard',
                   }),
                 }).catch(console.error);
+                // Mark dismissed in localStorage so DailyMoodCard doesn't reappear on re-render
+                const today = new Date().toISOString().split('T')[0];
+                localStorage.setItem('shoonaya_mood_dismissed', today);
                 onClose();
-                router.push('/home');
               }}
               style={{
                 width: '100%',
@@ -191,21 +193,53 @@ export default function MoodRecommendationSheet({ mood, onClose }: MoodRecommend
         )}
 
         {step === 'time' && (
-          <div className="flex flex-col gap-3 pb-6">
-            {['2 min', '5 min', '10+ min'].map(option => (
+          <div className="flex flex-col gap-3 pb-2">
+            {[
+              { value: 'no_time', label: 'Right now — just record it', sub: 'Skip to your recommendations' },
+              { value: '2 min',   label: '2 minutes',                  sub: 'A quick breath or mantra' },
+              { value: '5 min',   label: '5 minutes',                  sub: 'A short practice' },
+              { value: '10+ min', label: '10 minutes or more',         sub: 'Deep dive' },
+            ].map(({ value, label, sub }) => (
               <button
-                key={option}
-                onClick={() => handleTimeSelect(option)}
-                className="p-4 rounded-2xl border text-sm font-medium motion-press text-left"
-                style={{ 
-                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))', 
+                key={value}
+                onClick={() => {
+                  if (value === 'no_time') {
+                    setTime('no_time');
+                    setStep('loading');
+                  } else {
+                    handleTimeSelect(value);
+                  }
+                }}
+                className="p-4 rounded-2xl border motion-press text-left"
+                style={{
+                  background: 'var(--card-bg-soft, rgba(255, 255, 255, 0.03))',
                   borderColor: 'var(--card-border, rgba(255, 255, 255, 0.08))',
-                  color: 'var(--text-cream)'
                 }}
               >
-                {option}
+                <span className="text-sm font-semibold block" style={{ color: 'var(--text-cream)' }}>{label}</span>
+                <span className="text-xs mt-0.5 block" style={{ color: 'var(--text-muted-warm)' }}>{sub}</span>
               </button>
             ))}
+            {/* Go home shortcut also available at this step */}
+            <button
+              onClick={async () => {
+                fetch('/api/mood/checkin', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ before_mood: mood, source_surface: 'home_dashboard' }),
+                }).catch(console.error);
+                const today = new Date().toISOString().split('T')[0];
+                localStorage.setItem('shoonaya_mood_dismissed', today);
+                onClose();
+              }}
+              style={{
+                width: '100%', padding: '0.65rem', borderRadius: '0.75rem',
+                fontSize: '0.82rem', color: 'var(--text-muted-warm)',
+                background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'center',
+              }}
+            >
+              Just record mood · go home →
+            </button>
           </div>
         )}
 
