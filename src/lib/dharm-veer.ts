@@ -16,7 +16,7 @@ export interface DharmVeer {
   nameLocal?: string; 
   era: string;
   eraLocal?: string;
-  tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain';
+  tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'sufi' | 'tribal';
   region: string;
   regionLocal?: string;
   emoji: string;
@@ -520,6 +520,8 @@ export const TRADITION_META: Record<string, { label: string; labelLocal: string;
   sikh:     { label: 'Sikhi',          labelLocal: 'ਸਿੱਖੀ',     dharmVeerLocal: 'ਧਰਮ ਵੀਰ', emoji: '☬', color: 'rgba(0, 100, 255, 0.12)' },
   buddhist: { label: 'Buddha Dhamma',  labelLocal: 'बुद्ध धम्म', dharmVeerLocal: 'धर्म वीर', emoji: '☸️', color: 'rgba(255, 200, 0, 0.12)' },
   jain:     { label: 'Jain Dharma',    labelLocal: 'जैन धर्म',   dharmVeerLocal: 'धर्म वीर', emoji: '🤲', color: 'rgba(0, 200, 50, 0.12)' },
+  sufi:     { label: 'Sufi Path',      labelLocal: 'सूफ़ी मार्ग', dharmVeerLocal: 'धर्म वीर', emoji: '🕊️', color: 'rgba(140, 90, 220, 0.12)' },
+  tribal:   { label: 'Adivasi Wisdom', labelLocal: 'आदिवासी ज्ञान', dharmVeerLocal: 'धर्म वीर', emoji: '🌿', color: 'rgba(60, 160, 90, 0.12)' },
 };
 
 // ── Rotation logic ─────────────────────────────────────────────────────────

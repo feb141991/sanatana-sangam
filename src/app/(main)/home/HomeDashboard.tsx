@@ -40,7 +40,7 @@ import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, PANCHANG_TRUST_META, getTodaySpiritualPulses } from '@/lib/panchang';
 import { getFestivalStory, type FestivalStory } from '@/lib/festival-stories';
-import { getDharmVeerOfTheDay, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
+import { TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
@@ -154,6 +154,7 @@ interface Props {
   pathshalaHref?:      string;
   quizDoneToday?:      boolean;
   dharmVeerDoneToday?: boolean;
+  dharmVeer:           DharmVeer;
   streakFreezeCount?:  number;
   lastFreezeUsed?:     string | null;
   missedYesterday?:    boolean;
@@ -1056,6 +1057,7 @@ export default function HomeDashboard({
   pathshalaHref = '/pathshala',
   quizDoneToday = false,
   dharmVeerDoneToday = false,
+  dharmVeer,
   streakFreezeCount = 0,
   lastFreezeUsed = null,
   missedYesterday = false,
@@ -1961,7 +1963,6 @@ export default function HomeDashboard({
   // ── Dharm Veer ───────────────────────────────────────────────────────────────
   // Always shown on home — a forgotten/underappreciated hero of Dharma, rotating
   // every 3 days, tradition-weighted for the user's sampradaya.
-  const dharmVeer: DharmVeer = getDharmVeerOfTheDay(tradition);
   const dharmVeerTradMeta = TRADITION_META[dharmVeer.tradition] ?? TRADITION_META['hindu'];
 
   const heroTheme = resolveHomeHeroTheme({

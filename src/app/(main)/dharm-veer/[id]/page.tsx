@@ -1,4 +1,4 @@
-import { DHARM_VEERS } from '@/lib/dharm-veer';
+import { getDharmVeerBySlug } from '@/lib/dharm-veer-db';
 import DharmVeerClient from './DharmVeerClient';
 import { notFound } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
@@ -6,8 +6,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 export default async function DharmVeerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const hero = DHARM_VEERS.find(h => h.id === id);
   const supabase = await createServerSupabaseClient();
+  const hero = await getDharmVeerBySlug(supabase, id);
   if (!hero) notFound();
 
   const { data: { user } } = await supabase.auth.getUser();

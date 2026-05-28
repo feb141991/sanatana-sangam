@@ -9,7 +9,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.onesignal.com; connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co https://api.sarvam.ai https://texttospeech.googleapis.com https://onesignal.com; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://img.icons8.com https://i.ytimg.com; media-src 'self' data: blob: https://*.supabase.co; frame-ancestors 'none'; report-uri /api/csp-report;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.onesignal.com; connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co https://api.sarvam.ai https://onesignal.com https://tts.bhashini.ai; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://img.icons8.com https://i.ytimg.com; media-src 'self' data: blob: https://*.supabase.co; frame-ancestors 'none'; report-uri /api/csp-report;"
           }
         ],
       },

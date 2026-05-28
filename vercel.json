@@ -21,6 +21,7 @@
     { "path": "/api/cron/vrat-reminder", "schedule": "30 4 * * *" },
     { "path": "/api/cron/materialize-occurrences", "schedule": "0 2 * * *" },
     { "path": "/api/quiz/generate-daily", "schedule": "15 0 * * *" },
+    { "path": "/api/cron/generate-dharm-veer", "schedule": "0 1 * * *" },
     { "path": "/api/cron/japa-reminder", "schedule": "0 2 * * *" },
     { "path": "/api/cron/festival-email", "schedule": "0 7 * * *" },
     { "path": "/api/digest/generate", "schedule": "0 23 * * *" }

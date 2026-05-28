@@ -16,6 +16,8 @@ import { getTraditionMeta, getSacredTextLabel } from '@/lib/tradition-config';
 import { LIVE_STREAMS } from '@/lib/live-streams';
 import { getPlanById, type GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
+import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
+import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
@@ -197,6 +199,7 @@ export default async function HomePage() {
   }));
 
   const allStreams = dbStreams.length > 0 ? dbStreams : LIVE_STREAMS;
+  const dharmVeer: DharmVeer = await getDharmVeerOfTheDay(supabase, tradition);
 
   // Build nitya set (dates with any log entry = done)
   const nityaDates = new Set((nityaHistory ?? []).map(r => r.log_date));
@@ -293,6 +296,7 @@ export default async function HomePage() {
       pathshalaHref={pathshalaHref}
       quizDoneToday={Boolean(todaySadhana?.quiz_done)}
       dharmVeerDoneToday={Boolean(todaySadhana?.dharmveer_done)}
+      dharmVeer={dharmVeer}
       streakFreezeCount={(profile as { streak_freeze_count?: number | null })?.streak_freeze_count ?? 0}
       lastFreezeUsed={(profile as { last_freeze_used?: string | null })?.last_freeze_used ?? null}
       missedYesterday={missedYesterday}
