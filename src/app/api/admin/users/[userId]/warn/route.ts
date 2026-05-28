@@ -1,4 +1,4 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
@@ -6,7 +6,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  const authError = checkAdminAuth(request);
+  const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

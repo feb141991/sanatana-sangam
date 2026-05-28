@@ -136,12 +136,11 @@ async function generateDigest(
 
 export async function GET(request: Request) {
   // ── Auth ──────────────────────────────────────────────────────────────────
+  // IMPORTANT: auth is unconditional — if CRON_SECRET is unset the route is locked.
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const auth = request.headers.get('authorization');
+  if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // ── Env ───────────────────────────────────────────────────────────────────

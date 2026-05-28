@@ -5,21 +5,26 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    // Always verify JWT server-side — getSession() returns unverified cached data.
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { timeZone } = await req.json().catch(() => ({ timeZone: 'UTC' }));
     const spiritualDate = localSpiritualDate(timeZone);
-    const userId = session.user.id;
+    const userId = user.id;
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('streak_freeze_count')
+      .select('streak_freeze_count, is_banned')
       .eq('id', userId)
       .maybeSingle();
+
+    if (profile?.is_banned) {
+      return NextResponse.json({ error: 'Your account has been suspended.' }, { status: 403 });
+    }
 
     // Fetch today's sadhana record
     const { data: sadhana, error } = await supabase
@@ -45,15 +50,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ awarded: false, reason: 'incomplete' });
     }
 
-    // Update perfect_day_bonus_given
-    const { error: updateError } = await supabase
+    // Atomically claim the bonus: only succeeds if perfect_day_bonus_given is still false.
+    // .select('id') returns the updated row — if the array is empty, a concurrent request
+    // already set it to true and this request lost the race.
+    const { data: claimedRows, error: updateError } = await supabase
       .from('daily_sadhana')
       .update({ perfect_day_bonus_given: true })
       .eq('id', sadhana.id)
-      .eq('perfect_day_bonus_given', false); // extra safety check
+      .eq('perfect_day_bonus_given', false)
+      .select('id');
 
     if (updateError) {
       throw new Error(`Failed to update daily_sadhana: ${updateError.message}`);
+    }
+
+    // Another concurrent request won the race — bonus was already claimed.
+    if (!claimedRows || claimedRows.length === 0) {
+      return NextResponse.json({ awarded: false, reason: 'already_given' });
     }
 
     // Call RPCs to award karma and seva

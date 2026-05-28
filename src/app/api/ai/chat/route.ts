@@ -57,13 +57,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
 
-  // Fetch user profile to check Pro status
+  // Fetch user profile to check Pro status and ban state (single query)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro')
+    .select('is_pro, is_banned')
     .eq('id', user.id)
     .single();
   const isPro = profile?.is_pro ?? false;
+
+  if (profile?.is_banned) {
+    return NextResponse.json({ error: 'Your account has been suspended.' }, { status: 403 });
+  }
 
   // Daily limit check (Supabase-backed, survives cold starts)
   if (await isDailyLimitReached(supabase, user.id, isPro)) {

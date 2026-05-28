@@ -8,13 +8,10 @@ const supabaseAdmin = createClient(
 );
 
 export async function GET(request: Request) {
-  // 1. Verify Authorization (Vercel Cron automatically sends a Bearer token we can check, 
-  // or we can use a custom secret token defined in env vars)
+  // 1. Verify Authorization — unconditional: locked if CRON_SECRET is unset.
+  const cronSecret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization');
-  if (
-    process.env.CRON_SECRET && 
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 

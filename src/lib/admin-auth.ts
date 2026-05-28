@@ -100,6 +100,10 @@ export function checkAdminCredentials(username: string, password: string): boole
 
 import { NextRequest, NextResponse } from 'next/server';
 
+/**
+ * @deprecated Use verifyAdminCookieAuth (async, HMAC-verified) instead.
+ * Kept only for reference — all admin API routes now use verifyAdminCookieAuth.
+ */
 export function checkAdminAuth(req: NextRequest): NextResponse | null {
   const secret = process.env.ADMIN_SECRET;
   if (!secret) {
@@ -111,4 +115,19 @@ export function checkAdminAuth(req: NextRequest): NextResponse | null {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   return null; // auth passed
+}
+
+/**
+ * Drop-in async replacement for checkAdminAuth.
+ * Verifies the sangam_admin_session HMAC-SHA256 cookie — the same check
+ * the middleware performs on all /admin/* and /api/admin/* routes.
+ * Returns a NextResponse on failure, null on success.
+ */
+export async function verifyAdminCookieAuth(req: NextRequest): Promise<NextResponse | null> {
+  const token = req.cookies.get(ADMIN_COOKIE)?.value ?? '';
+  const result = await verifyAdminToken(token);
+  if (!result) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  return null;
 }

@@ -1,4 +1,4 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
@@ -6,7 +6,7 @@ export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ postId: string }> }
 ) {
-  const authError = checkAdminAuth(_request);
+  const authError = await verifyAdminCookieAuth(_request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

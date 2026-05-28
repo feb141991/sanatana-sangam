@@ -58,7 +58,7 @@ const APP_FEATURES = [
 
 const FACTS = [
   "Did you know? Shoonaya covers Hindu, Sikh, Buddhist, and Jain traditions.",
-  "Join over 10,000 seekers dedicated to a life of Dharma.",
+  "Shoonaya is free to join — begin your sadhana today.",
   "Access personalized Panchang and Vrat notifications for your location.",
   "Discover sacred Tirthas and local Mandalis near you."
 ];

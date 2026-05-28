@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { assertNotBanned } from '@/lib/api-guards';
 
 export async function POST(request: Request) {
   try {
@@ -12,6 +13,9 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
     }
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
+
     const { error } = await supabase
       .from('profiles')
       .update({ mandali_id } as never)
