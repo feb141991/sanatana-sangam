@@ -73,7 +73,7 @@ function VratCard({
   const href = getVratHref(festival);
   const cardContent = (
     <div
-      className="w-full h-full rounded-[1.8rem] p-5 flex flex-col relative overflow-hidden"
+      className="w-full h-full rounded-[1.5rem] p-3.5 flex flex-col relative overflow-hidden"
       style={{
         background: isDark
           ? 'linear-gradient(145deg, rgba(26,18,6,0.98) 0%, rgba(40,28,8,0.95) 100%)'
@@ -99,8 +99,8 @@ function VratCard({
       {/* Large 3D emoji — visual anchor */}
       <div className="mb-3">
         <span
-          className="drop-shadow-lg select-none"
-          style={{ fontSize: '3.5rem', lineHeight: 1, display: 'block' }}
+          className="drop-shadow-md select-none"
+          style={{ fontSize: '2.4rem', lineHeight: 1, display: 'block' }}
           aria-hidden="true"
         >
           {festival.emoji}
@@ -109,7 +109,7 @@ function VratCard({
 
       {/* Festival name */}
       <h3
-        className="font-serif text-xl leading-tight mb-1 pr-12"
+        className="font-serif text-base leading-tight mb-0.5 pr-10"
         style={{
           color:      isDark ? '#F5E8C0' : '#1A0A02',
           fontFamily: 'var(--font-serif)',
@@ -120,14 +120,14 @@ function VratCard({
       </h3>
 
       {/* Date */}
-      <p className="text-[11px] mb-3" style={{ color: isDark ? 'rgba(245,220,160,0.50)' : 'rgba(80,45,10,0.50)' }}>
+      <p className="text-[10px] mb-2" style={{ color: isDark ? 'rgba(245,220,160,0.50)' : 'rgba(80,45,10,0.50)' }}>
         {formatFestDate(festival.date)}
       </p>
 
       {/* Description snippet */}
       {festival.description && (
         <p
-          className="text-xs leading-relaxed line-clamp-2 flex-1 mb-4"
+          className="text-[11px] leading-relaxed line-clamp-1 flex-1 mb-3"
           style={{ color: isDark ? 'rgba(245,220,160,0.65)' : 'rgba(60,35,10,0.70)' }}
         >
           {festival.description}
@@ -270,7 +270,7 @@ export default function VratCarousel({ festivals, isDark, effectiveAppLanguage =
             style={{
               minWidth:       'calc(100% - 40px)',
               scrollSnapAlign: 'start',
-              height:          '220px',
+              height:          '164px',
             }}
           >
             <VratCard festival={festival} days={days} isDark={isDark} />

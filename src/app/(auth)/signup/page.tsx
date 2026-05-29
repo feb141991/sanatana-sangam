@@ -376,10 +376,22 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {/* Guest explore */}
-          <div className="mt-5 text-center">
-            <Link href="/guest" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/40 border border-[var(--premium-border)] text-[11px] font-bold text-[var(--brand-muted)] hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] transition-all uppercase tracking-widest">
-              👁️ Explore as Guest
+          {/* Guest explore — prominent eye CTA */}
+          <div className="mt-6 text-center">
+            <Link
+              href="/guest"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl transition-all active:scale-95"
+              style={{
+                background: 'rgba(197,160,89,0.10)',
+                border: '1.5px solid rgba(197,160,89,0.30)',
+                textDecoration: 'none',
+              }}
+            >
+              <span style={{ fontSize: '1.4rem', lineHeight: 1 }}>👁️</span>
+              <div className="text-left">
+                <p className="text-[12px] font-bold" style={{ color: 'var(--brand-primary-strong)' }}>Explore as Guest</p>
+                <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-muted)' }}>No account needed</p>
+              </div>
             </Link>
           </div>
         </motion.div>

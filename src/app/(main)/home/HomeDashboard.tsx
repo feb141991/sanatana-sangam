@@ -2271,7 +2271,25 @@ export default function HomeDashboard({
                 <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
               </label>
             </div>
-            
+            {/* ── Hero rotating banner — sankalpa / tithi / festival nudges ── */}
+            <PriorityBanner
+              heroMode
+              missedYesterday={missedYesterday}
+              freezeCount={freezeCount}
+              isPro={isPro}
+              streak={japaStreak}
+              tradition={tradition}
+              sankalpaText={activeSankalpa?.text}
+              sankalpaDaysLeft={activeSankalpa
+                ? Math.max(0, Math.ceil(
+                    (new Date(activeSankalpa.end_date + 'T00:00:00Z').getTime() - Date.now()) / 86_400_000
+                  ))
+                : undefined}
+              tithiLabel={panchang?.tithi}
+              nextFestivalName={festivals[0]?.name}
+              nextFestivalDays={daysUntilFestival}
+            />
+
           </motion.div>
 
           {/* Transparent Header Overlay — two-row layout */}
@@ -2506,23 +2524,10 @@ export default function HomeDashboard({
           </div>
         </div>
         
-        {/* ── Story Circles — daily quick-access strip ── */}
-        <StoryCircles
-          shlokaLine={dailyTextLine}
-          tithi={panchang?.tithi ?? ''}
-          nakshatra={panchang?.nakshatra ?? ''}
-          japaStreak={japaStreak ?? 0}
-          japaAlreadyDone={japaAlreadyDoneToday}
-          dharmVeer={dharmVeer}
-          dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
-          nextFestival={festivals[0] ?? null}
-          daysUntilFestival={daysUntilFestival}
-          tradition={tradition}
-          isDark={isDark}
-        />
+        {/* Story Circles — held for later release */}
 
         {/* ── Zenith Transitional Shloka ── */}
-        <div className="px-5 relative z-20 mb-8 mt-2">
+        <div className="px-5 relative z-20 mb-4 mt-1">
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
@@ -2581,15 +2586,42 @@ export default function HomeDashboard({
           tradition={tradition ?? 'hindu'}
         />
 
-        {/* ── Milestone Share Card — viral moment at 7/21/40/108-day streaks ── */}
-        {(japaStreak ?? 0) > 0 && (
-          <MilestoneShareCard
-            japaStreak={japaStreak ?? 0}
-            userId={userId}
-            userName={userName}
-            tradition={tradition}
-          />
-        )}
+        {/* ── Quick Access pills — replaces the removed + floating menu ── */}
+        <div className="px-5 mb-4">
+          <div
+            className="flex gap-2 overflow-x-auto pb-0.5"
+            style={{ scrollbarWidth: 'none' } as React.CSSProperties}
+          >
+            {[
+              { emoji: '🧘', label: 'Nitya',    href: '/nitya-karma' },
+              { emoji: '🧠', label: 'Quiz',     href: '/quiz' },
+              { emoji: '✨', label: 'AI Guide',  href: '/ai-chat' },
+              { emoji: '📈', label: 'Progress', href: '/my-progress' },
+              { emoji: '🛕', label: 'Tirtha',   href: '/tirtha-map' },
+              { emoji: '🪔', label: 'Sanskar',  href: '/kul/sanskara' },
+              { emoji: '🤝', label: 'Seva',     href: '/seva' },
+            ].map(item => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full border transition-transform active:scale-95"
+                style={{
+                  background:   isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,253,246,0.85)',
+                  borderColor:  isDark ? 'rgba(197,160,89,0.14)' : 'rgba(197,160,89,0.20)',
+                  textDecoration: 'none',
+                }}
+              >
+                <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>{item.emoji}</span>
+                <span
+                  className="text-[11px] font-semibold"
+                  style={{ color: isDark ? 'rgba(240,237,230,0.78)' : 'rgba(30,20,5,0.72)' }}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
 
         {/* ── Post-japa Dharma Mitra nudge — conversion prompt after practice ── */}
         {japaAlreadyDoneToday && !isPro && (
@@ -2638,14 +2670,7 @@ export default function HomeDashboard({
           />
         )}
 
-        {/* ── Invite Card — grow the installed base ── */}
-        {!showFirstTimeGuidance && (
-          <InviteCard
-            userId={userId}
-            userName={userName}
-            tradition={tradition}
-          />
-        )}
+        {/* Invite Card — moved to Profile page */}
 
         {/* ── PWA Install Banner — home-screen install prompt ── */}
         <PWAInstallBanner
@@ -2702,14 +2727,7 @@ export default function HomeDashboard({
           </div>
         </div>
 
-        {/* ── Priority Banner — rotating single-slot notification ── */}
-        <PriorityBanner
-          missedYesterday={missedYesterday}
-          freezeCount={freezeCount}
-          isPro={isPro}
-          streak={japaStreak}
-          tradition={tradition}
-        />
+        {/* Priority Banner moved to hero section above */}
 
         {showFreezeBanner && (
           <div className="px-5 mb-4">

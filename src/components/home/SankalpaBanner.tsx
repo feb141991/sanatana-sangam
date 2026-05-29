@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import SacredIcon from '@/components/ui/SacredIcon';
 interface Props {
@@ -47,12 +48,15 @@ export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete 
   const accentColor = meta?.accentColour || 'var(--brand-primary)';
 
   return (
-    // ── Compact pill — same visual weight as the empty-state row ─────────────
-    <div
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl mt-4"
+    // ── Clickable pill — taps to sankalpa status / my-progress ───────────────
+    <Link
+      href="/my-progress"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl mt-4 active:scale-[0.98] transition-transform"
       style={{
         background: 'rgba(197, 160, 89, 0.07)',
         border: '1px solid rgba(197, 160, 89, 0.18)',
+        textDecoration: 'none',
+        display: 'flex',
       }}
     >
       {/* Icon */}
@@ -81,13 +85,13 @@ export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete 
         ))}
       </div>
 
-      {/* Days remaining */}
+      {/* Days remaining + CTA */}
       <span
-        className="font-semibold tracking-wide shrink-0 tabular-nums"
+        className="font-bold tracking-wide shrink-0 tabular-nums"
         style={{ color: accentColor, fontSize: 11 }}
       >
-        {remainingDays} days left
+        {remainingDays}d · Let's go →
       </span>
-    </div>
+    </Link>
   );
 }
