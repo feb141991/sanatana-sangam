@@ -1,36 +1,18 @@
 'use client';
 
-import BrandMark from '@/components/BrandMark';
+import { useState } from 'react';
+import { SacredLoader } from '@/components/ui/SacredLoader';
 
+/**
+ * Root-level route loading fallback.
+ * Reads tradition synchronously from the `data-tradition` attribute
+ * stamped on <html> by our inline cold-start script — no flicker.
+ */
 export default function Loading() {
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: '#0E0E0F',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div className="loading-pulse">
-        <BrandMark size="lg" />
-      </div>
-      <p
-        style={{
-          marginTop: '16px',
-          fontSize: '11px',
-          letterSpacing: '0.3em',
-          textTransform: 'uppercase',
-          color: 'rgba(197,160,89,0.4)',
-          fontFamily: 'inherit',
-        }}
-      >
-        Shoonaya
-      </p>
-    </div>
-  );
+  const [tradition] = useState<string | null>(() => {
+    if (typeof document === 'undefined') return null;
+    return document.documentElement.getAttribute('data-tradition') || null;
+  });
+
+  return <SacredLoader variant="splash" tradition={tradition} />;
 }
