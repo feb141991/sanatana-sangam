@@ -2561,27 +2561,20 @@ export default function HomeDashboard({
         )}
 
         {/* ── Daily Sadhana Progress Strip ── */}
-        <div
-          className="mx-4 mb-3 rounded-2xl"
-          style={{
-            background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,253,248,0.88)',
-            border: isDark ? '1px solid rgba(197,160,89,0.12)' : '1px solid rgba(197,160,89,0.16)',
-          }}
-        >
-          <DailySadhanaStrip
-            japaDone={japaAlreadyDoneToday}
-            nityaDone={nityaDoneToday}
-            pathshalaDone={pathshalaDoneToday}
-            japaBeads={dailyDharmaStackState.japaBeads}
-            japaRounds={dailyDharmaStackState.japaRounds}
-            quizDone={dailyDharmaStackState.quizDone}
-            dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
-            dharmVeerId={dharmVeer.id}
-            pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
-            tithi={panchang?.tithi}
-            tradition={tradition ?? 'hindu'}
-          />
-        </div>
+        <DailySadhanaStrip
+          japaDone={japaAlreadyDoneToday}
+          nityaDone={nityaDoneToday}
+          pathshalaDone={pathshalaDoneToday}
+          japaBeads={dailyDharmaStackState.japaBeads}
+          japaRounds={dailyDharmaStackState.japaRounds}
+          quizDone={dailyDharmaStackState.quizDone}
+          dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+          dharmVeerId={dharmVeer.id}
+          pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+          tithi={panchang?.tithi}
+          tradition={tradition ?? 'hindu'}
+          isDark={isDark}
+        />
 
         {/* ── Quick Access pills — replaces the removed + floating menu ── */}
         <div className="px-4 mb-4">

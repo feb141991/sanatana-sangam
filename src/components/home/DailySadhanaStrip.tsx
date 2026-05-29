@@ -18,6 +18,7 @@ interface DailySadhanaStripProps {
   pathshalaProgress?: number;
   tithi?: string;
   tradition?: string;
+  isDark?: boolean;
 }
 
 type LocalState = {
@@ -162,7 +163,7 @@ function JapaArc({ beads, done, accentColor }: { beads: number; done: boolean; a
   );
 }
 
-export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
+export default function DailySadhanaStrip(props: DailySadhanaStripProps & { isDark?: boolean }) {
   const router = useRouter();
   const dharmVeerHref = props.dharmVeerId ? `/dharm-veer/${props.dharmVeerId}` : '/dharm-veer';
   const [localState, setLocalState] = useState<LocalState>(EMPTY_LOCAL_STATE);
@@ -194,6 +195,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   }, [refresh]);
 
   const tradition = props.tradition ?? 'hindu';
+  const isDark = props.isDark ?? true;
   const meta = getTraditionMeta(tradition);
   const accentColor = `var(--relic-accent, ${meta.accentColour})`;
 
@@ -293,7 +295,13 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   const activeRow = rows[activeIdx];
 
   return (
-    <div className="px-4 py-3 relative z-20" aria-label={`${completedCount} of 5 sadhanas complete today`}>
+    <div
+      className="px-5 relative z-20 mb-5 py-2"
+      style={{
+        background: isDark ? 'rgba(197,160,89,0.05)' : 'rgba(197,160,89,0.06)',
+      }}
+      aria-label={`${completedCount} of 5 sadhanas complete today`}
+    >
 
       {/* ── Slim pagination lines ─────────────────────────────────────────────── */}
       <div className="flex items-center gap-1.5 mb-3">
