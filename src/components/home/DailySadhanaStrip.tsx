@@ -38,6 +38,15 @@ const EMPTY_LOCAL_STATE: LocalState = {
   pathshalaDone: false, pathshalaProgress: 0,
 };
 
+// Per-sadhana colour palette — same language as mood pills
+const ITEM_PALETTE: Record<string, { colour: string; bg: string }> = {
+  japa:      { colour: '#F59E4A', bg: 'rgba(245,158,74,0.12)'  },
+  nitya:     { colour: '#C5A059', bg: 'rgba(197,160,89,0.10)'  },
+  pathshala: { colour: '#6BC47E', bg: 'rgba(107,196,126,0.12)' },
+  quiz:      { colour: '#A594E0', bg: 'rgba(165,148,224,0.12)' },
+  dharmveer: { colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
+};
+
 function formatToday() { return new Date().toISOString().split('T')[0]; }
 function clampPercent(v: number) { return Math.max(0, Math.min(100, Math.round(v))); }
 
@@ -79,8 +88,8 @@ function readLocalState(): LocalState {
   } catch { return EMPTY_LOCAL_STATE; }
 }
 
-// ── Unified ring — same visual language for every sadhana item ───────────────
-function Ring({ done, progress = 0, accentColor }: { done: boolean; progress?: number; accentColor: string }) {
+// ── Unified ring — hollow → arc → solid filled ───────────────────────────────
+function Ring({ done, progress = 0, colour }: { done: boolean; progress?: number; colour: string }) {
   const radius = 9;
   const circ   = 2 * Math.PI * radius;
   const pct    = Math.max(0, Math.min(1, progress));
@@ -90,7 +99,7 @@ function Ring({ done, progress = 0, accentColor }: { done: boolean; progress?: n
     return (
       <div
         className="flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300"
-        style={{ background: accentColor, boxShadow: `0 0 8px ${accentColor}55` }}
+        style={{ background: colour, boxShadow: `0 0 8px ${colour}55` }}
       >
         <Check size={13} strokeWidth={3} style={{ color: '#0e0d09' }} />
       </div>
@@ -98,14 +107,13 @@ function Ring({ done, progress = 0, accentColor }: { done: boolean; progress?: n
   }
 
   if (pct > 0) {
-    // Partial arc progress ring
     return (
       <div className="relative flex h-7 w-7 items-center justify-center">
         <svg viewBox="0 0 24 24" className="h-7 w-7 absolute inset-0" aria-hidden="true">
-          <circle cx="12" cy="12" r={radius} fill="none" stroke={`${accentColor}20`} strokeWidth="2" />
+          <circle cx="12" cy="12" r={radius} fill="none" stroke={`${colour}22`} strokeWidth="2" />
           <circle
             cx="12" cy="12" r={radius} fill="none"
-            stroke={accentColor} strokeWidth="2" strokeLinecap="round"
+            stroke={colour} strokeWidth="2" strokeLinecap="round"
             strokeDasharray={`${dash} ${circ - dash}`}
             transform="rotate(-90 12 12)"
             style={{ transition: 'stroke-dasharray 0.4s ease' }}
@@ -115,11 +123,10 @@ function Ring({ done, progress = 0, accentColor }: { done: boolean; progress?: n
     );
   }
 
-  // Empty ring
   return (
     <div
       className="flex h-7 w-7 items-center justify-center rounded-full"
-      style={{ border: `1.5px solid ${accentColor}50` }}
+      style={{ border: `1.5px solid ${colour}40` }}
     />
   );
 }
@@ -147,15 +154,15 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
 
   const tradition = props.tradition ?? 'hindu';
   const meta = getTraditionMeta(tradition);
-  const accentColor = `var(--relic-accent, ${meta.accentColour})`;
+  const goldAccent = `var(--relic-accent, ${meta.accentColour})`;
 
-  const japaDone      = props.japaDone || localState.japaDone;
-  const nityaDone     = props.nityaDone || localState.nityaDone;
-  const pathshalaDone = props.pathshalaDone || localState.pathshalaDone;
-  const japaBeads     = props.japaBeads ?? localState.japaBeads;
-  const japaRounds    = props.japaRounds ?? localState.japaRounds;
-  const quizDone      = Boolean(props.quizDone) || localState.quizDone;
-  const dharmVeerDone = Boolean(props.dharmVeerDone) || localState.dharmVeerDone;
+  const japaDone          = props.japaDone || localState.japaDone;
+  const nityaDone         = props.nityaDone || localState.nityaDone;
+  const pathshalaDone     = props.pathshalaDone || localState.pathshalaDone;
+  const japaBeads         = props.japaBeads ?? localState.japaBeads;
+  const japaRounds        = props.japaRounds ?? localState.japaRounds;
+  const quizDone          = Boolean(props.quizDone) || localState.quizDone;
+  const dharmVeerDone     = Boolean(props.dharmVeerDone) || localState.dharmVeerDone;
   const pathshalaProgress = clampPercent(props.pathshalaProgress ?? localState.pathshalaProgress);
 
   const rows = useMemo(() => [
@@ -163,31 +170,35 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
       id: 'japa', icon: '📿', label: 'Japa Mala',
       sublabel: japaBeads > 0 ? `${japaRounds} round${japaRounds !== 1 ? 's' : ''} · ${japaBeads} beads` : 'Recite the divine name',
       done: japaDone, href: '/bhakti/mala',
-      // Japa arc progress: beads out of 108
       progress: japaDone ? 1 : Math.min(1, (japaBeads % 109) / 108),
+      ...ITEM_PALETTE.japa,
     },
     {
       id: 'nitya', icon: '🌅', label: 'Nitya Seva',
       sublabel: nityaDone ? 'Morning routine done' : 'Morning practice',
       done: nityaDone, href: '/nitya-karma', progress: 0,
+      ...ITEM_PALETTE.nitya,
     },
     {
       id: 'pathshala', icon: '📖', label: 'Pathshala',
       sublabel: pathshalaProgress > 0 ? `${pathshalaProgress}% read today` : 'Study scripture',
       done: pathshalaDone, href: '/pathshala',
       progress: pathshalaDone ? 1 : pathshalaProgress / 100,
+      ...ITEM_PALETTE.pathshala,
     },
     {
       id: 'quiz', icon: '🧠', label: 'Daily Quiz',
       sublabel: quizDone ? 'All answered today' : 'Test your knowledge',
       done: quizDone, href: '/quiz', progress: 0,
+      ...ITEM_PALETTE.quiz,
     },
     {
       id: 'dharmveer', icon: '⚔️', label: 'Dharm Veer',
       sublabel: dharmVeerDone ? 'Challenge complete' : "Today's challenge",
       done: dharmVeerDone, href: dharmVeerHref, progress: 0,
+      ...ITEM_PALETTE.dharmveer,
     },
-  ], [accentColor, dharmVeerHref, dharmVeerDone, japaBeads, japaRounds, japaDone, nityaDone, pathshalaDone, pathshalaProgress, quizDone]);
+  ], [dharmVeerHref, dharmVeerDone, japaBeads, japaRounds, japaDone, nityaDone, pathshalaDone, pathshalaProgress, quizDone]);
 
   const completedCount = rows.filter(r => r.done).length;
 
@@ -212,9 +223,9 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   const activeRow = rows[activeIdx];
 
   return (
-    <div className="px-5 relative z-20 mb-5" aria-label={`${completedCount} of 5 sadhanas complete today`}>
+    <div className="px-4 relative z-20 mb-5" aria-label={`${completedCount} of 5 sadhanas complete today`}>
       {/* ── Slim pagination lines ──────────────────────────────────────────── */}
-      <div className="flex items-center gap-1.5 mb-3">
+      <div className="flex items-center gap-1.5 mb-2">
         {rows.map((row, i) => (
           <button
             key={row.id} type="button" aria-label={`Go to ${row.label}`}
@@ -224,19 +235,19 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
           >
             <motion.div
               className="h-full rounded-full"
-              style={{ background: row.done ? accentColor : i === activeIdx ? `${accentColor}55` : 'transparent' }}
+              style={{ background: row.done ? goldAccent : i === activeIdx ? `${goldAccent}55` : 'transparent' }}
               initial={{ width: '0%' }}
               animate={{ width: row.done ? '100%' : i === activeIdx ? '100%' : '0%' }}
               transition={{ duration: 0.55, delay: row.done ? i * 0.07 : 0, ease: [0.22, 1, 0.36, 1] }}
             />
           </button>
         ))}
-        <span className="shrink-0 text-[10px] font-bold tabular-nums ml-1" style={{ color: accentColor, opacity: 0.72 }}>
+        <span className="shrink-0 text-[10px] font-bold tabular-nums ml-1" style={{ color: goldAccent, opacity: 0.72 }}>
           {completedCount}/5
         </span>
       </div>
 
-      {/* ── Single carousel card ──────────────────────────────────────────── */}
+      {/* ── Carousel pill card ────────────────────────────────────────────── */}
       <div className="overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -253,14 +264,18 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
             onTap={() => router.push(activeRow.href)}
             className="cursor-pointer"
           >
-            <div className="flex h-[52px] items-center justify-between transition-opacity active:opacity-70">
+            {/* Coloured pill — same borderless bg style as mood buttons */}
+            <div
+              className="flex items-center justify-between rounded-2xl px-4 py-3 transition-opacity active:opacity-70"
+              style={{ background: activeRow.bg }}
+            >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="text-[20px] shrink-0">{activeRow.icon}</span>
                 <div className="min-w-0">
                   <div className="text-[13px] font-semibold leading-tight" style={{ color: 'var(--brand-ink)' }}>
                     {activeRow.label}
                     {activeRow.done && (
-                      <span className="ml-1.5 text-[10px] font-bold" style={{ color: accentColor, opacity: 0.8 }}>✓</span>
+                      <span className="ml-1.5 text-[10px] font-bold" style={{ color: activeRow.colour, opacity: 0.9 }}>✓</span>
                     )}
                   </div>
                   <div className="truncate text-[11px] leading-tight mt-[1px]" style={{ color: 'var(--brand-muted)' }}>
@@ -269,9 +284,8 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
                 </div>
               </div>
               <div className="ml-3 flex items-center gap-2 shrink-0">
-                {/* Unified ring — solid filled when done, arc/hollow otherwise */}
-                <Ring done={activeRow.done} progress={activeRow.progress} accentColor={accentColor} />
-                <ChevronRight size={14} style={{ color: 'rgba(197,160,89,0.4)' }} />
+                <Ring done={activeRow.done} progress={activeRow.progress} colour={activeRow.colour} />
+                <ChevronRight size={14} style={{ color: `${activeRow.colour}55` }} />
               </div>
             </div>
           </motion.div>

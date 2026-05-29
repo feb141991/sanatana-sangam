@@ -2470,7 +2470,7 @@ export default function HomeDashboard({
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
-            className="w-full text-center py-4 cursor-pointer"
+            className="w-full text-center pt-3 pb-1 cursor-pointer"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.01 }}
