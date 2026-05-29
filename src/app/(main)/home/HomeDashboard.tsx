@@ -73,6 +73,8 @@ import MantraPlayer from '@/components/ui/MantraPlayer';
 import PriorityBanner from '@/components/home/PriorityBanner';
 import VratCarousel from '@/components/home/VratCarousel';
 import ForYouSection from '@/components/home/ForYouSection';
+import StoryCircles from '@/components/home/StoryCircles';
+import NowNextMuhurta from '@/components/home/NowNextMuhurta';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
 import SetSankalpSheet from '@/components/home/SetSankalpSheet';
@@ -101,14 +103,15 @@ import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 
 interface Panchang {
-  tithi:          string;
-  nakshatra:      string;
-  yoga:           string;
-  sunrise:        string;
-  sunset:         string;
-  rahuKaal:       string;
-  brahmaMuhurta?: string;
-  tithiIndex:     number;
+  tithi:           string;
+  nakshatra:       string;
+  yoga:            string;
+  sunrise:         string;
+  sunset:          string;
+  rahuKaal:        string;
+  brahmaMuhurta?:  string;
+  abhijitMuhurat?: string;
+  tithiIndex:      number;
 }
 
 interface SacredTextMeta {
@@ -2503,6 +2506,21 @@ export default function HomeDashboard({
           </div>
         </div>
         
+        {/* ── Story Circles — daily quick-access strip ── */}
+        <StoryCircles
+          shlokaLine={dailyTextLine}
+          tithi={panchang?.tithi ?? ''}
+          nakshatra={panchang?.nakshatra ?? ''}
+          japaStreak={japaStreak ?? 0}
+          japaAlreadyDone={japaAlreadyDoneToday}
+          dharmVeer={dharmVeer}
+          dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+          nextFestival={festivals[0] ?? null}
+          daysUntilFestival={daysUntilFestival}
+          tradition={tradition}
+          isDark={isDark}
+        />
+
         {/* ── Zenith Transitional Shloka ── */}
         <div className="px-5 relative z-20 mb-8 mt-2">
           <motion.button
@@ -2533,6 +2551,18 @@ export default function HomeDashboard({
             sunrise={panchang.sunrise}
             japaAlreadyDoneToday={japaAlreadyDoneToday}
             tradition={tradition}
+          />
+        )}
+
+        {/* ── Now / Next Muhurta — always-visible sacred time context ── */}
+        {panchang?.brahmaMuhurta && panchang?.abhijitMuhurat && panchang?.rahuKaal && panchang?.sunrise && panchang?.sunset && (
+          <NowNextMuhurta
+            brahmaMuhurta={panchang.brahmaMuhurta}
+            abhijitMuhurat={panchang.abhijitMuhurat}
+            rahuKaal={panchang.rahuKaal}
+            sunrise={panchang.sunrise}
+            sunset={panchang.sunset}
+            isDark={isDark}
           />
         )}
 
