@@ -2470,36 +2470,6 @@ export default function HomeDashboard({
                 </motion.div>
               )}
 
-              {/* Tithi chip — compact pill, taps to Panchang ─────────────── */}
-              {panchang?.tithi && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.22 }}
-                  className="mt-2"
-                >
-                  <Link
-                    href="/panchang"
-                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full active:scale-95 transition-transform"
-                    style={{
-                      background: 'rgba(197,160,89,0.12)',
-                      backdropFilter: 'blur(8px)',
-                    }}
-                  >
-                    <span className="text-[9px]">🌙</span>
-                    <span
-                      className="text-[10px] font-semibold"
-                      style={{ color: 'rgba(255,240,200,0.85)' }}
-                    >
-                      {panchang.tithi}
-                    </span>
-                    <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
-                    <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
-                      {fmtDate(selectedDate, 'd MMM')}
-                    </span>
-                  </Link>
-                </motion.div>
-              )}
             </div>
           </div>
         </div>
@@ -2511,7 +2481,7 @@ export default function HomeDashboard({
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
-            className="w-full text-center pt-3 pb-1 cursor-pointer"
+            className="w-full text-center pt-3 pb-0 cursor-pointer"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.01 }}
@@ -2529,28 +2499,6 @@ export default function HomeDashboard({
           </motion.button>
         </div>
 
-        {/* ── Brahma Muhurta card — sunrise-aware japa prompt ── */}
-        {panchang?.brahmaMuhurta && panchang?.sunrise && (
-          <BrahmaMuhurtaCard
-            brahmaMuhurta={panchang.brahmaMuhurta}
-            sunrise={panchang.sunrise}
-            japaAlreadyDoneToday={japaAlreadyDoneToday}
-            tradition={tradition}
-          />
-        )}
-
-        {/* ── Now / Next Muhurta — always-visible sacred time context ── */}
-        {panchang?.brahmaMuhurta && panchang?.abhijitMuhurat && panchang?.rahuKaal && panchang?.sunrise && panchang?.sunset && (
-          <NowNextMuhurta
-            brahmaMuhurta={panchang.brahmaMuhurta}
-            abhijitMuhurat={panchang.abhijitMuhurat}
-            rahuKaal={panchang.rahuKaal}
-            sunrise={panchang.sunrise}
-            sunset={panchang.sunset}
-            isDark={isDark}
-          />
-        )}
-
         {/* ── Daily Sadhana Progress Strip ── */}
         <DailySadhanaStrip
           japaDone={japaAlreadyDoneToday}
@@ -2566,6 +2514,28 @@ export default function HomeDashboard({
           tradition={tradition ?? 'hindu'}
           isDark={isDark}
         />
+
+        {/* ── Brahma Muhurta card — below strip, no longer between shloka and strip ── */}
+        {panchang?.brahmaMuhurta && panchang?.sunrise && (
+          <BrahmaMuhurtaCard
+            brahmaMuhurta={panchang.brahmaMuhurta}
+            sunrise={panchang.sunrise}
+            japaAlreadyDoneToday={japaAlreadyDoneToday}
+            tradition={tradition}
+          />
+        )}
+
+        {/* ── Now / Next Muhurta ── */}
+        {panchang?.brahmaMuhurta && panchang?.abhijitMuhurat && panchang?.rahuKaal && panchang?.sunrise && panchang?.sunset && (
+          <NowNextMuhurta
+            brahmaMuhurta={panchang.brahmaMuhurta}
+            abhijitMuhurat={panchang.abhijitMuhurat}
+            rahuKaal={panchang.rahuKaal}
+            sunrise={panchang.sunrise}
+            sunset={panchang.sunset}
+            isDark={isDark}
+          />
+        )}
 
         {/* ── Quick Access pills — replaces the removed + floating menu ── */}
         <div className="px-4 mb-4">
