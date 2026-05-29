@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle2, ChevronLeft, CreditCard, Sparkles, AlertTriangle, ExternalLink } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -40,6 +41,8 @@ export default function SubscriptionClient({
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [history, setHistory] = useState<Invoice[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<'seeker' | 'zenith' | 'kul'>('zenith');
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
 
   useEffect(() => {
     async function fetchHistory() {
@@ -117,6 +120,12 @@ export default function SubscriptionClient({
   const handleSubscribe = async (planType: 'monthly' | 'annual') => {
     router.push('/pricing');
   };
+
+  const planMotion = {
+    whileTap: { scale: 0.98 },
+    whileHover: { y: -4 },
+    transition: { type: 'spring', stiffness: 280, damping: 22 },
+  } as const;
 
   const handleRestore = async () => {
     toast('If you have an active subscription, it will be restored. Contact support if not.', { icon: '🔄' });
@@ -240,65 +249,167 @@ export default function SubscriptionClient({
           <section>
             <h2 className="text-sm font-bold uppercase tracking-widest text-[#C5A059] mb-4">Available Plans</h2>
             <div className="space-y-4">
-              
-              {/* Annual Plan (Highlighted) */}
-              <div className="relative border border-[#C5A059]/40 rounded-2xl p-6 shadow-[0_8px_32px_rgba(197,160,89,0.1)]" style={{ background: 'linear-gradient(145deg, rgba(197,160,89,0.08), rgba(197,160,89,0.02))' }}>
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C5A059] text-[#0E0E0F] text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                  Best Value
-                </div>
-                
-                <div className="flex justify-between items-center mb-5 mt-1">
-                  <div>
-                    <h3 className="text-lg font-serif font-bold" style={{ color: 'var(--brand-ink)' }}>Zenith · Annual</h3>
-                    <p className="text-xs text-[#C5A059]">{pricing.monthly}/month</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-[#C5A059]">{pricing.annual}</p>
-                    <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-muted)' }}>per year</p>
-                  </div>
-                </div>
-
-                <ul className="space-y-2.5 mb-6">
-                  {['Ad-free experience', 'Premium Pathshala Content', 'Advanced Analytics'].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm" style={{ color: 'var(--brand-ink)' }}>
-                      <CheckCircle2 size={16} className="text-[#C5A059]" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <button 
-                  onClick={() => handleSubscribe('annual')}
-                  disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-[#C5A059] text-[#0E0E0F] font-bold hover:bg-[#d6b471] transition-colors disabled:opacity-50"
-                >
-                  Subscribe Now
-                </button>
+              <div
+                className="relative flex rounded-full p-1"
+                style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+              >
+                {(['monthly', 'annual'] as const).map((period) => {
+                  const active = billingPeriod === period;
+                  return (
+                    <button
+                      key={period}
+                      onClick={() => setBillingPeriod(period)}
+                      className="relative flex-1 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
+                      style={{ color: active ? '#0E0E0F' : 'var(--brand-muted)' }}
+                    >
+                      {active && (
+                        <motion.span
+                          layoutId="billing-pill"
+                          className="absolute inset-0 rounded-full"
+                          style={{ background: '#C5A059' }}
+                          transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                        />
+                      )}
+                      <span className="relative z-10">{period === 'monthly' ? 'Monthly' : 'Annual'}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Monthly Plan */}
-              <div className="rounded-2xl p-6" style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-lg font-serif font-bold" style={{ color: 'var(--brand-ink)' }}>Zenith · Monthly</h3>
-                    <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>Flexible</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold" style={{ color: 'var(--brand-ink)' }}>{pricing.monthly}</p>
-                    <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--brand-muted)' }}>per month</p>
-                  </div>
-                </div>
+              {[
+                {
+                  key: 'seeker' as const,
+                  title: 'Seeker',
+                  subtitle: 'Free forever',
+                  price: '₹0',
+                  cadence: 'start here',
+                  features: ['Daily basics', 'Core practice access', 'Community read access'],
+                  cta: 'Continue with Seeker',
+                  onClick: () => setSelectedPlan('seeker'),
+                  action: () => setSelectedPlan('seeker'),
+                },
+                {
+                  key: 'zenith' as const,
+                  title: 'Zenith',
+                  subtitle: 'Most popular',
+                  price: billingPeriod === 'annual' ? pricing.annual : pricing.monthly,
+                  cadence: billingPeriod === 'annual' ? 'per year' : 'per month',
+                  eyebrow: billingPeriod === 'annual' ? `${pricing.monthly}/month` : 'Flexible billing',
+                  features: ['Ad-free experience', 'Premium Pathshala Content', 'Advanced Analytics'],
+                  cta: billingPeriod === 'annual' ? 'Subscribe Annual' : 'Subscribe Monthly',
+                  onClick: () => setSelectedPlan('zenith'),
+                  action: () => handleSubscribe(billingPeriod),
+                  highlighted: true,
+                },
+                {
+                  key: 'kul' as const,
+                  title: 'Kul',
+                  subtitle: 'Family plan',
+                  price: billingPeriod === 'annual' ? 'Shared' : 'Shared',
+                  cadence: 'household access',
+                  features: ['Shared family access', 'Mandali-first experience', 'Designed for home practice'],
+                  cta: 'Explore Kul',
+                  onClick: () => setSelectedPlan('kul'),
+                  action: () => router.push('/pricing'),
+                },
+              ].map((plan) => {
+                const selected = selectedPlan === plan.key;
+                const isZenith = plan.key === 'zenith';
+                return (
+                  <motion.div
+                    key={plan.key}
+                    onClick={plan.onClick}
+                    className="relative rounded-2xl p-6 cursor-pointer overflow-hidden"
+                    style={{
+                      background: isZenith
+                        ? 'linear-gradient(145deg, #1C1608 0%, #2A1F0A 50%, #1a1208 100%)'
+                        : 'var(--card-bg)',
+                      border: selected
+                        ? '2px solid rgba(197,160,89,0.9)'
+                        : isZenith
+                          ? '1.5px solid rgba(197, 160, 89, 0.55)'
+                          : '1px solid var(--card-border)',
+                      boxShadow: selected
+                        ? '0 0 0 4px rgba(197,160,89,0.12)'
+                        : isZenith
+                          ? '0 0 40px rgba(197, 160, 89, 0.12), 0 20px 60px rgba(0,0,0,0.45)'
+                          : undefined,
+                    }}
+                    {...planMotion}
+                  >
+                    {isZenith && (
+                      <div
+                        className="absolute left-6 top-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                        style={{ background: 'rgba(197,160,89,0.18)', color: '#C5A059', boxShadow: '0 0 18px rgba(197,160,89,0.18)' }}
+                      >
+                        Most popular
+                      </div>
+                    )}
 
-                <button 
-                  onClick={() => handleSubscribe('monthly')}
-                  disabled={loading}
-                  className="w-full py-3.5 rounded-xl font-bold transition-colors disabled:opacity-50 hover:opacity-80"
-                  style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--brand-ink)' }}
-                >
-                  Subscribe Monthly
-                </button>
-              </div>
+                    {selected && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full"
+                        style={{ background: 'rgba(197,160,89,0.18)', border: '1px solid rgba(197,160,89,0.45)' }}
+                      >
+                        <CheckCircle2 size={16} color="#C5A059" />
+                      </motion.div>
+                    )}
 
+                    <div className={`flex justify-between items-start ${isZenith ? 'mt-8' : ''} mb-5`}>
+                      <div>
+                        <h3 className="text-lg font-serif font-bold" style={{ color: isZenith ? 'rgba(255,248,233,0.94)' : 'var(--brand-ink)' }}>{plan.title}</h3>
+                        <p className="text-xs" style={{ color: isZenith ? '#C5A059' : 'var(--brand-muted)' }}>{plan.subtitle}</p>
+                        {'eyebrow' in plan && plan.eyebrow ? (
+                          <p className="mt-1 text-[11px]" style={{ color: isZenith ? 'rgba(197,160,89,0.88)' : 'var(--brand-muted)' }}>{plan.eyebrow}</p>
+                        ) : null}
+                      </div>
+                      <div className="text-right">
+                        <AnimatePresence mode="wait">
+                          <motion.p
+                            key={`${plan.key}-${billingPeriod}-price`}
+                            initial={{ opacity: 0, x: 10, y: 4 }}
+                            animate={{ opacity: 1, x: 0, y: 0 }}
+                            exit={{ opacity: 0, x: -10, y: -4 }}
+                            transition={{ duration: 0.2 }}
+                            className={`font-bold ${plan.key === 'seeker' ? 'text-xl' : 'text-2xl'}`}
+                            style={{ color: isZenith ? '#C5A059' : 'var(--brand-ink)' }}
+                          >
+                            {plan.price}
+                          </motion.p>
+                        </AnimatePresence>
+                        <p className="text-[10px] uppercase tracking-wider" style={{ color: isZenith ? 'rgba(255,248,233,0.5)' : 'var(--brand-muted)' }}>{plan.cadence}</p>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-2.5 mb-6">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: isZenith ? 'rgba(255,248,233,0.9)' : 'var(--brand-ink)' }}>
+                          <CheckCircle2 size={16} className="text-[#C5A059]" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        plan.action();
+                      }}
+                      disabled={loading}
+                      className="w-full py-3.5 rounded-xl font-bold transition-colors disabled:opacity-50"
+                      style={{
+                        background: plan.key === 'zenith' ? '#C5A059' : 'var(--card-bg)',
+                        border: plan.key === 'zenith' ? 'none' : '1px solid var(--card-border)',
+                        color: plan.key === 'zenith' ? '#0E0E0F' : 'var(--brand-ink)',
+                      }}
+                    >
+                      {plan.cta}
+                    </button>
+                  </motion.div>
+                );
+              })}
             </div>
           </section>
         )}

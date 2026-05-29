@@ -1927,15 +1927,32 @@ export default function ProfileClient({
             <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]/60 px-1">Privacy & Data</p>
             <button 
               onClick={async () => {
-                const { data, error } = await supabase.rpc('export_user_data');
-                if (error) return toast.error('Export failed: ' + error.message);
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `shoonaya_data_${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-                toast.success('Data exported successfully! 🙏');
+                try {
+                  setReportLoading(true);
+                  const res = await fetch('/api/user/export');
+                  if (!res.ok) {
+                    const data = await res.json().catch(() => null);
+                    throw new Error(data?.error || 'Export failed');
+                  }
+
+                  const blob = await res.blob();
+                  const disposition = res.headers.get('Content-Disposition') ?? '';
+                  const match = disposition.match(/filename=([^;]+)/i);
+                  const fileName = match?.[1]?.replace(/["']/g, '') || `shoonaya-export-${new Date().toISOString().split('T')[0]}.json`;
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = fileName;
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                  URL.revokeObjectURL(url);
+                  toast.success('Your data export has been downloaded');
+                } catch (error) {
+                  toast.error(error instanceof Error ? error.message : 'Export failed');
+                } finally {
+                  setReportLoading(false);
+                }
               }}
               className="w-full flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 text-[#F2EAD6]/80 hover:bg-white/10 transition-all group"
             >
