@@ -63,7 +63,10 @@ import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import WeeklyHabitRow from '@/components/home/WeeklyHabitRow';
+import FirstWeekGuide from '@/components/home/FirstWeekGuide';
+import InviteCard from '@/components/home/InviteCard';
 import DailyDigestCard from '@/components/home/DailyDigestCard';
+import MantraPlayer from '@/components/ui/MantraPlayer';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
 import SetSankalpSheet from '@/components/home/SetSankalpSheet';
@@ -2507,6 +2510,23 @@ export default function HomeDashboard({
           />
         )}
 
+        {/* ── First Week Guide — shown to brand-new users only ── */}
+        {showFirstTimeGuidance && (
+          <FirstWeekGuide
+            tradition={tradition}
+            userName={userName}
+          />
+        )}
+
+        {/* ── Invite Card — grow the installed base ── */}
+        {!showFirstTimeGuidance && (
+          <InviteCard
+            userId={userId}
+            userName={userName}
+            tradition={tradition}
+          />
+        )}
+
         <div className="px-5 mt-3 mb-4">
           <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
             background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
@@ -2979,6 +2999,15 @@ export default function HomeDashboard({
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                {/* Audio player — always visible in modal for diaspora accessibility */}
+                {dailyTextBase.transliteration && (
+                  <MantraPlayer
+                    text={dailyTextBase.transliteration}
+                    label={`Listen to ${dailyText.label} pronunciation`}
+                    size={15}
+                    accentColor="rgba(197,160,89,0.90)"
+                  />
+                )}
                 <button onClick={shareShloka}
                   className="w-11 h-11 rounded-full flex items-center justify-center"
                   style={{ background: sacredTextTheme.iconWell }} aria-label="Share">
@@ -3024,11 +3053,14 @@ export default function HomeDashboard({
                 </p>
               </motion.div>
 
-              {/* Transliteration */}
-              {dailyText.transliteration && dailyText.transliteration !== dailyText.original && (
-                <p className="italic leading-snug" style={{ color: heroSecondaryText, fontSize: '0.78rem' }}>
-                  {dailyText.transliteration}
-                </p>
+              {/* Transliteration — always shown in modal for diaspora accessibility.
+                  Uses dailyTextBase (not dailyText) to bypass the showTransliteration gate. */}
+              {dailyTextBase.transliteration && dailyTextBase.transliteration !== dailyTextBase.original && (
+                <div className="flex items-start gap-2">
+                  <p className="italic leading-snug flex-1" style={{ color: heroSecondaryText, fontSize: '0.78rem', whiteSpace: 'pre-line' }}>
+                    {dailyTextBase.transliteration}
+                  </p>
+                </div>
               )}
 
               {/* Meaning */}

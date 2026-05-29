@@ -61,6 +61,7 @@ const MANTRAS: JapaMantraEntry[] = DATA_MANTRAS.map(m => ({
 import { getMalaSkin } from '@/lib/mala-skins';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import MantraPlayer from '@/components/ui/MantraPlayer';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const TOTAL_BEADS = 108;
@@ -3012,10 +3013,18 @@ export default function JapaClient({
                 Target {targetRounds}×
               </p>
             </div>
-            <div className="text-center mt-3 opacity-80 max-w-xs mx-auto">
-              <p style={{ fontSize: '11px', fontStyle: 'italic', color: sub, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div className="flex items-center justify-center gap-2 mt-3 opacity-80 max-w-xs mx-auto">
+              <p style={{ fontSize: '11px', fontStyle: 'italic', color: sub, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, textAlign: 'center' }}>
                 {'transliteration' in currentMantra ? currentMantra.transliteration : ''}
               </p>
+              {'transliteration' in currentMantra && currentMantra.transliteration && (
+                <MantraPlayer
+                  text={currentMantra.transliteration}
+                  label={`Listen to ${currentMantra.name} pronunciation`}
+                  size={12}
+                  accentColor={meta.accentColour}
+                />
+              )}
             </div>
           </div>
           </motion.div>
