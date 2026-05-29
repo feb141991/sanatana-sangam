@@ -36,6 +36,7 @@ export default async function MyProgressPage() {
   const today        = new Date().toISOString().slice(0, 10);
   const thirtyAgo    = daysAgoISO(29);
   const twentyEight  = daysAgoISO(27);
+  const sixMonthsAgo = daysAgoISO(181); // 26 full weeks + 1 day buffer
 
   // Current month boundaries (for premium report)
   const curMonthStart = monthStartISO(0);
@@ -49,6 +50,8 @@ export default async function MyProgressPage() {
     { data: malaPrev },
     { data: nityaLog },
     { data: sadhana28 },
+    { data: sadhana180 },
+    { data: nitya180 },
     { count: allTimeSessions },
     { count: mandaliPosts },
     { count: kulTasksCount },
@@ -84,13 +87,29 @@ export default async function MyProgressPage() {
       .gte('log_date', thirtyAgo)
       .lte('log_date', today),
 
-    // Daily sadhana — 28 days for heatmap
+    // Daily sadhana — 28 days for heatmap (existing view)
     supabase
       .from('daily_sadhana')
       .select('date, japa_done, streak_count')
       .eq('user_id', user.id)
       .gte('date', twentyEight)
       .lte('date', today),
+
+    // Daily sadhana — 6 months for GitHub-style heatmap
+    supabase
+      .from('daily_sadhana')
+      .select('date, japa_done')
+      .eq('user_id', user.id)
+      .gte('date', sixMonthsAgo)
+      .lte('date', today),
+
+    // Nitya karma — 6 months
+    supabase
+      .from('nitya_karma_log')
+      .select('log_date')
+      .eq('user_id', user.id)
+      .gte('log_date', sixMonthsAgo)
+      .lte('log_date', today),
 
     // All-time session count (for achievement shields)
     supabase
@@ -112,7 +131,7 @@ export default async function MyProgressPage() {
       .eq('completed', true),
   ]);
 
-  // Build 28-day heatmap
+  // Build 28-day heatmap (for existing calendar view)
   const sadhanaMap: Record<string, boolean> = {};
   (sadhana28 ?? []).forEach(r => { sadhanaMap[r.date] = r.japa_done; });
   const nityaDates = new Set((nityaLog ?? []).map(r => r.log_date));
@@ -122,6 +141,18 @@ export default async function MyProgressPage() {
     d.setDate(d.getDate() - 27 + i);
     const dt = d.toISOString().slice(0, 10);
     return { date: dt, japa: sadhanaMap[dt] ?? false, nitya: nityaDates.has(dt) };
+  });
+
+  // Build 6-month heatmap (26 weeks) for GitHub-style view
+  const sadhana180Map: Record<string, boolean> = {};
+  (sadhana180 ?? []).forEach(r => { sadhana180Map[r.date] = r.japa_done; });
+  const nitya180Dates = new Set((nitya180 ?? []).map(r => r.log_date));
+
+  const sixMonthHeatmap = Array.from({ length: 182 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - 181 + i);
+    const dt = d.toISOString().slice(0, 10);
+    return { date: dt, japa: sadhana180Map[dt] ?? false, nitya: nitya180Dates.has(dt) };
   });
 
   let sankalpas: any[] = [];
@@ -187,6 +218,7 @@ export default async function MyProgressPage() {
       isPro={(profile as any)?.is_pro ?? false}
       streak={streak}
       heatmap={heatmap}
+      sixMonthHeatmap={sixMonthHeatmap}
       sevaScore={profile?.seva_score}
       weeklySevaScore={profile?.weekly_seva}
       mandaliPostCount={mandaliPosts ?? 0}

@@ -67,6 +67,7 @@ import FirstWeekGuide from '@/components/home/FirstWeekGuide';
 import InviteCard from '@/components/home/InviteCard';
 import MilestoneShareCard from '@/components/home/MilestoneShareCard';
 import PWAInstallBanner from '@/components/ui/PWAInstallBanner';
+import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import DailyDigestCard from '@/components/home/DailyDigestCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
@@ -97,13 +98,14 @@ import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 
 interface Panchang {
-  tithi:      string;
-  nakshatra:  string;
-  yoga:       string;
-  sunrise:    string;
-  sunset:     string;
-  rahuKaal:   string;
-  tithiIndex: number;
+  tithi:          string;
+  nakshatra:      string;
+  yoga:           string;
+  sunrise:        string;
+  sunset:         string;
+  rahuKaal:       string;
+  brahmaMuhurta?: string;
+  tithiIndex:     number;
 }
 
 interface SacredTextMeta {
@@ -2488,6 +2490,16 @@ export default function HomeDashboard({
           </motion.button>
         </div>
 
+        {/* ── Brahma Muhurta card — sunrise-aware japa prompt ── */}
+        {panchang?.brahmaMuhurta && panchang?.sunrise && (
+          <BrahmaMuhurtaCard
+            brahmaMuhurta={panchang.brahmaMuhurta}
+            sunrise={panchang.sunrise}
+            japaAlreadyDoneToday={japaAlreadyDoneToday}
+            tradition={tradition}
+          />
+        )}
+
         {/* ── Daily Sadhana Progress Strip ── */}
         <DailySadhanaStrip
           japaDone={japaAlreadyDoneToday}
@@ -2511,6 +2523,36 @@ export default function HomeDashboard({
             userName={userName}
             tradition={tradition}
           />
+        )}
+
+        {/* ── Post-japa Dharma Mitra nudge — conversion prompt after practice ── */}
+        {japaAlreadyDoneToday && !isPro && (
+          <div className="px-5 mb-4">
+            <Link
+              href="/ai-chat"
+              className="flex items-center gap-3 rounded-2xl px-4 py-3 transition-all active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(139,92,246,0.05) 100%)',
+                border: '1px solid rgba(139,92,246,0.25)',
+              }}
+            >
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-base"
+                style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.25)' }}
+              >
+                ✨
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold leading-tight" style={{ color: 'rgba(255,255,255,0.88)' }}>
+                  Ask Dharma Mitra about today&apos;s mantra
+                </p>
+                <p className="text-[11px] mt-0.5" style={{ color: 'rgba(139,92,246,0.75)' }}>
+                  5 free questions daily · Unlimited with Zenith
+                </p>
+              </div>
+              <ChevronRight size={14} style={{ color: 'rgba(139,92,246,0.55)', flexShrink: 0 }} />
+            </Link>
+          </div>
         )}
 
         {/* ── 7-Day Habit History ── */}
@@ -2555,8 +2597,19 @@ export default function HomeDashboard({
                 Streak Freeze
               </p>
               <p className="text-xs mt-1" style={{ color: isDark ? 'rgba(185,220,255,0.65)' : 'rgba(37,99,235,0.65)' }}>
-                Miss one day without losing your streak
+                {freezeCount === 0 && !isPro
+                  ? 'Get 3 tokens/month with Zenith'
+                  : 'Miss one day without losing your streak'}
               </p>
+              {freezeCount === 0 && !isPro && (
+                <Link
+                  href="/settings/subscription"
+                  className="inline-block mt-1 text-[10px] font-bold"
+                  style={{ color: '#7DD3FC' }}
+                >
+                  Upgrade → Zenith ↗
+                </Link>
+              )}
             </div>
             <div className="flex items-center gap-2">
               {Array.from({ length: 3 }, (_, index) => {
@@ -2669,9 +2722,20 @@ export default function HomeDashboard({
                 <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
                   {effectiveAppLanguage === 'hi' ? 'पवित्र दिन' : effectiveAppLanguage === 'pa' ? 'ਪਵਿੱਤਰ ਦਿਨ' : 'Sacred Days'}
                 </span>
-                <span className="ml-auto rounded-full px-2 py-0.5 text-[9px] font-semibold" style={{ color: badgeColor, background: badgeBg }}>
+                <span className="rounded-full px-2 py-0.5 text-[9px] font-semibold" style={{ color: badgeColor, background: badgeBg }}>
                   {totalSacredCount}
                 </span>
+                {/* Add to Calendar — ICS export for Google/Apple Calendar */}
+                <a
+                  href="/api/calendar/export"
+                  download="shoonaya-dharmic-calendar.ics"
+                  className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold transition-opacity hover:opacity-80 active:scale-95"
+                  style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.22)', color: '#C5A059' }}
+                  title="Download ICS file — import into Google / Apple / Outlook Calendar"
+                >
+                  <CalendarDays size={9} />
+                  Add to Calendar
+                </a>
               </div>
 
               {/* Upcoming festival row */}

@@ -34,6 +34,7 @@ interface Props {
   isPro:            boolean;
   streak:           number;
   heatmap:          { date: string; japa: boolean; nitya: boolean }[];
+  sixMonthHeatmap?: { date: string; japa: boolean; nitya: boolean }[];
   japa30dSessions:  number;
   japa30dRounds:    number;
   japa30dBeads:     number;
@@ -171,6 +172,156 @@ function SparklineView({ days, isDark }: { days: Props['heatmap']; isDark: boole
             <p className="text-[8px] mt-0.5" style={{ color: sub }}>{label}</p>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// ── 6-Month GitHub-Style Contribution Heatmap ─────────────────────────────────
+// 26 weeks × 7 days grid. Columns = weeks (oldest → newest), rows = Sun–Sat.
+function SixMonthHeatmap({
+  days, isDark,
+}: {
+  days: Props['heatmap']; isDark: boolean;
+}) {
+  const amber  = '#C5A059';
+  const green  = '#8fb46e';
+  const dimBg  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const sub    = isDark ? 'rgba(245,210,130,0.38)' : 'rgba(100,60,10,0.45)';
+
+  const dayMap = useMemo(() => {
+    const m: Record<string, { japa: boolean; nitya: boolean }> = {};
+    days.forEach(d => { m[d.date] = { japa: d.japa, nitya: d.nitya }; });
+    return m;
+  }, [days]);
+
+  const todayIso = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  // Build 26 full weeks anchored to today (Sunday start)
+  const weeks = useMemo(() => {
+    // Find the most recent Sunday (or today if Sunday)
+    const anchor = new Date();
+    anchor.setDate(anchor.getDate() - anchor.getDay()); // roll back to Sunday
+    // Build 26 weeks going backwards
+    const allWeeks: (string | null)[][] = [];
+    for (let w = 25; w >= 0; w--) {
+      const week: (string | null)[] = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(anchor);
+        date.setDate(anchor.getDate() - w * 7 + d);
+        const iso = date.toISOString().slice(0, 10);
+        // Only include dates within our data window
+        week.push(iso <= todayIso ? iso : null);
+      }
+      allWeeks.push(week);
+    }
+    return allWeeks;
+  }, [todayIso]);
+
+  // Month labels for the top axis
+  const monthLabels = useMemo(() => {
+    const labels: { label: string; weekIndex: number }[] = [];
+    let lastMonth = -1;
+    weeks.forEach((week, wi) => {
+      const firstDate = week.find(d => d !== null);
+      if (!firstDate) return;
+      const m = new Date(firstDate + 'T12:00:00Z').getUTCMonth();
+      if (m !== lastMonth) {
+        labels.push({
+          label: new Date(firstDate + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short' }),
+          weekIndex: wi,
+        });
+        lastMonth = m;
+      }
+    });
+    return labels;
+  }, [weeks]);
+
+  function cellColor(iso: string | null): string {
+    if (!iso) return 'transparent';
+    const d = dayMap[iso];
+    if (!d) return dimBg;
+    if (d.japa && d.nitya) return amber;
+    if (d.japa)            return `${amber}bb`;
+    if (d.nitya)           return `${green}99`;
+    return dimBg;
+  }
+
+  const totalJapa  = days.filter(d => d.japa).length;
+  const totalNitya = days.filter(d => d.nitya).length;
+  const longestRun = useMemo(() => {
+    let max = 0, cur = 0;
+    const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
+    for (const d of sorted) {
+      if (d.japa) { cur++; max = Math.max(max, cur); } else cur = 0;
+    }
+    return max;
+  }, [days]);
+
+  return (
+    <div>
+      {/* Stats row */}
+      <div className="flex gap-4 mb-3 text-[11px]" style={{ color: sub }}>
+        <span><span style={{ color: amber }} className="font-bold">{totalJapa}</span> japa days</span>
+        <span><span style={{ color: green }} className="font-bold">{totalNitya}</span> nitya days</span>
+        <span>best run: <span className="font-bold" style={{ color: isDark ? '#f5dfa0' : '#2a1002' }}>{longestRun}</span></span>
+      </div>
+
+      {/* Month labels */}
+      <div className="relative h-4 mb-1" style={{ minWidth: 0 }}>
+        {monthLabels.map(({ label, weekIndex }) => (
+          <span
+            key={label + weekIndex}
+            className="absolute text-[9px]"
+            style={{
+              left: `${(weekIndex / 26) * 100}%`,
+              color: sub,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Grid: columns = weeks, rows = Sun(0)…Sat(6) */}
+      <div className="flex gap-[3px]">
+        {weeks.map((week, wi) => (
+          <div key={wi} className="flex flex-col gap-[3px]">
+            {week.map((iso, di) => (
+              <div
+                key={di}
+                title={iso ? `${iso}${dayMap[iso]?.japa ? ' · Japa' : ''}${dayMap[iso]?.nitya ? ' · Nitya' : ''}` : ''}
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  background: cellColor(iso),
+                  outline: iso === todayIso ? `1.5px solid ${amber}` : 'none',
+                  outlineOffset: 1,
+                  cursor: iso ? 'default' : 'default',
+                  opacity: iso ? 1 : 0,
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-3 mt-2.5 text-[10px]" style={{ color: sub }}>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: dimBg, display: 'inline-block' }} /> None
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: `${amber}bb`, display: 'inline-block' }} /> Japa
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: `${green}99`, display: 'inline-block' }} /> Nitya
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: amber, display: 'inline-block' }} /> Both
+        </span>
       </div>
     </div>
   );
@@ -1175,6 +1326,7 @@ export default function MyProgressClient({
   isPro,
   streak,
   heatmap,
+  sixMonthHeatmap,
   japa30dSessions,
   japa30dRounds,
   japa30dBeads,
@@ -1520,6 +1672,33 @@ export default function MyProgressClient({
               </p>
             </div>
           </motion.section>
+
+          {/* ── 6-Month History — GitHub-style heatmap ── */}
+          {sixMonthHeatmap && sixMonthHeatmap.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}
+              className="rounded-[2rem] p-5 overflow-hidden"
+              style={{
+                background: isDark ? 'rgba(30,18,4,0.65)' : 'rgba(255,248,235,0.80)',
+                border: isDark ? '1px solid rgba(197,160,89,0.14)' : '1px solid rgba(197,160,89,0.22)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: amber + 'aa' }}>
+                    6-Month History
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>
+                    26 weeks · Japa & Nitya
+                  </p>
+                </div>
+              </div>
+              <div className="overflow-x-auto pb-1">
+                <SixMonthHeatmap days={sixMonthHeatmap} isDark={isDark} />
+              </div>
+            </motion.section>
+          )}
 
           {/* ── Activity Calendar ── */}
           <motion.section

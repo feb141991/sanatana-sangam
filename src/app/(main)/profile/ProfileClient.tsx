@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
@@ -37,6 +37,7 @@ import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
+import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -197,6 +198,7 @@ export default function ProfileClient({
   const [koshOpen,  setKoshOpen]  = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [socialShareOpen, setSocialShareOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
@@ -1257,19 +1259,17 @@ export default function ProfileClient({
             />
           )}
 
-          <button 
-            onClick={() => {
-              const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
-              window.open(link, '_blank');
-            }}
+          {/* Share & Connect — full social drawer */}
+          <button
+            onClick={() => setSocialShareOpen(true)}
             className="clay-card rounded-[1.5rem] p-4 flex items-center gap-4 group hover:bg-[#C5A059]/5"
           >
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
-              <MessageCircle size={20} />
+            <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 flex items-center justify-center text-[#C5A059] group-hover:scale-110 transition-transform border border-[#C5A059]/20">
+              <Share2 size={20} />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-medium theme-ink">Expand the Mandali</p>
-              <p className="text-xs theme-muted mt-0.5">Invite on WhatsApp</p>
+              <p className="text-sm font-medium theme-ink">Share your practice</p>
+              <p className="text-xs theme-muted mt-0.5">WhatsApp · X · Copy link</p>
             </div>
             <ChevronRight size={16} className="text-white/20 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -2146,6 +2146,19 @@ export default function ProfileClient({
           </div>
         )}
       </AnimatePresence>
+      {/* Social Share Drawer */}
+      <AnimatePresence>
+        {socialShareOpen && (
+          <SocialShareDrawer
+            userId={userId}
+            userName={liveProfile?.full_name ?? liveProfile?.username ?? 'Seeker'}
+            streak={initialHighlightsStreak}
+            tradition={(liveProfile as any)?.tradition ?? null}
+            onClose={() => setSocialShareOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <BottomDrawer
         isOpen={showPhotoOptions}
         onClose={() => setShowPhotoOptions(false)}
