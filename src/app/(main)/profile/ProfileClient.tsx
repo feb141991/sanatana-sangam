@@ -1318,192 +1318,7 @@ export default function ProfileClient({
             </div>
           )}
 
-          {/* ── Edit Form (Zenith Sheet) ── */}
-          {editing && (
-            <div className="clay-card rounded-[2.5rem] p-8 space-y-8 shadow-2xl fade-in relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-6">
-                <button onClick={() => setEditing(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center transition-all hover:bg-white/10 active:scale-90">
-                  <X size={20} className="text-[#F2EAD6]/40" />
-                </button>
-              </div>
-              
-              <div className="space-y-1">
-                <h2 className="text-2xl font-medium theme-ink premium-serif">Personal details</h2>
-                <p className="text-sm theme-muted">Update your spiritual identity</p>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-xs font-medium theme-muted">Spiritual Level</label>
-                <div className="pt-1">
-                  <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="md" />
-                </div>
-              </div>
-
-              {/* ── Tradition — locked ── */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <label className="text-xs font-medium theme-muted">Spiritual tradition</label>
-                  <span className="flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] border border-[var(--card-border)] font-medium">
-                    <Lock size={10} /> Secured
-                  </span>
-                </div>
-                {(() => {
-                  const t = TRADITIONS.find(t => t.value === form.tradition);
-                  return t ? (
-                    <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
-                      <span className="text-3xl drop-shadow-md">{t.emoji}</span>
-                      <div>
-                        <p className="font-medium text-sm theme-ink">{t.label}</p>
-                        <p className="text-xs theme-muted mt-0.5">{t.desc}</p>
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-              </div>
-
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
-                    { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
-                  ].map(({ label, key, placeholder }) => (
-                    <div key={key} className="space-y-2">
-                      <label className="block text-xs font-medium theme-muted px-1">{label}</label>
-                      <input type="text" placeholder={placeholder}
-                        value={(form as Record<string, string>)[key]}
-                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                        className="zenith-input w-full"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">{sampradayaLabel}</label>
-                    <select value={form.sampradaya}
-                      onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                      className="zenith-input w-full appearance-none">
-                      <option value="">Select {sampradayaLabel.toLowerCase()}</option>
-                      {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">{ishtaDevataLabel}</label>
-                    <select value={form.ishta_devata}
-                      onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                      className="zenith-input w-full appearance-none">
-                      <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
-                      {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Hindu-specific fields ── */}
-              {(activeTradition === 'hindu') && (
-                <div className="space-y-6">
-                  <p className="text-sm font-medium text-[var(--brand-primary)]">Vansh identity</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
-                      { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
-                      { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
-                    ].map(({ label, key, placeholder }) => (
-                      <div key={key} className="space-y-2">
-                        <label className="block text-xs font-medium theme-muted px-1">{label}</label>
-                        <input type="text" placeholder={placeholder}
-                          value={(form as Record<string, string>)[key]}
-                          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          className="zenith-input w-full"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <p className="text-sm font-medium text-[var(--brand-primary)]">Life stage</p>
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
-                    <input
-                      type="date"
-                      value={form.date_of_birth}
-                      max={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
-                      className="zenith-input w-full"
-                      style={{ colorScheme: 'dark' }}
-                    />
-                    {form.date_of_birth && (() => {
-                      const suggested = ageToAshrama(form.date_of_birth);
-                      const age       = ageFromDob(form.date_of_birth);
-                      const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
-                      return (
-                        <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
-                          <SacredIcon name={meta.icon} size={16} strokeWidth={1.7} />
-                          <p className="text-xs font-medium theme-muted">
-                            Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-xs font-medium theme-muted px-1">Practice path</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {getPracticePathOptions(activeTradition).map(opt => {
-                        const sel = form.gender_context === opt.key;
-                        return (
-                          <button
-                            key={opt.key}
-                            type="button"
-                            onClick={() => setForm({ ...form, gender_context: opt.key })}
-                            className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
-                              sel
-                                ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
-                                : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
-                            }`}
-                          >
-                            <div className="mb-2"><SacredIcon name={opt.icon} size={22} strokeWidth={1.6} /></div>
-                            <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
-                            <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-xs font-medium theme-muted px-1">Bio</label>
-                <textarea placeholder="Share your spiritual journey…"
-                  value={form.bio}
-                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                  rows={4}
-                  className="zenith-input w-full resize-none min-h-[100px]"
-                />
-              </div>
-
-              <div className="flex gap-4 pt-6">
-                <button onClick={() => setEditing(false)}
-                  className="flex-1 py-4 rounded-2xl text-sm font-medium theme-muted border border-[var(--card-border)] transition-all hover:bg-[var(--card-bg-soft)] active:scale-95">
-                  Cancel
-                </button>
-                <button onClick={saveProfile} disabled={saving}
-                  className="flex-1 py-4 rounded-2xl text-sm font-medium bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 disabled:opacity-50">
-                  {saving ? 'Saving...' : 'Save changes'}
-                </button>
-              </div>
-            </div>
-          )}
+          {/* ── Edit Form — now a BottomDrawer (see drawers section below) ── */}
 
           {/* ── Account Summary (Refined Zenith) ── */}
           <div className="clay-card rounded-[2.5rem] p-6 space-y-6">
@@ -1678,6 +1493,185 @@ export default function ProfileClient({
             </div>
           );
         })()}
+      </BottomDrawer>
+
+      {/* ── Edit Profile Drawer ── */}
+      <BottomDrawer
+        isOpen={editing}
+        onClose={() => setEditing(false)}
+        title="Personal details"
+        description="Update your spiritual identity"
+      >
+        <div className="space-y-8 py-2">
+          <div className="space-y-3">
+            <label className="text-xs font-medium theme-muted">Spiritual Level</label>
+            <div className="pt-1">
+              <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="md" />
+            </div>
+          </div>
+
+          {/* ── Tradition — locked ── */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-xs font-medium theme-muted">Spiritual tradition</label>
+              <span className="flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] border border-[var(--card-border)] font-medium">
+                <Lock size={10} /> Secured
+              </span>
+            </div>
+            {(() => {
+              const t = TRADITIONS.find(t => t.value === form.tradition);
+              return t ? (
+                <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
+                  <span className="text-3xl drop-shadow-md">{t.emoji}</span>
+                  <div>
+                    <p className="font-medium text-sm theme-ink">{t.label}</p>
+                    <p className="text-xs theme-muted mt-0.5">{t.desc}</p>
+                  </div>
+                </div>
+              ) : null;
+            })()}
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
+                { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
+              ].map(({ label, key, placeholder }) => (
+                <div key={key} className="space-y-2">
+                  <label className="block text-xs font-medium theme-muted px-1">{label}</label>
+                  <input type="text" placeholder={placeholder}
+                    value={(form as Record<string, string>)[key]}
+                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                    className="zenith-input w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">{sampradayaLabel}</label>
+                <select value={form.sampradaya}
+                  onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select {sampradayaLabel.toLowerCase()}</option>
+                  {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">{ishtaDevataLabel}</label>
+                <select value={form.ishta_devata}
+                  onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
+                  {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {(activeTradition === 'hindu') && (
+            <div className="space-y-6">
+              <p className="text-sm font-medium text-[var(--brand-primary)]">Vansh identity</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { label: 'Gotra',       key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
+                  { label: 'Kul Devata',  key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
+                  { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'       },
+                ].map(({ label, key, placeholder }) => (
+                  <div key={key} className="space-y-2">
+                    <label className="block text-xs font-medium theme-muted px-1">{label}</label>
+                    <input type="text" placeholder={placeholder}
+                      value={(form as Record<string, string>)[key]}
+                      onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                      className="zenith-input w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            <p className="text-sm font-medium text-[var(--brand-primary)]">Life stage</p>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
+                <input
+                  type="date"
+                  value={form.date_of_birth}
+                  max={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                  className="zenith-input w-full"
+                  style={{ colorScheme: 'dark' }}
+                />
+                {form.date_of_birth && (() => {
+                  const suggested = ageToAshrama(form.date_of_birth);
+                  const age       = ageFromDob(form.date_of_birth);
+                  const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
+                  return (
+                    <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
+                      <SacredIcon name={meta.icon} size={16} strokeWidth={1.7} />
+                      <p className="text-xs font-medium theme-muted">
+                        Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-xs font-medium theme-muted px-1">Practice path</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {getPracticePathOptions(activeTradition).map(opt => {
+                    const sel = form.gender_context === opt.key;
+                    return (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => setForm({ ...form, gender_context: opt.key })}
+                        className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
+                          sel
+                            ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                            : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
+                        }`}
+                      >
+                        <div className="mb-2"><SacredIcon name={opt.icon} size={22} strokeWidth={1.6} /></div>
+                        <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
+                        <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-medium theme-muted px-1">Bio</label>
+            <textarea placeholder="Share your spiritual journey…"
+              value={form.bio}
+              onChange={(e) => setForm({ ...form, bio: e.target.value })}
+              rows={4}
+              className="zenith-input w-full resize-none min-h-[100px]"
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button onClick={() => setEditing(false)}
+              className="flex-1 py-4 rounded-2xl text-sm font-medium theme-muted border border-[var(--card-border)] transition-all hover:bg-[var(--card-bg-soft)] active:scale-95">
+              Cancel
+            </button>
+            <button onClick={saveProfile} disabled={saving}
+              className="flex-1 py-4 rounded-2xl text-sm font-medium bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save changes'}
+            </button>
+          </div>
+        </div>
       </BottomDrawer>
 
       <BottomDrawer

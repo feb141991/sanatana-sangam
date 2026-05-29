@@ -8,11 +8,13 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   Bell,
   CalendarDays,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
   Heart,
+  Images,
   MapPin,
   Pencil,
   Share2,
@@ -51,7 +53,7 @@ import { createClient } from '@/lib/supabase';
 import { usePremium } from '@/hooks/usePremium';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
-import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalThemes';
+import { resolveHomeHeroTheme, HOME_HERO_THEMES, type HomeHeroTheme } from '@/config/festivalThemes';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
@@ -1120,6 +1122,11 @@ export default function HomeDashboard({
     isGreetingCompatibleWithTradition(customGreeting, tradition, sampradaya) ? customGreeting : null
   ));
   const [heroImageFailed,   setHeroImageFailed]   = useState(false);
+  const [heroPicker,        setHeroPicker]        = useState(false);
+  const [selectedHeroId,    setSelectedHeroId]    = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('shoonaya_hero_pick');
+  });
   const [streak,           setStreak]           = useState(initialStreak);
   const [freezeCount,      setFreezeCount]      = useState(streakFreezeCount);
   const [freezeBannerDismissed, setFreezeBannerDismissed] = useState(false);
@@ -1949,7 +1956,31 @@ export default function HomeDashboard({
     ishtaDevata,
     festival,
     dbThemes: heroThemes,
+    selectedHeroId: selectedHeroId ?? undefined,
+    lockSelectedHero: Boolean(selectedHeroId),
   });
+
+  // Picker: tradition-filtered, no festival-specific themes
+  const pickerThemes = (() => {
+    const trad = tradition ?? 'hindu';
+    const all  = [...heroThemes, ...HOME_HERO_THEMES];
+    const seen = new Set<string>();
+    return all.filter(t => {
+      if (seen.has(t.id)) return false;
+      seen.add(t.id);
+      if (t.festivalSlugs?.length) return false;
+      if (!t.traditions?.length) return true;
+      return t.traditions.includes(trad);
+    });
+  })();
+
+  const handleHeroSelect = (id: string | null) => {
+    setSelectedHeroId(id);
+    if (id) localStorage.setItem('shoonaya_hero_pick', id);
+    else     localStorage.removeItem('shoonaya_hero_pick');
+    setHeroPicker(false);
+    setHeroImageFailed(false);
+  };
   
   const isFestivalTheme = Boolean(heroTheme.festivalSlugs && heroTheme.festivalSlugs.length > 0 && daysUntilFestival === 0);
   const activeCoverUrl = isFestivalTheme ? heroTheme.heroImage : (customCover || heroTheme.heroImage);
@@ -2186,8 +2217,9 @@ export default function HomeDashboard({
 
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
-            {/* Custom Cover Upload Button */}
+            {/* Hero image controls */}
             <div className="absolute bottom-6 right-6 z-50 flex gap-2">
+              {/* Remove custom cover */}
               {customCover && (
                 <button
                   type="button"
@@ -2195,7 +2227,6 @@ export default function HomeDashboard({
                     e.stopPropagation();
                     setCustomCover(null);
                     localStorage.removeItem('user_cover_photo');
-                    // Clear from DB so it doesn't restore on next load
                     await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
                     toast.success('Restored default cover 🙏');
                   }}
@@ -2205,9 +2236,19 @@ export default function HomeDashboard({
                   <X size={16} className="text-white/90" />
                 </button>
               )}
-              <label 
-                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg" 
-                aria-label="Change Cover Photo"
+              {/* Sacred backdrop picker */}
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); setHeroPicker(true); }}
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+                aria-label="Choose sacred backdrop"
+              >
+                <Images size={16} className="text-white/90" />
+              </button>
+              {/* Custom photo upload */}
+              <label
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+                aria-label="Upload custom cover"
                 onClick={e => e.stopPropagation()}
               >
                 <Pencil size={16} className="text-white/90" />
@@ -3553,6 +3594,112 @@ export default function HomeDashboard({
             mood={selectedMoodForSheet}
             onClose={() => setSelectedMoodForSheet(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* ── Sacred Backdrop Picker ──────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {heroPicker && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-end"
+            onClick={() => setHeroPicker(false)}
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 180 }}
+              onClick={e => e.stopPropagation()}
+              className="relative w-full overflow-y-auto rounded-t-[2.5rem] px-5 pt-0 pb-10"
+              style={{
+                maxHeight: '80vh',
+                background: 'var(--surface-raised)',
+                borderTop: '1px solid rgba(197,160,89,0.15)',
+              }}
+            >
+              {/* Handle */}
+              <div className="w-12 h-1.5 rounded-full mx-auto mt-4 mb-6" style={{ background: 'rgba(197,160,89,0.25)' }} />
+
+              {/* Header */}
+              <div className="mb-5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#C5A059' }}>
+                  Sacred Backdrop
+                </p>
+                <h3 className="text-xl font-semibold" style={{ color: 'var(--brand-ink)' }}>
+                  Choose your hero image
+                </h3>
+                <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }}>
+                  {pickerThemes.length} images curated for your tradition
+                </p>
+              </div>
+
+              {/* Image grid */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {pickerThemes.map(theme => {
+                  const isActive = (selectedHeroId ?? heroTheme.id) === theme.id;
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() => handleHeroSelect(theme.id)}
+                      className="relative rounded-2xl overflow-hidden active:scale-95 transition-transform"
+                      style={{
+                        aspectRatio: '16/9',
+                        outline: isActive ? '2.5px solid #C5A059' : '2.5px solid transparent',
+                        outlineOffset: '2px',
+                      }}
+                    >
+                      <Image
+                        src={theme.heroImage}
+                        alt={theme.heroAlt}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 600px) 45vw, 300px"
+                      />
+                      {/* Label overlay */}
+                      <div className="absolute inset-x-0 bottom-0 px-2.5 py-2"
+                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)' }}>
+                        <span className="text-[10px] font-semibold text-white/90">{theme.label}</span>
+                      </div>
+                      {/* Active check */}
+                      {isActive && (
+                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                          style={{ background: '#C5A059' }}>
+                          <Check size={11} strokeWidth={3} className="text-black" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Reset + upload row */}
+              <div className="flex gap-3">
+                {selectedHeroId && (
+                  <button
+                    type="button"
+                    onClick={() => handleHeroSelect(null)}
+                    className="flex-1 py-3 rounded-2xl text-[12px] font-medium"
+                    style={{ background: 'rgba(197,160,89,0.08)', color: 'rgba(197,160,89,0.7)' }}
+                  >
+                    Reset to default
+                  </button>
+                )}
+                <label
+                  className="flex-1 py-3 rounded-2xl text-[12px] font-medium text-center cursor-pointer"
+                  style={{ background: 'rgba(197,160,89,0.08)', color: 'rgba(197,160,89,0.7)' }}
+                  onClick={() => setHeroPicker(false)}
+                >
+                  Upload custom ↑
+                  <input type="file" accept="image/*" className="hidden" onChange={e => { setHeroPicker(false); handleCoverUpload(e); }} />
+                </label>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
