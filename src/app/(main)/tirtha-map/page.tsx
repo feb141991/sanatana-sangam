@@ -22,7 +22,8 @@ import {
   X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchNearbyTemples, geocodeCity, type Temple } from '@/lib/overpass';
+import { fetchNearbyTemples, geocodeCity, mergeCuratedAndOsm, type Temple } from '@/lib/overpass';
+import { getCuratedNearbyTemples } from '@/lib/diaspora-temples';
 import { useLocation } from '@/lib/LocationContext';
 import { API, MAP, MANDIR } from '@/lib/config';
 import { getTraditionMeta } from '@/lib/tradition-config';
@@ -181,8 +182,35 @@ export default function TirthaMapPage() {
     setLoading(true);
     setGeoError('');
     try {
-      const results = await fetchNearbyTemples(lat, lon, r);
-      setTemples(results);
+      // Curated temples: instant, pure client-side, always works
+      const curatedRaw = getCuratedNearbyTemples(lat, lon, r);
+      const curated: Temple[] = curatedRaw.map((t) => ({
+        id: parseInt(t.id.replace(/[^0-9]/g, '').slice(0, 8) || '0', 10),
+        lat: t.lat,
+        lon: t.lon,
+        name: t.name,
+        tradition: t.tradition,
+        deity: t.deity,
+        address: t.address,
+        website: t.website,
+        opening: t.opening,
+        sampradaya: t.sampradaya,
+        verified: true,
+      }));
+
+      // OSM temples: network call — may fail or return empty for diaspora cities
+      let osm: Temple[] = [];
+      try {
+        osm = await fetchNearbyTemples(lat, lon, r);
+      } catch {
+        // OSM failure is non-fatal when we have curated data
+        if (curated.length === 0) {
+          setGeoError('The map service is slow right now. Showing verified listings only.');
+        }
+      }
+
+      const merged = mergeCuratedAndOsm(curated, osm);
+      setTemples(merged);
       setSearched(true);
     } catch {
       setGeoError('Could not load sacred places. The map service may be slow; try search or a smaller radius.');
@@ -587,6 +615,11 @@ export default function TirthaMapPage() {
                         <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--chip-fill)] px-2 py-0.5 text-[10px] font-medium text-[color:var(--brand-primary)]">
                           {meta.badgeLabel}
                         </span>
+                        {temple.verified && (
+                          <span className="rounded-full bg-emerald-500/14 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                            ✓ Verified
+                          </span>
+                        )}
                         {open !== null && (
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${open ? 'bg-green-500/12 text-green-400' : 'bg-red-500/12 text-red-300'}`}>
                             {open ? 'Open now' : 'May be closed'}
@@ -786,9 +819,16 @@ function PlaceDetailSheet({
             <div className="absolute right-4 top-4 text-8xl opacity-[0.06]">{meta.mapPinEmoji}</div>
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--chip-fill)] px-2.5 py-1 text-[10px] font-medium text-[color:var(--brand-primary)]">
-                  {meta.badgeLabel}
-                </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded-full border border-[rgba(197, 160, 89,0.16)] bg-[var(--chip-fill)] px-2.5 py-1 text-[10px] font-medium text-[color:var(--brand-primary)]">
+                    {meta.badgeLabel}
+                  </span>
+                  {temple.verified && (
+                    <span className="rounded-full bg-emerald-500/14 px-2.5 py-1 text-[10px] font-semibold text-emerald-400">
+                      ✓ Verified listing
+                    </span>
+                  )}
+                </div>
                 <h2 className="mt-3 font-serif text-[2rem] leading-none text-[color:var(--text-cream)]">{temple.name}</h2>
                 <p className="mt-2 text-sm text-[color:var(--text-muted)]">
                   {getDistanceLabel(center, temple)} mi away {temple.address ? `· ${temple.address}` : ''}

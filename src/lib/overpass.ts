@@ -16,6 +16,8 @@ export interface Temple {
   phone?:      string;
   opening?:    string;
   sampradaya?: string;
+  /** True for hand-verified diaspora temples from our curated directory */
+  verified?:   boolean;
 }
 
 // ── Tradition config ────────────────────────────────────────────────────────
@@ -160,6 +162,41 @@ export async function fetchNearbyTemples(
   }
 
   throw lastError;
+}
+
+/**
+ * Merge curated verified temples with OSM results.
+ *
+ * Rules:
+ *  1. Curated temples always appear first.
+ *  2. If an OSM result is within DEDUP_RADIUS_KM of a curated temple,
+ *     it is considered a duplicate and dropped (the curated record is richer).
+ *  3. Remaining OSM results are appended after curated ones.
+ */
+const DEDUP_RADIUS_KM = 0.25; // 250 m
+
+function _haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export function mergeCuratedAndOsm(
+  curated: Temple[],
+  osm: Temple[]
+): Temple[] {
+  // Mark OSM entries that are too close to a curated entry
+  const filtered = osm.filter((osmT) =>
+    !curated.some(
+      (curT) => _haversineKm(curT.lat, curT.lon, osmT.lat, osmT.lon) < DEDUP_RADIUS_KM
+    )
+  );
+  return [...curated, ...filtered];
 }
 
 // Geocode a city name to lat/lon using Nominatim

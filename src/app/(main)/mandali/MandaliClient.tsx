@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal, Navigation } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
@@ -360,23 +360,84 @@ function CityPicker({ value, onChange }: {
   );
 }
 
+// ─── Geo helper (mirrors SeekersNearYou) ─────────────────────────
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+type NearbyMandali = {
+  id: string;
+  name: string;
+  city: string;
+  country: string;
+  member_count: number;
+  latitude: number | null;
+  longitude: number | null;
+  distanceKm?: number;
+};
+
 // ─── No-Mandali Prompt ────────────────────────────────────────────
 function NoMandaliPrompt({ userId }: { userId: string }) {
   const { city: liveCity, country: liveCountry } = useLocation();
   const mandaliMutations = useMandaliMutations(userId);
+  const supabase = createClient();
 
-  const [locating,  setLocating]  = useState(false);
-  const [detected,  setDetected]  = useState<{ city: string; country: string } | null>(null);
-  const [geoError,  setGeoError]  = useState('');
+  const [locating,       setLocating]       = useState(false);
+  const [detected,       setDetected]       = useState<{ city: string; country: string; lat?: number; lon?: number } | null>(null);
+  const [geoError,       setGeoError]       = useState('');
+  const [nearbyMandalis, setNearbyMandalis] = useState<NearbyMandali[]>([]);
+  const [loadingNearby,  setLoadingNearby]  = useState(false);
+  const [joiningId,      setJoiningId]      = useState<string | null>(null);
 
-  // If LocationContext already has a city (from saved profile GPS), pre-fill it
+  // If LocationContext already has a city, pre-fill it
   useEffect(() => {
     if (liveCity && !detected) {
       setDetected({ city: liveCity, country: liveCountry ?? '' });
     }
   }, [detected, liveCity, liveCountry]);
 
-  function detectLocation() {
+  // Fetch nearby mandalis whenever we have a lat/lon
+  useEffect(() => {
+    async function fetchNearby(lat: number, lon: number) {
+      setLoadingNearby(true);
+      const LAT_DELTA = 120 / 111;
+      const LON_DELTA = 120 / 85;
+      const { data } = await supabase
+        .from('mandalis')
+        .select('id, name, city, country, member_count, latitude, longitude')
+        .gte('latitude', lat - LAT_DELTA)
+        .lte('latitude', lat + LAT_DELTA)
+        .gte('longitude', lon - LON_DELTA)
+        .lte('longitude', lon + LON_DELTA)
+        .limit(20);
+
+      if (data) {
+        const withDist: NearbyMandali[] = (data as NearbyMandali[])
+          .map((m) =>
+            m.latitude != null && m.longitude != null
+              ? { ...m, distanceKm: haversineKm(lat, lon, m.latitude, m.longitude) }
+              : m
+          )
+          .filter((m) => (m.distanceKm ?? 0) <= 120)
+          .sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
+        setNearbyMandalis(withDist);
+      }
+      setLoadingNearby(false);
+    }
+
+    if (detected?.lat != null && detected?.lon != null) {
+      fetchNearby(detected.lat, detected.lon);
+    }
+  }, [detected?.lat, detected?.lon]);
+
+  async function detectLocation() {
     if (!navigator.geolocation) {
       setGeoError('Geolocation is not supported by your browser.'); return;
     }
@@ -384,15 +445,17 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     setGeoError('');
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
         try {
           const res  = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
           );
           const data = await res.json();
           const city    = data.address?.city || data.address?.town || data.address?.village || '';
           const country = data.address?.country ?? '';
           if (city) {
-            setDetected({ city, country });
+            setDetected({ city, country, lat, lon });
           } else {
             setGeoError('Could not detect your city. Please try again.');
           }
@@ -410,7 +473,26 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     );
   }
 
-  async function joinMandali() {
+  async function joinExistingMandali(mandaliId: string) {
+    setJoiningId(mandaliId);
+    try {
+      const res = await fetch('/api/mandali/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mandali_id: mandaliId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Join failed');
+      toast.success('Joined mandali! Welcome 🙏');
+      window.location.reload();
+    } catch (e: any) {
+      toast.error(e.message ?? 'Failed to join mandali');
+    } finally {
+      setJoiningId(null);
+    }
+  }
+
+  async function joinOrCreateMandali() {
     if (!detected?.city || !detected?.country) {
       toast.error('Please detect your location first');
       return;
@@ -438,7 +520,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
       <div className="glass-panel rounded-2xl border border-white/10 shadow-card p-5 w-full max-w-sm space-y-3">
 
-        {/* Detected city display */}
+        {/* Location detection */}
         {detected ? (
           <div className="flex items-center gap-2 px-3 py-3 rounded-xl border" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(200, 127, 146, 0.18)' }}>
             <MapPin size={14} className="flex-shrink-0" style={{ color: 'var(--brand-primary)' }} />
@@ -446,8 +528,8 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
               <p className="text-sm font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>{detected.city}</p>
               {detected.country && <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>{detected.country}</p>}
             </div>
-            <button onClick={() => setDetected(null)}
-              className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)]">
+            <button onClick={() => { setDetected(null); setNearbyMandalis([]); }}
+              className="text-xs text-[color:var(--brand-muted)]">
               <X size={14} />
             </button>
           </div>
@@ -465,7 +547,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
               </>
             ) : (
               <>
-                <MapPin size={16} />
+                <Navigation size={16} />
                 Detect My Location
               </>
             )}
@@ -474,7 +556,43 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 
         {geoError && <p className="text-xs text-red-500 text-center">{geoError}</p>}
 
-        <button onClick={joinMandali} disabled={mandaliMutations.joinMandali.isPending || !detected}
+        {/* Nearby mandalis list — shown when location is detected */}
+        {detected && (
+          <div className="space-y-2">
+            {loadingNearby ? (
+              <p className="text-xs text-center py-2" style={{ color: 'var(--brand-muted)' }}>Finding nearby mandalis…</p>
+            ) : nearbyMandalis.length > 0 ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-left" style={{ color: 'var(--brand-muted)' }}>
+                  Mandalis near you
+                </p>
+                {nearbyMandalis.slice(0, 5).map((m) => (
+                  <div key={m.id} className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border" style={{ borderColor: 'rgba(200,127,146,0.16)', background: 'rgba(255,255,255,0.03)' }}>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-semibold" style={{ color: 'var(--text-cream)' }}>{m.name || `${m.city} Mandali`}</p>
+                      <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>
+                        {m.city}{m.distanceKm != null ? ` · ${Math.round(m.distanceKm)} km away` : ''} · {m.member_count} members
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => joinExistingMandali(m.id)}
+                      disabled={joiningId === m.id}
+                      className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full disabled:opacity-50 transition"
+                      style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', color: 'white' }}
+                    >
+                      {joiningId === m.id ? 'Joining…' : 'Join'}
+                    </button>
+                  </div>
+                ))}
+                <p className="text-[10px] text-center pt-1" style={{ color: 'var(--brand-muted)' }}>
+                  Or create a new mandali for your exact locality below
+                </p>
+              </>
+            ) : null}
+          </div>
+        )}
+
+        <button onClick={joinOrCreateMandali} disabled={mandaliMutations.joinMandali.isPending || !detected}
           className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
           style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
           {mandaliMutations.joinMandali.isPending ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
