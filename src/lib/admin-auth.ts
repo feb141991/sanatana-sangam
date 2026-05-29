@@ -99,8 +99,7 @@ export function adminClearCookieHeader(): string {
  */
 function safeStrEqual(a: string, b: string): boolean {
   // Use Node's crypto for timingSafeEqual — this file only runs in Node runtime
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { timingSafeEqual } = require('crypto') as typeof import('crypto');
+  const { timingSafeEqual } = require('crypto') as typeof import('crypto'); // Node-only, runs in API routes not Edge
   const maxLen = Math.max(Buffer.byteLength(a, 'utf8'), Buffer.byteLength(b, 'utf8'));
   const bufA   = Buffer.alloc(maxLen);
   const bufB   = Buffer.alloc(maxLen);
