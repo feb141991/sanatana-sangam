@@ -1202,6 +1202,7 @@ export default function HomeDashboard({
   const [quizDailyId, setQuizDailyId] = useState<string | null>(null);
   const [activeSankalpa, setActiveSankalpa] = useState<any>(initialActiveSankalpa);
   const [showSankalpSheet, setShowSankalpSheet] = useState(false);
+  const [showRashiphalNudge, setShowRashiphalNudge] = useState(false);
   const [quizStreak, setQuizStreak] = useState<number>(0);
   const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
 
@@ -1318,27 +1319,6 @@ export default function HomeDashboard({
     const todayStr = localSpiritualDate(browserTz, 4);
     localStorage.setItem('last_darshan_date', todayStr);
   };
-  // Personalised content
-  const PERSONAL_CACHE_KEY = 'shoonaya-personal-content';
-  const PERSONAL_CACHE_DATE_KEY = 'shoonaya-personal-content-date';
-  const [personalContent, setPersonalContent] = useState<{
-    suggestion: string;
-    nudge: string | null;
-    context_label?: string | null;
-  } | null>(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const cacheDate = localStorage.getItem(PERSONAL_CACHE_DATE_KEY);
-      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const today = localSpiritualDate(browserTz, 4);
-      if (cacheDate === today) {
-        const raw = localStorage.getItem(PERSONAL_CACHE_KEY);
-        return raw ? JSON.parse(raw) : null;
-      }
-    } catch { /* silent */ }
-    return null;
-  });
-
   // ── Daily Quiz — load from localStorage cache or fetch fresh ──────────────
   const _quizTrad           = tradition ?? 'hindu';
   const todayStr            = localSpiritualDate(timezone, 4);
@@ -1371,6 +1351,18 @@ export default function HomeDashboard({
   useEffect(() => {
     fetchSankalpa();
   }, [fetchSankalpa]);
+
+  // ── Rashiphal nudge — show once to first-time / returning users ────────────
+  useEffect(() => {
+    try {
+      const key = 'shoonaya-rashiphal-nudge-v1';
+      const val = localStorage.getItem(key);
+      if (!val) {
+        const timer = setTimeout(() => setShowRashiphalNudge(true), 3000);
+        return () => clearTimeout(timer);
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     try {
@@ -1587,33 +1579,6 @@ export default function HomeDashboard({
       tithiIndex: p.tithiIndex,
     });
   }, [selectedDate, lat, lon]);
-
-  // Fetch personalised daily content from Sarvam-backed API.
-  // Cache result in localStorage keyed to today's date — so on repeat visits
-  // the suggestion renders immediately from cache (no blank-space wait).
-  // The fetch always runs in background to refresh stale cache from yesterday.
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchPersonalContent() {
-      try {
-        const res = await fetch('/api/home/personalise');
-        if (!res.ok) throw new Error('personalise failed');
-        const data = await res.json();
-        if (!cancelled && data?.suggestion) {
-          setPersonalContent(data);
-          try {
-            const today = new Date().toISOString().split('T')[0];
-            localStorage.setItem(PERSONAL_CACHE_KEY, JSON.stringify(data));
-            localStorage.setItem(PERSONAL_CACHE_DATE_KEY, today);
-          } catch { /* localStorage unavailable */ }
-        }
-      } catch {
-        // silently skip — cached value (if any) remains visible
-      }
-    }
-    fetchPersonalContent();
-    return () => { cancelled = true; };
-  }, []);
 
   useEffect(() => {
     const focus = searchParams.get('focus');
@@ -1866,14 +1831,6 @@ export default function HomeDashboard({
   const heroGlassSurface = isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.72)';
   const heroGlassBorder = isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.12)';
   const dailyTextLine = dailyText.original.split('\n')[0];
-  const dailyNudge = personalContent?.suggestion
-    ?? (!readToday
-      ? `Read ${dailyText.actionLabel} and keep today's practice alive.`
-      : !japaAlreadyDoneToday
-        ? 'Start one quiet mala when you have a focused moment.'
-        : !nityaDoneToday
-          ? 'Complete the remaining nitya rhythm for today.'
-          : 'Your core practice is steady today. Continue study or review Panchang.');
   const quickAction = !readToday 
     ? {
         label: 'Read today\'s sacred text',
@@ -2475,7 +2432,7 @@ export default function HomeDashboard({
                 </motion.div>
               )}
 
-              {/* Tithi · date chip — taps to open Panchang ─────────────────── */}
+              {/* Tithi chip — compact pill, taps to Panchang ─────────────── */}
               {panchang?.tithi && (
                 <motion.div
                   initial={{ opacity: 0, y: 4 }}
@@ -2485,26 +2442,22 @@ export default function HomeDashboard({
                 >
                   <Link
                     href="/panchang"
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full active:scale-95 transition-transform"
                     style={{
-                      background: 'rgba(197,160,89,0.14)',
-                      border: '1px solid rgba(197,160,89,0.28)',
+                      background: 'rgba(197,160,89,0.12)',
                       backdropFilter: 'blur(8px)',
                     }}
                   >
-                    <CalendarDays size={11} style={{ color: '#C5A059' }} />
+                    <span className="text-[9px]">🌙</span>
                     <span
-                      className="text-[11px] font-semibold"
-                      style={{ color: 'rgba(255,240,200,0.90)' }}
+                      className="text-[10px] font-semibold"
+                      style={{ color: 'rgba(255,240,200,0.85)' }}
                     >
                       {panchang.tithi}
                     </span>
-                    <span style={{ color: 'rgba(255,240,200,0.38)', fontSize: '10px' }}>·</span>
-                    <span
-                      className="text-[11px]"
-                      style={{ color: 'rgba(255,240,200,0.64)' }}
-                    >
-                      {fmtDate(selectedDate, 'EEE, d MMM')}
+                    <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
+                      {fmtDate(selectedDate, 'd MMM')}
                     </span>
                   </Link>
                 </motion.div>
@@ -2516,7 +2469,7 @@ export default function HomeDashboard({
         {/* Story Circles — held for later release */}
 
         {/* ── Zenith Transitional Shloka ── */}
-        <div className="px-4 relative z-20 mb-4 mt-1">
+        <div className="px-4 relative z-20 mb-0 mt-1">
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
@@ -2612,6 +2565,60 @@ export default function HomeDashboard({
             ))}
           </div>
         </div>
+
+        {/* ── Rashiphal first-visit nudge ── */}
+        <AnimatePresence>
+          {showRashiphalNudge && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="px-4 mb-4 overflow-hidden"
+            >
+              <div
+                className="flex items-center gap-3 rounded-2xl px-4 py-3"
+                style={{
+                  background: isDark ? 'rgba(100,60,180,0.10)' : 'rgba(100,60,180,0.07)',
+                  border: isDark ? '1px solid rgba(139,92,246,0.22)' : '1px solid rgba(139,92,246,0.18)',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem', lineHeight: 1, flexShrink: 0 }}>🔮</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold leading-tight" style={{ color: isDark ? 'rgba(220,200,255,0.92)' : '#4c1d95' }}>
+                    Know your Rashiphal daily?
+                  </p>
+                  <p className="text-[11px] mt-0.5" style={{ color: isDark ? 'rgba(180,160,240,0.60)' : 'rgba(109,40,217,0.60)' }}>
+                    Get your daily cosmic guide based on your rashi
+                  </p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <Link
+                    href="/panchang?tab=rashiphal"
+                    onClick={() => {
+                      try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'yes'); } catch {}
+                      setShowRashiphalNudge(false);
+                    }}
+                    className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                    style={{ background: 'rgba(139,92,246,0.20)', color: isDark ? '#c4b5fd' : '#7c3aed' }}
+                  >
+                    See mine
+                  </Link>
+                  <button
+                    onClick={() => {
+                      try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'skip'); } catch {}
+                      setShowRashiphalNudge(false);
+                    }}
+                    className="text-[11px] font-medium px-2 py-1.5 rounded-full"
+                    style={{ color: isDark ? 'rgba(180,160,240,0.50)' : 'rgba(109,40,217,0.45)' }}
+                  >
+                    Not now
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* ── Post-japa Dharma Mitra nudge — conversion prompt after practice ── */}
         {japaAlreadyDoneToday && !isPro && (
@@ -3138,38 +3145,6 @@ export default function HomeDashboard({
                   {dailyText.meaning}
                 </p>
               </div>
-
-              {/* AI suggestion */}
-              {personalContent?.suggestion && (
-                <div className="rounded-[1.2rem] px-4 py-3.5" style={{ background: 'rgba(197, 160, 89,0.07)', borderLeft: '2px solid rgba(197, 160, 89,0.35)' }}>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] mb-1.5" style={{ color: 'rgba(197, 160, 89,0.65)' }}>
-                    ✨ {personalContent.context_label ?? 'Today\'s Practice'}
-                  </p>
-                  <p className="text-sm leading-relaxed" style={{ color: heroSecondaryText }}>{personalContent.suggestion}</p>
-                  {personalContent.nudge && <p className="text-xs mt-1.5 italic" style={{ color: 'rgba(197, 160, 89,0.55)' }}>{personalContent.nudge}</p>}
-                  {(personalContent as any).action && (
-                    <div className="mt-3">
-                      <Link
-                        href={
-                          // Client-side guard: only allow exact known internal routes to prevent AI hallucination 404s
-                          ['/pathshala', '/bhakti', '/bhakti/mala', '/japa', '/bhakti/stotram', '/panchang', '/vrat', '/quiz'].includes((personalContent as any).action.href)
-                            ? (personalContent as any).action.href
-                            : '/pathshala'
-                        }
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors"
-                        style={{
-                          background: (personalContent as any).action.type === 'primary' ? 'var(--brand-primary)' : 'rgba(197, 160, 89,0.12)',
-                          color: (personalContent as any).action.type === 'primary' ? '#1c1c1a' : 'var(--brand-primary)',
-                          border: (personalContent as any).action.type === 'primary' ? 'none' : '1px solid rgba(197, 160, 89,0.2)'
-                        }}
-                      >
-                        {(personalContent as any).action.label}
-                        <ChevronRight size={12} strokeWidth={3} />
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              )}
 
               <motion.button
                 onClick={markShlokaRead}
