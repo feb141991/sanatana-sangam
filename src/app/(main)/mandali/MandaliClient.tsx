@@ -1101,6 +1101,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     return (
       <AsyncStateCard
         state="loading"
+        tradition={userTradition}
         title="Loading your Mandali"
         description="Pulling your local Sangam, posts, members, and events into one place."
       />

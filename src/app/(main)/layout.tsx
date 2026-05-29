@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import BottomNav from '@/components/layout/BottomNav';
 import AIChatFAB from '@/components/layout/AIChatFAB';
+import { TraditionSync } from '@/components/providers/TraditionSync';
 import { LocationProvider } from '@/lib/LocationContext';
 import { EngineProvider } from '@/contexts/EngineContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
@@ -74,6 +75,8 @@ export default async function MainLayout({
         </main>
         <BottomNav isGuest={!user} />
         <AIChatFAB userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
+        {/* Persist tradition to localStorage for cold-start loader */}
+        {user && <TraditionSync tradition={tradition} />}
       </div>
     </LanguageProvider>
   );

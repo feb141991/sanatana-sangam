@@ -1858,6 +1858,41 @@ body::after {
 }
 .gentle-pulse { animation: gentlePulse 2.4s ease-in-out infinite; }
 
+/* ── Sacred Loader animations ────────────────────────────────────────────────
+ *
+ *  Three presets consumed by SacredLoader.tsx:
+ *
+ *  animate-sacred-breathe  — scale + opacity pulse (Jain, Buddhist)
+ *                            Still, inward, meditative
+ *
+ *  animate-sacred-halo     — radial expansion pulse (Hindu, Sikh)
+ *                            Light emanating outward
+ *
+ *  animate-sacred-pulse    — opacity-only, used for inline/micro loaders
+ *                            Keeps the symbol sharp, only dims gently
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+@keyframes sacred-breathe {
+  0%, 100% { transform: scale(1);     opacity: 0.58; }
+  50%       { transform: scale(1.13); opacity: 1.00; }
+}
+
+@keyframes sacred-halo {
+  0%        { transform: scale(1);     opacity: 0.60; }
+  35%       { transform: scale(1.07); opacity: 1.00; }
+  65%       { transform: scale(1.12); opacity: 0.92; }
+  100%      { transform: scale(1);     opacity: 0.60; }
+}
+
+@keyframes sacred-pulse {
+  0%, 100% { opacity: 0.42; }
+  50%       { opacity: 1.00; }
+}
+
+.animate-sacred-breathe { animation: sacred-breathe 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-sacred-halo    { animation: sacred-halo    2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-sacred-pulse   { animation: sacred-pulse   1.8s ease-in-out infinite; }
+
 /* ── Glass surface system ────────────────────────────────────────────────────── */
 .glass-panel,
 .glass-panel-strong,

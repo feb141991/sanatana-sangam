@@ -96,6 +96,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" className={fontVars}>
+      <head>
+        {/*
+         * Cold-start tradition sync — runs synchronously before React hydrates.
+         * Reads the tradition written by TraditionSync on the previous session
+         * and stamps data-tradition on <html> so SacredLoader CSS responds
+         * instantly without waiting for the profile fetch.
+         * Pattern mirrors how next-themes avoids the dark-mode flash.
+         */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script
+          // biome-ignore lint: intentional inline script
+          dangerouslySetInnerHTML={{
+            __html: `try{var __t=localStorage.getItem('sh_tradition');if(__t)document.documentElement.setAttribute('data-tradition',__t);}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="zenith-120fps">
         <AppProviders>
           {children}

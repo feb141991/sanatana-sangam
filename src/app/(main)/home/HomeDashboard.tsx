@@ -55,6 +55,7 @@ import { resolveHomeHeroTheme, type HomeHeroTheme } from '@/config/festivalTheme
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
+import { SacredLoader } from '@/components/ui/SacredLoader';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
@@ -2811,6 +2812,9 @@ export default function HomeDashboard({
         {/* <div className="px-4 mb-3"><DailyDigestCard isDark={isDark} /></div> */}
 
         {/* ── Do You Know? Daily Quiz Spark Teaser — hidden once answered ── */}
+        {quiz === 'loading' && (
+          <SacredLoader variant="page" tradition={tradition} />
+        )}
         <AnimatePresence>
           {quiz && quiz !== 'loading' && quiz !== 'error' && quizAnswered === null && (
             <motion.div
