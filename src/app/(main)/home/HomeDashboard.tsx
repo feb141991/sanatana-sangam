@@ -1871,15 +1871,12 @@ export default function HomeDashboard({
     : [];
 
   // ── Mood check-in card ───────────────────────────────────────────────────────
+  // Card stays visible in content-phase after pick — no dismiss, no sheet.
   function handleMoodCardPick(moodKey: string) {
     const moodConf = MOODS.find(m => m.key === moodKey);
     if (moodConf) {
       setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
     }
-
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem('shoonaya_mood_dismissed', today);
-    setSelectedMoodForSheet(moodKey);
   }
 
   function handleMoodFollowupClose() {
