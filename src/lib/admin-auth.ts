@@ -91,11 +91,30 @@ export function adminClearCookieHeader(): string {
   return `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`;
 }
 
+/**
+ * Constant-time string comparison using Node crypto.
+ * Prevents timing attacks that could leak username/password length.
+ * - Always compares equal-length buffers (pads shorter to max length).
+ * - Also verifies exact length equality to reject padding attacks.
+ */
+function safeStrEqual(a: string, b: string): boolean {
+  // Use Node's crypto for timingSafeEqual — this file only runs in Node runtime
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { timingSafeEqual } = require('crypto') as typeof import('crypto');
+  const maxLen = Math.max(Buffer.byteLength(a, 'utf8'), Buffer.byteLength(b, 'utf8'));
+  const bufA   = Buffer.alloc(maxLen);
+  const bufB   = Buffer.alloc(maxLen);
+  bufA.write(a, 'utf8');
+  bufB.write(b, 'utf8');
+  // timingSafeEqual result AND length equality (defeats padding attacks)
+  return timingSafeEqual(bufA, bufB) && a.length === b.length;
+}
+
 export function checkAdminCredentials(username: string, password: string): boolean {
   const envUser = process.env.ADMIN_USERNAME;
   const envPass = process.env.ADMIN_PASSWORD;
   if (!envUser || !envPass) return false;
-  return username === envUser && password === envPass;
+  return safeStrEqual(username, envUser) && safeStrEqual(password, envPass);
 }
 
 import { NextRequest, NextResponse } from 'next/server';

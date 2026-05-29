@@ -43,6 +43,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'User ID missing in notes' }, { status: 400 });
   }
 
+  // Guard against injection / accidental bad data — userId must be a valid UUID
+  // before we use it as a primary-key filter in Supabase.
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(userId)) {
+    console.warn('[webhook] Rejected non-UUID user_id in notes:', userId);
+    return NextResponse.json({ error: 'Invalid user_id format' }, { status: 400 });
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) {

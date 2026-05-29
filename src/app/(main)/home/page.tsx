@@ -21,6 +21,14 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
+/** Wraps a promise with a timeout — resolves with null after timeoutMs instead of blocking. */
+function withTimeout<T>(promise: Promise<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
+  return Promise.race([
+    promise,
+    new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), timeoutMs)),
+  ]);
+}
+
 function shiftIsoDate(isoDate: string, days: number) {
   const date = new Date(`${isoDate}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
@@ -140,31 +148,31 @@ export default async function HomePage() {
   twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
   const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
 
-  const [{ data: sadhanaHistory }, { data: nityaHistory }, { data: liveDarshanData }, { data: malaSessionsToday }] = await Promise.all([
-    supabase
-      .from('daily_sadhana')
-      .select('date, japa_done')
-      .eq('user_id', user.id)
-      .gte('date', historyFrom)
-      .lte('date', today),
-    supabase
-      .from('nitya_karma_log')
-      .select('log_date')
-      .eq('user_id', user.id)
-      .gte('log_date', historyFrom)
-      .lte('log_date', today),
-    supabase
-      .from('live_darshans')
-      .select('*')
-      .eq('is_active', true),
-    supabase
-      .from('mala_sessions')
-      .select('id')
-      .eq('user_id', user.id)
-      .gte('completed_at', `${today}T00:00:00Z`)
-      .lte('completed_at', `${today}T23:59:59Z`)
-      .limit(1),
+  // Promise.allSettled — one slow/failing query cannot block the whole home page render.
+  // Each query is also capped at 4 s so a stalled DB connection doesn't time out the page.
+  const DB_TIMEOUT = 4_000;
+  const [sadhanaResult, nityaResult, liveResult, malaResult] = await Promise.allSettled([
+    withTimeout(
+      supabase.from('daily_sadhana').select('date, japa_done').eq('user_id', user.id).gte('date', historyFrom).lte('date', today),
+      DB_TIMEOUT,
+    ),
+    withTimeout(
+      supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
+      DB_TIMEOUT,
+    ),
+    withTimeout(
+      supabase.from('live_darshans').select('*').eq('is_active', true),
+      DB_TIMEOUT,
+    ),
+    withTimeout(
+      supabase.from('mala_sessions').select('id').eq('user_id', user.id).gte('completed_at', `${today}T00:00:00Z`).lte('completed_at', `${today}T23:59:59Z`).limit(1),
+      DB_TIMEOUT,
+    ),
   ]);
+  const sadhanaHistory  = sadhanaResult.status  === 'fulfilled' ? sadhanaResult.value.data  : null;
+  const nityaHistory    = nityaResult.status    === 'fulfilled' ? nityaResult.value.data    : null;
+  const liveDarshanData = liveResult.status     === 'fulfilled' ? liveResult.value.data     : null;
+  const malaSessionsToday = malaResult.status   === 'fulfilled' ? malaResult.value.data     : null;
 
   let activeSankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string } | null = null;
   try {

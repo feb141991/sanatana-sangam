@@ -6,38 +6,38 @@ import { SEED_PATHS } from '@/lib/pathshala-paths';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: 'https://shoonaya.com', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/bhakti', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/pathshala', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/japa', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/discover', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/panchang', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: 'https://shoonaya.com/pricing', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/bhakti', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/pathshala', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/japa', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/discover', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/panchang', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: 'https://shoonaya.app/pricing', lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
   ];
 
   const vratRoutes: MetadataRoute.Sitemap = Object.keys(VRAT_DATABASE).map(slug => ({
-    url: `https://shoonaya.com/vrat/${slug}`,
+    url: `https://shoonaya.app/vrat/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.8,
   }));
 
   const stotramRoutes: MetadataRoute.Sitemap = STOTRAMS.map(stotram => ({
-    url: `https://shoonaya.com/bhakti/stotram/${stotram.id}`,
+    url: `https://shoonaya.app/bhakti/stotram/${stotram.id}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.8,
   }));
 
   const kathaRoutes: MetadataRoute.Sitemap = ALL_KATHAS.map(katha => ({
-    url: `https://shoonaya.com/bhakti/katha/${katha.id}`,
+    url: `https://shoonaya.app/bhakti/katha/${katha.id}`,
     lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
 
   const pathshalaRoutes: MetadataRoute.Sitemap = SEED_PATHS.map(path => ({
-    url: `https://shoonaya.com/pathshala/${path.id}`,
+    url: `https://shoonaya.app/pathshala/${path.id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.6,
