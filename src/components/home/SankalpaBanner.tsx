@@ -90,7 +90,7 @@ export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete 
         className="font-bold tracking-wide shrink-0 tabular-nums"
         style={{ color: accentColor, fontSize: 11 }}
       >
-        {remainingDays}d · Let's go →
+        {remainingDays}d · Let&apos;s go →
       </span>
     </Link>
   );
