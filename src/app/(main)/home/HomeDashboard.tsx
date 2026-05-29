@@ -1082,12 +1082,15 @@ export default function HomeDashboard({
 
   // ── Notification panel ──────────────────────────────────────────────────────
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notifPortalTarget, setNotifPortalTarget] = useState<Element | null>(null);
   const notifQuery      = useNotificationsQuery(userId);
   const notifs          = notifQuery.data ?? [];
   useNotificationsRealtime(userId);
   const markOneRead     = useMarkNotificationReadMutation(userId);
   const markAllRead     = useMarkAllNotificationsReadMutation(userId);
   const unreadCount     = notifs.filter((n) => !n.read).length;
+
+  useEffect(() => { setNotifPortalTarget(document.body); }, []);
 
   const [shlokaExpanded,    setShlokaExpanded]    = useState(false);
   const [shlokaModalOpen,   setShlokaModalOpen]   = useState(false);
@@ -2273,146 +2276,6 @@ export default function HomeDashboard({
                     </span>
                   )}
                 </button>
-
-                {/* Floating notification panel */}
-                <AnimatePresence>
-                  {notifOpen && (
-                    <>
-                      {/* Click-away backdrop */}
-                      <div
-                        className="fixed inset-0 z-[998]"
-                        onClick={() => setNotifOpen(false)}
-                      />
-
-                      {/* Panel */}
-                      <motion.div
-                        className="absolute left-0 top-12 z-[999] flex flex-col overflow-hidden"
-                        style={{
-                          width: 'min(340px, calc(100vw - 32px))',
-                          maxHeight: 420,
-                          borderRadius: 18,
-                          background: isDark
-                            ? 'linear-gradient(160deg, rgba(30,27,22,0.98) 0%, rgba(22,20,16,0.99) 100%)'
-                            : 'linear-gradient(160deg, rgba(252,248,240,0.98) 0%, rgba(245,240,228,0.99) 100%)',
-                          border: `1px solid ${isDark ? 'rgba(197,160,89,0.18)' : 'rgba(197,160,89,0.30)'}`,
-                          boxShadow: isDark
-                            ? '0 16px 48px rgba(0,0,0,0.65), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)'
-                            : '0 16px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
-                        }}
-                        initial={{ opacity: 0, scale: 0.92, y: -8 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.94, y: -6 }}
-                        transition={{ type: 'spring', stiffness: 380, damping: 32, mass: 0.8 }}
-                      >
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-4 pt-3.5 pb-2.5 flex-shrink-0"
-                          style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'}` }}>
-                          <div className="flex items-center gap-2">
-                            <Bell size={13} style={{ color: 'var(--brand-primary)' }} />
-                            <span className="text-[13px] font-semibold" style={{ color: isDark ? 'rgba(242,234,214,0.95)' : 'rgba(30,20,5,0.90)' }}>
-                              Notifications
-                            </span>
-                            {unreadCount > 0 && (
-                              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                                style={{ background: 'rgba(197,160,89,0.18)', color: 'var(--brand-primary)' }}>
-                                {unreadCount} new
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {unreadCount > 0 && (
-                              <button
-                                onClick={() => markAllRead.mutate(notifs.filter(n => !n.read).map(n => n.id))}
-                                className="text-[10px] font-semibold transition-opacity hover:opacity-70"
-                                style={{ color: 'var(--brand-primary)' }}
-                              >
-                                Mark all read
-                              </button>
-                            )}
-                            <button onClick={() => setNotifOpen(false)}
-                              className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity hover:opacity-70"
-                              style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}>
-                              <X size={11} style={{ color: isDark ? 'rgba(242,234,214,0.7)' : 'rgba(30,20,5,0.55)' }} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Notification list */}
-                        <div className="overflow-y-auto overscroll-contain flex-1">
-                          {notifs.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center gap-3 py-8 px-4 text-center">
-                              <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                                style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.18)' }}>
-                                <Bell size={20} style={{ color: 'rgba(197,160,89,0.6)' }} />
-                              </div>
-                              <div>
-                                <p className="text-[13px] font-semibold" style={{ color: isDark ? 'rgba(242,234,214,0.80)' : 'rgba(30,20,5,0.75)' }}>All quiet</p>
-                                <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: isDark ? 'rgba(242,234,214,0.45)' : 'rgba(30,20,5,0.45)' }}>
-                                  Festival alerts & practice milestones show up here.
-                                </p>
-                              </div>
-                              <button
-                                className="text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-opacity hover:opacity-75"
-                                style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.20)' }}
-                                onClick={async () => {
-                                  await fetch('/api/notifications/test', { method: 'POST' });
-                                  notifQuery.refetch();
-                                }}
-                              >
-                                Send test notification
-                              </button>
-                            </div>
-                          ) : (
-                            <div>
-                              {notifs.map((n) => (
-                                <button
-                                  key={n.id}
-                                  className="w-full text-left px-4 py-3 flex items-start gap-3 transition-all hover:bg-white/5"
-                                  style={{
-                                    borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)'}`,
-                                    background: !n.read ? (isDark ? 'rgba(197,160,89,0.04)' : 'rgba(197,160,89,0.06)') : 'transparent',
-                                  }}
-                                  onClick={async () => {
-                                    if (!n.read) markOneRead.mutate(n.id);
-                                    setNotifOpen(false);
-                                    if (n.action_url) {
-                                      if (/^https?:\/\//.test(n.action_url)) window.location.href = n.action_url;
-                                      else router.push(n.action_url);
-                                    }
-                                  }}
-                                >
-                                  <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0 mt-0.5"
-                                    style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.18)' }}>
-                                    {n.emoji ?? '🔔'}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-[12px] leading-snug ${!n.read ? 'font-semibold' : 'font-normal opacity-70'}`}
-                                      style={{ color: isDark ? 'rgba(242,234,214,0.92)' : 'rgba(30,20,5,0.88)' }}>
-                                      {n.title}
-                                    </p>
-                                    {n.body && (
-                                      <p className="text-[11px] mt-0.5 leading-relaxed line-clamp-2"
-                                        style={{ color: isDark ? 'rgba(242,234,214,0.50)' : 'rgba(30,20,5,0.52)' }}>
-                                        {n.body}
-                                      </p>
-                                    )}
-                                    <p className="text-[10px] mt-1"
-                                      style={{ color: isDark ? 'rgba(197,160,89,0.45)' : 'rgba(120,90,20,0.55)' }}>
-                                      {new Date(n.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                                    </p>
-                                  </div>
-                                  {!n.read && (
-                                    <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: '#C5A059' }} />
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
               </motion.div>
 
               {/* Mood chip — center */}
@@ -3623,6 +3486,165 @@ export default function HomeDashboard({
           />
         )}
       </AnimatePresence>
+
+      {/* ── Notification panel (portal → document.body to escape stacking contexts) ── */}
+      {notifPortalTarget && createPortal(
+        <AnimatePresence>
+          {notifOpen && (
+            <>
+              {/* Click-away backdrop */}
+              <div
+                className="fixed inset-0"
+                style={{ zIndex: 9990 }}
+                onClick={() => setNotifOpen(false)}
+              />
+
+              {/* Floating panel — fixed below the bell (top-left of screen) */}
+              <motion.div
+                className="fixed flex flex-col"
+                style={{
+                  zIndex: 9991,
+                  top: 'calc(max(env(safe-area-inset-top), 8px) + 68px)',
+                  left: 16,
+                  width: 'min(340px, calc(100vw - 32px))',
+                  maxHeight: 420,
+                  borderRadius: 18,
+                  overflow: 'hidden',
+                  background: isDark
+                    ? 'linear-gradient(160deg, rgba(30,27,22,0.98) 0%, rgba(22,20,16,0.99) 100%)'
+                    : 'linear-gradient(160deg, rgba(252,248,240,0.98) 0%, rgba(245,240,228,0.99) 100%)',
+                  border: `1px solid ${isDark ? 'rgba(197,160,89,0.20)' : 'rgba(197,160,89,0.32)'}`,
+                  boxShadow: isDark
+                    ? '0 20px 56px rgba(0,0,0,0.70), 0 4px 12px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)'
+                    : '0 20px 56px rgba(0,0,0,0.16), 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.85)',
+                }}
+                initial={{ opacity: 0, scale: 0.92, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: -6 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 34, mass: 0.75 }}
+              >
+                {/* Header */}
+                <div
+                  className="flex items-center justify-between px-4 pt-3.5 pb-2.5 flex-shrink-0"
+                  style={{ borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.07)'}` }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Bell size={13} style={{ color: '#C5A059' }} />
+                    <span className="text-[13px] font-semibold"
+                      style={{ color: isDark ? 'rgba(242,234,214,0.95)' : 'rgba(30,20,5,0.90)' }}>
+                      Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                        style={{ background: 'rgba(197,160,89,0.16)', color: '#C5A059' }}>
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={() => markAllRead.mutate(notifs.filter(n => !n.read).map(n => n.id))}
+                        className="text-[10px] font-semibold transition-opacity hover:opacity-70"
+                        style={{ color: '#C5A059' }}
+                      >
+                        Mark all read
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setNotifOpen(false)}
+                      className="w-6 h-6 rounded-full flex items-center justify-center transition-opacity hover:opacity-70"
+                      style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
+                    >
+                      <X size={11} style={{ color: isDark ? 'rgba(242,234,214,0.65)' : 'rgba(30,20,5,0.50)' }} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* List */}
+                <div className="overflow-y-auto overscroll-contain flex-1">
+                  {notifs.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-8 px-4 text-center">
+                      <div className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                        style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.16)' }}>
+                        <Bell size={18} style={{ color: 'rgba(197,160,89,0.55)' }} />
+                      </div>
+                      <div>
+                        <p className="text-[12px] font-semibold"
+                          style={{ color: isDark ? 'rgba(242,234,214,0.78)' : 'rgba(30,20,5,0.72)' }}>
+                          All quiet
+                        </p>
+                        <p className="text-[11px] mt-0.5 leading-relaxed"
+                          style={{ color: isDark ? 'rgba(242,234,214,0.42)' : 'rgba(30,20,5,0.42)' }}>
+                          Festival alerts & practice milestones show up here.
+                        </p>
+                      </div>
+                      <button
+                        className="text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-opacity hover:opacity-75"
+                        style={{ background: 'rgba(197,160,89,0.12)', color: '#C5A059', border: '1px solid rgba(197,160,89,0.20)' }}
+                        onClick={async () => {
+                          await fetch('/api/notifications/test', { method: 'POST' });
+                          notifQuery.refetch();
+                        }}
+                      >
+                        Send test notification
+                      </button>
+                    </div>
+                  ) : (
+                    notifs.map((n) => (
+                      <button
+                        key={n.id}
+                        className="w-full text-left px-4 py-3 flex items-start gap-3 transition-colors"
+                        style={{
+                          borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.045)' : 'rgba(0,0,0,0.05)'}`,
+                          background: !n.read
+                            ? (isDark ? 'rgba(197,160,89,0.05)' : 'rgba(197,160,89,0.07)')
+                            : 'transparent',
+                        }}
+                        onClick={() => {
+                          if (!n.read) markOneRead.mutate(n.id);
+                          setNotifOpen(false);
+                          if (n.action_url) {
+                            if (/^https?:\/\//.test(n.action_url)) window.location.href = n.action_url;
+                            else router.push(n.action_url);
+                          }
+                        }}
+                      >
+                        <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base flex-shrink-0 mt-0.5"
+                          style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.16)' }}>
+                          {n.emoji ?? '🔔'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-[12px] leading-snug ${!n.read ? 'font-semibold' : 'font-normal'}`}
+                            style={{ color: isDark
+                              ? (!n.read ? 'rgba(242,234,214,0.95)' : 'rgba(242,234,214,0.55)')
+                              : (!n.read ? 'rgba(30,20,5,0.90)' : 'rgba(30,20,5,0.52)') }}>
+                            {n.title}
+                          </p>
+                          {n.body && (
+                            <p className="text-[11px] mt-0.5 leading-relaxed line-clamp-2"
+                              style={{ color: isDark ? 'rgba(242,234,214,0.45)' : 'rgba(30,20,5,0.48)' }}>
+                              {n.body}
+                            </p>
+                          )}
+                          <p className="text-[10px] mt-1"
+                            style={{ color: isDark ? 'rgba(197,160,89,0.42)' : 'rgba(120,90,20,0.52)' }}>
+                            {new Date(n.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                        {!n.read && (
+                          <div className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#C5A059' }} />
+                        )}
+                      </button>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        notifPortalTarget
+      )}
     </div>
   );
 }
