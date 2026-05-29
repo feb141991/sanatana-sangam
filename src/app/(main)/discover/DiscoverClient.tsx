@@ -10,6 +10,150 @@ import SacredIcon from '@/components/ui/SacredIcon';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getFullRecommendationsForMood, MoodRecommendation, MoodContext } from '@/lib/mood/engine';
 
+// ── Suggested Chips ───────────────────────────────────────────────────────────
+const BASE_CHIPS = [
+  { label: "What is today's tithi?",  href: '/panchang' },
+  { label: 'Gayatri Mantra meaning',  href: '/bhakti/stotram' },
+  { label: 'Ekadashi rules',          href: '/vrat/ekadashi' },
+  { label: 'Temples near me',         href: '/tirtha-map' },
+  { label: 'Start a Sankalpa',        href: '/my-progress' },
+  { label: 'Daily quiz',              href: '/quiz' },
+];
+
+const TRADITION_CHIPS: Record<string, Array<{label: string; href: string}>> = {
+  sikh:     [
+    { label: 'Nitnem Bani',    href: '/bhakti/stotram?tradition=sikh' },
+    { label: 'Ardas meaning',  href: '/pathshala?tradition=sikh' },
+    { label: 'Gurdwara nearby',href: '/tirtha-map' },
+  ],
+  buddhist: [
+    { label: 'Dhammapada verse',  href: '/pathshala?tradition=buddhist' },
+    { label: 'Meditation timer',  href: '/bhakti/mala' },
+    { label: 'Uposatha today?',   href: '/panchang' },
+  ],
+  jain: [
+    { label: 'Navkar Mantra',     href: '/bhakti/mala' },
+    { label: 'Paryushana info',   href: '/vrat/paryushana' },
+    { label: 'Jain calendar',     href: '/panchang' },
+  ],
+};
+
+function SuggestedChips({ tradition }: { tradition: string | null }) {
+  const chips = [
+    ...(tradition && TRADITION_CHIPS[tradition] ? TRADITION_CHIPS[tradition] : []),
+    ...BASE_CHIPS,
+  ].slice(0, 7);
+
+  return (
+    <div className="mb-5">
+      <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2.5" style={{ color: 'var(--text-dim)' }}>
+        Quick explore
+      </p>
+      <div
+        className="flex gap-2 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+      >
+        {chips.map(chip => (
+          <Link
+            key={chip.label}
+            href={chip.href}
+            className="shrink-0 px-3.5 py-2 rounded-full text-[11px] font-semibold border transition-all active:scale-95"
+            style={{
+              background:  'rgba(197,160,89,0.08)',
+              borderColor: 'rgba(197,160,89,0.20)',
+              color:       'var(--brand-primary)',
+              whiteSpace:  'nowrap',
+            }}
+          >
+            {chip.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Featured Grid ─────────────────────────────────────────────────────────────
+const BASE_FEATURED: Array<{ emoji: string; title: string; desc: string; href: string }> = [
+  { emoji: '📿', title: 'Daily Japa',      desc: 'Mala practice',          href: '/bhakti/mala' },
+  { emoji: '📚', title: 'Pathshala',        desc: 'Sacred study',           href: '/pathshala' },
+  { emoji: '📅', title: 'Panchang',         desc: 'Tithi & Nakshatra',      href: '/panchang' },
+  { emoji: '🏆', title: 'Leaderboard',      desc: 'Sadhana ranks',          href: '/scoreboard' },
+];
+
+const TRADITION_FEATURED: Record<string, Array<{ emoji: string; title: string; desc: string; href: string }>> = {
+  sikh:     [
+    { emoji: '☬',  title: 'Gurbani',    desc: 'Daily scripture',  href: '/pathshala?tradition=sikh' },
+    { emoji: '🙏', title: 'Ardas',      desc: 'Daily prayer',     href: '/bhakti' },
+    { emoji: '📿', title: 'Simran',     desc: 'Naam Japna',       href: '/bhakti/mala' },
+    { emoji: '👥', title: 'Sangat',     desc: 'Community',        href: '/mandali' },
+  ],
+  buddhist: [
+    { emoji: '☸️', title: 'Dhammapada', desc: 'Path of wisdom',   href: '/pathshala?tradition=buddhist' },
+    { emoji: '🧘', title: 'Meditation', desc: 'Mindful practice',  href: '/bhakti/mala' },
+    { emoji: '📅', title: 'Uposatha',   desc: 'Lunar calendar',    href: '/panchang' },
+    { emoji: '👥', title: 'Sangha',     desc: 'Community',         href: '/mandali' },
+  ],
+  jain: [
+    { emoji: '🤲', title: 'Navkar',     desc: 'Supreme mantra',   href: '/bhakti/mala' },
+    { emoji: '📚', title: 'Agama',      desc: 'Jain scriptures',  href: '/pathshala?tradition=jain' },
+    { emoji: '📅', title: 'Calendar',   desc: 'Jain observances', href: '/panchang' },
+    { emoji: '👥', title: 'Sangha',     desc: 'Community',        href: '/mandali' },
+  ],
+};
+
+function FeaturedGrid({
+  tradition,
+  isDark,
+}: { tradition: string | null; isDark: boolean }) {
+  const items = tradition && TRADITION_FEATURED[tradition]
+    ? TRADITION_FEATURED[tradition]
+    : BASE_FEATURED;
+
+  const cardBg     = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,253,246,0.92)';
+  const cardBorder = isDark ? 'rgba(197,160,89,0.12)' : 'rgba(197,160,89,0.18)';
+  const titleColor = isDark ? '#F0EDE6' : '#1A100A';
+  const descColor  = isDark ? 'rgba(240,237,230,0.45)' : 'rgba(60,40,15,0.50)';
+
+  return (
+    <div className="mb-5">
+      <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2.5" style={{ color: 'var(--text-dim)' }}>
+        Featured
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        {items.map(item => (
+          <Link
+            key={item.title}
+            href={item.href}
+            className="flex flex-col rounded-[1.3rem] p-3.5 border relative overflow-hidden transition-transform active:scale-[0.97]"
+            style={{ background: cardBg, borderColor: cardBorder, textDecoration: 'none' }}
+          >
+            {/* Ambient glow */}
+            <span
+              className="pointer-events-none absolute top-0 right-0 w-12 h-12 rounded-full opacity-20"
+              style={{ background: 'radial-gradient(circle, rgba(197,160,89,0.5), transparent 70%)', transform: 'translate(30%,-30%)' }}
+              aria-hidden="true"
+            />
+            <span
+              className="drop-shadow-sm select-none mb-2"
+              style={{ fontSize: '2rem', lineHeight: 1, display: 'block' }}
+              aria-hidden="true"
+            >
+              {item.emoji}
+            </span>
+            <span className="text-[13px] font-bold leading-tight" style={{ color: titleColor }}>
+              {item.title}
+            </span>
+            <span className="text-[10px] mt-0.5" style={{ color: descColor }}>
+              {item.desc}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface Props {
   tradition: string | null;
   spiritualLevel: string | null;
@@ -280,8 +424,18 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
               transition={{ duration: 0.2 }}
               className="px-4 pt-4 h-full overflow-y-auto pb-32"
             >
-              <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
-                Pick what resonates right now. The scripture speaks to every state of the soul.
+              {/* ── Suggested chips ── */}
+              <SuggestedChips tradition={tradition} />
+
+              {/* ── Featured grid ── */}
+              <FeaturedGrid
+                tradition={tradition}
+                isDark={resolvedTheme === 'dark'}
+              />
+
+              {/* ── Mood grid section ── */}
+              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'var(--text-dim)' }}>
+                By mood
               </p>
 
               <div className="grid grid-cols-2 gap-2.5">

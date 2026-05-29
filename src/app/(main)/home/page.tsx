@@ -316,6 +316,7 @@ export default async function HomePage() {
       missedYesterday={missedYesterday}
       activeSymbolId={(profile as any)?.active_symbol_id ?? null}
       activeSankalpa={activeSankalpa}
+      karmaPoints={(profile as any)?.karma_points ?? 0}
     />
   );
 }

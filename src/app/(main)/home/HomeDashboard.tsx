@@ -70,6 +70,9 @@ import PWAInstallBanner from '@/components/ui/PWAInstallBanner';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import DailyDigestCard from '@/components/home/DailyDigestCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
+import PriorityBanner from '@/components/home/PriorityBanner';
+import VratCarousel from '@/components/home/VratCarousel';
+import ForYouSection from '@/components/home/ForYouSection';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
 import SetSankalpSheet from '@/components/home/SetSankalpSheet';
@@ -175,6 +178,7 @@ interface Props {
   missedYesterday?:    boolean;
   activeSymbolId?:     string | null;
   activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string } | null;
+  karmaPoints?:        number;
 }
 
 type DailyDharmaStackState = {
@@ -1078,6 +1082,7 @@ export default function HomeDashboard({
   missedYesterday = false,
   activeSymbolId = null,
   activeSankalpa: initialActiveSankalpa = null,
+  karmaPoints = 0,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -2015,14 +2020,16 @@ export default function HomeDashboard({
     href?: string;
     onClick?: () => void;
     icon: React.ElementType;
+    emoji?: string;
   }> = [
     // Daily Darshan hidden until content is fully prepared
-    // { title: t('dailyDarshan'), description: t('dailyDarshanDesc'), onClick: handleOpenDarshan, icon: Sparkles },
+    // { title: t('dailyDarshan'), description: t('dailyDarshanDesc'), onClick: handleOpenDarshan, icon: Sparkles, emoji: '🛕' },
     {
       title: t('liveDarshan'),
       description: t('liveDarshanDesc'),
       href: '/live-darshan',
       icon: Radio,
+      emoji: '📺',
     },
     {
       title: t('tithi'),
@@ -2031,36 +2038,42 @@ export default function HomeDashboard({
         : t('panchangDesc'),
       href: '/panchang',
       icon: CalendarDays,
+      emoji: '📅',
     },
     {
       title: t('mandaliRanks'),
       description: t('mandaliRanksDesc'),
       href: '/scoreboard',
       icon: Trophy,
+      emoji: '🏆',
     },
     ...(isAdmin ? [{
       title: 'Moderation Hub',
       description: 'Review reports & safety',
       href: '/admin/moderation',
       icon: ShieldAlert,
+      emoji: '🛡️',
     }] : []),
     {
       title: t('bhakti'),
       description: t('bhaktiDesc'),
       href: '/bhakti',
       icon: Heart,
+      emoji: '🪷',
     },
     {
       title: t('mandali'),
       description: t('mandaliDesc'),
       href: '/mandali',
       icon: Users,
+      emoji: '👥',
     },
     {
       title: t('kul'),
       description: t('kulDesc'),
       href: '/kul',
       icon: Shield,
+      emoji: '🏡',
     },
 
     {
@@ -2068,6 +2081,7 @@ export default function HomeDashboard({
       description: t('tirthaDesc'),
       href: '/tirtha-map',
       icon: MapPin,
+      emoji: '🗺️',
     },
   ];
 
@@ -2327,13 +2341,35 @@ export default function HomeDashboard({
                 </Link>
               </motion.div>
 
-              {/* Profile avatar — right */}
+              {/* Karma points + Profile avatar — right */}
               <motion.div
-                className="pointer-events-auto"
+                className="pointer-events-auto flex items-center gap-2"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
+                {/* ⭐ Karma pill — visible gamification loop */}
+                {karmaPoints > 0 && (
+                  <Link
+                    href="/my-progress"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-full backdrop-blur-md transition-transform active:scale-95"
+                    style={{
+                      background:   'rgba(197,160,89,0.18)',
+                      border:       '1px solid rgba(197,160,89,0.32)',
+                      boxShadow:    '0 2px 10px rgba(0,0,0,0.15)',
+                    }}
+                    aria-label={`${karmaPoints} karma points`}
+                  >
+                    <span style={{ fontSize: 11, lineHeight: 1 }}>⭐</span>
+                    <span
+                      className="text-[10px] font-bold"
+                      style={{ color: '#F5E0A0', letterSpacing: '0.04em' }}
+                    >
+                      {karmaPoints >= 1000 ? `${Math.floor(karmaPoints / 1000)}k` : karmaPoints}
+                    </span>
+                  </Link>
+                )}
+
                 <Link href="/profile" className="relative group">
                   <div className="w-11 h-11 rounded-full border-2 border-white/25 p-0.5 transition-all duration-500 group-hover:border-white/45"
                     style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
@@ -2636,6 +2672,15 @@ export default function HomeDashboard({
           </div>
         </div>
 
+        {/* ── Priority Banner — rotating single-slot notification ── */}
+        <PriorityBanner
+          missedYesterday={missedYesterday}
+          freezeCount={freezeCount}
+          isPro={isPro}
+          streak={japaStreak}
+          tradition={tradition}
+        />
+
         {showFreezeBanner && (
           <div className="px-5 mb-4">
             <div className="rounded-2xl p-4" style={{ background: 'rgba(23,37,84,0.40)', border: '1px solid rgba(96,165,250,0.20)' }}>
@@ -2682,134 +2727,16 @@ export default function HomeDashboard({
       </div>
 
 
-        {/* ── Sacred Days — unified strip ───────────────────────────────────────── */}
-        {(() => {
-          const totalSacredCount = (upcomingSacredObservance ? 1 : 0) + sacredPulses.length;
-          const cardBg = isDark
-            ? 'linear-gradient(135deg, rgba(18,12,4,0.85), rgba(40,25,8,0.70))'
-            : 'linear-gradient(135deg, rgba(255,252,246,0.95), rgba(248,228,190,0.60))';
-          const cardBorder = isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.22)';
-          const dividerColor = isDark ? 'rgba(197,160,89,0.10)' : 'rgba(197,160,89,0.15)';
-          const nameColor = isDark ? '#f5dfa0' : '#1a0a02';
-          const descColor = isDark ? 'rgba(245,223,160,0.50)' : 'rgba(80,45,10,0.55)';
-          const badgeBg = isDark ? 'rgba(247,212,132,0.12)' : 'rgba(247,212,132,0.24)';
-          const badgeColor = isDark ? '#F6E2AE' : '#A0622A';
-
-          if (calendarLoading) {
-            return (
-              <div className="mb-3 h-[72px] rounded-[1.55rem] animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
-            );
-          }
-          if (totalSacredCount === 0) return null;
-
-          return (
-            <motion.div
-              key="sacred-days-unified"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-3 overflow-hidden rounded-[1.55rem] border relative"
-              style={{ background: cardBg, borderColor: cardBorder }}
-            >
-              {/* Gold glow */}
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-80" style={{
-                background: 'radial-gradient(circle at 88% 15%, rgba(197,160,89,0.14), transparent 30%)',
-              }} />
-
-              {/* Header */}
-              <div className="px-4 pt-3 pb-1.5 flex items-center gap-2 relative">
-                <SacredIcon name="calendar" size={13} />
-                <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
-                  {effectiveAppLanguage === 'hi' ? 'पवित्र दिन' : effectiveAppLanguage === 'pa' ? 'ਪਵਿੱਤਰ ਦਿਨ' : 'Sacred Days'}
-                </span>
-                <span className="rounded-full px-2 py-0.5 text-[9px] font-semibold" style={{ color: badgeColor, background: badgeBg }}>
-                  {totalSacredCount}
-                </span>
-                {/* Add to Calendar — ICS export for Google/Apple Calendar */}
-                <a
-                  href="/api/calendar/export"
-                  download="shoonaya-dharmic-calendar.ics"
-                  className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold transition-opacity hover:opacity-80 active:scale-95"
-                  style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.22)', color: '#C5A059' }}
-                  title="Download ICS file — import into Google / Apple / Outlook Calendar"
-                >
-                  <CalendarDays size={9} />
-                  Add to Calendar
-                </a>
-              </div>
-
-              {/* Upcoming festival row */}
-              {upcomingSacredObservance && (() => {
-                const vData = getVratData(upcomingSacredObservance.festival.name);
-                const upcomingName = (effectiveAppLanguage !== 'en' && vData?.nameLocal) ? vData.nameLocal : upcomingSacredObservance.festival.name;
-                const href = upcomingObservanceHref ? `/vrat/${encodeURIComponent(upcomingObservanceHref)}` : null;
-                const rowContent = (
-                  <div className="relative flex items-center gap-3 px-4 py-3">
-                    <div className="flex-1 min-w-0">
-                      <span className="block font-serif text-[1.02rem] leading-tight truncate" style={{ color: nameColor, fontFamily: 'var(--font-serif)' }}>
-                        {upcomingName}
-                      </span>
-                    </div>
-                    <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] shrink-0" style={{ color: badgeColor, background: badgeBg }}>
-                      {upcomingSacredObservanceLabel}
-                    </span>
-                    {href && <ChevronRight size={14} className="shrink-0" color="#C5A059" />}
-                  </div>
-                );
-                return href ? (
-                  <Link key="upcoming-row" href={href} className="block transition-colors hover:bg-white/5">{rowContent}</Link>
-                ) : <div key="upcoming-row">{rowContent}</div>;
-              })()}
-
-              {/* Divider between upcoming and today rows */}
-              {upcomingSacredObservance && sacredPulses.length > 0 && (
-                <span className="block mx-4 h-px" style={{ background: dividerColor }} />
-              )}
-
-              {/* Today's sacred pulse rows */}
-              {sacredPulses.map((pulse, idx) => {
-                const pulseVratData = getVratData(pulse.label);
-                const pulseHref = resolveVratSlug(pulse.label);
-                const pulseName = (effectiveAppLanguage !== 'en' && pulseVratData?.nameLocal)
-                  ? pulseVratData.nameLocal
-                  : (pulse.translationKey ? t(pulse.translationKey as any) : pulse.label);
-                const pulseDescText = (effectiveAppLanguage !== 'en' && pulseVratData?.taglineLocal)
-                  ? pulseVratData.taglineLocal
-                  : (pulse.descKey ? t(pulse.descKey as any) : pulse.description);
-                const isLast = idx === sacredPulses.length - 1;
-
-                const rowContent = (
-                  <div className="relative flex items-center gap-3 px-4 py-3">
-                    {idx > 0 && (
-                      <span className="absolute top-0 left-4 right-4 h-px" style={{ background: dividerColor }} />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <span className="block font-serif text-[1.02rem] leading-tight truncate" style={{ color: nameColor, fontFamily: 'var(--font-serif)' }}>
-                        {pulseName}
-                      </span>
-                      {pulseDescText && (
-                        <span className="block mt-0.5 text-[10.5px] leading-relaxed truncate" style={{ color: descColor }}>
-                          {pulseDescText}
-                        </span>
-                      )}
-                    </div>
-                    {pulseHref && <ChevronRight size={14} className="shrink-0" color="#C5A059" />}
-                  </div>
-                );
-
-                return pulseHref ? (
-                  <Link key={`pulse-${pulse.label}-${idx}`} href={`/vrat/${encodeURIComponent(pulseHref)}`} className={`block transition-colors hover:bg-white/5 ${isLast ? 'pb-1' : ''}`}>
-                    {rowContent}
-                  </Link>
-                ) : (
-                  <div key={`pulse-${pulse.label}-${idx}`} className={isLast ? 'pb-1' : ''}>
-                    {rowContent}
-                  </div>
-                );
-              })}
-            </motion.div>
-          );
-        })()}
+        {/* ── Sacred Days — swipeable carousel ─────────────────────────────── */}
+        {calendarLoading ? (
+          <div className="mx-5 mb-4 h-[236px] rounded-[1.8rem] animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
+        ) : (
+          <VratCarousel
+            festivals={apiFestivals}
+            isDark={isDark}
+            effectiveAppLanguage={effectiveAppLanguage}
+          />
+        )}
 
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
@@ -2971,9 +2898,19 @@ export default function HomeDashboard({
             const content = (
               <div className="divine-feature-card motion-lift">
                 <span className="divine-card-motif" aria-hidden="true" />
-                <span className="divine-feature-icon">
-                  <Icon size={20} strokeWidth={2.2} />
-                </span>
+                {item.emoji ? (
+                  <span
+                    className="drop-shadow-md select-none mb-1"
+                    style={{ fontSize: '2.2rem', lineHeight: 1, display: 'block' }}
+                    aria-hidden="true"
+                  >
+                    {item.emoji}
+                  </span>
+                ) : (
+                  <span className="divine-feature-icon">
+                    <Icon size={20} strokeWidth={2.2} />
+                  </span>
+                )}
                 <span className="divine-feature-title">{item.title}</span>
                 <span className="divine-feature-copy">{item.description}</span>
               </div>
@@ -3017,6 +2954,15 @@ export default function HomeDashboard({
           </span>
           <span className="divine-seva-cta">Donate Now</span>
         </Link>
+
+        {/* ── For You — personalised pathway recommendations ── */}
+        <ForYouSection
+          tradition={tradition}
+          sampradaya={sampradaya}
+          seeking={seeking}
+          lifeStage={lifeStage}
+          isDark={isDark}
+        />
 
       {/* Daily Darshan Overlay — hidden until content is fully prepared */}
 
