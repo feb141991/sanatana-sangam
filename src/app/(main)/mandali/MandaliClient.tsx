@@ -435,6 +435,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     if (detected?.lat != null && detected?.lon != null) {
       fetchNearby(detected.lat, detected.lon);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detected?.lat, detected?.lon]);
 
   async function detectLocation() {
