@@ -11,13 +11,46 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
 
-// ── Shankha (Conch Shell) SVG Icon ────────────────────────────────────────────
+// ── Dharma Mitra — Sacred Eye of Wisdom icon ──────────────────────────────────
+// An almond-shaped wisdom eye (inner sight, divine perception) with a small
+// flame above — the Ajna / third eye motif, universal across dharmic traditions.
+// Reads clearly at 15 px–24 px on both dark and light backgrounds.
 function ZenithMitraLogo({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3Z" fill={color} />
-      <path d="M18 6L19 9L22 10L19 11L18 14L17 11L14 10L17 9L18 6Z" fill={color} opacity="0.6" />
-      <path d="M7 16L8 18L10 19L8 20L7 22L6 20L4 19L6 18L7 16Z" fill={color} opacity="0.4" />
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      {/* Flame above the eye — divine light / Ajna chakra */}
+      <path
+        d="M12 6 Q13.1 3.2 12 1.5 Q10.9 3.2 12 6Z"
+        fill={color}
+        opacity="0.70"
+      />
+
+      {/* Eye almond — outer shape */}
+      <path
+        d="M2.5 12 C5.5 7 8.5 6 12 6 C15.5 6 18.5 7 21.5 12 C18.5 17 15.5 18 12 18 C8.5 18 5.5 17 2.5 12 Z"
+        fill={color}
+        fillOpacity="0.10"
+        stroke={color}
+        strokeWidth="1.55"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {/* Iris — filled circle, the seat of inner sight */}
+      <circle cx="12" cy="12" r="3.2" fill={color} />
+
+      {/* Pupil — small void, the mystery within */}
+      <circle cx="12" cy="12" r="1.4" fill={color} opacity="0.18" />
+
+      {/* Specular highlight — gives it life */}
+      <circle cx="13.1" cy="10.9" r="0.75" fill={color} opacity="0.45" />
     </svg>
   );
 }
