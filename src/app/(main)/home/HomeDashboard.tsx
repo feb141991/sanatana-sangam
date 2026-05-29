@@ -65,6 +65,8 @@ import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import WeeklyHabitRow from '@/components/home/WeeklyHabitRow';
 import FirstWeekGuide from '@/components/home/FirstWeekGuide';
 import InviteCard from '@/components/home/InviteCard';
+import MilestoneShareCard from '@/components/home/MilestoneShareCard';
+import PWAInstallBanner from '@/components/ui/PWAInstallBanner';
 import DailyDigestCard from '@/components/home/DailyDigestCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
@@ -2501,6 +2503,16 @@ export default function HomeDashboard({
           tradition={tradition ?? 'hindu'}
         />
 
+        {/* ── Milestone Share Card — viral moment at 7/21/40/108-day streaks ── */}
+        {(japaStreak ?? 0) > 0 && (
+          <MilestoneShareCard
+            japaStreak={japaStreak ?? 0}
+            userId={userId}
+            userName={userName}
+            tradition={tradition}
+          />
+        )}
+
         {/* ── 7-Day Habit History ── */}
         {practiceHistory.length > 0 && (
           <WeeklyHabitRow
@@ -2526,6 +2538,12 @@ export default function HomeDashboard({
             tradition={tradition}
           />
         )}
+
+        {/* ── PWA Install Banner — home-screen install prompt ── */}
+        <PWAInstallBanner
+          tradition={tradition}
+          japaCompletedToday={japaAlreadyDoneToday}
+        />
 
         <div className="px-5 mt-3 mb-4">
           <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{

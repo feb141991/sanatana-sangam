@@ -21,10 +21,12 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
-/** Wraps a promise with a timeout — resolves with null after timeoutMs instead of blocking. */
-function withTimeout<T>(promise: Promise<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
+/** Wraps a promise with a timeout — resolves with null after timeoutMs instead of blocking.
+ *  Accepts PromiseLike so Supabase PostgrestFilterBuilder (which is a thenable, not a
+ *  true Promise) can be passed in without a TS error. */
+function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
   return Promise.race([
-    promise,
+    Promise.resolve(promise),
     new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), timeoutMs)),
   ]);
 }

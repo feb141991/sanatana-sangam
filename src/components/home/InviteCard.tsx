@@ -30,12 +30,19 @@ const SHARE_COPY: Record<string, string> = {
 
 const BASE_URL = 'https://shoonaya.app';
 
+// Same deterministic code as HomeDashboard → InviteModal
+function generateInviteCode(userId: string): string {
+  return userId.replace(/-/g, '').slice(-6).toUpperCase();
+}
+
 export default function InviteCard({ userId, userName, tradition }: InviteCardProps) {
   const [copied, setCopied] = useState(false);
 
-  const meta    = getTraditionMeta(tradition ?? 'hindu');
-  const accent  = meta.accentColour ?? '#C5A059';
-  const refUrl  = `${BASE_URL}?ref=${userId}`;
+  const meta      = getTraditionMeta(tradition ?? 'hindu');
+  const accent    = meta.accentColour ?? '#C5A059';
+  // Personalised landing page — shows inviter name, tradition copy, proper CTA
+  // Previously shared /?ref=userId which hit landing.html and lost the ref param
+  const refUrl    = `${BASE_URL}/invite/${userId}`;
   const shareText = SHARE_COPY[tradition ?? 'hindu'] ?? SHARE_COPY.hindu;
   const fullText  = `${shareText}\n\n${refUrl}`;
 
@@ -131,7 +138,7 @@ export default function InviteCard({ userId, userName, tradition }: InviteCardPr
         >
           <span style={{ color: 'var(--brand-muted)' }}>Your invite link:</span>
           <span className="font-mono truncate flex-1" style={{ color: accent }}>
-            shoonaya.app?ref={userId.slice(0, 8)}…
+            shoonaya.app/invite/{userId.slice(0, 8)}…
           </span>
         </div>
       </div>
