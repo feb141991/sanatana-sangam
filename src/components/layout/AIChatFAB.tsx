@@ -182,6 +182,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   const [portalTarget,    setPortalTarget]   = useState<Element | null>(null);
   const [menuObscuring,   setMenuObscuring]  = useState(false); // quick-action menu is open
   const [constraints,     setConstraints]    = useState({ left: 0, right: 0, top: 0, bottom: 0 });
+  const [aiUsage,         setAiUsage]        = useState<{ used: number; limit: number; isPro: boolean } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
@@ -227,6 +228,15 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
     return () => window.removeEventListener('ai-fab-visibility', handler);
   }, []);
 
+  // ── Fetch AI usage when chat opens ────────────────────────────────────────
+  useEffect(() => {
+    if (!open) return;
+    fetch('/api/ai/chat/usage')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setAiUsage(data); })
+      .catch(() => { /* silent */ });
+  }, [open]);
+
   // ── Auto-scroll chat ──────────────────────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -269,10 +279,27 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         body:    JSON.stringify({ message: msgText, history, tradition }),
       });
       const data = await res.json();
-      if (!res.ok) { setLoading(false); return; }
+      if (!res.ok) {
+        if (data?.error === 'daily_limit_reached') {
+          // Surface the limit hit as a system message with upgrade CTA
+          const limit = data.limit ?? 5;
+          setMessages(prev => [...prev, {
+            id:        newId(),
+            role:      'model',
+            text:      `You've reached your ${limit}-message daily limit for Dharma Mitra.\n\nUpgrade to Zenith for 200 conversations per day — unlimited spiritual guidance, advanced analytics, monthly sadhana reports, and more.\n\nTap → Settings › Subscription to unlock the full path. 🙏`,
+            timestamp: new Date(),
+            fromRag:   false,
+          }]);
+          setAiUsage(prev => prev ? { ...prev, used: prev.limit } : null);
+        }
+        setLoading(false);
+        return;
+      }
       setMessages(prev => [...prev, {
         id: newId(), role: 'model', text: data.reply, timestamp: new Date(), fromRag: false,
       }]);
+      // Increment local usage counter so bar updates without refetching
+      setAiUsage(prev => prev ? { ...prev, used: Math.min(prev.used + 1, prev.limit) } : null);
     } catch { /* silent */ } finally {
       setLoading(false);
     }
@@ -322,31 +349,64 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b" style={{ borderColor: 'rgba(197, 160, 89,0.12)' }}>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(197, 160, 89,0.22)' }}>
-                  <ZenithMitraLogo size={20} color="rgba(197, 160, 89,0.90)" />
+            <div className="flex-shrink-0 border-b" style={{ borderColor: 'rgba(197, 160, 89,0.12)' }}>
+              <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
+                    style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(197, 160, 89,0.22)' }}>
+                    <ZenithMitraLogo size={20} color="rgba(197, 160, 89,0.90)" />
+                  </div>
+                  <div>
+                    <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
+                    <p className="text-[10px] text-[color:var(--text-dim)]">Your AI spiritual guide</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
-                  <p className="text-[10px] text-[color:var(--text-dim)]">Your AI spiritual guide</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {!isEmpty && (
-                  <button onClick={clearChat}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"
-                    style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-muted)' }}>
-                    <RotateCcw size={11} /> New
+                <div className="flex items-center gap-2">
+                  {!isEmpty && (
+                    <button onClick={clearChat}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"
+                      style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.18)', color: 'var(--brand-muted)' }}>
+                      <RotateCcw size={11} /> New
+                    </button>
+                  )}
+                  <button onClick={() => setOpen(false)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition"
+                    style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <X size={15} className="text-[color:var(--brand-muted)]" />
                   </button>
-                )}
-                <button onClick={() => setOpen(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center transition"
-                  style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <X size={15} className="text-[color:var(--brand-muted)]" />
-                </button>
+                </div>
               </div>
+
+              {/* AI usage bar — only shown for free users */}
+              {aiUsage && !aiUsage.isPro && (
+                <div className="px-4 pb-2.5">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(197,160,89,0.7)' }}>
+                      Daily messages
+                    </span>
+                    <span className="text-[9px] tabular-nums" style={{ color: aiUsage.used >= aiUsage.limit ? '#f87171' : 'var(--text-dim)' }}>
+                      {aiUsage.used}/{aiUsage.limit}
+                      {aiUsage.used >= aiUsage.limit && ' · '}
+                      {aiUsage.used >= aiUsage.limit && (
+                        <a href="/settings/subscription" className="underline" style={{ color: '#C5A059' }}>Upgrade</a>
+                      )}
+                    </span>
+                  </div>
+                  <div className="h-[3px] rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.12)' }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, (aiUsage.used / aiUsage.limit) * 100)}%`,
+                        background: aiUsage.used >= aiUsage.limit
+                          ? '#f87171'
+                          : aiUsage.used >= aiUsage.limit - 1
+                          ? '#fb923c'
+                          : '#C5A059',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Messages */}

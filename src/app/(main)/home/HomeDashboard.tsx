@@ -62,6 +62,7 @@ import { getDailyDarshan, DARSHAN_REGISTRY } from '@/lib/darshan-registry';
 import DarshanOverlay from '@/components/home/DarshanOverlay';
 import DarshanPrompt from '@/components/home/DarshanPrompt';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import WeeklyHabitRow from '@/components/home/WeeklyHabitRow';
 import DailyDigestCard from '@/components/home/DailyDigestCard';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
@@ -2483,7 +2484,7 @@ export default function HomeDashboard({
         </div>
 
         {/* ── Daily Sadhana Progress Strip ── */}
-        <DailySadhanaStrip 
+        <DailySadhanaStrip
           japaDone={japaAlreadyDoneToday}
           nityaDone={nityaDoneToday}
           pathshalaDone={pathshalaDoneToday}
@@ -2496,6 +2497,15 @@ export default function HomeDashboard({
           tithi={panchang?.tithi}
           tradition={tradition ?? 'hindu'}
         />
+
+        {/* ── 7-Day Habit History ── */}
+        {practiceHistory.length > 0 && (
+          <WeeklyHabitRow
+            practiceHistory={practiceHistory}
+            japaStreak={japaStreak ?? 0}
+            tradition={tradition}
+          />
+        )}
 
         <div className="px-5 mt-3 mb-4">
           <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{

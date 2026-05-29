@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CheckCircle2, ChevronLeft, CreditCard, Sparkles, AlertTriangle, ExternalLink } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, CreditCard, Sparkles, AlertTriangle, ExternalLink, X, Zap } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -283,7 +283,13 @@ export default function SubscriptionClient({
                   subtitle: 'Free forever',
                   price: '₹0',
                   cadence: 'start here',
-                  features: ['Daily basics', 'Core practice access', 'Community read access'],
+                  features: [
+                    'Daily japa mala tracker',
+                    'Nitya Karma morning routine',
+                    'Festival & panchang calendar',
+                    '5 Dharma Mitra messages/day',
+                    'Mandali community (read)',
+                  ],
                   cta: 'Continue with Seeker',
                   onClick: () => setSelectedPlan('seeker'),
                   action: () => setSelectedPlan('seeker'),
@@ -295,7 +301,14 @@ export default function SubscriptionClient({
                   price: billingPeriod === 'annual' ? pricing.annual : pricing.monthly,
                   cadence: billingPeriod === 'annual' ? 'per year' : 'per month',
                   eyebrow: billingPeriod === 'annual' ? `${pricing.monthly}/month` : 'Flexible billing',
-                  features: ['Ad-free experience', 'Premium Pathshala Content', 'Advanced Analytics'],
+                  features: [
+                    'Everything in Seeker',
+                    'Unlimited Dharma Mitra AI',
+                    'Advanced analytics & reports',
+                    'Full Pathshala scripture library',
+                    'Ad-free, distraction-free',
+                    '3× Streak Freeze tokens/month',
+                  ],
                   cta: billingPeriod === 'annual' ? 'Subscribe Annual' : 'Subscribe Monthly',
                   onClick: () => setSelectedPlan('zenith'),
                   action: () => handleSubscribe(billingPeriod),
@@ -307,7 +320,12 @@ export default function SubscriptionClient({
                   subtitle: 'Family plan',
                   price: billingPeriod === 'annual' ? 'Shared' : 'Shared',
                   cadence: 'household access',
-                  features: ['Shared family access', 'Mandali-first experience', 'Designed for home practice'],
+                  features: [
+                    'Up to 6 family members',
+                    'Shared mandali calendar',
+                    'Family karma board',
+                    'Designed for home practice',
+                  ],
                   cta: 'Explore Kul',
                   onClick: () => setSelectedPlan('kul'),
                   action: () => router.push('/pricing'),
@@ -410,6 +428,106 @@ export default function SubscriptionClient({
                   </motion.div>
                 );
               })}
+            </div>
+          </section>
+        )}
+
+        {/* ── Feature Comparison Table ── */}
+        {(status === 'free' || status === 'expired') && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-widest text-[#C5A059] mb-4">What You Get</h2>
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+            >
+              {/* Table header */}
+              <div
+                className="grid grid-cols-3 px-4 py-3 text-[10px] font-bold uppercase tracking-wider"
+                style={{ borderBottom: '1px solid var(--card-border)', color: 'var(--brand-muted)' }}
+              >
+                <span>Feature</span>
+                <span className="text-center">Seeker</span>
+                <span className="text-center" style={{ color: '#C5A059' }}>Zenith</span>
+              </div>
+
+              {([
+                { label: 'Japa Mala tracker',             seeker: true,    zenith: true },
+                { label: 'Nitya Karma routine',           seeker: true,    zenith: true },
+                { label: 'Festival & panchang',           seeker: true,    zenith: true },
+                { label: 'Dharm Veer challenges',         seeker: true,    zenith: true },
+                { label: 'Dharma Mitra AI',               seeker: '5/day', zenith: '200/day' },
+                { label: 'Advanced analytics',            seeker: false,   zenith: true },
+                { label: 'Monthly sadhana report',        seeker: false,   zenith: true },
+                { label: 'AI spiritual interpretation',   seeker: false,   zenith: true },
+                { label: 'Full Pathshala library',        seeker: false,   zenith: true },
+                { label: 'Streak Freeze tokens',          seeker: '1/mo',  zenith: '3/mo' },
+                { label: 'Ad-free experience',            seeker: false,   zenith: true },
+                { label: 'Early feature access',          seeker: false,   zenith: true },
+              ] as { label: string; seeker: boolean | string; zenith: boolean | string }[]).map((row, i) => (
+                <div
+                  key={row.label}
+                  className="grid grid-cols-3 items-center px-4 py-3"
+                  style={{
+                    borderTop: i === 0 ? undefined : '1px solid var(--card-border)',
+                    background: i % 2 === 0 ? 'transparent' : 'rgba(197,160,89,0.02)',
+                  }}
+                >
+                  <span className="text-xs leading-snug" style={{ color: 'var(--brand-ink)' }}>{row.label}</span>
+                  <div className="flex justify-center">
+                    {row.seeker === true ? (
+                      <CheckCircle2 size={15} style={{ color: '#C5A059', opacity: 0.6 }} />
+                    ) : row.seeker === false ? (
+                      <X size={14} style={{ color: 'var(--brand-muted)', opacity: 0.4 }} />
+                    ) : (
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--brand-muted)' }}>{row.seeker}</span>
+                    )}
+                  </div>
+                  <div className="flex justify-center">
+                    {row.zenith === true ? (
+                      <CheckCircle2 size={15} style={{ color: '#C5A059' }} />
+                    ) : row.zenith === false ? (
+                      <X size={14} style={{ color: 'var(--brand-muted)', opacity: 0.4 }} />
+                    ) : (
+                      <span className="text-[10px] font-bold" style={{ color: '#C5A059' }}>{row.zenith}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Emotional hook for free users ── */}
+        {(status === 'free' || status === 'expired') && (
+          <section>
+            <div
+              className="rounded-2xl p-5 text-center"
+              style={{
+                background: 'linear-gradient(145deg, #1C1608 0%, #2A1F0A 100%)',
+                border: '1px solid rgba(197,160,89,0.28)',
+              }}
+            >
+              <div
+                className="w-12 h-12 rounded-2xl mx-auto mb-4 flex items-center justify-center"
+                style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.22)' }}
+              >
+                <Zap size={22} style={{ color: '#C5A059' }} />
+              </div>
+              <h3 className="font-serif font-bold text-lg mb-2" style={{ color: 'rgba(255,248,233,0.94)' }}>
+                Your practice deserves the full path
+              </h3>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: 'rgba(255,248,233,0.55)' }}>
+                Most seekers who upgrade to Zenith maintain 3× longer streaks and develop a deeper,
+                daily relationship with their tradition — because the tools are there every time they open the app.
+              </p>
+              <button
+                onClick={() => handleSubscribe(billingPeriod)}
+                className="w-full py-3.5 rounded-xl font-bold transition-all hover:brightness-110"
+                style={{ background: '#C5A059', color: '#0E0E0F' }}
+              >
+                <Sparkles size={15} className="inline mr-2 -mt-0.5" />
+                Start Zenith — {billingPeriod === 'annual' ? pricing.annual + '/year' : pricing.monthly + '/month'}
+              </button>
             </div>
           </section>
         )}
