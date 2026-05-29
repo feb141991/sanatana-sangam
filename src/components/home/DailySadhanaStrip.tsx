@@ -293,7 +293,7 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
   const activeRow = rows[activeIdx];
 
   return (
-    <div className="px-5 relative z-20 mb-5" aria-label={`${completedCount} of 5 sadhanas complete today`}>
+    <div className="px-4 py-3 relative z-20" aria-label={`${completedCount} of 5 sadhanas complete today`}>
 
       {/* ── Slim pagination lines ─────────────────────────────────────────────── */}
       <div className="flex items-center gap-1.5 mb-3">

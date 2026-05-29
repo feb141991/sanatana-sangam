@@ -1668,22 +1668,11 @@ export default function HomeDashboard({
     if (japaAlreadyDoneToday) {
       return { text: 'Sadhana complete · rest in the glow 🌸', href: null };
     }
-    // Priority 2: active sankalpa with days remaining
-    if (activeSankalpa) {
-      const endMs = new Date(activeSankalpa.end_date + 'T00:00:00Z').getTime();
-      const daysLeft = Math.max(0, Math.ceil((endMs - Date.now()) / 86400000));
-      if (daysLeft > 0) {
-        return {
-          text: `${daysLeft}d left in your Sankalpa`,
-          href: '/my-progress',
-        };
-      }
-    }
-    // Priority 3: streak motivation (after day 2)
+    // Priority 2: streak motivation (after day 2)
     if (japaStreak > 2) {
       return { text: `🔥 ${japaStreak}-day streak — keep going`, href: null };
     }
-    // Priority 4: first visit
+    // Priority 3: first visit
     if (showFirstTimeGuidance) {
       return { text: 'Your dharmic journey begins today 🙏', href: null };
     }
@@ -2527,7 +2516,7 @@ export default function HomeDashboard({
         {/* Story Circles — held for later release */}
 
         {/* ── Zenith Transitional Shloka ── */}
-        <div className="px-5 relative z-20 mb-4 mt-1">
+        <div className="px-4 relative z-20 mb-4 mt-1">
           <motion.button
             type="button"
             onClick={() => setShlokaModalOpen(true)}
@@ -2572,22 +2561,30 @@ export default function HomeDashboard({
         )}
 
         {/* ── Daily Sadhana Progress Strip ── */}
-        <DailySadhanaStrip
-          japaDone={japaAlreadyDoneToday}
-          nityaDone={nityaDoneToday}
-          pathshalaDone={pathshalaDoneToday}
-          japaBeads={dailyDharmaStackState.japaBeads}
-          japaRounds={dailyDharmaStackState.japaRounds}
-          quizDone={dailyDharmaStackState.quizDone}
-          dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
-          dharmVeerId={dharmVeer.id}
-          pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
-          tithi={panchang?.tithi}
-          tradition={tradition ?? 'hindu'}
-        />
+        <div
+          className="mx-4 mb-3 rounded-2xl"
+          style={{
+            background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,253,248,0.88)',
+            border: isDark ? '1px solid rgba(197,160,89,0.12)' : '1px solid rgba(197,160,89,0.16)',
+          }}
+        >
+          <DailySadhanaStrip
+            japaDone={japaAlreadyDoneToday}
+            nityaDone={nityaDoneToday}
+            pathshalaDone={pathshalaDoneToday}
+            japaBeads={dailyDharmaStackState.japaBeads}
+            japaRounds={dailyDharmaStackState.japaRounds}
+            quizDone={dailyDharmaStackState.quizDone}
+            dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+            dharmVeerId={dharmVeer.id}
+            pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+            tithi={panchang?.tithi}
+            tradition={tradition ?? 'hindu'}
+          />
+        </div>
 
         {/* ── Quick Access pills — replaces the removed + floating menu ── */}
-        <div className="px-5 mb-4">
+        <div className="px-4 mb-4">
           <div
             className="flex gap-2 overflow-x-auto pb-0.5"
             style={{ scrollbarWidth: 'none' } as React.CSSProperties}
@@ -2604,17 +2601,17 @@ export default function HomeDashboard({
               <Link
                 key={item.label}
                 href={item.href}
-                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full border transition-transform active:scale-95"
+                className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border transition-transform active:scale-95"
                 style={{
-                  background:   isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,253,246,0.85)',
-                  borderColor:  isDark ? 'rgba(197,160,89,0.14)' : 'rgba(197,160,89,0.20)',
+                  background:   isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,253,246,0.88)',
+                  borderColor:  isDark ? 'rgba(197,160,89,0.18)' : 'rgba(197,160,89,0.22)',
                   textDecoration: 'none',
                 }}
               >
-                <span style={{ fontSize: '0.95rem', lineHeight: 1 }}>{item.emoji}</span>
+                <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{item.emoji}</span>
                 <span
-                  className="text-[11px] font-semibold"
-                  style={{ color: isDark ? 'rgba(240,237,230,0.78)' : 'rgba(30,20,5,0.72)' }}
+                  className="text-[12px] font-semibold"
+                  style={{ color: isDark ? 'rgba(240,237,230,0.85)' : 'rgba(30,20,5,0.78)' }}
                 >
                   {item.label}
                 </span>
@@ -2625,7 +2622,7 @@ export default function HomeDashboard({
 
         {/* ── Post-japa Dharma Mitra nudge — conversion prompt after practice ── */}
         {japaAlreadyDoneToday && !isPro && (
-          <div className="px-5 mb-4">
+          <div className="px-4 mb-4">
             <Link
               href="/ai-chat"
               className="flex items-center gap-3 rounded-2xl px-4 py-3 transition-all active:scale-[0.98]"
@@ -2653,14 +2650,7 @@ export default function HomeDashboard({
           </div>
         )}
 
-        {/* ── 7-Day Habit History ── */}
-        {practiceHistory.length > 0 && (
-          <WeeklyHabitRow
-            practiceHistory={practiceHistory}
-            japaStreak={japaStreak ?? 0}
-            tradition={tradition}
-          />
-        )}
+        {/* 7-Day Habit History — moved to /my-progress */}
 
         {/* ── First Week Guide — shown to brand-new users only ── */}
         {showFirstTimeGuidance && (
@@ -2678,7 +2668,7 @@ export default function HomeDashboard({
           japaCompletedToday={japaAlreadyDoneToday}
         />
 
-        <div className="px-5 mt-3 mb-4">
+        <div className="px-4 mt-3 mb-4">
           <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
             background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
             borderColor: isDark ? 'rgba(125,211,252,0.18)' : 'rgba(96,165,250,0.22)',
@@ -2730,7 +2720,7 @@ export default function HomeDashboard({
         {/* Priority Banner moved to hero section above */}
 
         {showFreezeBanner && (
-          <div className="px-5 mb-4">
+          <div className="px-4 mb-4">
             <div className="rounded-2xl p-4" style={{ background: 'rgba(23,37,84,0.40)', border: '1px solid rgba(96,165,250,0.20)' }}>
               <p className="text-sm font-semibold text-white/90">
                 Yesterday&apos;s sadhana was incomplete. Use a Streak Freeze? 🧊 ({freezeCount} remaining)
@@ -2758,18 +2748,20 @@ export default function HomeDashboard({
           </div>
         )}
 
-        <SankalpaBanner
-          sankalpa={activeSankalpa}
-          tradition={tradition ?? 'hindu'}
-          onSet={() => setShowSankalpSheet(true)}
-          onComplete={() => {
-            fetch('/api/sankalpa', {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
-            }).then(() => fetchSankalpa());
-          }}
-        />
+        <div className="px-4 mb-2">
+          <SankalpaBanner
+            sankalpa={activeSankalpa}
+            tradition={tradition ?? 'hindu'}
+            onSet={() => setShowSankalpSheet(true)}
+            onComplete={() => {
+              fetch('/api/sankalpa', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
+              }).then(() => fetchSankalpa());
+            }}
+          />
+        </div>
 
         {/* Daily Darshan — hidden until content is fully prepared */}
       </div>
@@ -2777,7 +2769,7 @@ export default function HomeDashboard({
 
         {/* ── Sacred Days — swipeable carousel ─────────────────────────────── */}
         {calendarLoading ? (
-          <div className="mx-5 mb-4 h-[236px] rounded-[1.8rem] animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
+          <div className="mx-4 mb-4 h-[144px] rounded-2xl animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
         ) : (
           <VratCarousel
             festivals={apiFestivals}

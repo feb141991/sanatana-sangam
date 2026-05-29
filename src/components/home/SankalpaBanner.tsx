@@ -19,7 +19,7 @@ export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete 
     return (
       <div
         onClick={onSet}
-        className="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer transition-transform active:scale-[0.98] mt-4"
+        className="flex items-center justify-between px-4 py-3 rounded-2xl cursor-pointer transition-transform active:scale-[0.98]"
         style={{
           background: 'rgba(197, 160, 89, 0.08)',
           border: '1px solid rgba(197, 160, 89, 0.2)',
@@ -51,7 +51,7 @@ export default function SankalpaBanner({ sankalpa, tradition, onSet, onComplete 
     // ── Clickable pill — taps to sankalpa status / my-progress ───────────────
     <Link
       href="/my-progress"
-      className="flex items-center gap-3 px-4 py-3 rounded-2xl mt-4 active:scale-[0.98] transition-transform"
+      className="flex items-center gap-3 px-4 py-3 rounded-2xl active:scale-[0.98] transition-transform"
       style={{
         background: 'rgba(197, 160, 89, 0.07)',
         border: '1px solid rgba(197, 160, 89, 0.18)',

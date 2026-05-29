@@ -73,81 +73,69 @@ function VratCard({
   const href = getVratHref(festival);
   const cardContent = (
     <div
-      className="w-full h-full rounded-[1.5rem] p-3.5 flex flex-col relative overflow-hidden"
+      className="w-full h-full rounded-[1.2rem] px-3.5 py-3 flex flex-row items-center gap-3 relative overflow-hidden"
       style={{
         background: isDark
-          ? 'linear-gradient(145deg, rgba(26,18,6,0.98) 0%, rgba(40,28,8,0.95) 100%)'
-          : 'linear-gradient(145deg, rgba(255,253,246,0.98) 0%, rgba(248,228,190,0.80) 100%)',
+          ? 'linear-gradient(135deg, rgba(26,18,6,0.98) 0%, rgba(40,28,8,0.95) 100%)'
+          : 'linear-gradient(135deg, rgba(255,253,246,0.98) 0%, rgba(248,228,190,0.80) 100%)',
         border: isDark
           ? '1px solid rgba(197,160,89,0.20)'
           : '1px solid rgba(197,160,89,0.28)',
         boxShadow: isDark
-          ? '0 12px 36px rgba(0,0,0,0.32)'
-          : '0 8px 28px rgba(49,35,20,0.09)',
+          ? '0 8px 24px rgba(0,0,0,0.28)'
+          : '0 6px 20px rgba(49,35,20,0.08)',
       }}
     >
       {/* Ambient glow */}
       <span className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(circle at 85% 15%, rgba(197,160,89,0.16), transparent 40%)' }}
+        style={{ background: 'radial-gradient(circle at 85% 15%, rgba(197,160,89,0.14), transparent 40%)' }}
         aria-hidden="true" />
 
-      {/* Days badge — top right */}
-      <div className="absolute top-4 right-4">
-        <DaysBadge days={days} isDark={isDark} />
-      </div>
-
-      {/* Large 3D emoji — visual anchor */}
-      <div className="mb-3">
-        <span
-          className="drop-shadow-md select-none"
-          style={{ fontSize: '2.4rem', lineHeight: 1, display: 'block' }}
-          aria-hidden="true"
-        >
-          {festival.emoji}
-        </span>
-      </div>
-
-      {/* Festival name */}
-      <h3
-        className="font-serif text-base leading-tight mb-0.5 pr-10"
-        style={{
-          color:      isDark ? '#F5E8C0' : '#1A0A02',
-          fontFamily: 'var(--font-serif)',
-          fontWeight: 700,
-        }}
+      {/* Emoji — left column */}
+      <span
+        className="drop-shadow-md select-none shrink-0"
+        style={{ fontSize: '2.6rem', lineHeight: 1 }}
+        aria-hidden="true"
       >
-        {festival.name}
-      </h3>
+        {festival.emoji}
+      </span>
 
-      {/* Date */}
-      <p className="text-[10px] mb-2" style={{ color: isDark ? 'rgba(245,220,160,0.50)' : 'rgba(80,45,10,0.50)' }}>
-        {formatFestDate(festival.date)}
-      </p>
-
-      {/* Description snippet */}
-      {festival.description && (
-        <p
-          className="text-[11px] leading-relaxed line-clamp-1 flex-1 mb-3"
-          style={{ color: isDark ? 'rgba(245,220,160,0.65)' : 'rgba(60,35,10,0.70)' }}
+      {/* Text — right column */}
+      <div className="flex-1 min-w-0 pr-12">
+        <h3
+          className="font-serif text-[15px] leading-tight font-bold"
+          style={{ color: isDark ? '#F5E8C0' : '#1A0A02' }}
         >
-          {festival.description}
+          {festival.name}
+        </h3>
+        <p className="text-[10px] mt-0.5 mb-1" style={{ color: isDark ? 'rgba(245,220,160,0.50)' : 'rgba(80,45,10,0.50)' }}>
+          {formatFestDate(festival.date)}
         </p>
-      )}
-
-      {/* CTAs */}
-      <div className="flex items-center gap-2 mt-auto">
+        {festival.description && (
+          <p
+            className="text-[11px] leading-snug line-clamp-2"
+            style={{ color: isDark ? 'rgba(245,220,160,0.60)' : 'rgba(60,35,10,0.65)' }}
+          >
+            {festival.description}
+          </p>
+        )}
         {href && (
           <span
-            className="flex items-center gap-1 px-3.5 py-2 rounded-full text-[11px] font-bold"
+            className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[10px] font-bold"
             style={{
-              background: isDark ? 'rgba(197,160,89,0.16)' : 'rgba(197,160,89,0.14)',
+              background: isDark ? 'rgba(197,160,89,0.14)' : 'rgba(197,160,89,0.12)',
               color: 'var(--brand-primary)',
-              border: '1px solid rgba(197,160,89,0.22)',
+              border: '1px solid rgba(197,160,89,0.20)',
             }}
           >
             Learn more →
           </span>
         )}
+      </div>
+
+      {/* Days badge — top right */}
+      <div className="absolute top-3 right-3">
+        <DaysBadge days={days} isDark={isDark} />
       </div>
     </div>
   );
@@ -221,7 +209,7 @@ export default function VratCarousel({ festivals, isDark, effectiveAppLanguage =
   return (
     <div className="mb-4">
       {/* Section header */}
-      <div className="px-5 flex items-center justify-between mb-2.5">
+      <div className="px-4 flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <CalendarDays size={13} style={{ color: '#C5A059' }} />
           <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: '#C5A059' }}>
@@ -256,7 +244,7 @@ export default function VratCarousel({ festivals, isDark, effectiveAppLanguage =
       {/* Scroll container */}
       <div
         ref={scrollRef}
-        className="flex gap-3 overflow-x-auto px-5 pb-1"
+        className="flex gap-3 overflow-x-auto px-4 pb-1"
         style={{
           scrollSnapType:    'x mandatory',
           WebkitOverflowScrolling: 'touch',
@@ -268,9 +256,9 @@ export default function VratCarousel({ festivals, isDark, effectiveAppLanguage =
           <div
             key={`${festival.name}-${festival.date}`}
             style={{
-              minWidth:       'calc(100% - 40px)',
+              minWidth:       'calc(100% - 32px)',
               scrollSnapAlign: 'start',
-              height:          '164px',
+              height:          '144px',
             }}
           >
             <VratCard festival={festival} days={days} isDark={isDark} />

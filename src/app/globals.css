@@ -1414,16 +1414,16 @@ body {
 .divine-feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 0 16px 24px;
+  gap: 10px;
+  padding: 0 12px 20px;
 }
 
 .divine-feature-card {
-  min-height: 154px;
+  min-height: 130px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 16px;
+  gap: 7px;
+  padding: 13px;
 }
 
 .divine-feature-icon {
@@ -1438,13 +1438,13 @@ body {
 }
 
 .divine-feature-title {
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .divine-feature-copy {
   position: relative;
   z-index: 1;
-  font-size: 13px;
+  font-size: 11px;
 }
 
 .divine-card-motif {

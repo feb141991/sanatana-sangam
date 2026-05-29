@@ -38,6 +38,7 @@ import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
+import InviteCard from '@/components/home/InviteCard';
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -1258,6 +1259,15 @@ export default function ProfileClient({
               onClose={() => setShowAvatarPreview(false)}
             />
           )}
+
+          {/* Invite & Refer — referral card */}
+          <div className="-mx-1">
+            <InviteCard
+              userId={userId}
+              userName={liveProfile?.full_name ?? undefined}
+              tradition={profileTradition}
+            />
+          </div>
 
           {/* Share & Connect — full social drawer */}
           <button

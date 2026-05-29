@@ -101,20 +101,7 @@ export default function PriorityBanner({
 
   const queue: BannerItem[] = [];
 
-  // 1. Sankalpa progress nudge
-  if (sankalpaText && sankalpaDaysLeft != null && sankalpaDaysLeft > 0) {
-    queue.push({
-      id:          'sankalpa-progress',
-      icon:        '🕉️',
-      message:     `${sankalpaDaysLeft} days left — "${sankalpaText.slice(0, 40)}${sankalpaText.length > 40 ? '…' : ''}"`,
-      cta:         { label: "Let's do it", href: '/my-progress' },
-      bg:          'rgba(26, 18, 6, 0.88)',
-      textColor:   '#F5E0A0',
-      borderColor: 'rgba(197,160,89,0.28)',
-    });
-  }
-
-  // 2. Notable tithi today
+  // 1. Notable tithi today
   if (tithiLabel && isNotableTithi(tithiLabel)) {
     queue.push({
       id:          `tithi-${tithiLabel}`,
