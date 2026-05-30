@@ -2216,24 +2216,45 @@ export default function HomeDashboard({
             <div className="divine-hero-readability" aria-hidden="true" />
 
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
-            
-            {/* ── Hero rotating banner — sankalpa / tithi / festival nudges ── */}
-            <PriorityBanner
-              heroMode
-              missedYesterday={missedYesterday}
-              freezeCount={freezeCount}
-              isPro={isPro}
-              streak={japaStreak}
-              tradition={tradition}
-              sankalpaText={activeSankalpa?.text}
-              sankalpaDaysLeft={activeSankalpa
-                ? Math.max(0, Math.ceil(
-                    (new Date(activeSankalpa.end_date + 'T00:00:00Z').getTime() - Date.now()) / 86_400_000
-                  ))
-                : undefined}
-              nextFestivalName={festivals[0]?.name}
-              nextFestivalDays={daysUntilFestival}
-            />
+
+            {/* Hero image controls */}
+            <div className="absolute bottom-6 right-6 z-50 flex gap-2">
+              {/* Remove custom cover */}
+              {customCover && (
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setCustomCover(null);
+                    localStorage.removeItem('user_cover_photo');
+                    await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
+                    toast.success('Restored default cover 🙏');
+                  }}
+                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
+                  aria-label="Remove Custom Cover"
+                >
+                  <X size={16} className="text-white/90" />
+                </button>
+              )}
+              {/* Sacred backdrop picker */}
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); setHeroPicker(true); }}
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+                aria-label="Choose sacred backdrop"
+              >
+                <Images size={16} className="text-white/90" />
+              </button>
+              {/* Custom photo upload */}
+              <label
+                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+                aria-label="Upload custom cover"
+                onClick={e => e.stopPropagation()}
+              >
+                <Pencil size={16} className="text-white/90" />
+                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+              </label>
+            </div>
 
           </motion.div>
 
@@ -2475,7 +2496,7 @@ export default function HomeDashboard({
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
                       style={{ background: 'rgba(234,112,48,0.22)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,180,100,0.18)' }}
                     >
-                      <span className="text-[11px]">{upcomingSacredObservance.festival.emoji || '🪷'}</span>
+                      <span className="text-[11px]">{upcomingSacredObservance.festival.emoji || '🌙'}</span>
                       <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,200,140,0.95)' }}>
                         {upcomingSacredObservance.festival.name}
                       </span>
