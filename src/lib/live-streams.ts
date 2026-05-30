@@ -1,5 +1,12 @@
 export type LiveStreamCategory = 'mandir' | 'katha' | 'satsang';
 
+export interface AartiSchedule {
+  /** Human-readable time for morning aarti, e.g. "4:00 AM" */
+  morning?: string;
+  /** Human-readable time for evening aarti, e.g. "7:00 PM" */
+  evening?: string;
+}
+
 export interface LiveStream {
   id: string;
   title: string;
@@ -12,7 +19,38 @@ export interface LiveStream {
   state?: string;
   collections?: string[];
   thumbnailUrl?: string;
+  /** Parsed aarti times for notification scheduling */
+  aartis?: AartiSchedule;
 }
+
+/**
+ * Curated aarti times keyed by stream ID.
+ * Morning = first aarti (Mangal/Bhasma/Suprabhata).
+ * Evening = Sandhya/evening aarti.
+ */
+export const AARTI_TIMES: Record<string, AartiSchedule> = {
+  'mahakaleshwar-ujjain':    { morning: '4:00 AM — Bhasma Aarti' },
+  'kashi-vishwanath':        { morning: '3:00 AM — Mangal Aarti', evening: '7:00 PM — Sandhya Aarti' },
+  'kedarnath-temple':        { morning: '5:00 AM — Abhishek Puja', evening: '6:00 PM — Sandhya Aarti' },
+  'badrinath-temple':        { morning: '4:30 AM — Abhishek Puja', evening: '8:00 PM — Sandhya Aarti' },
+  'tirupati-balaji':         { morning: '3:00 AM — Suprabhata Seva' },
+  'siddhivinayak':           { morning: '6:00 AM — Aarti', evening: '7:30 PM — Aarti' },
+  'somnath-temple':          { morning: '7:00 AM — Pratah Aarti', evening: '7:00 PM — Sandhya Aarti' },
+  'puri-jagannath':          { morning: '5:00 AM — Mangal Aarti', evening: '8:00 PM — Sandhya Aarti' },
+  'iskcon-vrindavan':        { morning: '4:30 AM — Mangal Aarti', evening: '8:00 PM — Aarti' },
+  'dwarkadhish-temple':      { morning: '6:30 AM — Mangal Aarti', evening: '7:30 PM — Sandhya Aarti' },
+  'ayodhya-ram-mandir':      { morning: '5:30 AM — Mangal Aarti', evening: '7:00 PM — Sandhya Aarti' },
+  'sankat-mochan-hanuman':   { morning: '5:00 AM — Mangal Aarti', evening: '7:30 PM — Bhajan Sandhya' },
+  'nathdwara-shrinathji':    { morning: '6:00 AM — Mangal Jhanki', evening: '7:30 PM — Sandhya Jhanki' },
+  'srisailam-temple':        { morning: '5:00 AM — Prakasha Darshan', evening: '6:30 PM — Sandhya Deepalankarana' },
+  'mahalakshmi-kolhapur':    { morning: '6:00 AM — Kakad Aarti', evening: '6:00 PM — Sandhya Aarti' },
+  'kamakhya-temple-live':    { morning: '5:30 AM — Pratah Darshan' },
+  'iskcon-mayapur':          { morning: '4:30 AM — Mangal Aarti', evening: '8:00 PM — Gaura Aarti' },
+  'iskcon-bangalore':        { morning: '4:30 AM — Mangal Aarti', evening: '8:00 PM — Sandhya Aarti' },
+  'vrindavan-chandrodaya':   { morning: '5:15 AM — Mangal Aarti', evening: '7:30 PM — Sandhya Aarti' },
+  'pashupatinath-nepal':     { morning: '5:00 AM — Pratah Darshan', evening: '6:00 PM — Sandhya Aarti' },
+  'krishna-janmabhoomi':     { morning: '5:00 AM — Mangal Aarti', evening: '7:30 PM — Sandhya Aarti' },
+};
 
 export const LIVE_STREAMS: LiveStream[] = [
   {
@@ -445,3 +483,11 @@ export const LIVE_STREAMS: LiveStream[] = [
     youtubeVideoId: 'Yv2D6cWWTq8',
   },
 ];
+
+/** Returns LIVE_STREAMS with aarti times merged in from AARTI_TIMES lookup. */
+export function getLiveStreamsWithAartis(): LiveStream[] {
+  return LIVE_STREAMS.map(s => ({
+    ...s,
+    aartis: AARTI_TIMES[s.id],
+  }));
+}
