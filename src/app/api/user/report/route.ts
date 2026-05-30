@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireUserNotBanned } from '@/lib/api-guards';
 import {
   malaSessionBeads,
   malaSessionDate,
@@ -14,8 +15,8 @@ import {
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { user, error: authError } = await requireUserNotBanned(supabase);
+  if (authError) return authError;
 
   const userId = user.id;
   const now    = new Date();

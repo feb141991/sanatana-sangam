@@ -154,10 +154,19 @@ function FeaturedGrid({
   );
 }
 
+interface TodayVeer {
+  id: string;
+  name: string;
+  emoji: string;
+  tagline: string;
+  tradition: string;
+}
+
 interface Props {
   tradition: string | null;
   spiritualLevel: string | null;
   transliterationLanguage?: string;
+  todayVeer?: TodayVeer | null;
 }
 
 import { MOODS_CONFIG } from '@/lib/mood/registry';
@@ -281,8 +290,53 @@ function StackCard({
   );
 }
 
+// ── Daily Dharm Veer Banner ────────────────────────────────────────────────────
+function DailyVeerBanner({ veer }: { veer: TodayVeer }) {
+  const TRADITION_ACCENT: Record<string, string> = {
+    hindu:    'rgba(255,120,0,0.12)',
+    sikh:     'rgba(0,100,255,0.12)',
+    buddhist: 'rgba(255,200,0,0.12)',
+    jain:     'rgba(0,200,50,0.12)',
+    sufi:     'rgba(140,90,220,0.12)',
+    tribal:   'rgba(60,160,90,0.12)',
+  };
+  const bg = TRADITION_ACCENT[veer.tradition] ?? 'rgba(197,160,89,0.10)';
+
+  return (
+    <Link
+      href={`/dharm-veer/${veer.id}`}
+      className="flex items-center gap-3 rounded-2xl p-3.5 mb-5 border transition-transform active:scale-[0.98] relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, rgba(197,160,89,0.09), rgba(197,160,89,0.03))', borderColor: 'rgba(197,160,89,0.22)', textDecoration: 'none' }}
+    >
+      <div
+        className="pointer-events-none absolute -top-6 -right-6 w-24 h-24 rounded-full blur-[32px] opacity-30"
+        style={{ background: '#C5A059' }}
+        aria-hidden="true"
+      />
+      <div
+        className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl shrink-0"
+        style={{ background: bg, border: '1px solid rgba(197,160,89,0.25)' }}
+      >
+        {veer.emoji}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[9px] font-bold uppercase tracking-[0.18em] mb-0.5" style={{ color: 'rgba(197,160,89,0.55)' }}>
+          Today&apos;s Dharm Veer
+        </p>
+        <p className="text-[13px] font-semibold leading-tight truncate" style={{ color: 'var(--text-cream)' }}>
+          {veer.name}
+        </p>
+        <p className="text-[10px] mt-0.5 line-clamp-1" style={{ color: 'var(--text-dim)' }}>
+          {veer.tagline}
+        </p>
+      </div>
+      <ArrowRight size={14} style={{ color: 'rgba(197,160,89,0.6)', flexShrink: 0 }} />
+    </Link>
+  );
+}
+
 // ── Main client ───────────────────────────────────────────────────────────────
-export default function DiscoverClient({ tradition, transliterationLanguage }: Props) {
+export default function DiscoverClient({ tradition, transliterationLanguage, todayVeer }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
@@ -426,6 +480,9 @@ export default function DiscoverClient({ tradition, transliterationLanguage }: P
             >
               {/* ── Suggested chips ── */}
               <SuggestedChips tradition={tradition} />
+
+              {/* ── Today's Dharm Veer ── */}
+              {todayVeer && <DailyVeerBanner veer={todayVeer} />}
 
               {/* ── Featured grid ── */}
               <FeaturedGrid

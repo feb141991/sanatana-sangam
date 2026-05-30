@@ -1,13 +1,78 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Lock, Star, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { SACRED_RELICS, getUnlockedRelics, type Relic } from '@/lib/relics';
 import PageIntro from '@/components/ui/PageIntro';
+
+// ── Relic emoji map (used when image assets are unavailable) ────────────────
+const RELIC_EMOJI: Record<string, string> = {
+  // Universal
+  'diya-bronze':         '🪔',
+  'clay-kalash':         '🏺',
+  'incense-sandalwood':  '🪷',
+  'camphor-flame':       '🕯️',
+  'mindful-bell':        '🔔',
+  'copper-lota':         '🫙',
+  'asana-kusha':         '🌿',
+  'sacred-mala':         '📿',
+  'shankha-conch':       '🐚',
+  'prarthana-pothi':     '📖',
+  'the-sage-halo':       '✨',
+  // Hindu
+  'ganesha-modak':       '🍡',
+  'vibhuti-ash':         '🌫️',
+  'trishula-gold':       '🔱',
+  'krishna-flute':       '🎶',
+  'rama-bow':            '🏹',
+  'peacock-feather':     '🦚',
+  'durga-shield':        '🛡️',
+  'ananta-shesha':       '🐍',
+  'tulsi-leaf':          '🌱',
+  'shiva-damaru':        '🥁',
+  'nandi-devotion':      '🐂',
+  'brahma-lotus':        '🪷',
+  'hanuman-gada':        '🏏',
+  'sudarshana-chakra':   '🌀',
+  'ganga-kalash':        '🏺',
+  'rishi-kamandalu':     '🫙',
+  'chintamani-gem':      '💎',
+  // Sikh
+  'steel-kara':          '⭕',
+  'sacred-kirpan':       '⚔️',
+  'khanda-gold':         '☬',
+  'sikh-chaur':          '🌾',
+  'kartarpur-nishan':    '🚩',
+  'wooden-kangha':       '🪥',
+  'nishan-sahib':        '🏴',
+  'deg-teg':             '⚔️',
+  'gurbani-pothi':       '📜',
+  // Buddhist
+  'lotus-bloom':         '🌸',
+  'alms-bowl':           '🍵',
+  'dharma-wheel-gold':   '☸️',
+  'treasure-vase':       '🫙',
+  'golden-fish':         '🐟',
+  'bodhi-leaf':          '🍃',
+  'prayer-wheel':        '☸️',
+  'vajra-scepter':       '⚡',
+  'parasol-royalty':     '☂️',
+  // Jain
+  'jain-swastika':       '🔯',
+  'peacock-brush':       '🦚',
+  'siddhashila-moon':    '🌙',
+  'ahimsa-hand':         '🤲',
+  'three-jewels':        '💎',
+  'siddhachakra-wheel':  '🔵',
+  'jain-kalasha':        '🏺',
+};
+
+function relicEmoji(id: string) {
+  return RELIC_EMOJI[id] ?? '🔱';
+}
 
 type FilterMode = 'all' | 'unlocked' | 'locked';
 
@@ -127,8 +192,8 @@ export default function KoshClient({
         {nextRelic && (
           <div className="mt-6 rounded-3xl p-4 backdrop-blur-sm" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
             <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 overflow-hidden rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}` }}>
-                <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill sizes="64px" className="object-contain" />
+              <div className="h-16 w-16 flex items-center justify-center rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '2.2rem' }}>
+                {relicEmoji(nextRelic.id)}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
@@ -200,8 +265,8 @@ export default function KoshClient({
               <div className="mt-6 rounded-2xl p-4 text-left" style={{ border: `1px solid ${cardBorder}`, background: 'var(--card-bg-soft, rgba(197,160,89,0.06))' }}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="relative h-14 w-14 overflow-hidden rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}` }}>
-                    <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill sizes="56px" className="object-contain" />
+                  <div className="h-14 w-14 flex items-center justify-center rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '2rem' }}>
+                    {relicEmoji(nextRelic.id)}
                   </div>
                   <div>
                     <p className="font-medium" style={{ color: inkColor }}>{nextRelic.name}</p>
@@ -236,8 +301,11 @@ export default function KoshClient({
                       boxShadow: active ? `0 0 0 2px ${goldColor}` : undefined,
                     }}
                   >
-                    <div className={`relative h-16 w-16 ${unlocked ? '' : 'grayscale opacity-40'}`}>
-                      <Image src={relic.imageUrl} alt={relic.name} fill sizes="64px" className="object-contain" />
+                    <div
+                      className={`h-16 w-16 flex items-center justify-center rounded-2xl ${unlocked ? '' : 'grayscale opacity-40'}`}
+                      style={{ fontSize: '2rem' }}
+                    >
+                      {relicEmoji(relic.id)}
                     </div>
                     {!unlocked && (
                       <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
@@ -308,8 +376,11 @@ export default function KoshClient({
                 </button>
               </div>
               <div className="mt-6 flex justify-center">
-                <div className="relative h-[120px] w-[120px] overflow-hidden rounded-[2rem]" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
-                  <Image src={selectedRelic.imageUrl} alt={selectedRelic.name} fill sizes="120px" className="object-contain" />
+                <div
+                  className="h-[120px] w-[120px] flex items-center justify-center rounded-[2rem]"
+                  style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '4rem' }}
+                >
+                  {relicEmoji(selectedRelic.id)}
                 </div>
               </div>
               <p className="mt-6 text-sm leading-6" style={{ color: mutedColor }}>{selectedRelic.description}</p>

@@ -546,7 +546,7 @@ export default function LandingPage() {
           variants={fadeUp} custom={2}
           className="text-amber-100/50 mb-10 text-lg"
         >
-          Join thousands of Sanatani who have already found their community — from Leicester to Los Angeles, Mauritius to Melbourne.
+          A growing sangha spanning Leicester to Los Angeles, Mauritius to Melbourne — one dharma, many paths.
         </motion.p>
         <motion.div variants={fadeUp} custom={3}>
           <Link href="/signup"

@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireUserNotBanned } from '@/lib/api-guards';
 
 export async function GET(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user, error: authError } = await requireUserNotBanned(supabase);
+    if (authError) return authError;
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -65,11 +63,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user, error: authError } = await requireUserNotBanned(supabase);
+    if (authError) return authError;
 
     const body = await request.json();
 

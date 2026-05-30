@@ -2217,44 +2217,6 @@ export default function HomeDashboard({
 
             <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
             
-            {/* Hero image controls */}
-            <div className="absolute bottom-6 right-6 z-50 flex gap-2">
-              {/* Remove custom cover */}
-              {customCover && (
-                <button
-                  type="button"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    setCustomCover(null);
-                    localStorage.removeItem('user_cover_photo');
-                    await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
-                    toast.success('Restored default cover 🙏');
-                  }}
-                  className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
-                  aria-label="Remove Custom Cover"
-                >
-                  <X size={16} className="text-white/90" />
-                </button>
-              )}
-              {/* Sacred backdrop picker */}
-              <button
-                type="button"
-                onClick={e => { e.stopPropagation(); setHeroPicker(true); }}
-                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
-                aria-label="Choose sacred backdrop"
-              >
-                <Images size={16} className="text-white/90" />
-              </button>
-              {/* Custom photo upload */}
-              <label
-                className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
-                aria-label="Upload custom cover"
-                onClick={e => e.stopPropagation()}
-              >
-                <Pencil size={16} className="text-white/90" />
-                <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
-              </label>
-            </div>
             {/* ── Hero rotating banner — sankalpa / tithi / festival nudges ── */}
             <PriorityBanner
               heroMode
@@ -2510,15 +2472,15 @@ export default function HomeDashboard({
                           ? `/vrat/${upcomingSacredObservance.festival.route_slug ?? resolveVratSlug(upcomingSacredObservance.festival.name)}`
                           : `/festivals/${upcomingSacredObservance.festival.route_slug ?? ''}`
                       }
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
-                      style={{ background: 'rgba(234,112,48,0.18)', backdropFilter: 'blur(8px)' }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
+                      style={{ background: 'rgba(234,112,48,0.22)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,180,100,0.18)' }}
                     >
-                      <span className="text-[10px]">{upcomingSacredObservance.festival.emoji || '🪔'}</span>
-                      <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,200,140,0.92)' }}>
+                      <span className="text-[11px]">{upcomingSacredObservance.festival.emoji || '🪷'}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,200,140,0.95)' }}>
                         {upcomingSacredObservance.festival.name}
                       </span>
-                      <span style={{ color: 'rgba(255,200,140,0.30)', fontSize: '8px' }}>·</span>
-                      <span className="text-[10px]" style={{ color: 'rgba(255,200,140,0.60)' }}>
+                      <span style={{ color: 'rgba(255,200,140,0.35)', fontSize: '9px' }}>·</span>
+                      <span className="text-[11px]" style={{ color: 'rgba(255,200,140,0.65)' }}>
                         {upcomingSacredObservanceLabel}
                       </span>
                     </Link>

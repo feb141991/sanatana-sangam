@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireUserNotBanned } from '@/lib/api-guards';
 
 export async function GET(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { user, error: authError } = await requireUserNotBanned(supabase);
+  if (authError) return authError;
 
   try {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -35,11 +33,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { user, error: authError } = await requireUserNotBanned(supabase);
+  if (authError) return authError;
 
   try {
     const body = await req.json();
@@ -56,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
-    
+
     const endDate = new Date(today);
     endDate.setDate(endDate.getDate() + days);
     const endDateStr = endDate.toISOString().split('T')[0];
@@ -94,11 +89,8 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { user, error: authError } = await requireUserNotBanned(supabase);
+  if (authError) return authError;
 
   try {
     const body = await req.json();

@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireUserNotBanned } from '@/lib/api-guards';
 
 const FREE_DAILY_LIMIT = 5;
 const PRO_DAILY_LIMIT = 200;
 
 export async function GET(req: Request) {
-  // Auth check — only logged-in users can query usage
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
-  }
+  const { user, error: authError } = await requireUserNotBanned(supabase);
+  if (authError) return authError;
 
   // Fetch Pro status
   const { data: profile } = await supabase

@@ -9,7 +9,7 @@ export function getIsPro(): boolean {
   return window.localStorage.getItem(PRO_STORAGE_KEY) === 'true';
 }
 
-/** Early-access activation path. Connects to backend but keeps optimistic UI updates. */
+/** Early-access activation path. Optimistic UI + server persistence. */
 export async function activatePro(): Promise<void> {
   // Optimistic update
   if (typeof window !== 'undefined') {
@@ -19,14 +19,30 @@ export async function activatePro(): Promise<void> {
 
   try {
     const res = await fetch('/api/premium/activate', { method: 'POST' });
+
+    if (res.status === 409) {
+      // Feature flag disabled in this environment — revert optimistic update.
+      // This is expected in production; do not throw an error users will see.
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(PRO_STORAGE_KEY);
+        window.dispatchEvent(new Event('sangam_pro_changed'));
+      }
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.error ?? 'Early-access activation is not available.');
+    }
+
     if (!res.ok) {
       throw new Error('Server activation failed');
     }
+
+    // ok: true — server confirmed. Optimistic state already correct.
   } catch (err) {
-    // Revert optimistic update on failure
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(PRO_STORAGE_KEY);
-      window.dispatchEvent(new Event('sangam_pro_changed'));
+    // Revert optimistic update on any non-409 failure
+    if (err instanceof Error && !err.message.includes('not available')) {
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem(PRO_STORAGE_KEY);
+        window.dispatchEvent(new Event('sangam_pro_changed'));
+      }
     }
     console.error('[premium] Activation failed:', err);
     throw err;

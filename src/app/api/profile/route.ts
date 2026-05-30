@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { requireUserNotBanned } from '@/lib/api-guards';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 
 export async function PATCH(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { user, error: authError } = await requireUserNotBanned(supabase);
+    if (authError) return authError;
 
     const body = await req.json().catch(() => null) as { active_symbol_id?: string } | null;
     const relicId = body?.active_symbol_id;
