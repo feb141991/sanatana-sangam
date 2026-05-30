@@ -2479,20 +2479,52 @@ export default function HomeDashboard({
                 >
                   <Link
                     href="/panchang"
-                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full active:scale-95 transition-transform"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
                     style={{ background: 'rgba(197,160,89,0.14)', backdropFilter: 'blur(8px)' }}
                   >
-                    <span className="text-[9px]">🌙</span>
-                    <span className="text-[9px] font-semibold" style={{ color: 'rgba(255,240,200,0.90)' }}>
+                    <span className="text-[10px]">🌙</span>
+                    <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,240,200,0.90)' }}>
                       {panchang.tithi}
                     </span>
-                    <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '7px' }}>·</span>
-                    <span className="text-[9px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
+                    <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
                       {fmtDate(selectedDate, 'd MMM')}
                     </span>
                   </Link>
                 </motion.div>
               )}
+
+              {/* ── Upcoming vrat / sacred day pill ── */}
+              <AnimatePresence>
+                {upcomingSacredObservance && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: 0.26, duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-1"
+                  >
+                    <Link
+                      href={
+                        upcomingSacredObservance.festival.route_kind === 'vrat'
+                          ? `/vrat/${upcomingSacredObservance.festival.route_slug ?? resolveVratSlug(upcomingSacredObservance.festival.name)}`
+                          : `/festivals/${upcomingSacredObservance.festival.route_slug ?? ''}`
+                      }
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
+                      style={{ background: 'rgba(234,112,48,0.18)', backdropFilter: 'blur(8px)' }}
+                    >
+                      <span className="text-[10px]">{upcomingSacredObservance.festival.emoji || '🪔'}</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,200,140,0.92)' }}>
+                        {upcomingSacredObservance.festival.name}
+                      </span>
+                      <span style={{ color: 'rgba(255,200,140,0.30)', fontSize: '8px' }}>·</span>
+                      <span className="text-[10px]" style={{ color: 'rgba(255,200,140,0.60)' }}>
+                        {upcomingSacredObservanceLabel}
+                      </span>
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* ── Rashiphal nudge pill ── */}
               <AnimatePresence>
@@ -2515,14 +2547,14 @@ export default function HomeDashboard({
                           }
                         }).catch(() => {});
                       }}
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full active:scale-95 transition-transform"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
                       style={{ background: 'rgba(139,92,246,0.20)', backdropFilter: 'blur(8px)' }}
                     >
-                      <span className="text-[9px]">🔮</span>
-                      <span className="text-[9px] font-semibold" style={{ color: '#c4b5fd' }}>
+                      <span className="text-[10px]">🔮</span>
+                      <span className="text-[10px] font-semibold" style={{ color: '#c4b5fd' }}>
                         See your Rashiphal
                       </span>
-                      <span className="text-[8px]" style={{ color: 'rgba(196,181,253,0.55)' }}>→</span>
+                      <span className="text-[9px]" style={{ color: 'rgba(196,181,253,0.55)' }}>→</span>
                     </Link>
                   </motion.div>
                 )}
