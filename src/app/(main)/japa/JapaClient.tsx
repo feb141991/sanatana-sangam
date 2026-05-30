@@ -1140,77 +1140,91 @@ function PracticeLauncherScreen({
           </Link>
         </div>
 
-        <div className="relative flex flex-1 flex-col justify-center gap-6 py-8">
+        <div className="relative flex flex-1 flex-col justify-center gap-5 py-6">
+          {/* ── Screen heading ── */}
           <div>
-            <p className="text-[11px] tracking-[0.18em] uppercase" style={{ color: sub }}>{traditionLabel} practice</p>
-            <h1 className="mt-2 text-[2.65rem] leading-none" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 500 }}>
-              Begin your jaap
-            </h1>
-            <p className="mt-3 max-w-sm text-sm leading-6" style={{ color: sub }}>
-              A quiet full-screen mala with haptics, sound, and clean practice tracking.
+            <p className="text-[10px] font-bold tracking-[0.26em] uppercase mb-1" style={{ color: `${amber}80` }}>
+              Japa Mala · {traditionLabel}
             </p>
+            <h1 className="text-[2.2rem] leading-none" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 300 }}>
+              Choose your practice
+            </h1>
           </div>
 
-          <div className="relative rounded-[2rem] border p-5" style={{ background: card, borderColor: `${amber}1f`, backdropFilter: 'blur(18px)' }}>
-            <div className="absolute right-5 top-5 h-16 w-16 rounded-full border" style={{ borderColor: `${amber}24`, background: `${amber}0f` }} />
-            <p className="text-[11px] tracking-[0.16em] uppercase" style={{ color: sub }}>Today&apos;s mantra</p>
-            <h2 className="mt-2 text-2xl leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 500 }}>{currentMantra.name}</h2>
-            <p className="mt-2 text-[1.35rem] leading-relaxed" style={{ color: amber, fontFamily: 'var(--font-devanagari), var(--font-serif)' }}>{currentMantra.devanagari}</p>
-            <p className="mt-2 text-sm leading-6" style={{ color: sub }}>{currentMantra.description}</p>
-
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
-                <p className="text-[10px]" style={{ color: sub }}>Mala</p>
-                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{currentMala.name}</p>
-              </div>
-              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
-                <p className="text-[10px]" style={{ color: sub }}>Target</p>
-                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{targetRounds} x 108</p>
-              </div>
-              <div className="rounded-2xl border p-3" style={{ borderColor: `${amber}18`, background: `${amber}08` }}>
-                <p className="text-[10px]" style={{ color: sub }}>Streak</p>
-                <p className="mt-1 text-sm font-medium" style={{ color: text }}>{streak > 0 ? `${streak} days` : 'Start'}</p>
+          {/* ── Mantra hero card ── */}
+          <div className="relative rounded-[1.75rem] border overflow-hidden" style={{ background: card, borderColor: `${amber}1c`, backdropFilter: 'blur(18px)' }}>
+            {/* ambient glow */}
+            <div className="pointer-events-none absolute -top-6 -right-6 h-28 w-28 rounded-full blur-2xl" style={{ background: `${amber}18` }} />
+            <div className="p-5">
+              <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-3" style={{ color: `${amber}70` }}>Selected mantra</p>
+              {/* Large Devanagari hero */}
+              <p className="text-[2.4rem] leading-[1.15] mb-2" style={{ color: amber, fontFamily: 'var(--font-devanagari), var(--font-serif)', fontWeight: 300 }}>{currentMantra.devanagari}</p>
+              <p className="text-[15px] font-medium leading-snug mb-1" style={{ color: text, fontFamily: 'var(--font-serif)' }}>{currentMantra.name}</p>
+              <p className="text-[12px] leading-5" style={{ color: sub }}>{currentMantra.description}</p>
+              {/* Thin divider */}
+              <div className="mt-4 mb-3 h-px" style={{ background: `${amber}14` }} />
+              {/* Meta row */}
+              <div className="flex gap-2">
+                {[
+                  { label: 'Mala', value: currentMala.name },
+                  { label: 'Target', value: `${targetRounds} × 108` },
+                  { label: 'Streak', value: streak > 0 ? `${streak} days` : 'Start' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex-1 rounded-xl border px-2.5 py-2" style={{ borderColor: `${amber}15`, background: `${amber}07` }}>
+                    <p className="text-[9.5px] uppercase tracking-[0.14em] mb-0.5" style={{ color: sub }}>{label}</p>
+                    <p className="text-[12px] font-semibold truncate" style={{ color: text }}>{value}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center gap-2">
-            {TARGET_OPTIONS.map(rounds => (
-              <button
-                key={rounds}
-                onClick={() => onTargetChange(rounds)}
-                className="h-11 rounded-full border px-4 text-sm font-medium transition-all active:scale-95"
-                style={{
-                  background: targetRounds === rounds ? amber : card,
-                  borderColor: targetRounds === rounds ? amber : `${amber}22`,
-                  color: targetRounds === rounds ? (isDark ? '#16100A' : '#fffaf2') : text,
-                }}
-              >
-                {rounds} mala
-              </button>
-            ))}
+          {/* ── Target rounds ── */}
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2" style={{ color: sub }}>Target rounds</p>
+            <div className="flex gap-2">
+              {TARGET_OPTIONS.map(rounds => (
+                <button
+                  key={rounds}
+                  onClick={() => onTargetChange(rounds)}
+                  className="flex-1 h-10 rounded-full border text-[13px] font-semibold transition-all active:scale-95"
+                  style={{
+                    background: targetRounds === rounds ? amber : card,
+                    borderColor: targetRounds === rounds ? amber : `${amber}20`,
+                    color: targetRounds === rounds ? (isDark ? '#160F08' : '#fffaf2') : sub,
+                  }}
+                >
+                  {rounds}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="relative space-y-3 pb-3">
-          <button onClick={onStart} className="w-full rounded-full py-4 text-[15px] font-medium transition-transform active:scale-[0.98]" style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2' }}>
-            Start full focus
-          </button>
+        <div className="relative space-y-2.5 pb-3">
+          {/* Lifetime stats */}
           {lifetimeData.totalBeads > 0 && (
-            <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 8, alignItems: 'stretch' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: accentColor }}>{lifetimeData.totalBeads.toLocaleString()}</div>
-                <div style={{ fontSize: 10, color: sub, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Beads</div>
+            <div className="flex items-center justify-center gap-6 pb-1">
+              <div className="text-center">
+                <div className="text-[17px] font-bold" style={{ color: amber, fontFamily: 'var(--font-serif)' }}>{lifetimeData.totalBeads.toLocaleString()}</div>
+                <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: sub }}>Beads</div>
               </div>
-              <div style={{ width: 1, background: borderColor }} />
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: accentColor }}>{lifetimeData.totalRounds}</div>
-                <div style={{ fontSize: 10, color: sub, textTransform: 'uppercase', letterSpacing: '0.12em' }}>Rounds</div>
+              <div className="h-6 w-px" style={{ background: `${amber}22` }} />
+              <div className="text-center">
+                <div className="text-[17px] font-bold" style={{ color: amber, fontFamily: 'var(--font-serif)' }}>{lifetimeData.totalRounds}</div>
+                <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: sub }}>Rounds</div>
               </div>
             </div>
           )}
-          <button onClick={onCustomize} className="w-full rounded-full border py-3.5 text-[14px] font-medium" style={{ borderColor: `${amber}28`, color: sub, background: card }}>
-            Change mala, mantra, or sanctuary
+          <button
+            onClick={onStart}
+            className="w-full rounded-full py-4 text-[15px] font-semibold transition-transform active:scale-[0.98]"
+            style={{ background: amber, color: isDark ? '#160F08' : '#fffaf2', boxShadow: `0 8px 24px ${amber}38`, letterSpacing: '0.02em' }}
+          >
+            Begin Japa
+          </button>
+          <button onClick={onCustomize} className="w-full rounded-full border py-3.5 text-[13px] font-medium" style={{ borderColor: `${amber}22`, color: sub, background: 'transparent' }}>
+            Change mala, mantra or background
           </button>
         </div>
       </div>
@@ -1243,19 +1257,19 @@ function ChooseMalaScreen({
       <div className="flex items-center gap-3 px-5 pt-14 pb-2">
         <button
           onClick={onBack}
-          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
+          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 border"
+          style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}22` }}
          aria-label="Go back">
-          <ChevronLeft size={20} style={{ color: amber }} />
+          <ChevronLeft size={18} style={{ color: amber }} />
         </button>
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.18em] uppercase" style={{ color: amber }}>Choose Your</p>
-          <h1 className="text-[2rem] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>
-            Mala
+          <p className="text-[10px] font-bold tracking-[0.24em] uppercase" style={{ color: `${amber}70` }}>Japa Mala</p>
+          <h1 className="text-[1.9rem] leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 300 }}>
+            Choose your mala
           </h1>
         </div>
       </div>
-      <p className="px-6 pb-4 text-sm" style={{ color: sub }}>The sacred beads for your practice</p>
+      <p className="px-6 pb-4 text-[12px]" style={{ color: sub }}>The sacred beads carry the energy of your tradition</p>
 
       {/* Mala list */}
       <div className="flex-1 px-5 space-y-3 overflow-y-auto pb-6">
@@ -1353,14 +1367,15 @@ function ChooseMalaScreen({
         <motion.button
           onClick={onConfirm}
           whileTap={{ scale: 0.97 }}
-          className="w-full py-4 rounded-2xl font-bold text-[15px]"
+          className="w-full py-4 rounded-full font-semibold text-[15px]"
           style={{
-            background: isDark ? 'linear-gradient(135deg, #C5A059, #8a5818)' : 'linear-gradient(135deg, #8B5E3C, #5a3010)',
-            color: isDark ? '#fde8c8' : '#fff8f0',
-            boxShadow: '0 4px 24px rgba(197, 160, 89,0.25)',
+            background: amber,
+            color: isDark ? '#160F08' : '#fffaf2',
+            boxShadow: `0 8px 24px ${amber}38`,
+            letterSpacing: '0.02em',
           }}
         >
-          Continue →
+          Choose mantra →
         </motion.button>
       </div>
     </motion.div>
@@ -1399,14 +1414,14 @@ function ChooseMantraScreen({
       <div className="flex items-center gap-3 px-5 pt-14 pb-4">
         <button
           onClick={onBack}
-          className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' }}
+          className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 border"
+          style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', borderColor: `${amber}22` }}
          aria-label="Go back">
-          <ChevronLeft size={20} style={{ color: amber }} />
+          <ChevronLeft size={18} style={{ color: amber }} />
         </button>
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.18em] uppercase" style={{ color: amber }}>Choose Your</p>
-          <h1 className="text-[1.8rem] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>Mantra</h1>
+          <p className="text-[10px] font-bold tracking-[0.24em] uppercase" style={{ color: `${amber}70` }}>Japa Mala</p>
+          <h1 className="text-[1.9rem] leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)', fontWeight: 300 }}>Choose your mantra</h1>
         </div>
       </div>
 

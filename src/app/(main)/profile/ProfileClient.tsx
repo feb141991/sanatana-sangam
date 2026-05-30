@@ -367,6 +367,11 @@ export default function ProfileClient({
   const activeRelic = SACRED_RELICS.find((relic) => relic.id === (liveProfile as any)?.active_symbol_id) ?? null;
   const relicFrame = getRelicFrame((liveProfile as any)?.active_symbol_id);
 
+  // Ashrama life stage — computed from DOB
+  const profileDob = (liveProfile as any)?.date_of_birth ?? '';
+  const ashramaStage = profileDob ? ageToAshrama(profileDob) : 'grihastha' as const;
+  const ashramaMeta = getAshramaMeta(profileTradition, ashramaStage, (liveProfile as any)?.gender_context ?? 'general');
+
   useEffect(() => {
     if (!koshOpen || typeof window === 'undefined') return;
     const raw = localStorage.getItem('shoonaya_last_seen_relic_count');
@@ -1180,77 +1185,138 @@ export default function ProfileClient({
             isOwnProfile={isOwnProfile}
           />
 
-          {/* Metric Row with Clay Cards */}
-          {/* Metric Row (Compact Zenith) */}
+          {/* Metric Row — Redesigned: Streak / Seva / Relics / Ashrama */}
           <div className="grid grid-cols-4 gap-2">
-            {[
-              { label: 'Threads', value: threadCount },
-              { label: 'Posts', value: postCount },
-              { label: 'Streak', value: isPro ? `${streak}🔥` : '🔒' },
-              { label: 'Kul', value: kulData ? 'Connected' : 'None' }
-            ].map((m, i) => (
+            {([
+              { label: 'Streak', value: String(streak), suffix: '🔥' },
+              { label: 'Seva', value: String(liveProfile?.seva_score ?? 0), suffix: '' },
+              { label: 'Relics', value: `${unlockedCount}/${totalVisible}`, suffix: '' },
+              { label: 'Ashrama', value: ashramaMeta.label, suffix: '' },
+            ] as { label: string; value: string; suffix: string }[]).map((m, i) => (
               <motion.div
                 key={m.label}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 * i }}
-                className={`clay-card rounded-2xl p-2.5 text-center transition-all ${m.label === 'Kul' && !kulData ? 'border-red-500/20' : 'hover:border-[#C5A059]/30'}`}
+                className="clay-card rounded-2xl p-2.5 text-center transition-all hover:border-[#C5A059]/30"
               >
                 <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
-                <p className="text-sm font-medium theme-ink truncate">{m.value}</p>
+                <p className="text-sm font-medium theme-ink truncate">{m.value}{m.suffix}</p>
               </motion.div>
             ))}
           </div>
 
+          {/* Ashrama Life Stage Card */}
+          {profileDob && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="clay-card rounded-2xl p-4 flex items-center gap-4"
+              style={{ borderLeft: `2px solid ${ashramaMeta.accent}50` }}
+            >
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{ background: `${ashramaMeta.accent}18` }}
+              >
+                <SacredIcon name={ashramaMeta.icon} size={20} style={{ color: ashramaMeta.accent }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase theme-dim mb-0.5">Life Stage</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">{ashramaMeta.label}</p>
+                <p className="text-[12px] theme-muted mt-0.5 leading-snug truncate">{ashramaMeta.subtitle}</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-[10px] theme-dim">{ashramaMeta.ageRange}</p>
+              </div>
+            </motion.div>
+          )}
+
           <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
-          {/* ── Zenith Action Grid (Tightened) ── */}
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              onClick={() => router.push('/kosh')}
-              className="clay-card relative rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
-            >
-              {unlockedCount > 0 && (
-                <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-amber-400" aria-hidden="true" />
-              )}
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Star className="text-[#C5A059] group-hover:animate-pulse" size={20} />
+          {/* ── Sacred Kosh — Inline Relic Scroll ── */}
+          <div className="clay-card rounded-2xl p-4 border-[#C5A059]/15">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#C5A059]/60">Sacred Kosh</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif">Your relics</p>
               </div>
-              <div className="text-center">
-                <p className="text-base font-medium theme-ink premium-serif">Sacred kosh</p>
-                <p className="text-xs theme-muted mt-0.5">Divine relics</p>
-                <p className="text-[9px] font-bold text-amber-400/60 mt-0.5">{unlockedCount}/{totalVisible} unlocked</p>
-              </div>
-            </motion.button>
-
-            {kulData ? (
-              <motion.button
-                onClick={() => setShowInviteModal(true)}
-                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
+              <button
+                onClick={() => setKoshOpen(true)}
+                className="text-[11px] text-[#C5A059]/70 hover:text-[#C5A059] transition-colors font-medium"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <Users className="text-[#C5A059]" size={20} />
-                </div>
-                <div className="text-center">
-                  <p className="text-base font-medium theme-ink premium-serif">Sacred invite</p>
-                  <p className="text-xs theme-muted mt-0.5">Invite to {kulData.name}</p>
-                </div>
-              </motion.button>
-            ) : (
-              <motion.button
-                onClick={() => router.push('/kul')}
-                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-white/5"
-              >
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <Shield className="text-[#F2EAD6]/40" size={20} />
-                </div>
-                <div className="text-center">
-                  <p className="text-base font-medium theme-ink premium-serif">Join Kul</p>
-                  <p className="text-xs theme-muted mt-0.5">Start lineage</p>
-                </div>
-              </motion.button>
-            )}
+                View all →
+              </button>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              {visibleRelics.map((relic) => {
+                const isUnlocked = unlockedRelics.some((r) => r.id === relic.id);
+                const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+                return (
+                  <button
+                    key={relic.id}
+                    type="button"
+                    onClick={() => isUnlocked && setKoshOpen(true)}
+                    className="flex-shrink-0 flex flex-col items-center gap-1.5"
+                  >
+                    <div
+                      className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${
+                        isActive
+                          ? 'border-[#C5A059]/60 bg-[#C5A059]/10 shadow-lg shadow-[#C5A059]/20'
+                          : isUnlocked
+                          ? 'border-white/10 bg-white/5 hover:border-[#C5A059]/30'
+                          : 'border-white/5 bg-white/[0.03]'
+                      }`}
+                    >
+                      {isUnlocked ? (
+                        <div className="relative w-9 h-9">
+                          <Image src={relic.imageUrl} alt={relic.name} fill sizes="36px" className="object-contain" />
+                        </div>
+                      ) : (
+                        <Lock size={13} className="text-white/20" />
+                      )}
+                    </div>
+                    <p className={`text-[9px] text-center leading-tight max-w-[56px] ${isUnlocked ? 'theme-muted' : 'text-white/20'}`}>
+                      {relic.name}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[9px] theme-dim mt-2.5 text-center">{unlockedCount} of {totalVisible} relics unlocked</p>
           </div>
+
+          {/* ── Kul Card ── */}
+          {kulData ? (
+            <motion.button
+              onClick={() => setShowInviteModal(true)}
+              className="clay-card rounded-2xl p-4 w-full flex items-center gap-4 border-[#C5A059]/20 transition-all hover:border-[#C5A059]/40"
+            >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner flex-shrink-0">
+                <Users className="text-[#C5A059]" size={18} />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#C5A059]/60">Sacred Invite</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">Invite to {kulData.name}</p>
+              </div>
+              <ChevronRight size={16} className="text-[#C5A059]/40 flex-shrink-0" />
+            </motion.button>
+          ) : (
+            <motion.button
+              onClick={() => router.push('/kul')}
+              className="clay-card rounded-2xl p-4 w-full flex items-center gap-4 border-white/5 transition-all hover:border-white/10"
+            >
+              <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shadow-inner flex-shrink-0">
+                <Shield className="text-[#F2EAD6]/40" size={18} />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-white/20">Lineage</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">Join your Kul</p>
+                <p className="text-[12px] theme-dim mt-0.5">Connect with your ancestral lineage</p>
+              </div>
+              <ChevronRight size={16} className="text-white/20 flex-shrink-0" />
+            </motion.button>
+          )}
 
           {showAvatarPreview && avatarUrl && (
             <AvatarPreviewModal
