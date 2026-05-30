@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
-  ChevronLeft, Heart, Bell, BellOff, Play, MapPin, Clock,
-  Search, X, Share2, Sunrise, Sunset, Star, Radio, Lock,
+  ChevronLeft, Heart, Bell, Play, MapPin, Clock,
+  Search, Share2, Sunrise, Sunset, Radio, ChevronRight,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LiveStream, LiveStreamCategory, AartiSchedule } from '@/lib/live-streams';
+import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 import { withOneSignal, getPermissionState } from '@/lib/onesignal';
 import InteractiveAarti from '@/components/darshan/InteractiveAarti';
@@ -32,13 +32,9 @@ interface Props {
 type TraditionFilter = 'all' | 'hindu' | 'sikh' | 'jain' | 'buddhist';
 type CategoryFilter  = 'all' | LiveStreamCategory;
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const amber  = '#C5A059';
-const cream  = '#f2ead6';
-const muted  = '#b0aa9e';
-const dim    = '#7a7469';
-const card   = 'rgba(20,18,14,0.92)';
-const dark   = '#0C0A07';
+// ─── Theme token helpers ──────────────────────────────────────────────────────
+// Use CSS vars so we respect light/dark mode — never hardcode hex here.
+const gold = 'var(--brand-primary)';
 
 const TRADITION_LABELS: Record<TraditionFilter, { label: string; icon: SacredIconName }> = {
   all:      { label: 'All',      icon: 'sparkles' },
@@ -49,14 +45,14 @@ const TRADITION_LABELS: Record<TraditionFilter, { label: string; icon: SacredIco
 };
 
 const ALL_COLLECTIONS = [
-  { id: 'Char Dham',      label: 'Char Dham',     icon: 'mountain'  as SacredIconName, color: '#FF9933', desc: '4 holy abodes'         },
-  { id: 'Jyotirlinga',    label: 'Jyotirlinga',   icon: 'sparkles'  as SacredIconName, color: '#8B0000', desc: '12 radiant Lingas'      },
-  { id: 'Rivers',         label: 'Holy Rivers',   icon: 'water'     as SacredIconName, color: '#1E6BB8', desc: 'Ganga & Yamuna Aarti'   },
-  { id: 'Panj Takht',     label: 'Panj Takht',    icon: 'landmark'  as SacredIconName, color: '#FFCC00', desc: '5 Sikh thrones'         },
-  { id: 'Gurbani Kirtan', label: 'Kirtan',         icon: 'music'     as SacredIconName, color: '#2E6B3E', desc: 'Akhand Gurbani'        },
-  { id: 'Jain Path',      label: 'Jain Path',     icon: 'flower'    as SacredIconName, color: '#E05A5A', desc: 'Tirthankar bhakti'      },
-  { id: 'Saptapuri',      label: 'Saptapuri',     icon: 'landmark'  as SacredIconName, color: '#B8860B', desc: '7 ancient holy cities'  },
-  { id: 'Shaktipeeth',    label: 'Shaktipeeth',   icon: 'sparkles'  as SacredIconName, color: '#CC3300', desc: 'Seats of the Goddess'   },
+  { id: 'Char Dham',      label: 'Char Dham',    icon: 'mountain' as SacredIconName,  color: '#FF9933', desc: '4 holy abodes'         },
+  { id: 'Jyotirlinga',    label: 'Jyotirlinga',  icon: 'sparkles' as SacredIconName,  color: '#8B0000', desc: '12 radiant Lingas'      },
+  { id: 'Shaktipeeth',    label: 'Shaktipeeth',  icon: 'sparkles' as SacredIconName,  color: '#CC3300', desc: 'Seats of the Goddess'   },
+  { id: 'Rivers',         label: 'Holy Rivers',  icon: 'water'    as SacredIconName,  color: '#1E6BB8', desc: 'Sacred river aartis'    },
+  { id: 'Panj Takht',     label: 'Panj Takht',   icon: 'landmark' as SacredIconName,  color: '#FFCC00', desc: '5 Sikh thrones'         },
+  { id: 'Gurbani Kirtan', label: 'Kirtan',        icon: 'music'    as SacredIconName,  color: '#2E6B3E', desc: 'Akhand Gurbani'         },
+  { id: 'Jain Path',      label: 'Jain Path',    icon: 'flower'   as SacredIconName,  color: '#E05A5A', desc: 'Tirthankar bhakti'      },
+  { id: 'Saptapuri',      label: 'Saptapuri',    icon: 'landmark' as SacredIconName,  color: '#B8860B', desc: '7 ancient holy cities'  },
 ];
 
 // ─── Toggle Switch ─────────────────────────────────────────────────────────────
@@ -68,7 +64,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
       aria-checked={checked}
       onClick={onChange}
       className="relative flex-shrink-0 w-11 h-6 rounded-full transition-colors"
-      style={{ background: checked ? amber : 'rgba(255,255,255,0.1)' }}
+      style={{ background: checked ? gold : 'rgba(128,128,128,0.2)' }}
     >
       <motion.div
         animate={{ x: checked ? 20 : 2 }}
@@ -103,44 +99,41 @@ function NotifSheet({
       className="fixed inset-0 z-[200] flex items-end"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <motion.div
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 28, stiffness: 180 }}
         onClick={e => e.stopPropagation()}
-        className="relative w-full rounded-t-[2rem] p-6 pb-10"
-        style={{ background: '#141210', border: `1px solid rgba(197,160,89,0.12)`, borderBottom: 'none' }}
+        className="clay-card relative w-full rounded-t-[2rem] p-6 pb-10"
+        style={{ borderBottom: 'none' }}
       >
         {/* Handle */}
-        <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: 'rgba(255,255,255,0.15)' }} />
+        <div className="w-10 h-1 rounded-full mx-auto mb-5 opacity-20 bg-current" />
 
         {/* Header */}
         <div className="mb-5">
-          <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-1" style={{ color: `${amber}70` }}>
+          <p className="text-[10px] font-bold tracking-[0.22em] uppercase mb-1 theme-dim">
             Aarti Notifications
           </p>
-          <h2 className="text-[1.4rem] leading-tight premium-serif font-light" style={{ color: cream }}>
+          <h2 className="text-[1.35rem] leading-tight premium-serif font-light theme-ink">
             {stream.title}
           </h2>
-          <p className="text-[13px] mt-0.5" style={{ color: muted }}>
+          <p className="text-[13px] mt-0.5 theme-muted">
             Receive a call when aarti begins
           </p>
         </div>
 
         {/* Morning toggle */}
-        <div
-          className="flex items-center justify-between py-4 border-b"
-          style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-        >
+        <div className="flex items-center justify-between py-4 border-b border-current/10">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,180,80,0.12)' }}>
               <Sunrise size={16} style={{ color: '#FFB450' }} />
             </div>
             <div>
-              <p className="text-[14px] font-medium" style={{ color: cream }}>Morning Aarti</p>
-              <p className="text-[11px]" style={{ color: dim }}>
+              <p className="text-[14px] font-medium theme-ink">Morning Aarti</p>
+              <p className="text-[11px] theme-dim">
                 {aartis?.morning ?? 'Approx. 5:00 AM — 7:00 AM IST'}
               </p>
             </div>
@@ -155,8 +148,8 @@ function NotifSheet({
               <Sunset size={16} style={{ color: '#C080FF' }} />
             </div>
             <div>
-              <p className="text-[14px] font-medium" style={{ color: cream }}>Evening Aarti</p>
-              <p className="text-[11px]" style={{ color: dim }}>
+              <p className="text-[14px] font-medium theme-ink">Evening Aarti</p>
+              <p className="text-[11px] theme-dim">
                 {aartis?.evening ?? 'Approx. 6:00 PM — 8:00 PM IST'}
               </p>
             </div>
@@ -168,7 +161,7 @@ function NotifSheet({
         <button
           onClick={() => onSave({ notify_morning: morning, notify_evening: evening })}
           className="w-full mt-4 py-4 rounded-full font-semibold text-[15px] transition-transform active:scale-[0.98]"
-          style={{ background: amber, color: '#160F08', boxShadow: `0 8px 24px ${amber}38` }}
+          style={{ background: gold, color: '#160F08', boxShadow: `0 8px 24px color-mix(in srgb, var(--brand-primary) 40%, transparent)` }}
         >
           {(morning || evening) ? 'Save aarti calls' : 'Turn off notifications'}
         </button>
@@ -177,29 +170,83 @@ function NotifSheet({
   );
 }
 
+// ─── Suggestion Mini-Card ─────────────────────────────────────────────────────
+function SuggestionCard({
+  stream,
+  isFavourite,
+  onPlay,
+}: {
+  stream: LiveStream;
+  isFavourite: boolean;
+  onPlay: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onPlay}
+      className="flex-shrink-0 w-44 text-left group"
+    >
+      <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-2">
+        <Image
+          src={`https://i.ytimg.com/vi/${stream.youtubeVideoId}/hqdefault.jpg`}
+          alt={stream.title}
+          fill
+          sizes="176px"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        {/* Play icon */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-10 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(220,38,38,0.90)' }}>
+            <Play className="text-white fill-white ml-0.5" size={16} />
+          </div>
+        </div>
+        {/* Live badge */}
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(220,38,38,0.80)' }}>
+          <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+          <span className="text-[8px] font-bold text-white uppercase tracking-widest">Live</span>
+        </div>
+        {isFavourite && (
+          <Heart size={10} className="absolute top-2 right-2 fill-red-400 text-red-400" />
+        )}
+      </div>
+      <p className="text-[12px] font-medium theme-ink line-clamp-2 leading-snug mb-0.5">
+        {stream.title}
+      </p>
+      <p className="text-[10px] theme-dim">{stream.location}</p>
+    </button>
+  );
+}
+
 // ─── Player Overlay ───────────────────────────────────────────────────────────
 function PlayerOverlay({
   stream,
   isFavourite,
   notifPref,
+  suggestions,
+  favouriteIds,
   onClose,
   onToggleFav,
   onOpenNotif,
   onOfferAarti,
+  onSwitch,
 }: {
   stream: LiveStream;
   isFavourite: boolean;
   notifPref: Partial<DarshanPref>;
+  suggestions: LiveStream[];
+  favouriteIds: string[];
   onClose: () => void;
   onToggleFav: () => void;
   onOpenNotif: () => void;
   onOfferAarti: () => void;
+  onSwitch: (id: string) => void;
 }) {
   const hasNotif = notifPref.notify_morning || notifPref.notify_evening;
   const aartis   = stream.aartis;
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/live-darshan`;
+    const url  = `${window.location.origin}/live-darshan`;
     const text = `🙏 Watching ${stream.title} live on Shoonaya`;
     if (navigator.share) {
       try { await navigator.share({ title: stream.title, text, url }); } catch {}
@@ -215,8 +262,9 @@ function PlayerOverlay({
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 32, stiffness: 280 }}
+      // Player overlay is always dark — video player UX expectation
       className="fixed inset-0 z-[100] flex flex-col"
-      style={{ background: dark }}
+      style={{ background: '#0C0A07' }}
     >
       {/* ── YouTube iframe ─────────────────────────────────── */}
       <div className="relative w-full aspect-video flex-shrink-0 bg-black">
@@ -255,122 +303,140 @@ function PlayerOverlay({
               className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md"
               style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.14)' }}
             >
-              <Heart
-                size={16}
-                className={isFavourite ? 'fill-red-400 text-red-400' : 'text-white'}
-              />
+              <Heart size={16} className={isFavourite ? 'fill-red-400 text-red-400' : 'text-white'} />
             </button>
             <button
               onClick={onOpenNotif}
               className="w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md"
               style={{
-                background: hasNotif ? `${amber}28` : 'rgba(0,0,0,0.45)',
-                border: `1px solid ${hasNotif ? `${amber}50` : 'rgba(255,255,255,0.14)'}`,
+                background: hasNotif ? 'rgba(197,160,89,0.28)' : 'rgba(0,0,0,0.45)',
+                border: `1px solid ${hasNotif ? 'rgba(197,160,89,0.55)' : 'rgba(255,255,255,0.14)'}`,
               }}
             >
-              <Bell size={16} style={{ color: hasNotif ? amber : 'white' }} />
+              <Bell size={16} style={{ color: hasNotif ? 'var(--brand-primary)' : 'white' }} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* ── Info panel ─────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {/* Temple identity */}
-        <div>
-          <h2
-            className="text-[1.5rem] leading-tight premium-serif font-light"
-            style={{ color: cream }}
-          >
-            {stream.title}
-          </h2>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <div className="flex items-center gap-1" style={{ color: muted }}>
-              <MapPin size={11} />
-              <span className="text-[12px]">{stream.location}</span>
+      {/* ── Info panel (always dark inside player) ──────────── */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-5 pt-4 pb-2 space-y-4">
+          {/* Temple identity */}
+          <div>
+            <h2 className="text-[1.45rem] leading-tight premium-serif font-light" style={{ color: '#ede8de' }}>
+              {stream.title}
+            </h2>
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              <div className="flex items-center gap-1" style={{ color: '#b0aa9e' }}>
+                <MapPin size={11} />
+                <span className="text-[12px]">{stream.location}</span>
+              </div>
+              <span style={{ color: '#7a7469', fontSize: 8 }}>·</span>
+              <span
+                className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize"
+                style={{ background: 'rgba(197,160,89,0.15)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.30)' }}
+              >
+                {stream.category}
+              </span>
             </div>
-            <span style={{ color: dim, fontSize: 8 }}>·</span>
-            <span
-              className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize"
-              style={{ background: `${amber}15`, color: amber, border: `1px solid ${amber}30` }}
+          </div>
+
+          {/* Aarti schedule card */}
+          {(aartis?.morning || aartis?.evening) && (
+            <div
+              className="rounded-2xl p-4 space-y-3"
+              style={{ background: 'rgba(20,18,14,0.92)', border: '1px solid rgba(197,160,89,0.12)' }}
             >
-              {stream.category}
-            </span>
+              <p className="text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: 'rgba(197,160,89,0.70)' }}>
+                Aarti Schedule
+              </p>
+              {aartis.morning && (
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,180,80,0.12)' }}>
+                    <Sunrise size={14} style={{ color: '#FFB450' }} />
+                  </div>
+                  <div>
+                    <p className="text-[11px]" style={{ color: '#7a7469' }}>Morning Aarti</p>
+                    <p className="text-[13px] font-medium" style={{ color: '#ede8de' }}>{aartis.morning}</p>
+                  </div>
+                </div>
+              )}
+              {aartis.evening && (
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(150,100,255,0.12)' }}>
+                    <Sunset size={14} style={{ color: '#C080FF' }} />
+                  </div>
+                  <div>
+                    <p className="text-[11px]" style={{ color: '#7a7469' }}>Evening Aarti</p>
+                    <p className="text-[13px] font-medium" style={{ color: '#ede8de' }}>{aartis.evening}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Schedule fallback */}
+          {!aartis && stream.schedule && (
+            <div className="flex items-center gap-2" style={{ color: '#b0aa9e' }}>
+              <Clock size={13} />
+              <span className="text-[13px]">{stream.schedule}</span>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={onOfferAarti}
+              className="flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-[13px] transition-transform active:scale-[0.97]"
+              style={{ background: 'var(--brand-primary)', color: '#160F08' }}
+            >
+              🪔 Offer Aarti
+            </button>
+            <button
+              onClick={handleShare}
+              className="flex items-center justify-center gap-2 py-3.5 rounded-full font-medium text-[13px] transition-transform active:scale-[0.97]"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#ede8de' }}
+            >
+              <Share2 size={14} /> Share
+            </button>
           </div>
+
+          {/* Notification CTA */}
+          {!hasNotif && (aartis?.morning || aartis?.evening) && (
+            <button
+              onClick={onOpenNotif}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-transform active:scale-[0.98]"
+              style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.22)' }}
+            >
+              <Bell size={14} style={{ color: 'var(--brand-primary)' }} />
+              <span className="text-[13px] font-medium" style={{ color: 'var(--brand-primary)' }}>
+                Get aarti call for this temple
+              </span>
+            </button>
+          )}
         </div>
 
-        {/* Aarti schedule card */}
-        {(aartis?.morning || aartis?.evening) && (
-          <div
-            className="rounded-2xl p-4 space-y-3"
-            style={{ background: card, border: '1px solid rgba(197,160,89,0.12)' }}
-          >
-            <p className="text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: `${amber}70` }}>
-              Aarti Schedule
-            </p>
-            {aartis.morning && (
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,180,80,0.12)' }}>
-                  <Sunrise size={14} style={{ color: '#FFB450' }} />
-                </div>
-                <div>
-                  <p className="text-[11px]" style={{ color: dim }}>Morning Aarti</p>
-                  <p className="text-[13px] font-medium" style={{ color: cream }}>{aartis.morning}</p>
-                </div>
-              </div>
-            )}
-            {aartis.evening && (
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(150,100,255,0.12)' }}>
-                  <Sunset size={14} style={{ color: '#C080FF' }} />
-                </div>
-                <div>
-                  <p className="text-[11px]" style={{ color: dim }}>Evening Aarti</p>
-                  <p className="text-[13px] font-medium" style={{ color: cream }}>{aartis.evening}</p>
-                </div>
-              </div>
-            )}
+        {/* ── Watch Next ─────────────────────────────────────── */}
+        {suggestions.length > 0 && (
+          <div className="pt-2 pb-6">
+            <div className="flex items-center justify-between px-5 mb-3">
+              <p className="text-[11px] font-bold tracking-[0.16em] uppercase" style={{ color: 'rgba(197,160,89,0.70)' }}>
+                Watch Next
+              </p>
+              <ChevronRight size={14} style={{ color: '#7a7469' }} />
+            </div>
+            <div className="flex gap-3 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: 'none' }}>
+              {suggestions.map(s => (
+                <SuggestionCard
+                  key={s.id}
+                  stream={s}
+                  isFavourite={favouriteIds.includes(s.id)}
+                  onPlay={() => onSwitch(s.id)}
+                />
+              ))}
+            </div>
           </div>
-        )}
-
-        {/* Schedule (if no parsed aartis) */}
-        {!aartis && stream.schedule && (
-          <div className="flex items-center gap-2" style={{ color: muted }}>
-            <Clock size={13} />
-            <span className="text-[13px]">{stream.schedule}</span>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <button
-            onClick={onOfferAarti}
-            className="flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-[13px] transition-transform active:scale-[0.97]"
-            style={{ background: amber, color: '#160F08', boxShadow: `0 6px 20px ${amber}35` }}
-          >
-            🪔 Offer Aarti
-          </button>
-          <button
-            onClick={handleShare}
-            className="flex items-center justify-center gap-2 py-3.5 rounded-full font-medium text-[13px] transition-transform active:scale-[0.97]"
-            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: cream }}
-          >
-            <Share2 size={14} /> Share
-          </button>
-        </div>
-
-        {/* Notification CTA */}
-        {!hasNotif && (aartis?.morning || aartis?.evening) && (
-          <button
-            onClick={onOpenNotif}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl transition-transform active:scale-[0.98]"
-            style={{ background: 'rgba(197,160,89,0.08)', border: `1px solid ${amber}22` }}
-          >
-            <Bell size={14} style={{ color: amber }} />
-            <span className="text-[13px] font-medium" style={{ color: amber }}>
-              Get aarti call for this temple
-            </span>
-          </button>
         )}
       </div>
     </motion.div>
@@ -393,20 +459,14 @@ function StreamCard({
   onToggleFav: () => void;
   onOpenNotif: () => void;
 }) {
-  const hasNotif = notifPref.notify_morning || notifPref.notify_evening;
+  const hasNotif  = notifPref.notify_morning || notifPref.notify_evening;
   const hasAartis = !!(stream.aartis?.morning || stream.aartis?.evening);
-  const thumbUrl = `https://i.ytimg.com/vi/${stream.youtubeVideoId}/hqdefault.jpg`;
+  const thumbUrl  = `https://i.ytimg.com/vi/${stream.youtubeVideoId}/hqdefault.jpg`;
 
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{ background: card, border: '1px solid rgba(255,255,255,0.06)' }}
-    >
+    <div className="clay-card rounded-2xl overflow-hidden">
       {/* Thumbnail */}
-      <div
-        className="relative w-full aspect-video cursor-pointer group"
-        onClick={onPlay}
-      >
+      <div className="relative w-full aspect-video cursor-pointer group" onClick={onPlay}>
         <Image
           src={thumbUrl}
           alt={stream.title}
@@ -451,14 +511,14 @@ function StreamCard({
       {/* Footer */}
       <div className="px-3.5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="flex items-center gap-1 min-w-0" style={{ color: muted }}>
+          <div className="flex items-center gap-1 min-w-0 theme-muted">
             <MapPin size={10} className="flex-shrink-0" />
             <span className="text-[11px] truncate">{stream.location}</span>
           </div>
           {stream.aartis?.morning && (
             <>
-              <span style={{ color: dim, fontSize: 8 }}>·</span>
-              <div className="flex items-center gap-1 flex-shrink-0" style={{ color: dim }}>
+              <span className="theme-dim" style={{ fontSize: 8 }}>·</span>
+              <div className="flex items-center gap-1 flex-shrink-0 theme-dim">
                 <Sunrise size={10} />
                 <span className="text-[11px]">{stream.aartis.morning.split(' — ')[0]}</span>
               </div>
@@ -467,20 +527,17 @@ function StreamCard({
         </div>
 
         <div className="flex items-center gap-1.5 flex-shrink-0">
-          {/* Notification bell — only for streams with aarti times */}
+          {/* Notification bell */}
           {hasAartis && (
             <button
               onClick={e => { e.stopPropagation(); onOpenNotif(); }}
               className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
               style={{
-                background: hasNotif ? `${amber}18` : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${hasNotif ? `${amber}40` : 'rgba(255,255,255,0.08)'}`,
+                background: hasNotif ? 'rgba(197,160,89,0.18)' : 'rgba(128,128,128,0.08)',
+                border: `1px solid ${hasNotif ? 'rgba(197,160,89,0.40)' : 'rgba(128,128,128,0.12)'}`,
               }}
             >
-              {hasNotif
-                ? <Bell size={13} style={{ color: amber }} />
-                : <Bell size={13} style={{ color: dim }} />
-              }
+              <Bell size={13} style={{ color: hasNotif ? 'var(--brand-primary)' : 'var(--text-dim)' }} />
             </button>
           )}
 
@@ -489,11 +546,11 @@ function StreamCard({
             onClick={e => { e.stopPropagation(); onToggleFav(); }}
             className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
             style={{
-              background: isFavourite ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${isFavourite ? 'rgba(248,113,113,0.35)' : 'rgba(255,255,255,0.08)'}`,
+              background: isFavourite ? 'rgba(248,113,113,0.15)' : 'rgba(128,128,128,0.08)',
+              border: `1px solid ${isFavourite ? 'rgba(248,113,113,0.35)' : 'rgba(128,128,128,0.12)'}`,
             }}
           >
-            <Heart size={13} className={isFavourite ? 'fill-red-400 text-red-400' : ''} style={{ color: isFavourite ? '#f87171' : dim }} />
+            <Heart size={13} className={isFavourite ? 'fill-red-400 text-red-400' : 'theme-dim'} />
           </button>
         </div>
       </div>
@@ -507,7 +564,7 @@ export default function LiveDarshanClient({
   streams,
   initialPreferences,
 }: Props) {
-  const router = useRouter();
+  useRouter();
 
   // Preferences state
   const [prefs, setPrefs] = useState<Map<string, DarshanPref>>(() => {
@@ -517,24 +574,24 @@ export default function LiveDarshanClient({
   });
 
   // UI state
-  const [activePlayer, setActivePlayer]     = useState<string | null>(null);
-  const [notifTarget, setNotifTarget]       = useState<string | null>(null);
-  const [aartiTarget, setAartiTarget]       = useState<string | null>(null);
-  const [search, setSearch]                 = useState('');
+  const [activePlayer,    setActivePlayer]    = useState<string | null>(null);
+  const [notifTarget,     setNotifTarget]     = useState<string | null>(null);
+  const [aartiTarget,     setAartiTarget]     = useState<string | null>(null);
+  const [search,          setSearch]          = useState('');
   const [activeTradition, setActiveTradition] = useState<TraditionFilter>('all');
   const [activeCategory,  setActiveCategory]  = useState<CategoryFilter>('all');
-  const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [activeCollection,setActiveCollection]= useState<string | null>(null);
 
   const favouriteIds = Array.from(prefs.values())
     .filter(p => p.is_favourite)
     .map(p => p.stream_id);
 
-  // ── Sort collections by user's tradition ──────────────────────────────────
+  // ── Collections sorted by user's tradition ────────────────────────────────
   const TRAD_COLLECTION_MAP: Record<string, string[]> = {
-    hindu:    ['Char Dham', 'Jyotirlinga', 'Saptapuri', 'Shaktipeeth', 'Rivers'],
+    hindu:    ['Char Dham', 'Jyotirlinga', 'Shaktipeeth', 'Saptapuri', 'Rivers'],
     sikh:     ['Panj Takht', 'Gurbani Kirtan'],
     jain:     ['Jain Path'],
-    buddhist: ['Bodhi Path'],
+    buddhist: [],
   };
   const myCollections = TRAD_COLLECTION_MAP[tradition] ?? [];
   const sortedCollections = [...ALL_COLLECTIONS].sort((a, b) => {
@@ -556,7 +613,6 @@ export default function LiveDarshanClient({
       return true;
     })
     .sort((a, b) => {
-      // Favourites first, then user's tradition
       const aFav = favouriteIds.includes(a.id);
       const bFav = favouriteIds.includes(b.id);
       if (aFav && !bFav) return -1;
@@ -571,9 +627,8 @@ export default function LiveDarshanClient({
     streamId: string,
     update: Partial<Omit<DarshanPref, 'stream_id'>>
   ) => {
-    // Optimistic update
     setPrefs(prev => {
-      const next = new Map(prev);
+      const next     = new Map(prev);
       const existing = next.get(streamId) ?? {
         stream_id: streamId, is_favourite: false,
         notify_morning: false, notify_evening: false,
@@ -581,7 +636,6 @@ export default function LiveDarshanClient({
       next.set(streamId, { ...existing, ...update });
       return next;
     });
-
     try {
       const res = await fetch('/api/darshan/preferences', {
         method: 'POST',
@@ -591,7 +645,6 @@ export default function LiveDarshanClient({
       if (!res.ok) throw new Error('save failed');
     } catch {
       toast.error('Could not save preference');
-      // Revert not implemented — page reload would re-fetch
     }
   }, []);
 
@@ -607,8 +660,6 @@ export default function LiveDarshanClient({
     update: { notify_morning: boolean; notify_evening: boolean }
   ) => {
     const wantsNotif = update.notify_morning || update.notify_evening;
-
-    // Request notification permission via OneSignal if user wants notifications
     if (wantsNotif) {
       const permState = await getPermissionState();
       if (permState !== 'granted') {
@@ -619,63 +670,74 @@ export default function LiveDarshanClient({
         });
       }
     }
-
     await savePref(streamId, { ...update, is_favourite: true });
     setNotifTarget(null);
-
-    if (wantsNotif) {
-      toast.success('🔔 Aarti call saved');
-    } else {
-      toast.success('Notifications turned off');
-    }
+    toast.success(wantsNotif ? '🔔 Aarti call saved' : 'Notifications turned off');
   }, [savePref]);
 
-  // ── Player stream ─────────────────────────────────────────────────────────
-  const playerStream  = streams.find(s => s.id === activePlayer)  ?? null;
-  const notifStream   = streams.find(s => s.id === notifTarget)   ?? null;
-  const aartiStream   = streams.find(s => s.id === aartiTarget)   ?? null;
+  // ── Player helpers ────────────────────────────────────────────────────────
+  const playerStream = streams.find(s => s.id === activePlayer)  ?? null;
+  const notifStream  = streams.find(s => s.id === notifTarget)   ?? null;
+  const aartiStream  = streams.find(s => s.id === aartiTarget)   ?? null;
+
+  // Suggestions: same collection → same tradition → favourites → rest (excluding current)
+  const suggestions = playerStream
+    ? streams
+        .filter(s => s.id !== playerStream.id)
+        .sort((a, b) => {
+          const aFav  = favouriteIds.includes(a.id) ? 0 : 1;
+          const bFav  = favouriteIds.includes(b.id) ? 0 : 1;
+          const aColl = playerStream.collections?.some(c => a.collections?.includes(c)) ? 0 : 1;
+          const bColl = playerStream.collections?.some(c => b.collections?.includes(c)) ? 0 : 1;
+          const aTrad = a.tradition === playerStream.tradition ? 0 : 1;
+          const bTrad = b.tradition === playerStream.tradition ? 0 : 1;
+          // Weighted: collection overlap > tradition > favourite
+          return (aColl * 4 + aTrad * 2 + aFav) - (bColl * 4 + bTrad * 2 + bFav);
+        })
+        .slice(0, 10)
+    : [];
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: dark }}>
+    <div className="min-h-screen pb-28" style={{ background: 'var(--surface-base)' }}>
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div
         className="sticky top-0 z-40 px-4 pt-5 pb-3 space-y-4"
-        style={{ background: `${dark}f0`, backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+        style={{ background: 'color-mix(in srgb, var(--surface-base) 94%, transparent)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(128,128,128,0.08)' }}
       >
         {/* Title row */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold tracking-[0.24em] uppercase mb-0.5" style={{ color: `${amber}70` }}>
+            <p className="text-[10px] font-bold tracking-[0.24em] uppercase mb-0.5 theme-dim">
               Shoonaya
             </p>
-            <h1 className="text-[1.7rem] leading-none premium-serif font-light" style={{ color: cream }}>
+            <h1 className="text-[1.7rem] leading-none premium-serif font-light theme-ink">
               Live Darshan
             </h1>
           </div>
           <div className="flex items-center gap-2">
             {favouriteIds.length > 0 && (
-              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full" style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)' }}>
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full" style={{ background: 'rgba(248,113,113,0.10)', border: '1px solid rgba(248,113,113,0.22)' }}>
                 <Heart size={10} className="fill-red-400 text-red-400" />
                 <span className="text-[10px] font-bold text-red-400">{favouriteIds.length}</span>
               </div>
             )}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.25)' }}>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(220,38,38,0.10)', border: '1px solid rgba(220,38,38,0.22)' }}>
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
             </div>
           </div>
         </div>
 
-        {/* Collections */}
+        {/* Collections strip */}
         <div className="flex gap-2.5 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
           <button
             onClick={() => setActiveCollection(null)}
             className="flex-shrink-0 flex flex-col items-center justify-center w-[72px] h-[72px] rounded-2xl border transition-all"
             style={{
-              background: !activeCollection ? `${amber}14` : 'rgba(255,255,255,0.04)',
-              borderColor: !activeCollection ? `${amber}60` : 'rgba(255,255,255,0.07)',
-              color: !activeCollection ? amber : muted,
+              background: !activeCollection ? 'rgba(197,160,89,0.12)' : 'rgba(128,128,128,0.06)',
+              borderColor: !activeCollection ? 'rgba(197,160,89,0.55)' : 'rgba(128,128,128,0.10)',
+              color: !activeCollection ? 'var(--brand-primary)' : 'var(--text-muted-warm)',
             }}
           >
             <SacredIcon name="sparkles" size={18} className="mb-1" />
@@ -690,19 +752,19 @@ export default function LiveDarshanClient({
                 onClick={() => setActiveCollection(isActive ? null : col.id)}
                 className="flex-shrink-0 flex flex-col justify-between w-[110px] h-[72px] p-2.5 rounded-2xl border transition-all relative overflow-hidden"
                 style={{
-                  background: isActive ? col.color : 'rgba(255,255,255,0.04)',
-                  borderColor: isActive ? 'transparent' : 'rgba(255,255,255,0.07)',
+                  background: isActive ? col.color : 'rgba(128,128,128,0.06)',
+                  borderColor: isActive ? 'transparent' : 'rgba(128,128,128,0.10)',
                 }}
               >
                 <div className="flex justify-between items-start">
-                  <SacredIcon name={col.icon} size={16} style={{ color: isActive ? 'rgba(255,255,255,0.9)' : muted }} />
+                  <SacredIcon name={col.icon} size={16} style={{ color: isActive ? 'rgba(255,255,255,0.9)' : 'var(--text-muted-warm)' }} />
                   {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] font-black uppercase tracking-wide leading-none mb-0.5" style={{ color: isActive ? 'rgba(255,255,255,0.95)' : cream }}>
+                  <p className="text-[10px] font-black uppercase tracking-wide leading-none mb-0.5" style={{ color: isActive ? 'rgba(255,255,255,0.95)' : 'var(--text-cream)' }}>
                     {col.label}
                   </p>
-                  <p className="text-[8px] leading-none" style={{ color: isActive ? 'rgba(255,255,255,0.65)' : dim }}>
+                  <p className="text-[8px] leading-none" style={{ color: isActive ? 'rgba(255,255,255,0.65)' : 'var(--text-dim)' }}>
                     {col.desc}
                   </p>
                 </div>
@@ -714,17 +776,16 @@ export default function LiveDarshanClient({
         {/* Search + tradition filter */}
         <div className="space-y-2">
           <div className="relative">
-            <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: dim }} />
+            <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 theme-dim" />
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search temple or city…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-full text-[13px] focus:outline-none"
+              className="w-full pl-9 pr-4 py-2.5 rounded-full text-[13px] focus:outline-none theme-ink"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: `1px solid rgba(255,255,255,0.09)`,
-                color: cream,
+                background: 'rgba(128,128,128,0.08)',
+                border: '1px solid rgba(128,128,128,0.12)',
               }}
             />
           </div>
@@ -739,9 +800,9 @@ export default function LiveDarshanClient({
                   onClick={() => setActiveTradition(t)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all border flex-shrink-0"
                   style={{
-                    background: active ? amber : 'rgba(255,255,255,0.05)',
-                    borderColor: active ? 'transparent' : 'rgba(255,255,255,0.08)',
-                    color: active ? '#160F08' : muted,
+                    background: active ? 'var(--brand-primary)' : 'rgba(128,128,128,0.06)',
+                    borderColor: active ? 'transparent' : 'rgba(128,128,128,0.10)',
+                    color: active ? '#160F08' : 'var(--text-muted-warm)',
                   }}
                 >
                   <SacredIcon name={TRADITION_LABELS[t].icon} size={11} />
@@ -756,7 +817,7 @@ export default function LiveDarshanClient({
       {/* ── Favourites strip ───────────────────────────────────────────────── */}
       {favouriteIds.length > 0 && (
         <div className="px-4 pt-4">
-          <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-2.5" style={{ color: `${amber}70` }}>
+          <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-2.5" style={{ color: 'rgba(197,160,89,0.70)' }}>
             Your Mandirs
           </p>
           <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
@@ -771,7 +832,7 @@ export default function LiveDarshanClient({
                 >
                   <div
                     className="relative w-14 h-14 rounded-full overflow-hidden border-2 transition-all"
-                    style={{ borderColor: amber }}
+                    style={{ borderColor: 'var(--brand-primary)' }}
                   >
                     <Image
                       src={`https://i.ytimg.com/vi/${s.youtubeVideoId}/hqdefault.jpg`}
@@ -782,13 +843,13 @@ export default function LiveDarshanClient({
                     />
                     <div className="absolute inset-0 bg-black/20" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-6 h-4.5 rounded-sm flex items-center justify-center" style={{ background: 'rgba(220,38,38,0.85)' }}>
+                      <div className="w-6 h-5 rounded-sm flex items-center justify-center" style={{ background: 'rgba(220,38,38,0.85)' }}>
                         <Play size={10} className="text-white fill-white ml-0.5" />
                       </div>
                     </div>
                   </div>
-                  <p className="text-[9px] text-center max-w-[60px] leading-tight" style={{ color: muted }}>
-                    {s.title.split(' ')[s.title.split(' ').length > 2 ? 1 : 0]}
+                  <p className="text-[9px] text-center max-w-[60px] leading-tight theme-muted">
+                    {s.title.split(' ').slice(0, 2).join(' ')}
                   </p>
                 </button>
               );
@@ -799,8 +860,8 @@ export default function LiveDarshanClient({
 
       {/* ── Stream count + category tabs ──────────────────────────────────── */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <p className="text-[11px]" style={{ color: dim }}>
-          {filtered.length} streams
+        <p className="text-[11px] theme-dim">
+          {filtered.length} of {streams.length} streams
         </p>
         <div className="flex gap-1.5">
           {(['all', 'mandir', 'katha', 'satsang'] as CategoryFilter[]).map(c => (
@@ -809,9 +870,9 @@ export default function LiveDarshanClient({
               onClick={() => setActiveCategory(c)}
               className="px-2.5 py-1 rounded-full text-[10px] font-semibold capitalize transition-all"
               style={{
-                background: activeCategory === c ? `${amber}18` : 'transparent',
-                color: activeCategory === c ? amber : dim,
-                border: `1px solid ${activeCategory === c ? `${amber}35` : 'transparent'}`,
+                background: activeCategory === c ? 'rgba(197,160,89,0.15)' : 'transparent',
+                color: activeCategory === c ? 'var(--brand-primary)' : 'var(--text-dim)',
+                border: `1px solid ${activeCategory === c ? 'rgba(197,160,89,0.35)' : 'transparent'}`,
               }}
             >
               {c === 'all' ? 'All' : c}
@@ -824,12 +885,12 @@ export default function LiveDarshanClient({
       <main className="px-4 space-y-4 max-w-2xl mx-auto">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
-            <Radio size={36} style={{ color: dim, opacity: 0.4 }} />
-            <p className="text-[13px]" style={{ color: dim }}>No streams match your filters.</p>
+            <Radio size={36} className="theme-dim opacity-40" />
+            <p className="text-[13px] theme-dim">No streams match your filters.</p>
             <button
               onClick={() => { setActiveTradition('all'); setActiveCategory('all'); setSearch(''); setActiveCollection(null); }}
               className="text-[12px] font-semibold underline"
-              style={{ color: amber }}
+              style={{ color: 'var(--brand-primary)' }}
             >
               Clear all filters
             </button>
@@ -841,7 +902,7 @@ export default function LiveDarshanClient({
                 key={stream.id}
                 layout
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0, transition: { delay: i * 0.03 } }}
+                animate={{ opacity: 1, y: 0, transition: { delay: i * 0.025 } }}
                 exit={{ opacity: 0, scale: 0.96 }}
               >
                 <StreamCard
@@ -866,10 +927,13 @@ export default function LiveDarshanClient({
             stream={playerStream}
             isFavourite={prefs.get(activePlayer)?.is_favourite ?? false}
             notifPref={prefs.get(activePlayer) ?? {}}
+            suggestions={suggestions}
+            favouriteIds={favouriteIds}
             onClose={() => setActivePlayer(null)}
             onToggleFav={() => toggleFav(activePlayer)}
-            onOpenNotif={() => { setNotifTarget(activePlayer); }}
+            onOpenNotif={() => setNotifTarget(activePlayer)}
             onOfferAarti={() => setAartiTarget(activePlayer)}
+            onSwitch={id => setActivePlayer(id)}
           />
         )}
       </AnimatePresence>
@@ -895,13 +959,13 @@ export default function LiveDarshanClient({
               id: aartiStream.id,
               tradition: aartiStream.tradition,
               title: aartiStream.title,
-              symbol: aartiStream.tradition === 'sikh' ? 'ੴ'
-                : aartiStream.tradition === 'buddhist' ? '☸️'
-                : aartiStream.tradition === 'jain' ? '🕉'
-                : aartiStream.ishtaDevata === 'Shiva' ? '🕉'
-                : aartiStream.ishtaDevata === 'Krishna' ? '🦚'
-                : aartiStream.ishtaDevata === 'Ganesha' ? '🐘'
-                : '🪔',
+              symbol: aartiStream.tradition === 'sikh'     ? 'ੴ'
+                    : aartiStream.tradition === 'buddhist' ? '☸️'
+                    : aartiStream.tradition === 'jain'     ? '🕉'
+                    : aartiStream.ishtaDevata === 'Shiva'  ? '🕉'
+                    : aartiStream.ishtaDevata === 'Krishna'? '🦚'
+                    : aartiStream.ishtaDevata === 'Ganesha'? '🐘'
+                    : '🪔',
               blessing: `May ${aartiStream.title} bless you with peace and divine grace.`,
             }}
             onClose={() => setAartiTarget(null)}
