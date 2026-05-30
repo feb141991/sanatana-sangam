@@ -55,10 +55,13 @@ export default async function MyProgressPage() {
     { count: allTimeSessions },
     { count: mandaliPosts },
     { count: kulTasksCount },
+    { data: quizRows30d },
+    { count: vratTotal },
+    { data: karmaRows },
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, is_pro, seva_score, weekly_seva, monthly_seva')
+      .select('full_name, username, tradition, is_pro, seva_score, karma_points, weekly_seva, monthly_seva')
       .eq('id', user.id)
       .single(),
 
@@ -87,12 +90,12 @@ export default async function MyProgressPage() {
       .gte('log_date', thirtyAgo)
       .lte('log_date', today),
 
-    // Daily sadhana — 28 days for heatmap (existing view)
+    // Daily sadhana — 30 days: japa + quiz + pathshala + dharmveer + perfect_day
     supabase
       .from('daily_sadhana')
-      .select('date, japa_done, streak_count')
+      .select('date, japa_done, quiz_done, pathshala_done, dharmveer_done, streak_count, perfect_day_bonus_given')
       .eq('user_id', user.id)
-      .gte('date', twentyEight)
+      .gte('date', thirtyAgo)
       .lte('date', today),
 
     // Daily sadhana — 6 months for GitHub-style heatmap
@@ -129,16 +132,69 @@ export default async function MyProgressPage() {
       .select('id', { count: 'exact', head: true })
       .eq('assigned_to', user.id)
       .eq('completed', true),
+
+    // Quiz responses — last 30 days (accuracy + streak)
+    supabase
+      .from('quiz_responses')
+      .select('date, is_correct')
+      .eq('user_id', user.id)
+      .gte('date', thirtyAgo)
+      .lte('date', today),
+
+    // Vrat observations — all time count
+    supabase
+      .from('recommendations')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .like('type', 'vrat_obs:%'),
+
+    // Karma ledger — last 30 days for top sources
+    supabase
+      .from('karma_ledger')
+      .select('reason, amount')
+      .eq('user_id', user.id)
+      .gte('created_at', thirtyAgo)
+      .lte('created_at', today + 'T23:59:59')
+      .order('created_at', { ascending: false })
+      .limit(100),
   ]);
 
-  // Build 28-day heatmap (for existing calendar view)
+  // Build 30-day heatmap (japa + nitya)
   const sadhanaMap: Record<string, boolean> = {};
   (sadhana28 ?? []).forEach(r => { sadhanaMap[r.date] = r.japa_done; });
   const nityaDates = new Set((nityaLog ?? []).map(r => r.log_date));
 
-  const heatmap = Array.from({ length: 28 }, (_, i) => {
+  // 5-Pillar 30-day completion counts
+  const sadhanaRows = sadhana28 ?? [];
+  const pillarData = {
+    japa:        sadhanaRows.filter(r => r.japa_done).length,
+    nitya:       nityaDates.size,
+    quiz:        sadhanaRows.filter(r => (r as any).quiz_done).length,
+    pathshala:   sadhanaRows.filter(r => (r as any).pathshala_done).length,
+    dharmveer:   sadhanaRows.filter(r => (r as any).dharmveer_done).length,
+    perfectDays: sadhanaRows.filter(r => (r as any).perfect_day_bonus_given).length,
+    window:      Math.min(sadhanaRows.length, 30),
+  };
+
+  // Quiz 30d stats
+  const quizAnswers = quizRows30d ?? [];
+  const quiz30dTotal   = quizAnswers.length;
+  const quiz30dCorrect = quizAnswers.filter(r => r.is_correct).length;
+
+  // Karma 30d breakdown (top 5 sources)
+  const karmaByReason: Record<string, number> = {};
+  for (const row of karmaRows ?? []) {
+    if (row.reason) karmaByReason[row.reason] = (karmaByReason[row.reason] ?? 0) + (row.amount ?? 0);
+  }
+  const karma30dTotal = Object.values(karmaByReason).reduce((s, v) => s + v, 0);
+  const karma30dBreakdown = Object.entries(karmaByReason)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 4)
+    .map(([reason, total]) => ({ reason, total }));
+
+  const heatmap = Array.from({ length: 30 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - 27 + i);
+    d.setDate(d.getDate() - 29 + i);
     const dt = d.toISOString().slice(0, 10);
     return { date: dt, japa: sadhanaMap[dt] ?? false, nitya: nityaDates.has(dt) };
   });
@@ -220,6 +276,7 @@ export default async function MyProgressPage() {
       heatmap={heatmap}
       sixMonthHeatmap={sixMonthHeatmap}
       sevaScore={profile?.seva_score}
+      karmaPoints={(profile as any)?.karma_points ?? 0}
       weeklySevaScore={profile?.weekly_seva}
       mandaliPostCount={mandaliPosts ?? 0}
       kulTasksDone={kulTasksCount ?? 0}
@@ -234,6 +291,16 @@ export default async function MyProgressPage() {
       totalJapaSessions={allTimeSessions ?? 0}
       // Nitya — 30d
       nitya30dDays={nityaDaysCount}
+      // 5-Pillar scorecard
+      pillarData={pillarData}
+      // Quiz 30d
+      quiz30dTotal={quiz30dTotal}
+      quiz30dCorrect={quiz30dCorrect}
+      // Vrat
+      vratTotal={vratTotal ?? 0}
+      // Karma 30d
+      karma30dTotal={karma30dTotal}
+      karma30dBreakdown={karma30dBreakdown}
       // Premium report data — current calendar month vs prev month
       report={{
         curMonthStart,

@@ -97,6 +97,7 @@ import { getRelicAccent } from '@/lib/relic-accents';
 
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
+import { withOneSignal } from '@/lib/onesignal';
 import DailyMoodCard from '@/components/mood/DailyMoodCard';
 import MoodRecommendationSheet from '@/components/mood/MoodRecommendationSheet';
 import MoodFollowupSheet, { type PendingMoodFollowup } from '@/components/mood/MoodFollowupSheet';
@@ -1960,7 +1961,7 @@ export default function HomeDashboard({
     lockSelectedHero: Boolean(selectedHeroId),
   });
 
-  // Picker: tradition-filtered, no festival-specific themes
+  // Picker: show ALL images for user's tradition (including festival themes — user picks what they love)
   const pickerThemes = (() => {
     const trad = tradition ?? 'hindu';
     const all  = [...heroThemes, ...HOME_HERO_THEMES];
@@ -1968,9 +1969,8 @@ export default function HomeDashboard({
     return all.filter(t => {
       if (seen.has(t.id)) return false;
       seen.add(t.id);
-      if (t.festivalSlugs?.length) return false;
-      if (!t.traditions?.length) return true;
-      return t.traditions.includes(trad);
+      if (!t.traditions?.length) return true;       // global / no-tradition images always shown
+      return t.traditions.includes(trad);            // tradition-matching images shown
     });
   })();
 
@@ -2269,7 +2269,6 @@ export default function HomeDashboard({
                     (new Date(activeSankalpa.end_date + 'T00:00:00Z').getTime() - Date.now()) / 86_400_000
                   ))
                 : undefined}
-              tithiLabel={panchang?.tithi}
               nextFestivalName={festivals[0]?.name}
               nextFestivalDays={daysUntilFestival}
             />
@@ -2470,6 +2469,65 @@ export default function HomeDashboard({
                 </motion.div>
               )}
 
+              {/* ── Tithi pill ── */}
+              {panchang?.tithi && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.22 }}
+                  className="mt-2"
+                >
+                  <Link
+                    href="/panchang"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full active:scale-95 transition-transform"
+                    style={{ background: 'rgba(197,160,89,0.14)', backdropFilter: 'blur(8px)' }}
+                  >
+                    <span className="text-[11px]">🌙</span>
+                    <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,240,200,0.90)' }}>
+                      {panchang.tithi}
+                    </span>
+                    <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
+                      {fmtDate(selectedDate, 'd MMM')}
+                    </span>
+                  </Link>
+                </motion.div>
+              )}
+
+              {/* ── Rashiphal nudge pill ── */}
+              <AnimatePresence>
+                {showRashiphalNudge && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: 0.30, duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                    className="mt-2"
+                  >
+                    <Link
+                      href="/panchang?tab=rashiphal"
+                      onClick={() => {
+                        try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'yes'); } catch {}
+                        setShowRashiphalNudge(false);
+                        withOneSignal(async (OS) => {
+                          if (typeof OS.User?.addTag === 'function') {
+                            await OS.User.addTag('wants_rashiphal', '1');
+                          }
+                        }).catch(() => {});
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full active:scale-95 transition-transform"
+                      style={{ background: 'rgba(139,92,246,0.20)', backdropFilter: 'blur(8px)' }}
+                    >
+                      <span className="text-[11px]">🔮</span>
+                      <span className="text-[10px] font-semibold" style={{ color: '#c4b5fd' }}>
+                        See your Rashiphal
+                      </span>
+                      <span className="text-[9px]" style={{ color: 'rgba(196,181,253,0.55)' }}>→</span>
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
             </div>
           </div>
         </div>
@@ -2573,60 +2631,6 @@ export default function HomeDashboard({
             ))}
           </div>
         </div>
-
-        {/* ── Rashiphal first-visit nudge ── */}
-        <AnimatePresence>
-          {showRashiphalNudge && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="px-4 mb-4 overflow-hidden"
-            >
-              <div
-                className="flex items-center gap-3 rounded-2xl px-4 py-3"
-                style={{
-                  background: isDark ? 'rgba(100,60,180,0.10)' : 'rgba(100,60,180,0.07)',
-                  border: isDark ? '1px solid rgba(139,92,246,0.22)' : '1px solid rgba(139,92,246,0.18)',
-                }}
-              >
-                <span style={{ fontSize: '1.3rem', lineHeight: 1, flexShrink: 0 }}>🔮</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold leading-tight" style={{ color: isDark ? 'rgba(220,200,255,0.92)' : '#4c1d95' }}>
-                    Know your Rashiphal daily?
-                  </p>
-                  <p className="text-[11px] mt-0.5" style={{ color: isDark ? 'rgba(180,160,240,0.60)' : 'rgba(109,40,217,0.60)' }}>
-                    Get your daily cosmic guide based on your rashi
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <Link
-                    href="/panchang?tab=rashiphal"
-                    onClick={() => {
-                      try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'yes'); } catch {}
-                      setShowRashiphalNudge(false);
-                    }}
-                    className="text-[11px] font-bold px-3 py-1.5 rounded-full"
-                    style={{ background: 'rgba(139,92,246,0.20)', color: isDark ? '#c4b5fd' : '#7c3aed' }}
-                  >
-                    See mine
-                  </Link>
-                  <button
-                    onClick={() => {
-                      try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'skip'); } catch {}
-                      setShowRashiphalNudge(false);
-                    }}
-                    className="text-[11px] font-medium px-2 py-1.5 rounded-full"
-                    style={{ color: isDark ? 'rgba(180,160,240,0.50)' : 'rgba(109,40,217,0.45)' }}
-                  >
-                    Not now
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* ── Post-japa Dharma Mitra nudge — conversion prompt after practice ── */}
         {japaAlreadyDoneToday && !isPro && (

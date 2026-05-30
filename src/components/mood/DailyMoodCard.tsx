@@ -88,8 +88,8 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
 
   // ── Handlers ─────────────────────────────────────────────────────────────────
   const handlePickMood = (moodKey: string) => {
+    // Step 1: select the mood — stays in pick phase so user can "Done" or "Explore"
     setActiveMoodKey(moodKey);
-    setPhase('content');
     const today = new Date().toISOString().split('T')[0];
     localStorage.setItem(MOOD_KEY_STORAGE, moodKey);
     localStorage.setItem('home_mood_date', today);
@@ -100,6 +100,20 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
       body: JSON.stringify({ before_mood: moodKey, source_surface: 'home_dashboard' }),
     }).catch(() => {});
     onSelectMood(moodKey);
+  };
+
+  const handleExploreMood = () => setPhase('content');
+
+  const handleMoodDone = () => {
+    // Save mood and dismiss — user doesn't need suggestions right now
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('shoonaya_mood_dismissed', today);
+    fetch('/api/mood/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dismissed: true, source_surface: 'home_dashboard' }),
+    }).catch(() => {});
+    setIsVisible(false);
   };
 
   const handleChangeMood = () => setPhase('pick');
@@ -155,11 +169,11 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               >
-                <p className="text-xs mb-3" style={{ color: 'var(--brand-muted)' }}>
-                  {activeMoodKey
-                    ? 'Pick a different mood to refresh your suggestions.'
-                    : `How are you, ${userName.split(' ')[0]}? Pick a mood for tailored suggestions.`}
-                </p>
+                {!activeMoodKey && (
+                  <p className="text-xs mb-3" style={{ color: 'var(--brand-muted)' }}>
+                    {`How are you, ${userName.split(' ')[0]}?`}
+                  </p>
+                )}
 
                 {/* Mood pills */}
                 <div
@@ -173,7 +187,8 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                       className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full transition-all active:scale-95"
                       style={{
                         background: mood.bg,
-                        outline: activeMoodKey === mood.key ? `1.5px solid ${mood.colour}55` : 'none',
+                        outline: activeMoodKey === mood.key ? `2px solid ${mood.colour}66` : 'none',
+                        outlineOffset: '1px',
                       }}
                     >
                       <MoodGlyph mood={mood.key} color={mood.colour} size={15} />
@@ -183,6 +198,45 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                     </button>
                   ))}
                 </div>
+
+                {/* ── Two-step confirm bar — appears after mood is selected ── */}
+                <AnimatePresence>
+                  {activeMoodKey && (() => {
+                    const sel = MOODS.find(m => m.key === activeMoodKey);
+                    return sel ? (
+                      <motion.div
+                        key="confirm"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 4 }}
+                        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex items-center gap-2 mt-3 pt-2.5"
+                        style={{ borderTop: `1px solid ${sel.colour}18` }}
+                      >
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <MoodGlyph mood={sel.key} color={sel.colour} size={12} />
+                          <span className="text-[11px] font-semibold truncate" style={{ color: sel.colour }}>
+                            {sel.label} saved
+                          </span>
+                        </div>
+                        <button
+                          onClick={handleMoodDone}
+                          className="text-[11px] font-semibold px-3 py-1.5 rounded-full shrink-0 active:scale-95 transition-transform"
+                          style={{ background: 'rgba(197,160,89,0.10)', color: 'rgba(197,160,89,0.75)' }}
+                        >
+                          Done ✓
+                        </button>
+                        <button
+                          onClick={handleExploreMood}
+                          className="text-[11px] font-bold px-3 py-1.5 rounded-full shrink-0 active:scale-95 transition-transform"
+                          style={{ background: sel.bg, color: sel.colour }}
+                        >
+                          Explore →
+                        </button>
+                      </motion.div>
+                    ) : null;
+                  })()}
+                </AnimatePresence>
               </motion.div>
             )}
 

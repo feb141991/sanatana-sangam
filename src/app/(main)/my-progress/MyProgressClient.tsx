@@ -28,6 +28,16 @@ interface ReportData {
   topMantra:     string | null;
 }
 
+interface PillarData {
+  japa:        number;
+  nitya:       number;
+  quiz:        number;
+  pathshala:   number;
+  dharmveer:   number;
+  perfectDays: number;
+  window:      number;   // days in the window (≤30)
+}
+
 interface Props {
   userName:         string;
   tradition:        string | null;
@@ -44,9 +54,16 @@ interface Props {
   totalJapaSessions: number;
   nitya30dDays:     number;
   sevaScore?:       number;
+  karmaPoints?:     number;
   weeklySevaScore?: number;
   mandaliPostCount?: number;
   kulTasksDone?:    number;
+  pillarData?:      PillarData;
+  quiz30dTotal?:    number;
+  quiz30dCorrect?:  number;
+  vratTotal?:       number;
+  karma30dTotal?:   number;
+  karma30dBreakdown?: { reason: string; total: number }[];
   report:           ReportData;
   sankalpas:        any[];
 }
@@ -569,10 +586,9 @@ function ShieldBadgesPreview({
   const nextSession = SESSION_SHIELDS.find(s => totalSessions < s.threshold);
 
   return (
-    <motion.div 
-      className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-      style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', perspective: 1000 }}
-      whileHover={{ rotateX: 1, rotateY: -1, scale: 1.005 }}
+    <motion.div
+      className="rounded-2xl p-5"
+      style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}
     >
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -643,12 +659,13 @@ function ShieldBadgesPreview({
         const val  = nextStreak ? streak : totalSessions;
         const pct  = Math.min(100, Math.round((val / next.threshold) * 100));
         return (
-          <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+          <div className="p-4 rounded-2xl"
+            style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'}` }}>
             <div className="flex justify-between mb-2">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+              <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.40)' }}>
                 Target: <span className="text-amber-500">{next.name}</span>
               </span>
-              <span className="text-[10px] font-bold text-white/40">
+              <span className="text-[10px] font-bold" style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)' }}>
                 {val}/{next.threshold}
               </span>
             </div>
@@ -942,6 +959,184 @@ function AdvancedAnalyticsSection({ isPro, isDark }: { isPro: boolean; isDark: b
 
       </div>
     </motion.section>
+  );
+}
+
+// ── 5-Pillar 30-Day Scorecard ─────────────────────────────────────────────────
+const PILLAR_META = [
+  { key: 'japa',      emoji: '📿', label: 'Japa',       colour: '#F59E4A', bg: 'rgba(245,158,74,0.12)'  },
+  { key: 'nitya',     emoji: '🌅', label: 'Nitya',      colour: '#C5A059', bg: 'rgba(197,160,89,0.10)'  },
+  { key: 'quiz',      emoji: '🧠', label: 'Quiz',       colour: '#A594E0', bg: 'rgba(165,148,224,0.12)' },
+  { key: 'pathshala', emoji: '📖', label: 'Pathshala',  colour: '#6BC47E', bg: 'rgba(107,196,126,0.12)' },
+  { key: 'dharmveer', emoji: '⚔️', label: 'Dharm Veer', colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
+];
+
+const KARMA_LABELS: Record<string, string> = {
+  japa_complete: 'Japa', quiz_complete: 'Quiz', nitya_karma: 'Nitya',
+  pathshala_lesson: 'Pathshala', sankalpa_complete: 'Sankalpa',
+  vrat_complete: 'Vrat', mala_session: 'Mala', streak_milestone: 'Streak',
+  profile_complete: 'Profile', seva: 'Seva', referral: 'Referral', kul_event: 'Kul',
+};
+
+function SadhanaScorecard({
+  pillarData, quiz30dTotal, quiz30dCorrect, vratTotal, karma30dTotal, karma30dBreakdown, isDark, h1, muted,
+}: {
+  pillarData: PillarData;
+  quiz30dTotal: number; quiz30dCorrect: number;
+  vratTotal: number;
+  karma30dTotal: number;
+  karma30dBreakdown: { reason: string; total: number }[];
+  isDark: boolean; h1: string; muted: string;
+}) {
+  const window = Math.max(pillarData.window, 1);
+  const quizAccuracy = quiz30dTotal > 0 ? Math.round((quiz30dCorrect / quiz30dTotal) * 100) : null;
+
+  return (
+    <div className="space-y-3">
+
+      {/* ── 5-Pillar scorecard ── */}
+      <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.90)', border: isDark ? '1px solid rgba(197,160,89,0.14)' : '1px solid rgba(197,160,89,0.14)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: 'rgba(197,160,89,0.65)' }}>
+          5-Pillar Scorecard · 30 days
+        </p>
+        <div className="space-y-3">
+          {PILLAR_META.map(p => {
+            const count = pillarData[p.key as keyof PillarData] as number;
+            const pct   = Math.min(100, Math.round((count / window) * 100));
+            return (
+              <div key={p.key} className="flex items-center gap-3">
+                <span className="text-[16px] shrink-0 w-6 text-center">{p.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold" style={{ color: h1 }}>{p.label}</span>
+                    <span className="text-[11px] font-bold tabular-nums" style={{ color: p.colour }}>
+                      {count}<span className="font-normal text-[9px]" style={{ color: muted }}>/{window}d</span>
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: p.bg }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: p.colour }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: PILLAR_META.indexOf(p) * 0.06 }}
+                    />
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold w-9 text-right shrink-0" style={{ color: pct >= 70 ? p.colour : muted }}>
+                  {pct}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Perfect days */}
+        {pillarData.perfectDays > 0 && (
+          <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.14)' }}>
+            <span className="text-base">⭐</span>
+            <div className="flex-1">
+              <span className="text-[12px] font-semibold" style={{ color: h1 }}>Perfect days</span>
+              <span className="text-[11px] ml-1.5" style={{ color: muted }}>all 5 pillars in one day</span>
+            </div>
+            <span className="text-[18px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>{pillarData.perfectDays}</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Quiz accuracy + Vrat row ── */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Quiz accuracy */}
+        <div className="rounded-2xl p-4" style={{ background: isDark ? 'rgba(165,148,224,0.08)' : 'rgba(165,148,224,0.06)', border: '1px solid rgba(165,148,224,0.18)', boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-2" style={{ color: 'rgba(165,148,224,0.80)' }}>Quiz · 30d</p>
+          {quiz30dTotal === 0 ? (
+            <Link href="/quiz">
+              <p className="text-[11px] font-medium mb-1" style={{ color: muted }}>No quiz sessions yet</p>
+              <p className="text-[10px] font-bold" style={{ color: 'rgba(165,148,224,0.75)' }}>Start now →</p>
+            </Link>
+          ) : (
+            <>
+              {/* Accuracy ring */}
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const R = 18, CX = 22, CY = 22;
+                  const circ = 2 * Math.PI * R;
+                  const dash = ((quizAccuracy ?? 0) / 100) * circ;
+                  return (
+                    <svg width="44" height="44" viewBox="0 0 44 44" className="shrink-0">
+                      <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(165,148,224,0.12)" strokeWidth="4" />
+                      <motion.circle cx={CX} cy={CY} r={R} fill="none"
+                        stroke="rgba(165,148,224,0.85)" strokeWidth="4" strokeLinecap="round"
+                        strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4}
+                        initial={{ strokeDasharray: `0 ${circ}` }}
+                        animate={{ strokeDasharray: `${dash} ${circ - dash}` }}
+                        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                      <text x={CX} y={CY + 4} textAnchor="middle" fontSize="9" fontWeight="700"
+                        fill={isDark ? '#c4b5fd' : '#7c3aed'}>
+                        {quizAccuracy ?? 0}%
+                      </text>
+                    </svg>
+                  );
+                })()}
+                <div>
+                  <p className="text-[13px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{quiz30dTotal}</p>
+                  <p className="text-[9px] mt-0.5 font-medium uppercase tracking-wider" style={{ color: muted }}>answered</p>
+                  <p className="text-[11px] font-semibold mt-1" style={{ color: 'rgba(165,148,224,0.85)' }}>{quiz30dCorrect} correct</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Vrat observations */}
+        <div className="rounded-2xl p-4" style={{ background: isDark ? 'rgba(196,181,253,0.07)' : 'rgba(196,181,253,0.06)', border: '1px solid rgba(196,181,253,0.18)', boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: 'rgba(196,181,253,0.75)' }}>Vrat · All time</p>
+          {vratTotal === 0 ? (
+            <Link href="/vrat">
+              <p className="text-[11px] font-medium mb-1" style={{ color: muted }}>No vratas yet</p>
+              <p className="text-[10px] font-bold" style={{ color: 'rgba(196,181,253,0.70)' }}>Observe Ekadashi →</p>
+            </Link>
+          ) : (
+            <>
+              <p className="text-[28px] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{vratTotal}</p>
+              <p className="text-[10px] mt-1 font-medium" style={{ color: muted }}>total observations</p>
+              <Link href="/vrat" className="text-[10px] font-bold mt-2 block" style={{ color: 'rgba(196,181,253,0.75)' }}>
+                View calendar →
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Karma 30d breakdown ── */}
+      {karma30dTotal > 0 && (
+        <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(197,160,89,0.05)' : 'rgba(255,248,230,0.90)', border: '1px solid rgba(197,160,89,0.16)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.65)' }}>Karma Earned · 30 days</p>
+            <span className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>+{karma30dTotal}</span>
+          </div>
+          <div className="space-y-2">
+            {karma30dBreakdown.map(({ reason, total }) => {
+              const maxKarma = karma30dBreakdown[0]?.total ?? 1;
+              return (
+                <div key={reason} className="flex items-center gap-2.5">
+                  <span className="text-[10px] w-16 truncate shrink-0" style={{ color: muted }}>{KARMA_LABELS[reason] ?? reason}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.10)' }}>
+                    <motion.div className="h-full rounded-full"
+                      style={{ background: 'rgba(197,160,89,0.75)' }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((total / maxKarma) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
+                  </div>
+                  <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: h1 }}>+{total}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -1336,9 +1531,16 @@ export default function MyProgressClient({
   totalJapaSessions,
   nitya30dDays,
   sevaScore,
+  karmaPoints = 0,
   weeklySevaScore,
   mandaliPostCount,
   kulTasksDone,
+  pillarData,
+  quiz30dTotal = 0,
+  quiz30dCorrect = 0,
+  vratTotal = 0,
+  karma30dTotal = 0,
+  karma30dBreakdown = [],
   report,
   sankalpas,
 }: Props) {
@@ -1525,153 +1727,81 @@ export default function MyProgressClient({
         {/* Safe area */}
         <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
 
-        {/* ── Top bar — Premium Revamp ── */}
-        <div className="relative overflow-hidden pt-8 pb-12 px-6">
-          {/* 3D Background Pulse */}
-          <div className="absolute inset-0 pointer-events-none opacity-40">
-            <motion.div 
-              className="absolute -top-24 -left-24 w-64 h-64 rounded-full"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)' }}
-            />
-          </div>
+        {/* ── Hero header ── */}
+        <div className="relative px-5 pt-6 pb-5">
+          {/* Subtle ambient radial */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-28 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.08) 0%, transparent 70%)' }}
+          />
 
-          <div className="relative flex flex-col items-center text-center">
+          {/* Back button */}
+          <button
+            onClick={() => router.back()}
+            className="absolute top-6 left-5 w-9 h-9 rounded-full flex items-center justify-center transition-opacity active:opacity-60"
+            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.08)' }}
+          >
+            <ChevronLeft size={18} style={{ color: h1 }} />
+          </button>
+
+          {/* Center: streak + name */}
+          <div className="flex flex-col items-center text-center">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(197,160,89,0.55)' }}>
+              Sādhana Progress
+            </p>
+
+            {/* Streak hero */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="mb-6 relative"
+              className="flex items-center gap-2.5 mb-1"
             >
-              {/* The 9D Sadhana Sphere */}
-              <motion.div
-                className="w-32 h-32 rounded-full relative z-10"
-                style={{
-                  background: 'radial-gradient(circle at 30% 30%, #fcd34d 0%, #d97706 50%, #78350f 100%)',
-                  boxShadow: '0 0 40px rgba(251, 191, 36, 0.3), inset -10px -10px 30px rgba(0,0,0,0.5)',
-                }}
-                whileHover={{ 
-                  scale: 1.15, 
-                  rotateY: 720,
-                  transition: { duration: 1.2, ease: "easeOut" }
-                }}
-                animate={streak >= 9 ? {
-                  rotateY: 360,
-                  scale: [1, 1.05, 1],
-                  boxShadow: '0 0 60px rgba(251, 191, 36, 0.5), inset -10px -10px 30px rgba(0,0,0,0.5)'
-                } : { rotateY: 360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              />
-              {/* Outer Rings */}
-              <motion.div 
-                className="absolute inset-0 -m-4 border border-amber-500/20 rounded-full"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div 
-                className="absolute inset-0 -m-8 border border-amber-500/10 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              />
+              <motion.span
+                className="text-3xl leading-none"
+                animate={streak > 0 ? { scale: [1, 1.12, 1] } : {}}
+                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                🔥
+              </motion.span>
+              <span
+                className="text-5xl font-bold leading-none"
+                style={{ fontFamily: 'var(--font-serif)', color: streak > 0 ? '#C5A059' : h1 }}
+              >
+                {streak}
+              </span>
             </motion.div>
+            <p className="text-[12px] font-medium mt-1" style={{ color: muted }}>
+              {streak === 0
+                ? 'Begin today — every great sādhaka started with day one'
+                : `day${streak !== 1 ? 's' : ''} of unbroken practice`}
+            </p>
 
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <p className="text-[11px] tracking-[0.25em] uppercase font-bold text-amber-500/60 mb-2">Sādhana Trajectory</p>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: 800, color: h1, letterSpacing: '-0.02em' }}>
-                {userName}
-              </h1>
-              <div className="flex items-center justify-center gap-4 mt-4">
-                <div className="text-center">
-                  <p className="text-2xl font-black text-amber-500" style={{ fontFamily: 'var(--font-serif)' }}>{streak}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Streak</p>
-                </div>
-                <div className="w-px h-8 bg-white/10" />
-                <div className="text-center">
-                  <p className="text-2xl font-black text-amber-200" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 9)}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Navarātri</p>
-                </div>
-                <div className="w-px h-8 bg-white/10" />
-                <div className="text-center">
-                  <p className="text-2xl font-black text-slate-300" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 7)}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Saptāha</p>
-                </div>
-              </div>
-            </motion.div>
+            <p className="text-base font-serif mt-3" style={{ color: h1 }}>{userName}</p>
           </div>
 
-          <button onClick={() => router.back()}
-            className="absolute top-8 left-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-xl">
-            <ChevronLeft size={20} className="text-amber-500" />
-          </button>
-        </div>
-
-        <div className="px-4 space-y-4">
-
-          {/* ── Signal Summary ── */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+          {/* ── 4-stat grid ── */}
+          <div className="grid grid-cols-4 gap-2 mt-5 relative">
             {[
-              { label: 'Streak', val: `${streak}d`, icon: 'flame' as SacredIconName },
-              { label: 'Seva Points', val: sevaScore ?? 0, icon: 'heart' as SacredIconName },
-              { label: 'Posts', val: mandaliPostCount ?? 0, icon: 'mandali' as SacredIconName },
-              { label: 'Kul Tasks', val: kulTasksDone ?? 0, icon: 'kul' as SacredIconName },
-            ].map(item => (
-              <div key={item.label} className="rounded-2xl px-4 py-3 flex-col flex-shrink-0 flex items-center justify-center min-w-[80px]"
-                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(197,160,89,0.12)' }}>
-                <SacredIcon name={item.icon} size={14} style={{ color: '#C5A059' }} className="mb-1" />
-                <span className="text-xl font-bold" style={{ color: 'var(--divine-text)' }}>{item.val}</span>
-                <span className="text-[10px] uppercase tracking-widest mt-1" style={{ color: 'rgba(197,160,89,0.55)' }}>{item.label}</span>
+              { val: String(japa30dSessions), label: 'sessions' },
+              { val: fmt(japa30dBeads),       label: 'beads'    },
+              { val: `${nityaRate}%`,          label: 'nitya'   },
+              { val: karmaPoints > 999 ? `${(karmaPoints/1000).toFixed(1)}k` : String(karmaPoints), label: 'karma' },
+            ].map(({ val, label }) => (
+              <div
+                key={label}
+                className="rounded-2xl py-3 px-1 text-center"
+                style={{
+                  background: isDark ? 'rgba(197,160,89,0.07)' : 'rgba(197,160,89,0.06)',
+                  border: `1px solid rgba(197,160,89,${isDark ? '0.14' : '0.12'})`,
+                }}
+              >
+                <p className="text-[18px] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{val}</p>
+                <p className="text-[9px] mt-1 font-medium uppercase tracking-wider" style={{ color: muted }}>{label}</p>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* ── 9-Day Rhythm Card — Premium Addition ── */}
-          <motion.section
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(0,0,0,0) 100%)',
-              border: '1px solid rgba(251,191,36,0.15)',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              perspective: 1000
-            }}
-            whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-[11px] uppercase tracking-[0.2em] font-bold text-amber-500/70">9-Day Rhythm</h2>
-                <p className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>Navarātri Readiness</p>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                <Sparkles size={24} className="text-amber-500" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {[
-                { label: 'Current Cycle', val: `${(streak % 9) + 1}/9`, icon: 'sparkles' as SacredIconName },
-                { label: 'Intensity', val: streak > 40 ? 'High' : 'Steady', icon: 'flame' as SacredIconName },
-                { label: 'Focus', val: 'Devotion', icon: 'heart' as SacredIconName },
-              ].map(item => (
-                <div key={item.label} className="text-center">
-                  <div className="mb-1"><SacredIcon name={item.icon} size={22} strokeWidth={1.6} style={{ color: 'var(--brand-primary)' }} /></div>
-                  <p className="text-lg font-bold" style={{ color: h1 }}>{item.val}</p>
-                  <p className="text-[9px] uppercase tracking-tighter text-white/30 font-bold">{item.label}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-              <p className="text-[12px] leading-relaxed italic text-amber-200/80">
-                &ldquo;{streak >= 9 ? 'You have completed a full Navarātri cycle. Your spirit is attuned to the divine rhythm.' : 'You are approaching your first Navarātri milestone. Every breath is a step toward liberation.'}&rdquo;
-              </p>
-            </div>
-          </motion.section>
+        <div className="px-4 space-y-4">
 
           {/* ── 6-Month History — GitHub-style heatmap ── */}
           {sixMonthHeatmap && sixMonthHeatmap.length > 0 && (
@@ -1703,9 +1833,8 @@ export default function MyProgressClient({
           {/* ── Activity Calendar ── */}
           <motion.section
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
-            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: '0 20px 50px rgba(0,0,0,0.5)', perspective: 1000 }}
-            whileHover={{ scale: 1.005 }}
+            className="rounded-2xl p-5"
+            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}
           >
             {/* ... calendar content ... */}
 
@@ -1779,271 +1908,192 @@ export default function MyProgressClient({
           {/* ── Practice pillars ── */}
           <motion.section
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }}
-            className="space-y-4"
+            className="space-y-3"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] px-2 text-amber-500/50">
-              Practice Pillars · 30 Days
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1" style={{ color: 'rgba(197,160,89,0.55)' }}>
+              Practice Pillars · 30 days
             </p>
 
-            {/* Japa card — Premium Revamp */}
-            <motion.div 
-              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-              style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
-              whileHover={{ rotateX: 1, rotateY: 1, scale: 1.01 }}
+            {/* Japa card */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+              className="rounded-2xl p-5"
+              style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">🪷</span>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">📿</span>
                   <div>
-                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-amber-500/70">Japa</h2>
-                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Mantra Repetition</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(212,120,74,0.80)' }}>Japa · 30 days</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: muted }}>Mantra repetition</p>
                   </div>
                 </div>
                 <Link href="/bhakti/mala/insights"
-                  className="rounded-full px-4 py-2 text-[11px] font-bold bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                  className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(212,120,74,0.10)', color: 'rgba(212,120,74,0.85)', border: '1px solid rgba(212,120,74,0.18)' }}>
                   Insights →
                 </Link>
               </div>
 
               {japa30dSessions === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-3xl mb-3">📿</p>
-                  <p className="text-sm font-bold" style={{ color: h1 }}>No sessions this cycle</p>
+                <div className="text-center py-4">
+                  <p className="text-sm font-semibold mb-3" style={{ color: muted }}>No sessions this cycle</p>
                   <Link href="/bhakti/mala"
-                    className="inline-flex items-center mt-4 rounded-full px-6 py-2 text-[11px] font-bold bg-amber-500 text-black">
+                    className="inline-flex items-center rounded-full px-5 py-2 text-[11px] font-bold"
+                    style={{ background: 'rgba(212,120,74,0.88)', color: '#fff' }}>
                     Begin Japa →
                   </Link>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2.5 mb-4">
                     {[
                       { val: String(japa30dSessions), sub: 'sessions' },
                       { val: fmt(japa30dBeads),       sub: 'beads'    },
                       { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds' },
-                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'time'   },
+                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—', sub: 'time' },
                     ].map(({ val, sub: s }) => (
-                      <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
-                        <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
-                        <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
+                      <div key={s} className="text-center rounded-xl py-2.5"
+                        style={{ background: isDark ? 'rgba(212,120,74,0.09)' : 'rgba(212,120,74,0.07)', border: '1px solid rgba(212,120,74,0.12)' }}>
+                        <p className="text-[17px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                        <p className="text-[9px] mt-1 font-medium uppercase tracking-wide" style={{ color: muted }}>{s}</p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-6">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Consistency</span>
-                      <span className="text-[10px] font-bold text-amber-500">{japaRate}%</span>
+                  <div>
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Consistency</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'rgba(212,120,74,0.85)' }}>{japaRate}%</span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden bg-white/5">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400"
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(212,120,74,0.10)' : 'rgba(212,120,74,0.08)' }}>
+                      <motion.div className="h-full rounded-full"
+                        style={{ background: 'linear-gradient(90deg,rgba(212,100,40,0.85),rgba(245,158,74,0.90))' }}
                         initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
-                      />
+                        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }} />
                     </div>
                   </div>
                 </>
               )}
             </motion.div>
 
-            {/* Nitya Karma card — Premium Revamp */}
-            <motion.div 
-              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-              style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
-              whileHover={{ rotateX: 1, rotateY: -1, scale: 1.01 }}
+            {/* Nitya Karma card */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}
+              className="rounded-2xl p-5"
+              style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">🌅</span>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">🌅</span>
                   <div>
-                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-green-500/70">Nitya Karma</h2>
-                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Daily Dharma</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(100,160,100,0.85)' }}>Nitya Karma · 30 days</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: muted }}>Daily dharma practice</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights"
-                    className="rounded-full px-3 py-1.5 text-[11px] font-bold bg-green-500/10 border border-green-500/20 text-green-500">
-                    Insights
-                  </Link>
-                  <Link href="/nitya-karma"
-                    className="rounded-full px-4 py-1.5 text-[11px] font-bold bg-green-500 text-black">
-                    Open →
+                    className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                    style={{ background: 'rgba(100,160,100,0.10)', color: 'rgba(100,160,100,0.90)', border: '1px solid rgba(100,160,100,0.18)' }}>
+                    Insights →
                   </Link>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-3 mb-6">
+
+              <div className="grid grid-cols-3 gap-2.5 mb-4">
                 {[
-                  { val: String(nitya30dDays), sub: 'completed' },
-                  { val: `${nityaRate}%`,      sub: 'rate'      },
-                  { val: `${30 - nitya30dDays}`, sub: 'remaining' },
+                  { val: String(nitya30dDays), sub: 'done' },
+                  { val: `${nityaRate}%`,      sub: 'rate' },
+                  { val: `${Math.max(0, 30 - nitya30dDays)}`, sub: 'left' },
                 ].map(({ val, sub: s }) => (
-                  <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
-                    <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
-                    <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
+                  <div key={s} className="text-center rounded-xl py-2.5"
+                    style={{ background: isDark ? 'rgba(100,160,100,0.09)' : 'rgba(100,160,100,0.07)', border: '1px solid rgba(100,160,100,0.12)' }}>
+                    <p className="text-[17px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                    <p className="text-[9px] mt-1 font-medium uppercase tracking-wide" style={{ color: muted }}>{s}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Momentum</span>
-                <span className="text-[10px] font-bold text-green-500">{nityaRate}%</span>
-              </div>
-              <div className="h-2 rounded-full overflow-hidden bg-white/5">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-green-600 to-green-400"
-                  initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
-                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
-                />
+              <div>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Momentum</span>
+                  <span className="text-[10px] font-bold" style={{ color: 'rgba(100,160,100,0.90)' }}>{nityaRate}%</span>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(100,160,100,0.10)' : 'rgba(100,160,100,0.08)' }}>
+                  <motion.div className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg,rgba(80,140,80,0.85),rgba(107,196,126,0.90))' }}
+                    initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.1 }} />
+                </div>
               </div>
             </motion.div>
 
-            {/* Pathshala + Bhakti mini cards */}
+            {/* Mini feature cards — 2×2 grid */}
             <div className="grid grid-cols-2 gap-3">
-              <Link href="/pathshala/insights"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardPathBg, border: `1px solid ${cardPathBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(80,160,200,0.55)' }} />
-                <span className="text-xl block mb-2">📖</span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Pathshala</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Study paths</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(80,160,200,0.70)' }}>Open →</p>
-              </Link>
-              <Link href="/bhakti/insights"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardBhaktiBg, border: `1px solid ${cardBhaktiBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(196,120,154,0.55)' }} />
-                <span className="text-xl block mb-2">🪷</span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Bhakti</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Devotion insights</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
-              </Link>
-            </div>
-            {/* Kul + Mandali mini cards */}
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              <Link href="/kul"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardPathBg, border: `1px solid ${cardPathBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(197,160,89,0.55)' }} />
-                <span className="block mb-2"><SacredIcon name="kul" size={20} /></span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Kul</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>{kulTasksDone ?? 0} tasks done</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(197,160,89,0.70)' }}>Open →</p>
-              </Link>
-              <Link href="/mandali"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardBhaktiBg, border: `1px solid ${cardBhaktiBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(196,120,154,0.55)' }} />
-                <span className="block mb-2"><SacredIcon name="mandali" size={20} /></span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Mandali</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>{mandaliPostCount ?? 0} posts</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
-              </Link>
+              {[
+                { href: '/pathshala/insights', emoji: '📖', label: 'Pathshala', sub: 'Study paths', accent: 'rgba(80,160,200,' },
+                { href: '/bhakti/insights',    emoji: '🪷', label: 'Bhakti',    sub: 'Devotion insights', accent: 'rgba(196,120,154,' },
+                { href: '/quiz',               emoji: '🧠', label: 'Quiz',      sub: 'Knowledge mastery', accent: 'rgba(165,148,224,' },
+                { href: '/mandali',            emoji: '🕊️', label: 'Mandali',   sub: `${mandaliPostCount ?? 0} posts`, accent: 'rgba(107,196,126,' },
+              ].map(({ href, emoji, label, sub, accent }) => (
+                <Link key={href} href={href}
+                  className="block rounded-2xl p-4 active:opacity-70 transition-opacity"
+                  style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)', border: `1px solid ${accent}0.16)`, boxShadow: isDark ? '0 2px 16px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+                  <div className="w-1 h-5 rounded-full mb-3" style={{ background: `${accent}0.55)` }} />
+                  <span className="text-xl block mb-2">{emoji}</span>
+                  <p className="text-sm font-semibold" style={{ color: h1 }}>{label}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{sub}</p>
+                  <p className="text-[10px] mt-3 font-semibold" style={{ color: `${accent}0.75)` }}>Open →</p>
+                </Link>
+              ))}
             </div>
           </motion.section>
+
+          {/* ── 5-Pillar Scorecard + Quiz + Vrat + Karma ── */}
+          {pillarData && (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1 mb-3" style={{ color: 'rgba(197,160,89,0.55)' }}>
+                Practice Insights · 30 days
+              </p>
+              <SadhanaScorecard
+                pillarData={pillarData}
+                quiz30dTotal={quiz30dTotal}
+                quiz30dCorrect={quiz30dCorrect}
+                vratTotal={vratTotal}
+                karma30dTotal={karma30dTotal}
+                karma30dBreakdown={karma30dBreakdown}
+                isDark={isDark}
+                h1={h1}
+                muted={muted}
+              />
+            </motion.div>
+          )}
 
           {/* ── Advanced Analytics (Zenith) ── */}
           <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />
 
-          {/* ── Quiz Mastery ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
-            className="mb-8"
+          {/* ── Deep-dive links row ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            className="grid grid-cols-2 gap-3"
           >
-            <Link href="/quiz">
-              <div className="rounded-[1.8rem] p-5 relative overflow-hidden group" 
-                style={{ 
-                  background: isDark ? 'rgba(126, 87, 194, 0.08)' : 'rgba(126, 87, 194, 0.05)',
-                  border: `1px solid ${isDark ? 'rgba(126, 87, 194, 0.2)' : 'rgba(126, 87, 194, 0.15)'}`,
-                  boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)'
-                }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: '#9575cd' }}>
-                      <SacredIcon name="brain" size={14} /> Quiz Mastery
-                    </p>
-                    <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
-                      Track your spiritual knowledge
-                    </p>
-                  </div>
-                  <ChevronRight size={18} style={{ color: '#9575cd' }} />
+            {[
+              { href: '/quiz',            emoji: '🧠', label: 'Quiz', sub: 'Spiritual knowledge', accent: 'rgba(165,148,224,' },
+              { href: '/my-progress/mood', emoji: '🕊️', label: 'Mood Journal', sub: 'Emotional patterns', accent: 'rgba(52,211,153,' },
+            ].map(({ href, emoji, label, sub, accent }) => (
+              <Link key={href} href={href}
+                className="flex items-center gap-3 rounded-2xl p-4 active:opacity-70 transition-opacity"
+                style={{ background: isDark ? `${accent}0.08)` : `${accent}0.06)`, border: `1px solid ${accent}0.18)`, boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+                <span className="text-2xl">{emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-[12px] font-semibold leading-tight" style={{ color: h1 }}>{label}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{sub}</p>
                 </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Knowledge Hub</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Target size={14} style={{ color: '#9575cd' }} />
-                      View Stats
-                    </p>
-                  </div>
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Streak</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Flame size={14} className="text-orange-500" />
-                      Historical log
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Ambient glow */}
-                <div className="absolute -bottom-8 -right-8 w-24 h-24 blur-[40px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity"
-                  style={{ background: '#7e57c2' }}
-                />
-              </div>
-            </Link>
-          </motion.section>
-
-          {/* ── Mood Insights ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}
-            className="mb-8"
-          >
-            <Link href="/my-progress/mood">
-              <div className="rounded-[1.8rem] p-5 relative overflow-hidden group" 
-                style={{ 
-                  background: isDark ? 'rgba(52, 211, 153, 0.08)' : 'rgba(52, 211, 153, 0.05)',
-                  border: `1px solid ${isDark ? 'rgba(52, 211, 153, 0.2)' : 'rgba(52, 211, 153, 0.15)'}`,
-                  boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)'
-                }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] flex items-center gap-1.5" style={{ color: '#10b981' }}>
-                      <SacredIcon name="flower" size={14} /> Mood Insights
-                    </p>
-                    <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
-                      Track your emotional journey
-                    </p>
-                  </div>
-                  <ChevronRight size={18} style={{ color: '#10b981' }} />
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Weekly & Monthly</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Activity size={14} style={{ color: '#10b981' }} />
-                      Pattern Stats
-                    </p>
-                  </div>
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">AI Guided</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-amber-500" />
-                      Reflections
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Ambient glow */}
-                <div className="absolute -bottom-8 -right-8 w-24 h-24 blur-[40px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity"
-                  style={{ background: '#10b981' }}
-                />
-              </div>
-            </Link>
-          </motion.section>
+                <ChevronRight size={14} className="ml-auto shrink-0" style={{ color: `${accent}0.55)` }} />
+              </Link>
+            ))}
+          </motion.div>
 
           {/* ── Achievement Shields (compact preview → full page) ── */}
           <motion.section
@@ -2058,12 +2108,12 @@ export default function MyProgressClient({
           {/* ── Day-of-week chart ── */}
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
-            className="rounded-[1.8rem] p-5 mb-8"
-            style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
+            className="rounded-2xl p-5"
+            style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-0.5" style={{ color: 'rgba(197,160,89,0.65)' }}>
               Practice Rhythm
             </p>
-            <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa (last 30 days)</p>
+            <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa · last 30 days</p>
             <DowChart counts={dowCounts} isDark={isDark} />
           </motion.section>
 

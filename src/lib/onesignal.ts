@@ -14,7 +14,7 @@ export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
 // OneSignalDeferred callbacks fire only AFTER init() resolves, so always use it.
 const ONESIGNAL_TIMEOUT_MS = 8000; // 8s — generous for slow mobile connections
 
-function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
+export function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
   if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
 
   return new Promise((resolve) => {
