@@ -38,8 +38,30 @@ const TRADITION_CHIPS: Record<string, Array<{label: string; href: string}>> = {
   ],
 };
 
-function SuggestedChips({ tradition }: { tradition: string | null }) {
+function SuggestedChips({
+  tradition,
+  nextObservance,
+}: {
+  tradition: string | null;
+  nextObservance?: { name: string; emoji: string; daysAway: number; slug: string; routeKind: string } | null;
+}) {
+  const dynamicChips = [];
+  if (nextObservance && nextObservance.daysAway <= 3) {
+    if (nextObservance.daysAway === 0) {
+      dynamicChips.push({
+        label: `${nextObservance.emoji} It's ${nextObservance.name} today`,
+        href: `/${nextObservance.routeKind}/${nextObservance.slug}`,
+      });
+    } else {
+      dynamicChips.push({
+        label: `${nextObservance.emoji} Prepare for ${nextObservance.name}`,
+        href: `/${nextObservance.routeKind}/${nextObservance.slug}`,
+      });
+    }
+  }
+
   const chips = [
+    ...dynamicChips,
     ...(tradition && TRADITION_CHIPS[tradition] ? TRADITION_CHIPS[tradition] : []),
     ...BASE_CHIPS,
   ].slice(0, 7);
@@ -167,51 +189,43 @@ interface Props {
   spiritualLevel: string | null;
   transliterationLanguage?: string;
   todayVeer?: TodayVeer | null;
+  activeSankalpa?: { name: string; streakDays: number; targetDays: number } | null;
+  nextObservance?: { name: string; emoji: string; daysAway: number; slug: string; routeKind: string } | null;
 }
 
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 
-// ── Stack Card Component ──────────────────────────────────────────────────────
+// ── Recommendation Card Component ───────────────────────────────────────────────
 
-function StackCard({
+function RecommendationCard({
   rec,
-  index,
-  total,
   accentColour,
-  onNext, onPrev,
-  onClose,
   onClickAction,
-  isActive
 }: {
   rec: MoodRecommendation;
-  index: number;
-  total: number;
   accentColour: string;
-  onNext: () => void;
-  onPrev?: () => void;
-  onClose: () => void;
   onClickAction: () => void;
-  isActive: boolean;
 }) {
+  let badgeLabel = 'Explore';
+  if (rec.href.includes('/pathshala?tradition=sikh')) badgeLabel = 'Sikh';
+  else if (rec.href.includes('/bhakti/mala')) badgeLabel = 'Practice';
+  else if (rec.type === 'katha') badgeLabel = 'Story';
+  else if ((rec.type as string) === 'vrat') badgeLabel = 'Vrat';
+
+  const TIME_ESTIMATE: Record<string, string> = {
+    shloka: '3 min', katha: '5 min', mantra: '5 min',
+    vrat: '4 min', meditation: '10 min', default: '5 min'
+  };
+  const timeEst = TIME_ESTIMATE[rec.type] || TIME_ESTIMATE['default'];
+
   return (
-    <motion.div
-      className="absolute left-1/2 w-full max-w-sm rounded-[1.6rem] p-4 flex flex-col overflow-hidden"
+    <div
+      className="w-full rounded-[1.6rem] p-4 flex flex-col overflow-hidden relative"
       style={{
-        height: 420,
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',
-        boxShadow: isActive ? '0 12px 40px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
-        zIndex: total - index,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
       }}
-      initial={{ scale: 0.9, x: '-50%', y: 40, opacity: 0 }}
-      animate={{
-        scale: isActive ? 1 : Math.max(0.9, 1 - index * 0.05),
-        x: '-50%',
-        y: isActive ? 0 : index * 14,
-        opacity: 1 - index * 0.2,
-      }}
-      exit={{ scale: 1.05, x: '-50%', y: -40, opacity: 0 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 blur-[40px] opacity-20 pointer-events-none rounded-full"
@@ -222,14 +236,12 @@ function StackCard({
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
             style={{ background: `${accentColour}15`, color: accentColour }}>
-            {rec.type}
+            {badgeLabel}
           </span>
         </div>
-        {isActive && (
-          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center transition hover:bg-white/5">
-            <X size={16} style={{ color: 'var(--text-dim)' }} />
-          </button>
-        )}
+        <span className="text-[11px] font-medium" style={{ color: 'var(--text-dim)' }}>
+          {timeEst}
+        </span>
       </div>
 
       <div className="flex-1 flex flex-col justify-center">
@@ -238,7 +250,7 @@ function StackCard({
           <SacredIcon name={rec.icon} size={26} strokeWidth={1.6} style={{ color: accentColour }} />
         </div>
 
-        <h3 className="text-xl font-bold mb-2 leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}>
+        <h3 className="text-xl font-bold mb-2 leading-tight premium-serif" style={{ color: 'var(--text-cream)' }}>
           {rec.title}
         </h3>
 
@@ -256,37 +268,17 @@ function StackCard({
         )}
       </div>
 
-      {isActive && (
-        <div className="mt-4 flex items-center gap-2">
-          {onPrev && (
-            <button
-              onClick={onPrev}
-              className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
-              style={{ border: '1px solid var(--card-border)' }}
-              aria-label="Previous recommendation"
-            >
-              <ChevronLeft size={16} style={{ color: 'var(--text-dim)' }} />
-            </button>
-          )}
-          <Link
-            href={rec.href}
-            onClick={onClickAction}
-            className="flex-1 py-2.5 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95"
-            style={{ background: accentColour, color: 'var(--surface-base)' }}
-          >
-            {rec.actionLabel}
-          </Link>
-          <button
-            onClick={onNext}
-            className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
-            style={{ border: '1px solid var(--card-border)' }}
-            aria-label="Next recommendation"
-          >
-            <ArrowRight size={18} style={{ color: 'var(--text-dim)' }} />
-          </button>
-        </div>
-      )}
-    </motion.div>
+      <div className="mt-4 flex items-center gap-2">
+        <Link
+          href={rec.href}
+          onClick={onClickAction}
+          className="flex-1 py-2.5 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95"
+          style={{ background: accentColour, color: 'var(--surface-base)' }}
+        >
+          {rec.actionLabel}
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -335,8 +327,57 @@ function DailyVeerBanner({ veer }: { veer: TodayVeer }) {
   );
 }
 
+// ── Today's Context Banner ───────────────────────────────────────────────────
+function TodayContextBanner({ activeSankalpa, nextObservance }: {
+  activeSankalpa?: Props['activeSankalpa'];
+  nextObservance?: Props['nextObservance'];
+}) {
+  if (!activeSankalpa && !nextObservance) return null;
+
+  const now = new Date();
+  const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const day = now.getDate();
+  const month = now.toLocaleDateString('en-US', { month: 'long' });
+
+  return (
+    <div className="clay-card rounded-2xl p-4 mb-5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3" style={{ color: 'var(--text-dim)' }}>
+        Today · {weekday} {day} {month}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {activeSankalpa && (
+          <Link
+            href="/my-progress"
+            className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold transition-transform active:scale-[0.98]"
+            style={{
+              background: 'rgba(197,160,89,0.12)',
+              border: '1px solid rgba(197,160,89,0.3)',
+              color: 'var(--brand-primary)',
+            }}
+          >
+            🔥 Day {activeSankalpa.streakDays} of {activeSankalpa.targetDays} · {activeSankalpa.name}
+          </Link>
+        )}
+        {nextObservance && (
+          <Link
+            href={`/${nextObservance.routeKind}/${nextObservance.slug}`}
+            className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold transition-transform active:scale-[0.98]"
+            style={{
+              background: nextObservance.daysAway === 0 ? 'rgba(197,160,89,0.12)' : 'var(--surface-soft)',
+              border: '1px solid ' + (nextObservance.daysAway === 0 ? 'rgba(197,160,89,0.3)' : 'var(--card-border)'),
+              color: nextObservance.daysAway === 0 ? 'var(--brand-primary)' : 'var(--text-muted-warm)',
+            }}
+          >
+            {nextObservance.emoji} {nextObservance.name} · {nextObservance.daysAway === 0 ? 'Today' : nextObservance.daysAway === 1 ? 'Tomorrow' : `In ${nextObservance.daysAway} days`}
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Main client ───────────────────────────────────────────────────────────────
-export default function DiscoverClient({ tradition, transliterationLanguage, todayVeer }: Props) {
+export default function DiscoverClient({ tradition, transliterationLanguage, todayVeer, activeSankalpa, nextObservance }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
@@ -468,138 +509,67 @@ export default function DiscoverClient({ tradition, transliterationLanguage, tod
 
       {/* ── Content ── */}
       <div className="flex-1 relative">
-        <AnimatePresence mode="wait">
-          {!selectedMood ? (
-            <motion.div
-              key="grid"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="px-4 pt-4 h-full overflow-y-auto pb-32"
-            >
-              {/* ── Suggested chips ── */}
-              <SuggestedChips tradition={tradition} />
+        <div className="px-4 pt-4 h-full overflow-y-auto pb-32">
+          {/* ── Today's Context ── */}
+          {(!selectedMood) && <TodayContextBanner activeSankalpa={activeSankalpa} nextObservance={nextObservance} />}
 
-              {/* ── Today's Dharm Veer ── */}
-              {todayVeer && <DailyVeerBanner veer={todayVeer} />}
+          {/* ── Today's Dharm Veer ── */}
+          {todayVeer && !selectedMood && <DailyVeerBanner veer={todayVeer} />}
 
-              {/* ── Featured grid ── */}
-              <FeaturedGrid
-                tradition={tradition}
-                isDark={resolvedTheme === 'dark'}
-              />
+          {/* ── Suggested chips ── */}
+          {!selectedMood && <SuggestedChips tradition={tradition} nextObservance={nextObservance} />}
 
-              {/* ── Mood grid section ── */}
-              <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'var(--text-dim)' }}>
-                By mood
-              </p>
+          {/* ── Featured grid ── */}
+          {!selectedMood && (
+            <FeaturedGrid
+              tradition={tradition}
+              isDark={resolvedTheme === 'dark'}
+            />
+          )}
 
-              <div className="grid grid-cols-2 gap-2.5">
-                {MOODS.map(mood => (
-                  <motion.button
-                    key={mood.key}
-                    onClick={() => handleSelectMood(mood.key)}
-                    className="flex flex-col items-center gap-2 rounded-[1.4rem] px-3 py-5 text-center transition-all motion-press"
-                    style={{
-                      background: `linear-gradient(145deg, ${mood.colour}12, var(--card-bg-soft))`,
-                      border: `1px solid var(--card-border)`,
-                      boxShadow: 'var(--shadow-soft)',
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span className="flex items-center justify-center" style={{ width: 32, height: 32 }}>
-                      <MoodGlyph mood={mood.key} color={mood.colour} size={28} />
-                    </span>
-                    <span
-                      className="text-[13px] font-semibold leading-tight mt-1"
-                      style={{ color: 'var(--text-cream)' }}
-                    >
-                      {mood.label}
-                    </span>
-                  </motion.button>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="stack"
-              className="absolute w-full h-full flex flex-col px-5 pb-8 pt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {/* Stack Progress */}
-              <div className="flex items-center justify-center gap-1.5 mb-6">
-                {stack.map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-1 rounded-full transition-all duration-300"
-                    style={{
-                      width: i === activeIndex ? 16 : 4,
-                      background: i === activeIndex ? accent : 'var(--card-border)',
-                    }}
+          {/* ── Mood selection section ── */}
+          <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-3 mt-2" style={{ color: 'var(--text-dim)' }}>
+            How are you feeling?
+          </p>
+
+          <div className="flex gap-2 overflow-x-auto pb-4 mb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+            {MOODS.map(mood => (
+              <button
+                key={mood.key}
+                onClick={() => handleSelectMood(mood.key)}
+                className="flex-shrink-0 flex items-center gap-2 px-3.5 py-2.5 rounded-full border transition-all active:scale-95"
+                style={{
+                  background: selectedMood === mood.key ? `${mood.colour}18` : 'rgba(128,128,128,0.06)',
+                  borderColor: selectedMood === mood.key ? `${mood.colour}50` : 'rgba(128,128,128,0.12)',
+                  color: selectedMood === mood.key ? mood.colour : 'var(--text-muted-warm)',
+                }}>
+                <MoodGlyph mood={mood.key} color={mood.colour} size={16} />
+                <span className="text-[12px] font-semibold whitespace-nowrap">{mood.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* ── Inline Recommendations ── */}
+          <AnimatePresence>
+            {selectedMood && stack.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-4"
+              >
+                {stack.map((rec) => (
+                  <RecommendationCard
+                    key={rec.id}
+                    rec={rec}
+                    accentColour={accent}
+                    onClickAction={() => trackInteraction('click', rec.type)}
                   />
                 ))}
-              </div>
-
-              {/* Cards Container */}
-              <div className="relative flex-1 flex items-center justify-center">
-                <AnimatePresence>
-                  {stack.slice(activeIndex, activeIndex + 3).map((rec, renderIndex) => {
-                    const actualIndex = activeIndex + renderIndex;
-                    return (
-                      <StackCard
-                        key={`${rec.id}-${actualIndex}`}
-                        rec={rec}
-                        index={renderIndex}
-                        total={stack.length}
-                        accentColour={accent}
-                        isActive={renderIndex === 0}
-                        onNext={() => {
-                          trackInteraction('skip', rec.type);
-                          if (activeIndex < stack.length - 1) {
-                            setActiveIndex(prev => prev + 1);
-                          } else {
-                            reset();
-                          }
-                        }}
-                        onPrev={activeIndex > 0 ? () => setActiveIndex(prev => Math.max(0, prev - 1)) : undefined}
-                        onClickAction={() => {
-                          trackInteraction('click', rec.type);
-                        }}
-                        onClose={reset}
-                      />
-                    );
-                  })}
-                </AnimatePresence>
-
-                {/* End of stack state */}
-                {activeIndex >= stack.length && (
-                  <motion.div
-                    className="absolute left-1/2 w-full max-w-sm rounded-[2rem] p-6 flex flex-col items-center justify-center text-center"
-                    style={{ height: 420, background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
-                    initial={{ opacity: 0, x: '-50%' }} animate={{ opacity: 1, x: '-50%' }}
-                  >
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--brand-primary-soft)' }}>
-                      <RotateCcw size={24} style={{ color: 'var(--brand-primary)' }} />
-                    </div>
-                    <p className="text-[15px] font-bold mb-2" style={{ color: 'var(--text-cream)' }}>You&apos;ve seen everything</p>
-                    <p className="text-[13px] mb-6" style={{ color: 'var(--text-dim)' }}>Would you like to explore another state?</p>
-                    <button
-                      onClick={reset}
-                      className="px-6 py-3 rounded-full text-[13px] font-bold"
-                      style={{ background: 'var(--card-border)', color: 'var(--text-cream)' }}
-                    >
-                      Return to Moods
-                    </button>
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
