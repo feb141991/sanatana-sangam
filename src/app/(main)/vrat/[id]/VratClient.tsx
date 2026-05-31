@@ -551,7 +551,7 @@ export default function VratClient({
               <div className="rounded-2xl p-4 space-y-3"
                 style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-1.5">
-                  <ShoppingBag size={12} /> What you'll need
+                  <ShoppingBag size={12} /> What you&apos;ll need
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {vrat.pujaItems.map((item, i) => (
@@ -660,10 +660,10 @@ export default function VratClient({
               <Info size={14} /> New to this practice?
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
-              Vratas are intentional fasting days tied to the Hindu lunar calendar. They are not about deprivation — they're about clearing space: in your body, your mind, your week. Most vratas follow a rhythm (every 11 days, every full moon) so the practice becomes second nature over time.
+              Vratas are intentional fasting days tied to the Hindu lunar calendar. They are not about deprivation — they&apos;re about clearing space: in your body, your mind, your week. Most vratas follow a rhythm (every 11 days, every full moon) so the practice becomes second nature over time.
             </p>
             <p className="text-sm opacity-70 leading-relaxed">
-              You don't need to be Hindu to observe. Millions of global seekers use these lunar rhythms to reset, meditate more deeply, and connect with a tradition older than most religions.
+              You don&apos;t need to be Hindu to observe. Millions of global seekers use these lunar rhythms to reset, meditate more deeply, and connect with a tradition older than most religions.
             </p>
             <Link href="/home"
               className="inline-flex items-center gap-1.5 text-xs font-semibold mt-1"

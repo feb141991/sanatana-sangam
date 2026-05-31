@@ -1268,7 +1268,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               style={{ background: 'rgba(197,160,89,0.12)' }}>🌍</div>
             <div>
               <p className="font-semibold theme-ink text-sm">Global Sangam</p>
-              <p className="text-xs theme-muted">No local Mandali yet — you're reading from the wider community</p>
+              <p className="text-xs theme-muted">No local Mandali yet — you&apos;re reading from the wider community</p>
             </div>
           </div>
           <button
