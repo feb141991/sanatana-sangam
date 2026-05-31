@@ -1288,6 +1288,7 @@ export const LIVE_STREAMS: LiveStream[] = [
  * confirmed current_video_id. This keeps broken iframes off the screen.
  */
 export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
+  // ── India — originally verified ───────────────────────────────────────────
   'krishna-janmabhoomi',
   'mahakaleshwar-ujjain',
   'takhat-hazur-sahib',
@@ -1320,6 +1321,31 @@ export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
   'dwarkadhish-temple',
   'ayodhya-ram-mandir',
   'ram-katha-live',
+  // ── International — added via migration-v85 ───────────────────────────────
+  'iskcon-mayapur',
+  'iskcon-london',
+  'iskcon-delhi',
+  'baps-london-neasden',
+  'baps-nj-usa',
+  'baps-toronto-canada',
+  'baps-abu-dhabi',
+  'meenakshi-temple-houston',
+  'svt-pittsburgh-usa',
+  'murugan-temple-london',
+  'mariamman-temple-kl',
+  'veeramakali-singapore',
+  'bangla-sahib-delhi',
+  'gurdwara-southall-london',
+  'gurdwara-brampton-canada',
+  'gurdwara-fremont-usa',
+  'kartarpur-sahib',
+  'plum-village-france',
+  'dalai-lama-temple-dharamshala',
+  'fo-guang-shan-taiwan',
+  'isha-sadhguru-satsang',
+  'art-of-living-satsang',
+  'mata-amritanandamayi-satsang',
+  'shemaroo-bhakti-live',
 ]);
 
 export type LiveDarshanDbRow = {
