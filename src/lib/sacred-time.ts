@@ -103,11 +103,11 @@ export function isoDateDiff(targetDateIso: string, baseDateIso: string): number 
  */
 export function localSpiritualDate(
   timeZone: string | null | undefined,
-  brahmaMuhurtaHour = 4
+  brahmaMuhurtaHour = 4,
+  date: Date = new Date()
 ): string {
   const tz  = resolveTimeZone(timeZone);
-  const now  = new Date();
-  const { year, month, day, hour } = getParts(now, tz);
+  const { year, month, day, hour } = getParts(date, tz);
 
   // Before Brahma Muhurta — still the previous spiritual day
   if (hour < brahmaMuhurtaHour) {

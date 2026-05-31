@@ -476,96 +476,6 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, displayTz === 'ist' ? 'Asia/Kolkata' : timezone);
 
-  // ── Web Audio Graha Beeja Resonance Synthesizer ─────────────────────────────
-  const [isPlayingResonance, setIsPlayingResonance] = useState(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const osc1Ref = useRef<OscillatorNode | null>(null);
-  const osc2Ref = useRef<OscillatorNode | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
-
-  const startResonance = (freq: number) => {
-    try {
-      stopResonance();
-
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      const ctx = new AudioContextClass();
-      audioCtxRef.current = ctx;
-
-      const mainGain = ctx.createGain();
-      mainGain.gain.setValueAtTime(0, ctx.currentTime);
-      mainGain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.7);
-      gainRef.current = mainGain;
-
-      // Fundamental pure tone (Sine)
-      const osc1 = ctx.createOscillator();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(freq, ctx.currentTime);
-      osc1Ref.current = osc1;
-
-      // Cozy harmonic secondary (Triangle)
-      const osc2 = ctx.createOscillator();
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(freq * 2, ctx.currentTime);
-      osc2Ref.current = osc2;
-
-      const osc2Gain = ctx.createGain();
-      osc2Gain.gain.setValueAtTime(0.08, ctx.currentTime);
-
-      // Lowpass filtering to make the sound soft and temple-like
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(450, ctx.currentTime);
-
-      osc1.connect(filter);
-      osc2.connect(osc2Gain);
-      osc2Gain.connect(filter);
-      filter.connect(mainGain);
-      mainGain.connect(ctx.destination);
-
-      osc1.start();
-      osc2.start();
-      setIsPlayingResonance(true);
-      playHaptic('heavy');
-    } catch (e) {
-      console.error("Audio Context Failed", e);
-    }
-  };
-
-  const stopResonance = () => {
-    try {
-      if (gainRef.current && audioCtxRef.current) {
-        const ctx = audioCtxRef.current;
-        gainRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
-        
-        const o1 = osc1Ref.current;
-        const o2 = osc2Ref.current;
-        const g = gainRef.current;
-        const c = audioCtxRef.current;
-        
-        setTimeout(() => {
-          try {
-            o1?.stop();
-            o2?.stop();
-            c?.close();
-          } catch {}
-        }, 500);
-      }
-    } catch {}
-    setIsPlayingResonance(false);
-    osc1Ref.current = null;
-    osc2Ref.current = null;
-    gainRef.current = null;
-    audioCtxRef.current = null;
-  };
-
-  useEffect(() => {
-    return () => {
-      stopResonance();
-    };
-  }, [activeTab, selectedRashi]);
-
   // ── Auth state + load saved profiles ─────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -686,7 +596,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
         `🌅 Sunrise: ${p.sunrise}  🌆 Sunset: ${p.sunset}\n` +
         `⚠️ Rahu Kaal: ${p.rahuKaal}\n✨ Abhijit Muhurat: ${p.abhijitMuhurat}\n\n— Shoonaya`;
     } else if (activeTab === 'rashiphal') {
-      const h = getDailyHoroscope(selectedRashi, selected);
+      const h = getDailyHoroscope(selectedRashi, selected, timezone ?? 'Asia/Kolkata');
       const link = `${origin}/panchang?tab=rashiphal`;
       text = `Read & check your rashiphal following this link to open those features: ${link}\n\n` +
         `🐏 Daily Rashiphal for ${h.rashiSanskrit} (${h.rashi}) — ${dateLabel}\n\n` +
@@ -1065,7 +975,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
 
             {/* Generated Horoscope details */}
             {(() => {
-              const h = getDailyHoroscope(selectedRashi, selected);
+              const h = getDailyHoroscope(selectedRashi, selected, timezone ?? 'Asia/Kolkata');
               return (
                 <motion.div
                   key={selectedRashi}
@@ -1074,7 +984,6 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                   transition={{ duration: 0.3 }}
                   className="space-y-3"
                 >
-                  {/* Hero Information Card */}
                   <div className="rounded-2xl p-4 border border-white/5 flex flex-col gap-3"
                     style={{ background: 'rgba(10,8,25,0.65)' }}>
                     <div className="flex items-center gap-3">
@@ -1085,188 +994,49 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                         <h2 className="font-serif text-lg font-bold text-[#F2EAD6]">{h.rashiSanskrit} ({h.rashi})</h2>
                         <p className="text-white/40 text-xs">Ruling Graha: {h.lord}</p>
                       </div>
-                      <span className="ml-auto text-[10px] font-semibold bg-green-500/10 border border-green-500/20 text-green-400 px-2.5 py-0.5 rounded-full">
-                        ● Active
-                      </span>
                     </div>
-
-                    <div className="grid grid-cols-3 gap-2 border-t border-white/5 pt-3">
-                      <div className="text-center p-2 rounded-xl bg-white/5">
-                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Color</p>
-                        <p className="text-xs font-semibold text-white/80 mt-0.5">{h.luckyColor}</p>
-                      </div>
-                      <div className="text-center p-2 rounded-xl bg-white/5">
-                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Number</p>
-                        <p className="text-xs font-semibold text-[#C5A059] mt-0.5">{h.luckyNumber}</p>
-                      </div>
-                      <div className="text-center p-2 rounded-xl bg-white/5">
-                        <p className="text-[9px] text-white/30 uppercase font-medium">Lucky Time</p>
-                        <p className="text-[9px] font-semibold text-white/80 mt-0.5 leading-tight">{h.luckyTime.split(' (')[0]}</p>
-                      </div>
+                    <div className="rounded-xl border border-[#C5A059]/15 bg-white/5 px-3 py-3">
+                      <p className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">Transit summary</p>
+                      <p className="text-sm text-[#F2EAD6]/90 leading-relaxed mt-1">{h.panditAiOracle}</p>
+                      <p className="text-[10px] text-white/35 leading-relaxed border-t border-white/5 pt-2 mt-2">
+                        {h.accuracyNote}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Pandit AI Cosmic Channeled Oracle */}
-                  {'panditAiOracle' in h && (
-                    <div className="rounded-2xl p-4 border border-[#C5A059]/40 space-y-2 relative overflow-hidden"
-                      style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.08) 0%, rgba(10,8,25,0.85) 100%)' }}>
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/10 rounded-full blur-xl pointer-events-none" />
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">📿</span>
-                        <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Pandit AI Daily Oracle</h3>
+                  <div className="rounded-2xl p-4 border border-white/5 space-y-3"
+                    style={{ background: 'rgba(10,8,25,0.65)' }}>
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg">🪐</span>
+                      <div>
+                        <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Transit facts</h3>
+                        <p className="text-[11px] text-white/45 mt-1 leading-relaxed">{h.gocharSummary}</p>
+                        <p className="text-[11px] text-[#F2EAD6]/75 mt-1 leading-relaxed">{h.moonTransit}</p>
                       </div>
-                      <p className="text-sm font-medium text-[#F2EAD6]/90 leading-relaxed italic">
-                        &ldquo;{(h as any).panditAiOracle}&rdquo;
-                      </p>
-                      <p className="text-[10px] text-white/35 leading-relaxed border-t border-white/5 pt-2">
-                        {(h as any).accuracyNote}
-                      </p>
                     </div>
-                  )}
-
-                  {/* True gochar layer */}
-                  {'transitHighlights' in h && (
-                    <div className="rounded-2xl p-4 border border-white/5 space-y-3"
-                      style={{ background: 'rgba(10,8,25,0.65)' }}>
-                      <div className="flex items-start gap-2">
-                        <span className="text-lg">🪐</span>
-                        <div>
-                          <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Gochar layer</h3>
-                          <p className="text-[11px] text-white/45 mt-1 leading-relaxed">{(h as any).gocharSummary}</p>
-                          <p className="text-[11px] text-[#F2EAD6]/75 mt-1 leading-relaxed">{(h as any).moonTransit}</p>
+                    <div className="space-y-2">
+                      {h.transitHighlights.slice(0, 4).map((item, idx) => (
+                        <div key={`${item.title}-${idx}`}
+                          className={`rounded-xl px-3 py-2 border ${
+                            item.tone === 'support'
+                              ? 'border-emerald-500/20 bg-emerald-500/8'
+                              : item.tone === 'discipline'
+                                ? 'border-orange-500/25 bg-orange-500/8'
+                                : 'border-white/8 bg-white/4'
+                          }`}>
+                          <p className="text-[10px] font-bold text-white/75">{item.title}</p>
+                          <p className="text-[10px] text-white/45 leading-relaxed mt-0.5">{item.detail}</p>
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        {(h as any).transitHighlights.slice(0, 4).map((item: any, idx: number) => (
-                          <div key={`${item.title}-${idx}`}
-                            className={`rounded-xl px-3 py-2 border ${
-                              item.tone === 'support'
-                                ? 'border-emerald-500/20 bg-emerald-500/8'
-                                : item.tone === 'discipline'
-                                  ? 'border-orange-500/25 bg-orange-500/8'
-                                  : 'border-white/8 bg-white/4'
-                            }`}>
-                            <p className="text-[10px] font-bold text-white/75">{item.title}</p>
-                            <p className="text-[10px] text-white/45 leading-relaxed mt-0.5">{item.detail}</p>
-                          </div>
-                        ))}
-                      </div>
+                      ))}
                     </div>
-                  )}
-
-                  {/* Planetary Dhyana Shloka */}
-                  {'shloka' in h && (
-                    <div className="rounded-2xl p-4 border border-white/5 space-y-3"
-                      style={{ background: 'rgba(10,8,25,0.65)' }}>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs">📜</span>
-                        <h4 className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Graha Dhyana Shloka</h4>
-                      </div>
-                      <div className="text-center py-2 px-1">
-                        <p className="font-serif text-base text-[#F2EAD6] font-medium leading-relaxed tracking-wide">
-                          {(h as any).shloka}
-                        </p>
-                        <p className="text-xs text-[#C5A059]/90 italic mt-3 leading-relaxed">
-                          &ldquo;{(h as any).shlokaTranslation}&rdquo;
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Graha Sound Resonance (Web Audio API Synthesizer) */}
-                  {'beejaMantra' in h && (
-                    <div className="rounded-2xl p-4 border border-[#C5A059]/30 space-y-4 relative overflow-hidden"
-                      style={{ background: 'rgba(10,8,25,0.75)' }}>
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A059]/5 rounded-full blur-2xl pointer-events-none" />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">🔊</span>
-                          <div>
-                            <h4 className="text-xs font-bold text-white/80 uppercase tracking-wider">Graha Sound Resonance</h4>
-                            <p className="text-[10px] text-white/40 mt-0.5">Tune your energy into the planet&apos;s physical frequency</p>
-                          </div>
-                        </div>
-                        <span className="text-[10px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-md">
-                          {(h as any).beejaFrequency} Hz
-                        </span>
-                      </div>
-
-                      {isPlayingResonance ? (
-                        <div className="flex flex-col items-center justify-center py-4 space-y-4 border border-[#C5A059]/20 bg-[#C5A059]/5 rounded-xl">
-                          {/* Pulsing expander ring */}
-                          <div className="relative w-16 h-16 flex items-center justify-center">
-                            <span className="absolute inset-0 rounded-full bg-[#C5A059]/20 animate-ping" />
-                            <span className="absolute inset-2 rounded-full bg-[#C5A059]/30 animate-pulse" />
-                            <div className="w-10 h-10 rounded-full bg-[#C5A059] flex items-center justify-center text-[#1c1c1a] font-bold text-sm">
-                              🕉️
-                            </div>
-                          </div>
-                          <div className="text-center space-y-1">
-                            <p className="text-xs text-white/40 uppercase tracking-wider font-bold">Resonating Mantra</p>
-                            <p className="font-serif text-lg text-[#F2EAD6] font-bold tracking-wide">
-                              {(h as any).beejaMantra}
-                            </p>
-                            <p className="text-[10px] text-white/50 italic mt-1">Close your eyes and hum along in perfect pitch</p>
-                          </div>
-
-                          <button
-                            onClick={() => {
-                              stopResonance();
-                              playHaptic('light');
-                            }}
-                            className="px-6 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-[#F2EAD6] border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition"
-                          >
-                            🛑 Stop Resonance Hum
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                            <p className="text-xs text-white/60 leading-relaxed">
-                              This sound engine generates a real-time deep temple drone at the cosmic pitch of <span className="text-[#C5A059] font-bold">{(h as any).beejaFrequency}Hz</span>. Chant the sacred beeja mantra while humming to balance the active Graha.
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => {
-                              startResonance((h as any).beejaFrequency);
-                            }}
-                            className="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider text-[#1c1c1a] bg-[#C5A059] hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2"
-                          >
-                            📿 Start Cosmic Sound Resonance
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Daily Sadhana Focus Card (Featured Shoonaya Experience!) */}
-                  <div className="rounded-2xl p-4 border border-[#C5A059]/35 space-y-2 relative overflow-hidden"
-                    style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(10,8,25,0.7) 100%)' }}>
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/5 rounded-full blur-xl pointer-events-none" />
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">📿</span>
-                      <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Today&apos;s Sadhana Focus</h3>
-                    </div>
-                    <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed pr-6">{h.sadhanaFocus}</p>
-                    {'sadhanaPlan' in h && (
-                      <div className="grid gap-2 pt-2">
-                        {(h as any).sadhanaPlan.map((step: any) => (
-                          <div key={step.label} className="rounded-xl border border-[#C5A059]/15 bg-[#C5A059]/5 px-3 py-2">
-                            <p className="text-[9px] uppercase tracking-wider font-bold text-[#C5A059]/75">{step.label}</p>
-                            <p className="text-[11px] text-[#F2EAD6]/75 leading-relaxed mt-0.5">{step.action}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
-                  {/* Interpretations for work/life */}
-                  <div className="space-y-2">
+                  <div className="grid gap-2">
                     <div className="rounded-2xl p-4 border border-white/5 flex gap-3 items-start"
                       style={{ background: 'rgba(10,8,25,0.5)' }}>
                       <span className="text-xl mt-0.5">💼</span>
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Karma &amp; Career</h4>
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Work guidance</h4>
                         <p className="text-sm text-white/85 leading-relaxed">{h.karma}</p>
                       </div>
                     </div>
@@ -1275,7 +1045,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                       style={{ background: 'rgba(10,8,25,0.5)' }}>
                       <span className="text-xl mt-0.5">🌿</span>
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Vitality &amp; Health</h4>
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Body and energy</h4>
                         <p className="text-sm text-white/85 leading-relaxed">{h.health}</p>
                       </div>
                     </div>
@@ -1284,9 +1054,39 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                       style={{ background: 'rgba(10,8,25,0.5)' }}>
                       <span className="text-xl mt-0.5">💖</span>
                       <div className="space-y-0.5">
-                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Love &amp; Connections</h4>
+                        <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Relationships</h4>
                         <p className="text-sm text-white/85 leading-relaxed">{h.love}</p>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl p-4 border border-[#C5A059]/35 space-y-3 relative overflow-hidden"
+                    style={{ background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(10,8,25,0.7) 100%)' }}>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A059]/5 rounded-full blur-xl pointer-events-none" />
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">📿</span>
+                        <h3 className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Practice guidance</h3>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] text-white/35 uppercase tracking-wider">Suggested window</p>
+                        <p className="text-[11px] font-semibold text-[#F2EAD6]/80">{h.luckyTime}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm font-medium text-[#F2EAD6] leading-relaxed">{h.sadhanaFocus}</p>
+                    <div className="grid gap-2">
+                      {h.sadhanaPlan.map((step) => (
+                        <div key={step.label} className="rounded-xl border border-[#C5A059]/15 bg-[#C5A059]/5 px-3 py-2">
+                          <p className="text-[9px] uppercase tracking-wider font-bold text-[#C5A059]/75">{step.label}</p>
+                          <p className="text-[11px] text-[#F2EAD6]/75 leading-relaxed mt-0.5">{step.action}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-xl border border-white/8 bg-black/20 px-3 py-3">
+                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider">Dhyana support</p>
+                      <p className="font-serif text-sm text-[#F2EAD6] mt-1 leading-relaxed">{h.shloka}</p>
+                      <p className="text-[10px] text-[#C5A059]/85 mt-2 leading-relaxed">{h.shlokaTranslation}</p>
+                      <p className="text-[10px] text-white/50 mt-2">Mantra anchor: {h.beejaMantra}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -1589,12 +1389,39 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                   </div>
                 </div>
 
-                {/* Lagna details banner */}
+                <div className={`rounded-2xl p-4 border space-y-2 ${
+                  kundaliResult.chart.timeUnknown
+                    ? 'border-amber-400/25'
+                    : 'border-sky-400/20'
+                }`}
+                  style={{ background: kundaliResult.chart.timeUnknown ? 'rgba(245, 158, 11, 0.08)' : 'rgba(56, 189, 248, 0.07)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{kundaliResult.chart.timeUnknown ? '⏳' : '🧭'}</span>
+                    <h3 className={`text-xs font-bold uppercase tracking-wider ${
+                      kundaliResult.chart.timeUnknown ? 'text-amber-200' : 'text-sky-200'
+                    }`}>
+                      {kundaliResult.chart.timeUnknown ? 'Timing confidence: partial' : 'Timing confidence: high'}
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-white/60 leading-relaxed">
+                    {kundaliResult.chart.timeUnknown
+                      ? 'Birth time is unknown, so this reading is intentionally restricted to Moon sign, Nakshatra, Dasha, and sign-based guidance.'
+                      : 'Birth time is available, so ascendant, houses, D9, and house-based interpretation are enabled.'}
+                  </p>
+                </div>
+
+                {/* Identity banner */}
                 <div className="rounded-2xl p-5 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.65)' }}>
                   <div className="text-center space-y-1">
-                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">{t('calculatedAscendant')}</span>
-                    <h3 className="font-serif text-2xl font-bold text-[#F2EAD6]">{kundaliResult.lagnaSign} ({kundaliResult.lagnaEnglish})</h3>
+                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider">
+                      {kundaliResult.chart.timeUnknown ? 'Moon-sign-led reading' : t('calculatedAscendant')}
+                    </span>
+                    <h3 className="font-serif text-2xl font-bold text-[#F2EAD6]">
+                      {kundaliResult.chart.timeUnknown
+                        ? `${kundaliResult.chart.planets['Chandra']?.rashiName ?? kundaliResult.lagnaSign} · ${kundaliResult.chart.nakshatra?.name ?? 'Nakshatra'}`
+                        : `${kundaliResult.lagnaSign} (${kundaliResult.lagnaEnglish})`}
+                    </h3>
                     <p className="text-white/40 text-xs">{t('chartGeneratedFor')}: {kundaliResult.input.name}</p>
                     {kundaliResult.chart.timeUnknown && (
                       <p className="text-[10px] text-amber-400/80 italic mt-1">
@@ -1682,14 +1509,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                 )}
 
                 {/* Styled North Indian Kundali SVG */}
-                <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"
-                  style={{ background: 'rgba(10,8,25,0.65)' }}>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider self-start">{t('northIndianRashiChart')}</h4>
-                  <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-2xl"
-                    dangerouslySetInnerHTML={{ __html: renderKundaliSVG(kundaliResult) }}
-                  />
-                  <span className="text-[10px] text-white/30 italic">{t('rashiPlacementsHint')}</span>
-                </div>
+                {!kundaliResult.chart.timeUnknown && (
+                  <div className="rounded-2xl p-4 border border-white/5 space-y-3 flex flex-col items-center"
+                    style={{ background: 'rgba(10,8,25,0.65)' }}>
+                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider self-start">{t('northIndianRashiChart')}</h4>
+                    <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-2xl"
+                      dangerouslySetInnerHTML={{ __html: renderKundaliSVG(kundaliResult) }}
+                    />
+                    <span className="text-[10px] text-white/30 italic">{t('rashiPlacementsHint')}</span>
+                  </div>
+                )}
 
                 {/* Nakshatra + Dasha banner */}
                 {kundaliResult.chart && (
@@ -1974,6 +1803,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                 )}
 
                 {/* Advanced Jyotish modules */}
+                {!kundaliResult.chart.timeUnknown && (
                 <div className="grid gap-3">
                   {kundaliResult.yogaResults?.length > 0 && (
                     <div className="rounded-2xl p-4 border border-violet-400/20 space-y-3"
@@ -2036,6 +1866,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                     </div>
                   )}
                 </div>
+                )}
 
                 {/* Save Chart section */}
                 {chartSaved ? (
@@ -2185,7 +2016,9 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                 {/* Planet positions */}
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
-                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('grahasHousePlacements')}</h4>
+                  <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">
+                    {kundaliResult.chart.timeUnknown ? 'Graha sign snapshot' : t('grahasHousePlacements')}
+                  </h4>
                   <div className="grid grid-cols-2 gap-2">
                     {kundaliResult.placements.map(p => {
                       const grahaData = kundaliResult.chart.planets[p.key];
@@ -2211,7 +2044,9 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                               {combust && <span className="text-[9px] text-red-400">combust</span>}
                               {dignityLabel && <span className={`text-[9px] font-bold ${dignityColor}`}>{dignityLabel}</span>}
                             </p>
-                            <p className="text-[10px] text-white/40">H{p.house} · {p.sign} {p.degree}</p>
+                            <p className="text-[10px] text-white/40">
+                              {kundaliResult.chart.timeUnknown ? `${p.sign} ${p.degree}` : `H${p.house} · ${p.sign} ${p.degree}`}
+                            </p>
                           </div>
                         </div>
                       );
@@ -2220,6 +2055,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                 </div>
 
                 {/* Graha Shadbala Strength Heatmap (Vedic Power Index) */}
+                {!kundaliResult.chart.timeUnknown && (
                 <div className="rounded-2xl p-4 border border-white/5 space-y-4"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
                   <div className="flex items-center justify-between">
@@ -2257,8 +2093,10 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                     })}
                   </div>
                 </div>
+                )}
 
                 {/* Bhava readings */}
+                {!kundaliResult.chart.timeUnknown && (
                 <div className="rounded-2xl p-4 border border-white/5 space-y-3"
                   style={{ background: 'rgba(10,8,25,0.5)' }}>
                   <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">{t('interactiveBhavaReadings')}</h4>
@@ -2281,6 +2119,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                     ))}
                   </div>
                 </div>
+                )}
               </motion.div>
             )}
           </div>
