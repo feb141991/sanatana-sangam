@@ -12,7 +12,6 @@ import toast from 'react-hot-toast';
 import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
-import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
@@ -48,11 +47,12 @@ export default function VratClient({
   const [showSettings, setShowSettings] = useState(false);
   
   const { t, lang: contextLang } = useLanguage();
+  const localContentLanguage: AppLang = vrat.mantraLocal?.match(/[੦-ੵ]/) ? 'pa' : 'hi';
   const canToggleLocalLanguage =
-    !!vrat.nameLocal ||
-    !!vrat.taglineLocal ||
-    !!vrat.significanceLocal ||
-    !!vrat.practiceLocal ||
+    !!vrat.nameLocal &&
+    !!vrat.taglineLocal &&
+    !!vrat.significanceLocal &&
+    !!vrat.practiceLocal &&
     !!vrat.mantraLocal;
   const preferences = resolveReadablePreferences({
     appLanguage: appLanguage ?? contextLang,
@@ -65,40 +65,15 @@ export default function VratClient({
     getInitialReaderDisplayMode(preferences, canToggleLocalLanguage)
   );
 
-  const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
-
-  // ── Localization ──
-  const localizedSignificance = useLocalizedMeaning({
-    entryId: `vrat:${vrat.id}:significance`,
-    sourceMeaning: vrat.significance,
-    providedMeaning: vrat.significanceLocal,
-    targetLanguage: effectiveLang,
-    enabled: lang === 'local'
-  });
-
-  const localizedPractice = useLocalizedMeaning({
-    entryId: `vrat:${vrat.id}:practice`,
-    sourceMeaning: vrat.practice,
-    providedMeaning: vrat.practiceLocal,
-    targetLanguage: effectiveLang,
-    enabled: lang === 'local'
-  });
-
-  const localizedMantra = useLocalizedMeaning({
-    entryId: `vrat:${vrat.id}:mantra`,
-    sourceMeaning: vrat.mantra,
-    providedMeaning: vrat.mantraLocal,
-    targetLanguage: effectiveLang,
-    enabled: lang === 'local'
-  });
-
-  const localizedTagline = useLocalizedMeaning({
-    entryId: `vrat:${vrat.id}:tagline`,
-    sourceMeaning: vrat.tagline,
-    providedMeaning: vrat.taglineLocal,
-    targetLanguage: effectiveLang,
-    enabled: lang === 'local'
-  });
+  const displayLang: AppLang = lang === 'local' ? localContentLanguage : 'en';
+  const title = lang === 'local' && vrat.nameLocal ? vrat.nameLocal : vrat.name;
+  const tagline = lang === 'local' && vrat.taglineLocal ? vrat.taglineLocal : vrat.tagline;
+  const significanceText =
+    lang === 'local' && vrat.significanceLocal ? vrat.significanceLocal : vrat.significance;
+  const practiceText =
+    lang === 'local' && vrat.practiceLocal ? vrat.practiceLocal : vrat.practice;
+  const mantraText =
+    lang === 'local' && vrat.mantraLocal ? vrat.mantraLocal : vrat.mantra;
 
   const significanceContent: ReadableContent = {
     original: vrat.significance,
@@ -275,9 +250,7 @@ export default function VratClient({
   }, [stopTTS]);
 
   const speakMantra = async () => {
-    const textToSpeak = lang === 'local' && mantraContent.capabilities.canShowMeaning
-      ? localizedMantra.meaning
-      : vrat.mantra;
+    const textToSpeak = mantraText;
 
     if (speaking || readerControls.state.isGeneratingTTS) {
       stopTTS();
@@ -307,13 +280,13 @@ export default function VratClient({
 
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${vrat.name}\n${vrat.tagline}\nRead more on Shoonaya.`;
-    readerControls.handlers.share(text, vrat.name, link);
+    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${title}\n${tagline}\nRead more on Shoonaya.`;
+    readerControls.handlers.share(text, title, link);
   };
 
   const handleCopy = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const textToCopy = `🙏 Today's Sacred Observance: ${vrat.name}\n"${vrat.tagline}"\n\nSignificance:\n${vrat.significance}\n\nHow to observe:\n${vrat.practice}\n\nMantra:\n${vrat.mantra}\n\nRead more on Shoonaya: ${link}`;
+    const textToCopy = `🙏 Today's Sacred Observance: ${title}\n"${tagline}"\n\nSignificance:\n${significanceText}\n\nHow to observe:\n${practiceText}\n\nMantra:\n${mantraText}\n\nRead more on Shoonaya: ${link}`;
     readerControls.handlers.copyText(textToCopy, 'Sacred Vrat details');
   };
 
@@ -338,7 +311,7 @@ export default function VratClient({
         
         <div className="flex-1 min-w-0 flex flex-col">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            {translateFn(effectiveLang, 'vrat') || 'Vrat'}
+            {translateFn(displayLang, 'vrat') || 'Vrat'}
           </span>
           <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
             {originalSlug.toUpperCase()}
@@ -416,12 +389,12 @@ export default function VratClient({
           
           <div className="space-y-1">
             <h1 className="text-3xl font-bold premium-serif tracking-tight">
-              {lang === 'local' && vrat.nameLocal ? vrat.nameLocal : vrat.name}
+              {title}
             </h1>
           </div>
 
-          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]} ${localizedTagline.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-            &ldquo;{lang === 'local' ? localizedTagline.meaning : vrat.tagline}&rdquo;
+          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
+            &ldquo;{tagline}&rdquo;
           </p>
         </section>
 
@@ -430,24 +403,20 @@ export default function VratClient({
           {/* Significance */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> {translateFn(effectiveLang, 'significance')}
+              <Book size={14} /> {translateFn(displayLang, 'significance')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedSignificance.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' && significanceContent.capabilities.canShowMeaning
-                ? localizedSignificance.meaning
-                : vrat.significance}
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
+              {significanceText}
             </p>
           </div>
 
           {/* Practice */}
           <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
-              <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
+              <Flame size={14} /> {translateFn(displayLang, 'howToObserve')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic ${localizedPractice.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' && practiceContent.capabilities.canShowMeaning
-                ? localizedPractice.meaning
-                : vrat.practice}
+            <p className={`${fontStyles[fontSize]} font-medium italic`}>
+              {practiceText}
             </p>
           </div>
 
@@ -455,7 +424,7 @@ export default function VratClient({
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <span className="flex items-center gap-2">
-                <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
+                <Info size={14} /> {translateFn(displayLang, 'sacredMantra')}
               </span>
               {mantraContent.capabilities.canGenerateTTS && (
                 <button
@@ -478,10 +447,8 @@ export default function VratClient({
                 </button>
               )}
             </div>
-            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4 ${localizedMantra.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
-              {lang === 'local' && mantraContent.capabilities.canShowMeaning
-                ? localizedMantra.meaning
-                : vrat.mantra}
+            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4`}>
+              {mantraText}
             </p>
           </div>
 
@@ -544,7 +511,7 @@ export default function VratClient({
             }}
           >
             <Share2 size={18} />
-            {translateFn(effectiveLang, 'shareObservance')}
+            {translateFn(displayLang, 'shareObservance')}
           </button>
         </div>
       </main>

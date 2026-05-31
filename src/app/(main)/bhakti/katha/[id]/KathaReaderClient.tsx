@@ -111,7 +111,13 @@ export default function KathaReaderClient({
 }: Props) {
   const router = useRouter();
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
-  const hasPunjabi = true; // Always true to make Punjabi dynamic script selection fully available
+  const nativePaBody = katha.bodyPa;
+  const nativePaTitle = katha.titlePa;
+  const nativePaPhal = katha.phalPa;
+  const hasPunjabi =
+    (nativePaBody?.length ?? 0) > 0 &&
+    !!nativePaTitle &&
+    !!nativePaPhal;
   const readablePreferences = useMemo(() => resolveReadablePreferences({
     appLanguage,
     meaningLanguage,
@@ -189,10 +195,6 @@ export default function KathaReaderClient({
   const readerControls = useReaderControls(kathaReadableContent.capabilities);
 
   // Which body / phal to show based on selected language
-  const nativePaBody = katha.bodyPa;
-  const nativePaTitle = katha.titlePa;
-  const nativePaPhal = katha.phalPa;
-
   const bodyToShow =
     lang === 'hi' && hasHindi ? (katha.bodyHi ?? katha.body) :
     lang === 'pa' ? (
