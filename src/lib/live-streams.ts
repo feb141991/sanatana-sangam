@@ -1278,13 +1278,16 @@ export const LIVE_STREAMS: LiveStream[] = [
  *   can move faster and should be validated separately at ingestion time.
  */
 /**
- * IDs marked VERIFY-LIVE in comments need their YouTube video IDs confirmed
- * against each channel's current live stream before production use.
- * The static metadata (title, location, aarti times) is correct — only the
- * video ID needs periodic re-validation as live stream IDs can change.
+ * IDs whose YouTube video IDs have been manually audited and confirmed working.
+ * These are shown as a static fallback even when the DB table is empty or does
+ * not contain a row for them.
+ *
+ * All other streams in LIVE_STREAMS have rich metadata (aarti times, collections,
+ * etc.) but their YouTube IDs are marked VERIFY-LIVE in source. They surface in
+ * the app ONLY when the team adds them to the live_darshans DB table with a
+ * confirmed current_video_id. This keeps broken iframes off the screen.
  */
 export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
-  // ── Confirmed working (audited against YouTube) ───────────────────────────
   'krishna-janmabhoomi',
   'mahakaleshwar-ujjain',
   'takhat-hazur-sahib',
@@ -1317,85 +1320,6 @@ export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
   'dwarkadhish-temple',
   'ayodhya-ram-mandir',
   'ram-katha-live',
-
-  // ── New streams — video IDs need VERIFY-LIVE confirmation before shipping ─
-  // Gurdwaras — India
-  'bangla-sahib-delhi',
-  'sis-ganj-sahib-delhi',
-  'tarn-taran-sahib',
-  'kartarpur-sahib',
-  'fatehgarh-sahib-gurdwara',
-  // Gurdwaras — International
-  'gurdwara-southall-london',
-  'gurdwara-brampton-canada',
-  'gurdwara-fremont-usa',
-  'gurdwara-melbourne-australia',
-  'gurdwara-dubai-uae',
-  // Jain — Tirths
-  'sammed-shikharji',
-  'shravanabelagola-bahubali',
-  'shankheshwar-parshwanath',
-  'palitana-jain-temples',
-  'ranakpur-jain-temple',
-  'dilwara-mount-abu',
-  'lal-mandir-delhi',
-  'pavapuri-jal-mandir',
-  'nakoda-bhairav-tirth',
-  'kundalpur-jain',
-  'namokar-mantra-jaap',
-  // Jain — International
-  'jain-center-of-america',
-  'jain-temple-leicester',
-  'jain-temple-nairobi',
-  // Buddhist — India & Nepal
-  'mahabodhi-bodh-gaya',
-  'sarnath-dhamek-stupa',
-  'lumbini-nepal',
-  'boudhanath-stupa',
-  'swayambhunath-nepal',
-  'kushinagar-parinirvana',
-  // Buddhist — Monasteries India
-  'dalai-lama-temple-dharamshala',
-  'tawang-monastery',
-  'thiksey-monastery-ladakh',
-  'hemis-monastery-ladakh',
-  'namdroling-bylakuppe',
-  'rumtek-monastery-sikkim',
-  // Buddhist — International
-  'dalada-maligawa-kandy',
-  'wat-phra-kaew-bangkok',
-  'shwedagon-pagoda-yangon',
-  'borobudur-indonesia',
-  'wat-arun-bangkok',
-  'big-buddha-hong-kong',
-  'plum-village-france',
-  'fo-guang-shan-taiwan',
-  'kagyu-samye-ling-scotland',
-  // Kirtan / Satsang / Ashram
-  'iskcon-mayapur',
-  'iskcon-london',
-  'iskcon-delhi',
-  'baps-nj-usa',
-  'baps-london-neasden',
-  'baps-toronto-canada',
-  'baps-sydney-australia',
-  'baps-abu-dhabi',
-  'isha-sadhguru-satsang',
-  'art-of-living-satsang',
-  'mata-amritanandamayi-satsang',
-  'shemaroo-bhakti-live',
-  'metta-meditation-live',
-  // Final 10 — reaching 100 streams
-  'kashi-vishwanath',
-  'vaishno-devi-katra',
-  'har-ki-pauri-haridwar',
-  'guruvayur-krishna',
-  'meenakshi-amman-madurai',
-  'dakshineswar-kali',
-  'pandharpur-vitthal',
-  'nathdwara-shrinathji',
-  'keshgarh-sahib-anandpur',
-  'damdama-sahib-talwandi',
 ]);
 
 export type LiveDarshanDbRow = {
@@ -1426,30 +1350,63 @@ export function getLiveStreamsWithAartis(): LiveStream[] {
 /**
  * Resolves the effective stream inventory for product surfaces.
  *
- * Design: always show every stream in VERIFIED_STATIC_STREAM_IDS (the full
- * curated 100-stream list). DB rows are used only to patch in a fresh
- * `current_video_id` when the static ID has gone stale — they never limit
- * which streams are shown. Streams whose DB row has `is_active = false` are
- * suppressed. DB-only rows (IDs not in the static list) are ignored.
+ * Two-tier merge — always shows working streams, never broken iframes:
+ *
+ * Tier 1 — DB-managed streams (team-curated, confirmed working video IDs):
+ *   Any row in live_darshans with a current_video_id is shown. The static
+ *   registry provides rich metadata (aarti times, collections, ishtaDevata)
+ *   that the DB row doesn't carry. Rows with is_active=false are suppressed.
+ *
+ * Tier 2 — Confirmed static streams (VERIFIED_STATIC_STREAM_IDS):
+ *   The 32 streams whose YouTube IDs were manually audited. Shown for any ID
+ *   not already in Tier 1 so the page is never empty even if the DB is down.
+ *   DB can override their video ID via current_video_id (to refresh stale IDs
+ *   without a code deploy) while keeping the stream visible in Tier 1.
+ *
+ * All other streams in LIVE_STREAMS have correct metadata but carry unverified
+ * (VERIFY-LIVE) video IDs. They remain invisible until the team adds them to
+ * live_darshans with a confirmed current_video_id.
  */
 export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): LiveStream[] {
-  // Index DB rows by ID for O(1) look-up
-  const dbById = new Map<string, LiveDarshanDbRow>(
-    (dbRows ?? []).map((row) => [row.id, row]),
-  );
+  const activeDbRows = (dbRows ?? []).filter((r) => r.is_active !== false);
+  const dbById = new Map<string, LiveDarshanDbRow>(activeDbRows.map((r) => [r.id, r]));
 
-  return LIVE_STREAMS
-    .filter((s) => {
-      if (!VERIFIED_STATIC_STREAM_IDS.has(s.id)) return false;
-      // Honour explicit is_active=false from DB (e.g. stream retired)
-      const row = dbById.get(s.id);
-      if (row && row.is_active === false) return false;
-      return true;
-    })
-    .map((s) => {
-      const row = dbById.get(s.id);
-      // DB can override the video ID; all other metadata stays static
-      const youtubeVideoId = row?.current_video_id || s.youtubeVideoId;
-      return enrichLiveStream({ ...s, youtubeVideoId });
-    });
+  const seen = new Set<string>();
+  const result: LiveStream[] = [];
+
+  // ── Tier 1: DB-managed streams (confirmed working by the team) ─────────────
+  for (const row of activeDbRows) {
+    const videoId = row.current_video_id;
+    if (!videoId) continue; // no video ID → don't surface a broken iframe
+
+    const fallback = STATIC_STREAM_BY_ID.get(row.id);
+    result.push(enrichLiveStream({
+      id:            row.id,
+      title:         row.title         || fallback?.title         || row.id,
+      location:      row.location      || fallback?.location      || 'Live Darshan',
+      schedule:      row.schedule      || fallback?.schedule      || 'Live Darshan',
+      category:      (row.category     || fallback?.category      || 'mandir') as LiveStreamCategory,
+      tradition:     row.tradition     || fallback?.tradition     || 'hindu',
+      youtubeVideoId: videoId,
+      ishtaDevata:   fallback?.ishtaDevata,
+      state:         fallback?.state,
+      collections:   fallback?.collections,
+      thumbnailUrl:  fallback?.thumbnailUrl,
+    }));
+    seen.add(row.id);
+  }
+
+  // ── Tier 2: Confirmed-static streams not already in Tier 1 ────────────────
+  for (const s of LIVE_STREAMS) {
+    if (!VERIFIED_STATIC_STREAM_IDS.has(s.id)) continue; // not audited → skip
+    if (seen.has(s.id)) continue;                         // already in Tier 1
+
+    // DB may mark even a confirmed-static stream as retired
+    if (dbById.get(s.id)?.is_active === false) continue;
+
+    result.push(enrichLiveStream(s));
+    seen.add(s.id);
+  }
+
+  return result;
 }
