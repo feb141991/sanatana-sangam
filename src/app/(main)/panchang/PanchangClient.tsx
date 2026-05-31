@@ -3,9 +3,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowLeft, Share2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X } from 'lucide-react';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { calculatePanchang } from '@/lib/panchang';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { createClient } from '@/lib/supabase';
@@ -167,8 +168,8 @@ function InfoTooltip({ text }: { text: string }) {
 }
 
 // ─── Panchang row ─────────────────────────────────────────────────────────────
-function Row({ emoji, label, value, upto, accent, warn = false, infoKey }: {
-  emoji: string; label: string; value: string; upto?: string; accent: string; warn?: boolean; infoKey?: string;
+function Row({ emoji, label, value, upto, accent, warn = false, infoKey, isLocal = false }: {
+  emoji: string; label: string; value: string; upto?: string; accent: string; warn?: boolean; infoKey?: string; isLocal?: boolean;
 }) {
   const infoText = infoKey ? INFO_TEXT[infoKey] : undefined;
   return (
@@ -181,7 +182,10 @@ function Row({ emoji, label, value, upto, accent, warn = false, infoKey }: {
       <div className="flex-1 min-w-0">
         <p className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{label}</p>
         <div className="flex items-baseline gap-2 flex-wrap">
-          <p className={`font-semibold text-sm mt-0.5 ${warn ? 'text-orange-300' : 'text-white/90'}`}>{value}</p>
+          <p className={`font-semibold text-sm mt-0.5 ${warn ? 'text-orange-300' : 'text-white/90'}`}>
+            {value}
+            {isLocal && <span className="text-[10px] text-white/50 ml-2 font-normal">(your time)</span>}
+          </p>
           {upto && (
             <p className="text-[10px] text-white/40 mt-0.5">upto {upto}</p>
           )}
@@ -434,6 +438,25 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
   const [showLocSuggestions, setShowLocSuggestions] = useState(false);
   const locTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Diaspora features
+  const [displayTz, setDisplayTz] = useState<'local' | 'ist'>('local');
+  const [upcomingObservances, setUpcomingObservances] = useState<any[]>([]);
+  const [dismissedBanner, setDismissedBanner] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('shoonaya_dismissed_ekadashi')) setDismissedBanner(true);
+    } catch {}
+
+    const tzQuery = timezone || 'Asia/Kolkata';
+    fetch(`/api/calendar/upcoming?days=14&tz=${encodeURIComponent(tzQuery)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.observances) setUpcomingObservances(data.observances);
+      })
+      .catch(() => {});
+  }, [timezone]);
+
   // Memoize today's transit positions — expensive computation, run once per mount
   const todayTransits = useMemo(() => {
     try { return getTodayTransits(); } catch { return null; }
@@ -451,7 +474,7 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
     });
   }, [lang]);
 
-  const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, timezone);
+  const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, displayTz === 'ist' ? 'Asia/Kolkata' : timezone);
 
   // ── Web Audio Graha Beeja Resonance Synthesizer ─────────────────────────────
   const [isPlayingResonance, setIsPlayingResonance] = useState(false);
@@ -743,6 +766,23 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
             <p className="text-white/50 text-xs mt-0.5">
               {PHASE_LABELS[skyPhase]}{city ? ` · 📍 ${city}` : ''}
             </p>
+            {timezone && timezone !== 'Asia/Kolkata' && (
+              <div className="mt-1 flex items-center gap-2">
+                <button
+                  onClick={() => setDisplayTz(t => t === 'local' ? 'ist' : 'local')}
+                  className="flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors"
+                  style={{
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    color: 'rgba(255,255,255,0.8)',
+                  }}
+                >
+                  <span className={displayTz === 'local' ? 'text-[#C5A059]' : 'opacity-60'}>Your time</span>
+                  <span className="opacity-40">↔</span>
+                  <span className={displayTz === 'ist' ? 'text-[#C5A059]' : 'opacity-60'}>IST</span>
+                </button>
+              </div>
+            )}
           </div>
           <button onClick={share}
             className="w-11 h-11 rounded-xl flex items-center justify-center transition"
@@ -750,6 +790,52 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
             <Share2 size={15} className="text-white/80" />
           </button>
         </div>
+
+        {/* Unauthenticated Prompt */}
+        {!isLoggedIn && lat === 28.6139 && lon === 77.2090 && (
+          <div className="rounded-xl px-3 py-2 flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span className="text-sm">📍</span>
+            <p className="text-[11px] text-white/70 flex-1">Showing panchang for New Delhi.</p>
+            <Link href="/auth" className="text-[11px] font-bold text-[#C5A059] px-2 py-1 rounded bg-white/5">Sign in for local times</Link>
+          </div>
+        )}
+
+        {/* Smart Banner */}
+        {(() => {
+          if (dismissedBanner || upcomingObservances.length === 0) return null;
+          const todayIso = localSpiritualDate(timezone, 4);
+          const todayObs = upcomingObservances.find(o => o.date === todayIso);
+          if (!todayObs) return null;
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative overflow-hidden rounded-xl p-3 border"
+              style={{
+                background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.15), rgba(197, 160, 89, 0.05))',
+                borderColor: 'rgba(197, 160, 89, 0.3)',
+              }}
+            >
+              <button
+                onClick={() => {
+                  try { sessionStorage.setItem('shoonaya_dismissed_ekadashi', 'true'); } catch {}
+                  setDismissedBanner(true);
+                }}
+                className="absolute top-2 right-2 text-[#C5A059]/60 hover:text-[#C5A059]"
+              >
+                <X size={14} />
+              </button>
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl leading-none">{todayObs.emoji}</span>
+                <div>
+                  <p className="text-sm font-semibold text-[#F2EAD6]">{todayObs.display_name}</p>
+                  <p className="text-[11px] text-[#C5A059] font-medium opacity-90 mt-0.5">Today in your timezone</p>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {/* Premium Hub Navigation Tabs */}
         <div className="grid grid-cols-3 p-1 rounded-2xl bg-black/25 border border-white/5 backdrop-blur-sm">
@@ -799,6 +885,31 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
                 <p className="text-white/40 text-[10px]">sunrise</p>
               </div>
             </motion.div>
+
+            {/* Festival Strip */}
+            {upcomingObservances.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 snap-x">
+                {upcomingObservances.filter(o => o.date !== localSpiritualDate(timezone, 4)).slice(0, 5).map(obs => {
+                  const [y, m, d] = obs.date.split('-');
+                  const localDateLabel = new Date(Number(y), Number(m)-1, Number(d)).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  
+                  return (
+                    <Link
+                      href={obs.route_slug ? `/${obs.route_kind || 'festivals'}/${obs.route_slug}` : '#'}
+                      key={`${obs.slug}-${obs.date}`}
+                      className="snap-start flex-shrink-0 flex items-center gap-2 rounded-xl px-3 py-2 border transition-all"
+                      style={{ background: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.1)' }}
+                    >
+                      <span className="text-sm leading-none">{obs.emoji}</span>
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-medium text-white/90 whitespace-nowrap">{obs.display_name}</span>
+                        <span className="text-[9px] text-[#C5A059]">{localDateLabel}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Calendar */}
             <GlassCard className="overflow-hidden">
@@ -890,16 +1001,16 @@ export default function PanchangClient({ lat, lon, city, tradition = 'hindu', ti
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" />
-                <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" />
+                <Row emoji="🌅" label={t('sunrise')} value={p.sunrise} accent={tradMeta.accent} infoKey="Sunrise" isLocal={displayTz === 'local' && !!timezone && timezone !== 'Asia/Kolkata'} />
+                <Row emoji="🌆" label={t('sunset')}  value={p.sunset}  accent={tradMeta.accent} infoKey="Sunset" isLocal={displayTz === 'local' && !!timezone && timezone !== 'Asia/Kolkata'} />
               </div>
 
               {'brahmaMuhurta' in p && (
-                <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} infoKey="Brahma Muhurta" />
+                <Row emoji="🌙" label="Brahma Muhurta" value={(p as any).brahmaMuhurta} accent={tradMeta.accent} infoKey="Brahma Muhurta" isLocal={displayTz === 'local' && !!timezone && timezone !== 'Asia/Kolkata'} />
               )}
 
-              <Row emoji="⚠️" label={t('rahuKaal')} value={p.rahuKaal} accent={tradMeta.accent} warn infoKey="Rahu Kaal" />
-              <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" />
+              <Row emoji="⚠️" label={t('rahuKaal')} value={p.rahuKaal} accent={tradMeta.accent} warn infoKey="Rahu Kaal" isLocal={displayTz === 'local' && !!timezone && timezone !== 'Asia/Kolkata'} />
+              <Row emoji="✨" label={t('abhijitMuhurat')} value={p.abhijitMuhurat} accent={tradMeta.accent} infoKey="Abhijit Muhurat" isLocal={displayTz === 'local' && !!timezone && timezone !== 'Asia/Kolkata'} />
 
               {'samvatYear' in p && (
                 <div className="rounded-xl px-4 py-2.5 flex items-center gap-3"
