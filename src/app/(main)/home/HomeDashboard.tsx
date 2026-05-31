@@ -1934,13 +1934,17 @@ export default function HomeDashboard({
 
   const upcomingSacredObservance = apiFestivals
     .map(f => ({ festival: f, daysLeft: daysFromNow(f.date) }))
-    .filter(x => x.daysLeft !== null && x.daysLeft > 0 && x.daysLeft <= 7)
+    // Include today (daysLeft === 0) — previously excluded, hiding same-day festivals
+    // for users in timezones ahead of IST where the API window started from UTC tomorrow.
+    .filter(x => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= 7)
     .sort((a, b) => a.daysLeft - b.daysLeft)[0] ?? null;
 
   const upcomingSacredObservanceLabel = upcomingSacredObservance
-    ? upcomingSacredObservance.daysLeft === 1
-      ? t('tomorrow')
-      : t('inNDays').replace('{n}', String(upcomingSacredObservance.daysLeft))
+    ? upcomingSacredObservance.daysLeft === 0
+      ? t('today')
+      : upcomingSacredObservance.daysLeft === 1
+        ? t('tomorrow')
+        : t('inNDays').replace('{n}', String(upcomingSacredObservance.daysLeft))
     : null;
   const upcomingObservanceHref = upcomingSacredObservance
     ? getVratHref(upcomingSacredObservance.festival)

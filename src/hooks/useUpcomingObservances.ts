@@ -20,9 +20,14 @@ export function useUpcomingObservances(tradition: string, days = 30) {
   useEffect(() => {
     let active = true;
     setLoading(true);
-    
+
     const trad = tradition === 'all' ? '' : `&tradition=${tradition}`;
-    fetch(`/api/calendar/upcoming?days=${days}${trad}`)
+    // Pass the browser's IANA timezone so the API window starts at the user's
+    // local midnight, not UTC midnight (critical for users outside IST).
+    const tz = typeof Intl !== 'undefined'
+      ? `&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`
+      : '';
+    fetch(`/api/calendar/upcoming?days=${days}${trad}${tz}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         if (active) {

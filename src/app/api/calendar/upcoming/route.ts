@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 export const runtime = 'nodejs';
 
@@ -27,11 +28,18 @@ export async function GET(request: NextRequest) {
     if (days > 60) days = 60;
     
     const tradition = searchParams.get('tradition') || 'all';
+    // Accept the caller's timezone so the date window matches their local day,
+    // not the server's UTC clock. Fall back to IST (where the Hindu calendar is
+    // anchored) when no timezone is provided (e.g. pre-login requests).
+    const tz = searchParams.get('tz') || 'Asia/Kolkata';
 
-    const now = new Date();
-    const fromStr = now.toISOString().split('T')[0];
-    
-    const endDate = new Date(now.getTime() + (days - 1) * 24 * 60 * 60 * 1000);
+    // localSpiritualDate respects Brahma Muhurta: before 4am the user is still
+    // on the previous spiritual day. This is correct for global users too.
+    const fromStr = localSpiritualDate(tz, 4);
+
+    // Build the end date by adding `days` calendar days to the local start.
+    const [fy, fm, fd] = fromStr.split('-').map(Number);
+    const endDate = new Date(Date.UTC(fy, fm - 1, fd + days));
     const toStr = endDate.toISOString().split('T')[0];
 
     const supabase = await createServerSupabaseClient();

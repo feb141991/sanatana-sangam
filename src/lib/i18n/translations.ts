@@ -110,7 +110,7 @@ export type TranslationKey =
   // Home — previously hardcoded UI strings
   | 'mandaliRanks' | 'mandaliRanksDesc'
   | 'upcomingSacredTime' | 'festivalPrepDesc' | 'viewBtn'
-  | 'tomorrow' | 'inNDays'
+  | 'today' | 'tomorrow' | 'inNDays'
   | 'moodChip' | 'feelingPrefix'
   // Mood keys
   | 'moodAnxious' | 'moodGrieving' | 'moodAngry' | 'moodScattered' | 'moodLost'
