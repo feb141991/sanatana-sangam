@@ -262,9 +262,9 @@ function PlayerOverlay({
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 32, stiffness: 280 }}
-      // Player overlay is always dark — video player UX expectation
+      // Video area stays black; the panel below follows the app theme.
       className="fixed inset-0 z-[100] flex flex-col"
-      style={{ background: '#0C0A07' }}
+      style={{ background: 'var(--surface-base)' }}
     >
       {/* ── YouTube iframe ─────────────────────────────────── */}
       <div className="relative w-full aspect-video flex-shrink-0 bg-black">
@@ -324,15 +324,15 @@ function PlayerOverlay({
         <div className="px-5 pt-4 pb-2 space-y-4">
           {/* Temple identity */}
           <div>
-            <h2 className="text-[1.45rem] leading-tight premium-serif font-light" style={{ color: '#ede8de' }}>
+            <h2 className="text-[1.45rem] leading-tight premium-serif font-light" style={{ color: 'var(--text-cream)' }}>
               {stream.title}
             </h2>
             <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-              <div className="flex items-center gap-1" style={{ color: '#b0aa9e' }}>
+              <div className="flex items-center gap-1" style={{ color: 'var(--text-muted-warm)' }}>
                 <MapPin size={11} />
                 <span className="text-[12px]">{stream.location}</span>
               </div>
-              <span style={{ color: '#7a7469', fontSize: 8 }}>·</span>
+              <span style={{ color: 'var(--text-dim)', fontSize: 8 }}>·</span>
               <span
                 className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full capitalize"
                 style={{ background: 'rgba(197,160,89,0.15)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.30)' }}
@@ -346,7 +346,7 @@ function PlayerOverlay({
           {(aartis?.morning || aartis?.evening) && (
             <div
               className="rounded-2xl p-4 space-y-3"
-              style={{ background: 'rgba(20,18,14,0.92)', border: '1px solid rgba(197,160,89,0.12)' }}
+              style={{ background: 'var(--surface-raised)', border: '1px solid rgba(197,160,89,0.12)' }}
             >
               <p className="text-[10px] font-bold tracking-[0.18em] uppercase" style={{ color: 'rgba(197,160,89,0.70)' }}>
                 Aarti Schedule
@@ -357,8 +357,8 @@ function PlayerOverlay({
                     <Sunrise size={14} style={{ color: '#FFB450' }} />
                   </div>
                   <div>
-                    <p className="text-[11px]" style={{ color: '#7a7469' }}>Morning Aarti</p>
-                    <p className="text-[13px] font-medium" style={{ color: '#ede8de' }}>{aartis.morning}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>Morning Aarti</p>
+                    <p className="text-[13px] font-medium" style={{ color: 'var(--text-cream)' }}>{aartis.morning}</p>
                   </div>
                 </div>
               )}
@@ -368,8 +368,8 @@ function PlayerOverlay({
                     <Sunset size={14} style={{ color: '#C080FF' }} />
                   </div>
                   <div>
-                    <p className="text-[11px]" style={{ color: '#7a7469' }}>Evening Aarti</p>
-                    <p className="text-[13px] font-medium" style={{ color: '#ede8de' }}>{aartis.evening}</p>
+                    <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>Evening Aarti</p>
+                    <p className="text-[13px] font-medium" style={{ color: 'var(--text-cream)' }}>{aartis.evening}</p>
                   </div>
                 </div>
               )}
@@ -378,7 +378,7 @@ function PlayerOverlay({
 
           {/* Schedule fallback */}
           {!aartis && stream.schedule && (
-            <div className="flex items-center gap-2" style={{ color: '#b0aa9e' }}>
+            <div className="flex items-center gap-2" style={{ color: 'var(--text-muted-warm)' }}>
               <Clock size={13} />
               <span className="text-[13px]">{stream.schedule}</span>
             </div>
@@ -396,7 +396,7 @@ function PlayerOverlay({
             <button
               onClick={handleShare}
               className="flex items-center justify-center gap-2 py-3.5 rounded-full font-medium text-[13px] transition-transform active:scale-[0.97]"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#ede8de' }}
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'var(--text-cream)' }}
             >
               <Share2 size={14} /> Share
             </button>
@@ -424,7 +424,7 @@ function PlayerOverlay({
               <p className="text-[11px] font-bold tracking-[0.16em] uppercase" style={{ color: 'rgba(197,160,89,0.70)' }}>
                 Watch Next
               </p>
-              <ChevronRight size={14} style={{ color: '#7a7469' }} />
+              <ChevronRight size={14} style={{ color: 'var(--text-dim)' }} />
             </div>
             <div className="flex gap-3 overflow-x-auto px-5 pb-1" style={{ scrollbarWidth: 'none' }}>
               {suggestions.map(s => (
@@ -670,7 +670,7 @@ export default function LiveDarshanClient({
         });
       }
     }
-    await savePref(streamId, { ...update, is_favourite: true });
+    await savePref(streamId, update);
     setNotifTarget(null);
     toast.success(wantsNotif ? '🔔 Aarti call saved' : 'Notifications turned off');
   }, [savePref]);
