@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import LiveDarshanClient from './LiveDarshanClient';
-import { getLiveStreamsWithAartis, AARTI_TIMES } from '@/lib/live-streams';
+import { resolveActiveLiveStreams } from '@/lib/live-streams';
 
 
 export default async function LiveDarshanPage() {
@@ -23,23 +23,8 @@ export default async function LiveDarshanPage() {
       .order('created_at', { ascending: true }),
   ]);
 
-  // Build the streams list — merge aarti times into DB rows if available,
-  // otherwise fall back to the local static list (already has aarti times).
-  let activeStreams = getLiveStreamsWithAartis();
   const { data: dbStreams, error: streamsError } = dbStreamsResult;
-  if (!streamsError && dbStreams && dbStreams.length > 0) {
-    activeStreams = dbStreams.map(row => ({
-      id: row.id,
-      title: row.title,
-      location: row.location,
-      schedule: row.schedule,
-      category: row.category,
-      tradition: row.tradition,
-      youtubeVideoId: row.current_video_id || '',
-      // Merge aarti schedule from static registry
-      aartis: AARTI_TIMES[row.id],
-    }));
-  }
+  const activeStreams = resolveActiveLiveStreams(!streamsError ? dbStreams : null);
 
   const initialPreferences = prefsResult.data ?? [];
 

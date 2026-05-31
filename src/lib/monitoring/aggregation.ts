@@ -60,8 +60,8 @@ export function detectConfigDrift(): ConfigDriftWarning[] {
  * Generates an aggregated health report from the event sink and circuit breakers.
  * This should be called by the admin monitoring window.
  */
-export function generateHealthReport(): AggregatedHealthReport {
-  const activeIncidents = _eventSink.filter(e => e.severity === 'P0' || e.severity === 'P1').slice(0, 50);
+export function generateHealthReport(events: MonitoringEvent[] = _eventSink): AggregatedHealthReport {
+  const activeIncidents = events.filter(e => e.severity === 'P0' || e.severity === 'P1').slice(0, 50);
   
   const routeStats = new Map<string, { count: number; errors: number; totalLatency: number }>();
   let ttsCacheHits = 0;
@@ -69,7 +69,7 @@ export function generateHealthReport(): AggregatedHealthReport {
   
   const providerFallbacks = new Map<string, number>();
 
-  for (const event of _eventSink) {
+  for (const event of events) {
     // Route Stats
     if (event.route) {
       if (!routeStats.has(event.route)) {

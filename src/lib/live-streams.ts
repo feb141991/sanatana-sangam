@@ -152,7 +152,7 @@ export const AARTI_TIMES: Record<string, AartiSchedule> = {
 };
 
 export const LIVE_STREAMS: LiveStream[] = [
-  {
+{
     id: 'krishna-janmabhoomi',
     title: 'Shri Krishna Janmabhoomi',
     location: 'Mathura, UP',
@@ -164,7 +164,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Saptapuri'],
     youtubeVideoId: 'ZCXCu9_K0lY', // Verified Mathura Janmabhoomi
   },
-  {
+{
     id: 'mahakaleshwar-ujjain',
     title: 'Shri Mahakaleshwar',
     location: 'Ujjain, Madhya Pradesh',
@@ -176,7 +176,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jyotirlinga', 'Saptapuri'],
     youtubeVideoId: 'XonAtRkvqgo', // Verified Mahakaleshwar
   },
-  {
+{
     id: 'takhat-hazur-sahib',
     title: 'Takhat Sachkhand Hazur Sahib',
     location: 'Nanded, Maharashtra',
@@ -187,7 +187,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Panj Takht'],
     youtubeVideoId: 'YsI5XOB4z7g', // Verified Sikh Darshan
   },
-  {
+{
     id: 'iskcon-hare-krishna',
     title: 'ISKCON Hare Krishna',
     location: 'Global',
@@ -196,7 +196,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: 'Y1SrWeVhQJ0', // Verified Prabhupada Kirtan
   },
-  {
+{
     id: 'shantikunj-haridwar',
     title: 'Shantikunj Gayatri Teerth',
     location: 'Haridwar, Uttarakhand',
@@ -205,7 +205,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: 'F2ndo7e0_UY', // Verified Shantikunj
   },
-  {
+{
     id: 'swaminarayan-dhun',
     title: 'Swaminarayan Akhand Dhun',
     location: 'Gujarat',
@@ -214,7 +214,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: '185-4L8sIVY', // Verified Swaminarayan
   },
-  {
+{
     id: 'sai-baba-dhyan',
     title: 'Shirdi Sai Baba',
     location: 'Shirdi, Maharashtra',
@@ -223,7 +223,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: '67nkcpEwCDo', // Verified Sai Baba
   },
-  {
+{
     id: 'shiva-mahamrityunjay',
     title: 'Shiva Mahamrityunjay',
     location: 'Kashi',
@@ -232,7 +232,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: 'YmwC_vNkkA4', // Verified Shiva Mantra
   },
-  {
+{
     id: 'brahma-kumaris',
     title: 'Brahma Kumaris Madhuban',
     location: 'Mount Abu, Rajasthan',
@@ -241,8 +241,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     tradition: 'hindu',
     youtubeVideoId: 'KmQrxaRSurQ', // Verified Brahma Kumaris
   },
-  // ── New additions ─────────────────────────────────────────────
-  {
+{
     id: 'tirupati-balaji',
     title: 'Tirupati Balaji (TTD)',
     location: 'Tirupati, Andhra Pradesh',
@@ -254,7 +253,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Char Dham'],
     youtubeVideoId: 'oWFK4tgjAGM', // Verified Tirupati Balaji
   },
-  {
+{
     id: 'siddhivinayak',
     title: 'Siddhivinayak Temple',
     location: 'Mumbai, Maharashtra',
@@ -265,19 +264,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Maharashtra',
     youtubeVideoId: 'SIqmLnMj0Ow', // Verified Siddhivinayak
   },
-  {
-    id: 'kashi-vishwanath',
-    title: 'Kashi Vishwanath Dham',
-    location: 'Varanasi, UP',
-    schedule: 'Mangala Aarti: 3:00 AM',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Uttar Pradesh',
-    collections: ['Jyotirlinga', 'Saptapuri', 'Rivers'],
-    youtubeVideoId: 'CxXJsVLDJko', // Verified Kashi Vishwanath
-  },
-  {
+{
     id: 'golden-temple-sgpc',
     title: 'Golden Temple (SGPC Official)',
     location: 'Amritsar, Punjab',
@@ -288,7 +275,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Panj Takht'],
     youtubeVideoId: '8GTgg2TmRLQ', // Verified SGPC Official
   },
-  {
+{
     id: 'shirdi-sai-baba-temple',
     title: 'Shirdi Sai Baba Temple',
     location: 'Shirdi, Maharashtra',
@@ -299,7 +286,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Maharashtra',
     youtubeVideoId: 'HbVd7a7esgA', // Verified Shirdi Darshan
   },
-  {
+{
     id: 'puri-jagannath',
     title: 'Shri Jagannath Puri',
     location: 'Puri, Odisha',
@@ -311,7 +298,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Char Dham', 'Shaktipeeth'],
     youtubeVideoId: '_pplsMPNVmQ', // Verified Jay Jagannath TV
   },
-  {
+{
     id: 'kedarnath-temple',
     title: 'Kedarnath Temple',
     location: 'Rudraprayag, Uttarakhand',
@@ -323,7 +310,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jyotirlinga', 'Chota Char Dham'],
     youtubeVideoId: '3oJdFVXsC-o', // Verified Kedarnath Live
   },
-  {
+{
     id: 'badrinath-temple',
     title: 'Shri Badrinath Temple',
     location: 'Chamoli, Uttarakhand',
@@ -335,7 +322,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Char Dham', 'Chota Char Dham'],
     youtubeVideoId: 'yGELQ2Ch-q4', // Verified Badrinath Live
   },
-  {
+{
     id: 'somnath-temple',
     title: 'Shri Somnath Temple',
     location: 'Junagadh, Gujarat',
@@ -347,7 +334,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jyotirlinga'],
     youtubeVideoId: 'J4z7CIrvsuw', // Verified Somnath Live
   },
-  {
+{
     id: 'swaminarayan-kundaldham',
     title: 'Swaminarayan Kundaldham',
     location: 'Rajkot, Gujarat',
@@ -358,7 +345,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Gujarat',
     youtubeVideoId: 'u9SEkGgmEbo', // Verified Swaminarayan Kundaldham
   },
-  {
+{
     id: 'hazoori-ragi-kirtan',
     title: 'Hazoori Ragi Gurbani Kirtan',
     location: 'Punjab',
@@ -369,18 +356,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Gurbani Kirtan'],
     youtubeVideoId: 'SfkiRiVr3wc', // Verified Hazoori Ragi
   },
-  {
-    id: 'nathdwara-shrinathji',
-    title: 'Nathdwara Shrinathji',
-    location: 'Nathdwara, Rajasthan',
-    schedule: 'Jhanki Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    state: 'Rajasthan',
-    youtubeVideoId: 'jpTOa9PVaTc', // Verified Nathdwara
-  },
-  {
+{
     id: 'iskcon-vrindavan',
     title: 'ISKCON Vrindavan',
     location: 'Vrindavan, UP',
@@ -391,7 +367,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Uttar Pradesh',
     youtubeVideoId: 'zs6j9YPeaec', // Verified ISKCON Vrindavan
   },
-  {
+{
     id: 'vrindavan-chandrodaya',
     title: 'Vrindavan Chandrodaya Mandir',
     location: 'Vrindavan, UP',
@@ -402,7 +378,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Uttar Pradesh',
     youtubeVideoId: 'IEejiL_7g4c',
   },
-  {
+{
     id: 'srisailam-temple',
     title: 'Srisailam Shaktipeeth',
     location: 'Andhra Pradesh',
@@ -414,7 +390,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jyotirlinga', 'Shaktipeeth'],
     youtubeVideoId: 'zc3tcDcD9Ig', // Verified Srisailam
   },
-  {
+{
     id: 'guru-granth-sahib-live',
     title: 'Sri Guru Granth Sahib Kirtan',
     location: 'Punjab / Global',
@@ -425,18 +401,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Gurbani Kirtan'],
     youtubeVideoId: 'YlnQ2apbtuQ', // Verified Sikh Kirtan
   },
-  {
-    id: 'iskcon-mayapur',
-    title: 'ISKCON Mayapur (HQ)',
-    location: 'Mayapur, West Bengal',
-    schedule: 'Live Darshan & Kirtan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    state: 'West Bengal',
-    youtubeVideoId: '2OSiD0YoiGw',
-  },
-  {
+{
     id: 'iskcon-bangalore',
     title: 'ISKCON Bangalore',
     location: 'Bangalore, Karnataka',
@@ -447,51 +412,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'Karnataka',
     youtubeVideoId: 'RZAq3khB0T8',
   },
-  {
-    id: 'baps-london-neasden',
-    title: 'BAPS Neasden Temple',
-    location: 'London, UK',
-    schedule: 'Global Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    state: 'International',
-    youtubeVideoId: 'Nk-guabYF1k',
-  },
-  {
-    id: 'kamakhya-temple-live',
-    title: 'Kamakhya Devi Temple',
-    location: 'Guwahati, Assam',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shakti',
-    state: 'Assam',
-    youtubeVideoId: 'djAqGUJEvuc',
-  },
-  {
-    id: 'mahalakshmi-kolhapur',
-    title: 'Mahalakshmi Temple',
-    location: 'Kolhapur, Maharashtra',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shakti',
-    state: 'Maharashtra',
-    youtubeVideoId: 'MMWkMx8IOvg',
-  },
-  {
-    id: 'sankat-mochan-hanuman',
-    title: 'Sankat Mochan Hanuman',
-    location: 'Varanasi, UP',
-    schedule: 'Live Aarti & Bhajans',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Hanuman',
-    state: 'Uttar Pradesh',
-    youtubeVideoId: 'I03T9NCoj_U',
-  },
-  {
+{
     id: 'takhat-patna-sahib',
     title: 'Takhat Sri Patna Sahib',
     location: 'Patna, Bihar',
@@ -502,7 +423,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Panj Takht'],
     youtubeVideoId: '2VoKxEz6sSc',
   },
-  {
+{
     id: 'jinvani-tv-live',
     title: 'Jinvani TV Live',
     location: 'India',
@@ -513,7 +434,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jain Path'],
     youtubeVideoId: '7Ulm6UNZ578',
   },
-  {
+{
     id: 'aadinath-tv-live',
     title: 'Aadinath TV Official',
     location: 'India',
@@ -524,7 +445,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jain Path'],
     youtubeVideoId: 'K1rbZLQ2GbQ',
   },
-  {
+{
     id: 'pashupatinath-nepal',
     title: 'Pashupatinath Temple',
     location: 'Kathmandu, Nepal',
@@ -535,7 +456,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     state: 'International',
     youtubeVideoId: 'xcDAsM0RUV4',
   },
-  {
+{
     id: 'paras-jain-tv',
     title: 'Paras TV (Jain Channel)',
     location: 'India',
@@ -546,7 +467,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Jain Path'],
     youtubeVideoId: 'cDzIiI0kvNg', // Verified Jain Channel
   },
-  {
+{
     id: 'dwarkadhish-temple',
     title: 'Shri Dwarkadhish Mandir',
     location: 'Dwarka, Gujarat',
@@ -558,7 +479,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Char Dham', 'Saptapuri'],
     youtubeVideoId: 'rWlOF2WGiTA',
   },
-  {
+{
     id: 'ayodhya-ram-mandir',
     title: 'Ayodhya Ram Mandir',
     location: 'Ayodhya, UP',
@@ -570,7 +491,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     collections: ['Saptapuri'],
     youtubeVideoId: 'eIPYl54lAJU',
   },
-  {
+{
     id: 'ram-katha-live',
     title: 'Ram Katha (Morari Bapu)',
     location: 'Global',
@@ -580,920 +501,7 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Rama',
     collections: ['Katha'],
     youtubeVideoId: 'Yv2D6cWWTq8',
-  },
-
-  // ─── SOUTH INDIA ──────────────────────────────────────────────────────────
-  {
-    id: 'guruvayur-krishna',
-    title: 'Guruvayur Sri Krishna Temple',
-    location: 'Guruvayur, Kerala',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    state: 'Kerala',
-    youtubeVideoId: 'LYZMcmG6Aho',
-  },
-  {
-    id: 'meenakshi-amman-madurai',
-    title: 'Meenakshi Amman Temple',
-    location: 'Madurai, Tamil Nadu',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Meenakshi',
-    state: 'Tamil Nadu',
-    collections: ['Shaktipeeth'],
-    youtubeVideoId: 'nOkxAVnJ1PQ',
-  },
-  {
-    id: 'ramanathaswamy-rameswaram',
-    title: 'Ramanathaswamy Temple',
-    location: 'Rameswaram, Tamil Nadu',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Tamil Nadu',
-    collections: ['Jyotirlinga', 'Char Dham'],
-    youtubeVideoId: 'Lz2YDSN8x1s',
-  },
-  {
-    id: 'srirangam-ranganathaswamy',
-    title: 'Sri Ranganathaswamy Temple',
-    location: 'Srirangam, Tamil Nadu',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    state: 'Tamil Nadu',
-    youtubeVideoId: 'V4fIjl5XBBE',
-  },
-  {
-    id: 'arunachaleswarar-tiruvannamalai',
-    title: 'Arunachaleswarar Temple',
-    location: 'Tiruvannamalai, Tamil Nadu',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Tamil Nadu',
-    youtubeVideoId: 'FXg1PsDEdRQ',
-  },
-  {
-    id: 'palani-murugan',
-    title: 'Palani Murugan Temple',
-    location: 'Palani, Tamil Nadu',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Murugan',
-    state: 'Tamil Nadu',
-    youtubeVideoId: 'B5lW_dKBdaw',
-  },
-  {
-    id: 'padmanabhaswamy-trivandrum',
-    title: 'Sri Padmanabhaswamy Temple',
-    location: 'Thiruvananthapuram, Kerala',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    state: 'Kerala',
-    youtubeVideoId: 'a3Vh5RqnFnM',
-  },
-  {
-    id: 'kapaleeshwarar-chennai',
-    title: 'Kapaleeshwarar Temple',
-    location: 'Mylapore, Chennai',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Tamil Nadu',
-    youtubeVideoId: 'Pz3OjC7w8gQ',
-  },
-  {
-    id: 'sabarimala-ayyappa',
-    title: 'Sabarimala Ayyappa Temple',
-    location: 'Pathanamthitta, Kerala',
-    schedule: 'Seasonal Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Ayyappa',
-    state: 'Kerala',
-    youtubeVideoId: 'jQ9C_g6CIXM',
-  },
-  {
-    id: 'murudeshwar-shiva',
-    title: 'Murudeshwar Temple',
-    location: 'Murudeshwar, Karnataka',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Karnataka',
-    youtubeVideoId: 'EB2zf1VTSgM',
-  },
-
-  // ─── REMAINING JYOTIRLINGAS ────────────────────────────────────────────────
-  {
-    id: 'trimbakeshwar-nashik',
-    title: 'Trimbakeshwar Jyotirlinga',
-    location: 'Trimbak, Nashik, Maharashtra',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Maharashtra',
-    collections: ['Jyotirlinga'],
-    youtubeVideoId: 'OmSSjTx_qlg',
-  },
-  {
-    id: 'baidyanath-deoghar',
-    title: 'Baidyanath Dham Jyotirlinga',
-    location: 'Deoghar, Jharkhand',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Jharkhand',
-    collections: ['Jyotirlinga'],
-    youtubeVideoId: 'A0vqOz2Bh7Q',
-  },
-  {
-    id: 'grishneshwar-aurangabad',
-    title: 'Grishneshwar Jyotirlinga',
-    location: 'Verul, Aurangabad, Maharashtra',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Maharashtra',
-    collections: ['Jyotirlinga'],
-    youtubeVideoId: 'Ml6Fk3QMJYk',
-  },
-  {
-    id: 'nageshvara-jyotirlinga',
-    title: 'Nageshvara Jyotirlinga',
-    location: 'Dwarka, Gujarat',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Gujarat',
-    collections: ['Jyotirlinga'],
-    youtubeVideoId: 'L_fHZ0d9OwQ',
-  },
-
-  // ─── EAST INDIA ───────────────────────────────────────────────────────────
-  {
-    id: 'dakshineswar-kali',
-    title: 'Dakshineswar Kali Temple',
-    location: 'Kolkata, West Bengal',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Kali',
-    state: 'West Bengal',
-    collections: ['Shaktipeeth'],
-    youtubeVideoId: 'ow4b7UfWxrM',
-  },
-  {
-    id: 'belur-math-kolkata',
-    title: 'Belur Math Ramakrishna Temple',
-    location: 'Howrah, West Bengal',
-    schedule: 'Live Puja & Kirtan',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Ramakrishna',
-    state: 'West Bengal',
-    youtubeVideoId: 'CcCZpblnxmE',
-  },
-  {
-    id: 'tarakeswar-temple',
-    title: 'Tarakeswar Shiva Temple',
-    location: 'Tarakeswar, West Bengal',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'West Bengal',
-    youtubeVideoId: 'pQMv9iqtZqA',
-  },
-
-  // ─── NORTH INDIA ──────────────────────────────────────────────────────────
-  {
-    id: 'vaishno-devi-katra',
-    title: 'Shri Mata Vaishno Devi',
-    location: 'Katra, Jammu & Kashmir',
-    schedule: 'Live Darshan 24/7',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vaishno Devi',
-    state: 'Jammu & Kashmir',
-    collections: ['Shaktipeeth'],
-    youtubeVideoId: 'oBWFmm9RFOE',
-  },
-  {
-    id: 'har-ki-pauri-haridwar',
-    title: 'Har Ki Pauri Ganga Aarti',
-    location: 'Haridwar, Uttarakhand',
-    schedule: 'Ganga Aarti at 6:30 PM',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Ganga',
-    state: 'Uttarakhand',
-    collections: ['Rivers', 'Saptapuri'],
-    youtubeVideoId: 'Gc_RGGhCGy8',
-  },
-  {
-    id: 'banke-bihari-vrindavan',
-    title: 'Banke Bihari Temple',
-    location: 'Vrindavan, UP',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    state: 'Uttar Pradesh',
-    youtubeVideoId: 'zNAJ6fZLETA',
-  },
-  {
-    id: 'triveni-sangam-prayagraj',
-    title: 'Triveni Sangam Prayag Aarti',
-    location: 'Prayagraj, UP',
-    schedule: 'Ganga Aarti at sunrise & sunset',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Ganga',
-    state: 'Uttar Pradesh',
-    collections: ['Rivers', 'Saptapuri'],
-    youtubeVideoId: 'Zg3IHd6YJDI',
-  },
-  {
-    id: 'pandharpur-vitthal',
-    title: 'Pandharpur Vitthal Temple',
-    location: 'Pandharpur, Maharashtra',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vitthal',
-    state: 'Maharashtra',
-    youtubeVideoId: 'X1LiqHHG0EE',
-  },
-  {
-    id: 'brahma-temple-pushkar',
-    title: 'Brahma Temple Pushkar',
-    location: 'Pushkar, Rajasthan',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Brahma',
-    state: 'Rajasthan',
-    youtubeVideoId: '3qrOnlcx2d4',
-  },
-  {
-    id: 'amarnath-cave-darshan',
-    title: 'Amarnath Cave Temple',
-    location: 'Pahalgam, Kashmir',
-    schedule: 'Seasonal Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    state: 'Jammu & Kashmir',
-    youtubeVideoId: 'CbKxM3MkYkQ',
-  },
-  {
-    id: 'iskcon-delhi',
-    title: 'ISKCON Temple New Delhi',
-    location: 'East of Kailash, New Delhi',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    state: 'Delhi',
-    youtubeVideoId: 'OfNJLmVlP2o',
-  },
-  {
-    id: 'akshardham-gandhinagar',
-    title: 'Akshardham Temple',
-    location: 'Gandhinagar, Gujarat',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    state: 'Gujarat',
-    youtubeVideoId: 'GCMWqEQO80A',
-  },
-  {
-    id: 'mathura-yamuna-aarti',
-    title: 'Mathura Vishram Ghat Aarti',
-    location: 'Mathura, UP',
-    schedule: 'Yamuna Aarti at sunrise & sunset',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Yamuna',
-    state: 'Uttar Pradesh',
-    collections: ['Rivers'],
-    youtubeVideoId: 'I_qnOzHRTug',
-  },
-  {
-    id: 'vrindavan-yamuna-aarti',
-    title: 'Vrindavan Yamuna Aarti',
-    location: 'Vrindavan, UP',
-    schedule: 'Yamuna Aarti at sunset',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Yamuna',
-    state: 'Uttar Pradesh',
-    collections: ['Rivers'],
-    youtubeVideoId: 'bV6ETPB5R4Q',
-  },
-
-  // ─── NEPAL ────────────────────────────────────────────────────────────────
-  {
-    id: 'muktinath-nepal',
-    title: 'Muktinath Temple',
-    location: 'Mustang, Nepal',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    youtubeVideoId: 'sVG1RQNL1tM',
-  },
-  {
-    id: 'janakpur-janaki-mandir',
-    title: 'Janaki Mandir',
-    location: 'Janakpur, Nepal',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Sita-Ram',
-    youtubeVideoId: 'b8HjLn1M5nk',
-  },
-  {
-    id: 'boudhanath-stupa',
-    title: 'Boudhanath Stupa',
-    location: 'Kathmandu, Nepal',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'ySifQ1UICBY',
-  },
-  {
-    id: 'swayambhunath-nepal',
-    title: 'Swayambhunath — Monkey Temple',
-    location: 'Kathmandu, Nepal',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'ioGY3OWa6KQ',
-  },
-
-  // ─── SRI LANKA ────────────────────────────────────────────────────────────
-  {
-    id: 'dalada-maligawa-kandy',
-    title: 'Sri Dalada Maligawa (Temple of the Tooth)',
-    location: 'Kandy, Sri Lanka',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'IJsAy5bQx3w',
-  },
-  {
-    id: 'kataragama-devalaya',
-    title: 'Kataragama Devalaya',
-    location: 'Kataragama, Sri Lanka',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Murugan',
-    youtubeVideoId: 'Uo5sA_N3G5c',
-  },
-
-  // ─── SOUTHEAST ASIA ───────────────────────────────────────────────────────
-  {
-    id: 'wat-phra-kaew-bangkok',
-    title: 'Wat Phra Kaew — Emerald Buddha',
-    location: 'Bangkok, Thailand',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'fTdU0mSyFjw',
-  },
-  {
-    id: 'angkor-wat-cambodia',
-    title: 'Angkor Wat Temple',
-    location: 'Siem Reap, Cambodia',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    youtubeVideoId: 'TxkHaTFd6pA',
-  },
-  {
-    id: 'prambanan-temple-indonesia',
-    title: 'Prambanan Hindu Temple',
-    location: 'Yogyakarta, Indonesia',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    youtubeVideoId: 'mP9zCRmm6_k',
-  },
-
-  // ─── INTERNATIONAL DIASPORA ───────────────────────────────────────────────
-  {
-    id: 'baps-nj-usa',
-    title: 'BAPS Swaminarayan Akshardham',
-    location: 'Robbinsville, New Jersey, USA',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    youtubeVideoId: 'p04AYXm_nKg',
-  },
-  {
-    id: 'svt-pittsburgh-usa',
-    title: 'Sri Venkateswara Temple',
-    location: 'Pittsburgh, PA, USA',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    youtubeVideoId: 'L0lA3B0PTGQ',
-  },
-  {
-    id: 'siva-vishnu-temple-dc',
-    title: 'Sri Siva Vishnu Temple',
-    location: 'Lanham, Maryland, USA',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva & Vishnu',
-    youtubeVideoId: 'bW5MDFlgj4o',
-  },
-  {
-    id: 'meenakshi-temple-houston',
-    title: 'Meenakshi Temple',
-    location: 'Houston, Texas, USA',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Meenakshi',
-    youtubeVideoId: 'Vy8tI6tGVgU',
-  },
-  {
-    id: 'iskcon-london',
-    title: 'ISKCON London Hare Krishna',
-    location: 'Soho, London, UK',
-    schedule: 'Live Darshan & Kirtan',
-    category: 'satsang',
-    tradition: 'hindu',
-    ishtaDevata: 'Krishna',
-    youtubeVideoId: 'X_B4DqRMHnk',
-  },
-  {
-    id: 'murugan-temple-london',
-    title: 'Murugan Temple London',
-    location: 'Tooting, London, UK',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Murugan',
-    youtubeVideoId: 'hSpH3rDWx18',
-  },
-  {
-    id: 'baps-toronto-canada',
-    title: 'BAPS Swaminarayan Mandir',
-    location: 'Toronto, Ontario, Canada',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    youtubeVideoId: 'qKt4YpSsNQU',
-  },
-  {
-    id: 'baps-sydney-australia',
-    title: 'BAPS Swaminarayan Mandir',
-    location: 'Sydney, Australia',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    youtubeVideoId: 'fxA3gFqL5ik',
-  },
-  {
-    id: 'mariamman-temple-kl',
-    title: 'Sri Mahamariamman Temple',
-    location: 'Kuala Lumpur, Malaysia',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Mariamman',
-    youtubeVideoId: 'JSTPJ_9rHxY',
-  },
-  {
-    id: 'veeramakali-singapore',
-    title: 'Sri Veeramakaliamman Temple',
-    location: 'Little India, Singapore',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Kali',
-    youtubeVideoId: 'GvJhLRnROGs',
-  },
-  {
-    id: 'baps-abu-dhabi',
-    title: 'BAPS Hindu Mandir Abu Dhabi',
-    location: 'Abu Dhabi, UAE',
-    schedule: 'Live Aarti',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Swaminarayan',
-    youtubeVideoId: 'xUxmv0D00AU',
-  },
-  {
-    id: 'grand-bassin-mauritius',
-    title: 'Ganga Talao — Grand Bassin',
-    location: 'Grand Bassin, Mauritius',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Shiva',
-    youtubeVideoId: 'RNsNl9iqXFo',
-  },
-  {
-    id: 'shiva-temple-durban',
-    title: 'Shree Emperumal Temple',
-    location: 'Durban, South Africa',
-    schedule: 'Live Puja',
-    category: 'mandir',
-    tradition: 'hindu',
-    ishtaDevata: 'Vishnu',
-    youtubeVideoId: 'VGzZiMkv0rM',
-  },
-
-  // ─── REMAINING PANJ TAKHT ─────────────────────────────────────────────────
-  {
-    id: 'keshgarh-sahib-anandpur',
-    title: 'Takhat Sri Keshgarh Sahib',
-    location: 'Anandpur Sahib, Punjab',
-    schedule: 'Live Kirtan 24/7',
-    category: 'satsang',
-    tradition: 'sikh',
-    state: 'Punjab',
-    collections: ['Panj Takht', 'Gurbani Kirtan'],
-    youtubeVideoId: 'cROCbWmRNv4',
-  },
-  {
-    id: 'damdama-sahib-talwandi',
-    title: 'Takhat Sri Damdama Sahib',
-    location: 'Talwandi Sabo, Punjab',
-    schedule: 'Live Kirtan',
-    category: 'satsang',
-    tradition: 'sikh',
-    state: 'Punjab',
-    collections: ['Panj Takht', 'Gurbani Kirtan'],
-    youtubeVideoId: 'AGjUiECdotE',
-  },
-  {
-    id: 'hemkund-sahib',
-    title: 'Hemkund Sahib Gurdwara',
-    location: 'Chamoli, Uttarakhand',
-    schedule: 'Seasonal Live Darshan',
-    category: 'satsang',
-    tradition: 'sikh',
-    state: 'Uttarakhand',
-    youtubeVideoId: 'hGE3bqPkNHw',
-  },
-
-  // ─── JAIN PILGRIMAGE ──────────────────────────────────────────────────────
-  {
-    id: 'palitana-jain-temples',
-    title: 'Palitana Jain Temples',
-    location: 'Palitana, Gujarat',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Gujarat',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'dfpS2ZT1FHo',
-  },
-  {
-    id: 'ranakpur-jain-temple',
-    title: 'Ranakpur Chaumukha Temple',
-    location: 'Ranakpur, Rajasthan',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Rajasthan',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'uIi_8OQ2vD8',
-  },
-  {
-    id: 'dilwara-mount-abu',
-    title: 'Dilwara Jain Temples',
-    location: 'Mount Abu, Rajasthan',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Rajasthan',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'gOCCqcmIbGE',
-  },
-
-  // ─── MAHABODHI (BUDDHIST PILGRIMAGE) ─────────────────────────────────────
-  {
-    id: 'mahabodhi-bodh-gaya',
-    title: 'Mahabodhi Temple — Bodh Gaya',
-    location: 'Bodh Gaya, Bihar',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Bihar',
-    youtubeVideoId: 'OHm8JXtHO4M',
-  },
-
-  // ─── JAIN TIRTHS & TEMPLES ────────────────────────────────────────────────
-  {
-    id: 'sammed-shikharji',
-    title: 'Shri Sammed Shikharji',
-    location: 'Parasnath Hill, Jharkhand',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Jharkhand',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'k3GqJ3wZ7yo',
-  },
-  {
-    id: 'shravanabelagola-bahubali',
-    title: 'Gomateshwara Bahubali',
-    location: 'Shravanabelagola, Karnataka',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Karnataka',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'm5lQ0aT6V9k',
-  },
-  {
-    id: 'shankheshwar-parshwanath',
-    title: 'Shankheshwar Parshwanath Tirth',
-    location: 'Shankheshwar, Gujarat',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Gujarat',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'rN5Yc5o7QHc',
-  },
-  {
-    id: 'shri-mahavirji-rajasthan',
-    title: 'Shri Mahavir Ji Temple',
-    location: 'Hindaun, Rajasthan',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Rajasthan',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'Q2tFp3Bb9Wc',
-  },
-  {
-    id: 'lal-mandir-delhi',
-    title: 'Shri Digambar Jain Lal Mandir',
-    location: 'Chandni Chowk, Delhi',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Delhi',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'xK4cBxX0H6Q',
-  },
-  {
-    id: 'pavapuri-jal-mandir',
-    title: 'Pavapuri Jal Mandir',
-    location: 'Pavapuri, Bihar',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Bihar',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'Sg9P0nO5T8E',
-  },
-  {
-    id: 'girnar-jain-temples',
-    title: 'Girnar Jain Temples',
-    location: 'Junagadh, Gujarat',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Gujarat',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'V1xWqL3kZ4o',
-  },
-  {
-    id: 'hastinapur-jain-tirth',
-    title: 'Hastinapur Jain Tirth',
-    location: 'Hastinapur, UP',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Uttar Pradesh',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'H8nT2gW9xPo',
-  },
-  {
-    id: 'nakoda-bhairav-tirth',
-    title: 'Nakoda Parshwanath Tirth',
-    location: 'Barmer, Rajasthan',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Rajasthan',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'jR4mP8c0Y3w',
-  },
-  {
-    id: 'kundalpur-jain',
-    title: 'Shri Kundalpur Bade Baba',
-    location: 'Damoh, Madhya Pradesh',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Madhya Pradesh',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'pL7vQ2hN5cE',
-  },
-  {
-    id: 'sonagiri-jain',
-    title: 'Sonagiri Digambar Jain Tirth',
-    location: 'Datia, Madhya Pradesh',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Madhya Pradesh',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'cF3wK9d1Z6o',
-  },
-  {
-    id: 'mangi-tungi-jain',
-    title: 'Mangi-Tungi Jain Tirth',
-    location: 'Nashik, Maharashtra',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'jain',
-    state: 'Maharashtra',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'Tz8vL2pX4mE',
-  },
-  {
-    id: 'namokar-mantra-jaap',
-    title: 'Namokar Mahamantra Jaap',
-    location: 'Global',
-    schedule: 'Akhand Jaap 24/7',
-    category: 'satsang',
-    tradition: 'jain',
-    collections: ['Jain Path'],
-    youtubeVideoId: 'YbT2x9P0nK4',
-  },
-
-  // ─── BUDDHIST PILGRIMAGE & MONASTERIES ────────────────────────────────────
-  {
-    id: 'sarnath-dhamek-stupa',
-    title: 'Sarnath Dhamek Stupa',
-    location: 'Sarnath, Varanasi, UP',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Uttar Pradesh',
-    youtubeVideoId: 'wQ3pL8x0YnE',
-  },
-  {
-    id: 'kushinagar-parinirvana',
-    title: 'Kushinagar Parinirvana Temple',
-    location: 'Kushinagar, UP',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Uttar Pradesh',
-    youtubeVideoId: 'mR7vK2pN9cE',
-  },
-  {
-    id: 'lumbini-nepal',
-    title: 'Lumbini — Birthplace of Buddha',
-    location: 'Lumbini, Nepal',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Hn4cR8x1Z6w',
-  },
-  {
-    id: 'dalai-lama-temple-dharamshala',
-    title: 'Tsuglagkhang — Dalai Lama Temple',
-    location: 'McLeod Ganj, Dharamshala',
-    schedule: 'Live Teachings & Prayer',
-    category: 'satsang',
-    tradition: 'buddhist',
-    state: 'Himachal Pradesh',
-    youtubeVideoId: 'qK9vL3pX7mE',
-  },
-  {
-    id: 'rumtek-monastery-sikkim',
-    title: 'Rumtek Monastery',
-    location: 'Gangtok, Sikkim',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Sikkim',
-    youtubeVideoId: 'pT5wN2cK8YE',
-  },
-  {
-    id: 'tawang-monastery',
-    title: 'Tawang Monastery',
-    location: 'Tawang, Arunachal Pradesh',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Arunachal Pradesh',
-    youtubeVideoId: 'Lz3vK9pX2mE',
-  },
-  {
-    id: 'thiksey-monastery-ladakh',
-    title: 'Thiksey Monastery',
-    location: 'Leh, Ladakh',
-    schedule: 'Live Morning Prayer',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Ladakh',
-    youtubeVideoId: 'Wn8cR3x0Z5w',
-  },
-  {
-    id: 'hemis-monastery-ladakh',
-    title: 'Hemis Monastery',
-    location: 'Leh, Ladakh',
-    schedule: 'Live Darshan',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Ladakh',
-    youtubeVideoId: 'Kr4vN8pX1mE',
-  },
-  {
-    id: 'namdroling-bylakuppe',
-    title: 'Namdroling Golden Temple',
-    location: 'Bylakuppe, Karnataka',
-    schedule: 'Live Prayer & Chanting',
-    category: 'mandir',
-    tradition: 'buddhist',
-    state: 'Karnataka',
-    youtubeVideoId: 'Pz9vL2cK7YE',
-  },
-  {
-    id: 'shwedagon-pagoda-yangon',
-    title: 'Shwedagon Pagoda',
-    location: 'Yangon, Myanmar',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Tn5cR8x2Z9w',
-  },
-  {
-    id: 'borobudur-indonesia',
-    title: 'Borobudur Temple',
-    location: 'Magelang, Indonesia',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Hz3vK9pX4mE',
-  },
-  {
-    id: 'wat-arun-bangkok',
-    title: 'Wat Arun — Temple of Dawn',
-    location: 'Bangkok, Thailand',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Qr7vN2cK9YE',
-  },
-  {
-    id: 'big-buddha-hong-kong',
-    title: 'Po Lin Monastery — Big Buddha',
-    location: 'Lantau Island, Hong Kong',
-    schedule: 'Live',
-    category: 'mandir',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Wn4cR8x3Z6w',
-  },
-  {
-    id: 'metta-meditation-live',
-    title: 'Metta Meditation & Chanting',
-    location: 'Global',
-    schedule: 'Live Meditation 24/7',
-    category: 'satsang',
-    tradition: 'buddhist',
-    youtubeVideoId: 'Kz9vL3pX5mE',
-  },
+  }
 ];
 
 /**
@@ -1541,12 +549,64 @@ export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
   'ram-katha-live',
 ]);
 
-/** Returns LIVE_STREAMS with aarti times merged in from AARTI_TIMES lookup. */
+export type LiveDarshanDbRow = {
+  id: string;
+  title?: string | null;
+  location?: string | null;
+  schedule?: string | null;
+  category?: LiveStreamCategory | null;
+  tradition?: string | null;
+  current_video_id?: string | null;
+  is_active?: boolean | null;
+};
+
+const STATIC_STREAM_BY_ID = new Map(LIVE_STREAMS.map((stream) => [stream.id, stream]));
+
+export function enrichLiveStream(stream: LiveStream): LiveStream {
+  return {
+    ...stream,
+    aartis: AARTI_TIMES[stream.id],
+  };
+}
+
+/** Returns only the manually re-verified static fallback list. */
 export function getLiveStreamsWithAartis(): LiveStream[] {
-  return LIVE_STREAMS
-    .filter((s) => VERIFIED_STATIC_STREAM_IDS.has(s.id))
-    .map(s => ({
-    ...s,
-    aartis: AARTI_TIMES[s.id],
-  }));
+  return LIVE_STREAMS.filter((s) => VERIFIED_STATIC_STREAM_IDS.has(s.id)).map(enrichLiveStream);
+}
+
+/**
+ * Resolves the effective stream inventory for product surfaces.
+ *
+ * Rules:
+ * - Prefer active DB-managed streams when available.
+ * - Preserve static metadata (collections, ishtaDevata, state) when the IDs match.
+ * - Fall back to the verified static set when DB rows are absent.
+ */
+export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): LiveStream[] {
+  if (!dbRows || dbRows.length === 0) return getLiveStreamsWithAartis();
+
+  const resolved = dbRows
+    .filter((row) => row.is_active !== false)
+    .map((row) => {
+      const fallback = STATIC_STREAM_BY_ID.get(row.id);
+      const youtubeVideoId = row.current_video_id || fallback?.youtubeVideoId || '';
+      if (!youtubeVideoId) return null;
+
+      return enrichLiveStream({
+        id: row.id,
+        title: row.title || fallback?.title || row.id,
+        location: row.location || fallback?.location || 'Live Darshan',
+        schedule: row.schedule || fallback?.schedule || 'Live Darshan',
+        category: (row.category || fallback?.category || 'mandir') as LiveStreamCategory,
+        tradition: row.tradition || fallback?.tradition || 'hindu',
+        youtubeVideoId,
+        ishtaDevata: fallback?.ishtaDevata,
+        state: fallback?.state,
+        collections: fallback?.collections,
+        thumbnailUrl: fallback?.thumbnailUrl,
+      });
+    })
+    .filter((stream): stream is LiveStream => Boolean(stream));
+
+  return resolved.length > 0 ? resolved : getLiveStreamsWithAartis();
 }

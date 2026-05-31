@@ -586,6 +586,10 @@ export default function LiveDarshanClient({
     .filter(p => p.is_favourite)
     .map(p => p.stream_id);
 
+  const notificationIds = Array.from(prefs.values())
+    .filter((p) => p.notify_morning || p.notify_evening)
+    .map((p) => p.stream_id);
+
   // ── Collections sorted by user's tradition ────────────────────────────────
   const TRAD_COLLECTION_MAP: Record<string, string[]> = {
     hindu:    ['Char Dham', 'Jyotirlinga', 'Shaktipeeth', 'Saptapuri', 'Rivers'],
@@ -851,6 +855,49 @@ export default function LiveDarshanClient({
                   <p className="text-[9px] text-center max-w-[60px] leading-tight theme-muted">
                     {s.title.split(' ').slice(0, 2).join(' ')}
                   </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Aarti calls strip — intentionally separate from favourites ─────── */}
+      {notificationIds.length > 0 && (
+        <div className="px-4 pt-4">
+          <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-2.5" style={{ color: 'rgba(197,160,89,0.70)' }}>
+            Aarti Calls
+          </p>
+          <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+            {notificationIds.map(id => {
+              const s = streams.find(st => st.id === id);
+              const pref = prefs.get(id);
+              if (!s || !pref) return null;
+              const label = pref.notify_morning && pref.notify_evening
+                ? 'Morning + Evening'
+                : pref.notify_morning
+                  ? 'Morning only'
+                  : 'Evening only';
+              return (
+                <button
+                  key={id}
+                  onClick={() => setNotifTarget(id)}
+                  className="flex-shrink-0 w-[164px] rounded-2xl border px-3 py-3 text-left"
+                  style={{
+                    background: 'rgba(197,160,89,0.08)',
+                    borderColor: 'rgba(197,160,89,0.20)',
+                  }}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(197,160,89,0.16)' }}>
+                      <Bell size={14} style={{ color: 'var(--brand-primary)' }} />
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--brand-primary)' }}>
+                      On
+                    </span>
+                  </div>
+                  <p className="text-[12px] font-semibold leading-snug theme-ink line-clamp-2">{s.title}</p>
+                  <p className="text-[10px] mt-1 theme-dim">{label}</p>
                 </button>
               );
             })}

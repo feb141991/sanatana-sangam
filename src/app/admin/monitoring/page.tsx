@@ -1,5 +1,6 @@
 import { generateHealthReport } from '@/lib/monitoring/aggregation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { redirect } from 'next/navigation';
 
 
@@ -19,7 +20,20 @@ export default async function MonitoringPage() {
     // redirect('/'); 
   }
 
-  const report = generateHealthReport();
+  let recentEvents: any[] = [];
+  try {
+    const adminSupabase = createAdminClient();
+    const { data } = await adminSupabase
+      .from('monitoring_events')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(500);
+    recentEvents = data ?? [];
+  } catch {
+    recentEvents = [];
+  }
+
+  const report = generateHealthReport(recentEvents);
 
   return (
     <div className="p-8 max-w-7xl mx-auto font-sans">

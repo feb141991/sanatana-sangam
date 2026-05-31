@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
-import { LIVE_STREAMS, AARTI_TIMES } from '@/lib/live-streams';
+import { AARTI_TIMES, resolveActiveLiveStreams } from '@/lib/live-streams';
 
 /**
  * Aarti Notify Cron
@@ -55,6 +55,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ sent: 0, message: 'No opted-in users' });
   }
 
+  // ── Resolve the effective stream registry ─────────────────────────────────
+  const { data: dbStreams } = await supabase
+    .from('live_darshans')
+    .select('id, title, location, schedule, category, tradition, current_video_id, is_active')
+    .eq('is_active', true);
+
+  const effectiveStreams = resolveActiveLiveStreams(dbStreams ?? null);
+  const streamMap = Object.fromEntries(effectiveStreams.map((stream) => [stream.id, stream]));
+
   // ── Group user IDs by stream_id ───────────────────────────────────────────
   const byStream: Record<string, string[]> = {};
   for (const pref of prefs) {
@@ -63,7 +72,6 @@ export async function GET(request: Request) {
   }
 
   // ── Build & send notifications per stream ────────────────────────────────
-  const streamMap = Object.fromEntries(LIVE_STREAMS.map(s => [s.id, s]));
   const results: { streamId: string; userCount: number; sent: number }[] = [];
 
   for (const [streamId, userIds] of Object.entries(byStream)) {

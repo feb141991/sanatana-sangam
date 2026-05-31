@@ -13,7 +13,7 @@ import {
 import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta, getSacredTextLabel } from '@/lib/tradition-config';
-import { LIVE_STREAMS } from '@/lib/live-streams';
+import { resolveActiveLiveStreams } from '@/lib/live-streams';
 import { getPlanById, type GuidedPathProgressRow } from '@/lib/guided-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
@@ -202,17 +202,7 @@ export default async function HomePage() {
     // table may not exist yet — ignore
   }
 
-  const dbStreams = (liveDarshanData ?? []).map(row => ({
-    id: row.id,
-    title: row.title,
-    location: row.location,
-    schedule: row.schedule,
-    category: row.category as any,
-    tradition: row.tradition as any,
-    youtubeVideoId: row.current_video_id || '',
-  }));
-
-  const allStreams = dbStreams.length > 0 ? dbStreams : LIVE_STREAMS;
+  const allStreams = resolveActiveLiveStreams(liveDarshanData ?? null);
   const dharmVeer: DharmVeer = await getDharmVeerOfTheDay(supabase, tradition);
 
   // Build nitya set (dates with any log entry = done)
