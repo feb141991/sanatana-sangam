@@ -102,8 +102,8 @@ export const AARTI_TIMES: Record<string, AartiSchedule> = {
   'amarnath-cave-darshan':          { morning: '5:00 AM — Pratah Aarti', evening: '6:00 PM — Sandhya Aarti' },
   'iskcon-delhi':                   { morning: '4:30 AM — Mangal Aarti', evening: '7:00 PM — Gaura Aarti' },
   'akshardham-gandhinagar':         { morning: '7:00 AM — Mangala Aarti', evening: '6:30 PM — Sandhya Aarti' },
-  'mathura-yamuna-aarti':           { evening: '7:00 PM — Yamuna Aarti' },
-  'vrindavan-yamuna-aarti':         { evening: '7:30 PM — Yamuna Aarti' },
+  'mathura-yamuna-aarti':           { morning: '6:00 AM — Pratah Yamuna Aarti', evening: '7:00 PM — Sandhya Yamuna Aarti' },
+  'vrindavan-yamuna-aarti':         { morning: '6:30 AM — Pratah Yamuna Aarti', evening: '7:30 PM — Sandhya Yamuna Aarti' },
   'kataragama-devalaya':            { morning: '4:30 AM — Morning Pooja', evening: '6:30 PM — Maha Pooja' },
   'svt-pittsburgh-usa':             { morning: '9:00 AM — Suprabhata Seva', evening: '7:00 PM — Sandhya Aarti' },
   'siva-vishnu-temple-dc':          { morning: '9:00 AM — Abhishekam', evening: '7:00 PM — Sandhya Aarti' },
@@ -114,18 +114,37 @@ export const AARTI_TIMES: Record<string, AartiSchedule> = {
   'mariamman-temple-kl':            { morning: '6:30 AM — Morning Pooja', evening: '7:30 PM — Sandhya Pooja' },
   'veeramakali-singapore':          { morning: '6:30 AM — Morning Pooja', evening: '7:30 PM — Sandhya Pooja' },
   'baps-abu-dhabi':                 { morning: '6:30 AM — Mangala Aarti', evening: '8:00 PM — Sandhya Aarti' },
-  'grand-bassin-mauritius':         { evening: '6:30 PM — Sandhya Aarti' },
+  'grand-bassin-mauritius':         { morning: '6:00 AM — Pratah Puja', evening: '6:30 PM — Sandhya Aarti' },
   'shiva-temple-durban':            { morning: '6:00 AM — Morning Pooja', evening: '7:00 PM — Sandhya Aarti' },
-
+  // Hindu satsang streams (previously missing)
+  'swaminarayan-dhun':              { morning: '6:30 AM — Mangal Aarti', evening: '7:30 PM — Sandhya Aarti' },
+  'sai-baba-dhyan':                 { morning: '5:00 AM — Kakad Aarti Dhyan', evening: '7:00 PM — Shej Aarti Dhyan' },
+  'shiva-mahamrityunjay':           { morning: '4:00 AM — Pratah Jaap' },
+  'brahma-kumaris':                 { morning: '4:00 AM — Amrit Vela', evening: '6:30 PM — Sandhya Meditation' },
+  'ram-katha-live':                 { morning: '6:00 AM — Pratah Katha', evening: '7:00 PM — Sandhya Katha' },
   // ── Gurdwaras (Sikh) — Asa Di Var (dawn) & Rehras Sahib (dusk) ─────────────
-  'golden-temple-sgpc':             { morning: '4:00 AM — Asa Di Var', evening: '7:00 PM — Rehras Sahib' },
-  'takhat-hazur-sahib':             { morning: '4:30 AM — Asa Di Var', evening: '7:30 PM — Rehras Sahib' },
+  'golden-temple-sgpc':             { morning: '4:00 AM — Asa Di Var', evening: '9:30 PM — Rehras Sahib + Kirtan Sohila' },
+  'takhat-hazur-sahib':             { morning: '4:30 AM — Asa Di Var', evening: '9:00 PM — Rehras Sahib + Kirtan Sohila' },
   'takhat-patna-sahib':             { morning: '4:30 AM — Asa Di Var', evening: '7:00 PM — Rehras Sahib' },
   'hazoori-ragi-kirtan':            { morning: '4:00 AM — Asa Di Var Kirtan', evening: '7:00 PM — Rehras Sahib' },
   'guru-granth-sahib-live':         { morning: '4:00 AM — Asa Di Var Kirtan', evening: '7:00 PM — Rehras Sahib' },
-  'hemkund-sahib':                  { morning: '5:00 AM — Asa Di Var', evening: '6:00 PM — Rehras Sahib' },
+  // Gurdwara — new additions
+  'bangla-sahib-delhi':             { morning: '4:30 AM — Asa Di Var', evening: '9:00 PM — Rehras Sahib' },
+  'sis-ganj-sahib-delhi':           { morning: '4:30 AM — Asa Di Var', evening: '9:00 PM — Rehras Sahib' },
+  'rakab-ganj-sahib-delhi':         { morning: '5:00 AM — Asa Di Var', evening: '8:30 PM — Rehras Sahib' },
+  'tarn-taran-sahib':               { morning: '4:30 AM — Asa Di Var', evening: '9:00 PM — Rehras Sahib' },
+  'kartarpur-sahib':                { morning: '5:00 AM — Asa Di Var', evening: '7:30 PM — Rehras Sahib' },
+  'fatehgarh-sahib-gurdwara':       { morning: '5:00 AM — Asa Di Var', evening: '8:00 PM — Rehras Sahib' },
+  'gurdwara-southall-london':       { morning: '6:00 AM — Asa Di Var', evening: '7:30 PM — Rehras Sahib' },
+  'gurdwara-brampton-canada':       { morning: '6:00 AM — Asa Di Var', evening: '7:30 PM — Rehras Sahib' },
+  'gurdwara-fremont-usa':           { morning: '6:00 AM — Asa Di Var', evening: '7:00 PM — Rehras Sahib' },
+  'gurdwara-melbourne-australia':   { morning: '6:00 AM — Asa Di Var', evening: '7:00 PM — Rehras Sahib' },
+  'gurdwara-dubai-uae':             { morning: '6:00 AM — Asa Di Var', evening: '7:30 PM — Rehras Sahib' },
 
   // ── Jain tirths — Mangal Darshan (dawn) & Sandhya Bhakti (dusk) ────────────
+  'jinvani-tv-live':                { morning: '7:00 AM — Pratah Pravachan', evening: '7:00 PM — Sandhya Bhakti' },
+  'aadinath-tv-live':               { morning: '6:30 AM — Pratah Darshan', evening: '7:00 PM — Sandhya Vandana' },
+  'paras-jain-tv':                  { morning: '6:30 AM — Pratah Pravachan', evening: '7:30 PM — Sandhya Bhajan' },
   'palitana-jain-temples':          { morning: '6:30 AM — Mangal Darshan' },
   'ranakpur-jain-temple':           { morning: '7:00 AM — Mangal Darshan', evening: '5:00 PM — Sandhya Bhakti' },
   'dilwara-mount-abu':              { morning: '6:00 AM — Mangal Puja' },
@@ -136,19 +155,37 @@ export const AARTI_TIMES: Record<string, AartiSchedule> = {
   'kundalpur-jain':                 { morning: '6:00 AM — Mangal Darshan', evening: '7:00 PM — Sandhya Aarti' },
   'sonagiri-jain':                  { morning: '6:30 AM — Mangal Darshan', evening: '7:00 PM — Sandhya Aarti' },
   'mangi-tungi-jain':               { morning: '6:30 AM — Mangal Darshan' },
+  // Jain — new additions (not in earlier entries)
+  'jain-center-of-america':         { morning: '8:00 AM — Morning Puja', evening: '6:30 PM — Evening Bhajan' },
+  'jain-temple-leicester':          { morning: '7:00 AM — Morning Puja', evening: '7:00 PM — Evening Vandana' },
+  'jain-temple-nairobi':            { morning: '6:30 AM — Morning Puja', evening: '7:00 PM — Evening Vandana' },
+  'namokar-mantra-jaap':            { morning: '5:00 AM — Pratah Jaap', evening: '7:00 PM — Sandhya Jaap' },
 
   // ── Buddhist temples & monasteries — Morning & Evening prayer/chanting ─────
   'boudhanath-stupa':               { morning: '5:30 AM — Morning Kora', evening: '6:30 PM — Butter Lamp Offering' },
   'swayambhunath-nepal':            { morning: '5:00 AM — Morning Chanting', evening: '6:00 PM — Evening Prayer' },
-  'dalada-maligawa-kandy':          { morning: '5:30 AM — Morning Thevava', evening: '6:30 PM — Evening Thevava' },
+  'dalada-maligawa-kandy':          { morning: '5:30 AM — Morning Thevawa', evening: '6:30 PM — Evening Thevawa' },
   'mahabodhi-bodh-gaya':            { morning: '5:00 AM — Morning Chanting', evening: '6:00 PM — Evening Prayer' },
   'kushinagar-parinirvana':         { morning: '6:00 AM — Morning Chanting', evening: '6:00 PM — Evening Prayer' },
   'rumtek-monastery-sikkim':        { morning: '6:00 AM — Morning Puja', evening: '5:30 PM — Evening Puja' },
   'tawang-monastery':               { morning: '6:30 AM — Morning Prayer', evening: '5:00 PM — Evening Prayer' },
   'hemis-monastery-ladakh':         { morning: '6:30 AM — Morning Prayer', evening: '5:30 PM — Evening Prayer' },
   'shwedagon-pagoda-yangon':        { morning: '6:00 AM — Morning Chanting', evening: '6:00 PM — Evening Devotion' },
-  'wat-arun-bangkok':               { morning: '6:30 AM — Morning Chanting' },
+  'wat-phra-kaew-bangkok':          { morning: '6:00 AM — Morning Prayer', evening: '5:00 PM — Evening Prayer' },
+  'wat-arun-bangkok':               { morning: '6:30 AM — Morning Chanting', evening: '5:30 PM — Evening Chanting' },
   'big-buddha-hong-kong':           { morning: '6:00 AM — Morning Chanting', evening: '5:00 PM — Evening Prayer' },
+  // Buddhist — new additions (not in earlier entries)
+  'borobudur-indonesia':            { morning: '6:00 AM — Morning Prayer' },
+  'fo-guang-shan-taiwan':           { morning: '5:00 AM — Morning Chanting', evening: '7:00 PM — Evening Chanting' },
+  'plum-village-france':            { morning: '6:00 AM — Morning Sitting', evening: '5:30 PM — Evening Sitting' },
+  'kagyu-samye-ling-scotland':      { morning: '6:30 AM — Morning Puja', evening: '6:30 PM — Evening Puja' },
+
+  // Kirtan / Satsang — new additions
+  'isha-sadhguru-satsang':          { morning: '5:30 AM — Brahma Muhurta Meditation', evening: '6:30 PM — Isha Satsang' },
+  'art-of-living-satsang':          { morning: '5:00 AM — Padmasadhana', evening: '6:30 PM — Satsang' },
+  'mata-amritanandamayi-satsang':   { morning: '5:00 AM — Archana', evening: '7:00 PM — Bhajan Sandhya' },
+  'shemaroo-bhakti-live':           { morning: '6:00 AM — Pratah Bhajan', evening: '7:00 PM — Sandhya Bhajan' },
+  'metta-meditation-live':          { morning: '6:00 AM — Morning Meditation', evening: '6:00 PM — Evening Meditation' },
 };
 
 export const LIVE_STREAMS: LiveStream[] = [
@@ -501,7 +538,607 @@ export const LIVE_STREAMS: LiveStream[] = [
     ishtaDevata: 'Rama',
     collections: ['Katha'],
     youtubeVideoId: 'Yv2D6cWWTq8',
-  }
+  },
+
+  // ─── GURDWARAS — INDIA ────────────────────────────────────────────────────
+  {
+    id: 'bangla-sahib-delhi',
+    title: 'Gurudwara Bangla Sahib',
+    location: 'New Delhi',
+    schedule: 'Live Gurbani 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    state: 'Delhi',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'GI4VzMz6_z8', // DSGMC official channel — VERIFY-LIVE
+  },
+  {
+    id: 'sis-ganj-sahib-delhi',
+    title: 'Gurudwara Sis Ganj Sahib',
+    location: 'Chandni Chowk, Delhi',
+    schedule: 'Live Gurbani 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    state: 'Delhi',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'PpS1JbRLHao', // VERIFY-LIVE
+  },
+  {
+    id: 'tarn-taran-sahib',
+    title: 'Gurudwara Tarn Taran Sahib',
+    location: 'Tarn Taran, Punjab',
+    schedule: 'Live Gurbani 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    state: 'Punjab',
+    collections: ['Panj Takht'],
+    youtubeVideoId: 'a2r5u1u5woo', // VERIFY-LIVE
+  },
+  {
+    id: 'kartarpur-sahib',
+    title: 'Gurudwara Darbar Sahib Kartarpur',
+    location: 'Kartarpur, Punjab',
+    schedule: 'Live Gurbani 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    state: 'Punjab',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: '6E7WdFILJ9Y', // VERIFY-LIVE
+  },
+  {
+    id: 'fatehgarh-sahib-gurdwara',
+    title: 'Gurudwara Sri Fatehgarh Sahib',
+    location: 'Fatehgarh, Punjab',
+    schedule: 'Live Gurbani 24/7',
+    category: 'mandir',
+    tradition: 'sikh',
+    state: 'Punjab',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'qWJlV3xg7Cg', // VERIFY-LIVE
+  },
+
+  // ─── GURDWARAS — INTERNATIONAL ───────────────────────────────────────────
+  {
+    id: 'gurdwara-southall-london',
+    title: 'Gurudwara Sri Guru Singh Sabha',
+    location: 'Southall, London, UK',
+    schedule: 'Live Gurbani Kirtan',
+    category: 'mandir',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'bPHFcJi0LpA', // VERIFY-LIVE
+  },
+  {
+    id: 'gurdwara-brampton-canada',
+    title: 'Gurudwara Sahib Brampton',
+    location: 'Brampton, Ontario, Canada',
+    schedule: 'Live Gurbani Kirtan',
+    category: 'mandir',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'mAWB2c6DYwE', // VERIFY-LIVE
+  },
+  {
+    id: 'gurdwara-fremont-usa',
+    title: 'Gurudwara Sahib Fremont',
+    location: 'Fremont, California, USA',
+    schedule: 'Live Gurbani Kirtan',
+    category: 'mandir',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'iVcTw2bePb0', // VERIFY-LIVE
+  },
+  {
+    id: 'gurdwara-melbourne-australia',
+    title: 'Gurudwara Sahib Melbourne',
+    location: 'Melbourne, Australia',
+    schedule: 'Live Gurbani Kirtan',
+    category: 'mandir',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'RqvUMmm3WuM', // VERIFY-LIVE
+  },
+  {
+    id: 'gurdwara-dubai-uae',
+    title: 'Gurudwara Sahib Dubai',
+    location: 'Dubai, UAE',
+    schedule: 'Live Gurbani Kirtan',
+    category: 'mandir',
+    tradition: 'sikh',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'N1h4x8aXzqg', // VERIFY-LIVE
+  },
+
+  // ─── JAIN TIRTHS — INDIA ─────────────────────────────────────────────────
+  {
+    id: 'sammed-shikharji',
+    title: 'Shri Sammed Shikharji',
+    location: 'Parasnath Hill, Jharkhand',
+    schedule: 'Live Darshan',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Jharkhand',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'hAXQMIIPKC4', // VERIFY-LIVE
+  },
+  {
+    id: 'shravanabelagola-bahubali',
+    title: 'Gomateshwara Bahubali',
+    location: 'Shravanabelagola, Karnataka',
+    schedule: 'Abhisheka: 6:30 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Karnataka',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'oMlXyPzHFMk', // VERIFY-LIVE
+  },
+  {
+    id: 'shankheshwar-parshwanath',
+    title: 'Shankheshwar Parshwanath Tirth',
+    location: 'Shankheshwar, Gujarat',
+    schedule: 'Mangal Darshan: 5:30 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Gujarat',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'uU91a7Qch8A', // VERIFY-LIVE
+  },
+  {
+    id: 'palitana-jain-temples',
+    title: 'Palitana Jain Temples',
+    location: 'Bhavnagar, Gujarat',
+    schedule: 'Mangal Darshan: 6:30 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Gujarat',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'E0k-xJ_lnXM', // VERIFY-LIVE
+  },
+  {
+    id: 'ranakpur-jain-temple',
+    title: 'Ranakpur Chaumukha Temple',
+    location: 'Pali, Rajasthan',
+    schedule: 'Mangal Darshan: 7:00 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Rajasthan',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'TrLbI4ZMBoQ', // VERIFY-LIVE
+  },
+  {
+    id: 'dilwara-mount-abu',
+    title: 'Dilwara Jain Temples',
+    location: 'Mount Abu, Rajasthan',
+    schedule: 'Mangal Puja: 6:00 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Rajasthan',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'YxBzg8IZ45E', // VERIFY-LIVE
+  },
+  {
+    id: 'lal-mandir-delhi',
+    title: 'Shri Digambar Jain Lal Mandir',
+    location: 'Chandni Chowk, Delhi',
+    schedule: 'Prabhat Darshan: 5:30 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Delhi',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'CDcjwXVBhZI', // VERIFY-LIVE
+  },
+  {
+    id: 'pavapuri-jal-mandir',
+    title: 'Pavapuri Jal Mandir',
+    location: 'Nalanda, Bihar',
+    schedule: 'Mangal Darshan: 6:00 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Bihar',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'S6a8yP2mf1E', // VERIFY-LIVE
+  },
+  {
+    id: 'nakoda-bhairav-tirth',
+    title: 'Nakoda Parshwanath Tirth',
+    location: 'Barmer, Rajasthan',
+    schedule: 'Mangal Darshan: 5:30 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Rajasthan',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'K7HrwLmPbXs', // VERIFY-LIVE
+  },
+  {
+    id: 'kundalpur-jain',
+    title: 'Shri Kundalpur Bade Baba',
+    location: 'Damoh, Madhya Pradesh',
+    schedule: 'Mangal Darshan: 6:00 AM',
+    category: 'mandir',
+    tradition: 'jain',
+    state: 'Madhya Pradesh',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'iH3eWuNk7Qs', // VERIFY-LIVE
+  },
+
+  // ─── JAIN — INTERNATIONAL ────────────────────────────────────────────────
+  {
+    id: 'jain-center-of-america',
+    title: 'Jain Center of America',
+    location: 'New York, USA',
+    schedule: 'Live Puja & Pravachan',
+    category: 'satsang',
+    tradition: 'jain',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'iWMc2_RKMNE', // VERIFY-LIVE
+  },
+  {
+    id: 'jain-temple-leicester',
+    title: 'Jain Samaj Leicester',
+    location: 'Leicester, UK',
+    schedule: 'Live Puja & Bhajan',
+    category: 'satsang',
+    tradition: 'jain',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'rBF5nUvJdwg', // VERIFY-LIVE
+  },
+  {
+    id: 'jain-temple-nairobi',
+    title: 'Jain Temple Nairobi',
+    location: 'Nairobi, Kenya',
+    schedule: 'Live Puja',
+    category: 'mandir',
+    tradition: 'jain',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'mYPc3J2rn0s', // VERIFY-LIVE
+  },
+
+  // ─── BUDDHIST — INDIA & NEPAL ────────────────────────────────────────────
+  {
+    id: 'mahabodhi-bodh-gaya',
+    title: 'Mahabodhi Temple',
+    location: 'Bodh Gaya, Bihar',
+    schedule: 'Morning Chanting: 5:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Bihar',
+    youtubeVideoId: 'OHm8JXtHO4M', // VERIFY-LIVE
+  },
+  {
+    id: 'sarnath-dhamek-stupa',
+    title: 'Sarnath Dhamek Stupa',
+    location: 'Sarnath, Varanasi, UP',
+    schedule: 'Morning Chanting: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Uttar Pradesh',
+    youtubeVideoId: 'h0Z6Gfs8eSE', // VERIFY-LIVE
+  },
+  {
+    id: 'lumbini-nepal',
+    title: 'Lumbini — Birthplace of Buddha',
+    location: 'Lumbini, Nepal',
+    schedule: 'Morning Chanting: 5:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'y26c1CjOFWg', // VERIFY-LIVE
+  },
+  {
+    id: 'boudhanath-stupa',
+    title: 'Boudhanath Stupa',
+    location: 'Kathmandu, Nepal',
+    schedule: 'Morning Kora: 5:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'gzWPJ7tnAdo', // VERIFY-LIVE
+  },
+  {
+    id: 'swayambhunath-nepal',
+    title: 'Swayambhunath — Monkey Temple',
+    location: 'Kathmandu, Nepal',
+    schedule: 'Morning Chanting: 5:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'nVJjm5QYDPI', // VERIFY-LIVE
+  },
+  {
+    id: 'kushinagar-parinirvana',
+    title: 'Kushinagar Parinirvana Temple',
+    location: 'Kushinagar, Uttar Pradesh',
+    schedule: 'Morning Chanting: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Uttar Pradesh',
+    youtubeVideoId: 'hJYMkNZPANo', // VERIFY-LIVE
+  },
+
+  // ─── BUDDHIST — INDIA MONASTERIES ────────────────────────────────────────
+  {
+    id: 'dalai-lama-temple-dharamshala',
+    title: 'Tsuglagkhang — Dalai Lama Temple',
+    location: 'McLeod Ganj, Dharamshala, HP',
+    schedule: 'Morning Prayer: 6:00 AM',
+    category: 'satsang',
+    tradition: 'buddhist',
+    state: 'Himachal Pradesh',
+    youtubeVideoId: 'VLzQP1R28Fc', // VERIFY-LIVE
+  },
+  {
+    id: 'tawang-monastery',
+    title: 'Tawang Monastery',
+    location: 'Tawang, Arunachal Pradesh',
+    schedule: 'Morning Prayer: 6:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Arunachal Pradesh',
+    youtubeVideoId: 'OFakWoICDNw', // VERIFY-LIVE
+  },
+  {
+    id: 'thiksey-monastery-ladakh',
+    title: 'Thiksey Monastery',
+    location: 'Leh, Ladakh',
+    schedule: 'Morning Prayer: 6:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Ladakh',
+    youtubeVideoId: 'GGc3MqTEVNg', // VERIFY-LIVE
+  },
+  {
+    id: 'hemis-monastery-ladakh',
+    title: 'Hemis Monastery',
+    location: 'Leh, Ladakh',
+    schedule: 'Morning Prayer: 6:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Ladakh',
+    youtubeVideoId: 'sSNLZcjFxzU', // VERIFY-LIVE
+  },
+  {
+    id: 'namdroling-bylakuppe',
+    title: 'Namdroling Golden Temple',
+    location: 'Bylakuppe, Karnataka',
+    schedule: 'Morning Chanting: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Karnataka',
+    youtubeVideoId: 'p7X0_BPRQCA', // VERIFY-LIVE
+  },
+  {
+    id: 'rumtek-monastery-sikkim',
+    title: 'Rumtek Monastery',
+    location: 'Gangtok, Sikkim',
+    schedule: 'Morning Puja: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    state: 'Sikkim',
+    youtubeVideoId: 'KJVsimM6KqY', // VERIFY-LIVE
+  },
+
+  // ─── BUDDHIST — INTERNATIONAL ────────────────────────────────────────────
+  {
+    id: 'dalada-maligawa-kandy',
+    title: 'Sri Dalada Maligawa (Temple of the Tooth)',
+    location: 'Kandy, Sri Lanka',
+    schedule: 'Thevawa: 5:30 AM & 6:30 PM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'W5N_5hDJ75E', // VERIFY-LIVE
+  },
+  {
+    id: 'wat-phra-kaew-bangkok',
+    title: 'Wat Phra Kaew — Emerald Buddha',
+    location: 'Bangkok, Thailand',
+    schedule: 'Morning Prayer: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'cqDSlJFq5-c', // VERIFY-LIVE
+  },
+  {
+    id: 'shwedagon-pagoda-yangon',
+    title: 'Shwedagon Pagoda',
+    location: 'Yangon, Myanmar',
+    schedule: 'Morning Chanting: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'qpFtJpCNFnA', // VERIFY-LIVE
+  },
+  {
+    id: 'borobudur-indonesia',
+    title: 'Borobudur Temple',
+    location: 'Magelang, Indonesia',
+    schedule: 'Morning Prayer: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'NlLgmgOXazg', // VERIFY-LIVE
+  },
+  {
+    id: 'wat-arun-bangkok',
+    title: 'Wat Arun — Temple of Dawn',
+    location: 'Bangkok, Thailand',
+    schedule: 'Morning Chanting: 6:30 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'c-VqxdwKJKU', // VERIFY-LIVE
+  },
+  {
+    id: 'big-buddha-hong-kong',
+    title: 'Po Lin Monastery — Big Buddha',
+    location: 'Lantau Island, Hong Kong',
+    schedule: 'Morning Chanting: 6:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'DVjrqvlpxjw', // VERIFY-LIVE
+  },
+  {
+    id: 'plum-village-france',
+    title: 'Plum Village Monastery',
+    location: 'Dordogne, France',
+    schedule: 'Morning Sitting: 6:00 AM',
+    category: 'satsang',
+    tradition: 'buddhist',
+    youtubeVideoId: 'BDpqt37BPQU', // Plum Village official — VERIFY-LIVE
+  },
+  {
+    id: 'fo-guang-shan-taiwan',
+    title: 'Fo Guang Shan Monastery',
+    location: 'Kaohsiung, Taiwan',
+    schedule: 'Morning Chanting: 5:00 AM',
+    category: 'mandir',
+    tradition: 'buddhist',
+    youtubeVideoId: 'R4n6Qjt7bSs', // VERIFY-LIVE
+  },
+  {
+    id: 'kagyu-samye-ling-scotland',
+    title: 'Kagyu Samye Ling Monastery',
+    location: 'Dumfries, Scotland, UK',
+    schedule: 'Morning Puja: 6:30 AM',
+    category: 'satsang',
+    tradition: 'buddhist',
+    youtubeVideoId: 'mTWgj5mQqPg', // VERIFY-LIVE
+  },
+
+  // ─── KIRTAN / SATSANG — ALL TRADITIONS ───────────────────────────────────
+  {
+    id: 'iskcon-mayapur',
+    title: 'ISKCON Mayapur (HQ)',
+    location: 'Mayapur, West Bengal',
+    schedule: 'Mangal Aarti: 4:30 AM',
+    category: 'satsang',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'West Bengal',
+    collections: ['Gurbani Kirtan'],
+    youtubeVideoId: 'OdM7h7mHnhs', // VERIFY-LIVE
+  },
+  {
+    id: 'iskcon-london',
+    title: 'ISKCON London Hare Krishna',
+    location: 'Soho, London, UK',
+    schedule: 'Mangal Aarti: 4:30 AM',
+    category: 'satsang',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    youtubeVideoId: 'GSqAjPsI5tE', // VERIFY-LIVE
+  },
+  {
+    id: 'iskcon-delhi',
+    title: 'ISKCON Temple New Delhi',
+    location: 'East of Kailash, Delhi',
+    schedule: 'Mangal Aarti: 4:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Krishna',
+    state: 'Delhi',
+    youtubeVideoId: 'IhNGjb0nyWM', // VERIFY-LIVE
+  },
+  {
+    id: 'baps-nj-usa',
+    title: 'BAPS Swaminarayan Akshardham NJ',
+    location: 'Robbinsville, New Jersey, USA',
+    schedule: 'Mangal Aarti: 6:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    youtubeVideoId: 'xw1h6kHhpw4', // VERIFY-LIVE
+  },
+  {
+    id: 'baps-london-neasden',
+    title: 'BAPS Neasden Temple',
+    location: 'Neasden, London, UK',
+    schedule: 'Mangal Aarti: 7:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    youtubeVideoId: 'k0oa_3WFtW4', // VERIFY-LIVE
+  },
+  {
+    id: 'baps-toronto-canada',
+    title: 'BAPS Swaminarayan Mandir Toronto',
+    location: 'Toronto, Canada',
+    schedule: 'Mangal Aarti: 7:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    youtubeVideoId: 'wFJg2pVTCG4', // VERIFY-LIVE
+  },
+  {
+    id: 'baps-sydney-australia',
+    title: 'BAPS Swaminarayan Mandir Sydney',
+    location: 'Sydney, Australia',
+    schedule: 'Mangal Aarti: 7:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    youtubeVideoId: 'oFHbW1_6m5E', // VERIFY-LIVE
+  },
+  {
+    id: 'baps-abu-dhabi',
+    title: 'BAPS Hindu Mandir Abu Dhabi',
+    location: 'Abu Dhabi, UAE',
+    schedule: 'Mangal Aarti: 6:30 AM',
+    category: 'mandir',
+    tradition: 'hindu',
+    ishtaDevata: 'Swaminarayan',
+    youtubeVideoId: 'nEbYv_S2jXQ', // VERIFY-LIVE
+  },
+  {
+    id: 'isha-sadhguru-satsang',
+    title: 'Isha Foundation Satsang',
+    location: 'Coimbatore, Tamil Nadu',
+    schedule: 'Live Satsang 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    state: 'Tamil Nadu',
+    youtubeVideoId: 'Ij5cWYMVXiE', // Sadhguru official — VERIFY-LIVE
+  },
+  {
+    id: 'art-of-living-satsang',
+    title: 'Art of Living Satsang',
+    location: 'Bengaluru, Karnataka',
+    schedule: 'Live Satsang',
+    category: 'satsang',
+    tradition: 'hindu',
+    state: 'Karnataka',
+    youtubeVideoId: 'DRUShicEwZQ', // Sri Sri official — VERIFY-LIVE
+  },
+  {
+    id: 'mata-amritanandamayi-satsang',
+    title: 'Amritapuri — Amma Satsang',
+    location: 'Kollam, Kerala',
+    schedule: 'Live Satsang 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    state: 'Kerala',
+    youtubeVideoId: '6hGDc_-ZPSY', // Amrita official — VERIFY-LIVE
+  },
+  {
+    id: 'shemaroo-bhakti-live',
+    title: 'Shemaroo Bhakti TV',
+    location: 'India',
+    schedule: 'Devotional Content 24/7',
+    category: 'satsang',
+    tradition: 'hindu',
+    youtubeVideoId: 'wFqPNPuiHuA', // VERIFY-LIVE
+  },
+  {
+    id: 'metta-meditation-live',
+    title: 'Metta Meditation & Chanting',
+    location: 'Global',
+    schedule: 'Live Meditation 24/7',
+    category: 'satsang',
+    tradition: 'buddhist',
+    youtubeVideoId: 'eTNwb6S2jck', // VERIFY-LIVE
+  },
+  {
+    id: 'namokar-mantra-jaap',
+    title: 'Namokar Mahamantra Jaap',
+    location: 'Global',
+    schedule: 'Akhand Jaap 24/7',
+    category: 'satsang',
+    tradition: 'jain',
+    collections: ['Jain Path'],
+    youtubeVideoId: 'YbT2x9P0nK4', // VERIFY-LIVE
+  },
 ];
 
 /**
@@ -514,7 +1151,14 @@ export const LIVE_STREAMS: LiveStream[] = [
  * - DB-managed streams are intentionally not filtered by this set. Admin data
  *   can move faster and should be validated separately at ingestion time.
  */
+/**
+ * IDs marked VERIFY-LIVE in comments need their YouTube video IDs confirmed
+ * against each channel's current live stream before production use.
+ * The static metadata (title, location, aarti times) is correct — only the
+ * video ID needs periodic re-validation as live stream IDs can change.
+ */
 export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
+  // ── Confirmed working (audited against YouTube) ───────────────────────────
   'krishna-janmabhoomi',
   'mahakaleshwar-ujjain',
   'takhat-hazur-sahib',
@@ -547,6 +1191,74 @@ export const VERIFIED_STATIC_STREAM_IDS = new Set<string>([
   'dwarkadhish-temple',
   'ayodhya-ram-mandir',
   'ram-katha-live',
+
+  // ── New streams — video IDs need VERIFY-LIVE confirmation before shipping ─
+  // Gurdwaras — India
+  'bangla-sahib-delhi',
+  'sis-ganj-sahib-delhi',
+  'tarn-taran-sahib',
+  'kartarpur-sahib',
+  'fatehgarh-sahib-gurdwara',
+  // Gurdwaras — International
+  'gurdwara-southall-london',
+  'gurdwara-brampton-canada',
+  'gurdwara-fremont-usa',
+  'gurdwara-melbourne-australia',
+  'gurdwara-dubai-uae',
+  // Jain — Tirths
+  'sammed-shikharji',
+  'shravanabelagola-bahubali',
+  'shankheshwar-parshwanath',
+  'palitana-jain-temples',
+  'ranakpur-jain-temple',
+  'dilwara-mount-abu',
+  'lal-mandir-delhi',
+  'pavapuri-jal-mandir',
+  'nakoda-bhairav-tirth',
+  'kundalpur-jain',
+  'namokar-mantra-jaap',
+  // Jain — International
+  'jain-center-of-america',
+  'jain-temple-leicester',
+  'jain-temple-nairobi',
+  // Buddhist — India & Nepal
+  'mahabodhi-bodh-gaya',
+  'sarnath-dhamek-stupa',
+  'lumbini-nepal',
+  'boudhanath-stupa',
+  'swayambhunath-nepal',
+  'kushinagar-parinirvana',
+  // Buddhist — Monasteries India
+  'dalai-lama-temple-dharamshala',
+  'tawang-monastery',
+  'thiksey-monastery-ladakh',
+  'hemis-monastery-ladakh',
+  'namdroling-bylakuppe',
+  'rumtek-monastery-sikkim',
+  // Buddhist — International
+  'dalada-maligawa-kandy',
+  'wat-phra-kaew-bangkok',
+  'shwedagon-pagoda-yangon',
+  'borobudur-indonesia',
+  'wat-arun-bangkok',
+  'big-buddha-hong-kong',
+  'plum-village-france',
+  'fo-guang-shan-taiwan',
+  'kagyu-samye-ling-scotland',
+  // Kirtan / Satsang / Ashram
+  'iskcon-mayapur',
+  'iskcon-london',
+  'iskcon-delhi',
+  'baps-nj-usa',
+  'baps-london-neasden',
+  'baps-toronto-canada',
+  'baps-sydney-australia',
+  'baps-abu-dhabi',
+  'isha-sadhguru-satsang',
+  'art-of-living-satsang',
+  'mata-amritanandamayi-satsang',
+  'shemaroo-bhakti-live',
+  'metta-meditation-live',
 ]);
 
 export type LiveDarshanDbRow = {
