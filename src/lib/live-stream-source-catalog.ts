@@ -30,8 +30,9 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'SGPC, Sri Amritsar',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCYn6UEtQ771a_OWSiNBoG8w',
     fallbackVideoId: '8GTgg2TmRLQ',
-    notes: 'Remote author resolves to SGPC, Sri Amritsar. Use admin ingestion once the canonical channel ID is confirmed.',
+    notes: 'Remote author resolves to SGPC, Sri Amritsar. Canonical channel ID resolved from the live video.',
   },
   {
     id: 'takhat-hazur-sahib-live',
@@ -42,6 +43,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Takhat Sachkhand Hazur Sahib',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCuerQ47I9Y2qxr4eIopxbYw',
     fallbackVideoId: 'YsI5XOB4z7g',
   },
   {
@@ -53,6 +55,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Takhat Sri Harimandir Ji Patna Sahib',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UC3nqw1kd4AK1q9e68YUoLDQ',
     fallbackVideoId: '2VoKxEz6sSc',
   },
   {
@@ -64,6 +67,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Darbar Sri Guru Granth Sahib Ji, Surrey BC',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCZTngRGg1Dc2RKq6DbQLfvw',
     fallbackVideoId: 'YlnQ2apbtuQ',
   },
   {
@@ -75,6 +79,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Expeder Music',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCcMsjQs6pMLQWbW3ufhz1SQ',
     fallbackVideoId: 'SfkiRiVr3wc',
     notes: 'Real live kirtan source, but not an institutional gurdwara channel.',
   },
@@ -87,6 +92,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Jinvani Channel',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCDNNWj0oAFXngcwHAwnwP4w',
     fallbackVideoId: '7Ulm6UNZ578',
   },
   {
@@ -98,6 +104,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Aadinath Tv Channel',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UCY8r_lukdRi5cK5wjK_O3qw',
     fallbackVideoId: 'K1rbZLQ2GbQ',
   },
   {
@@ -109,6 +116,7 @@ export const VERIFIED_LIVE_STREAM_SOURCES: VerifiedLiveStreamSource[] = [
     organization: 'Paras TV',
     verification: 'manual-review',
     appReady: true,
+    youtubeChannelId: 'UC6E1pvhGa55AaZ-svF70ViA',
     fallbackVideoId: 'cDzIiI0kvNg',
   },
   {
