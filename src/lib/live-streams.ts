@@ -1426,36 +1426,30 @@ export function getLiveStreamsWithAartis(): LiveStream[] {
 /**
  * Resolves the effective stream inventory for product surfaces.
  *
- * Rules:
- * - Prefer active DB-managed streams when available.
- * - Preserve static metadata (collections, ishtaDevata, state) when the IDs match.
- * - Fall back to the verified static set when DB rows are absent.
+ * Design: always show every stream in VERIFIED_STATIC_STREAM_IDS (the full
+ * curated 100-stream list). DB rows are used only to patch in a fresh
+ * `current_video_id` when the static ID has gone stale — they never limit
+ * which streams are shown. Streams whose DB row has `is_active = false` are
+ * suppressed. DB-only rows (IDs not in the static list) are ignored.
  */
 export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): LiveStream[] {
-  if (!dbRows || dbRows.length === 0) return getLiveStreamsWithAartis();
+  // Index DB rows by ID for O(1) look-up
+  const dbById = new Map<string, LiveDarshanDbRow>(
+    (dbRows ?? []).map((row) => [row.id, row]),
+  );
 
-  const resolved = dbRows
-    .filter((row) => row.is_active !== false)
-    .map((row) => {
-      const fallback = STATIC_STREAM_BY_ID.get(row.id);
-      const youtubeVideoId = row.current_video_id || fallback?.youtubeVideoId || '';
-      if (!youtubeVideoId) return null;
-
-      return enrichLiveStream({
-        id: row.id,
-        title: row.title || fallback?.title || row.id,
-        location: row.location || fallback?.location || 'Live Darshan',
-        schedule: row.schedule || fallback?.schedule || 'Live Darshan',
-        category: (row.category || fallback?.category || 'mandir') as LiveStreamCategory,
-        tradition: row.tradition || fallback?.tradition || 'hindu',
-        youtubeVideoId,
-        ishtaDevata: fallback?.ishtaDevata,
-        state: fallback?.state,
-        collections: fallback?.collections,
-        thumbnailUrl: fallback?.thumbnailUrl,
-      });
+  return LIVE_STREAMS
+    .filter((s) => {
+      if (!VERIFIED_STATIC_STREAM_IDS.has(s.id)) return false;
+      // Honour explicit is_active=false from DB (e.g. stream retired)
+      const row = dbById.get(s.id);
+      if (row && row.is_active === false) return false;
+      return true;
     })
-    .filter((stream): stream is LiveStream => Boolean(stream));
-
-  return resolved.length > 0 ? resolved : getLiveStreamsWithAartis();
+    .map((s) => {
+      const row = dbById.get(s.id);
+      // DB can override the video ID; all other metadata stays static
+      const youtubeVideoId = row?.current_video_id || s.youtubeVideoId;
+      return enrichLiveStream({ ...s, youtubeVideoId });
+    });
 }
