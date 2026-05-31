@@ -233,6 +233,127 @@ function heatStyle(count: number): React.CSSProperties {
   };
 }
 
+function formatShortDate(date: string): string {
+  return new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+function weekdayShort(date: string): string {
+  return new Date(`${date}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 1);
+}
+
+function PracticeRhythmCard({
+  dayRecords,
+  accent,
+  streak,
+  spiritualToday,
+}: {
+  dayRecords: DayRecord[];
+  accent: string;
+  streak: { current_streak: number; longest_streak: number } | null;
+  spiritualToday: string;
+}) {
+  const activeDays = dayRecords.filter((d) => d.count > 0).length;
+  const weeklyBuckets = Array.from({ length: Math.ceil(dayRecords.length / 7) }, (_, idx) =>
+    dayRecords.slice(idx * 7, idx * 7 + 7),
+  );
+  const weeklySums = weeklyBuckets.map((bucket) => bucket.reduce((sum, day) => sum + day.count, 0));
+  const bestWeek = weeklySums.length > 0 ? Math.max(...weeklySums) : 0;
+  const weekdayTotals = dayRecords.reduce<Record<string, number>>((acc, day) => {
+    const key = weekdayShort(day.date);
+    acc[key] = (acc[key] ?? 0) + day.count;
+    return acc;
+  }, {});
+  const strongestWeekday = Object.entries(weekdayTotals).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
+  const maxCount = Math.max(...dayRecords.map((d) => d.count), 1);
+
+  return (
+    <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 overflow-hidden">
+      <div className="px-4 pt-4 pb-3 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Practice Rhythm</p>
+          <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Completion intensity · last 30 spiritual days</p>
+        </div>
+        <div
+          className="rounded-full px-2.5 py-1 text-[10px] font-semibold"
+          style={{ background: `${accent}12`, color: accent, border: `1px solid ${accent}24` }}
+        >
+          {activeDays} active
+        </div>
+      </div>
+
+      <div className="px-4 pb-4">
+        <div
+          className="rounded-[1.2rem] p-3.5"
+          style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))', border: '1px solid rgba(255,255,255,0.04)' }}
+        >
+          <div className="flex items-end gap-1.5 h-28">
+            {dayRecords.map((day, idx) => {
+              const isToday = day.date === spiritualToday;
+              const height = day.count === 0 ? 12 : 12 + Math.round((day.count / maxCount) * 84);
+              const isHot = day.count >= 3;
+              return (
+                <div key={day.date} className="flex-1 min-w-0 flex flex-col items-center justify-end gap-1">
+                  <div
+                    title={`${formatShortDate(day.date)} · ${day.count}/${day.total} steps`}
+                    className="w-full rounded-[0.8rem] transition-all"
+                    style={{
+                      height,
+                      background: isHot
+                        ? 'linear-gradient(180deg, #f0c060 0%, #C5A059 55%, #a06520 100%)'
+                        : day.count > 0
+                          ? `linear-gradient(180deg, ${accent}AA 0%, ${accent}66 100%)`
+                          : 'rgba(255,255,255,0.06)',
+                      border: isToday
+                        ? '2px solid rgba(197,160,89,0.7)'
+                        : day.count > 0
+                          ? '1px solid rgba(255,255,255,0.08)'
+                          : '1px solid rgba(255,255,255,0.03)',
+                      boxShadow: isToday ? '0 0 0 3px rgba(197,160,89,0.12)' : isHot ? '0 6px 16px rgba(197,160,89,0.18)' : 'none',
+                    }}
+                  />
+                  <span className="text-[8px]" style={{ color: idx % 5 === 0 ? 'var(--text-dim)' : 'transparent' }}>
+                    {weekdayShort(day.date)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 flex items-center gap-3 flex-wrap">
+            {[0, 1, 2, 3].map((level) => (
+              <div key={level} className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-[4px]" style={heatStyle(level)} />
+                <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>
+                  {level === 3 ? '3+ steps' : `${level} step${level === 1 ? '' : 's'}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          <div className="rounded-xl px-3 py-3 text-center" style={{ background: `${accent}10`, border: `1px solid ${accent}18` }}>
+            <p className="text-lg font-bold" style={{ color: accent }}>{streak?.current_streak ?? 0}</p>
+            <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
+          </div>
+          <div className="rounded-xl px-3 py-3 text-center" style={{ background: `${accent}10`, border: `1px solid ${accent}18` }}>
+            <p className="text-lg font-bold" style={{ color: accent }}>{streak?.longest_streak ?? 0}</p>
+            <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
+          </div>
+          <div className="rounded-xl px-3 py-3 text-center" style={{ background: `${accent}10`, border: `1px solid ${accent}18` }}>
+            <p className="text-lg font-bold" style={{ color: accent }}>{bestWeek}</p>
+            <p className="text-[10px] text-[color:var(--brand-muted)]">Best week</p>
+          </div>
+          <div className="rounded-xl px-3 py-3 text-center" style={{ background: `${accent}10`, border: `1px solid ${accent}18` }}>
+            <p className="text-lg font-bold" style={{ color: accent }}>{strongestWeekday}</p>
+            <p className="text-[10px] text-[color:var(--brand-muted)]">Best day</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // (CircularProgress removed — use shared RadialRing from @/components/ui/RadialRing)
 
 // ── Nitya customization — localStorage helpers ────────────────────────────────
@@ -784,7 +905,8 @@ export default function NityaKarmaClient({
   transliterationLanguage,
   showTransliteration,
   scriptureScript,
-}: Omit<Props, 'isPro'>) {
+  isPro: initialIsPro = false,
+}: Props) {
   // Compute "today" as a spiritual date: before 4 AM local = still yesterday.
   // This is re-evaluated each render — if the app is left open across Brahma
   // Muhurta it will naturally shift to the new day on next interaction.
@@ -794,7 +916,8 @@ export default function NityaKarmaClient({
   const { engine, isReady } = useEngine();
   const meta                = getTraditionMeta(tradition);
   const accent              = meta.accentColour;
-  const isPro               = usePremium();
+  const livePremium         = usePremium();
+  const isPro               = initialIsPro || livePremium;
   const { term }            = useVocabulary(tradition);
   const readablePreferences = resolveReadablePreferences({
     appLanguage,
@@ -1932,90 +2055,29 @@ export default function NityaKarmaClient({
                 <ChevronDown size={16} style={{ color: accent, transform: 'rotate(-90deg)', flexShrink: 0 }} />
               </Link>
 
-              {/* 30-day calendar */}
-              <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 overflow-hidden">
-                <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">30-Day Sadhana</p>
-                    <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">Step intensity · last 30 days</p>
-                  </div>
-                </div>
-                <div className="px-4 pb-4">
-                  <div className="grid gap-[4px] mb-1" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                    {['S','M','T','W','T','F','S'].map((d, i) => (
-                      <div key={i} className="text-center text-[9px] font-semibold"
-                        style={{ color: 'rgba(255,255,255,0.25)' }}>{d}</div>
-                    ))}
-                  </div>
-                  {(() => {
-                    // Use the spiritual date range that was used to build dayRecords
-                    const startDate = new Date(`${dayRecords[0]?.date ?? spiritualToday}T12:00:00Z`);
-                    const dayOfWeek = startDate.getUTCDay();
-                    const slots: (DayRecord | null)[] = Array(dayOfWeek).fill(null);
-                    for (const rec of dayRecords) slots.push(rec);
-                    while (slots.length % 7 !== 0) slots.push(null);
-                    return (
-                      <div className="grid gap-[4px]" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                        {slots.map((slot, idx) => {
-                          if (!slot) return <div key={idx} className="aspect-square" />;
-                          const isToday = slot.date === spiritualToday;
-                          return (
-                            <div key={slot.date}
-                              title={`${slot.date}: ${slot.count} steps`}
-                              className="aspect-square rounded-md transition-all"
-                              style={{
-                                ...heatStyle(slot.count),
-                                outline: isToday ? `2px solid rgba(197, 160, 89,0.55)` : undefined,
-                                outlineOffset: '1px',
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                    );
-                  })()}
-                  <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    {[{ style: heatStyle(0), label: '0' }, { style: heatStyle(1), label: '1' },
-                      { style: heatStyle(2), label: '2' }, { style: heatStyle(3), label: '3+' }].map(({ style, label }) => (
-                      <div key={label} className="flex items-center gap-1">
-                        <div className="w-3 h-3 rounded-sm" style={style} />
-                        <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{label} step{label === '1' ? '' : 's'}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {streak && (
-                    <div className="mt-3 pt-3 border-t border-[#C5A059]/15 flex items-center justify-around">
-                      <div className="text-center">
-                        <p className="text-lg font-bold" style={{ color: accent }}>{streak.current_streak}</p>
-                        <p className="text-[10px] text-[color:var(--brand-muted)]">Current streak</p>
-                      </div>
-                      <div className="w-px h-8 bg-[var(--surface-soft)]" />
-                      <div className="text-center">
-                        <p className="text-lg font-bold" style={{ color: accent }}>{streak.longest_streak}</p>
-                        <p className="text-[10px] text-[color:var(--brand-muted)]">Best streak</p>
-                      </div>
-                      <div className="w-px h-8 bg-[var(--surface-soft)]" />
-                      <div className="text-center">
-                        <p className="text-lg font-bold" style={{ color: accent }}>
-                          {dayRecords.filter(d => d.count > 0).length}
-                        </p>
-                        <p className="text-[10px] text-[color:var(--brand-muted)]">Active days</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <PracticeRhythmCard
+                dayRecords={dayRecords}
+                accent={accent}
+                streak={streak}
+                spiritualToday={spiritualToday}
+              />
 
               {/* Engine note */}
               <div className="bg-[var(--surface-soft)] rounded-2xl border border-[#C5A059]/15 px-4 py-3 flex items-start gap-2.5">
                 <Info size={14} className="text-[color:var(--brand-muted)] shrink-0 mt-0.5" />
                 <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed">
-                  Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
-                  <button onClick={() => setShowProSheet(true)}
-                    className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
-                    Shoonaya Pro
-                  </button>
-                  {' '}unlocks AI-personalised sequences, full analytics, and all Guided Plans.
+                  {isPro ? (
+                    <>Your sequence adapts to today&apos;s tithi, nakshatra, and vrat. Guided plans and analytics are active on this account.</>
+                  ) : (
+                    <>
+                      Your sequence adapts to today&apos;s tithi, nakshatra, and vrat.{' '}
+                      <button onClick={() => setShowProSheet(true)}
+                        className="font-semibold text-[color:var(--brand-ink)] underline underline-offset-2">
+                        Shoonaya Pro
+                      </button>
+                      {' '}unlocks AI-personalised sequences, full analytics, and all Guided Plans.
+                    </>
+                  )}
                 </p>
               </div>
             </div>

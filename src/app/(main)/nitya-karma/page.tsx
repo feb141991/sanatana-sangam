@@ -10,7 +10,7 @@ export default async function NityaKarmaPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
+    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro')
     .eq('id', user.id)
     .single();
 
@@ -27,6 +27,7 @@ export default async function NityaKarmaPage() {
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
       showTransliteration={(profile as any)?.show_transliteration ?? true}
       scriptureScript={(profile as any)?.scripture_script ?? 'original'}
+      isPro={(profile as any)?.is_pro ?? false}
     />
   );
 }
