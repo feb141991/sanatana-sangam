@@ -1,78 +1,19 @@
--- Migration v84 (fixed): register 68 new live darshan streams
--- All inserted with is_active = false — invisible to users until
--- the team verifies the video ID and runs:
---   UPDATE live_darshans
---     SET current_video_id = '<confirmed_id>', is_active = true
---     WHERE id = '<stream_id>';
+-- Migration v84: allow youtube_channel_id to be NULL for pending/unverified streams
+-- Previously NOT NULL, which prevented inserting streams before their channel ID is confirmed.
+-- The sync-cron (sync-live-darshans) already skips rows where youtube_channel_id IS NULL.
 
-INSERT INTO live_darshans (id, title, location, schedule, category, tradition, current_video_id, is_active)
-VALUES
-  ('bangla-sahib-delhi', 'Gurudwara Bangla Sahib', 'New Delhi', 'Live Gurbani 24/7', 'mandir', 'sikh', 'GI4VzMz6_z8', 'false'),
-  ('sis-ganj-sahib-delhi', 'Gurudwara Sis Ganj Sahib', 'Chandni Chowk, Delhi', 'Live Gurbani 24/7', 'mandir', 'sikh', 'PpS1JbRLHao', 'false'),
-  ('tarn-taran-sahib', 'Gurudwara Tarn Taran Sahib', 'Tarn Taran, Punjab', 'Live Gurbani 24/7', 'mandir', 'sikh', 'a2r5u1u5woo', 'false'),
-  ('kartarpur-sahib', 'Gurudwara Darbar Sahib Kartarpur', 'Kartarpur, Punjab', 'Live Gurbani 24/7', 'mandir', 'sikh', '6E7WdFILJ9Y', 'false'),
-  ('fatehgarh-sahib-gurdwara', 'Gurudwara Sri Fatehgarh Sahib', 'Fatehgarh, Punjab', 'Live Gurbani 24/7', 'mandir', 'sikh', 'qWJlV3xg7Cg', 'false'),
-  ('gurdwara-southall-london', 'Gurudwara Sri Guru Singh Sabha', 'Southall, London, UK', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'bPHFcJi0LpA', 'false'),
-  ('gurdwara-brampton-canada', 'Gurudwara Sahib Brampton', 'Brampton, Ontario, Canada', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'mAWB2c6DYwE', 'false'),
-  ('gurdwara-fremont-usa', 'Gurudwara Sahib Fremont', 'Fremont, California, USA', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'iVcTw2bePb0', 'false'),
-  ('gurdwara-melbourne-australia', 'Gurudwara Sahib Melbourne', 'Melbourne, Australia', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'RqvUMmm3WuM', 'false'),
-  ('gurdwara-dubai-uae', 'Gurudwara Sahib Dubai', 'Dubai, UAE', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'N1h4x8aXzqg', 'false'),
-  ('sammed-shikharji', 'Shri Sammed Shikharji', 'Parasnath Hill, Jharkhand', 'Live Darshan', 'mandir', 'jain', 'hAXQMIIPKC4', 'false'),
-  ('shravanabelagola-bahubali', 'Gomateshwara Bahubali', 'Shravanabelagola, Karnataka', 'Abhisheka: 6:30 AM', 'mandir', 'jain', 'oMlXyPzHFMk', 'false'),
-  ('shankheshwar-parshwanath', 'Shankheshwar Parshwanath Tirth', 'Shankheshwar, Gujarat', 'Mangal Darshan: 5:30 AM', 'mandir', 'jain', 'uU91a7Qch8A', 'false'),
-  ('palitana-jain-temples', 'Palitana Jain Temples', 'Bhavnagar, Gujarat', 'Mangal Darshan: 6:30 AM', 'mandir', 'jain', 'E0k-xJ_lnXM', 'false'),
-  ('ranakpur-jain-temple', 'Ranakpur Chaumukha Temple', 'Pali, Rajasthan', 'Mangal Darshan: 7:00 AM', 'mandir', 'jain', 'TrLbI4ZMBoQ', 'false'),
-  ('dilwara-mount-abu', 'Dilwara Jain Temples', 'Mount Abu, Rajasthan', 'Mangal Puja: 6:00 AM', 'mandir', 'jain', 'YxBzg8IZ45E', 'false'),
-  ('lal-mandir-delhi', 'Shri Digambar Jain Lal Mandir', 'Chandni Chowk, Delhi', 'Prabhat Darshan: 5:30 AM', 'mandir', 'jain', 'CDcjwXVBhZI', 'false'),
-  ('pavapuri-jal-mandir', 'Pavapuri Jal Mandir', 'Nalanda, Bihar', 'Mangal Darshan: 6:00 AM', 'mandir', 'jain', 'S6a8yP2mf1E', 'false'),
-  ('nakoda-bhairav-tirth', 'Nakoda Parshwanath Tirth', 'Barmer, Rajasthan', 'Mangal Darshan: 5:30 AM', 'mandir', 'jain', 'K7HrwLmPbXs', 'false'),
-  ('kundalpur-jain', 'Shri Kundalpur Bade Baba', 'Damoh, Madhya Pradesh', 'Mangal Darshan: 6:00 AM', 'mandir', 'jain', 'iH3eWuNk7Qs', 'false'),
-  ('jain-center-of-america', 'Jain Center of America', 'New York, USA', 'Live Puja & Pravachan', 'satsang', 'jain', 'iWMc2_RKMNE', 'false'),
-  ('jain-temple-leicester', 'Jain Samaj Leicester', 'Leicester, UK', 'Live Puja & Bhajan', 'satsang', 'jain', 'rBF5nUvJdwg', 'false'),
-  ('jain-temple-nairobi', 'Jain Temple Nairobi', 'Nairobi, Kenya', 'Live Puja', 'mandir', 'jain', 'mYPc3J2rn0s', 'false'),
-  ('mahabodhi-bodh-gaya', 'Mahabodhi Temple', 'Bodh Gaya, Bihar', 'Morning Chanting: 5:00 AM', 'mandir', 'buddhist', 'OHm8JXtHO4M', 'false'),
-  ('sarnath-dhamek-stupa', 'Sarnath Dhamek Stupa', 'Sarnath, Varanasi, UP', 'Morning Chanting: 6:00 AM', 'mandir', 'buddhist', 'h0Z6Gfs8eSE', 'false'),
-  ('lumbini-nepal', 'Lumbini — Birthplace of Buddha', 'Lumbini, Nepal', 'Morning Chanting: 5:30 AM', 'mandir', 'buddhist', 'y26c1CjOFWg', 'false'),
-  ('boudhanath-stupa', 'Boudhanath Stupa', 'Kathmandu, Nepal', 'Morning Kora: 5:30 AM', 'mandir', 'buddhist', 'gzWPJ7tnAdo', 'false'),
-  ('swayambhunath-nepal', 'Swayambhunath — Monkey Temple', 'Kathmandu, Nepal', 'Morning Chanting: 5:00 AM', 'mandir', 'buddhist', 'nVJjm5QYDPI', 'false'),
-  ('kushinagar-parinirvana', 'Kushinagar Parinirvana Temple', 'Kushinagar, Uttar Pradesh', 'Morning Chanting: 6:00 AM', 'mandir', 'buddhist', 'hJYMkNZPANo', 'false'),
-  ('dalai-lama-temple-dharamshala', 'Tsuglagkhang — Dalai Lama Temple', 'McLeod Ganj, Dharamshala, HP', 'Morning Prayer: 6:00 AM', 'satsang', 'buddhist', 'VLzQP1R28Fc', 'false'),
-  ('tawang-monastery', 'Tawang Monastery', 'Tawang, Arunachal Pradesh', 'Morning Prayer: 6:30 AM', 'mandir', 'buddhist', 'OFakWoICDNw', 'false'),
-  ('thiksey-monastery-ladakh', 'Thiksey Monastery', 'Leh, Ladakh', 'Morning Prayer: 6:30 AM', 'mandir', 'buddhist', 'GGc3MqTEVNg', 'false'),
-  ('hemis-monastery-ladakh', 'Hemis Monastery', 'Leh, Ladakh', 'Morning Prayer: 6:30 AM', 'mandir', 'buddhist', 'sSNLZcjFxzU', 'false'),
-  ('namdroling-bylakuppe', 'Namdroling Golden Temple', 'Bylakuppe, Karnataka', 'Morning Chanting: 6:00 AM', 'mandir', 'buddhist', 'p7X0_BPRQCA', 'false'),
-  ('rumtek-monastery-sikkim', 'Rumtek Monastery', 'Gangtok, Sikkim', 'Morning Puja: 6:00 AM', 'mandir', 'buddhist', 'KJVsimM6KqY', 'false'),
-  ('dalada-maligawa-kandy', 'Sri Dalada Maligawa (Temple of the Tooth)', 'Kandy, Sri Lanka', 'Thevawa: 5:30 AM & 6:30 PM', 'mandir', 'buddhist', 'W5N_5hDJ75E', 'false'),
-  ('wat-phra-kaew-bangkok', 'Wat Phra Kaew — Emerald Buddha', 'Bangkok, Thailand', 'Morning Prayer: 6:00 AM', 'mandir', 'buddhist', 'cqDSlJFq5-c', 'false'),
-  ('shwedagon-pagoda-yangon', 'Shwedagon Pagoda', 'Yangon, Myanmar', 'Morning Chanting: 6:00 AM', 'mandir', 'buddhist', 'qpFtJpCNFnA', 'false'),
-  ('borobudur-indonesia', 'Borobudur Temple', 'Magelang, Indonesia', 'Morning Prayer: 6:00 AM', 'mandir', 'buddhist', 'NlLgmgOXazg', 'false'),
-  ('wat-arun-bangkok', 'Wat Arun — Temple of Dawn', 'Bangkok, Thailand', 'Morning Chanting: 6:30 AM', 'mandir', 'buddhist', 'c-VqxdwKJKU', 'false'),
-  ('big-buddha-hong-kong', 'Po Lin Monastery — Big Buddha', 'Lantau Island, Hong Kong', 'Morning Chanting: 6:00 AM', 'mandir', 'buddhist', 'DVjrqvlpxjw', 'false'),
-  ('plum-village-france', 'Plum Village Monastery', 'Dordogne, France', 'Morning Sitting: 6:00 AM', 'satsang', 'buddhist', 'BDpqt37BPQU', 'false'),
-  ('fo-guang-shan-taiwan', 'Fo Guang Shan Monastery', 'Kaohsiung, Taiwan', 'Morning Chanting: 5:00 AM', 'mandir', 'buddhist', 'R4n6Qjt7bSs', 'false'),
-  ('kagyu-samye-ling-scotland', 'Kagyu Samye Ling Monastery', 'Dumfries, Scotland, UK', 'Morning Puja: 6:30 AM', 'satsang', 'buddhist', 'mTWgj5mQqPg', 'false'),
-  ('iskcon-mayapur', 'ISKCON Mayapur (HQ)', 'Mayapur, West Bengal', 'Mangal Aarti: 4:30 AM', 'satsang', 'hindu', 'OdM7h7mHnhs', 'false'),
-  ('iskcon-london', 'ISKCON London Hare Krishna', 'Soho, London, UK', 'Mangal Aarti: 4:30 AM', 'satsang', 'hindu', 'GSqAjPsI5tE', 'false'),
-  ('iskcon-delhi', 'ISKCON Temple New Delhi', 'East of Kailash, Delhi', 'Mangal Aarti: 4:30 AM', 'mandir', 'hindu', 'IhNGjb0nyWM', 'false'),
-  ('baps-nj-usa', 'BAPS Swaminarayan Akshardham NJ', 'Robbinsville, New Jersey, USA', 'Mangal Aarti: 6:30 AM', 'mandir', 'hindu', 'xw1h6kHhpw4', 'false'),
-  ('baps-london-neasden', 'BAPS Neasden Temple', 'Neasden, London, UK', 'Mangal Aarti: 7:30 AM', 'mandir', 'hindu', 'k0oa_3WFtW4', 'false'),
-  ('baps-toronto-canada', 'BAPS Swaminarayan Mandir Toronto', 'Toronto, Canada', 'Mangal Aarti: 7:30 AM', 'mandir', 'hindu', 'wFJg2pVTCG4', 'false'),
-  ('baps-sydney-australia', 'BAPS Swaminarayan Mandir Sydney', 'Sydney, Australia', 'Mangal Aarti: 7:30 AM', 'mandir', 'hindu', 'oFHbW1_6m5E', 'false'),
-  ('baps-abu-dhabi', 'BAPS Hindu Mandir Abu Dhabi', 'Abu Dhabi, UAE', 'Mangal Aarti: 6:30 AM', 'mandir', 'hindu', 'nEbYv_S2jXQ', 'false'),
-  ('isha-sadhguru-satsang', 'Isha Foundation Satsang', 'Coimbatore, Tamil Nadu', 'Live Satsang 24/7', 'satsang', 'hindu', 'Ij5cWYMVXiE', 'false'),
-  ('art-of-living-satsang', 'Art of Living Satsang', 'Bengaluru, Karnataka', 'Live Satsang', 'satsang', 'hindu', 'DRUShicEwZQ', 'false'),
-  ('mata-amritanandamayi-satsang', 'Amritapuri — Amma Satsang', 'Kollam, Kerala', 'Live Satsang 24/7', 'satsang', 'hindu', '6hGDc_-ZPSY', 'false'),
-  ('shemaroo-bhakti-live', 'Shemaroo Bhakti TV', 'India', 'Devotional Content 24/7', 'satsang', 'hindu', 'wFqPNPuiHuA', 'false'),
-  ('metta-meditation-live', 'Metta Meditation & Chanting', 'Global', 'Live Meditation 24/7', 'satsang', 'buddhist', 'eTNwb6S2jck', 'false'),
-  ('namokar-mantra-jaap', 'Namokar Mahamantra Jaap', 'Global', 'Akhand Jaap 24/7', 'satsang', 'jain', 'YbT2x9P0nK4', 'false'),
-  ('kashi-vishwanath', 'Kashi Vishwanath Dham', 'Varanasi, Uttar Pradesh', 'Mangal Aarti: 3:00 AM', 'mandir', 'hindu', 'RGEaFxPE6II', 'false'),
-  ('vaishno-devi-katra', 'Shri Mata Vaishno Devi', 'Katra, Jammu & Kashmir', 'Pratah Darshan: 5:00 AM', 'mandir', 'hindu', 'Qk3KVoJpOmA', 'false'),
-  ('har-ki-pauri-haridwar', 'Har Ki Pauri Ganga Aarti', 'Haridwar, Uttarakhand', 'Pratah Ganga Aarti: 6:00 AM', 'mandir', 'hindu', 'ERRFoVOVRX8', 'false'),
-  ('guruvayur-krishna', 'Guruvayur Sri Krishna Temple', 'Guruvayur, Kerala', 'Nirmalya Darshan: 3:00 AM', 'mandir', 'hindu', 'PvYd3C2FQBQ', 'false'),
-  ('meenakshi-amman-madurai', 'Meenakshi Amman Temple', 'Madurai, Tamil Nadu', 'Thiruvempavai: 5:30 AM', 'mandir', 'hindu', 'nABsHGdE3OU', 'false'),
-  ('dakshineswar-kali', 'Dakshineswar Kali Temple', 'Kolkata, West Bengal', 'Pratah Aarti: 6:00 AM', 'mandir', 'hindu', 'JZbr5sAhVPY', 'false'),
-  ('pandharpur-vitthal', 'Pandharpur Vitthal Temple', 'Pandharpur, Maharashtra', 'Kakad Aarti: 5:00 AM', 'mandir', 'hindu', 'I3fvXZ_mDXQ', 'false'),
-  ('nathdwara-shrinathji', 'Nathdwara Shrinathji', 'Nathdwara, Rajasthan', 'Mangal Jhanki: 6:00 AM', 'mandir', 'hindu', 'bO_XvhpFWBM', 'false'),
-  ('keshgarh-sahib-anandpur', 'Takhat Sri Keshgarh Sahib', 'Anandpur Sahib, Punjab', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'v6fJfHDMLQo', 'false'),
-  ('damdama-sahib-talwandi', 'Takhat Sri Damdama Sahib', 'Talwandi Sabo, Punjab', 'Live Gurbani Kirtan', 'mandir', 'sikh', 'u4T8OgCF3yE', 'false')
-ON CONFLICT (id) DO NOTHING;
+ALTER TABLE public.live_darshans
+  ALTER COLUMN youtube_channel_id DROP NOT NULL;
+
+-- The 68 new streams are managed via LIVE_STREAMS static registry and surface only
+-- when the team verifies them. Use the AG verification prompt + INSERT below to publish:
+--
+-- INSERT INTO public.live_darshans
+--   (id, title, location, schedule, category, tradition, youtube_channel_id, current_video_id, is_active)
+-- VALUES
+--   ('<stream_id>', '<title>', '<location>', '<schedule>', '<category>', '<tradition>',
+--    '<UC_channel_id>', '<video_id>', true)
+-- ON CONFLICT (id) DO UPDATE SET
+--   youtube_channel_id = EXCLUDED.youtube_channel_id,
+--   current_video_id   = EXCLUDED.current_video_id,
+--   is_active          = EXCLUDED.is_active;
