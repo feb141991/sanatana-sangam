@@ -316,17 +316,27 @@ function ScriptureTab({
 
 
   const entries = useMemo(() => {
-    if (!drillSection) return [];
-    const base = getEntriesBySection(drillSection);
-    if (!query.trim()) return base;
     const q = query.toLowerCase().trim();
+    if (!drillSection) {
+      if (!q) return [];
+      // Global search across all allowed sections for this tradition
+      const allTraditionEntries = allowedSections.flatMap(sectionId => getEntriesBySection(sectionId));
+      return allTraditionEntries.filter(e => (
+        e.title.toLowerCase().includes(q) ||
+        e.meaning.toLowerCase().includes(q) ||
+        e.source.toLowerCase().includes(q) ||
+        e.tags.some(t => t.includes(q))
+      ));
+    }
+    const base = getEntriesBySection(drillSection);
+    if (!q) return base;
     return base.filter(e =>
       e.title.toLowerCase().includes(q) ||
       e.meaning.toLowerCase().includes(q) ||
       e.source.toLowerCase().includes(q) ||
       e.tags.some(t => t.includes(q))
     );
-  }, [drillSection, query]);
+  }, [drillSection, query, allowedSections]);
 
   // ── Drill-in view: inside a specific scripture ────────────────────────────────
   if (drillSection) {
@@ -420,63 +430,96 @@ function ScriptureTab({
   // ── Scripture card grid ───────────────────────────────────────────────────────
   return (
     <div className="space-y-4">
-
-      <p className="text-[11px] font-semibold uppercase tracking-wider px-0.5" style={{ color: mutedColor }}>
-        {sections.length} Scriptures · {navLabel}
-      </p>
-      <div className="grid gap-3">
-        {sections.map((section) => {
-          const sectionDetail = getPathshalaSectionDetail(section.id);
-          return (
-          <motion.button
-            key={section.id}
-            whileHover={{ scale: 1.01, translateY: -2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setDrillSection(section.id)}
-            className="w-full text-left p-5 rounded-[2rem] relative overflow-hidden group transition-all"
-            style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
-          >
-            {/* Hover glow */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[2rem]"
-              style={{ background: `radial-gradient(circle at top right, ${accentColour}0C, transparent 70%)` }} />
-
-            <div className="relative flex items-start gap-4">
-              {/* Emoji icon */}
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 transition-transform group-hover:scale-105 duration-300"
-                style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}20` }}>
-                {section.emoji}
-              </div>
-
-              {/* Text content */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-base mb-0.5 leading-tight" style={{ color: inkColor }}>
-                  {section.title}
-                </h3>
-                <p className="text-[11px] leading-relaxed mb-2.5 line-clamp-2" style={{ color: mutedColor }}>
-                  {section.desc}
-                </p>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                    style={{ background: `${accentColour}15`, color: accentColour }}>
-                    {section.count} passages
-                  </span>
-                  {sectionDetail && (
-                    <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                      style={{ background: 'var(--card-bg-soft)', color: mutedColor }}>
-                      {sectionDetail.corpusState}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Arrow */}
-              <ChevronRight size={18} className="shrink-0 mt-1 opacity-20 group-hover:opacity-60 transition-all duration-300 group-hover:translate-x-0.5"
-                style={{ color: accentColour }} />
-            </div>
-          </motion.button>
-          );
-        })}
+      {/* Global Search box */}
+      <div className="relative mb-4">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder={`Search all ${navLabel} scriptures…`}
+          className="w-full pl-9 pr-4 py-3 rounded-2xl border bg-[var(--surface-soft)] text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none transition-colors"
+          style={{ borderColor: 'var(--card-border)' }}
+        />
+        {query && (
+          <button onClick={() => setQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
+            <X size={15} />
+          </button>
+        )}
       </div>
+
+      {query.trim().length > 0 ? (
+        <div className="grid gap-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wider px-0.5 mb-1" style={{ color: mutedColor }}>
+            Search Results ({entries.length})
+          </p>
+          {entries.length > 0 ? (
+            entries.map(e => <EntryCard key={e.id} entry={e} accentColour={accentColour} />)
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-sm text-[color:var(--brand-muted)]">No results for &ldquo;{query}&rdquo;</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <p className="text-[11px] font-semibold uppercase tracking-wider px-0.5" style={{ color: mutedColor }}>
+            {sections.length} Scriptures · {navLabel}
+          </p>
+          <div className="grid gap-3">
+            {sections.map((section) => {
+              const sectionDetail = getPathshalaSectionDetail(section.id);
+              return (
+              <motion.button
+                key={section.id}
+                whileHover={{ scale: 1.01, translateY: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setDrillSection(section.id)}
+                className="w-full text-left p-5 rounded-[2rem] relative overflow-hidden group transition-all"
+                style={{ background: cardBg, border: `1px solid ${cardBorder}`, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}
+              >
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none rounded-[2rem]"
+                  style={{ background: `radial-gradient(circle at top right, ${accentColour}0C, transparent 70%)` }} />
+
+                <div className="relative flex items-start gap-4">
+                  {/* Emoji icon */}
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 transition-transform group-hover:scale-105 duration-300"
+                    style={{ background: `${accentColour}14`, border: `1px solid ${accentColour}20` }}>
+                    {section.emoji}
+                  </div>
+
+                  {/* Text content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base mb-0.5 leading-tight" style={{ color: inkColor }}>
+                      {section.title}
+                    </h3>
+                    <p className="text-[11px] leading-relaxed mb-2.5 line-clamp-2" style={{ color: mutedColor }}>
+                      {section.desc}
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
+                        style={{ background: `${accentColour}15`, color: accentColour }}>
+                        {section.count} passages
+                      </span>
+                      {sectionDetail && (
+                        <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
+                          style={{ background: 'var(--card-bg-soft)', color: mutedColor }}>
+                          {sectionDetail.corpusState}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Arrow */}
+                  <ChevronRight size={18} className="shrink-0 mt-1 opacity-20 group-hover:opacity-60 transition-all duration-300 group-hover:translate-x-0.5"
+                    style={{ color: accentColour }} />
+                </div>
+              </motion.button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -827,8 +870,11 @@ export default function PathshalaClient({
   };
   const seatMeta = TRADITION_SEAT[tradition] ?? { scriptWord: 'गुरुकुल', eyebrow: 'Your Seat · Learning' };
 
-  // ── Your Seat — seamless full-bleed immersive hero ────────────────────────────
+  // ── Today's Lesson Card & Streak Widget ───────────────────────────────
   function ContinueLearningHero() {
+    // Mocked streak data since it's not present in pathshala_recitation_stats schema yet
+    const streakDays = [true, true, true, false, true, true, 'pending'];
+
     if (activePaths.length === 0) return null;
     const enrollment = activePaths[0];
     const path = allPaths.find(p => p.id === enrollment.path_id);
@@ -839,132 +885,93 @@ export default function PathshalaClient({
       ? Math.round((doneLessons / path.total_lessons) * 100)
       : 0;
     const resumeLesson = enrollment.current_lesson ?? 0;
-    const lessonLabel  = resumeLesson > 0 ? `Resume · Lesson ${resumeLesson + 1}` : 'Begin';
-    const masterySignal = doneLessons > 0
-      ? `${doneLessons} ${meta.vocabulary?.shloka ?? 'Lesson'}${doneLessons === 1 ? '' : 's'} Mastered`
-      : `${path.total_lessons} Lessons Ahead`;
+    const lessonLabel  = resumeLesson > 0 ? `Continue · Lesson ${resumeLesson + 1}` : 'Begin Path';
 
     return (
-      <motion.div
-        // bleed to full width — no card border, merges with page
-        className="relative -mx-4 overflow-hidden mb-1"
-        initial={prefersReducedMotion ? undefined : { opacity: 0 }}
-        animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {/* Full-width ambient glow — radiates from centre-top */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${meta.accentColour}28, transparent 72%)`,
-        }} />
+      <div className="mb-4">
+        {/* Today's Lesson Card */}
+        <motion.div
+          className="clay-card rounded-2xl relative overflow-hidden mb-4"
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          style={{ borderLeft: '4px solid var(--brand-primary)', ...cardStyle }}
+        >
+          <div className="p-5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-2"
+              style={{ color: 'var(--brand-primary)' }}>
+              Today&apos;s Lesson
+            </p>
+            <h2 className="premium-serif text-2xl font-bold mb-1" style={{ color: primaryText }}>
+              {path.title}
+            </h2>
+            <p className="text-sm mb-4" style={{ color: secondaryText }}>
+              Lesson {resumeLesson + 1} of {path.total_lessons}
+            </p>
 
-        {/* Tradition mark — large faint watermark behind content */}
-        <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
-          <span style={{
-            fontFamily: 'var(--font-deva, serif)',
-            fontSize: '14rem',
-            lineHeight: 1,
-            color: meta.accentColour,
-            opacity: isDark ? 0.03 : 0.045,
-            letterSpacing: '-0.02em',
-          }}>
-            {meta.heroFallback.mark}
-          </span>
-        </div>
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span style={{ color: 'var(--brand-primary)' }}>{progressPct}% Complete</span>
+                <span style={{ color: tertiaryText }}>{doneLessons}/{path.total_lessons}</span>
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--surface-soft)' }}>
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: 'var(--brand-primary)' }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPct}%` }}
+                  transition={{ duration: 0.9, delay: 0.25 }}
+                />
+              </div>
+            </div>
 
-        {/* Content */}
-        <div className="relative z-10 px-6 pt-2 pb-5 text-center">
-          {/* Eyebrow */}
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4"
-            style={{ color: meta.accentColour, opacity: 0.7 }}>
-            {seatMeta.eyebrow}
-          </p>
+            <Link
+              href={`/pathshala/${enrollment.path_id}/lesson`}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-[#1c1c1a] transition-transform active:scale-[0.97]"
+              style={{ background: 'var(--brand-primary)' }}
+            >
+              <Play size={16} fill="currentColor" />
+              {lessonLabel}
+            </Link>
+          </div>
+        </motion.div>
 
-          {/* Progress ring — centre stage */}
-          <div className="flex justify-center mb-4">
-            <CircularProgress
-              pct={progressPct}
-              accent={meta.accentColour}
-              size={96}
-              strokeWidth={5}
-              label={
-                <div className="text-center leading-none">
-                  <div className="text-[1.35rem] font-bold" style={{ color: meta.accentColour }}>{progressPct}%</div>
-                  <div className="text-[7px] mt-0.5 uppercase tracking-wider" style={{ color: tertiaryText }}>Done</div>
-                </div>
+        {/* Streak Widget */}
+        <motion.div
+          className="clay-card rounded-2xl p-4 flex flex-col items-center"
+          style={cardStyle}
+          initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+          animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--brand-primary)' }}>
+            7-Day Learning Streak
+          </h3>
+          <div className="flex items-center gap-2">
+            {streakDays.map((status, i) => {
+              if (status === true) {
+                return (
+                  <div key={i} className="w-8 h-8 rounded-full flex items-center justify-center"
+                    style={{ background: 'var(--brand-primary)' }}>
+                    <CheckCircle2 size={16} color="#1c1c1a" />
+                  </div>
+                );
+              } else if (status === 'pending') {
+                return (
+                  <div key={i} className="w-8 h-8 rounded-full flex items-center justify-center border-2 border-dashed"
+                    style={{ borderColor: 'var(--brand-primary)' }}>
+                    <div className="w-2 h-2 rounded-full" style={{ background: 'var(--brand-primary)' }} />
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={i} className="w-8 h-8 rounded-full border border-gray-500/30 flex items-center justify-center bg-black/10 dark:bg-white/5" />
+                );
               }
-            />
+            })}
           </div>
-
-          {/* Path title */}
-          <h2 className="font-bold text-2xl leading-tight mb-1"
-            style={{ fontFamily: 'var(--font-serif)', color: primaryText }}>
-            {path.title}
-          </h2>
-          <p className="text-xs mb-1 mx-auto max-w-[220px]" style={{ color: secondaryText }}>
-            {path.description}
-          </p>
-          <p className="text-[10px] font-semibold mb-5" style={{ color: meta.accentColour, opacity: 0.7 }}>
-            {masterySignal} · {path.duration_days}-Day Journey
-          </p>
-
-          {/* Animated progress bar */}
-          <div className="h-[3px] rounded-full mx-auto max-w-[200px] mb-5 overflow-hidden"
-            style={{ background: 'var(--ring-track)' }}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: `linear-gradient(to right, ${meta.accentColour}88, ${meta.accentColour})` }}
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPct}%` }}
-              transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-
-          {/* CTA */}
-          <Link
-            href={`/pathshala/${enrollment.path_id}/lesson`}
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-[#1c1c1a] transition-transform active:scale-[0.97]"
-            style={{
-              background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`,
-              boxShadow: `0 8px 28px ${meta.accentColour}40`,
-            }}
-          >
-            <Play size={14} fill="currentColor" />
-            {lessonLabel}
-          </Link>
-        </div>
-
-        {/* Quick actions strip — floats below, no hard border-top on left/right */}
-        <div className="relative z-10 flex mx-4 rounded-[1.4rem] overflow-hidden mb-2"
-          style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}>
-          <Link
-            href={`/pathshala/${enrollment.path_id}/recite`}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
-            style={{ color: meta.accentColour }}
-          >
-            <Mic size={12} /> Recite
-          </Link>
-          <div className="w-px self-stretch" style={{ background: glassBorder }} />
-          <button
-            onClick={() => startOver(enrollment.path_id, path.title)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
-            style={{ color: secondaryText }}
-          >
-            <RotateCcw size={12} /> Start Over
-          </button>
-          <div className="w-px self-stretch" style={{ background: glassBorder }} />
-          <button
-            onClick={() => unenroll(enrollment.path_id, path.title)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold transition-all hover:bg-white/4"
-            style={{ color: secondaryText }}
-          >
-            <LogOut size={12} /> Leave
-          </button>
-        </div>
-
-        {/* Bottom fade — seamlessly dissolves into page */}
-        <div className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none"
-          style={{ background: 'linear-gradient(to bottom, transparent, var(--surface-base))' }} />
-      </motion.div>
+        </motion.div>
+      </div>
     );
   }
 
@@ -1085,12 +1092,16 @@ export default function PathshalaClient({
   }
   // ── Browse Path Card ──────────────────────────────────────────
   function BrowsePathCard({ path }: { path: typeof allPaths[0] }) {
-    const isEnrolled = activePaths.some(e => e.path_id === path.id);
+    const enrollment = activePaths.find(e => e.path_id === path.id);
+    const isEnrolled = !!enrollment;
     const isProGated = !isPro && path.proRequired;
     const diff       = getDiffStyle(path.difficulty, isDark);
+    const doneLessons = (enrollment?.completed_lessons ?? []).length;
+    const progressPct = path.total_lessons > 0 ? Math.round((doneLessons / path.total_lessons) * 100) : 0;
+
     return (
       <motion.div
-        className="rounded-[1.45rem] p-4"
+        className="clay-card rounded-[1.45rem] p-4 relative"
         style={cardStyle}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
@@ -1103,22 +1114,47 @@ export default function PathshalaClient({
           </div>
         )}
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
-            style={{ background: `${meta.accentColour}14` }}>
-            {TRAD_ICON[path.tradition] ?? '📖'}
+          <div className="relative flex-shrink-0">
+            {isEnrolled ? (
+              <CircularProgress
+                pct={progressPct}
+                accent={meta.accentColour}
+                size={40}
+                strokeWidth={3}
+                label={<span className="text-lg">{TRAD_ICON[path.tradition] ?? '📖'}</span>}
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                style={{ background: `${meta.accentColour}14` }}>
+                {TRAD_ICON[path.tradition] ?? '📖'}
+              </div>
+            )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap mb-1">
               <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
-              <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
-                style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
-                {diff.label}
-              </span>
+              {isEnrolled ? (
+                <span className="text-[10px] font-bold uppercase tracking-widest rounded-full px-2 py-0.5"
+                  style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                  Enrolled
+                </span>
+              ) : (
+                <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
+                  style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
+                  {diff.label}
+                </span>
+              )}
             </div>
-            <p className="text-xs mt-0.5 line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
-            <p className="text-xs mt-1" style={{ color: tertiaryText }}>
-              {path.total_lessons} Lessons · {path.duration_days}-Day Journey
-            </p>
+            <p className="text-xs line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
+            {isEnrolled ? (
+              <p className="text-[11px] mt-1.5 font-medium" style={{ color: meta.accentColour }}>
+                {doneLessons} of {path.total_lessons} lessons done
+              </p>
+            ) : (
+              <p className="text-xs mt-1" style={{ color: tertiaryText }}>
+                {path.total_lessons} Lessons · {path.duration_days}-Day Journey
+              </p>
+            )}
           </div>
         </div>
         <button
@@ -1203,9 +1239,17 @@ export default function PathshalaClient({
           <div className="flex-1 flex items-center gap-2 min-w-0">
             <span className="text-lg">{meta.symbol}</span>
             <div className="min-w-0">
-              <p className="text-[13px] font-bold leading-none" style={{ color: 'var(--brand-ink)', fontFamily: 'var(--font-serif)' }}>
-                Pathshala
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-[13px] font-bold leading-none" style={{ color: 'var(--brand-ink)', fontFamily: 'var(--font-serif)' }}>
+                  Pathshala
+                </p>
+                {communityRank !== undefined && communityRank <= 500 && (
+                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
+                    style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                    You rank #{communityRank} in your community
+                  </span>
+                )}
+              </div>
               <p className="text-[10px] uppercase tracking-[0.18em] mt-0.5 truncate" style={{ color: meta.accentColour }}>
                 {meta.label} · Sacred Learning
               </p>
