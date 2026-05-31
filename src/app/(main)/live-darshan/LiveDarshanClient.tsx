@@ -584,15 +584,16 @@ export default function LiveDarshanClient({
 
   const searchParams = useSearchParams();
 
+  // Auto-open a stream passed via ?stream=<id> from the Tirtha Map.
+  // Runs only once on mount — removing activePlayer from deps prevents
+  // re-opening the player after the user explicitly closes it.
   useEffect(() => {
     const streamId = searchParams.get('stream');
-    if (streamId && !activePlayer) {
-      // Validate stream exists
-      if (streams.some(s => s.id === streamId)) {
-        setActivePlayer(streamId);
-      }
+    if (streamId && streams.some(s => s.id === streamId)) {
+      setActivePlayer(streamId);
     }
-  }, [searchParams, streams, activePlayer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally mount-only
 
   const favouriteIds = Array.from(prefs.values())
     .filter(p => p.is_favourite)

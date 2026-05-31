@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
 import {
   Bookmark,
@@ -912,7 +913,7 @@ function PlaceDetailSheet({
                 </div>
                 <div className="flex gap-3 items-start">
                   <div className="w-20 h-16 relative rounded-lg overflow-hidden shrink-0 border border-[rgba(197, 160, 89,0.16)]">
-                    <img src={`https://i.ytimg.com/vi/${liveStream.youtubeVideoId}/hqdefault.jpg`} className="object-cover w-full h-full" alt="Live stream thumbnail" />
+                    <Image src={`https://i.ytimg.com/vi/${liveStream.youtubeVideoId}/hqdefault.jpg`} fill sizes="80px" className="object-cover" alt="Live stream thumbnail" />
                     <div className="absolute inset-0 bg-black/20" />
                   </div>
                   <div>
