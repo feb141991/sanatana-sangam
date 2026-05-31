@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ChevronLeft, Heart, Bell, Play, MapPin, Clock,
   Search, Share2, Sunrise, Sunset, Radio, ChevronRight,
@@ -581,6 +581,18 @@ export default function LiveDarshanClient({
   const [activeTradition, setActiveTradition] = useState<TraditionFilter>('all');
   const [activeCategory,  setActiveCategory]  = useState<CategoryFilter>('all');
   const [activeCollection,setActiveCollection]= useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const streamId = searchParams.get('stream');
+    if (streamId && !activePlayer) {
+      // Validate stream exists
+      if (streams.some(s => s.id === streamId)) {
+        setActivePlayer(streamId);
+      }
+    }
+  }, [searchParams, streams, activePlayer]);
 
   const favouriteIds = Array.from(prefs.values())
     .filter(p => p.is_favourite)

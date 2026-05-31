@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Sparkles,
   X,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchNearbyTemples, geocodeCity, mergeCuratedAndOsm, type Temple } from '@/lib/overpass';
@@ -43,6 +44,7 @@ import {
   type TirthaSaveRow,
   type TirthaVisitRow,
 } from '@/lib/tirtha-companion';
+import { getLiveStreamsWithAartis, type LiveStream } from '@/lib/live-streams';
 
 const TirthaMapComponent = nextDynamic(
   () => import('@/components/TirthaMapComponent'),
@@ -360,12 +362,6 @@ export default function TirthaMapPage() {
   const savedIds = useMemo(() => new Set(saves.map((save) => save.place_id)), [saves]);
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.place_id)), [visits]);
 
-  const filtered = useMemo(() => temples.filter((temple) => {
-    const placeId = tirthaPlaceId(temple);
-    if (smartFilter === 'open') return isOpen(temple) === true;
-    return templeMatchesSmartFilter(temple, smartFilter, savedIds.has(placeId), visitedIds.has(placeId));
-  }), [smartFilter, savedIds, temples, visitedIds]);
-
   const passport = useMemo(() => {
     const uniqueVisited = new Set(visits.map((visit) => visit.place_id));
     const recentVisit = visits[0];
@@ -377,6 +373,29 @@ export default function TirthaMapPage() {
       recentVisit,
     };
   }, [saves.length, savedIds, temples, visits]);
+
+  const liveStreams = useMemo(() => getLiveStreamsWithAartis(), []);
+  
+  const liveMatches = useMemo(() => {
+    const matches = new Map<number, LiveStream>();
+    for (const temple of temples) {
+      const tName = temple.name.toLowerCase().split(' ')[0];
+      const tCity = temple.address?.toLowerCase() || '';
+      const match = liveStreams.find(s => {
+        const sLoc = s.location.toLowerCase().split(',')[0].trim();
+        return s.title.toLowerCase().includes(tName) && (tCity === '' || tCity.includes(sLoc));
+      });
+      if (match) matches.set(temple.id, match);
+    }
+    return matches;
+  }, [temples, liveStreams]);
+
+  const filtered = useMemo(() => temples.filter((temple) => {
+    const placeId = tirthaPlaceId(temple);
+    if (smartFilter === 'live') return liveMatches.has(temple.id);
+    if (smartFilter === 'open') return isOpen(temple) === true;
+    return templeMatchesSmartFilter(temple, smartFilter, savedIds.has(placeId), visitedIds.has(placeId));
+  }), [smartFilter, savedIds, temples, visitedIds, liveMatches]);
 
   const activeCityLabel = cityInput.trim() || liveCity || (locationAsked ? 'your area' : 'near you');
 
@@ -542,8 +561,32 @@ export default function TirthaMapPage() {
           </div>
         )}
 
+        {smartFilter === 'live' && filtered.length > 0 && (
+          <section className="space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--brand-primary)]">
+              {filtered.length} temples with live darshan nearby
+            </p>
+            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+              {filtered.map(temple => {
+                const match = liveMatches.get(temple.id);
+                if (!match) return null;
+                return (
+                  <button
+                    key={temple.id}
+                    onClick={() => setSelected(temple)}
+                    className="flex shrink-0 items-center gap-2 rounded-full border border-[rgba(197, 160, 89,0.18)] bg-[var(--surface-raised)] px-3 py-1.5 text-xs font-medium text-[color:var(--text-cream)]"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                    {match.title}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         <div className="h-[285px] overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] shadow-card">
-          <TirthaMapComponent temples={filtered} center={center} loading={loading} />
+          <TirthaMapComponent temples={filtered} center={center} loading={loading} liveMatches={liveMatches} />
         </div>
 
         <section className="rounded-[1.7rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] p-4">
@@ -671,6 +714,7 @@ export default function TirthaMapPage() {
             center={center}
             saved={savedIds.has(tirthaPlaceId(selected))}
             visited={visitedIds.has(tirthaPlaceId(selected))}
+            liveStream={liveMatches.get(selected.id)}
             onClose={() => setSelected(null)}
             onSave={() => toggleSave(selected)}
             onCheckIn={() => setCheckInTemple(selected)}
@@ -787,6 +831,7 @@ function PlaceDetailSheet({
   center,
   saved,
   visited,
+  liveStream,
   onClose,
   onSave,
   onCheckIn,
@@ -796,6 +841,7 @@ function PlaceDetailSheet({
   center: [number, number];
   saved: boolean;
   visited: boolean;
+  liveStream?: LiveStream;
   onClose: () => void;
   onSave: () => void;
   onCheckIn: () => void;
@@ -856,6 +902,38 @@ function PlaceDetailSheet({
           </div>
 
           <div className="space-y-4 p-5">
+            {liveStream && (
+              <section className="rounded-[1.45rem] border border-red-500/20 bg-red-500/5 p-4 relative overflow-hidden">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live Darshan</span>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <div className="w-20 h-16 relative rounded-lg overflow-hidden shrink-0 border border-[rgba(197, 160, 89,0.16)]">
+                    <img src={`https://i.ytimg.com/vi/${liveStream.youtubeVideoId}/hqdefault.jpg`} className="object-cover w-full h-full" alt="Live stream thumbnail" />
+                    <div className="absolute inset-0 bg-black/20" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-[color:var(--text-cream)] leading-tight mb-1">Watch {liveStream.title}</h3>
+                    {liveStream.aartis && (
+                      <p className="text-[11px] text-[color:var(--text-muted)] flex flex-col gap-0.5 mt-1">
+                        {liveStream.aartis.morning && <span>🌅 {liveStream.aartis.morning.split(' — ')[0]}</span>}
+                        {liveStream.aartis.evening && <span>🪔 {liveStream.aartis.evening.split(' — ')[0]}</span>}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <a
+                  href={`/live-darshan?stream=${liveStream.id}`}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] px-4 py-2.5 text-sm font-medium text-[#1c1c1a] active:scale-[0.98] transition-transform"
+                >
+                  <Play size={14} className="fill-current" /> Open Player
+                </a>
+              </section>
+            )}
+
             <section className="rounded-[1.45rem] border border-[rgba(197, 160, 89,0.14)] bg-[var(--surface-raised)] p-4">
               <div className="mb-3 flex items-center gap-2">
                 <Clock size={15} className="text-[color:var(--brand-primary)]" />
