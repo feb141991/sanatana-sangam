@@ -11,7 +11,7 @@
 //  Theme: follows global data-theme dark/light via useThemePreference()
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, Volume2, VolumeX, Flame, RotateCcw, BarChart2, Settings2, X, Moon, Sun, Sparkles, Play, Pause } from 'lucide-react';
@@ -639,7 +639,7 @@ function SacredGeometry({
   );
 }
 
-function MalaSVG({
+const MalaSVG = memo(function MalaSVG({
   malaId, beadCount, isDark, pulsing, flashBeadIdx, flashKey, milestoneActive, appLanguage, tradition, isPracticing, accentColor, completedRounds, activeSymbolId,
 }: {
   malaId: MalaId; beadCount: number; isDark: boolean; pulsing: boolean;
@@ -975,7 +975,7 @@ function MalaSVG({
       )}
     </svg>
   );
-}
+});
 
 function MantraStream({
   mantra,
@@ -1384,12 +1384,13 @@ function ChooseMalaScreen({
 
 // ── Screen 2: Choose Mantra ───────────────────────────────────────────────────
 function ChooseMantraScreen({
-  isDark, selected, mantras, onSelect, onBack, onConfirm, customMantra, onOpenCustom,
+  isDark, selected, mantras, onSelect, onBack, onConfirm, customMantra, onOpenCustom, targetRounds, onTargetChange
 }: {
   isDark: boolean; selected: SelectedMantraId;
   mantras: readonly MantraOption[];
   onSelect: (id: SelectedMantraId) => void; onBack: () => void; onConfirm: () => void;
   customMantra: CustomMantra | null; onOpenCustom: () => void;
+  targetRounds: number; onTargetChange: (n: number) => void;
 }) {
   const bg    = isDark ? '#08070A' : '#F5F0E8';
   const card  = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
@@ -1532,6 +1533,33 @@ function ChooseMantraScreen({
             Browse all mantras →
           </Link>
         </div>
+      </div>
+
+      {/* Target Rounds Picker */}
+      <div className="px-5 pb-4 pt-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wide mb-3 pl-1" style={{ color: sub }}>
+          Target rounds
+        </p>
+        <div className="flex items-center justify-between gap-2">
+          {[1, 3, 5, 11, 21].map(n => (
+            <button
+              key={n}
+              onClick={() => onTargetChange(n)}
+              className="flex-1 py-2 rounded-xl text-[13px] font-bold transition-all border"
+              style={{
+                background: targetRounds === n ? (isDark ? 'rgba(197, 160, 89, 0.15)' : 'rgba(197, 160, 89, 0.12)') : card,
+                borderColor: targetRounds === n ? `${amber}60` : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                color: targetRounds === n ? amber : text,
+                boxShadow: targetRounds === n ? `0 0 0 1.5px ${amber}30` : 'none',
+              }}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] mt-2 text-center" style={{ color: sub }}>
+          {targetRounds} mala{targetRounds > 1 ? 's' : ''} = {targetRounds * 108} beads
+        </p>
       </div>
 
       {/* Confirm */}
@@ -2082,17 +2110,14 @@ function StopPracticeSheet({
   );
 }
 
-// ── In-practice Settings Sheet ────────────────────────────────────────────────
-// Opened via the gear icon — lets user change target rounds and sounds WITHOUT
-// exiting fullscreen / going back to chooseMala.
 function PracticeSettingsSheet({
-  isDark, targetRounds, onTargetChange,
-  soundId, onSoundSelect,
-  onChangeMala, onClose,
+  isDark, targetRounds, onTargetChange, soundId, onSoundSelect, isSilent, onSilentToggle,
+  onChangeMala, onClose
 }: {
   isDark: boolean;
   targetRounds: number; onTargetChange: (n: number) => void;
   soundId: SoundId; onSoundSelect: (id: SoundId) => void;
+  isSilent: boolean; onSilentToggle: (v: boolean) => void;
   onChangeMala: () => void; onClose: () => void;
 }) {
   const bg   = isDark ? 'rgba(10,8,14,0.97)' : 'rgba(248,244,236,0.97)';
@@ -2100,7 +2125,7 @@ function PracticeSettingsSheet({
   const sub  = isDark ? 'rgba(197, 160, 89,0.60)' : 'rgba(100,65,25,0.60)';
   const amber = isDark ? '#C5A059' : '#7A4A1E';
   const border = isDark ? 'rgba(197, 160, 89,0.14)' : 'rgba(0,0,0,0.07)';
-  const cardBg = isDark ? 'var(--card-bg)' : 'rgba(0,0,0,0.04)';
+  const cardBg = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
 
   const [localSound, setLocalSound] = useState<SoundId>(soundId);
 
@@ -2118,7 +2143,6 @@ function PracticeSettingsSheet({
         style={{ background: bg, backdropFilter: 'blur(28px)', paddingBottom: 'max(2.5rem, calc(env(safe-area-inset-bottom,0px) + 2rem))' }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Drag handle */}
         <div className="w-10 h-1 rounded-full mx-auto mb-5" style={{ background: `${amber}30` }} />
 
         <div className="flex items-center justify-between mb-5">
@@ -2134,11 +2158,37 @@ function PracticeSettingsSheet({
           </button>
         </div>
 
+        {/* Silent Mode */}
+        <div className="px-5 mb-7">
+          <p className="text-[11px] font-semibold uppercase tracking-wide mb-3 px-1" style={{ color: sub }}>
+            Sacred Sounds
+          </p>
+          <div className="flex items-center justify-between p-4 rounded-2xl border"
+            style={{ background: cardBg, borderColor: border }}>
+            <div>
+              <p className="text-[14px] font-semibold" style={{ color: text }}>Silent mode</p>
+              <p className="text-[11px] mt-0.5" style={{ color: sub }}>Mute bells and taps. Use haptics only.</p>
+            </div>
+            <button
+              onClick={() => onSilentToggle(!isSilent)}
+              className="w-12 h-7 rounded-full p-1 transition-colors relative"
+              style={{ background: isSilent ? amber : (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)') }}
+            >
+              <motion.div
+                layout
+                className="w-5 h-5 rounded-full bg-white shadow-sm"
+                animate={{ x: isSilent ? 20 : 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </button>
+          </div>
+        </div>
+
         {/* Target rounds */}
         <div className="mb-5">
           <p className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: sub }}>Rounds target</p>
-          <div className="grid grid-cols-4 gap-2">
-            {TARGET_OPTIONS.map(n => (
+          <div className="grid grid-cols-5 gap-2">
+            {[1, 3, 5, 11, 21].map(n => (
               <button
                 key={n}
                 onClick={() => onTargetChange(n)}
@@ -2154,11 +2204,7 @@ function PracticeSettingsSheet({
               </button>
             ))}
           </div>
-          <p className="text-[10px] mt-2 text-center" style={{ color: sub }}>
-            {targetRounds} mala{targetRounds > 1 ? 's' : ''} = {targetRounds * 108} mantras
-          </p>
         </div>
-
         {/* Ambient sound */}
         <div className="mb-5">
           <p className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: sub }}>Ambient sound</p>
@@ -2192,6 +2238,7 @@ function PracticeSettingsSheet({
     </motion.div>
   );
 }
+
 
 // ── Main JapaClient ────────────────────────────────────────────────────────────
 type Screen = 'launcher' | 'chooseMala' | 'chooseMantra' | 'practice';
@@ -2233,6 +2280,21 @@ export default function JapaClient({
   const [hasStoredMantra, setHasStoredMantra] = useState(false);
   const targetRoundsRef = useRef(1);
   useEffect(() => { targetRoundsRef.current = targetRounds; }, [targetRounds]);
+
+  const [isSilent, setIsSilent] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('shoonaya-japa-silent');
+      if (stored === 'true') setIsSilent(true);
+    }
+  }, []);
+
+  const handleSilentToggle = useCallback((val: boolean) => {
+    setIsSilent(val);
+    localStorage.setItem('shoonaya-japa-silent', val ? 'true' : 'false');
+  }, []);
+
+  const tapTimesRef = useRef<number[]>([]);
 
   // ── Auto-hide controls state (immersive mode) ────────────────────────────
   const [controlsVisible, setControlsVisible] = useState(true);
@@ -2289,7 +2351,7 @@ export default function JapaClient({
       const savedMala   = localStorage.getItem(STORAGE_MALA)   as MalaId | null;
       const savedMantra = localStorage.getItem(STORAGE_MANTRA) as SelectedMantraId | null;
       const savedCustomMantra = localStorage.getItem(STORAGE_CUSTOM_MANTRA);
-      setHasStoredMantra(!!savedMantra);
+      setHasStoredMantra(!!savedMala);
       const savedBg     = localStorage.getItem(STORAGE_BG)     as BgSceneId | null;
       if (savedMala   && MALAS.find(m => m.id === savedMala))         setMalaId(savedMala);
       if (savedCustomMantra) {
@@ -2433,15 +2495,15 @@ export default function JapaClient({
   function handleSoundSelect(id: SoundId) {
     setSoundId(id);
     localStorage.setItem(STORAGE_SOUND, id);
-    startJapaAmbient(id);
+    if (!isSilent) startJapaAmbient(id);
   }
 
   const triggerMilestonePulse = useCallback((bead: number) => {
     setMilestoneActive(bead);
     if (milestoneTimerRef.current) clearTimeout(milestoneTimerRef.current);
     milestoneTimerRef.current = setTimeout(() => setMilestoneActive(null), 2200);
-    playIntervalBell();
-  }, []);
+    if (!isSilent) playIntervalBell();
+  }, [isSilent]);
 
   const updateLifetimeData = useCallback((completedRounds: number) => {
     if (completedRounds <= 0) return;
@@ -2478,9 +2540,14 @@ export default function JapaClient({
   }, [userId]);
 
   const countBead = useCallback(() => {
+    const now = Date.now();
+    tapTimesRef.current.push(now);
+    if (tapTimesRef.current.length > 11) tapTimesRef.current.shift();
+
     if (paused || showComplete) return;
-    playHaptic('light');
-    playBeadTapSound();
+    if (!isSilent) playBeadTapSound();
+    if (appLanguage !== 'hi') playHaptic('light');
+
     setPulsing(true);
     setTimeout(() => setPulsing(false), 120);
 
@@ -2502,7 +2569,7 @@ export default function JapaClient({
       }
       if (next >= TOTAL_BEADS) {
         hapticSuccess();
-        playIntervalBell();
+        if (!isSilent) playIntervalBell();
         setRoundsDone(r => {
           const newRounds = r + 1;
           setTotalBeads(t => t + next);
@@ -2518,7 +2585,7 @@ export default function JapaClient({
       setTotalBeads(t => t + 1);
       return next;
     });
-  }, [paused, showComplete, playHaptic, triggerMilestonePulse, updateLifetimeData]);
+  }, [paused, showComplete, playHaptic, triggerMilestonePulse, updateLifetimeData, isSilent, malaId, appLanguage]);
 
   const saveSession = useCallback(async (completedRounds: number, partialBeads = 0) => {
     if (saved || savingSession || (completedRounds === 0 && partialBeads === 0)) return false;
@@ -2626,22 +2693,16 @@ export default function JapaClient({
         }
       }
 
-      // ── Write strip-readable key so DailySadhanaStrip updates immediately ──
       try {
         localStorage.setItem('shoonaya-japa-session-today', JSON.stringify({
           date: today, beads: totalBeads, rounds: completedRounds,
         }));
       } catch { /* ok */ }
 
-      // ── Award seva_score + karma_points for completed rounds ──────────────
-      // seva_score  : +10 per completed mala round (leaderboard currency)
-      // karma_points: +5  per completed mala round (daily XP)
-      // Only full rounds count — partialBeads alone awards nothing.
       if (completedRounds > 0) {
         const sevaGain  = completedRounds * 10;
         const karmaGain = completedRounds * 5;
 
-        // seva_score — RPC with direct-update fallback
         try {
           const { error: sevaRpcErr } = await supabase.rpc('increment_period_seva', {
             p_user_id: userId, p_points: sevaGain,
@@ -2658,11 +2719,9 @@ export default function JapaClient({
                 .eq('id', userId);
             }
           }
-          // PART C - fire-and-forget tier check
-          fetch('/api/seva-tier/check', { method: 'POST' }).catch(() => {}); // non-fatal, fire-and-forget
+          fetch('/api/seva-tier/check', { method: 'POST' }).catch(() => {});
         } catch { /* non-fatal */ }
 
-        // karma_points — RPC with direct-update fallback
         try {
           const { error: karmaRpcErr } = await supabase.rpc('increment_karma', {
             p_user_id: userId, p_amount: karmaGain,
@@ -2677,7 +2736,6 @@ export default function JapaClient({
           }
         } catch { /* non-fatal */ }
       }
-      // ─────────────────────────────────────────────────────────────────────
 
       setStreak(newStreak);
       setSaved(true);
@@ -2819,7 +2877,6 @@ export default function JapaClient({
     },
     [tradition]
   );
-  // Only show preset mantras in the list — personal card is rendered separately above the list
   const selectableMantras = useMemo(() => traditionMantras, [traditionMantras]);
   const bgC = isDark ? currentBgScene.dark : currentBgScene.light;
 
@@ -2887,6 +2944,8 @@ export default function JapaClient({
           onConfirm={handleConfirmMantra}
           customMantra={customMantra}
           onOpenCustom={() => setShowCustomMantraSheet(true)}
+          targetRounds={targetRounds}
+          onTargetChange={n => { setTargetRounds(n); targetRoundsRef.current = n; }}
         />
       )}
 
@@ -2943,7 +3002,6 @@ export default function JapaClient({
             </motion.button>
           )}
 
-          {/* ── Persistent X — always visible, not tied to controlsVisible ── */}
           <button
             onClick={(e) => { e.stopPropagation(); setShowStopSheet(true); }}
             className="w-11 h-11 rounded-full flex items-center justify-center border"
@@ -2965,7 +3023,6 @@ export default function JapaClient({
             style={{ pointerEvents: controlsVisible ? 'auto' : 'none', position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}
           >
           <div className="flex items-center justify-between px-5 pt-14 pb-2">
-            {/* Spacer — X button is now always-visible above, keep layout balanced */}
             <div className="w-11 h-11" />
             <button
               onClick={() => {
@@ -2989,6 +3046,14 @@ export default function JapaClient({
               </p>
             </button>
             <div className="flex items-center gap-2">
+              {isSilent && (
+                <div className="w-8 h-8 rounded-full flex items-center justify-center border"
+                  style={{ background: isDark ? 'rgba(8,6,4,0.36)' : 'rgba(255,253,248,0.42)', borderColor: `${amber}28`, backdropFilter: 'blur(18px)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={amber} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path><path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path><path d="M18 8a6 6 0 0 0-9.33-5"></path><line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </div>
+              )}
               <button
                 onClick={() => setShowSettings(true)}
                 className="w-11 h-11 rounded-full flex items-center justify-center border"
@@ -3088,7 +3153,11 @@ export default function JapaClient({
                 </span>
               </div>
               <div className="text-right">
-                <span className="block text-[11px]" style={{ color: sub }}>Tap beads to count</span>
+                <span className="block text-[11px]" style={{ color: sub }}>
+                  {beadCount >= 20 && tapTimesRef.current.length === 11 ? (
+                    `~${Math.round(60000 / ((tapTimesRef.current[tapTimesRef.current.length - 1] - tapTimesRef.current[0]) / 10))} beads/min`
+                  ) : 'Tap beads to count'}
+                </span>
                 <span className="block text-[10px]" style={{ color: sub }}>{malaSkin.label} Mala</span>
               </div>
             </div>
@@ -3127,6 +3196,8 @@ export default function JapaClient({
                 onTargetChange={n => { setTargetRounds(n); targetRoundsRef.current = n; }}
                 soundId={soundId}
                 onSoundSelect={handleSoundSelect}
+                isSilent={isSilent}
+                onSilentToggle={handleSilentToggle}
                 onChangeMala={() => setShowStopSheet(true)}
                 onClose={() => setShowSettings(false)}
               />
