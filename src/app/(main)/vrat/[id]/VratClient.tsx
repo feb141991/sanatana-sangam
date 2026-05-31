@@ -2,14 +2,17 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  ChevronLeft, Settings, Sun, Moon,
+  ChevronLeft, Sun, Moon,
   Book, Flame, Share2, Info, Copy, Check,
-  Volume2, VolumeX, Loader2, CheckCircle2
+  Volume2, VolumeX, Loader2, CheckCircle2,
+  Users, CalendarDays, Utensils, ShoppingBag, Radio,
+  CheckCheck, XCircle, Clock,
 } from 'lucide-react';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
-import type { VratData } from '@/lib/vrat-data';
+import type { VratData, FastingType } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
@@ -19,6 +22,19 @@ import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/r
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
+
+const FASTING_LABELS: Record<FastingType, string> = {
+  nirjala:   '💧 Nirjala — No food or water',
+  phalahar:  '🍎 Phalahar — Fruits & milk only',
+  sattvic:   '🥬 Sattvic — Pure vegetarian food',
+  ekbhukta:  '🌙 Ekbhukta — One meal only',
+  partial:   '🌓 Partial fast — Light eating',
+  none:      '🙏 No fasting — Devotion only',
+};
+
+function fastingLabel(type: FastingType): string {
+  return FASTING_LABELS[type] ?? type;
+}
 
 interface VratClientProps {
   vrat: VratData;
@@ -232,6 +248,20 @@ export default function VratClient({
       setObserveLoading(false);
     }
   }
+
+  // ── Global stats (public — works for unauthenticated readers too) ────────────
+  const [globalStats, setGlobalStats] = useState<{
+    today_count: number;
+    total_count: number;
+    next_date: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/vrat/stats?vrat_id=${encodeURIComponent(vrat.id)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setGlobalStats(data); })
+      .catch(() => {});
+  }, [vrat.id]);
 
   // ── TTS playback ──
   const [speaking, setSpeaking] = useState(false);
@@ -453,6 +483,195 @@ export default function VratClient({
           </div>
 
         </section>
+
+        {/* ── Global Reader Cards ─────────────────────────────────────── */}
+
+        {/* 1 — Fasting Guide */}
+        {(vrat.fastingType || vrat.dos?.length || vrat.donts?.length || vrat.pujaItems?.length) && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
+              <Utensils size={14} /> Fasting Guide
+            </div>
+
+            {/* Fast type pill */}
+            {vrat.fastingType && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+                  style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.25)' }}>
+                  {fastingLabel(vrat.fastingType)}
+                </span>
+                {vrat.breakFastTime && (
+                  <span className="flex items-center gap-1 text-xs opacity-60">
+                    <Clock size={11} /> Break fast: {vrat.breakFastTime}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Dos & Don'ts side by side */}
+            {(vrat.dos?.length || vrat.donts?.length) && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {vrat.dos?.length ? (
+                  <div className="rounded-2xl p-4 space-y-2.5"
+                    style={{ background: 'rgba(90,170,56,0.06)', border: '1px solid rgba(90,170,56,0.15)' }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                      <CheckCheck size={12} /> Do
+                    </p>
+                    <ul className="space-y-2">
+                      {vrat.dos.map((d, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs opacity-80 leading-snug">
+                          <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                {vrat.donts?.length ? (
+                  <div className="rounded-2xl p-4 space-y-2.5"
+                    style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.12)' }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 text-red-500 dark:text-red-400">
+                      <XCircle size={12} /> Avoid
+                    </p>
+                    <ul className="space-y-2">
+                      {vrat.donts.map((d, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs opacity-80 leading-snug">
+                          <span className="text-red-400 mt-0.5 flex-shrink-0">✕</span>
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            {/* Puja items */}
+            {vrat.pujaItems?.length ? (
+              <div className="rounded-2xl p-4 space-y-3"
+                style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-1.5">
+                  <ShoppingBag size={12} /> What you'll need
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {vrat.pujaItems.map((item, i) => (
+                    <span key={i} className="text-xs px-2.5 py-1 rounded-full"
+                      style={{ background: activeTheme.border }}>
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </section>
+        )}
+
+        {/* 2 — Next Occurrence + Global Count */}
+        {globalStats && (globalStats.next_date || globalStats.total_count > 0) && (
+          <section className="space-y-3">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
+              <CalendarDays size={14} /> Around the World
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {globalStats.next_date && (
+                <div className="rounded-2xl p-4 text-center"
+                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">Next date</p>
+                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
+                    {new Date(globalStats.next_date + 'T00:00:00').toLocaleDateString('en', { day: 'numeric', month: 'short' })}
+                  </p>
+                  <p className="text-[10px] opacity-40 mt-0.5">
+                    {new Date(globalStats.next_date + 'T00:00:00').toLocaleDateString('en', { weekday: 'long' })}
+                  </p>
+                </div>
+              )}
+              {globalStats.today_count > 0 && (
+                <div className="rounded-2xl p-4 text-center"
+                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">Observing today</p>
+                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
+                    {globalStats.today_count.toLocaleString()}
+                  </p>
+                  <p className="text-[10px] opacity-40 mt-0.5">seekers on Shoonaya</p>
+                </div>
+              )}
+              {globalStats.total_count > 0 && !globalStats.today_count && (
+                <div className="rounded-2xl p-4 text-center"
+                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">All-time</p>
+                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
+                    {globalStats.total_count.toLocaleString()}
+                  </p>
+                  <p className="text-[10px] opacity-40 mt-0.5">observances recorded</p>
+                </div>
+              )}
+            </div>
+            {globalStats.today_count > 0 && (
+              <div className="flex items-center justify-center gap-2 py-2">
+                <div className="flex -space-x-1.5">
+                  {['🕉️','☸️','☬','🙏','✨'].slice(0, Math.min(5, globalStats.today_count)).map((e, i) => (
+                    <span key={i} className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px]"
+                      style={{ borderColor: activeTheme.bg, background: activeTheme.card }}>
+                      {e}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-xs opacity-50">
+                  {globalStats.today_count === 1 ? '1 seeker is' : `${globalStats.today_count} seekers are`} observing with you today
+                </span>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* 3 — Live Darshan suggestion */}
+        <section>
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-3">
+            <Radio size={14} /> Watch Live
+          </div>
+          <Link href="/live-darshan"
+            className="flex items-center gap-4 rounded-2xl p-4 transition active:scale-[0.98]"
+            style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+              style={{ background: 'rgba(220,38,38,0.10)' }}>
+              🪔
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm leading-snug" style={{ color: activeTheme.text }}>
+                Join the Live Aarti
+              </p>
+              <p className="text-xs opacity-50 mt-0.5">
+                Watch temples streaming live darshan right now
+              </p>
+            </div>
+            <div className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+              style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.20)' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
+            </div>
+          </Link>
+        </section>
+
+        {/* 4 — Global reader explainer (non-auth only — authenticated users already know this) */}
+        {!isAuthenticated && (
+          <section className="rounded-2xl p-5 space-y-3"
+            style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
+              <Info size={14} /> New to this practice?
+            </div>
+            <p className="text-sm opacity-70 leading-relaxed">
+              Vratas are intentional fasting days tied to the Hindu lunar calendar. They are not about deprivation — they're about clearing space: in your body, your mind, your week. Most vratas follow a rhythm (every 11 days, every full moon) so the practice becomes second nature over time.
+            </p>
+            <p className="text-sm opacity-70 leading-relaxed">
+              You don't need to be Hindu to observe. Millions of global seekers use these lunar rhythms to reset, meditate more deeply, and connect with a tradition older than most religions.
+            </p>
+            <Link href="/home"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold mt-1"
+              style={{ color: 'var(--brand-primary)' }}>
+              Start your practice on Shoonaya →
+            </Link>
+          </section>
+        )}
 
         {/* CTA Buttons */}
         <div className="flex flex-col items-center gap-4 pt-12">

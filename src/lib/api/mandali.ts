@@ -4,7 +4,7 @@ import type { EventRsvp, PostCommentWithAuthor, PostWithAuthor, Profile } from '
 
 const BLEND_THRESHOLD = 5;
 
-export type MandaliMemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
+export type MandaliMemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
 
 export type MandaliProfile = (Profile & {
   mandalis?: {
@@ -53,7 +53,7 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
         .limit(30),
       supabase
         .from('profiles')
-        .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, seva_score')
+        .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, country, seva_score')
         .eq('mandali_id', mandaliId)
         .order('seva_score', { ascending: false })
         .limit(50),

@@ -94,6 +94,7 @@ const baseMembers: MandaliMemberRow[] = [
     ishta_devata: 'krishna',
     spiritual_level: 'sadhaka',
     city: 'London',
+    country: 'United Kingdom',
     seva_score: 120,
   },
   {
@@ -105,6 +106,7 @@ const baseMembers: MandaliMemberRow[] = [
     ishta_devata: 'shiva',
     spiritual_level: 'jigyasu',
     city: 'London',
+    country: 'United Kingdom',
     seva_score: 86,
   },
 ];

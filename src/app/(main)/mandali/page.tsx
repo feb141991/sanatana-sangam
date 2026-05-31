@@ -61,7 +61,7 @@ export default async function MandaliPage() {
   if (mandaliId) {
     const { data } = await supabase
       .from('profiles')
-      .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, seva_score')
+      .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, country, seva_score')
       .eq('mandali_id', mandaliId)
       .order('seva_score', { ascending: false })
       .limit(50);

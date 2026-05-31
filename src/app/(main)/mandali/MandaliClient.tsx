@@ -19,7 +19,7 @@ import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import JoinMandaliFlow from './JoinMandaliFlow';
 import SeekersNearYou from './SeekersNearYou';
-type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
+type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
 
 type Props = {
   profile:      (Profile & { mandalis?: { name: string; city: string; country: string; member_count: number } | null }) | null;
@@ -659,14 +659,21 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
             </div>
             {/* Info */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <p className="font-semibold text-[color:var(--brand-ink)] text-sm truncate">
                   {m.full_name || m.username}
                   {isMe && <span className="ml-1 text-[10px] font-medium" style={{ color: 'var(--brand-primary-strong)' }}>(you)</span>}
                 </p>
+                {/* Country flag for global members */}
+                {m.country && m.country !== 'India' && (
+                  <span className="text-xs px-1.5 py-0.5 rounded-full theme-dim"
+                    style={{ background: 'rgba(128,128,128,0.08)', fontSize: '10px' }}>
+                    🌍 {m.country}
+                  </span>
+                )}
               </div>
               <p className="text-xs text-[color:var(--brand-muted)] truncate">
-                {devata?.emoji} {devata?.label ?? 'Sanatani'} · {m.spiritual_level ?? 'Seeker'}
+                {devata?.emoji} {devata?.label ?? 'Sanatani'} · {m.city ?? m.spiritual_level ?? 'Seeker'}
               </p>
             </div>
             {/* Seva Score */}
@@ -1024,18 +1031,22 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
   }
 
   return (
-    <div className="glass-panel rounded-2xl border border-white/8 p-4">
+    <div className="clay-card rounded-2xl p-4">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-          {getInitials((author?.full_name || author?.username) ?? '?')}
+        {/* Avatar — show real image when available */}
+        <div className="relative w-9 h-9 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center text-white text-xs font-bold"
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+          {author?.avatar_url
+            ? <Image src={author.avatar_url} alt={author.full_name ?? ''} fill sizes="36px" className="object-cover" />
+            : getInitials((author?.full_name || author?.username) ?? '?')}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm text-[color:var(--brand-ink)]">
+            <span className="font-semibold text-sm theme-ink">
               {author?.full_name ?? author?.username}
             </span>
-            <span className="text-white/25">·</span>
-            <span className="text-xs text-[color:var(--brand-muted)]">{formatRelativeTime(post.created_at)}</span>
+            <span className="theme-dim opacity-30">·</span>
+            <span className="text-xs theme-muted">{formatRelativeTime(post.created_at)}</span>
             <div className="ml-auto flex items-center gap-1">
               <span>{typeIcon[post.type]}</span>
               <ContentSafetyMenu
@@ -1048,22 +1059,23 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
               />
             </div>
           </div>
-          <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{post.content}</p>
+          <p className="text-sm theme-ink leading-relaxed">{post.content}</p>
           {post.event_date && (
-            <div className="mt-2 px-3 py-2 rounded-xl border border-white/10 bg-white/6 text-xs text-[color:var(--brand-muted)]">
-              📅 {new Date(post.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+            <div className="mt-2 px-3 py-2 rounded-xl theme-dim text-xs"
+              style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
+              📅 {new Date(post.event_date).toLocaleDateString('en', { weekday: 'short', day: 'numeric', month: 'short' })}
               {post.event_location && ` · 📍 ${post.event_location}`}
             </div>
           )}
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-4 mt-2.5">
             <button onClick={() => onUpvote(post.id)}
-              className={`flex items-center gap-1 text-xs transition ${isUpvoted ? 'text-rose-500' : 'text-[color:var(--brand-muted)] hover:text-rose-400'}`}>
+              className={`flex items-center gap-1.5 text-xs transition ${isUpvoted ? 'text-rose-500' : 'theme-muted hover:text-rose-400'}`}>
               <Heart size={13} fill={isUpvoted ? 'currentColor' : 'none'} />
-              {post.upvotes > 0 && <span>{post.upvotes}</span>}
+              {post.upvotes > 0 && <span className="font-medium">{post.upvotes}</span>}
             </button>
             <button
               onClick={() => setShowComments((current) => !current)}
-              className="flex items-center gap-1 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)] transition"
+              className="flex items-center gap-1.5 text-xs theme-muted hover:theme-ink transition"
             >
               <MessageSquare size={13} />
               <span>{post.comment_count > 0 ? post.comment_count : 'Comment'}</span>
@@ -1244,8 +1256,52 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const rsvps = data.rsvps.filter((item) => !hiddenContentIds.has(item.post_id) && !hiddenAuthorIds.has(item.user_id));
   const visibleMembers = data.members.filter((member) => !hiddenAuthorIds.has(member.id));
 
+  // Global readers (no local mandali yet) see the global Sabha first so the page
+  // isn't empty. They get a banner inviting them to find their local Mandali.
   if (!liveProfile?.city || !liveProfile?.mandali_id) {
-    return <JoinMandaliFlow userId={userId} />;
+    return (
+      <div className="space-y-4 fade-in">
+        {/* Global reader banner */}
+        <div className="clay-card rounded-[1.8rem] p-5 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
+              style={{ background: 'rgba(197,160,89,0.12)' }}>🌍</div>
+            <div>
+              <p className="font-semibold theme-ink text-sm">Global Sangam</p>
+              <p className="text-xs theme-muted">No local Mandali yet — you're reading from the wider community</p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              // Replace with JoinMandaliFlow by re-rendering
+              const el = document.getElementById('__join_mandali_flow__');
+              if (el) el.style.display = 'block';
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition active:scale-[0.98]"
+            style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.25)' }}>
+            <MapPin size={14} /> Find my local Mandali
+          </button>
+        </div>
+        {/* Hidden join flow — shown on button tap */}
+        <div id="__join_mandali_flow__" style={{ display: 'none' }}>
+          <JoinMandaliFlow userId={userId} />
+        </div>
+        {/* Show Sabha (global forum) so global readers see content immediately */}
+        <div className="relative flex rounded-2xl p-1"
+          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
+          <div className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold"
+            style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', color: '#fff' }}>
+            <Globe size={13} /> Global Sabha
+          </div>
+        </div>
+        <VichaarClient
+          threads={threads}
+          userId={userId}
+          userTradition={userTradition}
+          embedded
+        />
+      </div>
+    );
   }
 
   const mandali    = liveProfile?.mandalis;
