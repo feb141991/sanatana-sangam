@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendShoonayaEmail } from '@/lib/email';
 
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -82,12 +84,12 @@ export async function GET(request: Request) {
     const lead = def.description ? `${def.description}\n\n` : '';
     const across = `Across traditions — the theme of ${def.theme || 'light'} resonates across all four paths, reminding us of unity, liberation, and gratitude.\n\n`;
     const bullets = `- Practice 1 related to ${def.name}\n- Practice 2 related to ${def.name}\n- Practice 3 related to ${def.name}\n`;
-    const cta = 'Set your reminder in Shoonaya → https://shoonaya.app/panchang';
+    const cta = `Set your reminder in Shoonaya → ${APP_BASE}/panchang`;
 
     for (const batch of userBatches) {
       const results = await Promise.allSettled(
         batch.map(async user => {
-          const unsub = `https://shoonaya.app/api/unsubscribe?token=${user.unsubscribe_token}`;
+          const unsub = `${APP_BASE}/api/unsubscribe?token=${user.unsubscribe_token}`;
           await sendShoonayaEmail({
             to: user.email!,
             subject,
@@ -96,7 +98,7 @@ export async function GET(request: Request) {
             title: subject,
             body: `${lead}${across}${bullets}\n${cta}`,
             ctaText: 'Explore',
-            ctaUrl: 'https://shoonaya.app/panchang',
+            ctaUrl: `${APP_BASE}/panchang`,
             unsubUrl: unsub,
           });
         })

@@ -2429,7 +2429,10 @@ export default function ProfileClient({
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => {
-                      const link = `https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      const base = typeof window !== 'undefined'
+                        ? window.location.origin
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                      const link = `${base}/kul/join?code=${kulData.code}`;
                       navigator.clipboard.writeText(link);
                       toast.success('Join link copied 🙏');
                     }}
@@ -2443,7 +2446,10 @@ export default function ProfileClient({
 
                   <button 
                     onClick={() => {
-                      const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      const base = typeof window !== 'undefined'
+                        ? window.location.origin
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                      const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: ${base}/kul/join?code=${kulData.code}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="flex flex-col items-center gap-2 p-5 rounded-[2rem] bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-all active:scale-95 group"

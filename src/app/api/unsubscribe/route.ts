@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -50,7 +52,7 @@ export async function GET(request: Request) {
   <div class="container">
     <h1>You've been unsubscribed</h1>
     ${error ? `<p style="color:red;">Error: ${error.message}</p>` : '<p>We have updated your email preferences.</p>'}
-    <p>Manage your preferences anytime at <a href="https://shoonaya.app/settings">shoonaya.app/settings</a>.</p>
+    <p>Manage your preferences anytime at <a href="${APP_BASE}/settings">shoonaya.com/settings</a>.</p>
   </div>
 </body>
 </html>`;

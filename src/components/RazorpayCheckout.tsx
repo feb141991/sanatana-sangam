@@ -72,7 +72,7 @@ export default function RazorpayCheckout({ plan, billing, label, className }: Pr
         subscription_id: subscriptionId,
         name: 'Shoonaya',
         description: plan === 'zenith' ? 'Shoonaya Zenith' : 'Shoonaya Kul Pro',
-        image: 'https://shoonaya.app/icon-192.png',
+        image: '/icon-192.png',
         theme: { color: '#C5A059' },
         handler: (response: { razorpay_subscription_id: string }) => {
           window.location.href = `/payment/success?sub=${response.razorpay_subscription_id}&plan=${plan}`;

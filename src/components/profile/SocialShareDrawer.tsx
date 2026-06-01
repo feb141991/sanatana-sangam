@@ -28,7 +28,10 @@ interface SocialShareDrawerProps {
   onClose: () => void;
 }
 
-const BASE = 'https://shoonaya.app';
+const BASE =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
 
 type CopyState = 'idle' | 'copied';
 
@@ -69,7 +72,7 @@ export default function SocialShareDrawer({
       : []),
     { id: 'whatsapp', icon: MessageCircle, label: 'WhatsApp', desc: 'Send to a contact or group', color: '#22c55e', action: null, href: whatsappHref },
     { id: 'twitter', icon: Twitter, label: 'Twitter / X', desc: 'Post your practice', color: '#1d9bf0', action: null, href: twitterHref },
-    { id: 'copy', icon: copyState === 'copied' ? Check : Copy, label: copyState === 'copied' ? 'Copied!' : 'Copy invite link', desc: `shoonaya.app/invite/${userId.slice(0,8)}…`, color: '#C5A059', action: copyLink, href: null },
+    { id: 'copy', icon: copyState === 'copied' ? Check : Copy, label: copyState === 'copied' ? 'Copied!' : 'Copy invite link', desc: `shoonaya.com/invite/${userId.slice(0,8)}…`, color: '#C5A059', action: copyLink, href: null },
   ] as const;
 
   return (

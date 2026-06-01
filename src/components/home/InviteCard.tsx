@@ -7,7 +7,7 @@
  * This card gives them a frictionless one-tap share with tradition-aware copy.
  *
  * Uses Web Share API where available (mobile), falls back to clipboard copy.
- * Deep link format: https://shoonaya.app?ref=<userId>
+ * Deep link format: https://shoonaya.com?ref=<userId>
  * (The ref param can be picked up during signup to track referrals later.)
  */
 

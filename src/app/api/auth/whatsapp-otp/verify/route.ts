@@ -78,7 +78,7 @@ export async function POST(request: Request) {
   const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
     type: 'magiclink',
     email: userEmail,
-    options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.app'}/auth/callback?next=${isNewUser ? '/onboarding' : '/home'}` },
+    options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com'}/auth/callback?next=${isNewUser ? '/onboarding' : '/home'}` },
   });
 
   if (linkErr || !linkData?.properties?.action_link) {

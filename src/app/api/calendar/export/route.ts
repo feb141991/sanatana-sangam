@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -125,7 +127,7 @@ export async function GET(req: Request) {
     lines.push('RRULE:FREQ=DAILY');
     lines.push('SUMMARY:🪷 Daily Japa — Shoonaya');
     lines.push('DESCRIPTION:Your daily practice window. Open Shoonaya to begin.');
-    lines.push('URL:https://shoonaya.app/bhakti/mala');
+    lines.push(`URL:${APP_BASE}/bhakti/mala`);
     lines.push('CATEGORIES:DHARMA,PRACTICE');
     lines.push('STATUS:CONFIRMED');
     lines.push('TRANSP:TRANSPARENT');

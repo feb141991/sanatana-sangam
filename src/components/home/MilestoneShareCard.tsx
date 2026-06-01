@@ -82,7 +82,10 @@ export default function MilestoneShareCard({
   const share = useCallback(async () => {
     if (!milestone) return;
     const copy = MILESTONE_COPY[milestone];
-    const url  = `https://shoonaya.app/invite/${userId}`;
+    const base = typeof window !== 'undefined'
+      ? window.location.origin
+      : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+    const url  = `${base}/invite/${userId}`;
     const text = `${copy.body}\n\n${url}`;
 
     if (navigator.share) {

@@ -5,6 +5,8 @@ import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { sendShoonayaEmail } from '@/lib/email';
 import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
@@ -192,7 +194,7 @@ export async function GET(request: Request) {
 
           // Send email digest — only to users who opted in and have an email
           if ((user as any).email_newsletter && (user as any).email) {
-            const unsubUrl = `https://shoonaya.app/api/unsubscribe?token=${(user as any).unsubscribe_token}`;
+            const unsubUrl = `${APP_BASE}/api/unsubscribe?token=${(user as any).unsubscribe_token}`;
             await sendShoonayaEmail({
               to: (user as any).email,
               subject: TITLE,
@@ -201,7 +203,7 @@ export async function GET(request: Request) {
               title: TITLE,
               body,
               ctaText: 'Open App',
-              ctaUrl: 'https://shoonaya.app/home',
+              ctaUrl: `${APP_BASE}/home`,
               unsubUrl,
             });
           }
