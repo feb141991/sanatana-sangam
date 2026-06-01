@@ -166,16 +166,16 @@ interface PanchangPillProps {
 }
 
 const PILL_SLIDES = [
-  { key: 'tithi',    icon: '🌙', getLabel: (p: PanchangPillProps['panchang'], _d: Date) => p.tithi },
-  { key: 'nakshatra', icon: '✨', getLabel: (p: PanchangPillProps['panchang'], _d: Date) => `${p.nakshatra} · ${p.yoga}` },
   {
-    key: 'date',
-    icon: '📅',
-    getLabel: (_p: PanchangPillProps['panchang'], d: Date) => {
-      const vs = d.getFullYear() + 57; // Vikram Samvat approximation
-      return `${fmtDate(d, 'dd MMM yyyy')} · VS ${vs}`;
+    key: 'tithi',
+    icon: '🌙',
+    getLabel: (p: PanchangPillProps['panchang'], d: Date) => {
+      const vs = d.getFullYear() + 57;
+      return `${p.tithi} · VS ${vs}`;
     },
   },
+  { key: 'nakshatra', icon: '✨', getLabel: (p: PanchangPillProps['panchang'], _d: Date) => `${p.nakshatra} · ${p.yoga}` },
+  { key: 'date',      icon: '📅', getLabel: (_p: PanchangPillProps['panchang'], d: Date) => fmtDate(d, 'dd MMM yyyy') },
 ] as const;
 
 function PanchangPill({ panchang, selectedDate }: PanchangPillProps) {
