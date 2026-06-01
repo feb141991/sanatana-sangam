@@ -356,210 +356,287 @@ export default function QuizDashboardClient({
         </Link>
       </div>
 
+      {/* ── Daily Quiz Card ───────────────────────────────────────────────── */}
       <div className="px-5 mb-6">
         {hasGraceAvailable && !effectiveAnswered && (
-          <div className="mb-4 rounded-xl p-3 flex items-center gap-3" style={{ background: 'var(--surface-soft)', borderLeft: '2px solid var(--brand-primary)' }}>
+          <div className="mb-3 rounded-2xl px-4 py-3 flex items-center gap-3"
+            style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.22)' }}>
             <span aria-hidden="true">🛡️</span>
             <span className="text-[12px]" style={{ color: 'var(--text-muted-warm)' }}>
-              Grace day active — your streak is protected until you answer today
+              Grace day active — streak protected until you answer
             </span>
           </div>
         )}
 
-        <div>
-          <div className="flex items-center justify-between px-5 pt-5 pb-4">
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.14em]"
-              style={{
-                color: displayStreak >= 7 ? '#C5A059' : 'rgba(255,255,255,0.72)',
-                border: `1px solid ${displayStreak >= 7 ? 'rgba(197,160,89,0.35)' : 'rgba(255,255,255,0.08)'}`,
-                background: displayStreak >= 7 ? 'rgba(197,160,89,0.10)' : 'rgba(255,255,255,0.03)',
-                boxShadow: displayStreak >= 7 ? '0 0 18px rgba(197,160,89,0.12)' : 'none',
-              }}
-            >
-              <Flame size={12} />
-              <span>Day {displayStreak} streak 🔥</span>
+        {/* Card container — always themed */}
+        <div className="rounded-[1.8rem] overflow-hidden"
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+
+          {/* Card header */}
+          <div className="flex items-center justify-between px-5 pt-4 pb-3"
+            style={{ borderBottom: '1px solid var(--card-border)' }}>
+            <div className="flex items-center gap-2">
+              <span className="text-[18px]">🧠</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em]"
+                style={{ color: 'var(--text-dim)' }}>
+                Daily Spark
+              </span>
             </div>
-            <span className="text-[10px] uppercase tracking-[0.14em] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Daily Quiz
-            </span>
+            {displayStreak > 0 && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold"
+                style={{
+                  color: displayStreak >= 7 ? 'var(--brand-primary)' : 'var(--text-muted-warm)',
+                  background: displayStreak >= 7 ? 'rgba(197,160,89,0.12)' : 'var(--surface-soft)',
+                  border: `1px solid ${displayStreak >= 7 ? 'rgba(197,160,89,0.30)' : 'var(--card-border)'}`,
+                }}>
+                🔥 {displayStreak}
+              </div>
+            )}
           </div>
 
           <AnimatePresence mode="wait" initial={false}>
-            {dailyQuizState === 'loading' ? (
-              <motion.div
-                key="quiz-loading"
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="px-5 pb-5 space-y-3"
-              >
-                <div className="h-5 w-28 rounded-full" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.07))' }} />
-                <div className="h-16 rounded-2xl" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.05))' }} />
+
+            {/* ── Loading ── */}
+            {dailyQuizState === 'loading' && (
+              <motion.div key="quiz-loading"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="px-5 pt-5 pb-6 space-y-3">
+                <div className="h-4 w-32 rounded-full animate-pulse" style={{ background: 'var(--surface-soft)' }} />
+                <div className="h-20 rounded-2xl animate-pulse" style={{ background: 'var(--surface-soft)' }} />
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="h-12 rounded-2xl" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.04))', opacity: 1 - i * 0.1 }} />
+                  <div key={i} className="h-12 rounded-2xl animate-pulse"
+                    style={{ background: 'var(--surface-soft)', opacity: 1.1 - i * 0.15 }} />
                 ))}
               </motion.div>
-            ) : dailyQuizState === 'error' ? (
-              <motion.div
-                key="quiz-error"
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="text-center py-10"
-              >
-                <p className="text-sm font-semibold text-[var(--brand-ink)]">Unable to load today&apos;s quiz</p>
-                <p className="text-xs mt-2 text-[var(--brand-muted)]">Try again in a moment.</p>
+            )}
+
+            {/* ── Error ── */}
+            {dailyQuizState === 'error' && (
+              <motion.div key="quiz-error"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="px-5 py-10 text-center">
+                <p className="text-2xl mb-3">🙏</p>
+                <p className="text-[14px] font-semibold" style={{ color: 'var(--text-cream)' }}>
+                  Today&apos;s quiz is resting
+                </p>
+                <p className="text-[12px] mt-1" style={{ color: 'var(--text-dim)' }}>
+                  Try again in a moment
+                </p>
               </motion.div>
-            ) : completedThisSession && dailyQuiz ? (
-              <motion.div
-                key="quiz-complete"
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="text-center py-4"
-              >
-                <div
-                  className="rounded-[1.6rem] p-6"
-                  style={{
-                    background: resultTone.bg,
-                    border: `1px solid ${resultTone.border}`,
-                    boxShadow: dailyScorePct >= 80 ? '0 0 32px rgba(197,160,89,0.14)' : 'none',
-                  }}
-                >
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[var(--brand-muted)] mb-2">Today&apos;s Result</p>
+            )}
+
+            {/* ── Completed this session ── */}
+            {dailyQuizState === 'ready' && completedThisSession && dailyQuiz && (
+              <motion.div key="quiz-complete"
+                initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="px-5 py-6">
+                {/* Result banner */}
+                <div className="rounded-2xl p-5 text-center mb-4"
+                  style={{ background: resultTone.bg, border: `1px solid ${resultTone.border}` }}>
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold mb-1"
+                    style={{ color: 'var(--text-dim)' }}>Today&apos;s Result</p>
                   <CountUpScore value={dailyScorePct} color={resultTone.text} />
-                  <p className="text-sm font-semibold mt-2 text-[var(--brand-ink)]">
-                    {dailyScorePct >= 80 ? 'Well held.' : dailyScorePct >= 50 ? 'Good grasp.' : 'One true correction matters.'}
+                  <p className="text-[13px] font-semibold mt-1" style={{ color: 'var(--text-cream)' }}>
+                    {dailyScorePct >= 80 ? 'Well held. 🙏' : dailyScorePct >= 50 ? 'Good grasp.' : 'Keep showing up.'}
                   </p>
                 </div>
-                <React.Fragment>
-                  {dailyQuiz.fact && (
-                    <div className="mt-4 rounded-2xl p-4 text-left" style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.20)' }}>
-                      <p className="text-[10px] uppercase tracking-[0.18em] font-bold mb-2" style={{ color: 'var(--brand-primary)' }}>Did You Know?</p>
-                      <p className="text-[14px] italic leading-relaxed premium-serif" style={{ color: 'var(--brand-ink)' }}>{dailyQuiz.fact}</p>
+                {dailyQuiz.fact && (
+                  <div className="rounded-2xl p-4 mb-3"
+                    style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.18)' }}>
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                      style={{ color: 'var(--brand-primary)' }}>Did You Know?</p>
+                    <p className="text-[13px] italic leading-relaxed"
+                      style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
+                      {dailyQuiz.fact}
+                    </p>
+                  </div>
+                )}
+                {dailyQuiz.explanation && (
+                  <div className="rounded-2xl p-4" style={{ background: 'var(--surface-soft)' }}>
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                      style={{ color: 'var(--text-dim)' }}>Why?</p>
+                    <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
+                      {dailyQuiz.explanation}
+                    </p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {/* ── Already answered (returning user) ── */}
+            {dailyQuizState === 'ready' && effectiveAnswered && !completedThisSession && dailyQuiz && (
+              <motion.div key="quiz-locked"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="px-5 py-6">
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.28)' }}>
+                    <Check size={22} style={{ color: 'var(--brand-primary)' }} />
+                  </div>
+                  <div>
+                    <p className="text-[15px] font-bold" style={{ color: 'var(--text-cream)' }}>
+                      Sadhana complete
+                    </p>
+                    <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-dim)' }}>
+                      {todayResponse?.is_correct ? 'Correct answer ✓' : 'Answered today'}
+                    </p>
+                  </div>
+                  {todayResponse && (
+                    <div className="ml-auto text-right">
+                      <p className="text-[22px] font-bold"
+                        style={{ color: todayResponse.is_correct ? '#5cb85c' : 'var(--text-dim)',
+                                 fontFamily: 'var(--font-serif)' }}>
+                        {todayResponse.is_correct ? '100%' : '0%'}
+                      </p>
                     </div>
                   )}
-                  {dailyQuiz.explanation && (
-                    <div className="mt-4 rounded-2xl p-4 text-left bg-white/[0.03] border border-white/[0.06]">
-                      <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[var(--brand-muted)] mb-2">Explanation</p>
-                      <p className="text-xs leading-relaxed text-[var(--brand-muted)]">{dailyQuiz.explanation}</p>
-                    </div>
-                  )}
-                </React.Fragment>
-              </motion.div>
-            ) : effectiveAnswered && dailyQuiz ? (
-              <motion.div
-                key="quiz-locked"
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="text-center py-4"
-              >
-                <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4" style={{ border: '1.5px solid rgba(197,160,89,0.45)', background: 'rgba(197,160,89,0.10)' }}>
-                  <Check size={26} style={{ color: '#C5A059' }} />
                 </div>
-                <h2 className="text-xl font-bold text-[var(--brand-ink)]">Quiz complete for today</h2>
-                <p className="mt-2 text-sm" style={{ color: '#C5A059' }}>
-                  {todayResponse ? `${todayResponse.is_correct ? '100' : '0'}%` : 'Sadhana recorded'}
-                </p>
-                <p className="mt-2 text-xs text-[var(--brand-muted)]">Next quiz unlocks at dawn 🌅</p>
-                <p className="mt-1 text-sm font-semibold text-[var(--brand-ink)]">{countdownLabel}</p>
-                <div className="mt-5 rounded-2xl p-4 text-left bg-white/[0.03] border border-white/[0.06]">
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-[var(--brand-muted)] mb-2">Today&apos;s Insight</p>
-                  <p className="text-sm text-[var(--brand-ink)]/85">{dailyQuiz.fact || dailyQuiz.explanation || dailyQuiz.question}</p>
+                {/* Countdown */}
+                <div className="rounded-2xl px-4 py-3 flex items-center justify-between mb-4"
+                  style={{ background: 'var(--surface-soft)' }}>
+                  <span className="text-[12px]" style={{ color: 'var(--text-dim)' }}>
+                    🌅 Next quiz
+                  </span>
+                  <span className="text-[13px] font-bold tabular-nums"
+                    style={{ color: 'var(--text-cream)' }}>
+                    {countdownLabel}
+                  </span>
                 </div>
+                {/* Insight */}
+                {(dailyQuiz.fact || dailyQuiz.explanation) && (
+                  <div className="rounded-2xl p-4"
+                    style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.16)' }}>
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                      style={{ color: 'var(--brand-primary)' }}>Today&apos;s Wisdom</p>
+                    <p className="text-[13px] leading-relaxed italic"
+                      style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
+                      {dailyQuiz.fact || dailyQuiz.explanation}
+                    </p>
+                  </div>
+                )}
               </motion.div>
-            ) : dailyQuiz ? (
+            )}
+
+            {/* ── Active question ── */}
+            {dailyQuizState === 'ready' && dailyQuiz && !effectiveAnswered && (
               <motion.div
                 key={`quiz-question-${dailyQuiz.daily_quiz_id ?? dailyQuiz.date}`}
                 initial={{ opacity: 0, x: transitionDirection > 0 ? 28 : -28 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: transitionDirection > 0 ? -28 : 28 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="px-5 pb-5"
-              >
-                <div className="mb-4">
-                  <span className="text-[10px] uppercase tracking-widest font-bold mb-2 block" style={{ color: 'var(--brand-primary)', opacity: 0.7 }}>
-                    🧠 {tradition} · Daily Shastra
-                  </span>
-                  <p className="text-[1.25rem] font-semibold leading-snug premium-serif min-h-[4rem]" style={{ color: 'var(--text-cream)' }}>
-                    {dailyQuiz.question}
-                  </p>
-                </div>
-                <div className="space-y-3">
+                className="px-5 pt-4 pb-6">
+
+                {/* Tradition label */}
+                <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-3"
+                  style={{ color: 'var(--brand-primary)', opacity: 0.75 }}>
+                  {tradition} · Daily Shastra
+                </p>
+
+                {/* Question */}
+                <p className="text-[1.2rem] font-semibold leading-snug mb-5"
+                  style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
+                  {dailyQuiz.question}
+                </p>
+
+                {/* Options */}
+                <div className="space-y-2.5">
                   {dailyQuiz.options.map((opt, idx) => {
-                    const isChosen = selectedAnswer === idx;
+                    const isChosen  = selectedAnswer === idx;
                     const isCorrect = idx === dailyQuiz.answerIndex;
-                    const showAnsweredState = selectedAnswer !== null;
-                    let bg = 'rgba(255,255,255,0.03)';
-                    let border = 'rgba(255,255,255,0.06)';
-                    let text = 'rgba(255,255,255,0.90)';
-                    if (showAnsweredState && isCorrect) {
-                      bg = 'rgba(60,180,110,0.14)';
-                      border = 'rgba(60,180,110,0.35)';
-                      text = '#8ce4a8';
-                    } else if (showAnsweredState && isChosen && !isCorrect) {
-                      bg = 'rgba(220,90,90,0.14)';
-                      border = 'rgba(220,90,90,0.35)';
-                      text = '#f0a0a0';
+                    const answered  = selectedAnswer !== null;
+
+                    let bg     = 'var(--surface-soft)';
+                    let border = 'var(--card-border)';
+                    let color  = 'var(--text-cream)';
+                    let labelBg = 'var(--card-bg)';
+                    let labelColor = 'var(--text-dim)';
+
+                    if (answered && isCorrect) {
+                      bg = 'rgba(60,180,110,0.12)';
+                      border = 'rgba(60,180,110,0.40)';
+                      color = '#3aaa6e';
+                      labelBg = 'rgba(60,180,110,0.20)';
+                      labelColor = '#3aaa6e';
+                    } else if (answered && isChosen && !isCorrect) {
+                      bg = 'rgba(220,80,80,0.10)';
+                      border = 'rgba(220,80,80,0.35)';
+                      color = '#cc5555';
+                      labelBg = 'rgba(220,80,80,0.18)';
+                      labelColor = '#cc5555';
+                    } else if (answered) {
+                      color = 'var(--text-dim)';
                     }
 
                     return (
                       <motion.button
                         key={idx}
-                        disabled={selectedAnswer !== null}
+                        disabled={answered}
                         onClick={() => handleDailyAnswer(idx)}
-                        className="w-full text-left rounded-2xl px-4 py-4 border"
-                        style={{ background: bg, borderColor: border, color: text }}
-                        whileTap={{ scale: selectedAnswer === null ? 0.985 : 1 }}
-                      >
+                        className="w-full text-left rounded-2xl px-4 py-3.5 transition-all"
+                        style={{ background: bg, border: `1px solid ${border}` }}
+                        whileTap={{ scale: !answered ? 0.98 : 1 }}>
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold border border-[var(--card-border)] bg-black/10">
+                          <span className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+                            style={{ background: labelBg, color: labelColor, border: `1px solid ${border}` }}>
                             {String.fromCharCode(65 + idx)}
                           </span>
-                          <span className="flex-1 text-[14px] font-medium">{opt}</span>
-                          {showAnsweredState && isCorrect ? <CheckCircle2 size={16} /> : null}
-                          {showAnsweredState && isChosen && !isCorrect ? <XCircle size={16} /> : null}
+                          <span className="flex-1 text-[13px] font-medium leading-snug" style={{ color }}>
+                            {opt}
+                          </span>
+                          {answered && isCorrect && <CheckCircle2 size={15} color="#3aaa6e" />}
+                          {answered && isChosen && !isCorrect && <XCircle size={15} color="#cc5555" />}
                         </div>
                       </motion.button>
                     );
                   })}
                 </div>
+
+                {/* Post-answer reveal */}
                 {selectedAnswer !== null && (
-                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+                  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }} className="mt-4 space-y-3">
                     {dailyQuiz.fact && (
-                      <div className="rounded-2xl p-4 text-left mb-4" style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.20)' }}>
-                        <p className="text-[10px] uppercase tracking-[0.18em] font-bold mb-2" style={{ color: 'var(--brand-primary)' }}>Did You Know?</p>
-                        <p className="text-[14px] italic leading-relaxed premium-serif" style={{ color: 'var(--text-cream)' }}>{dailyQuiz.fact}</p>
+                      <div className="rounded-2xl p-4"
+                        style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.20)' }}>
+                        <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                          style={{ color: 'var(--brand-primary)' }}>Did You Know?</p>
+                        <p className="text-[13px] italic leading-relaxed"
+                          style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
+                          {dailyQuiz.fact}
+                        </p>
                       </div>
                     )}
                     {dailyQuiz.explanation && (
-                      <div className="rounded-2xl p-4 bg-white/[0.03] border border-white/[0.06]">
-                        <p className="text-[10px] uppercase tracking-[0.16em] font-bold text-[var(--brand-muted)] mb-2">Explanation</p>
-                        <p className="text-[12px] leading-relaxed text-[var(--text-dim)]">{dailyQuiz.explanation}</p>
+                      <div className="rounded-2xl p-4" style={{ background: 'var(--surface-soft)' }}>
+                        <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                          style={{ color: 'var(--text-dim)' }}>Explanation</p>
+                        <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
+                          {dailyQuiz.explanation}
+                        </p>
                       </div>
                     )}
                     {dailyQuiz.source && (
-                      <p className="text-[10px] italic mt-4 text-right" style={{ color: 'var(--text-dim)' }}>
+                      <p className="text-[11px] italic text-right" style={{ color: 'var(--text-dim)' }}>
                         — {dailyQuiz.source}
                       </p>
                     )}
                   </motion.div>
                 )}
-                {!effectiveAnswered && initialHistory.length > 0 && initialHistory[0]?.explanation && (
-                  <div className="mt-6 rounded-xl overflow-hidden" style={{ background: 'var(--surface-soft)', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
+
+                {/* Yesterday's insight accordion */}
+                {initialHistory.length > 0 && initialHistory[0]?.explanation && (
+                  <div className="mt-5 rounded-2xl overflow-hidden"
+                    style={{ background: 'var(--surface-soft)', border: '1px solid var(--card-border)' }}>
                     <details className="group">
-                      <summary className="cursor-pointer px-4 py-3 text-[12px] font-bold uppercase tracking-widest flex items-center justify-between outline-none" style={{ color: 'var(--text-dim)' }}>
-                        Yesterday&apos;s insight
-                        <ChevronRight size={14} className="group-open:rotate-90 transition-transform" />
+                      <summary className="cursor-pointer px-4 py-3 text-[11px] font-bold uppercase tracking-widest flex items-center justify-between outline-none"
+                        style={{ color: 'var(--text-dim)' }}>
+                        Yesterday&apos;s Insight
+                        <ChevronRight size={13} className="group-open:rotate-90 transition-transform" />
                       </summary>
-                      <div className="px-4 pb-4 pt-1">
-                        <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-cream)' }}>
+                      <div className="px-4 pb-4" style={{ borderTop: '1px solid var(--card-border)' }}>
+                        <p className="text-[13px] leading-relaxed pt-3" style={{ color: 'var(--text-muted-warm)' }}>
                           {initialHistory[0].explanation}
                         </p>
                       </div>
@@ -567,7 +644,8 @@ export default function QuizDashboardClient({
                   </div>
                 )}
               </motion.div>
-            ) : null}
+            )}
+
           </AnimatePresence>
         </div>
       </div>
