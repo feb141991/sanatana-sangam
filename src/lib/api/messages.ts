@@ -3,11 +3,9 @@ import { mockMessageThreads, mockThreadMessages } from '@/lib/mocks/messages';
 import { selectRuntimeAdapter } from '@shared-core/runtime/selectRuntimeAdapter';
 import { createClient as createBrowserSupabaseClient } from '@/lib/supabase';
 
-async function getSupabase() {
-  if (typeof window === 'undefined') {
-    const { createServerSupabaseClient } = await import('@/lib/supabase-server');
-    return createServerSupabaseClient();
-  }
+// Always use the browser client — this file is imported by client components.
+// Server-side initial data fetching (page.tsx) uses its own server client directly.
+function getSupabase() {
   return createBrowserSupabaseClient();
 }
 
@@ -95,7 +93,7 @@ const mockMessagesApi: MessagesApi = {
 
 const liveMessagesApi: MessagesApi = {
   async listThreads(userId) {
-    const supabase = await getSupabase();
+    const supabase = getSupabase();
     
     // 1. Get all threads the user is participant in
     const { data: participantsData, error: tpError } = await supabase
@@ -174,7 +172,7 @@ const liveMessagesApi: MessagesApi = {
   },
 
   async listMessages(threadId, userId) {
-    const supabase = await getSupabase();
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('thread_messages')
       .select('id, thread_id, sender_id, sender_name, body, created_at, delivery_state')
@@ -198,7 +196,7 @@ const liveMessagesApi: MessagesApi = {
   },
 
   async sendMessage(input) {
-    const supabase = await getSupabase();
+    const supabase = getSupabase();
 
     // 1. Insert into thread_messages
     const { data: insertedMsg, error: insertError } = await supabase
@@ -262,7 +260,7 @@ const liveMessagesApi: MessagesApi = {
   },
 
   async markThreadRead(threadId, userId) {
-    const supabase = await getSupabase();
+    const supabase = getSupabase();
     await supabase
       .from('thread_participants')
       .update({ unread_count: 0 })
