@@ -104,11 +104,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          * instantly without waiting for the profile fetch.
          * Pattern mirrors how next-themes avoids the dark-mode flash.
          */}
+        {/*
+         * Instant background paint — eliminates the white flash before
+         * globals.css loads. Sets body bg synchronously from stored theme
+         * preference. Dark default (#0C0A07) matches --surface-base dark.
+         * Light users get #FAF6EF. No flicker on either theme.
+         */}
+        <style dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }} />
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script
           // biome-ignore lint: intentional inline script
           dangerouslySetInnerHTML={{
-            __html: `try{var __t=localStorage.getItem('sh_tradition');if(__t)document.documentElement.setAttribute('data-tradition',__t);}catch(e){}`,
+            __html: `try{
+  var __t=localStorage.getItem('sh_tradition');
+  if(__t)document.documentElement.setAttribute('data-tradition',__t);
+  var __theme=localStorage.getItem('sh_theme');
+  if(__theme==='light'){document.body.style.background='#FAF6EF';}
+}catch(e){}`,
           }}
         />
       </head>
