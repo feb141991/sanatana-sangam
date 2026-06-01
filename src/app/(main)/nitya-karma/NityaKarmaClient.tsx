@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronDown, Flame, CheckCircle2, Circle, Loader2,
   Info, Lock, Trophy, Sunrise, Star, X, Settings2, Plus, Bell, BarChart2,
+  GripVertical,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -46,6 +47,7 @@ import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import PageIntro from '@/components/ui/PageIntro';
+import { withOneSignal } from '@/lib/onesignal';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -386,6 +388,33 @@ function saveCustom(userId: string, custom: NityaCustom) {
   try { localStorage.setItem(customKey(userId), JSON.stringify(custom)); } catch {}
 }
 
+async function scheduleMorningAlert(time: string) {
+  try {
+    await withOneSignal(async (OS) => {
+      await OS.User.addTag('nitya_alert_time', time);
+    });
+  } catch (err) {
+    console.warn('[Nitya OneSignal Alert] Non-fatal OneSignal tag error:', err);
+  }
+
+  try {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted' && 'serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        if (registration && registration.active) {
+          registration.active.postMessage({
+            type: 'SCHEDULE_NITYA_ALERT',
+            time: time,
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[Nitya Web Alert] Non-fatal Web Alert scheduling error:', err);
+  }
+}
+
 // ── Nitya Customization Sheet ─────────────────────────────────────────────────
 function NityaCustomSheet({
   userId, steps, custom: initialCustom, accent, isPro,
@@ -403,6 +432,16 @@ function NityaCustomSheet({
   const [newStepLabel, setNewStepLabel] = useState('');
   const [newStepIcon, setNewStepIcon]   = useState('🙏');
   const [newStepMins, setNewStepMins]   = useState(10);
+  const [shakeTrigger, setShakeTrigger] = useState(false);
+
+  function handleAddStepClick() {
+    if (!newStepLabel.trim()) {
+      setShakeTrigger(true);
+      void hapticLight();
+      return;
+    }
+    addExtraStep();
+  }
 
   function updateLabel(stepId: string, val: string) {
     setDraft(prev => ({ ...prev, labels: { ...prev.labels, [stepId]: val } }));
@@ -429,6 +468,7 @@ function NityaCustomSheet({
   function handleSave() {
     saveCustom(userId, draft);
     onSave(draft);
+    void scheduleMorningAlert(draft.alertTime);
     onClose();
   }
 
@@ -562,6 +602,7 @@ function NityaCustomSheet({
                     className="flex items-center gap-3 rounded-xl px-3 py-2.5"
                     style={{ background: 'rgba(197, 160, 89,0.06)', border: '1px solid rgba(197, 160, 89,0.12)' }}
                   >
+                    <GripVertical size={14} className="opacity-30 cursor-grab shrink-0" style={{ color: 'var(--brand-muted)' }} />
                     <SacredIcon name={es.icon as SacredIconName} size={20} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
                     <span className="flex-1 text-sm" style={{ color: 'var(--brand-ink)' }}>{es.label}</span>
                     <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>{es.minutes}m</span>
@@ -578,25 +619,31 @@ function NityaCustomSheet({
               className="rounded-2xl px-4 py-4 space-y-3"
               style={{ background: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}
             >
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Step icon (emoji)"
-                  value={newStepIcon}
-                  onChange={e => setNewStepIcon(e.target.value)}
-                  maxLength={4}
-                  className="w-16 rounded-xl px-2 py-2 text-center text-lg border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
-                />
-                <input
-                  type="text"
-                  placeholder="Practice name (e.g. Tratak, Pranayama…)"
-                  value={newStepLabel}
-                  onChange={e => setNewStepLabel(e.target.value)}
-                  maxLength={50}
-                  className="flex-1 rounded-xl px-3 py-2 text-sm border focus:outline-none bg-transparent"
-                  style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
-                />
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-bold tracking-wider" style={{ color: 'var(--brand-muted)' }}>Emoji</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Emoji"
+                    value={newStepIcon}
+                    onChange={e => setNewStepIcon(e.target.value)}
+                    maxLength={4}
+                    className="w-16 rounded-xl px-2 py-2 text-center text-lg border focus:outline-none bg-transparent"
+                    style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Practice name (e.g. Tratak, Pranayama…)"
+                    value={newStepLabel}
+                    onChange={e => setNewStepLabel(e.target.value)}
+                    maxLength={50}
+                    className="flex-1 rounded-xl px-3 py-2 text-sm border focus:outline-none bg-transparent"
+                    style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
+                  />
+                </div>
+                <p className="text-[10px] opacity-70 mt-1 pl-1" style={{ color: 'var(--brand-muted)' }}>
+                  Tap to pick an emoji (e.g. 🌬️ for Pranayama)
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs" style={{ color: 'var(--brand-muted)' }}>Duration (min):</span>
@@ -608,14 +655,17 @@ function NityaCustomSheet({
                   className="w-16 rounded-xl px-2 py-1.5 text-sm text-center border focus:outline-none bg-transparent"
                   style={{ borderColor: 'rgba(197, 160, 89,0.2)', color: 'var(--brand-ink)' }}
                 />
-                <button
-                  onClick={addExtraStep}
-                  disabled={!newStepLabel.trim()}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold disabled:opacity-40 transition-opacity"
+                <motion.button
+                  onClick={handleAddStepClick}
+                  animate={shakeTrigger ? { x: [0, 6, -6, 6, -6, 0] } : {}}
+                  onAnimationComplete={() => setShakeTrigger(false)}
+                  className={`ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    !newStepLabel.trim() ? 'opacity-40 cursor-not-allowed' : 'hover:opacity-90'
+                  }`}
                   style={{ background: `${accent}22`, color: accent, border: `1px solid ${accent}33` }}
                 >
                   <Plus size={12} /> Add step
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>
@@ -1045,6 +1095,7 @@ export default function NityaKarmaClient({
   );
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
+  const [doneCustomIds, setDoneCustomIds] = useState<Set<string>>(new Set());
   const [vratRouteInfo, setVratRouteInfo] = useState<{ route_kind: string | null; route_slug: string | null } | null>(null);
   const [greeting,      setGreeting]     = useState('');
   const [panchang,      setPanchang]     = useState<any>(null);
@@ -1157,6 +1208,16 @@ export default function NityaKarmaClient({
         (data ?? []).forEach((r: any) => { if (r.step_id) doneIds.add(r.step_id as string); });
       } catch { /* offline — local data is still used */ }
 
+      const customDoneIds = new Set<string>();
+      doneIds.forEach(id => {
+        if (id.startsWith('custom_')) {
+          customDoneIds.add(id);
+        }
+      });
+      if (!cancelled) {
+        setDoneCustomIds(customDoneIds);
+      }
+
       return baseSteps.map(s => ({ ...s, completed: s.completed || doneIds.has(s.id) }));
     }
 
@@ -1209,6 +1270,9 @@ export default function NityaKarmaClient({
 
       // Optimistic UI update
       setSteps(prev => prev.map(s => s.id === stepId ? { ...s, completed: true } : s));
+      if (stepId.startsWith('custom_')) {
+        setDoneCustomIds(prev => new Set([...prev, stepId]));
+      }
       setJustCompleted(stepId);
       setTimeout(() => setJustCompleted(null), 2500);
 
@@ -1260,7 +1324,7 @@ export default function NityaKarmaClient({
       }
 
       // Check all done using ref (avoids stale closure)
-      const currentSteps = stepsRef.current;
+      const currentSteps = displayStepsRef.current;
       const allNowDone   = currentSteps.every(s => s.id === stepId ? true : s.completed);
 
       if (allNowDone && !confettiFired.current) {
@@ -1297,19 +1361,36 @@ export default function NityaKarmaClient({
           }
         } catch { /* silent — guided plan bridge is best-effort */ }
       } else {
-        // Use hardcoded colors — CSS variables don't work inside toast portals
-        toast(getStepMessage(stepId), {
-          icon: 'heart' as SacredIconName,
-          duration: 3500,
-          style: {
-            background: '#1c1c1a',
-            color: '#f0ede4',
-            border: `1px solid ${accent}40`,
-            borderRadius: '14px',
-            fontSize: '13px',
-            maxWidth: '320px',
-          },
-        });
+        if (stepId.startsWith('custom_')) {
+          const es = custom.extraSteps.find(s => s.id === stepId);
+          const label = es?.label || 'Custom practice';
+          toast(`${label} — practice complete 🙏`, {
+            icon: 'heart' as SacredIconName,
+            duration: 3500,
+            style: {
+              background: '#1c1c1a',
+              color: '#f0ede4',
+              border: `1px solid ${accent}40`,
+              borderRadius: '14px',
+              fontSize: '13px',
+              maxWidth: '320px',
+            },
+          });
+        } else {
+          // Use hardcoded colors — CSS variables don't work inside toast portals
+          toast(getStepMessage(stepId), {
+            icon: 'heart' as SacredIconName,
+            duration: 3500,
+            style: {
+              background: '#1c1c1a',
+              color: '#f0ede4',
+              border: `1px solid ${accent}40`,
+              borderRadius: '14px',
+              fontSize: '13px',
+              maxWidth: '320px',
+            },
+          });
+        }
       }
     } finally {
       // Always clear the busy lock — even if something above throws
@@ -1322,9 +1403,12 @@ export default function NityaKarmaClient({
     ...applyCustomLabels(steps, custom),
     ...(isPro ? custom.extraSteps.map(es => ({
       id: es.id, label: es.label, icon: es.icon, minutes: es.minutes,
-      description: 'Custom practice', completed: false,
+      description: 'Custom practice', completed: doneCustomIds.has(es.id),
     } as NityaSequenceStep)) : []),
   ];
+
+  const displayStepsRef = useRef(displaySteps);
+  useEffect(() => { displayStepsRef.current = displaySteps; }, [displaySteps]);
 
   const completedCount = displaySteps.filter(s => s.completed).length;
   const totalSteps     = displaySteps.length;
