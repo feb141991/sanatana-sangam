@@ -31,18 +31,21 @@ export function CommunitySection({
       description: t('liveDarshanDesc'),
       href: '/live-darshan',
       emoji: '📺',
+      bg: 'rgba(100,181,246,0.14)',
     },
     {
       title: t('mandali'),
       description: t('mandaliDesc'),
       href: '/mandali',
       emoji: '👥',
+      bg: 'rgba(165,148,224,0.14)',
     },
     {
       title: t('kul'),
       description: t('kulDesc'),
       href: '/kul',
       emoji: '🏡',
+      bg: 'rgba(255,138,101,0.14)',
     },
   ];
 
@@ -57,11 +60,22 @@ export function CommunitySection({
                 <div className="divine-feature-card motion-lift">
                   <span className="divine-card-motif" aria-hidden="true" />
                   <span
-                    className="drop-shadow-md select-none mb-1"
-                    style={{ fontSize: '2.2rem', lineHeight: 1, display: 'block' }}
+                    className="flex items-center justify-center rounded-[1.2rem] mb-1 select-none"
+                    style={{
+                      width: '3rem',
+                      height: '3rem',
+                      background: isDark ? item.bg : item.bg.replace('0.14', '0.12'),
+                      border: `1px solid ${item.bg.replace('0.14', '0.3')}`,
+                    }}
                     aria-hidden="true"
                   >
-                    {item.emoji}
+                    <span style={{
+                      fontSize: '1.7rem',
+                      lineHeight: 1,
+                      filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.22)) drop-shadow(0px 1px 2px rgba(0,0,0,0.14))',
+                    }}>
+                      {item.emoji}
+                    </span>
                   </span>
                   <span className="divine-feature-title">{item.title}</span>
                   <span className="divine-feature-copy">{item.description}</span>
