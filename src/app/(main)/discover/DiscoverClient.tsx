@@ -410,7 +410,7 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                   How are you feeling?
                 </h1>
                 <p className="mt-1 text-[13px]" style={{ color: 'var(--text-dim)' }}>
-                  Pick what's closest to your state right now
+                  Pick what&apos;s closest to your state right now
                 </p>
               </div>
 

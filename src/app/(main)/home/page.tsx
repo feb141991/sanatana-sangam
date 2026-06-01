@@ -155,7 +155,6 @@ export default async function HomePage() {
 
   // Extract results — use `as any` only at the extraction boundary;
   // downstream variables are typed explicitly below.
-  /* eslint-disable @typescript-eslint/no-explicit-any */
   const guidedPathProgress = (guidedResult.status  === 'fulfilled' ? guidedResult.value.data  : null) as any[] | null;
   const calendarRows       = (calendarResult.status === 'fulfilled' ? calendarResult.value.data : null) as any[] | null;
   const heroAssetRows      = (heroResult.status     === 'fulfilled' ? heroResult.value.data     : null) as any[] | null;
@@ -169,7 +168,6 @@ export default async function HomePage() {
   const sankalpaRow        = (sankalpaResult.status === 'fulfilled' ? sankalpaResult.value.data : null) as { id: string; text: string; start_date: string; target_days: number | null; tradition: string | null } | null;
   const dharmVeer: DharmVeer = (dharmVeerResult.status === 'fulfilled' ? dharmVeerResult.value.data : null) as unknown as DharmVeer
     ?? (await getDharmVeerOfTheDay(supabase, tradition));
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   // Build calendar / festival data from results
   const calendarFromDb = (calendarRows ?? []).map((row) => mapOccurrenceToFestival(row));
