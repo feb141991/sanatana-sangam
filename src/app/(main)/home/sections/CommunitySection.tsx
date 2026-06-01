@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
 
 interface CommunitySectionProps {
   userId: string;
@@ -15,77 +15,53 @@ interface CommunitySectionProps {
 }
 
 export function CommunitySection({
-  userId,
-  userName,
-  tradition,
-  isPro,
-  sevaScore,
   isDark,
-  onInviteClick,
 }: CommunitySectionProps) {
   const { t } = useLanguage();
 
-  const cards = [
-    {
-      title: t('liveDarshan'),
-      description: t('liveDarshanDesc'),
-      href: '/live-darshan',
-      emoji: '📺',
-      bg: 'rgba(100,181,246,0.14)',
-    },
-    {
-      title: t('mandali'),
-      description: t('mandaliDesc'),
-      href: '/mandali',
-      emoji: '👥',
-      bg: 'rgba(165,148,224,0.14)',
-    },
-    {
-      title: t('kul'),
-      description: t('kulDesc'),
-      href: '/kul',
-      emoji: '🏡',
-      bg: 'rgba(255,138,101,0.14)',
-    },
+  const items = [
+    { label: t('liveDarshan'), href: '/live-darshan', emoji: '📺', bg: 'rgba(100,181,246,0.14)' },
+    { label: t('mandali'),     href: '/mandali',       emoji: '👥', bg: 'rgba(165,148,224,0.14)' },
+    { label: t('kul'),         href: '/kul',           emoji: '🏡', bg: 'rgba(255,138,101,0.14)' },
   ];
 
   return (
-    <div className="space-y-4">
-      {/* ── Community Grid ── */}
-      <div className="px-4">
-        <MotionStagger className="divine-feature-grid" delay={0.08}>
-          {cards.map((item) => (
-            <MotionItem key={item.title}>
-              <Link href={item.href} className="no-underline">
-                <div className="divine-feature-card motion-lift">
-                  <span className="divine-card-motif" aria-hidden="true" />
-                  <span
-                    className="flex items-center justify-center rounded-[1.2rem] mb-1 select-none"
-                    style={{
-                      width: '3rem',
-                      height: '3rem',
-                      background: isDark ? item.bg : item.bg.replace('0.14', '0.12'),
-                      border: `1px solid ${item.bg.replace('0.14', '0.3')}`,
-                    }}
-                    aria-hidden="true"
-                  >
-                    <span style={{
-                      fontSize: '1.7rem',
-                      lineHeight: 1,
-                      filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.22)) drop-shadow(0px 1px 2px rgba(0,0,0,0.14))',
-                    }}>
-                      {item.emoji}
-                    </span>
-                  </span>
-                  <span className="divine-feature-title">{item.title}</span>
-                  <span className="divine-feature-copy">{item.description}</span>
-                </div>
-              </Link>
-            </MotionItem>
-          ))}
-        </MotionStagger>
+    <div className="px-4 mb-4">
+      <div className="grid grid-cols-4 gap-2.5">
+        {items.map((item, i) => (
+          <motion.div
+            key={item.label}
+            whileTap={{ scale: 0.87 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+          >
+            <Link
+              href={item.href}
+              className="flex flex-col items-center gap-1.5 rounded-[1.2rem] py-3 px-1 no-underline"
+              style={{
+                background: isDark ? item.bg : item.bg.replace('0.14', '0.12'),
+                border: `1px solid ${item.bg.replace('0.14', '0.3')}`,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '2rem',
+                  lineHeight: 1,
+                  display: 'block',
+                  filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.22)) drop-shadow(0px 1px 2px rgba(0,0,0,0.14))',
+                }}
+              >
+                {item.emoji}
+              </span>
+              <span
+                className="text-[10px] font-semibold text-center leading-tight"
+                style={{ color: isDark ? 'rgba(240,237,230,0.80)' : 'rgba(30,20,5,0.72)' }}
+              >
+                {item.label}
+              </span>
+            </Link>
+          </motion.div>
+        ))}
       </div>
-
     </div>
   );
 }
