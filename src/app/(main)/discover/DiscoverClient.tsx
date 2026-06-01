@@ -530,14 +530,23 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                   ))}
                 </div>
 
-                <button
-                  onClick={resetToMood}
-                  className="mt-6 w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                  style={{ background: 'transparent', border: '1px solid var(--card-border)', color: 'var(--text-dim)' }}
-                >
-                  <RotateCcw size={13} />
-                  Change mood
-                </button>
+                <div className="flex flex-col gap-2 mt-6">
+                  <Link
+                    href="/"
+                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
+                    style={{ background: 'var(--brand-primary-soft)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--brand-primary)' }}
+                  >
+                    ✓ Just set my mood — go home
+                  </Link>
+                  <button
+                    onClick={resetToMood}
+                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                    style={{ background: 'transparent', border: '1px solid var(--card-border)', color: 'var(--text-dim)' }}
+                  >
+                    <RotateCcw size={13} />
+                    Change mood
+                  </button>
+                </div>
               </motion.div>
             </AnimatePresence>
           )}
@@ -591,23 +600,32 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                   </div>
                 )}
 
-                <div className="flex gap-2 mt-6">
-                  <button
-                    onClick={resetToTime}
-                    className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
+                <div className="flex flex-col gap-2 mt-6">
+                  <Link
+                    href="/"
+                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
+                    style={{ background: 'var(--brand-primary-soft)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--brand-primary)' }}
                   >
-                    <RotateCcw size={13} />
-                    Change time
-                  </button>
-                  <button
-                    onClick={resetToMood}
-                    className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                    style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
-                  >
-                    <X size={13} />
-                    Change mood
-                  </button>
+                    ✓ Done — go home
+                  </Link>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={resetToTime}
+                      className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
+                    >
+                      <RotateCcw size={13} />
+                      Change time
+                    </button>
+                    <button
+                      onClick={resetToMood}
+                      className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
+                    >
+                      <X size={13} />
+                      Change mood
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>

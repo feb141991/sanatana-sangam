@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
-import InviteCard from '@/components/home/InviteCard';
 
 interface CommunitySectionProps {
   userId: string;
@@ -49,13 +48,6 @@ export function CommunitySection({
 
   return (
     <div className="space-y-4">
-      {/* ── Invite Card ── */}
-      <InviteCard
-        userId={userId}
-        userName={userName}
-        tradition={tradition}
-      />
-
       {/* ── Community Grid ── */}
       <div className="px-4">
         <MotionStagger className="divine-feature-grid" delay={0.08}>
