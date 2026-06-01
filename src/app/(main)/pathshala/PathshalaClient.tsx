@@ -163,16 +163,16 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
           <h3 className="font-bold text-[color:var(--brand-ink)] text-base md:text-lg leading-tight mb-3 group-hover:text-[var(--brand-ink)] transition-colors">
             {entry.title}
           </h3>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group-hover:border-white/10 transition-colors">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--surface-soft)] border transition-colors" style={{ borderColor: 'var(--card-border)' }}>
             <BookOpen size={12} style={{ color: accentColour }} />
             <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColour }}>{t('beginReading')}</span>
           </div>
         </div>
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 group-hover:scale-110 transition-transform duration-500">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-[var(--surface-soft)] border group-hover:scale-110 transition-transform duration-500" style={{ borderColor: 'var(--card-border)' }}>
           <Sparkles size={18} style={{ color: accentColour }} className="opacity-40" />
         </div>
       </div>
-      <div className="mt-5 pt-4 border-t border-black/5 dark:border-white/5 relative">
+      <div className="mt-5 pt-4 border-t relative" style={{ borderColor: 'var(--card-border)' }}>
         <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
           style={{ color: accentColour }}>
           {entry.original.split('\n')[0]}
@@ -236,10 +236,13 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
               onClick={() => setKanda(k)}
               className={`px-4 py-2 rounded-2xl text-[10px] font-bold whitespace-nowrap transition-all border ${
                 selectedKanda.id === k.id
-                  ? 'bg-white/10 border-white/20'
-                  : 'bg-white/5 border-white/5 text-[color:var(--brand-muted)] hover:bg-white/8'
+                  ? 'bg-[var(--card-bg)]'
+                  : 'bg-[var(--surface-soft)] text-[color:var(--brand-muted)] hover:bg-[var(--surface-soft)]'
               }`}
-              style={selectedKanda.id === k.id ? { color: accentColour, boxShadow: `0 4px 15px ${accentColour}10` } : {}}
+              style={{
+                borderColor: 'var(--card-border)',
+                ...(selectedKanda.id === k.id ? { color: accentColour, boxShadow: `0 4px 15px ${accentColour}10` } : {})
+              }}
             >
               {k.title}
             </button>
@@ -247,7 +250,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
         </div>
       </div>
 
-      <div className="p-5 rounded-[2rem] bg-white/5 border border-white/10 relative overflow-hidden">
+      <div className="p-5 rounded-[2rem] bg-[var(--surface-soft)] border relative overflow-hidden" style={{ borderColor: 'var(--card-border)' }}>
         <div className="absolute top-0 right-0 p-4 opacity-10">
           <BookOpen size={60} style={{ color: accentColour }} />
         </div>
@@ -259,7 +262,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
       {/* Chapter List - Step Journey Design */}
       <div className="grid gap-3 relative">
         {/* Journey Line */}
-        <div className="absolute left-[2.25rem] top-6 bottom-6 w-px bg-white/5" />
+        <div className="absolute left-[2.25rem] top-6 bottom-6 w-px" style={{ background: 'var(--card-border)' }} />
         
         {selectedKanda.chapters.length > 0 ? (
           selectedKanda.chapters.map(c => (
@@ -268,10 +271,11 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
               whileHover={{ x: 4 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleOpenChapter(c)}
-              className="flex items-center gap-4 p-4 rounded-[1.8rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all text-left relative z-10 group"
+              className="flex items-center gap-4 p-4 rounded-[1.8rem] bg-[var(--surface-soft)] border hover:bg-[var(--card-bg)] transition-all text-left relative z-10 group"
+              style={{ borderColor: 'var(--card-border)' }}
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--divine-bg)] border border-white/10 text-xs font-bold transition-all group-hover:border-white/20 group-hover:scale-110 shadow-lg"
-                style={{ color: accentColour }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--divine-bg)] border text-xs font-bold transition-all group-hover:scale-110 shadow-lg"
+                style={{ color: accentColour, borderColor: 'var(--card-border)' }}>
                 {c.chapterNumber}
               </div>
               <div className="flex-1 min-w-0">
@@ -284,7 +288,8 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
             </motion.button>
           ))
         ) : (
-          <div className="py-20 text-center rounded-[2rem] border border-dashed border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/2">
+          <div className="py-20 text-center rounded-[2rem] border border-dashed bg-[var(--surface-soft)]"
+            style={{ borderColor: 'var(--card-border)' }}>
             <Loader2 className="mx-auto mb-3 animate-spin-slow opacity-20" size={32} />
             <p className="text-xs font-medium tracking-wide opacity-40 uppercase">Compiling chapters for the Path…</p>
           </div>
@@ -385,7 +390,8 @@ function ScriptureTab({
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder={`Search ${section?.title ?? navLabel}…`}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/6 text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none focus:border-white/20"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border bg-[var(--surface-soft)] text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)]"
+              style={{ borderColor: 'var(--card-border)' }}
             />
           </div>
         )}
@@ -400,9 +406,9 @@ function ScriptureTab({
             {entries.length > 0 && (
               <div className="space-y-4">
                 <div className="flex item-center gap-4 px-2">
-                  <div className="h-px flex-1 bg-white/5" />
+                  <div className="h-px flex-1" style={{ background: 'var(--card-border)' }} />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Featured Passages</span>
-                  <div className="h-px flex-1 bg-white/5" />
+                  <div className="h-px flex-1" style={{ background: 'var(--card-border)' }} />
                 </div>
                 <div className="grid gap-3">
                   {entries.map(e => <EntryCard key={e.id} entry={e} accentColour={accentColour} />)}
@@ -983,7 +989,7 @@ export default function PathshalaClient({
                 );
               } else {
                 return (
-                  <div key={i} className="w-8 h-8 rounded-full border border-gray-500/30 flex items-center justify-center bg-black/10 dark:bg-white/5" />
+                  <div key={i} className="w-8 h-8 rounded-full border border-gray-500/30 flex items-center justify-center bg-[var(--surface-soft)]" />
                 );
               }
             })}
@@ -1005,7 +1011,7 @@ export default function PathshalaClient({
           onClick={() => setExpanded(v => !v)}
         >
           {pulse && (
-            <div className="flex items-center gap-2 mb-3 bg-white/5 w-max px-2 py-0.5 rounded-full border border-white/5">
+            <div className="flex items-center gap-2 mb-3 bg-[var(--surface-soft)] w-max px-2 py-0.5 rounded-full border" style={{ borderColor: 'var(--card-border)' }}>
               <span className="text-[10px]">{pulse.emoji}</span>
               <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: meta.accentColour }}>
                 {t('todayIs')} {pulse.label}
