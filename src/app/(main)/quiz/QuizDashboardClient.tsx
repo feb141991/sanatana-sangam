@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { animate, AnimatePresence, motion, useMotionValue, useTransform } from 'framer-motion';
 import {
   ChevronRight, CheckCircle2, XCircle,
-  Flame, Target, Trophy, Calendar, History,
+  Flame, Target, Trophy, History,
   Lock, Zap, BookOpen, Star,
   Check, Sparkles,
 } from 'lucide-react';
@@ -343,7 +343,7 @@ export default function QuizDashboardClient({
           </div>
         )}
 
-        <div className={`${quizCardGlass}`} style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}>
+        <div>
           <div className="flex items-center justify-between px-5 pt-5 pb-4">
             <div
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.14em]"
@@ -370,14 +370,13 @@ export default function QuizDashboardClient({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="space-y-3"
+                className="px-5 pb-5 space-y-3"
               >
-                <div className="h-5 w-24 rounded-full bg-white/[0.06]" />
-                <div className="h-16 rounded-2xl bg-white/[0.05]" />
-                <div className="h-12 rounded-2xl bg-white/[0.04]" />
-                <div className="h-12 rounded-2xl bg-white/[0.04]" />
-                <div className="h-12 rounded-2xl bg-white/[0.04]" />
-                <div className="h-12 rounded-2xl bg-white/[0.04]" />
+                <div className="h-5 w-28 rounded-full" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.07))' }} />
+                <div className="h-16 rounded-2xl" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.05))' }} />
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="h-12 rounded-2xl" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.04))', opacity: 1 - i * 0.1 }} />
+                ))}
               </motion.div>
             ) : dailyQuizState === 'error' ? (
               <motion.div
@@ -651,7 +650,7 @@ export default function QuizDashboardClient({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + i * 0.06 }}
             className="rounded-2xl p-4 text-center"
-            style={glass}
+            style={{ background: 'transparent' }}
           >
             <s.icon size={18} className="mx-auto mb-2" style={{ color: s.color }} />
             <p className="text-xl font-bold" style={{ fontFamily: 'var(--font-serif)' }}>
@@ -853,29 +852,40 @@ export default function QuizDashboardClient({
         </div>
       )}
 
-      {/* ── Consistency calendar ──────────────────────────────────────────── */}
+      {/* ── Consistency strip ────────────────────────────────────────────── */}
       <div className="px-5 mb-6">
-        <h2 className="text-[13px] font-bold uppercase tracking-[0.14em] mb-3 flex items-center gap-2" style={{ color: 'var(--text-dim)' }}>
-          <Calendar size={13} />
-          28-Day Consistency
-        </h2>
-        <div className="rounded-[1.4rem] p-4" style={glass}>
-          <div className="grid grid-cols-7 gap-1.5">
-            {activityGrid.map((active, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-[4px]"
-                style={active
-                  ? { background: `${meta.accentColour}30`, border: `1px solid ${meta.accentColour}50` }
-                  : { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }
-                }
-              />
-            ))}
-          </div>
-          <p className="text-[10px] mt-3 leading-relaxed" style={{ color: 'var(--text-dim)' }}>
-            Answer the daily question to keep your streak alive.
-          </p>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[13px] font-bold uppercase tracking-[0.14em] flex items-center gap-2" style={{ color: 'var(--text-dim)' }}>
+            <Flame size={13} />
+            28-Day Streak
+          </h2>
+          <span className="text-[11px] font-semibold" style={{ color: meta.accentColour }}>
+            {activityGrid.filter(Boolean).length} / 28
+          </span>
         </div>
+        {/* Two rows of 14 dots */}
+        <div className="space-y-2">
+          {[activityGrid.slice(0, 14), activityGrid.slice(14)].map((row, rowIdx) => (
+            <div key={rowIdx} className="flex gap-1.5">
+              {row.map((active, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: (rowIdx * 14 + i) * 0.018, duration: 0.22 }}
+                  className="flex-1 h-2 rounded-full"
+                  style={active
+                    ? { background: meta.accentColour, boxShadow: `0 0 6px ${meta.accentColour}60` }
+                    : { background: 'var(--surface-soft, rgba(0,0,0,0.07))' }
+                  }
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] mt-3" style={{ color: 'var(--text-dim)' }}>
+          Answer daily to keep your streak alive.
+        </p>
       </div>
 
       {/* ── History ──────────────────────────────────────────────────────── */}
@@ -923,8 +933,8 @@ export default function QuizDashboardClient({
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.28 }}
-                  className="mb-3 rounded-[1.4rem] p-4"
-                  style={glass}
+                  className="mb-3 px-0 py-3 border-b"
+                  style={{ borderColor: 'var(--card-border, rgba(0,0,0,0.06))' }}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5 flex-shrink-0">
