@@ -63,7 +63,7 @@ interface Props {
   karmaPoints:      number;
   todayResponse:    QuizResponse | null;
   initialHistory:   QuizResponse[];
-  activityDates:    string[];
+  activityDates:    { date: string; correct: boolean }[];
   practiceSessions: PracticeSession[];
   hasGraceAvailable: boolean;
 }
@@ -264,12 +264,16 @@ export default function QuizDashboardClient({
 
   // 28-day activity grid — uses full activityDates (never gated)
   const activityGrid = useMemo(() => {
-    return generateActivityGrid(activityDates, spiritualToday);
+    return generateActivityGrid(activityDates.map(a => a.date), spiritualToday);
   }, [activityDates, spiritualToday]);
 
-  // Build 4-week calendar grid: array of 28 {dateStr, active, isToday, isFuture}
-  const calendarWeeks = useMemo(() => {
-    const dateSet = new Set(activityDates);
+  // Heatmap: 28 days with 3 states — missed / wrong / correct
+  const heatmapWeeks = useMemo(() => {
+    // date → 'correct' | 'wrong' | null
+    const dateMap = new Map<string, 'correct' | 'wrong'>();
+    for (const { date, correct } of activityDates) {
+      dateMap.set(date, correct ? 'correct' : 'wrong');
+    }
     const todayMs = Date.UTC(
       parseInt(spiritualToday.slice(0, 4)),
       parseInt(spiritualToday.slice(5, 7)) - 1,
@@ -277,17 +281,11 @@ export default function QuizDashboardClient({
       12, 0, 0,
     );
     const days = Array.from({ length: 28 }, (_, i) => {
-      const ms = todayMs - (27 - i) * 86_400_000;
-      const d = new Date(ms);
+      const ms  = todayMs - (27 - i) * 86_400_000;
+      const d   = new Date(ms);
       const dateStr = d.toISOString().slice(0, 10);
-      return {
-        dateStr,
-        active: dateSet.has(dateStr),
-        isToday: dateStr === spiritualToday,
-        dayOfWeek: d.getUTCDay(), // 0=Sun
-      };
+      return { dateStr, state: dateMap.get(dateStr) ?? null, isToday: dateStr === spiritualToday };
     });
-    // chunk into 4 weeks of 7
     return [days.slice(0, 7), days.slice(7, 14), days.slice(14, 21), days.slice(21, 28)];
   }, [activityDates, spiritualToday]);
 
@@ -877,77 +875,90 @@ export default function QuizDashboardClient({
         </div>
       )}
 
-      {/* ── 28-Day Calendar ──────────────────────────────────────────────── */}
+      {/* ── 28-Day Heatmap ───────────────────────────────────────────────── */}
       <div className="px-5 mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[13px] font-bold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
             28-Day Practice
           </h2>
-          <span className="text-[11px] font-semibold tabular-nums" style={{ color: meta.accentColour }}>
-            {activityGrid.filter(Boolean).length} <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>/ 28 days</span>
+          <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-dim)' }}>
+            <span className="font-bold" style={{ color: meta.accentColour }}>{activityGrid.filter(Boolean).length}</span> / 28
           </span>
         </div>
 
-        {/* Day-of-week header */}
-        <div className="grid grid-cols-7 mb-1.5">
+        {/* Day-of-week labels */}
+        <div className="grid grid-cols-7 gap-1 mb-1">
           {['S','M','T','W','T','F','S'].map((d, i) => (
-            <div key={i} className="text-center text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-dim)', opacity: 0.5 }}>
-              {d}
+            <p key={i} className="text-center text-[9px] font-semibold" style={{ color: 'var(--text-dim)', opacity: 0.45 }}>{d}</p>
+          ))}
+        </div>
+
+        {/* 4 rows × 7 cols heatmap */}
+        <div className="space-y-1">
+          {heatmapWeeks.map((week, wi) => (
+            <div key={wi} className="grid grid-cols-7 gap-1">
+              {week.map((day, di) => {
+                const isCorrect = day.state === 'correct';
+                const isWrong   = day.state === 'wrong';
+                const isEmpty   = day.state === null;
+                return (
+                  <motion.div
+                    key={day.dateStr}
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: (wi * 7 + di) * 0.01, duration: 0.18, ease: 'backOut' }}
+                    className="aspect-square rounded-md"
+                    style={
+                      day.isToday
+                        ? {
+                            background: isCorrect
+                              ? meta.accentColour
+                              : isWrong
+                              ? `${meta.accentColour}40`
+                              : 'transparent',
+                            outline: `2px solid ${meta.accentColour}`,
+                            outlineOffset: '1px',
+                            boxShadow: isCorrect ? `0 0 8px ${meta.accentColour}70` : undefined,
+                          }
+                        : isCorrect
+                        ? {
+                            background: meta.accentColour,
+                            boxShadow: `0 0 6px ${meta.accentColour}50`,
+                          }
+                        : isWrong
+                        ? {
+                            background: `${meta.accentColour}35`,
+                          }
+                        : {
+                            background: 'var(--surface-soft, rgba(0,0,0,0.06))',
+                          }
+                    }
+                  />
+                );
+              })}
             </div>
           ))}
         </div>
 
-        {/* 4 weeks × 7 days */}
-        <div className="space-y-1.5">
-          {calendarWeeks.map((week, wi) => (
-            <div key={wi} className="grid grid-cols-7 gap-1.5">
-              {week.map((day, di) => (
-                <motion.div
-                  key={day.dateStr}
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: (wi * 7 + di) * 0.012, duration: 0.2, ease: 'backOut' }}
-                  className="aspect-square rounded-lg flex items-center justify-center"
-                  style={
-                    day.isToday
-                      ? {
-                          background: day.active ? meta.accentColour : 'transparent',
-                          border: `2px solid ${meta.accentColour}`,
-                          boxShadow: day.active ? `0 0 10px ${meta.accentColour}60` : undefined,
-                        }
-                      : day.active
-                      ? {
-                          background: `${meta.accentColour}28`,
-                          border: `1px solid ${meta.accentColour}55`,
-                          boxShadow: `0 0 6px ${meta.accentColour}30`,
-                        }
-                      : {
-                          background: 'var(--surface-soft, rgba(0,0,0,0.05))',
-                          border: '1px solid transparent',
-                        }
-                  }
-                >
-                  {day.active && (
-                    <div
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{
-                        background: day.isToday ? (day.active ? '#fff' : meta.accentColour) : meta.accentColour,
-                        opacity: day.isToday && day.active ? 0.9 : 0.7,
-                      }}
-                    />
-                  )}
-                  {day.isToday && !day.active && (
-                    <div className="w-1 h-1 rounded-full" style={{ background: meta.accentColour, opacity: 0.6 }} />
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          ))}
+        {/* Legend */}
+        <div className="flex items-center gap-4 mt-3">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: meta.accentColour }} />
+            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Correct</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: `${meta.accentColour}35` }} />
+            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Answered</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.06))' }} />
+            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Missed</span>
+          </div>
+          <div className="flex items-center gap-1.5 ml-auto">
+            <div className="w-2.5 h-2.5 rounded-sm" style={{ outline: `2px solid ${meta.accentColour}`, outlineOffset: '1px' }} />
+            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Today</span>
+          </div>
         </div>
-
-        <p className="text-[10px] mt-3" style={{ color: 'var(--text-dim)' }}>
-          Each column is a day of the week · Today is highlighted
-        </p>
       </div>
 
       {/* ── History ──────────────────────────────────────────────────────── */}

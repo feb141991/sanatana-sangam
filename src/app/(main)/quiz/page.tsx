@@ -61,8 +61,8 @@ export default async function QuizPage() {
   const recentHistory = history.filter(h => h.date >= sevenDaysAgo);
   const hasGraceAvailable = recentHistory.length < 7 && missedYesterday;
 
-  // Activity dates for the 28-day grid — always full history, never gated
-  const activityDates = history.map(h => h.date);
+  // Activity data for the 28-day grid — always full history, never gated
+  const activityDates = history.map(h => ({ date: h.date, correct: h.is_correct }));
 
   return (
     <QuizDashboardClient
