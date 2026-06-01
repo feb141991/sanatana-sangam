@@ -20,7 +20,7 @@ import {
   Loader2, Play, Star, Plus, Search, X,
   Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles, BarChart2,
   ChevronRight, Volume2, VolumeX, Bookmark, Copy, EyeOff, CheckCircle2,
-  RotateCcw, LogOut, SlidersHorizontal,
+  RotateCcw, LogOut, SlidersHorizontal, Check,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
@@ -117,8 +117,6 @@ function getReaderPalette(tradition: string, accent: string) {
 
   return base;
 }
-
-
 
 function getEntryText(entry: LibraryEntry, meaningLabel: string) {
   return [
@@ -252,7 +250,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
         </div>
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: accentColour }}>Current Kanda</p>
         <h3 className="text-xl font-bold mb-2">{selectedKanda.title}</h3>
-        <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed max-w-[80%]">{selectedKanda.description}</p>
+        <p className="text-xs text-[color:var(--brand-muted)] leading-relaxed max-w-[85%] mb-3">{selectedKanda.description}</p>
       </div>
 
       {/* Chapter List - Step Journey Design */}
@@ -269,7 +267,7 @@ function EpicViewer({ structure, accentColour }: { structure: EpicStructure; acc
               onClick={() => handleOpenChapter(c)}
               className="flex items-center gap-4 p-4 rounded-[1.8rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all text-left relative z-10 group"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[#1c1c1a] border border-white/10 text-xs font-bold transition-all group-hover:border-white/20 group-hover:scale-110 shadow-lg"
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--divine-bg)] border border-white/10 text-xs font-bold transition-all group-hover:border-white/20 group-hover:scale-110 shadow-lg"
                 style={{ color: accentColour }}>
                 {c.chapterNumber}
               </div>
@@ -299,6 +297,7 @@ function ScriptureTab({
 }: {
   tradition: string; accentColour: string; navLabel: string; isDark: boolean; initialSectionId?: string;
 }) {
+  const { t } = useLanguage();
   const allowedSections = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
   const sections        = LIBRARY_SECTIONS.filter(s => allowedSections.includes(s.id));
 
@@ -311,9 +310,6 @@ function ScriptureTab({
   const cardBorder = 'var(--card-border)';
   const inkColor   = 'var(--brand-ink)';
   const mutedColor = 'var(--brand-muted)';
-  const trustBg    = 'var(--card-bg)';
-
-
 
   const entries = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -341,13 +337,12 @@ function ScriptureTab({
   // ── Drill-in view: inside a specific scripture ────────────────────────────────
   if (drillSection) {
     const section = sections.find(s => s.id === drillSection);
-    const sectionDetail = getPathshalaSectionDetail(drillSection);
     return (
       <div className="space-y-4">
         {/* Back to library */}
         <button
           onClick={() => { setDrillSection(null); setQuery(''); setSearch(false); }}
-          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-opacity hover:opacity-70"
+          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider transition-opacity hover:opacity-70 text-left focus:outline-none"
           style={{ color: accentColour }}
         >
           <ChevronLeft size={14} /> Scripture Library
@@ -365,7 +360,6 @@ function ScriptureTab({
             {section?.count} passages
           </span>
         </div>
-
 
         {/* Search toggle (not for epic viewers) */}
         {drillSection !== 'ramayana' && drillSection !== 'bhagavatam' && (
@@ -587,6 +581,14 @@ export default function PathshalaClient({
   const [isDark,      setIsDark]    = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
 
+  // ── Tab State & Layout ───────────────────────────────────────────────────────
+  const [activeTab, setActiveTab] = useState<'progress' | 'explore'>('progress');
+  const [globalQuery, setGlobalQuery] = useState('');
+  const [openDrawer, setOpenDrawer] = useState<'scriptures' | 'paths' | 'saved' | null>('scriptures');
+  const [savedCount, setSavedCount] = useState<number | null>(null);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   // ── Premium UX state ──────────────────────────────────────────────────────────
   const [displayedVerse, setDisplayedVerse] = useState('');
   const [diffFilter, setDiffFilter] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
@@ -598,8 +600,6 @@ export default function PathshalaClient({
     const p = calculatePanchang(new Date(), lat ?? undefined, lon ?? undefined);
     return getTodaySpiritualPulses(p.tithiIndex, tradition)[0] ?? null;
   }, [tradition, lat, lon]);
-
-  // tab state removed — page is now single-scroll (initialTab handled via scrollIntoView)
 
   // Show all 44 paths across all traditions in the Explore tab
   const allPaths = SEED_PATHS as unknown as {
@@ -615,12 +615,32 @@ export default function PathshalaClient({
     return () => obs.disconnect();
   }, []);
 
+  // ── Fetch Saved Verses Count ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!userId) return;
+    async function fetchSavedCount() {
+      try {
+        const { count, error } = await supabase
+          .from('pathshala_user_state')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .not('bookmarked_at', 'is', null);
+
+        if (error) throw error;
+        setSavedCount(count ?? 0);
+      } catch (err) {
+        console.error('Failed to fetch saved verses count:', err);
+        setSavedCount(0);
+      }
+    }
+    fetchSavedCount();
+  }, [userId, supabase]);
+
   // ── Use global CSS tokens — automatically handles dark/light theme ──────────
   const primaryText       = 'var(--brand-ink)';
   const secondaryText     = 'var(--brand-muted)';
   const tertiaryText      = 'var(--brand-muted)';
   const glassSurface      = 'var(--card-bg)';
-  const glassSurfaceStrong = 'var(--card-bg)';
   const glassBorder       = 'var(--card-border)';
   const glassShadow       = 'var(--shadow-soft)';
     
@@ -661,11 +681,13 @@ export default function PathshalaClient({
 
   // ── Scroll to section on deep-link ───────────────────────────────────────────
   useEffect(() => {
-    if (initialTab === 'scripture' && scriptureRef.current) {
-      setTimeout(() => scriptureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
+    if (initialTab === 'scripture') {
+      setActiveTab('explore');
+      setOpenDrawer('scriptures');
     }
-    if (initialTab === 'explore' && pathsRef.current) {
-      setTimeout(() => pathsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 600);
+    if (initialTab === 'explore') {
+      setActiveTab('explore');
+      setOpenDrawer('paths');
     }
   }, [initialTab]);
 
@@ -676,9 +698,6 @@ export default function PathshalaClient({
   };
 
   // ── Load active enrollments from guided_path_progress ───────────────────────
-  // PATHSHALA_PATH_IDS is imported from @/lib/pathshala-paths.
-  // It scopes all queries away from NityaKarma guided-plan rows (brahma-muhurta-7 etc.)
-  // which share the guided_path_progress table. Without it those rows inflate the badge.
   useEffect(() => {
     async function loadEnrollments() {
       try {
@@ -687,7 +706,7 @@ export default function PathshalaClient({
           .select('path_id, status, completed_at, current_lesson, completed_lessons')
           .eq('user_id', userId)
           .eq('status', 'active')
-          .in('path_id', PATHSHALA_PATH_IDS);  // ← only Pathshala paths
+          .in('path_id', PATHSHALA_PATH_IDS);
 
         if (error) throw error;
         setActive(data ?? []);
@@ -782,7 +801,7 @@ export default function PathshalaClient({
     if (!isPro && pathToEnroll && pathToEnroll.proRequired) {
       toast(t('upgradeToShoonayaPro'), {
         duration: 4000,
-        style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
+        style: { background: 'var(--divine-bg)', color: 'var(--brand-ink)' },
       });
       return;
     }
@@ -811,7 +830,7 @@ export default function PathshalaClient({
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 4000);
       toast.success('Enrollment successful!');
-      // Scroll to gurukul section (single-scroll page — no tabs)
+      // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
       console.error('[Pathshala] enroll failed:', err);
@@ -828,7 +847,7 @@ export default function PathshalaClient({
     try {
       const { error } = await supabase
         .from('guided_path_progress')
-        .update({ status: 'dismissed' })   // 'paused' is not in CHECK constraint
+        .update({ status: 'dismissed' })
         .eq('user_id', userId)
         .eq('path_id', pathId);
       if (error) throw error;
@@ -872,7 +891,6 @@ export default function PathshalaClient({
 
   // ── Today's Lesson Card & Streak Widget ───────────────────────────────
   function ContinueLearningHero() {
-    // Mocked streak data since it's not present in pathshala_recitation_stats schema yet
     const streakDays = [true, true, true, false, true, true, 'pending'];
 
     if (activePaths.length === 0) return null;
@@ -894,7 +912,7 @@ export default function PathshalaClient({
           className="clay-card rounded-2xl relative overflow-hidden mb-4"
           initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
           animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           style={{ borderLeft: '4px solid var(--brand-primary)', ...cardStyle }}
         >
           <div className="p-5">
@@ -928,14 +946,14 @@ export default function PathshalaClient({
                   style={{ background: 'var(--brand-primary)' }}
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPct}%` }}
-                  transition={{ duration: 0.9, delay: 0.25 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, delay: 0.25 }}
                 />
               </div>
             </div>
 
             <Link
               href={`/pathshala/${enrollment.path_id}/lesson`}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-[#1c1c1a] transition-transform active:scale-[0.97]"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-[var(--divine-bg)] transition-transform active:scale-[0.97]"
               style={{ background: 'var(--brand-primary)' }}
             >
               <Play size={16} fill="currentColor" />
@@ -950,7 +968,7 @@ export default function PathshalaClient({
           style={cardStyle}
           initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
           animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--brand-primary)' }}>
             7-Day Learning Streak
@@ -961,7 +979,7 @@ export default function PathshalaClient({
                 return (
                   <div key={i} className="w-8 h-8 rounded-full flex items-center justify-center"
                     style={{ background: 'var(--brand-primary)' }}>
-                    <CheckCircle2 size={16} color="#1c1c1a" />
+                    <CheckCircle2 size={16} color="var(--divine-bg)" />
                   </div>
                 );
               } else if (status === 'pending') {
@@ -990,7 +1008,7 @@ export default function PathshalaClient({
     return (
       <div className="rounded-[1.8rem] overflow-hidden mb-4" style={cardStyle}>
         <button
-          className="w-full text-left p-5 transition-colors active:opacity-80"
+          className="w-full text-left p-5 transition-colors active:opacity-80 focus:outline-none"
           style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}
           onClick={() => setExpanded(v => !v)}
         >
@@ -1012,7 +1030,7 @@ export default function PathshalaClient({
               </p>
             </div>
             <motion.span
-              animate={{ rotate: expanded ? 180 : 0 }}
+              animate={prefersReducedMotion ? {} : { rotate: expanded ? 180 : 0 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="flex-shrink-0 mt-1 text-[var(--brand-muted)]"
             >
@@ -1025,23 +1043,23 @@ export default function PathshalaClient({
           {expanded && (
             <motion.div
               key="shloka-meaning"
-              initial={{ height: 0, opacity: 0 }}
+              initial={prefersReducedMotion ? undefined : { height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              exit={prefersReducedMotion ? undefined : { height: 0, opacity: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
               style={{ overflow: 'hidden' }}
             >
               <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
                 <p className="text-sm leading-relaxed mb-3" style={{ color: secondaryText }}>
                   {pulse ? pulse.description : shlokaMeaning}
                 </p>
-                <Link
-                  href="/pathshala?tab=scripture"
-                  className="text-xs font-semibold"
+                <button
+                  onClick={() => { setActiveTab('explore'); setOpenDrawer('scriptures'); }}
+                  className="text-xs font-semibold bg-transparent border-0 p-0 hover:underline cursor-pointer"
                   style={{ color: meta.accentColour }}
                 >
-                  {t('explore')} {meta.navLibraryLabel} →
-                </Link>
+                  {t('explore')} {meta.navLibraryLabel} &rarr;
+                </button>
               </div>
             </motion.div>
           )}
@@ -1070,7 +1088,7 @@ export default function PathshalaClient({
         style={cardStyle}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="flex items-start gap-3">
           <div className="relative flex-shrink-0">
@@ -1097,7 +1115,7 @@ export default function PathshalaClient({
               {/* Unenroll */}
               <button
                 onClick={() => unenroll(enrollment.path_id, path.title)}
-                className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition"
+                className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition focus:outline-none"
                 style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}
                 title="Leave this Path"
               >
@@ -1115,7 +1133,7 @@ export default function PathshalaClient({
         <div className="mt-3 flex gap-2">
           <Link
             href={`/pathshala/${enrollment.path_id}/lesson`}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[#1c1c1a] font-semibold text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[var(--divine-bg)] font-semibold text-sm"
             style={{ background: meta.accentColour }}
           >
             <Play size={14} /> {lessonLabel}
@@ -1131,6 +1149,66 @@ export default function PathshalaClient({
       </motion.div>
     );
   }
+
+  // ── Starter Path Card (Empty enrolled state) ───────────────────────────────
+  function StarterPathCard({ path }: { path: typeof allPaths[0] }) {
+    const diff = getDiffStyle(path.difficulty, isDark);
+    return (
+      <motion.div
+        className="rounded-[1.45rem] p-4"
+        style={cardStyle}
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="flex items-start gap-3">
+          <div className="relative flex-shrink-0">
+            <CircularProgress
+              pct={0}
+              accent={meta.accentColour}
+              size={44}
+              strokeWidth={3}
+              label={<span className="text-lg">{TRAD_ICON[path.tradition] ?? '📖'}</span>}
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold text-xs animate-none" style={{ color: primaryText }}>{path.title}</h3>
+                  <span className="text-[9px] font-semibold rounded-full px-1.5 py-0.5"
+                    style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
+                    {diff.label}
+                  </span>
+                </div>
+                <p className="text-[10px] mt-0.5 truncate" style={{ color: secondaryText }}>{path.description}</p>
+              </div>
+            </div>
+            <div className="mt-1.5 flex items-center justify-between gap-2">
+              <span className="text-[10px]" style={{ color: secondaryText }}>
+                {path.total_lessons} Lessons · {path.duration_days} Days
+              </span>
+              <button
+                disabled={enrolling !== null}
+                onClick={() => enroll(path.id)}
+                className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-xl font-bold text-[10px] text-[var(--divine-bg)] transition-transform active:scale-[0.97]"
+                style={{ background: meta.accentColour }}
+              >
+                {enrolling === path.id ? (
+                  <Loader2 size={10} className="animate-spin" />
+                ) : (
+                  <>
+                    <Plus size={10} /> Enroll
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   // ── Browse Path Card ──────────────────────────────────────────
   function BrowsePathCard({ path }: { path: typeof allPaths[0] }) {
     const enrollment = activePaths.find(e => e.path_id === path.id);
@@ -1142,11 +1220,11 @@ export default function PathshalaClient({
 
     return (
       <motion.div
-        className="clay-card rounded-[1.45rem] p-4 relative"
+        className="clay-card rounded-[1.45rem] p-4 relative animate-none"
         style={cardStyle}
         initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
         animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       >
         {isProGated && !isEnrolled && (
           <div className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-widest text-white px-2 py-1 rounded-full shadow-md z-10 flex items-center gap-1"
@@ -1176,7 +1254,7 @@ export default function PathshalaClient({
               <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
               {isEnrolled ? (
                 <span className="text-[10px] font-bold uppercase tracking-widest rounded-full px-2 py-0.5"
-                  style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                  style={{ background: 'var(--brand-primary)', color: 'var(--divine-bg)' }}>
                   Enrolled
                 </span>
               ) : (
@@ -1229,6 +1307,73 @@ export default function PathshalaClient({
     );
   }
 
+  // ── Accordion Drawer Component ──────────────────────────────────────────────
+  const AccordionDrawer = ({
+    id,
+    label,
+    count,
+    children,
+  }: {
+    id: 'scriptures' | 'paths' | 'saved';
+    label: string;
+    count: string | number;
+    children: React.ReactNode;
+  }) => {
+    const isOpen = openDrawer === id;
+    const toggle = () => {
+      setOpenDrawer(isOpen ? null : id);
+      playHaptic('light');
+    };
+
+    return (
+      <div className="mx-4 mb-4 rounded-2xl border border-[var(--card-border)] overflow-hidden bg-[var(--surface-base)]">
+        <button
+          onClick={toggle}
+          className={`w-full p-4 flex justify-between items-center bg-[var(--card-bg)] focus:outline-none transition-all ${
+            isOpen ? 'rounded-t-2xl border-b border-[var(--card-border)]' : 'rounded-2xl'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[11px] font-bold uppercase tracking-widest text-left"
+              style={{ color: meta.accentColour }}
+            >
+              {label}
+            </span>
+            <span
+              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: `${meta.accentColour}14`, color: meta.accentColour }}
+            >
+              {count}
+            </span>
+          </div>
+          <motion.div
+            animate={prefersReducedMotion ? {} : { rotate: isOpen ? 180 : 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.22 }}
+          >
+            <ChevronDown size={16} className="text-[color:var(--brand-muted)]" />
+          </motion.div>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={prefersReducedMotion ? undefined : { height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={prefersReducedMotion ? undefined : { height: 0, opacity: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div className="p-4 rounded-b-2xl bg-[var(--surface-base)]">
+                {children}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   // ── Stagger variants ─────────────────────────────────────────
   const containerVariants = {
     hidden: {},
@@ -1243,6 +1388,52 @@ export default function PathshalaClient({
   const filteredPaths = diffFilter === 'all'
     ? allPaths
     : allPaths.filter(p => p.difficulty === diffFilter);
+
+  // ── Calculate total scriptures across allowed tradition sections ──────────────
+  const totalScripturesCount = useMemo(() => {
+    const allowed = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
+    return allowed.reduce((sum, sectionId) => sum + getEntriesBySection(sectionId).length, 0);
+  }, [tradition]);
+
+  // ── Compute Level Progression details ─────────────────────────────────────────
+  const completedIds = useMemo(() => {
+    return activePaths
+      .filter(e => {
+        const p = allPaths.find(p => p.id === e.path_id);
+        return p && (e.completed_lessons ?? []).length >= p.total_lessons;
+      })
+      .map(e => e.path_id);
+  }, [activePaths, allPaths]);
+
+  const hasCompletedBeginner     = allPaths.some(p => p.difficulty === 'beginner' && completedIds.includes(p.id));
+  const hasCompletedIntermediate = allPaths.some(p => p.difficulty === 'intermediate' && completedIds.includes(p.id));
+  const currentLevel =
+    activePaths.some(e => allPaths.find(p => p.id === e.path_id)?.difficulty === 'advanced')
+      ? 'advanced'
+    : activePaths.some(e => allPaths.find(p => p.id === e.path_id)?.difficulty === 'intermediate')
+      ? 'intermediate'
+      : 'beginner';
+
+  // ── Global Search Filter ──────────────────────────────────────────────────────
+  const searchPathsResult = useMemo(() => {
+    const q = globalQuery.toLowerCase().trim();
+    if (q.length < 2) return [];
+    return allPaths.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q)
+    );
+  }, [globalQuery, allPaths]);
+
+  const searchScripturesResult = useMemo(() => {
+    const q = globalQuery.toLowerCase().trim();
+    if (q.length < 2) return [];
+    const allowed = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
+    const allTraditionEntries = allowed.flatMap(sectionId => getEntriesBySection(sectionId));
+    return allTraditionEntries.filter(e =>
+      e.original.toLowerCase().includes(q) ||
+      e.meaning.toLowerCase().includes(q)
+    );
+  }, [globalQuery, tradition]);
 
   // ─────────────────────────────────────────────
   return (
@@ -1259,7 +1450,7 @@ export default function PathshalaClient({
       <motion.div
         className="fixed inset-0 pointer-events-none z-0"
         animate={prefersReducedMotion ? {} : { opacity: [0.35, 0.6, 0.35] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         style={{ background: `radial-gradient(ellipse 70% 45% at 50% 0%, ${meta.accentColour}1e, transparent 65%)` }}
       />
 
@@ -1271,7 +1462,7 @@ export default function PathshalaClient({
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => router.back()}
-            className="w-9 h-9 rounded-full flex items-center justify-center border"
+            className="w-9 h-9 rounded-full flex items-center justify-center border focus:outline-none"
             style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}
           >
             <ChevronLeft size={18} style={{ color: 'var(--brand-ink)' }} />
@@ -1286,7 +1477,7 @@ export default function PathshalaClient({
                 </p>
                 {communityRank !== undefined && communityRank <= 500 && (
                   <span className="text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
-                    style={{ background: 'var(--brand-primary)', color: '#1c1c1a' }}>
+                    style={{ background: 'var(--brand-primary)', color: 'var(--divine-bg)' }}>
                     You rank #{communityRank} in your community
                   </span>
                 )}
@@ -1329,258 +1520,496 @@ export default function PathshalaClient({
           initial="hidden"
           animate="visible"
         >
-          {/* ── Section 1: Today's Verse — premium immersive hero ─────────────── */}
-          <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
-            {/* Tradition watermark */}
-            <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
-              <span style={{
-                fontFamily: 'var(--font-deva, serif)',
-                fontSize: '16rem',
-                lineHeight: 1,
-                color: meta.accentColour,
-                opacity: isDark ? 0.032 : 0.045,
-              }}>
-                {meta.heroFallback.mark}
-              </span>
-            </div>
-
-            <div className="relative z-10">
-              {/* Eyebrow + spiritual pulse */}
-              <div className="flex items-center gap-2 mb-5">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
-                  style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
-                  <span className="text-[10px]">{meta.sacredTextIcon}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
-                    {meta.sacredTextLabel} · Today
-                  </span>
-                </div>
-                {pulse && (
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
-                    style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
-                    <span className="text-[10px]">{pulse.emoji}</span>
-                    <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
-                      {pulse.label}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Sanskrit verse — typewriter */}
-              <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
-                style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
-                {displayedVerse}
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
-                  className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
-                  style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
-                />
-              </p>
-
-              {/* Meaning */}
-              <div className="rounded-2xl p-4 mb-5 border"
-                style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                  {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
-                </p>
-              </div>
-
-              {/* CTA row */}
-              <div className="flex flex-wrap items-center gap-3">
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => scriptureRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] text-[#1c1c1a]"
-                  style={{ background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`, boxShadow: `0 6px 20px ${meta.accentColour}35` }}
-                >
-                  <BookOpen size={13} /> Explore {meta.navLibraryLabel}
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => pathsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] border"
-                  style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)', color: 'var(--brand-muted)' }}
-                >
-                  <GraduationCap size={13} /> Paths
-                </motion.button>
-                
-                {shrutiStats && shrutiStats.scored_count >= 3 && communityRank !== undefined && (
-                  <Link
-                    href="/pathshala/insights"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-[10px] font-bold text-amber-600 dark:text-amber-400 transition-all hover:bg-amber-500/15"
-                  >
-                    <Mic size={10} /> Your Shruti: {shrutiStats.avg_overall_score}/100 · #{communityRank} community
-                  </Link>
-                )}
-              </div>
-            </div>
-          </motion.section>
-
-          {/* ── Section 2: Your Gurukul (active paths + recommendations) ──────────────────────────── */}
-          {loading ? (
-            <motion.div variants={itemVariants} className="flex items-center justify-center gap-3 py-8">
-              <Loader2 size={20} className="animate-spin" style={{ color: meta.accentColour }} />
-              <span className="text-sm" style={{ color: 'var(--brand-muted)' }}>Loading Gurukul...</span>
-            </motion.div>
-          ) : (
-            <>
-              
-              {activePaths.length > 0 ? (
-                <motion.section variants={itemVariants} className="px-4 mb-6">
-              {/* Section header */}
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1 h-4 rounded-full" style={{ background: meta.accentColour }} />
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: meta.accentColour }}>
-                  {seatMeta.eyebrow}
-                </span>
-              </div>
-              <ContinueLearningHero />
-              {activePaths.slice(1).length > 0 && (
-                <div className="mt-3 space-y-3">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] px-1" style={{ color: 'var(--brand-muted)' }}>
-                    Also enrolled in
-                  </p>
-                  {activePaths.slice(1).map(e => (
-                    <ActivePathCard key={e.path_id} enrollment={e} />
-                  ))}
-                </div>
-              )}
-              {!isPro && (
-                <div className="flex items-center gap-3 rounded-[1.45rem] p-4 mt-3 border"
-                  style={{ background: `${meta.accentColour}0c`, borderColor: `${meta.accentColour}22` }}>
-                  <Lock size={16} style={{ color: meta.accentColour }} className="flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Free Beginner Paths</p>
-                    <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-muted)' }}>
-                      Intermediate & Advanced paths require Shoonaya Pro
-                    </p>
-                  </div>
-                  <Link href="/profile"
-                    className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold text-[#1c1c1a]"
-                    style={{ background: meta.accentColour }}>
-                    <Sparkles size={9} /> Pro
-                  </Link>
-                </div>
-              )}
-            </motion.section>
-          ) : (
-            /* ── No path: empty invite state ── */
-            <motion.section variants={itemVariants} className="px-4 mb-6">
-              <motion.div
-                className="rounded-[2rem] overflow-hidden relative text-center"
-                style={{ background: `linear-gradient(160deg, ${meta.accentColour}16, ${meta.accentColour}06 60%, transparent)`, border: `1px solid ${meta.accentColour}22` }}
+          {/* Pill Tabs Toggle */}
+          <div className="px-4 mb-4 mt-2">
+            <div className="flex p-1 rounded-2xl bg-[var(--surface-soft)] gap-1">
+              <button
+                onClick={() => { setActiveTab('progress'); playHaptic('light'); }}
+                className="flex-1 relative py-2 rounded-xl text-xs font-bold transition-all focus:outline-none"
+                style={{
+                  color: activeTab === 'progress' ? meta.accentColour : 'var(--text-dim)',
+                }}
               >
+                {activeTab === 'progress' && !prefersReducedMotion && (
+                  <motion.div
+                    layoutId="pathshala-tab-pill"
+                    className="absolute inset-0 rounded-xl shadow-sm bg-[var(--card-bg)]"
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 30 }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                {activeTab === 'progress' && prefersReducedMotion && (
+                  <div
+                    className="absolute inset-0 rounded-xl shadow-sm bg-[var(--card-bg)]"
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                <span className="relative z-10">My Progress</span>
+              </button>
+              <button
+                onClick={() => { setActiveTab('explore'); playHaptic('light'); }}
+                className="flex-1 relative py-2 rounded-xl text-xs font-bold transition-all focus:outline-none"
+                style={{
+                  color: activeTab === 'explore' ? meta.accentColour : 'var(--text-dim)',
+                }}
+              >
+                {activeTab === 'explore' && !prefersReducedMotion && (
+                  <motion.div
+                    layoutId="pathshala-tab-pill"
+                    className="absolute inset-0 rounded-xl shadow-sm bg-[var(--card-bg)]"
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 30 }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                {activeTab === 'explore' && prefersReducedMotion && (
+                  <div
+                    className="absolute inset-0 rounded-xl shadow-sm bg-[var(--card-bg)]"
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+                <span className="relative z-10">Explore</span>
+              </button>
+            </div>
+          </div>
+
+          {activeTab === 'progress' ? (
+            <div className="space-y-6">
+              {/* DailyVersePrompt */}
+              <div className="px-4">
+                <DailyVersePrompt />
+              </div>
+
+              {/* Section 1: Today's Verse — premium immersive hero */}
+              <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
+                {/* Tradition watermark */}
                 <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
-                  <span style={{ fontFamily: 'var(--font-deva, serif)', fontSize: '12rem', lineHeight: 1, color: meta.accentColour, opacity: 0.06 }}>
+                  <span style={{
+                    fontFamily: 'var(--font-deva, serif)',
+                    fontSize: '16rem',
+                    lineHeight: 1,
+                    color: meta.accentColour,
+                    opacity: isDark ? 0.032 : 0.045,
+                  }}>
                     {meta.heroFallback.mark}
                   </span>
                 </div>
-                <div className="relative z-10 px-6 pt-8 pb-8">
-                  <p className="text-[3rem] leading-none mb-3">{meta.symbol}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-2" style={{ color: meta.accentColour }}>
-                    {seatMeta.eyebrow}
+
+                <div className="relative z-10">
+                  {/* Eyebrow + spiritual pulse */}
+                  <div className="flex items-center gap-2 mb-5">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
+                      style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
+                      <span className="text-[10px]">{meta.sacredTextIcon}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
+                        {meta.sacredTextLabel} · Today
+                      </span>
+                    </div>
+                    {pulse && (
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
+                        style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
+                        <span className="text-[10px]">{pulse.emoji}</span>
+                        <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
+                          {pulse.label}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sanskrit verse — typewriter */}
+                  <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
+                    style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
+                    {displayedVerse}
+                    <motion.span
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
+                      className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
+                      style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
+                    />
                   </p>
-                  <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-serif)', color: 'var(--brand-ink)' }}>
-                    Your seat awaits
-                  </h2>
-                  <p className="text-sm leading-relaxed mb-6 mx-auto max-w-[240px]" style={{ color: 'var(--brand-muted)' }}>
-                    Begin your study of {meta.pathshalaVocabulary} — one lesson at a time.
-                  </p>
-                  <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => pathsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm text-[#1c1c1a]"
-                    style={{ background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`, boxShadow: `0 10px 30px ${meta.accentColour}35` }}
-                  >
-                    <GraduationCap size={16} /> Choose a Path
-                  </motion.button>
+
+                  {/* Meaning */}
+                  <div className="rounded-2xl p-4 mb-5 border"
+                    style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                      {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
+                    </p>
+                  </div>
+
+                  {/* CTA row */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => { setActiveTab('explore'); setOpenDrawer('scriptures'); }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] text-[var(--divine-bg)] focus:outline-none"
+                      style={{ background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`, boxShadow: `0 6px 20px ${meta.accentColour}35` }}
+                    >
+                      <BookOpen size={13} /> Explore {meta.navLibraryLabel}
+                    </motion.button>
+                    <motion.button
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => { setActiveTab('explore'); setOpenDrawer('paths'); }}
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] border focus:outline-none"
+                      style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)', color: 'var(--brand-muted)' }}
+                    >
+                      <GraduationCap size={13} /> Paths
+                    </motion.button>
+                    
+                    {shrutiStats && shrutiStats.scored_count >= 3 && communityRank !== undefined && (
+                      <Link
+                        href="/pathshala/insights"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-[10px] font-bold text-amber-600 dark:text-amber-400 transition-all hover:bg-amber-500/15"
+                      >
+                        <Mic size={10} /> Your Shruti: {shrutiStats.avg_overall_score}/100 · #{communityRank} community
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </motion.div>
-            </motion.section>
-              )}
-            </>
-          )}
+              </motion.section>
 
-          {/* ── Section 3: Scripture Library ────────────────────────────────────── */}
-          <motion.section variants={itemVariants} ref={scriptureRef} className="mb-4">
-            <div className="px-4 flex items-center gap-2 mb-3">
-              <div className="w-1 h-4 rounded-full" style={{ background: meta.accentColour }} />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: meta.accentColour }}>
-                {meta.navLibraryLabel}
-              </span>
-            </div>
-            <ScriptureTab
-              tradition={tradition}
-              accentColour={meta.accentColour}
-              navLabel={meta.navLibraryLabel}
-              isDark={isDark}
-              initialSectionId={initialSectionId}
-            />
-          </motion.section>
-
-          {/* ── Section 4: Sacred Paths ──────────────────────────────────────────── */}
-          <motion.section variants={itemVariants} ref={pathsRef} className="px-4 mb-6">
-            {/* Section header */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-4 rounded-full" style={{ background: meta.accentColour }} />
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: meta.accentColour }}>
-                  Sacred Paths
-                </span>
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: `${meta.accentColour}14`, color: meta.accentColour }}>
-                  {allPaths.length}
-                </span>
-              </div>
-              {!isPro && (
-                <Link href="/profile"
-                  className="text-[10px] font-bold rounded-full px-2.5 py-1 flex items-center gap-1"
-                  style={{ background: `${meta.accentColour}14`, color: meta.accentColour, border: `1px solid ${meta.accentColour}22` }}>
-                  <Sparkles size={9} /> Unlock All
-                </Link>
-              )}
-            </div>
-
-            {/* Difficulty filter pills */}
-            <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-1">
-              {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(d => (
-                <motion.button
-                  key={d}
-                  whileTap={{ scale: 0.94 }}
-                  onClick={() => { setDiffFilter(d); playHaptic('light'); }}
-                  className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all"
-                  style={diffFilter === d ? {
-                    background: meta.accentColour,
-                    color: '#1c1c1a',
-                    borderColor: meta.accentColour,
-                    boxShadow: `0 4px 12px ${meta.accentColour}30`,
-                  } : {
-                    background: 'var(--card-bg-soft)',
-                    color: 'var(--brand-muted)',
-                    borderColor: 'var(--card-border)',
-                  }}
-                >
-                  {d === 'all' ? `All (${allPaths.length})` : d.charAt(0).toUpperCase() + d.slice(1)}
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Path cards */}
-            <AnimatePresence mode="popLayout">
-              {filteredPaths.map((p, i) => (
-                <motion.div
-                  key={p.id}
-                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.97 }}
-                  transition={{ duration: 0.3, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <BrowsePathCard path={p} />
+              {/* Section 2: Your Gurukul / Starters */}
+              {loading ? (
+                <motion.div variants={itemVariants} className="flex items-center justify-center gap-3 py-8">
+                  <Loader2 size={20} className="animate-spin" style={{ color: meta.accentColour }} />
+                  <span className="text-sm" style={{ color: 'var(--brand-muted)' }}>Loading Gurukul...</span>
                 </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.section>
+              ) : activePaths.length > 0 ? (
+                <motion.section variants={itemVariants} className="px-4 mb-6">
+                  {/* Section header */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 rounded-full" style={{ background: meta.accentColour }} />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: meta.accentColour }}>
+                      {seatMeta.eyebrow}
+                    </span>
+                  </div>
+                  <ContinueLearningHero />
+                  {activePaths.slice(1).length > 0 && (
+                    <div className="mt-3 space-y-3">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] px-1" style={{ color: 'var(--brand-muted)' }}>
+                        Also enrolled in
+                      </p>
+                      {activePaths.slice(1).map(e => (
+                        <ActivePathCard key={e.path_id} enrollment={e} />
+                      ))}
+                    </div>
+                  )}
+                  {!isPro && (
+                    <div className="flex items-center gap-3 rounded-[1.45rem] p-4 mt-3 border"
+                      style={{ background: `${meta.accentColour}0c`, borderColor: `${meta.accentColour}22` }}>
+                      <Lock size={16} style={{ color: meta.accentColour }} className="flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[12px] font-semibold" style={{ color: 'var(--brand-ink)' }}>Free Beginner Paths</p>
+                        <p className="text-[10px] mt-0.5" style={{ color: 'var(--brand-muted)' }}>
+                          Intermediate & Advanced paths require Shoonaya Pro
+                        </p>
+                      </div>
+                      <Link href="/profile"
+                        className="flex-shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-[10px] font-bold text-[var(--divine-bg)]"
+                        style={{ background: meta.accentColour }}>
+                        <Sparkles size={9} /> Pro
+                      </Link>
+                    </div>
+                  )}
+                </motion.section>
+              ) : (
+                /* Empty enrolled state: 3 beginner cards + see all paths trigger */
+                <motion.section variants={itemVariants} className="px-4 mb-6">
+                  <p className="text-[11px] font-bold uppercase tracking-widest mb-3 text-[color:var(--text-dim)]">
+                    Begin your journey
+                  </p>
+                  <div className="space-y-3">
+                    {allPaths.filter(p => p.difficulty === 'beginner').slice(0, 3).map(p => (
+                      <StarterPathCard key={p.id} path={p} />
+                    ))}
+                  </div>
+                  <div className="flex justify-center mt-4">
+                    <button
+                      onClick={() => { setActiveTab('explore'); playHaptic('light'); }}
+                      className="text-[11px] font-bold text-[color:var(--text-dim)] hover:underline focus:outline-none bg-transparent border-0"
+                    >
+                      See all paths &rarr;
+                    </button>
+                  </div>
+                </motion.section>
+              )}
 
+              {/* Difficulty Progression Strip */}
+              <div className="px-4">
+                <div className="mt-4 mb-6 bg-[var(--surface-soft)] rounded-2xl p-5 border border-[var(--card-border)]">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.25em] mb-4 text-center" style={{ color: 'var(--brand-primary)' }}>
+                    Your Path Progression
+                  </p>
+                  <div className="flex items-center justify-between relative px-2">
+                    {/* Step 1: Beginner */}
+                    <div className="flex flex-col items-center z-10">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border"
+                        style={{
+                          background: hasCompletedBeginner ? meta.accentColour : 'transparent',
+                          borderColor: (hasCompletedBeginner || currentLevel === 'beginner') ? meta.accentColour : 'var(--card-border)',
+                        }}
+                      >
+                        {hasCompletedBeginner ? (
+                          <Check size={12} className="text-[var(--divine-bg)]" />
+                        ) : currentLevel === 'beginner' ? (
+                          prefersReducedMotion ? (
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: meta.accentColour }} />
+                          ) : (
+                            <motion.div
+                              className="w-2.5 h-2.5 rounded-full"
+                              style={{ background: meta.accentColour }}
+                              animate={{ scale: [1, 1.3, 1] }}
+                              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                            />
+                          )
+                        ) : (
+                          <span className="text-[9px] font-bold text-[color:var(--text-dim)]">1</span>
+                        )}
+                      </div>
+                      <span className="text-[9px] uppercase tracking-wider mt-1.5 font-bold text-[color:var(--text-dim)]">
+                        Beginner
+                      </span>
+                    </div>
+
+                    {/* Line 1 -> 2 */}
+                    <div
+                      className="h-[1.5px] flex-1 mx-2"
+                      style={{
+                        background: hasCompletedBeginner ? meta.accentColour : 'var(--card-border)',
+                      }}
+                    />
+
+                    {/* Step 2: Intermediate */}
+                    <div className="flex flex-col items-center z-10">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border"
+                        style={{
+                          background: hasCompletedIntermediate ? meta.accentColour : 'transparent',
+                          borderColor: (hasCompletedIntermediate || currentLevel === 'intermediate') ? meta.accentColour : 'var(--card-border)',
+                        }}
+                      >
+                        {hasCompletedIntermediate ? (
+                          <Check size={12} className="text-[var(--divine-bg)]" />
+                        ) : currentLevel === 'intermediate' ? (
+                          prefersReducedMotion ? (
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: meta.accentColour }} />
+                          ) : (
+                            <motion.div
+                              className="w-2.5 h-2.5 rounded-full"
+                              style={{ background: meta.accentColour }}
+                              animate={{ scale: [1, 1.3, 1] }}
+                              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                            />
+                          )
+                        ) : !hasCompletedBeginner ? (
+                          <Lock size={10} className="text-[color:var(--text-dim)]" />
+                        ) : (
+                          <span className="text-[9px] font-bold text-[color:var(--text-dim)]">2</span>
+                        )}
+                      </div>
+                      <span className="text-[9px] uppercase tracking-wider mt-1.5 font-bold text-[color:var(--text-dim)]">
+                        Intermediate
+                      </span>
+                    </div>
+
+                    {/* Line 2 -> 3 */}
+                    <div
+                      className="h-[1.5px] flex-1 mx-2"
+                      style={{
+                        background: hasCompletedIntermediate ? meta.accentColour : 'var(--card-border)',
+                      }}
+                    />
+
+                    {/* Step 3: Advanced */}
+                    <div className="flex flex-col items-center z-10">
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border"
+                        style={{
+                          background: false ? meta.accentColour : 'transparent',
+                          borderColor: currentLevel === 'advanced' ? meta.accentColour : 'var(--card-border)',
+                        }}
+                      >
+                        {currentLevel === 'advanced' ? (
+                          prefersReducedMotion ? (
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ background: meta.accentColour }} />
+                          ) : (
+                            <motion.div
+                              className="w-2.5 h-2.5 rounded-full"
+                              style={{ background: meta.accentColour }}
+                              animate={{ scale: [1, 1.3, 1] }}
+                              transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                            />
+                          )
+                        ) : !hasCompletedIntermediate ? (
+                          <Lock size={10} className="text-[color:var(--text-dim)]" />
+                        ) : (
+                          <span className="text-[9px] font-bold text-[color:var(--text-dim)]">3</span>
+                        )}
+                      </div>
+                      <span className="text-[9px] uppercase tracking-wider mt-1.5 font-bold text-[color:var(--text-dim)]">
+                        Advanced
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Context Line */}
+                  <p className="text-[10px] text-[color:var(--text-dim)] italic text-center mt-4">
+                    {hasCompletedIntermediate
+                      ? 'Advanced paths unlocked'
+                      : hasCompletedBeginner
+                      ? 'Complete an Intermediate path to unlock Advanced'
+                      : 'Complete a Beginner path to advance'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Tab B: Explore */
+            <div className="space-y-4">
+              {/* Global search bar */}
+              <div className="px-4 mb-4">
+                <div className="relative">
+                  <Search
+                    size={16}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]"
+                  />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={globalQuery}
+                    onChange={e => setGlobalQuery(e.target.value)}
+                    placeholder="Search paths and scriptures&hellip;"
+                    className="w-full pl-11 pr-10 py-3 rounded-2xl border bg-[var(--surface-soft)] text-sm text-[color:var(--brand-ink)] placeholder:text-[color:var(--brand-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] focus:border-transparent transition-all"
+                    style={{ borderColor: 'var(--card-border)' }}
+                  />
+                  {globalQuery && (
+                    <button
+                      onClick={() => {
+                        setGlobalQuery('');
+                        searchInputRef.current?.blur();
+                      }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity focus:outline-none"
+                    >
+                      <X size={16} className="text-[color:var(--brand-ink)]" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {globalQuery.trim().length >= 2 ? (
+                /* Unified search results list */
+                <div className="px-4 space-y-6">
+                  {/* Section A: Paths */}
+                  {searchPathsResult.length > 0 && (
+                    <div className="space-y-3">
+                      <p className="text-[9px] uppercase tracking-wider font-bold text-[color:var(--text-dim)]">
+                        Paths
+                      </p>
+                      <div className="grid gap-3">
+                        {searchPathsResult.map(p => (
+                          <BrowsePathCard key={p.id} path={p} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Section B: Scriptures */}
+                  {searchScripturesResult.length > 0 && (
+                    <div className="space-y-3">
+                      <p className="text-[9px] uppercase tracking-wider font-bold text-[color:var(--text-dim)]">
+                        Scriptures
+                      </p>
+                      <div className="grid gap-3">
+                        {searchScripturesResult.map(e => (
+                          <EntryCard key={e.id} entry={e} accentColour={meta.accentColour} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Empty search results */}
+                  {searchPathsResult.length === 0 && searchScripturesResult.length === 0 && (
+                    <div className="text-center py-10">
+                      <p className="text-[13px] text-[color:var(--text-dim)]">
+                        Nothing found for &apos;{globalQuery}&apos;
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* 3 accordion drawers */
+                <div className="space-y-4">
+                  {/* Drawer 1: Scriptures */}
+                  <AccordionDrawer id="scriptures" label={meta.navLibraryLabel} count={totalScripturesCount}>
+                    <ScriptureTab
+                      key={`scripture-${activeTab}`}
+                      tradition={tradition}
+                      accentColour={meta.accentColour}
+                      navLabel={meta.navLibraryLabel}
+                      isDark={isDark}
+                      initialSectionId={initialSectionId}
+                    />
+                  </AccordionDrawer>
+
+                  {/* Drawer 2: Learning Paths */}
+                  <AccordionDrawer id="paths" label="Sacred Paths" count={allPaths.length}>
+                    {/* Difficulty filter pills */}
+                    <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar pb-1">
+                      {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(d => (
+                        <motion.button
+                          key={d}
+                          whileTap={{ scale: 0.94 }}
+                          onClick={() => { setDiffFilter(d); playHaptic('light'); }}
+                          className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider border transition-all"
+                          style={diffFilter === d ? {
+                            background: meta.accentColour,
+                            color: 'var(--divine-bg)',
+                            borderColor: meta.accentColour,
+                            boxShadow: `0 4px 12px ${meta.accentColour}30`,
+                          } : {
+                            background: 'var(--card-bg-soft)',
+                            color: 'var(--brand-muted)',
+                            borderColor: 'var(--card-border)',
+                          }}
+                        >
+                          {d === 'all' ? `All (${allPaths.length})` : d.charAt(0).toUpperCase() + d.slice(1)}
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    {/* BrowsePathCard list */}
+                    <div className="grid gap-3">
+                      <AnimatePresence mode="popLayout">
+                        {filteredPaths.map((p, i) => (
+                          <motion.div
+                            key={p.id}
+                            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.97 }}
+                            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            <BrowsePathCard path={p} />
+                          </motion.div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </AccordionDrawer>
+
+                  {/* Drawer 3: Saved Verses */}
+                  <AccordionDrawer id="saved" label="Saved Verses" count={savedCount !== null ? savedCount : '–'}>
+                    <Link
+                      href="/pathshala/saved"
+                      className="flex items-center justify-between p-4 rounded-xl bg-[var(--surface-soft)] hover:opacity-90 transition-opacity"
+                    >
+                      <span className="text-sm font-semibold text-[color:var(--brand-ink)]">
+                        View saved verses &rarr;
+                      </span>
+                      <ChevronRight size={16} style={{ color: meta.accentColour }} />
+                    </Link>
+                  </AccordionDrawer>
+                </div>
+              )}
+            </div>
+          )}
         </motion.div>
 
         {/* ── Reader modal ──────────────────────────────────────────────────────── */}

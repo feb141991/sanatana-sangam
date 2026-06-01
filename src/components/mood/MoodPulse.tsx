@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 
 export interface MoodPulseProps {
@@ -28,11 +29,13 @@ export default function MoodPulse({
   onDismiss,
 }: MoodPulseProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { resolvedTheme } = useThemePreference();
   const [mounted, setMounted] = useState(false);
   const [hidden, setHidden] = useState(true);
   const [selectedMood, setSelectedMood] = useState<MoodConfig | null>(null);
 
-  const MOODS = MOODS_CONFIG.dark;
+  const moodsConfig = MOODS_CONFIG[resolvedTheme as 'dark' | 'light'] ?? MOODS_CONFIG.dark;
+  const MOODS = moodsConfig;
 
   useEffect(() => {
     setMounted(true);

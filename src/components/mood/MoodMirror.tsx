@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
 import { type MoodInsightMetrics } from '@/lib/mood/insights';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 
 export interface MoodMirrorProps {
@@ -53,7 +54,9 @@ export default function MoodMirror({
   recentMoods,
 }: MoodMirrorProps) {
   const prefersReducedMotion = useReducedMotion();
+  const { resolvedTheme } = useThemePreference();
   const [typedReflection, setTypedReflection] = useState('');
+  const moodsConfig = MOODS_CONFIG[resolvedTheme as 'dark' | 'light'] ?? MOODS_CONFIG.dark;
 
   // A. 7-DAY MOOD DOTS
   // Determine past 7 days dates
@@ -70,7 +73,7 @@ export default function MoodMirror({
     return acc;
   }, {} as Record<string, number>);
   const topMoodEntry = Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0];
-  const topMoodConf = topMoodEntry ? MOODS_CONFIG.dark.find((m: MoodConfig) => m.key === topMoodEntry[0]) : null;
+  const topMoodConf = topMoodEntry ? moodsConfig.find((m: MoodConfig) => m.key === topMoodEntry[0]) : null;
 
   useEffect(() => {
     if (reflectionLoading || !reflectionSummary) {
@@ -105,7 +108,7 @@ export default function MoodMirror({
             const dateObj = new Date(dateStr);
             const label = dayLabels[dateObj.getDay()];
             const found = recentMoods.find(r => r.date === dateStr);
-            const moodConf = found ? MOODS_CONFIG.dark.find((m: MoodConfig) => m.key === found.mood) : null;
+            const moodConf = found ? moodsConfig.find((m: MoodConfig) => m.key === found.mood) : null;
             
             return (
               <div key={dateStr} className="flex flex-col items-center gap-1.5">

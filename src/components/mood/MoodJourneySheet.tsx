@@ -6,6 +6,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { type MoodRecommendation } from '@/lib/mood/engine';
 import { type MoodInsightMetrics } from '@/lib/mood/insights';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodMirror from './MoodMirror';
 import MoodPath from './MoodPath';
 import MoodReturn from './MoodReturn';
@@ -37,20 +38,23 @@ export default function MoodJourneySheet({
 }: MoodJourneySheetProps) {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
+  const { resolvedTheme } = useThemePreference();
 
-  const [step, setStep] = useState<SheetStep>('context');
+  const [step, setStep] = useState<SheetStep>('mirror');
   const [need, setNeed] = useState<ContextNeed | null>(null);
   const [time, setTime] = useState<ContextTime | null>(null);
   const [type, setType] = useState<ContextType | null>(null);
   const [checkinId, setCheckinId] = useState<string | null>(null);
   const [clickedAction, setClickedAction] = useState<string | null>(null);
+  const [showReturn, setShowReturn] = useState(false);
   const [recommendations, setRecommendations] = useState<MoodRecommendation[]>([]);
   const [recentMoods, setRecentMoods] = useState<Array<{ date: string; mood: string }>>([]);
   const [weekInsights, setWeekInsights] = useState<MoodInsightMetrics | null>(null);
   const [reflectionSummary, setReflectionSummary] = useState<string | null>(null);
   const [reflectionLoading, setReflectionLoading] = useState(false);
 
-  const activeMood = MOODS_CONFIG.dark.find((m) => m.key === moodKey) || MOODS_CONFIG.dark[0];
+  const moodsConfig = MOODS_CONFIG[resolvedTheme as 'dark' | 'light'] ?? MOODS_CONFIG.dark;
+  const activeMood = moodsConfig.find((m) => m.key === moodKey) ?? moodsConfig[0];
 
   useEffect(() => {
     if (!isOpen) return;
@@ -94,6 +98,15 @@ export default function MoodJourneySheet({
       .then((data) => mounted && setRecentMoods(Array.isArray(data) ? data : []))
       .catch((err) => console.error(err));
 
+    fetch(`/api/mood/recommendations?mood=${moodKey}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (mounted && data?.recommendations) {
+          setRecommendations(data.recommendations);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       mounted = false;
     };
@@ -128,8 +141,19 @@ export default function MoodJourneySheet({
     setStep('mirror');
   };
 
-  const handleSkipContext = () => {
+  const handleSkipContext = async () => {
     setStep('mirror');
+    if (recommendations.length === 0) {
+      try {
+        const res = await fetch(`/api/mood/recommendations?mood=${moodKey}`);
+        if (res.ok) {
+          const data = await res.json();
+          setRecommendations(data.recommendations || []);
+        }
+      } catch {
+        // non-fatal
+      }
+    }
   };
 
   const handleDragEnd = (
@@ -142,6 +166,11 @@ export default function MoodJourneySheet({
   };
 
   const handleClose = async () => {
+    if (step === 'path' && checkinId && !clickedAction && !showReturn) {
+      setShowReturn(true);
+      return;
+    }
+
     if (checkinId && !clickedAction) {
       await fetch('/api/mood/complete', {
         method: 'POST',
@@ -153,12 +182,13 @@ export default function MoodJourneySheet({
       }).catch(console.error);
     }
     
-    setStep('context');
+    setStep('mirror');
     setNeed(null);
     setTime(null);
     setType(null);
     setCheckinId(null);
     setClickedAction(null);
+    setShowReturn(false);
     setRecommendations([]);
     setReflectionSummary(null);
     setRecentMoods([]);
@@ -194,9 +224,9 @@ export default function MoodJourneySheet({
 
   if (!isOpen) return null;
 
-  const transitionConfig: any = prefersReducedMotion 
-    ? { duration: 0 } 
-    : { type: 'spring', stiffness: 260, damping: 28 };
+  const transitionConfig = prefersReducedMotion
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 260, damping: 28 };
 
   const stepSlideConfig = prefersReducedMotion
     ? { duration: 0 }
@@ -229,14 +259,14 @@ export default function MoodJourneySheet({
         <div className="flex flex-col items-center mt-3 mb-2 shrink-0">
           <div className="w-10 h-1 rounded-full bg-[var(--card-border)] mb-3" />
           <div className="flex gap-2">
-            {['context', 'mirror', 'path'].map((s) => (
+            {['mirror', 'context', 'path'].map((s) => (
               <div key={s} className="relative w-2 h-2 rounded-full bg-[var(--card-border)]">
                 {step === s && (
                   <motion.div
                     layoutId="sheet-step-dot"
                     className="absolute inset-0 rounded-full"
                     style={{ background: activeMood.colour }}
-                    transition={(prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 25 }) as any}
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 25 }}
                   />
                 )}
               </div>
@@ -327,6 +357,13 @@ export default function MoodJourneySheet({
                 >
                   See your path &rarr;
                 </button>
+                <button
+                  onClick={() => setStep('context')}
+                  className="w-full text-center text-[11px] mt-2 pb-2"
+                  style={{ color: 'var(--text-dim)' }}
+                >
+                  Refine with context &rarr;
+                </button>
               </motion.div>
             )}
 
@@ -348,7 +385,7 @@ export default function MoodJourneySheet({
                     onActionClick={handleActionClick}
                   />
                 </div>
-                {clickedAction && checkinId && (
+                {(clickedAction || showReturn) && checkinId && (
                   <div className="shrink-0">
                     <MoodReturn 
                       checkinId={checkinId}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
+import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getFullRecommendationsForMood } from '@/lib/mood/engine';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
@@ -17,7 +18,8 @@ export interface MoodReturnProps {
 export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturnProps) {
   const router = useRouter();
   const prefersReducedMotion = useReducedMotion();
-  const MOODS = MOODS_CONFIG.dark;
+  const { resolvedTheme } = useThemePreference();
+  const MOODS = MOODS_CONFIG[resolvedTheme as 'dark' | 'light'] ?? MOODS_CONFIG.dark;
   const [afterMood, setAfterMood] = useState<MoodConfig | null>(null);
 
   const handlePillTap = async (mood: MoodConfig) => {
@@ -49,7 +51,7 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
             initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="flex items-center justify-between px-2 mb-3">
               <span className="text-[11px] text-[var(--text-dim)]">How do you feel now?</span>
@@ -69,7 +71,7 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
                   <motion.button
                     key={mood.key}
                     whileTap={prefersReducedMotion ? undefined : { scale: 1.08 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 20 }}
                     onClick={() => handlePillTap(mood)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] active:scale-95 transition-transform"
                   >
@@ -91,7 +93,7 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
             initial={prefersReducedMotion ? undefined : { opacity: 0, y: 8 }}
             animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Confirmed mood + close */}
             <div className="flex items-center justify-between px-2 mb-3">

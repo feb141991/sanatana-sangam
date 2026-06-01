@@ -182,7 +182,7 @@ interface Props {
   lastFreezeUsed?:     string | null;
   missedYesterday?:    boolean;
   activeSymbolId?:     string | null;
-  activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string } | null;
+  activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string | null } | null;
   karmaPoints?:        number;
 }
 
@@ -1206,7 +1206,23 @@ export default function HomeDashboard({
 
   // ── Daily Quiz state ──────────────────────────────────────────────────────
   const [quizDailyId, setQuizDailyId] = useState<string | null>(null);
-  const [activeSankalpa, setActiveSankalpa] = useState<any>(initialActiveSankalpa);
+  const [activeSankalpa, setActiveSankalpa] = useState<Props['activeSankalpa']>(initialActiveSankalpa);
+  const [sankalpaCheckedToday, setSankalpaCheckedToday] = useState(false);
+
+  const handleSankalpaCheckin = async () => {
+    if (!activeSankalpa || sankalpaCheckedToday) return;
+    setSankalpaCheckedToday(true); // optimistic
+    try {
+      const res = await fetch('/api/sankalpa/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sankalpa_id: activeSankalpa.id }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setSankalpaCheckedToday(false); // revert on failure
+    }
+  };
   const [showSankalpSheet, setShowSankalpSheet] = useState(false);
   const [showRashiphalNudge, setShowRashiphalNudge] = useState(false);
   const [quizStreak, setQuizStreak] = useState<number>(0);
@@ -1332,27 +1348,43 @@ export default function HomeDashboard({
   const QUIZ_CACHE_KEY      = `shoonaya-quiz-daily-${_quizTrad}-${effectiveLang}-${todayStr}`;
   const QUIZ_ANSWERED_KEY   = `shoonaya-quiz-daily-answered-${_quizTrad}-${effectiveLang}-${todayStr}`;
 
-  const fetchSankalpa = useCallback(() => {
-    fetch('/api/sankalpa')
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => {
-        if (data.sankalpa) {
-          const targetDays = data.sankalpa.target_days ?? 30;
-          const startMs = new Date(data.sankalpa.start_date + 'T00:00:00Z').getTime();
-          const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
-          setActiveSankalpa({
-            id: data.sankalpa.id,
-            text: data.sankalpa.text,
-            start_date: data.sankalpa.start_date,
-            end_date: endDate,
-            tradition: data.sankalpa.tradition ?? tradition ?? 'hindu',
-          });
-        } else {
-          setActiveSankalpa(null);
-        }
-      })
-      .catch(() => {});
-  }, [tradition]);
+  const fetchSankalpa = useCallback(async () => {
+    try {
+      const res = await fetch('/api/sankalpa');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.sankalpa) {
+        const targetDays = data.sankalpa.target_days ?? 30;
+        const startMs = new Date(data.sankalpa.start_date + 'T00:00:00Z').getTime();
+        const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
+        const sankalpaObj = {
+          id: data.sankalpa.id,
+          text: data.sankalpa.text,
+          start_date: data.sankalpa.start_date,
+          end_date: endDate,
+          tradition: data.sankalpa.tradition ?? tradition ?? 'hindu',
+          related_practice: data.sankalpa.related_practice ?? null,
+        };
+        setActiveSankalpa(sankalpaObj);
+
+        // Fetch today's checkin status
+        const { data: existingCheckin } = await supabase
+          .from('sankalpa_checkins')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('sankalpa_id', sankalpaObj.id)
+          .eq('checked_date', todayStr)
+          .maybeSingle();
+        setSankalpaCheckedToday(!!existingCheckin);
+      } else {
+        setActiveSankalpa(null);
+        setSankalpaCheckedToday(false);
+      }
+    } catch {
+      setActiveSankalpa(null);
+      setSankalpaCheckedToday(false);
+    }
+  }, [tradition, userId, todayStr, supabase]);
 
   useEffect(() => {
     fetchSankalpa();
@@ -2741,16 +2773,21 @@ export default function HomeDashboard({
 
         <div className="px-4 mb-2">
           <SankalpaBanner
-            sankalpa={activeSankalpa}
+            sankalpa={activeSankalpa ?? null}
             tradition={tradition ?? 'hindu'}
             onSet={() => setShowSankalpSheet(true)}
             onComplete={() => {
-              fetch('/api/sankalpa', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
-              }).then(() => fetchSankalpa());
+              if (activeSankalpa) {
+                fetch('/api/sankalpa', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
+                }).then(() => fetchSankalpa());
+              }
             }}
+            checkedToday={sankalpaCheckedToday}
+            onCheckin={handleSankalpaCheckin}
+            relatedPractice={activeSankalpa?.related_practice ?? null}
           />
         </div>
 
