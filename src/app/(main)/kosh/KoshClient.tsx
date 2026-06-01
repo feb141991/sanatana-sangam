@@ -8,6 +8,17 @@ import toast from 'react-hot-toast';
 import { SACRED_RELICS, getUnlockedRelics, type Relic } from '@/lib/relics';
 import PageIntro from '@/components/ui/PageIntro';
 
+// ── Relic PNG assets (takes priority over emoji) ────────────────────────────
+const RELIC_ASSET: Record<string, string> = {
+  'diya-bronze':        '/relics/diya-bronze.png',
+  'sacred-mala':        '/relics/mala.png',
+  'the-sage-halo':      '/relics/halo.png',
+  'trishula-gold':      '/relics/trishula-gold.png',
+  'sudarshana-chakra':  '/relics/chakra.png',
+  'khanda-gold':        '/relics/khanda-gold.png',
+  'dharma-wheel-gold':  '/relics/dharma-wheel.png',
+};
+
 // ── Relic emoji map (used when image assets are unavailable) ────────────────
 const RELIC_EMOJI: Record<string, string> = {
   // Universal
@@ -73,6 +84,89 @@ const RELIC_EMOJI: Record<string, string> = {
 function relicEmoji(id: string) {
   return RELIC_EMOJI[id] ?? '🔱';
 }
+
+// ── Premium 3-D relic icon ───────────────────────────────────────────────────
+function RelicIcon({
+  id,
+  size = 56,
+  unlocked = true,
+  animate = false,
+  rarity = 'common',
+}: {
+  id: string;
+  size?: number;
+  unlocked?: boolean;
+  animate?: boolean;
+  rarity?: 'common' | 'rare' | 'legendary';
+}) {
+  const asset = RELIC_ASSET[id];
+  const glowColor =
+    rarity === 'legendary' ? 'rgba(197,160,89,0.9)' :
+    rarity === 'rare'      ? 'rgba(176,190,197,0.7)' :
+                             'rgba(255,255,255,0.4)';
+
+  const shadowStyle = unlocked
+    ? `drop-shadow(0 ${size * 0.07}px ${size * 0.14}px rgba(0,0,0,0.55)) drop-shadow(0 ${size * 0.02}px ${size * 0.06}px rgba(0,0,0,0.35)) drop-shadow(0 0 ${size * 0.22}px ${glowColor})`
+    : 'grayscale(1) brightness(0.4)';
+
+  const animClass = animate && unlocked
+    ? (rarity === 'legendary' ? 'kosh-float-legend' : 'kosh-float')
+    : '';
+
+  if (asset) {
+    return (
+      <img
+        src={asset}
+        alt=""
+        aria-hidden="true"
+        className={animClass}
+        style={{
+          width: size,
+          height: size,
+          objectFit: 'contain',
+          filter: shadowStyle,
+          opacity: unlocked ? 1 : 0.3,
+        }}
+      />
+    );
+  }
+
+  return (
+    <span
+      className={animClass}
+      style={{
+        fontSize: size * 0.6,
+        lineHeight: 1,
+        display: 'block',
+        filter: shadowStyle,
+        opacity: unlocked ? 1 : 0.3,
+      }}
+    >
+      {relicEmoji(id)}
+    </span>
+  );
+}
+
+const KOSH_CSS = `
+@keyframes kosh-float {
+  0%,100% { transform: translateY(0px) rotate(-1deg); }
+  50%      { transform: translateY(-5px) rotate(1deg); }
+}
+@keyframes kosh-float-legend {
+  0%,100% { transform: translateY(0px) scale(1) rotate(-2deg); }
+  50%      { transform: translateY(-7px) scale(1.04) rotate(2deg); }
+}
+@keyframes kosh-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes kosh-glow-pulse {
+  0%,100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.kosh-float        { animation: kosh-float        3.2s ease-in-out infinite; }
+.kosh-float-legend { animation: kosh-float-legend 2.6s ease-in-out infinite; }
+`;
 
 function getRelicRarity(relic: Relic): 'common' | 'rare' | 'legendary' {
   if (relic.milestoneValue <= 14) return 'common';
@@ -221,6 +315,7 @@ export default function KoshClient({
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--divine-bg)', color: inkColor }}>
+      <style dangerouslySetInnerHTML={{ __html: KOSH_CSS }} />
       <PageIntro
         pageKey="kosh"
         steps={[
@@ -250,8 +345,8 @@ export default function KoshClient({
         {nextRelic && (
           <div className="mt-6 rounded-3xl p-4 backdrop-blur-sm" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
             <div className="flex items-center gap-4">
-              <div className="h-16 w-16 flex items-center justify-center rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '2.2rem' }}>
-                {relicEmoji(nextRelic.id)}
+              <div className="h-16 w-16 flex items-center justify-center rounded-2xl" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
+                <RelicIcon id={nextRelic.id} size={48} unlocked={false} rarity={getRelicRarity(nextRelic)} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
@@ -323,8 +418,8 @@ export default function KoshClient({
               <div className="mt-6 rounded-2xl p-4 text-left" style={{ border: `1px solid ${cardBorder}`, background: 'var(--card-bg-soft, rgba(197,160,89,0.06))' }}>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Next unlock</p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="h-14 w-14 flex items-center justify-center rounded-2xl opacity-50 grayscale" style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '2rem' }}>
-                    {relicEmoji(nextRelic.id)}
+                  <div className="h-14 w-14 flex items-center justify-center rounded-2xl" style={{ border: `1px solid ${cardBorder}`, background: cardBg }}>
+                    <RelicIcon id={nextRelic.id} size={44} unlocked={false} rarity={getRelicRarity(nextRelic)} />
                   </div>
                   <div>
                     <p className="font-medium" style={{ color: inkColor }}>{nextRelic.name}</p>
@@ -352,19 +447,26 @@ export default function KoshClient({
                       }
                       setLockedHintId((current) => current === relic.id ? null : relic.id);
                     }}
-                    className="relative flex h-[100px] w-full items-center justify-center overflow-hidden rounded-2xl backdrop-blur-sm transition-transform hover:scale-[1.02]"
+                    className="relative flex h-[100px] w-full items-center justify-center overflow-hidden rounded-2xl backdrop-blur-sm transition-transform hover:scale-[1.02] active:scale-95"
                     style={{
                       border: `1px solid ${unlocked ? TRADITION_BORDER[relic.tradition] : cardBorder}`,
-                      background: unlocked ? TRADITION_GLOW[relic.tradition] : cardBg,
-                      boxShadow: active ? `0 0 0 2px ${goldColor}` : undefined,
+                      background: unlocked
+                        ? `radial-gradient(circle at 50% 70%, ${TRADITION_GLOW[relic.tradition]} 0%, transparent 80%), ${cardBg}`
+                        : cardBg,
+                      boxShadow: active
+                        ? `0 0 0 2px ${goldColor}, 0 0 20px ${TRADITION_GLOW[relic.tradition]}`
+                        : unlocked
+                        ? `0 4px 20px ${TRADITION_GLOW[relic.tradition]}`
+                        : undefined,
                     }}
                   >
-                    <div
-                      className={`h-16 w-16 flex items-center justify-center rounded-2xl ${unlocked ? '' : 'grayscale opacity-40'}`}
-                      style={{ fontSize: '2rem' }}
-                    >
-                      {relicEmoji(relic.id)}
-                    </div>
+                    <RelicIcon
+                      id={relic.id}
+                      size={56}
+                      unlocked={unlocked}
+                      animate={unlocked}
+                      rarity={getRelicRarity(relic)}
+                    />
                     {!unlocked && (
                       <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
                         <div className="rounded-full p-2" style={{ border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(0,0,0,0.35)' }}>
@@ -520,10 +622,20 @@ export default function KoshClient({
               </div>
               <div className="mt-6 flex justify-center">
                 <div
-                  className="h-[120px] w-[120px] flex items-center justify-center rounded-[2rem]"
-                  style={{ border: `1px solid ${cardBorder}`, background: cardBg, fontSize: '4rem' }}
+                  className="h-[140px] w-[140px] flex items-center justify-center rounded-[2.5rem] relative overflow-hidden"
+                  style={{
+                    border: `1px solid ${TRADITION_BORDER[selectedRelic.tradition] ?? cardBorder}`,
+                    background: `radial-gradient(circle at 50% 60%, ${TRADITION_GLOW[selectedRelic.tradition] ?? 'rgba(197,160,89,0.18)'} 0%, transparent 70%), ${cardBg}`,
+                    boxShadow: `0 0 40px ${TRADITION_GLOW[selectedRelic.tradition] ?? 'rgba(197,160,89,0.18)'}`,
+                  }}
                 >
-                  {relicEmoji(selectedRelic.id)}
+                  <RelicIcon
+                    id={selectedRelic.id}
+                    size={96}
+                    unlocked
+                    animate
+                    rarity={getRelicRarity(selectedRelic)}
+                  />
                 </div>
               </div>
               <p className="mt-4 mb-2 text-sm leading-relaxed" style={{ color: mutedColor }}>{selectedRelic.lore}</p>
@@ -579,8 +691,22 @@ export default function KoshClient({
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
               className="flex flex-col items-center justify-center"
             >
-              <div style={{ fontSize: '5rem', marginBottom: '1.5rem', lineHeight: 1 }}>
-                {relicEmoji(celebratingRelic.id)}
+              <div
+                className="flex items-center justify-center rounded-[2.5rem] mb-6 relative"
+                style={{
+                  width: 160, height: 160,
+                  background: `radial-gradient(circle at 50% 60%, ${TRADITION_GLOW[celebratingRelic.tradition] ?? 'rgba(197,160,89,0.30)'} 0%, transparent 70%)`,
+                  boxShadow: `0 0 80px ${TRADITION_GLOW[celebratingRelic.tradition] ?? 'rgba(197,160,89,0.40)'}`,
+                  border: `1px solid ${TRADITION_BORDER[celebratingRelic.tradition] ?? 'rgba(197,160,89,0.4)'}`,
+                }}
+              >
+                <RelicIcon
+                  id={celebratingRelic.id}
+                  size={110}
+                  unlocked
+                  animate
+                  rarity={getRelicRarity(celebratingRelic)}
+                />
               </div>
               <h2 className="font-serif text-2xl font-bold" style={{ color: goldColor }}>
                 {celebratingRelic.name}
