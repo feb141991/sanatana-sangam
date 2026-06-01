@@ -98,9 +98,8 @@ import { getRelicAccent } from '@/lib/relic-accents';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { withOneSignal } from '@/lib/onesignal';
-import DailyMoodCard from '@/components/mood/DailyMoodCard';
-import MoodRecommendationSheet from '@/components/mood/MoodRecommendationSheet';
-import MoodFollowupSheet, { type PendingMoodFollowup } from '@/components/mood/MoodFollowupSheet';
+import MoodPulse from '@/components/mood/MoodPulse';
+import MoodJourneySheet from '@/components/mood/MoodJourneySheet';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import { FESTIVALS_2026 } from '@/lib/festivals';
@@ -1201,8 +1200,7 @@ export default function HomeDashboard({
   const [editHomeOpen,     setEditHomeOpen]     = useState(false);
   const [activeStoryFestival, setActiveStoryFestival] = useState<import('@/lib/festivals').Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
-  const [selectedMoodForSheet, setSelectedMoodForSheet] = useState<string | null>(null);
-  const [pendingMoodFollowup, setPendingMoodFollowup] = useState<PendingMoodFollowup | null>(null);
+  const [journeyMoodKey, setJourneyMoodKey] = useState<string | null>(null);
 
   // showDeeksha / handleDeekshaComplete removed
 
@@ -1486,7 +1484,8 @@ export default function HomeDashboard({
     hasCompletedToday: boolean;
     hasDismissedToday: boolean;
     isLoaded: boolean;
-  }>({ hasCompletedToday: false, hasDismissedToday: false, isLoaded: false });
+    lastCompletedMood: string | null;
+  }>({ hasCompletedToday: false, hasDismissedToday: false, isLoaded: false, lastCompletedMood: null });
 
   // ── Fetch authoritative mood state from backend ──────────────────────────────
   useEffect(() => {
@@ -1500,21 +1499,13 @@ export default function HomeDashboard({
           setBackendMoodState({
             hasCompletedToday: data.hasCompletedToday || false,
             hasDismissedToday: data.hasDismissedToday || false,
-            isLoaded: true
+            isLoaded: true,
+            lastCompletedMood: data.lastCompletedMood || null
           });
 
           // Resolve pending followup if open session has clicked_action but not completed
           if (data.openSession?.clicked_action && !data.openSession?.completed_action) {
-            setPendingMoodFollowup({
-              checkinId: data.openSession.id,
-              mood: data.openSession.before_mood,
-              actionId: data.openSession.clicked_action,
-              actionTitle: 'Spiritual Action',
-              actionHref: '#',
-              createdAt: data.openSession.created_at
-            });
-          } else {
-            setPendingMoodFollowup(null);
+            // Pending followups removed in favor of single Bhavana journey
           }
 
           // If they completed a session today, update mood badge
@@ -1548,25 +1539,7 @@ export default function HomeDashboard({
     }
   }, []);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(PENDING_MOOD_FOLLOWUP_KEY);
-      if (!raw) return;
-
-      const parsed = JSON.parse(raw) as PendingMoodFollowup;
-      const createdDay = new Date(parsed.createdAt).toISOString().split('T')[0];
-      const today = new Date().toISOString().split('T')[0];
-
-      if (createdDay !== today || !parsed.checkinId || !parsed.actionId) {
-        localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
-        return;
-      }
-
-      setPendingMoodFollowup(parsed);
-    } catch {
-      localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
-    }
-  }, []);
+  // Followup state removed
 
   const { coords, city: liveCity } = useLocation();
 
@@ -1878,29 +1851,16 @@ export default function HomeDashboard({
     ? getTodaySpiritualPulses(panchang.tithiIndex, tradition, selectedDate)
     : [];
 
-  // ── Mood check-in card ───────────────────────────────────────────────────────
-  // Card stays visible in content-phase after pick — no dismiss, no sheet.
-  function handleMoodCardPick(moodKey: string) {
-    const moodConf = MOODS.find(m => m.key === moodKey);
-    if (moodConf) {
-      setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
-    }
-  }
-
-  function handleMoodFollowupClose() {
-    setPendingMoodFollowup(null);
-  }
-
-  function handleMoodFollowupCompleted(afterMood: string) {
-    localStorage.removeItem(PENDING_MOOD_FOLLOWUP_KEY);
-
-    const moodConf = MOODS.find(m => m.key === afterMood);
-    if (moodConf) {
-      setMoodToday({ key: moodConf.key, label: moodConf.label, colour: moodConf.colour });
-    }
-
-    setPendingMoodFollowup(null);
-  }
+  // ── Mood system helpers ───────────────────────────────────────────────────────
+  const handleMoodPulseDismiss = () => {
+    localStorage.setItem('shoonaya_mood_dismissed', new Date().toISOString().split('T')[0]);
+    fetch('/api/mood/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ before_mood: 'dismissed', source_surface: 'home_bhavana', dismissed: true })
+    }).catch(console.error);
+    setBackendMoodState(prev => prev ? { ...prev, hasDismissedToday: true } : prev);
+  };
 
   // ── Pitru Paksha ────────────────────────────────────────────────────────────
   // Only Hindu (and 'all') tradition users see this — Buddhist/Jain/Sikh have
@@ -2840,9 +2800,11 @@ export default function HomeDashboard({
         </AnimatePresence>
 
         {/* ── Mood Check-In Card ───────────────────────────────────────────── */}
-        <DailyMoodCard 
-          onSelectMood={handleMoodCardPick} 
+        <MoodPulse 
           userName={userName}
+          tradition={tradition}
+          onOpen={(moodKey) => setJourneyMoodKey(moodKey)}
+          onDismiss={handleMoodPulseDismiss}
           backendState={backendMoodState}
         />
 
@@ -3574,126 +3536,15 @@ export default function HomeDashboard({
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedMoodForSheet && (
-          <MoodRecommendationSheet
-            mood={selectedMoodForSheet}
-            onClose={() => setSelectedMoodForSheet(null)}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* ── Sacred Backdrop Picker ──────────────────────────────────────────────── */}
-      <AnimatePresence>
-        {heroPicker && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] flex items-end"
-            onClick={() => setHeroPicker(false)}
-          >
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 180 }}
-              onClick={e => e.stopPropagation()}
-              className="relative w-full overflow-y-auto rounded-t-[2.5rem] px-5 pt-0 pb-10"
-              style={{
-                maxHeight: '80vh',
-                background: 'var(--surface-raised)',
-                borderTop: '1px solid rgba(197,160,89,0.15)',
-              }}
-            >
-              {/* Handle */}
-              <div className="w-12 h-1.5 rounded-full mx-auto mt-4 mb-6" style={{ background: 'rgba(197,160,89,0.25)' }} />
-
-              {/* Header */}
-              <div className="mb-5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-1" style={{ color: '#C5A059' }}>
-                  Sacred Backdrop
-                </p>
-                <h3 className="text-xl font-semibold" style={{ color: 'var(--brand-ink)' }}>
-                  Choose your hero image
-                </h3>
-                <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }}>
-                  {pickerThemes.length} images curated for your tradition
-                </p>
-              </div>
-
-              {/* Image grid */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {pickerThemes.map(theme => {
-                  const isActive = (selectedHeroId ?? heroTheme.id) === theme.id;
-                  return (
-                    <button
-                      key={theme.id}
-                      type="button"
-                      onClick={() => handleHeroSelect(theme.id)}
-                      className="relative rounded-2xl overflow-hidden active:scale-95 transition-transform"
-                      style={{
-                        aspectRatio: '16/9',
-                        outline: isActive ? '2.5px solid #C5A059' : '2.5px solid transparent',
-                        outlineOffset: '2px',
-                      }}
-                    >
-                      <Image
-                        src={theme.heroImage}
-                        alt={theme.heroAlt}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 600px) 45vw, 300px"
-                      />
-                      {/* Label overlay */}
-                      <div className="absolute inset-x-0 bottom-0 px-2.5 py-2"
-                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65), transparent)' }}>
-                        <span className="text-[10px] font-semibold text-white/90">{theme.label}</span>
-                      </div>
-                      {/* Active check */}
-                      {isActive && (
-                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
-                          style={{ background: '#C5A059' }}>
-                          <Check size={11} strokeWidth={3} className="text-black" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Reset + upload row */}
-              <div className="flex gap-3">
-                {selectedHeroId && (
-                  <button
-                    type="button"
-                    onClick={() => handleHeroSelect(null)}
-                    className="flex-1 py-3 rounded-2xl text-[12px] font-medium"
-                    style={{ background: 'rgba(197,160,89,0.08)', color: 'rgba(197,160,89,0.7)' }}
-                  >
-                    Reset to default
-                  </button>
-                )}
-                <label
-                  className="flex-1 py-3 rounded-2xl text-[12px] font-medium text-center cursor-pointer"
-                  style={{ background: 'rgba(197,160,89,0.08)', color: 'rgba(197,160,89,0.7)' }}
-                  onClick={() => setHeroPicker(false)}
-                >
-                  Upload custom ↑
-                  <input type="file" accept="image/*" className="hidden" onChange={e => { setHeroPicker(false); handleCoverUpload(e); }} />
-                </label>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {pendingMoodFollowup && !selectedMoodForSheet && (
-          <MoodFollowupSheet
-            pending={pendingMoodFollowup}
-            onClose={handleMoodFollowupClose}
-            onCompleted={handleMoodFollowupCompleted}
+        {journeyMoodKey && (
+          <MoodJourneySheet
+            moodKey={journeyMoodKey}
+            tradition={tradition}
+            isOpen={Boolean(journeyMoodKey)}
+            onClose={() => {
+              setBackendMoodState(prev => prev ? { ...prev, hasCompletedToday: true, lastCompletedMood: journeyMoodKey } : prev);
+              setJourneyMoodKey(null);
+            }}
           />
         )}
       </AnimatePresence>

@@ -2,15 +2,30 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Send, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { useEngine } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 import SacredIcon from '@/components/ui/SacredIcon';
+
+async function readStreamedChatResponse(
+  response: Response,
+  onChunk: (chunk: string) => void
+) {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('Streaming response unavailable');
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    if (chunk) onChunk(chunk);
+  }
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ScriptureRef {
@@ -196,10 +211,20 @@ function TypingIndicator() {
         <SacredIcon name="sparkles" size={14} />
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-        <div className="flex gap-1 items-center h-5">
-          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+        <div className="flex gap-1.5 items-center h-5">
+          {[0, 1, 2].map((index) => (
+            <motion.span
+              key={index}
+              className="w-2 h-2 rounded-full bg-orange-400"
+              animate={{ opacity: [0.35, 1, 0.35], scale: [0.92, 1.1, 0.92] }}
+              transition={{
+                duration: 0.9,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: index * 0.15,
+              }}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -291,7 +316,6 @@ export default function AIChatClient({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
-  const { engine, isReady } = useEngine();
   const isPro = usePremium();
   const { playHaptic } = useZenithSensory();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
@@ -300,6 +324,7 @@ export default function AIChatClient({
   );
   const [usageData, setUsageData] = useState<{ used: number; limit: number } | null>(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [hasStreamedToken, setHasStreamedToken] = useState(false);
 
   // Fetch usage on mount and after each message
   const refreshUsage = async () => {
@@ -327,7 +352,12 @@ export default function AIChatClient({
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages.length]);
+
+  useEffect(() => {
+    if (!loading) return;
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [loading, hasStreamedToken]);
 
   function newId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -346,48 +376,20 @@ export default function AIChatClient({
     setLoading(true);
     playHaptic('light');
 
-    // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
-    // Uses pgvector to find relevant scripture chunks, then Sarvam explains them.
-    // Falls through to Path B if engine not ready or user has no scripture indexed.
-    if (resolvedResponseLanguage === 'en' && isReady && engine) {
-      try {
-        const ragResult = await engine.search.ask(msgText, userId, {
-          matchCount:      5,
-          matchThreshold:  0.25,
-          withExplanation: true,
-        });
-
-        if (ragResult.answer) {
-          const modelMsg: Message = {
-            id:        newId(),
-            role:      'model',
-            text:      ragResult.answer,
-            timestamp: new Date(),
-            verses:    (ragResult.verses ?? []).slice(0, 3).map(v => ({
-              text_id:         v.verse?.text_id,
-              chapter:         v.verse?.chapter,
-              verse:           v.verse?.verse,
-              sanskrit:        v.verse?.sanskrit,
-              transliteration: v.verse?.transliteration,
-              // source_label left undefined so formatVerseLabel() handles it
-            })),
-            fromRag: true,
-            transliterationLanguage: transliterationLanguage, // pass to bubble for chips
-          } as any;
-          setMessages(prev => [...prev, modelMsg]);
-          setLoading(false);
-          playHaptic('medium');
-          return;
-        }
-      } catch (ragErr) {
-        console.warn('[AiChat] RAG failed, falling back to direct API:', ragErr);
-        // Fall through to Path B
-      }
-    }
-
-    // ── Path B: Fallback — tradition-aware Sarvam via API route ─────────────
-    // Used when: corpus not yet seeded, engine not ready, or RAG returned empty answer.
     const history = messages.map(m => ({ role: m.role, text: m.text }));
+    const assistantId = newId();
+    setMessages(prev => [
+      ...prev,
+      {
+        id: assistantId,
+        role: 'model',
+        text: '',
+        timestamp: new Date(),
+        fromRag: false,
+      },
+    ]);
+    setHasStreamedToken(false);
+
     try {
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
@@ -406,32 +408,48 @@ export default function AIChatClient({
           transliterationLanguage,
         }),
       });
-      const data = await res.json();
-      if (res.status === 429 && data.error === 'daily_limit_reached') {
-        setLimitReached(true);
-        setLoading(false);
-        return;
+
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        if (data.error === 'daily_limit_reached') {
+          setLimitReached(true);
+          setMessages(prev => prev.filter(m => m.id !== assistantId));
+          setLoading(false);
+          return;
+        }
       }
+
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         toast.error(data.error ?? 'Something went wrong');
+        setMessages(prev => prev.filter(m => m.id !== assistantId));
         setLoading(false);
         return;
       }
-      // Refresh usage count after successful message
+
+      let fullText = '';
+      await readStreamedChatResponse(res, (chunk) => {
+        fullText += chunk;
+        setHasStreamedToken(true);
+        setMessages(prev => prev.map((msg) => (
+          msg.id === assistantId ? { ...msg, text: fullText } : msg
+        )));
+      });
+
+      setMessages(prev => prev.filter((msg) => msg.id !== assistantId || msg.text.trim().length > 0));
       refreshUsage();
-      const modelMsg: Message = {
-        id:        newId(),
-        role:      'model',
-        text:      data.reply,
-        timestamp: new Date(),
-        fromRag:   false,
-      };
-      setMessages(prev => [...prev, modelMsg]);
+      fetch('/api/karma/award', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1, reason: 'ai_chat_response' }),
+      }).catch(() => {});
       playHaptic('medium');
     } catch {
       toast.error('Network error — please try again');
+      setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {
       setLoading(false);
+      setHasStreamedToken(false);
     }
   }
 

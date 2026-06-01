@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { ChevronLeft, ChevronRight, Bell, Palette, Languages, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, Palette, Languages, Sparkles } from 'lucide-react';
 import { Button, Input } from '@/components/ui';
 import { APP_LANGUAGES, TRANSLITERATION_LANGUAGE_OPTIONS } from '@/lib/language-preferences';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
@@ -736,8 +736,8 @@ export default function SettingsClient({
               style={{ background: 'var(--surface-soft)', borderColor: 'var(--card-border)' }}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: 'var(--brand-primary-soft)' }}>
-                  <Bell size={18} color="var(--brand-primary)" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl" style={{ background: 'var(--surface-soft)' }}>
+                  <AlertTriangle size={18} color="var(--text-dim)" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[color:var(--text-cream)]">{copy.deleteAccountLink}</p>

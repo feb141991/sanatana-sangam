@@ -37,6 +37,7 @@ const ALLOWED_KARMA_REASONS = new Set([
   'vrat_complete',
   'sankalpa_milestone',
   'kul_event',
+  'ai_chat_response',
 ]);
 
 export async function POST(req: NextRequest) {

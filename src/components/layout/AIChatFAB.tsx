@@ -11,6 +11,22 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
 
+async function readStreamedChatResponse(
+  response: Response,
+  onChunk: (chunk: string) => void
+) {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('Streaming response unavailable');
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    if (chunk) onChunk(chunk);
+  }
+}
+
 // ── Dharma Mitra — Sacred Eye of Wisdom icon ──────────────────────────────────
 // An almond-shaped wisdom eye (inner sight, divine perception) with a small
 // flame above — the Ajna / third eye motif, universal across dharmic traditions.
@@ -134,13 +150,27 @@ function MessageBubble({ msg }: { msg: Message }) {
   const isUser = msg.role === 'user';
   return (
     <div className={`flex gap-2 mb-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-      <div className={`w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs ${isUser ? 'bg-[#7B1A1A] text-white' : ''}`}
-        style={!isUser ? { background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' } : undefined}>
+      <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs"
+        style={isUser
+          ? { background: 'var(--brand-primary-soft)', color: 'var(--divine-text)' }
+          : { background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
         {isUser ? '🙏' : <ZenithMitraLogo size={16} color="#1c1c1a" />}
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
-        <div className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'bg-[#7B1A1A] text-white rounded-tr-sm' : 'rounded-tl-sm border'}`}
-          style={!isUser ? { background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.16)', color: 'var(--brand-ink)' } : undefined}>
+        <div
+          className={`px-3 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${isUser ? 'rounded-tr-sm' : 'rounded-tl-sm border'}`}
+          style={isUser
+            ? {
+                background: 'var(--brand-primary-soft)',
+                border: '1px solid var(--card-border)',
+                color: 'var(--divine-text)',
+              }
+            : {
+                background: 'var(--card-bg)',
+                borderColor: 'var(--card-border)',
+                color: 'var(--divine-text)',
+              }}
+        >
           {msg.text}
           {!isUser && msg.verses && msg.verses.length > 0 && (
             <div className="mt-1">{msg.verses.map((v, i) => <VerseChip key={i} verse={v} />)}</div>
@@ -163,9 +193,19 @@ function TypingIndicator() {
         <ZenithMitraLogo size={15} color="#1c1c1a" />
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.16)' }}>
-        <div className="flex gap-1 items-center h-4">
-          {[0, 150, 300].map(delay => (
-            <span key={delay} className="w-1.5 h-1.5 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: `${delay}ms` }} />
+        <div className="flex gap-1.5 items-center h-4">
+          {[0, 1, 2].map((index) => (
+            <motion.span
+              key={index}
+              className="w-1.5 h-1.5 rounded-full bg-orange-400"
+              animate={{ opacity: [0.35, 1, 0.35], scale: [0.92, 1.1, 0.92] }}
+              transition={{
+                duration: 0.9,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: index * 0.15,
+              }}
+            />
           ))}
         </div>
       </div>
@@ -183,6 +223,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   const [menuObscuring,   setMenuObscuring]  = useState(false); // quick-action menu is open
   const [constraints,     setConstraints]    = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const [aiUsage,         setAiUsage]        = useState<{ used: number; limit: number; isPro: boolean } | null>(null);
+  const [hasStreamedToken, setHasStreamedToken] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
@@ -240,7 +281,12 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   // ── Auto-scroll chat ──────────────────────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages.length]);
+
+  useEffect(() => {
+    if (!loading) return;
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [loading, hasStreamedToken]);
 
   // ── Auto-resize textarea ──────────────────────────────────────────────────
   useEffect(() => {
@@ -272,18 +318,27 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
     setLoading(true);
 
     const history = messages.map(m => ({ role: m.role, text: m.text }));
+    const assistantId = newId();
+    setMessages(prev => [...prev, {
+      id: assistantId,
+      role: 'model',
+      text: '',
+      timestamp: new Date(),
+      fromRag: false,
+    }]);
+    setHasStreamedToken(false);
     try {
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ message: msgText, history, tradition }),
       });
-      const data = await res.json();
-      if (!res.ok) {
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
         if (data?.error === 'daily_limit_reached') {
           // Surface the limit hit as a system message with upgrade CTA
           const limit = data.limit ?? 5;
-          setMessages(prev => [...prev, {
+          setMessages(prev => [...prev.filter(m => m.id !== assistantId), {
             id:        newId(),
             role:      'model',
             text:      `You've reached your ${limit}-message daily limit for Dharma Mitra.\n\nUpgrade to Zenith for 200 conversations per day — unlimited spiritual guidance, advanced analytics, monthly sadhana reports, and more.\n\nTap → Settings › Subscription to unlock the full path. 🙏`,
@@ -295,13 +350,35 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         setLoading(false);
         return;
       }
-      setMessages(prev => [...prev, {
-        id: newId(), role: 'model', text: data.reply, timestamp: new Date(), fromRag: false,
-      }]);
+
+      if (!res.ok) {
+        setMessages(prev => prev.filter(m => m.id !== assistantId));
+        setLoading(false);
+        return;
+      }
+
+      let fullText = '';
+      await readStreamedChatResponse(res, (chunk) => {
+        fullText += chunk;
+        setHasStreamedToken(true);
+        setMessages(prev => prev.map((msg) => (
+          msg.id === assistantId ? { ...msg, text: fullText } : msg
+        )));
+      });
+
+      setMessages(prev => prev.filter((msg) => msg.id !== assistantId || msg.text.trim().length > 0));
       // Increment local usage counter so bar updates without refetching
       setAiUsage(prev => prev ? { ...prev, used: Math.min(prev.used + 1, prev.limit) } : null);
-    } catch { /* silent */ } finally {
+      fetch('/api/karma/award', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: 1, reason: 'ai_chat_response' }),
+      }).catch(() => {});
+    } catch {
+      setMessages(prev => prev.filter(m => m.id !== assistantId));
+    } finally {
       setLoading(false);
+      setHasStreamedToken(false);
     }
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, RotateCcw, CheckCircle2, XCircle, Zap, Loader2 } from 'lucide-react';
@@ -70,8 +70,18 @@ function SetupScreen({
   const meta = getTraditionMeta(tradition);
   const [topic,      setTopic]      = useState<TopicKey | null>((initialTopic as TopicKey) ?? null);
   const [difficulty, setDifficulty] = useState<DifficultyKey>((initialDifficulty as DifficultyKey) ?? 'seeker');
+  const [practiceSessions, setPracticeSessions] = useState<any[]>([]);
   const { lang, t } = useLanguage();
   const effectiveAppLanguage = lang === 'hi' || lang === 'pa' ? lang : 'en';
+
+  useEffect(() => {
+    fetch('/api/quiz/stats')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.practice_sessions) setPracticeSessions(d.practice_sessions);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="min-h-screen pb-28 px-5" style={{ background: 'var(--divine-bg)', color: 'var(--brand-ink)' }}>
@@ -100,24 +110,46 @@ function SetupScreen({
         <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] mt-8 mb-3" style={{ color: 'var(--brand-muted)' }}>
           {effectiveAppLanguage === 'hi' ? 'विषय चुनें' : effectiveAppLanguage === 'pa' ? 'ਵਿਸ਼ਾ ਚੁਣੋ' : 'Choose Topic'}
         </h2>
-        <div className="grid grid-cols-2 gap-3 mb-8">
-          {TOPICS.map((tItem) => (
-            <button
-              key={tItem.key}
-              onClick={() => setTopic(tItem.key)}
-              className="rounded-[1.4rem] p-4 text-left transition-all"
-              style={{
-                background: topic === tItem.key ? `${tItem.color}20` : 'var(--surface-soft)',
-                border: topic === tItem.key ? `1px solid ${tItem.color}50` : '1px solid rgba(197, 160, 89,0.15)',
-                boxShadow: topic === tItem.key ? `0 0 16px ${tItem.color}18` : 'none',
-              }}
-            >
-              <span className="text-2xl block mb-2" aria-hidden="true">{tItem.emoji}</span>
-              <p className="text-[13px] font-semibold leading-tight" style={{ color: topic === tItem.key ? tItem.color : 'var(--brand-ink)' }}>
-                {tItem.label}
-              </p>
-            </button>
-          ))}
+        <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+          {TOPICS.map(tItem => {
+            const topicSessions = practiceSessions.filter((s: any) => s.topic === tItem.key);
+            const topicTotal    = topicSessions.reduce((a: number, s: any) => a + s.questions_total, 0);
+            const topicCorrect  = topicSessions.reduce((a: number, s: any) => a + s.questions_correct, 0);
+            const mastery       = topicTotal > 0 ? Math.round((topicCorrect / topicTotal) * 100) : 0;
+            const isSelected    = topic === tItem.key;
+
+            return (
+              <button key={tItem.key}
+                onClick={() => setTopic(tItem.key)}
+                className="flex-shrink-0 w-36 flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all active:scale-95"
+                style={{
+                  background: isSelected ? `${tItem.color}18` : 'var(--surface-soft)',
+                  borderColor: isSelected ? `${tItem.color}50` : 'rgba(197,160,89,0.15)',
+                }}
+              >
+                <svg width="44" height="44" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" fill="none"
+                    stroke="rgba(128,128,128,0.15)" strokeWidth="3" />
+                  <circle cx="22" cy="22" r="18" fill="none"
+                    stroke={tItem.color} strokeWidth="3"
+                    strokeDasharray={`${2 * Math.PI * 18}`}
+                    strokeDashoffset={`${2 * Math.PI * 18 * (1 - mastery / 100)}`}
+                    strokeLinecap="round"
+                    transform="rotate(-90 22 22)"
+                    style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+                  />
+                  <text x="22" y="26" textAnchor="middle"
+                    fontSize="11" fontWeight="700" fill={tItem.color}>
+                    {mastery}%
+                  </text>
+                </svg>
+                <span className="text-[11px] font-bold text-center leading-snug"
+                  style={{ color: isSelected ? tItem.color : 'var(--text-cream)' }}>
+                  {tItem.emoji} {tItem.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Difficulty picker */}

@@ -49,7 +49,30 @@ type ShrutiLeaderboardUser = {
   certified_count: number;
 };
 
-type LeaderboardPeriod = 'all' | 'weekly' | 'monthly' | 'shruti';
+type QuizLeaderboardUser = {
+  id: string;
+  full_name: string | null;
+  username: string;
+  avatar_url: string | null;
+  tradition: string | null;
+  is_pro: boolean;
+  active_symbol_id?: string | null;
+  total_karma: number;
+  total_correct: number;
+  total_answered: number;
+  rank_title: 'Seeker' | 'Jigyasu' | 'Shishya' | 'Gyani' | 'Pandit';
+  rank_emoji: string;
+};
+
+type LeaderboardPeriod = 'all' | 'weekly' | 'monthly' | 'shruti' | 'quiz';
+
+const RANK_META = {
+  Seeker:  { emoji: '🌱', text: '#7aab7a', desc: 'Beginning the journey' },
+  Jigyasu: { emoji: '📖', text: '#c8a050', desc: 'Curious learner' },
+  Shishya: { emoji: '🪔', text: '#C5A059', desc: 'Devoted student' },
+  Gyani:   { emoji: '🧿', text: '#6a9cd4', desc: 'Knowledgeable one' },
+  Pandit:  { emoji: '🏵️', text: '#d4b840', desc: 'Master of tradition' },
+} as const;
 
 function getScoreForPeriod(user: LeaderboardUser, period: LeaderboardPeriod) {
   if (period === 'weekly') return user.weekly_seva ?? 0;
@@ -95,6 +118,9 @@ export default function ScoreboardClient({
   weeklyUsers,
   monthlyUsers,
   shrutiUsers,
+  quizAllTime,
+  quizWeekly,
+  quizMonthly,
   currentUserId,
   currentUserTradition,
 }: {
@@ -102,6 +128,9 @@ export default function ScoreboardClient({
   weeklyUsers: LeaderboardUser[];
   monthlyUsers: LeaderboardUser[];
   shrutiUsers: ShrutiLeaderboardUser[];
+  quizAllTime: QuizLeaderboardUser[];
+  quizWeekly: QuizLeaderboardUser[];
+  quizMonthly: QuizLeaderboardUser[];
   currentUserId?: string;
   currentUserTradition?: string | null;
 }) {
@@ -207,6 +236,20 @@ export default function ScoreboardClient({
   const getRelic = (activeSymbolId?: string | null) => SACRED_RELICS.find((relic) => relic.id === activeSymbolId) ?? null;
   const shrutiCurrentData = currentUserShrutiData;
   const shrutiCurrentRank = currentUserShrutiRank;
+  const quizUsers = period === 'weekly' ? quizWeekly : period === 'monthly' ? quizMonthly : quizAllTime;
+
+  const filteredQuizUsers = useMemo(() => {
+    return quizUsers.filter((user) => {
+      const matchesSearch =
+        user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = filter === 'global' || (!!currentUserTradition && user.tradition === currentUserTradition);
+      return Boolean(matchesSearch) && matchesFilter;
+    });
+  }, [quizUsers, filter, searchQuery, currentUserTradition]);
+
+  const currentUserQuizData = quizUsers.find((u) => u.id === currentUserId);
+  const currentUserQuizRank = quizUsers.findIndex((u) => u.id === currentUserId) + 1;
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 selection:bg-[#C5A059]/30">
@@ -245,7 +288,7 @@ export default function ScoreboardClient({
           ) : null}
         </div>
 
-        {period !== 'shruti' && currentUserData && (
+        {period !== 'shruti' && period !== 'quiz' && currentUserData && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -261,6 +304,40 @@ export default function ScoreboardClient({
             >
               <Share2 size={14} />
               Share on WhatsApp
+            </button>
+          </motion.div>
+        )}
+
+        {period === 'quiz' && currentUserQuizData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mb-8 p-4 rounded-2xl bg-[var(--surface-soft)] border border-[var(--card-border)] flex items-center justify-between"
+          >
+            <div>
+              <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-widest mb-1">Your Quiz Standing</p>
+              <h2 className="text-lg font-serif theme-ink mb-1">Ranked #{currentUserQuizRank}</h2>
+              <div className="flex items-center gap-1.5 text-xs">
+                <span>{currentUserQuizData.rank_emoji}</span>
+                <span className="font-bold" style={{ color: RANK_META[currentUserQuizData.rank_title].text }}>
+                  {currentUserQuizData.rank_title}
+                </span>
+                <span className="text-[var(--text-muted-warm)] ml-2">{currentUserQuizData.total_karma} Karma</span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                const link = shareScoreToWhatsApp(
+                  currentUserQuizData.full_name || currentUserQuizData.username,
+                  currentUserQuizData.total_karma,
+                  currentUserQuizRank
+                );
+                window.open(link, '_blank');
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba59] transition-colors shadow-lg shadow-[#25D366]/20"
+            >
+              <Share2 size={14} />
+              Share
             </button>
           </motion.div>
         )}
@@ -283,7 +360,7 @@ export default function ScoreboardClient({
           </motion.div>
         )}
 
-        {period !== 'shruti' && (
+        {period !== 'shruti' && period !== 'quiz' && (
         <div className="flex items-end justify-center gap-4 mb-12 pt-8">
           {topThree[1] && (
             <div className="flex flex-col items-center">
@@ -429,6 +506,7 @@ export default function ScoreboardClient({
               { value: 'weekly' as const, label: 'This Week' },
               { value: 'monthly' as const, label: 'This Month' },
               { value: 'shruti' as const, label: '🎙 Shruti' },
+              { value: 'quiz' as const, label: '🧠 Quiz' },
             ].map((tab) => (
               <button
                 key={tab.value}
@@ -601,7 +679,88 @@ export default function ScoreboardClient({
               );
             })}
 
-            {period !== 'shruti' && others.map((user, idx) => {
+            {period === 'quiz' && filteredQuizUsers.length === 0 && (
+              <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-6 text-center">
+                <p className="text-sm font-medium theme-ink">No quiz karma yet.</p>
+              </div>
+            )}
+
+            {period === 'quiz' && filteredQuizUsers.map((user, idx) => {
+              const relic = getRelic(user.active_symbol_id);
+              const isHighTier = idx < 3;
+
+              return (
+              <motion.div
+                key={user.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.03 }}
+                className={`group flex items-center gap-4 p-3 rounded-2xl bg-[var(--surface-soft)] border transition-all cursor-pointer ${
+                  isHighTier ? 'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] hover:border-amber-500/60' : 'border-black/[0.03] hover:border-[#C5A059]/30'
+                }`}
+              >
+                <div className={`w-8 text-center text-xs font-bold ${getRankTone(idx)}`}>
+                  #{idx + 1}
+                </div>
+
+                <div className="relative">
+                  <div
+                    className="w-10 h-10 rounded-full overflow-hidden bg-white/10 shadow-inner relative"
+                    style={{
+                      border: getListRelicBorder(user.active_symbol_id),
+                      transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                    }}
+                  >
+                    {user.avatar_url ? (
+                      <Image src={user.avatar_url} alt={user.username} fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-[var(--text-dim)]">
+                        {getInitials(user.full_name || user.username)}
+                      </div>
+                    )}
+                  </div>
+                  {user.is_pro && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-white">
+                      <Star size={8} className="text-white" fill="currentColor" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-bold theme-ink">{user.full_name || user.username}</p>
+                    <span className="shrink-0 text-[11px] opacity-80">{getTraditionEmoji(user.tradition)}</span>
+                    {relic && (
+                      <Image
+                        src={relic.imageUrl}
+                        alt={relic.name}
+                        title={relic.name}
+                        width={14}
+                        height={14}
+                        unoptimized
+                        className="rounded-full opacity-80"
+                      />
+                    )}
+                    {user.is_pro && <Crown size={12} className="text-yellow-600/60" />}
+                  </div>
+                  <p className="mt-0.5 truncate text-[10px] text-[var(--text-muted-warm)]">
+                    @{user.username}
+                  </p>
+                  <div className="mt-1 flex w-fit items-center gap-1 rounded border border-[var(--card-border)] bg-[var(--card-bg)] px-2 py-0.5">
+                    <span className="text-[10px]">{user.rank_emoji}</span>
+                    <span className="text-[10px] font-bold" style={{ color: RANK_META[user.rank_title].text }}>{user.rank_title}</span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-sm font-bold theme-ink">{user.total_karma}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-dim)]">Karma</p>
+                </div>
+              </motion.div>
+              );
+            })}
+
+            {period !== 'shruti' && period !== 'quiz' && others.map((user, idx) => {
               const tier = getTierFromScore(user.seva_score || 0);
               const isHighTier = tier.key === 'rishi' || tier.key === 'mahatma';
               

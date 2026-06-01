@@ -81,8 +81,8 @@ function SuggestedChips({
             href={chip.href}
             className="shrink-0 px-3.5 py-2 rounded-full text-[11px] font-semibold border transition-all active:scale-95"
             style={{
-              background:  'rgba(197,160,89,0.08)',
-              borderColor: 'rgba(197,160,89,0.20)',
+              background:  'var(--brand-primary-soft)',
+              borderColor: 'var(--card-border)',
               color:       'var(--brand-primary)',
               whiteSpace:  'nowrap',
             }}
@@ -124,18 +124,10 @@ const TRADITION_FEATURED: Record<string, Array<{ emoji: string; title: string; d
   ],
 };
 
-function FeaturedGrid({
-  tradition,
-  isDark,
-}: { tradition: string | null; isDark: boolean }) {
+function FeaturedGrid({ tradition }: { tradition: string | null }) {
   const items = tradition && TRADITION_FEATURED[tradition]
     ? TRADITION_FEATURED[tradition]
     : BASE_FEATURED;
-
-  const cardBg     = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,253,246,0.92)';
-  const cardBorder = isDark ? 'rgba(197,160,89,0.12)' : 'rgba(197,160,89,0.18)';
-  const titleColor = isDark ? '#F0EDE6' : '#1A100A';
-  const descColor  = isDark ? 'rgba(240,237,230,0.45)' : 'rgba(60,40,15,0.50)';
 
   return (
     <div className="mb-5">
@@ -148,12 +140,12 @@ function FeaturedGrid({
             key={item.title}
             href={item.href}
             className="flex flex-col rounded-[1.3rem] p-3.5 border relative overflow-hidden transition-transform active:scale-[0.97]"
-            style={{ background: cardBg, borderColor: cardBorder, textDecoration: 'none' }}
+            style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', textDecoration: 'none' }}
           >
             {/* Ambient glow */}
             <span
               className="pointer-events-none absolute top-0 right-0 w-12 h-12 rounded-full opacity-20"
-              style={{ background: 'radial-gradient(circle, rgba(197,160,89,0.5), transparent 70%)', transform: 'translate(30%,-30%)' }}
+              style={{ background: 'radial-gradient(circle, var(--brand-primary), transparent 70%)', transform: 'translate(30%,-30%)' }}
               aria-hidden="true"
             />
             <span
@@ -163,10 +155,10 @@ function FeaturedGrid({
             >
               {item.emoji}
             </span>
-            <span className="text-[13px] font-bold leading-tight" style={{ color: titleColor }}>
+            <span className="text-[13px] font-bold leading-tight" style={{ color: 'var(--text-cream)' }}>
               {item.title}
             </span>
-            <span className="text-[10px] mt-0.5" style={{ color: descColor }}>
+            <span className="text-[10px] mt-0.5" style={{ color: 'var(--text-dim)' }}>
               {item.desc}
             </span>
           </Link>
@@ -210,13 +202,12 @@ function RecommendationCard({
   if (rec.href.includes('/pathshala?tradition=sikh')) badgeLabel = 'Sikh';
   else if (rec.href.includes('/bhakti/mala')) badgeLabel = 'Practice';
   else if (rec.type === 'katha') badgeLabel = 'Story';
-  else if ((rec.type as string) === 'vrat') badgeLabel = 'Vrat';
 
-  const TIME_ESTIMATE: Record<string, string> = {
-    shloka: '3 min', katha: '5 min', mantra: '5 min',
-    vrat: '4 min', meditation: '10 min', default: '5 min'
+  const TIME_ESTIMATE: Record<MoodRecommendation['type'], string> = {
+    stotram: '3 min', katha: '5 min', dhyana: '10 min',
+    discover: '5 min', japa: '8 min', pathshala: '5 min',
   };
-  const timeEst = TIME_ESTIMATE[rec.type] || TIME_ESTIMATE['default'];
+  const timeEst = TIME_ESTIMATE[rec.type] ?? '5 min';
 
   return (
     <div
@@ -285,14 +276,12 @@ function RecommendationCard({
 // ── Daily Dharm Veer Banner ────────────────────────────────────────────────────
 function DailyVeerBanner({ veer }: { veer: TodayVeer }) {
   const TRADITION_ACCENT: Record<string, string> = {
-    hindu:    'rgba(255,120,0,0.12)',
-    sikh:     'rgba(0,100,255,0.12)',
-    buddhist: 'rgba(255,200,0,0.12)',
-    jain:     'rgba(0,200,50,0.12)',
-    sufi:     'rgba(140,90,220,0.12)',
-    tribal:   'rgba(60,160,90,0.12)',
+    hindu:    'var(--glow-hindu)',
+    sikh:     'var(--glow-sikh)',
+    buddhist: 'var(--glow-buddhist)',
+    jain:     'var(--glow-jain)',
   };
-  const bg = TRADITION_ACCENT[veer.tradition] ?? 'rgba(197,160,89,0.10)';
+  const bg = TRADITION_ACCENT[veer.tradition] ?? 'var(--brand-primary-soft)';
 
   return (
     <Link
@@ -464,7 +453,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage, tod
     }
 
     setSelectedMood(moodKey);
-    setContext({});
+    setContext({ need: null, time: null, type: null });
   }
 
   function reset() {
@@ -476,7 +465,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage, tod
   function trackInteraction(action: 'skip' | 'click', itemType: string) {
     if (!activeCheckinId) return;
 
-    fetch('/api/mood/dis' + 'cover-track', {
+    fetch('/api/mood/discover-track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ checkinId: activeCheckinId, action, itemType })
@@ -521,10 +510,7 @@ export default function DiscoverClient({ tradition, transliterationLanguage, tod
 
           {/* ── Featured grid ── */}
           {!selectedMood && (
-            <FeaturedGrid
-              tradition={tradition}
-              isDark={resolvedTheme === 'dark'}
-            />
+            <FeaturedGrid tradition={tradition} />
           )}
 
           {/* ── Mood selection section ── */}

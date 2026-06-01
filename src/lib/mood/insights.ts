@@ -4,7 +4,7 @@ export interface MoodInsightMetrics {
   totalCheckins: number;
   completedActions: number;
   mostFrequentMood: string | null;
-  preferredActions: { action: string; count: number }[];
+  preferredActions: { action?: string; type?: string; count: number }[];
   streak: number; // consecutive days
 }
 

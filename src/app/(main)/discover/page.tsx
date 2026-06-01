@@ -72,7 +72,7 @@ export default async function DiscoverPage() {
     <DiscoverClient
       tradition={profile?.tradition ?? null}
       spiritualLevel={profile?.spiritual_level ?? null}
-      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
+      transliterationLanguage={profile?.transliteration_language ?? 'en'}
       todayVeer={todayVeer ? {
         id:      todayVeer.id,
         name:    todayVeer.name,

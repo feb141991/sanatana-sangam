@@ -49,6 +49,18 @@ export default async function QuizPage() {
   // Gate history: free = 7 days, Pro = full 50
   const visibleHistory = isPro ? history : history.slice(0, 7);
 
+  // Streak grace day logic — use spiritual date to match how quiz dates are recorded
+  const yesterdayDate = new Date(todayStr + 'T12:00:00Z');
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+  const missedYesterday = !history.find(h => h.date === yesterdayStr);
+
+  const sevenDaysAgoDate = new Date(todayStr + 'T12:00:00Z');
+  sevenDaysAgoDate.setDate(sevenDaysAgoDate.getDate() - 7);
+  const sevenDaysAgo = sevenDaysAgoDate.toISOString().split('T')[0];
+  const recentHistory = history.filter(h => h.date >= sevenDaysAgo);
+  const hasGraceAvailable = recentHistory.length < 7 && missedYesterday;
+
   return (
     <QuizDashboardClient
       userId={user.id}
@@ -61,6 +73,7 @@ export default async function QuizPage() {
       todayResponse={todayResponse}
       initialHistory={visibleHistory}
       practiceSessions={sessionsResult.data ?? []}
+      hasGraceAvailable={hasGraceAvailable}
     />
   );
 }
