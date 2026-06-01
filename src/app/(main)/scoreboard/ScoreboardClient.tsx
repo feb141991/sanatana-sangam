@@ -21,6 +21,73 @@ import { SACRED_RELICS } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import PageIntro from '@/components/ui/PageIntro';
 
+// ── Relic emoji map (copied inline from KoshClient) ─────────────────────────
+const RELIC_EMOJI: Record<string, string> = {
+  // Universal
+  'diya-bronze':         '🪔',
+  'clay-kalash':         '🏺',
+  'incense-sandalwood':  '🪷',
+  'camphor-flame':       '🕯️',
+  'mindful-bell':        '🔔',
+  'copper-lota':         '🫙',
+  'asana-kusha':         '🌿',
+  'sacred-mala':         '📿',
+  'shankha-conch':       '🐚',
+  'prarthana-pothi':     '📖',
+  'the-sage-halo':       '✨',
+  // Hindu
+  'ganesha-modak':       '🍡',
+  'vibhuti-ash':         '🌫️',
+  'trishula-gold':       '🔱',
+  'krishna-flute':       '🎶',
+  'rama-bow':            '🏹',
+  'peacock-feather':     '🦚',
+  'durga-shield':        '🛡️',
+  'ananta-shesha':       '🐍',
+  'tulsi-leaf':          '🌱',
+  'shiva-damaru':        '🥁',
+  'nandi-devotion':      '🐂',
+  'brahma-lotus':        '🪷',
+  'hanuman-gada':        '🏏',
+  'sudarshana-chakra':   '🌀',
+  'ganga-kalash':        '🏺',
+  'rishi-kamandalu':     '🫙',
+  'chintamani-gem':      '💎',
+  // Sikh
+  'steel-kara':          '⭕',
+  'sacred-kirpan':       '⚔️',
+  'khanda-gold':         '☬',
+  'sikh-chaur':          '🌾',
+  'kartarpur-nishan':    '🚩',
+  'wooden-kangha':       '🪥',
+  'nishan-sahib':        '🏴',
+  'deg-teg':             '⚔️',
+  'gurbani-pothi':       '📜',
+  // Buddhist
+  'lotus-bloom':         '🌸',
+  'alms-bowl':           '🍵',
+  'dharma-wheel-gold':   '☸️',
+  'treasure-vase':       '🫙',
+  'golden-fish':         '🐟',
+  'bodhi-leaf':          '🍃',
+  'prayer-wheel':        '☸️',
+  'vajra-scepter':       '⚡',
+  'parasol-royalty':     '☂️',
+  // Jain
+  'jain-swastika':       '🔯',
+  'peacock-brush':       '🦚',
+  'siddhashila-moon':    '🌙',
+  'ahimsa-hand':         '🤲',
+  'three-jewels':        '💎',
+  'siddhachakra-wheel':  '🔵',
+  'jain-kalasha':        '🏺',
+};
+
+function relicEmoji(id: string | null | undefined): string | null {
+  if (!id) return null;
+  return RELIC_EMOJI[id] ?? '🔱';
+}
+
 type LeaderboardUser = {
   id: string;
   full_name: string | null;
@@ -635,6 +702,14 @@ export default function ScoreboardClient({
                         <Star size={8} className="text-white" fill="currentColor" />
                       </div>
                     )}
+                    {user.active_symbol_id && (
+                      <div
+                        className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
+                        style={{ background: 'rgba(197,160,89,0.22)', fontSize: '10px' }}
+                      >
+                        {relicEmoji(user.active_symbol_id)}
+                      </div>
+                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">
@@ -724,6 +799,14 @@ export default function ScoreboardClient({
                       <Star size={8} className="text-white" fill="currentColor" />
                     </div>
                   )}
+                  {user.active_symbol_id && (
+                    <div
+                      className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
+                      style={{ background: 'rgba(197,160,89,0.22)', fontSize: '10px' }}
+                    >
+                      {relicEmoji(user.active_symbol_id)}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex-1">
@@ -797,6 +880,14 @@ export default function ScoreboardClient({
                   {user.is_pro && (
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center border border-white">
                       <Star size={8} className="text-white" fill="currentColor" />
+                    </div>
+                  )}
+                  {user.active_symbol_id && (
+                    <div
+                      className="absolute bottom-0 right-0 w-5 h-5 rounded-full flex items-center justify-center border border-[rgba(0,0,0,0.15)] backdrop-blur-md z-10"
+                      style={{ background: 'rgba(197,160,89,0.22)', fontSize: '10px' }}
+                    >
+                      {relicEmoji(user.active_symbol_id)}
                     </div>
                   )}
                 </div>

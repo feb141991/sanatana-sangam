@@ -49,6 +49,73 @@ const PATH_LABELS: Record<string, string> = {
   jain:      'Jain path',
 };
 
+// ── Relic emoji map (copied inline from KoshClient) ─────────────────────────
+const RELIC_EMOJI: Record<string, string> = {
+  // Universal
+  'diya-bronze':         '🪔',
+  'clay-kalash':         '🏺',
+  'incense-sandalwood':  '🪷',
+  'camphor-flame':       '🕯️',
+  'mindful-bell':        '🔔',
+  'copper-lota':         '🫙',
+  'asana-kusha':         '🌿',
+  'sacred-mala':         '📿',
+  'shankha-conch':       '🐚',
+  'prarthana-pothi':     '📖',
+  'the-sage-halo':       '✨',
+  // Hindu
+  'ganesha-modak':       '🍡',
+  'vibhuti-ash':         '🌫️',
+  'trishula-gold':       '🔱',
+  'krishna-flute':       '🎶',
+  'rama-bow':            '🏹',
+  'peacock-feather':     '🦚',
+  'durga-shield':        '🛡️',
+  'ananta-shesha':       '🐍',
+  'tulsi-leaf':          '🌱',
+  'shiva-damaru':        '🥁',
+  'nandi-devotion':      '🐂',
+  'brahma-lotus':        '🪷',
+  'hanuman-gada':        '🏏',
+  'sudarshana-chakra':   '🌀',
+  'ganga-kalash':        '🏺',
+  'rishi-kamandalu':     '🫙',
+  'chintamani-gem':      '💎',
+  // Sikh
+  'steel-kara':          '⭕',
+  'sacred-kirpan':       '⚔️',
+  'khanda-gold':         '☬',
+  'sikh-chaur':          '🌾',
+  'kartarpur-nishan':    '🚩',
+  'wooden-kangha':       '🪥',
+  'nishan-sahib':        '🏴',
+  'deg-teg':             '⚔️',
+  'gurbani-pothi':       '📜',
+  // Buddhist
+  'lotus-bloom':         '🌸',
+  'alms-bowl':           '🍵',
+  'dharma-wheel-gold':   '☸️',
+  'treasure-vase':       '🫙',
+  'golden-fish':         '🐟',
+  'bodhi-leaf':          '🍃',
+  'prayer-wheel':        '☸️',
+  'vajra-scepter':       '⚡',
+  'parasol-royalty':     '☂️',
+  // Jain
+  'jain-swastika':       '🔯',
+  'peacock-brush':       '🦚',
+  'siddhashila-moon':    '🌙',
+  'ahimsa-hand':         '🤲',
+  'three-jewels':        '💎',
+  'siddhachakra-wheel':  '🔵',
+  'jain-kalasha':        '🏺',
+};
+
+function relicEmoji(id: string | null | undefined): string | null {
+  if (!id) return null;
+  return RELIC_EMOJI[id] ?? '🔱';
+}
+
 const ASHRAMA_DESCRIPTIONS: Record<string, string> = {
   brahmacharya: "Brahmacharya is the sacred stage of learning, self-discipline, and spiritual preparation. During these formative years, a seeker focuses on acquiring wisdom, cultivating physical and mental purity, and mastering the senses under the guidance of truth. It is a period of laying a secure foundation through study, contemplation, and consistent daily rituals, paving the path for a life of purpose, virtue, and deep spiritual awareness.",
   grihastha: "Grihastha is the householder stage of active service, family, and community responsibility. In this phase, the seeker integrates spiritual practice with worldly duties, supporting family, society, and ancestral lineages. It is a profound path of karma yoga, where every action is performed as a selfless offering. Sadhana is not abandoned but is integrated into the rhythm of daily duties, fostering patience, love, and spiritual maturity.",
@@ -1139,9 +1206,20 @@ export default function ProfileClient({
               transition={{ delay: 0.15, type: 'spring', stiffness: 200 }}
               className="text-center space-y-3"
             >
-                <div className="flex items-center justify-center gap-3">
-                  <h1 className="text-3xl font-medium theme-ink premium-serif">
-                    {liveProfile?.full_name}
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <h1 className="text-3xl font-medium theme-ink premium-serif flex items-center gap-2 flex-wrap justify-center">
+                    <span>{liveProfile?.full_name}</span>
+                    {liveProfile?.active_symbol_id && (
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[13px] inline-flex items-center justify-center"
+                        style={{
+                          background: 'rgba(197,160,89,0.12)',
+                          border: '1px solid rgba(197,160,89,0.22)',
+                        }}
+                      >
+                        {relicEmoji(liveProfile.active_symbol_id)}
+                      </span>
+                    )}
                   </h1>
                   <button
                     onClick={() => setEditing(true)}
@@ -1334,6 +1412,11 @@ export default function ProfileClient({
               })}
             </div>
             <p className="text-[9px] theme-dim mt-2.5 text-center">{unlockedCount} of {totalVisible} relics unlocked</p>
+            {!(liveProfile as any)?.active_symbol_id && (
+              <p className="text-[11px] text-center mt-2" style={{ color: 'var(--text-dim)' }}>
+                Tap a relic to equip it — it will appear on your profile and in the leaderboard
+              </p>
+            )}
           </div>
 
           {/* ── Kul Card ── */}
