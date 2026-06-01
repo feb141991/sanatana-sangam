@@ -109,8 +109,8 @@ function resolveMaxTokens(
       resolved = base + 8192;
       break;
     default:
-      // Unknown effort or not set — use safe default that covers a reasoning chain
-      resolved = Math.max(base, 4000);
+      // No reasoning effort set → thinking is disabled, no overhead needed
+      resolved = base;
       break;
   }
   return Math.min(resolved, SARVAM_MAX_TOKENS_LIMIT);

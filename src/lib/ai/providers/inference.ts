@@ -67,11 +67,20 @@ export async function generateWithProvider(
   options?: {
     responseFormat?: 'text' | 'json';
     providerOverride?: InferenceProviderOverride;
+    maxOutputTokens?: number;
   }
 ): Promise<AITextResult> {
   const providers = getInferenceProviders(options?.providerOverride);
+
+  // Inject maxOutputTokens onto the prompt spec so all providers honour it
+  const resolvedPrompt: AIPromptSpec = options?.maxOutputTokens
+    ? (typeof prompt === 'string'
+        ? { user: prompt, maxOutputTokens: options.maxOutputTokens }
+        : { ...prompt, maxOutputTokens: options.maxOutputTokens })
+    : prompt;
+
   const request: InferenceRequest = {
-    prompt,
+    prompt: resolvedPrompt,
     responseFormat: options?.responseFormat,
   };
 

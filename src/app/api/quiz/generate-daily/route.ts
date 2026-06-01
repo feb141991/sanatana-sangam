@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
             user: prompt,
             temperature: 0.35,
             reasoningEffort: 'none',
-            maxOutputTokens: 4096,
+            maxOutputTokens: 2048,
           },
           { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
         );

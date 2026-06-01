@@ -133,7 +133,7 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
           user: prompt,
           temperature: 0.7,
           reasoningEffort: 'none',
-          maxOutputTokens: 4096,
+          maxOutputTokens: 2048,
         },
         { 
           responseFormat: 'json',
