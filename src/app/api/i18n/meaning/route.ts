@@ -143,7 +143,9 @@ export async function POST(req: Request) {
     }
 
     // Store to reasoning cache (non-blocking)
-    storeReasoningCache('meaning_generate', cacheKey, { meaning, aiMetadata }).catch(() => {});
+    storeReasoningCache('meaning_generate', cacheKey, { meaning, aiMetadata }).catch((e: unknown) => {
+      console.warn('[i18n/meaning] reasoning cache write failed:', (e as Error)?.message);
+    });
 
     await supabase
       .from('content_meanings')

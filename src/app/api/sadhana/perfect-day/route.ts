@@ -84,7 +84,9 @@ export async function POST(req: NextRequest) {
       fetch(new URL('/api/seva-tier/check', req.url).toString(), { 
         method: 'POST', 
         headers: { Cookie: req.headers.get('cookie') ?? '' } 
-      }).catch(() => {}); // non-fatal
+      }).catch((e: unknown) => {
+        console.warn('[sadhana/perfect-day] seva-tier check failed:', (e as Error)?.message);
+      });
     }
 
     let freezeAwarded = false;
