@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { Twitter, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -39,6 +40,40 @@ import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
 import InviteCard from '@/components/home/InviteCard';
+
+const PATH_LABELS: Record<string, string> = {
+  universal: 'Universal path',
+  hindu:     'Hindu path',
+  sikh:      'Sikh path',
+  buddhist:  'Buddhist path',
+  jain:      'Jain path',
+};
+
+const ASHRAMA_DESCRIPTIONS: Record<string, string> = {
+  brahmacharya: "Brahmacharya is the sacred stage of learning, self-discipline, and spiritual preparation. During these formative years, a seeker focuses on acquiring wisdom, cultivating physical and mental purity, and mastering the senses under the guidance of truth. It is a period of laying a secure foundation through study, contemplation, and consistent daily rituals, paving the path for a life of purpose, virtue, and deep spiritual awareness.",
+  grihastha: "Grihastha is the householder stage of active service, family, and community responsibility. In this phase, the seeker integrates spiritual practice with worldly duties, supporting family, society, and ancestral lineages. It is a profound path of karma yoga, where every action is performed as a selfless offering. Sadhana is not abandoned but is integrated into the rhythm of daily duties, fostering patience, love, and spiritual maturity.",
+  vanaprastha: "Vanaprastha is the transition stage of gradual retirement and turning inward. As worldly responsibilities are handed down to the next generation, the seeker withdraws from active societal ambitions to focus on deeper contemplation, meditation, and spiritual study. It is a time of sharing wisdom, letting go of attachments, and simplifying life, preparing the soul for the ultimate journey of self-realization and formless union.",
+  sannyasa: "Sannyasa is the stage of complete renunciation and absolute spiritual freedom. The renunciate breaks all worldly bonds, dedicating the remainder of life solely to the pursuit of Moksha—liberation. Moving beyond personal identity, family ties, and possessions, the sannyasi beholds the Divine in all beings and walks as a pure channel of peace, wisdom, and selfless love, completely absorbed in the contemplation of the ultimate reality."
+};
+
+const ASHRAMA_BULLETS: Record<string, string[]> = {
+  brahmacharya: [
+    "Develop a robust foundation of learning and scripture through Pathshala and study of sacred verses.",
+    "Cultivate steady concentration and mental clarity through daily Japa mala practice."
+  ],
+  grihastha: [
+    "Your sadhana supports family and community — Kul and Mandali are your path.",
+    "Perform karma yoga and build consistency through daily Nitya and Seva point tracking."
+  ],
+  vanaprastha: [
+    "Deepen your meditation and study by tracking your progress and streaks on long-term pathshala paths.",
+    "Engage in selfless service and ancestral remembrance using custom vrat, tithi, and lunar panchang timing."
+  ],
+  sannyasa: [
+    "Embrace the formless path with pure, unattached Japa mala focus and silent meditation tracking.",
+    "Accumulate spiritual treasury by equipping sacred relics and guiding seekers in the community."
+  ]
+};
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -200,6 +235,7 @@ export default function ProfileClient({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [socialShareOpen, setSocialShareOpen] = useState(false);
+  const [ashramaInfoOpen, setAshramaInfoOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
@@ -1188,47 +1224,61 @@ export default function ProfileClient({
           {/* Metric Row — Redesigned: Streak / Seva / Relics / Ashrama */}
           <div className="grid grid-cols-4 gap-2">
             {([
-              { label: 'Streak', value: String(streak), suffix: '🔥' },
-              { label: 'Seva', value: String(liveProfile?.seva_score ?? 0), suffix: '' },
-              { label: 'Relics', value: `${unlockedCount}/${totalVisible}`, suffix: '' },
-              { label: 'Ashrama', value: ashramaMeta.label, suffix: '' },
-            ] as { label: string; value: string; suffix: string }[]).map((m, i) => (
-              <motion.div
+              { label: 'Streak', value: String(streak), suffix: '🔥', href: '/my-progress' },
+              { label: 'Seva', value: String(liveProfile?.seva_score ?? 0), suffix: '', href: '/my-progress' },
+              { label: 'Relics', value: `${unlockedCount}/${totalVisible}`, suffix: '', href: '/kosh' },
+              { label: 'Ashrama', value: ashramaMeta.label, suffix: '', href: '#ashrama' },
+            ] as { label: string; value: string; suffix: string; href: string }[]).map((m, i) => (
+              <Link
                 key={m.label}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 * i }}
-                className="clay-card rounded-2xl p-2.5 text-center transition-all hover:border-[#C5A059]/30"
+                href={m.href}
+                className="active:scale-95 transition-transform block"
               >
-                <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
-                <p className="text-sm font-medium theme-ink truncate">{m.value}{m.suffix}</p>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="clay-card rounded-2xl p-2.5 text-center transition-all hover:border-[#C5A059]/30 h-full flex flex-col justify-between items-center"
+                >
+                  <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
+                  <p className="text-sm font-medium theme-ink truncate">{m.value}{m.suffix}</p>
+                  <div className="flex justify-center mt-1">
+                    <ChevronRight size={10} className="opacity-25" />
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
 
           {/* Ashrama Life Stage Card */}
           {profileDob && (
             <motion.div
+              id="ashrama"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
-              className="clay-card rounded-2xl p-4 flex items-center gap-4"
-              style={{ borderLeft: `2px solid ${ashramaMeta.accent}50` }}
             >
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: `${ashramaMeta.accent}18` }}
+              <button
+                type="button"
+                onClick={() => setAshramaInfoOpen(true)}
+                className="w-full clay-card rounded-2xl p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] hover:border-[#C5A059]/30"
+                style={{ borderLeft: `2px solid ${ashramaMeta.accent}50` }}
               >
-                <SacredIcon name={ashramaMeta.icon} size={20} style={{ color: ashramaMeta.accent }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-bold tracking-[0.18em] uppercase theme-dim mb-0.5">Life Stage</p>
-                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">{ashramaMeta.label}</p>
-                <p className="text-[12px] theme-muted mt-0.5 leading-snug truncate">{ashramaMeta.subtitle}</p>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-[10px] theme-dim">{ashramaMeta.ageRange}</p>
-              </div>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${ashramaMeta.accent}18` }}
+                >
+                  <SacredIcon name={ashramaMeta.icon} size={20} style={{ color: ashramaMeta.accent }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold tracking-[0.18em] uppercase theme-dim mb-0.5">Life Stage</p>
+                  <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">{ashramaMeta.label}</p>
+                  <p className="text-[12px] theme-muted mt-0.5 leading-snug truncate">{ashramaMeta.subtitle}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-[10px] theme-dim">{ashramaMeta.ageRange}</p>
+                </div>
+              </button>
             </motion.div>
           )}
 
@@ -1335,19 +1385,89 @@ export default function ProfileClient({
             />
           </div>
 
-          {/* Share & Connect — full social drawer */}
+          {/* Redesigned Share your practice Card */}
           <button
+            type="button"
             onClick={() => setSocialShareOpen(true)}
-            className="clay-card rounded-[1.5rem] p-4 flex items-center gap-4 group hover:bg-[#C5A059]/5"
+            className="w-full text-left rounded-[2rem] p-5 relative overflow-hidden transition-all active:scale-[0.98] border border-[#C5A059]/25 hover:border-[#C5A059]/40"
+            style={{
+              background: 'linear-gradient(180deg, rgba(197,160,89,0.06) 0%, transparent 100%)',
+            }}
           >
-            <div className="w-10 h-10 rounded-xl bg-[#C5A059]/10 flex items-center justify-center text-[#C5A059] group-hover:scale-110 transition-transform border border-[#C5A059]/20">
-              <Share2 size={20} />
+            {/* Top section with emoji & glow */}
+            <div className="relative flex flex-col items-center justify-center mb-4 pt-4">
+              <div
+                className="pointer-events-none absolute w-24 h-24 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(197,160,89,0.18) 0%, transparent 70%)',
+                  filter: 'blur(10px)',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+              <span className="text-[2.5rem] leading-none z-10 select-none">
+                {TRADITIONS.find((t) => t.value === profileTradition)?.emoji ?? '🔱'}
+              </span>
             </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium theme-ink">Share your practice</p>
-              <p className="text-xs theme-muted mt-0.5">WhatsApp · X · Copy link</p>
+
+            {/* Display name */}
+            <p className="font-serif text-lg text-center theme-ink font-bold leading-tight">
+              {liveProfile?.full_name ?? liveProfile?.username ?? "Your Practice"}
+            </p>
+
+            {/* Subtitle with live values */}
+            <p className="text-xs text-center tracking-widest theme-muted mt-1.5 uppercase font-medium">
+              {streak}-day streak · {liveProfile?.seva_score ?? 0} seva · {PATH_LABELS[profileTradition] ?? 'Universal path'}
+            </p>
+
+            {/* Three Share Action Pills */}
+            <div className="mt-6 flex justify-center gap-6 w-full border-t border-white/5 pt-5">
+              {/* WhatsApp */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(34,197,94,0.08)',
+                    border: `1px solid rgba(34,197,94,0.2)`,
+                    color: '#22c55e',
+                  }}
+                >
+                  <MessageCircle size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">WhatsApp</span>
+              </div>
+
+              {/* X/Twitter */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `1px solid rgba(255,255,255,0.15)`,
+                    color: 'var(--brand-ink)',
+                  }}
+                >
+                  <Twitter size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">X / Twitter</span>
+              </div>
+
+              {/* Copy Link */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(197,160,89,0.08)',
+                    border: `1px solid rgba(197,160,89,0.2)`,
+                    color: 'var(--brand-primary)',
+                  }}
+                >
+                  <LinkIcon size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">Copy Link</span>
+              </div>
             </div>
-            <ChevronRight size={16} className="text-white/20 group-hover:translate-x-1 transition-transform" />
           </button>
 
           {hasSafetyItems && (
@@ -1559,6 +1679,53 @@ export default function ProfileClient({
             </div>
           );
         })()}
+      </BottomDrawer>
+
+      {/* Ashrama Life Stage Drawer */}
+      <BottomDrawer
+        isOpen={ashramaInfoOpen}
+        onClose={() => setAshramaInfoOpen(false)}
+        title="Ashrama Life Stage"
+        description="Understanding your current dharmic stage of life."
+      >
+        <div className="flex flex-col items-center text-center py-6">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+            style={{ background: `${ashramaMeta.accent}18` }}
+          >
+            <SacredIcon name={ashramaMeta.icon} size={32} style={{ color: ashramaMeta.accent }} />
+          </div>
+          <h2 className="font-serif text-2xl font-bold theme-ink leading-tight">
+            {ashramaMeta.label}
+          </h2>
+          <span
+            className="mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wider"
+            style={{
+              background: 'var(--card-bg-soft)',
+              color: 'var(--brand-primary)',
+              border: '1px solid var(--card-border)',
+            }}
+          >
+            {ashramaMeta.ageRange}
+          </span>
+          <p className="mt-6 text-sm theme-muted leading-relaxed max-w-md">
+            {ASHRAMA_DESCRIPTIONS[ashramaStage]}
+          </p>
+
+          <div className="w-full text-left mt-8 space-y-4 border-t border-white/5 pt-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#C5A059]">
+              What this means for your practice
+            </h3>
+            <ul className="space-y-3">
+              {(ASHRAMA_BULLETS[ashramaStage] ?? []).map((bullet, idx) => (
+                <li key={idx} className="flex gap-3 text-sm theme-muted leading-relaxed">
+                  <span className="text-[#C5A059]">•</span>
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </BottomDrawer>
 
       {/* ── Edit Profile Drawer ── */}

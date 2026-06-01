@@ -1,24 +1,117 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight, Info } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
 
-const STREAK_SHIELDS = [
-  { threshold: 7, name: 'Saptāha', emoji: '🔥' },
-  { threshold: 21, name: 'Niyama', emoji: '🕯️' },
-  { threshold: 40, name: 'Chālisā', emoji: '🌟' },
-  { threshold: 54, name: 'Ardha Mālā', emoji: '📿' },
-  { threshold: 108, name: 'Pūrṇa Mālā', emoji: '🙏' },
-  { threshold: 365, name: 'Varsha', emoji: '☀️' },
-] as const;
+interface Shield {
+  threshold: number;
+  name: string;
+  emoji: string;
+  description: string;
+  next: string | null;
+}
 
-const SESSION_SHIELDS = [
-  { threshold: 7, name: 'Prārambha', emoji: '🌱' },
-  { threshold: 21, name: 'Abhyāsa', emoji: '⚡' },
-  { threshold: 40, name: 'Tapas', emoji: '🔆' },
-  { threshold: 108, name: 'Mālā', emoji: '📿' },
-  { threshold: 365, name: 'Varshika', emoji: '🌕' },
-  { threshold: 1000, name: 'Sahasra', emoji: '💎' },
-] as const;
+const STREAK_SHIELDS: readonly Shield[] = [
+  {
+    threshold: 7,
+    name: 'Saptāha',
+    emoji: '🔥',
+    description: '7-day sadhana streak. A solid week of unbroken dedication.',
+    next: 'Niyama at 21 days',
+  },
+  {
+    threshold: 21,
+    name: 'Niyama',
+    emoji: '🕯️',
+    description: '21-day sadhana streak. Your practice has formed a steady habit.',
+    next: 'Chālisā at 40 days',
+  },
+  {
+    threshold: 40,
+    name: 'Chālisā',
+    emoji: '🌟',
+    description: '40-day sadhana streak. A complete cycle of deep transformation.',
+    next: 'Ardha Mālā at 54 days',
+  },
+  {
+    threshold: 54,
+    name: 'Ardha Mālā',
+    emoji: '📿',
+    description: '54-day sadhana streak. Halfway to the full sacred mala circle.',
+    next: 'Pūrṇa Mālā at 108 days',
+  },
+  {
+    threshold: 108,
+    name: 'Pūrṇa Mālā',
+    emoji: '🙏',
+    description: '108-day sadhana streak. You have completed the full sacred mala circle.',
+    next: 'Varsha at 365 days',
+  },
+  {
+    threshold: 365,
+    name: 'Varsha',
+    emoji: '☀️',
+    description: '365-day sadhana streak. A full solar circle of daily devotion.',
+    next: null,
+  },
+];
+
+const SESSION_SHIELDS: readonly Shield[] = [
+  {
+    threshold: 7,
+    name: 'Prārambha',
+    emoji: '🌱',
+    description: '7 japa sessions completed. The seed of practice has sprouted.',
+    next: 'Abhyāsa at 21 sessions',
+  },
+  {
+    threshold: 21,
+    name: 'Abhyāsa',
+    emoji: '⚡',
+    description: '21 japa sessions completed. Steady momentum builds.',
+    next: 'Tapas at 40 sessions',
+  },
+  {
+    threshold: 40,
+    name: 'Tapas',
+    emoji: '🔆',
+    description: '40 japa sessions completed. Your practice has become heat — a burning commitment.',
+    next: 'Mālā at 108 sessions',
+  },
+  {
+    threshold: 108,
+    name: 'Mālā',
+    emoji: '📿',
+    description: 'One full mala of sessions — 108 completions. You have circled the sacred number.',
+    next: 'Varshika at 365 sessions',
+  },
+  {
+    threshold: 365,
+    name: 'Varshika',
+    emoji: '🌕',
+    description: '365 japa sessions completed. A full year of sacred rounds.',
+    next: 'Sahasra at 1000 sessions',
+  },
+  {
+    threshold: 1000,
+    name: 'Sahasra',
+    emoji: '💎',
+    description: '1000 japa sessions completed. A diamond-clarity summit of practice.',
+    next: null,
+  },
+];
+
+const ROUTE_MAP: Record<string, string> = {
+  'Beads': '/bhakti/mala',
+  'Day Streak 🔥': '/my-progress',
+  'Rounds': '/bhakti/mala',
+  'In Practice': '/my-progress',
+  'Nitya Days': '/nitya-karma',
+  'Saved Verses': '/pathshala',
+};
 
 interface Props {
   tradition: string;
@@ -64,6 +157,8 @@ export default function SadhanaHighlightsCard({
   onToggleHighlights,
   isOwnProfile,
 }: Props) {
+  const [expandedShield, setExpandedShield] = useState<string | null>(null);
+
   if (!isOwnProfile && !showHighlights) return null;
 
   const accentColor = getTraditionMeta(tradition).accentColour;
@@ -106,17 +201,20 @@ export default function SadhanaHighlightsCard({
           { value: `${nityaDays}/30`, label: 'Nitya Days' },
           { value: bookmarkedVerses, label: 'Saved Verses' },
         ].map((stat) => (
-          <div
+          <Link
             key={stat.label}
+            href={ROUTE_MAP[stat.label] ?? '#'}
+            className="relative block active:scale-95 transition-transform text-left"
             style={{
-              textAlign: 'center',
               padding: '12px 8px',
               borderRadius: 18,
               background: 'color-mix(in srgb, var(--card-bg) 72%, transparent)',
               border: `1px solid ${borderColor}`,
+              position: 'relative',
+              display: 'block',
             }}
           >
-            <div style={{ fontSize: 22, fontWeight: 800, color: accentColor }}>{stat.value}</div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: accentColor, textAlign: 'center' }}>{stat.value}</div>
             <div
               style={{
                 fontSize: 10,
@@ -124,54 +222,103 @@ export default function SadhanaHighlightsCard({
                 letterSpacing: '0.14em',
                 color: muted,
                 marginTop: 3,
+                textAlign: 'center',
               }}
             >
               {stat.label}
             </div>
-          </div>
+            <ChevronRight
+              size={10}
+              style={{
+                position: 'absolute',
+                bottom: 8,
+                right: 8,
+                opacity: 0.3,
+                color: inkColor,
+              }}
+            />
+          </Link>
         ))}
       </div>
 
       {(streakShield || sessionShield) && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {streakShield && (
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 10px',
-                borderRadius: 999,
-                border: `1px solid ${borderColor}`,
-                background: 'var(--card-bg)',
-                color: inkColor,
-                fontSize: 12,
-                fontWeight: 600,
-              }}
-            >
-              <span>{streakShield.emoji}</span>
-              <span>{streakShield.name}</span>
-            </div>
-          )}
-          {sessionShield && (
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 10px',
-                borderRadius: 999,
-                border: `1px solid ${borderColor}`,
-                background: 'var(--card-bg)',
-                color: inkColor,
-                fontSize: 12,
-                fontWeight: 600,
-              }}
-            >
-              <span>{sessionShield.emoji}</span>
-              <span>{sessionShield.name}</span>
-            </div>
-          )}
+        <div className="mt-4 space-y-2">
+          <div className="flex flex-wrap gap-2">
+            {streakShield && (
+              <button
+                type="button"
+                onClick={() => setExpandedShield(expandedShield === streakShield.name ? null : streakShield.name)}
+                className="flex items-center gap-1.5 transition-all active:scale-95 text-left"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 10px',
+                  borderRadius: 999,
+                  border: `1px solid ${expandedShield === streakShield.name ? accentColor : borderColor}`,
+                  background: 'var(--card-bg)',
+                  color: inkColor,
+                  fontSize: 12,
+                  fontWeight: 600,
+                }}
+              >
+                <span>{streakShield.emoji}</span>
+                <span>{streakShield.name}</span>
+                <Info size={11} className="opacity-50" />
+              </button>
+            )}
+            {sessionShield && (
+              <button
+                type="button"
+                onClick={() => setExpandedShield(expandedShield === sessionShield.name ? null : sessionShield.name)}
+                className="flex items-center gap-1.5 transition-all active:scale-95 text-left"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 10px',
+                  borderRadius: 999,
+                  border: `1px solid ${expandedShield === sessionShield.name ? accentColor : borderColor}`,
+                  background: 'var(--card-bg)',
+                  color: inkColor,
+                  fontSize: 12,
+                  fontWeight: 600,
+                }}
+              >
+                <span>{sessionShield.emoji}</span>
+                <span>{sessionShield.name}</span>
+                <Info size={11} className="opacity-50" />
+              </button>
+            )}
+          </div>
+
+          <AnimatePresence mode="wait">
+            {expandedShield && (
+              (() => {
+                const shield = (streakShield?.name === expandedShield ? streakShield : null) || (sessionShield?.name === expandedShield ? sessionShield : null);
+                if (!shield) return null;
+                return (
+                  <motion.div
+                    key={shield.name}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden rounded-2xl p-3.5 bg-white/[0.02] border border-white/5 space-y-1.5"
+                  >
+                    <p className="text-xs leading-relaxed" style={{ color: muted }}>
+                      {shield.description}
+                    </p>
+                    {shield.next && (
+                      <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColor }}>
+                        Next: {shield.next}
+                      </p>
+                    )}
+                  </motion.div>
+                );
+              })()
+            )}
+          </AnimatePresence>
         </div>
       )}
 
