@@ -148,12 +148,12 @@ function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transli
           }`}
           style={isUser
             ? {
-                background: 'var(--brand-primary-soft)',
+                background: 'var(--surface-raised)',
                 border: '1px solid var(--card-border)',
                 color: 'var(--divine-text)',
               }
             : {
-                background: 'var(--card-bg)',
+                background: 'var(--surface-soft)',
                 borderColor: 'var(--card-border)',
                 color: 'var(--divine-text)',
               }
@@ -608,7 +608,7 @@ export default function AIChatClient({
         )}
 
         <div className="flex items-end gap-2">
-          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)' }}>
+          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
             <textarea
               ref={inputRef}
               value={input}

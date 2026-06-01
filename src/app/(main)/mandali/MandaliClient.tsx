@@ -89,19 +89,21 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-black/5 dark:border-white/8">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b"
+          style={{ borderBottomColor: 'var(--card-border)' }}>
           <div>
             <h2 className="font-display font-bold theme-ink">Find Sanatani</h2>
             <p className="text-xs theme-dim mt-0.5">Search by name or username</p>
           </div>
           <button onClick={onClose}
-            className="w-11 h-11 rounded-full bg-black/5 dark:bg-white/[0.06] flex items-center justify-center">
+            className="w-11 h-11 rounded-full bg-[var(--surface-soft)] flex items-center justify-center">
             <X size={16} className="theme-dim" />
           </button>
         </div>
 
         {/* Search input */}
-        <div className="px-5 py-3 border-b border-black/5 dark:border-white/8">
+        <div className="px-5 py-3 border-b"
+          style={{ borderBottomColor: 'var(--card-border)' }}>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 theme-dim" />
@@ -316,14 +318,15 @@ function CityPicker({ value, onChange }: {
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          className="w-full pl-9 pr-8 py-3 rounded-xl border border-white/10 outline-none text-sm"
+          className="w-full pl-9 pr-8 py-3 rounded-xl border outline-none text-sm"
           style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
         />
         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
       </div>
 
       {open && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 rounded-2xl border border-white/10 shadow-lg max-h-56 overflow-y-auto">
+        <div className="absolute z-50 w-full mt-1 rounded-2xl border shadow-lg max-h-56 overflow-y-auto"
+          style={{ borderColor: 'var(--card-border)', background: 'var(--card-bg)' }}>
           {filtered.map(c => (
             <button
               key={`${c.city}-${c.country}`}
@@ -345,7 +348,8 @@ function CityPicker({ value, onChange }: {
                 onChange({ city: parts[0].trim(), country: parts[1]?.trim() || '' });
                 setOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-white/8 transition hover:bg-[var(--brand-primary-soft)]"
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t transition hover:bg-[var(--brand-primary-soft)]"
+              style={{ borderTopColor: 'var(--card-border)' }}
             >
               <span className="text-base">🌍</span>
               <div>
@@ -519,7 +523,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
         </p>
       </div>
 
-      <div className="glass-panel rounded-2xl border border-white/10 shadow-card p-5 w-full max-w-sm space-y-3">
+      <div className="glass-panel rounded-2xl border shadow-card p-5 w-full max-w-sm space-y-3" style={{ borderColor: 'var(--card-border)' }}>
 
         {/* Location detection */}
         {detected ? (
@@ -568,7 +572,7 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
                   Mandalis near you
                 </p>
                 {nearbyMandalis.slice(0, 5).map((m) => (
-                  <div key={m.id} className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border" style={{ borderColor: 'rgba(200,127,146,0.16)', background: 'rgba(255,255,255,0.03)' }}>
+                  <div key={m.id} className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border" style={{ borderColor: 'rgba(200,127,146,0.16)', background: 'var(--surface-soft)' }}>
                     <div className="flex-1 text-left">
                       <p className="text-sm font-semibold" style={{ color: 'var(--text-cream)' }}>{m.name || `${m.city} Mandali`}</p>
                       <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>
@@ -643,10 +647,10 @@ function MembersTab({ members, userId }: { members: MemberRow[]; userId: string 
         const isMe = m.id === userId;
         return (
           <div key={m.id}
-            className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3"
-            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : 'rgba(255,255,255,0.08)' }}>
+            className="glass-panel rounded-2xl border p-3 flex items-center gap-3"
+            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : 'var(--card-bg)' }}>
             {/* Rank */}
-            <div className="w-5 text-center text-xs font-bold text-white/25">
+            <div className="w-5 text-center text-xs font-bold theme-dim">
               {idx + 1}
             </div>
             {/* Avatar */}
@@ -735,7 +739,7 @@ function EventRsvpBar({
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
               myStatus === item.value
                 ? 'text-white'
-                : 'border border-[rgba(200,127,146,0.25)] bg-white/6 text-[color:var(--brand-muted)]'
+                : 'border border-[rgba(200,127,146,0.25)] bg-[var(--surface-soft)] text-[color:var(--brand-muted)]'
             }`}
             style={myStatus === item.value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
           >
@@ -763,9 +767,9 @@ function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; 
   return (
     <div className="space-y-3">
       {events.map((post) => (
-        <div key={post.id} className="glass-panel rounded-2xl border border-black/5 dark:border-white/8 p-4">
+        <div key={post.id} className="glass-panel rounded-2xl border p-4" style={{ borderColor: 'var(--card-border)' }}>
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/8 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
+            <div className="w-10 h-10 rounded-xl bg-[var(--surface-soft)] flex items-center justify-center text-xl flex-shrink-0">🎉</div>
             <div className="flex-1">
               <p className="text-sm font-medium text-[color:var(--brand-ink)] leading-snug">{post.content}</p>
               {post.event_date && (
@@ -921,7 +925,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
   }
 
   return (
-    <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 fade-in">
+    <div className="glass-panel rounded-2xl border p-4 shadow-card space-y-3 fade-in" style={{ borderColor: 'var(--card-border)' }}>
       {/* Post type selector */}
       <div className="flex gap-2 flex-wrap">
         {POST_TYPES.map((t) => {
@@ -935,9 +939,9 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 postType === t.value
                   ? ''
-                  : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'
+                  : 'bg-[var(--surface-soft)] text-[color:var(--brand-muted)] border'
               } ${locked ? 'opacity-60' : ''}`}
-              style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
+              style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : { borderColor: 'var(--card-border)' }}>
               {t.icon} {t.label}{locked && ' 🔒'}
             </button>
           );
@@ -951,7 +955,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
         value={content}
         onChange={(e) => setContent(e.target.value)}
         rows={3}
-        className="w-full px-4 py-3 rounded-xl border border-white/10 outline-none resize-none text-sm"
+        className="w-full px-4 py-3 rounded-xl border outline-none resize-none text-sm"
         style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
       />
 
@@ -963,7 +967,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
               key={emoji}
               type="button"
               onClick={() => insertEmoji(emoji)}
-              className="text-[1.25rem] leading-none p-1.5 rounded-xl hover:bg-white/10 flex-shrink-0 transition active:scale-90"
+              className="text-[1.25rem] leading-none p-1.5 rounded-xl hover:bg-[var(--card-bg)] flex-shrink-0 transition active:scale-90"
               title={emoji}
             >
               {emoji}
@@ -975,10 +979,10 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
       {postType === 'event' && (
         <div className="grid grid-cols-2 gap-3">
           <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
           <input type="text" placeholder="Location" value={eventLoc} onChange={(e) => setEventLoc(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
         </div>
       )}
@@ -1089,7 +1093,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                   <p className="text-xs text-[color:var(--brand-muted)]">No comments yet.</p>
                 ) : (
                   rootComments.map((comment) => (
-                    <div key={comment.id} className="space-y-2 rounded-2xl bg-white/6 px-3 py-3">
+                    <div key={comment.id} className="space-y-2 rounded-2xl bg-[var(--surface-soft)] px-3 py-3">
                       <div className="flex items-start gap-2">
                         <div className="w-7 h-7 rounded-full bg-[var(--brand-primary)] text-white text-[10px] font-bold flex items-center justify-center overflow-hidden flex-shrink-0">
                           {comment.profiles?.avatar_url ? (
@@ -1138,7 +1142,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                             onChange={(event) => setReplyBody(event.target.value)}
                             rows={2}
                             placeholder="Reply gently…"
-                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
+                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                           />
                           <div className="flex justify-end gap-2">
                             <button onClick={() => setReplyTo(null)} className="text-xs text-[color:var(--brand-muted)]">Cancel</button>
@@ -1164,7 +1168,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                   onChange={(event) => setCommentBody(event.target.value)}
                   rows={2}
                   placeholder="Add a comment…"
-                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
+                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                 />
                 <div className="flex justify-end">
                   <button
@@ -1288,7 +1292,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         </div>
         {/* Show Sabha (global forum) so global readers see content immediately */}
         <div className="relative flex rounded-2xl p-1"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
+          style={{ background: 'var(--surface-soft)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
           <div className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold"
             style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', color: '#fff' }}>
             <Globe size={13} /> Global Sabha
@@ -1469,14 +1473,16 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         {/* Action row */}
         <div className="mt-3 flex items-center gap-2">
           <button onClick={() => setShowSearch(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium theme-ink transition hover:bg-white/[0.06]">
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border bg-[var(--surface-soft)] px-3 py-2 text-xs font-medium theme-ink transition hover:bg-[var(--surface-soft)]"
+            style={{ borderColor: 'var(--card-border)' }}>
             <Search size={13} /> Find Sanatani
           </button>
 
           {/* Mandali options menu — opens as a portal bottom sheet to escape overflow:hidden parent */}
           <button
             onClick={() => setShowMandaliMenu(true)}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] theme-ink transition hover:bg-white/[0.06]"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border bg-[var(--surface-soft)] theme-ink transition hover:bg-[var(--surface-soft)]"
+            style={{ borderColor: 'var(--card-border)' }}
             title="Mandali options"
           >
             <MoreHorizontal size={16} />
@@ -1488,7 +1494,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         <button
           type="button"
           onClick={primaryMandaliAction.onClick}
-          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/[0.06] decorative-orbit"
+          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-[var(--surface-soft)] decorative-orbit"
         >
           <p className="type-card-label">Start here</p>
           <div className="flex items-start justify-between gap-3 mt-3">
@@ -1508,7 +1514,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               { label: 'Events', value: eventCount },
               { label: 'Vichaar', value: vichaarCount },
             ].map((item) => (
-              <div key={item.label} className="rounded-[1.1rem] bg-white/[0.04] border border-white/8 px-3 py-3 text-center">
+              <div key={item.label} className="rounded-[1.1rem] bg-[var(--surface-soft)] border px-3 py-3 text-center" style={{ borderColor: 'var(--card-border)' }}>
                 <p className="type-metric">{item.value}</p>
                 <p className="type-card-label mt-1">{item.label}</p>
               </div>
@@ -1549,8 +1555,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 setShowMandaliMenu(false);
                 await mandaliMutations.leaveMandali.mutateAsync();
               }}
-              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
-              style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'var(--card-bg)' }}
+              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-[var(--surface-soft)]"
+              style={{ border: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
             >
               <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197, 160, 89,0.1)' }}>
                 <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />
@@ -1584,7 +1590,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
       {/* ── Scope Toggle: Nearby | Sabha ── */}
       <div className="relative flex rounded-2xl p-1 gap-1"
-        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
+        style={{ background: 'var(--surface-soft)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
         {([
           { key: 'nearby' as Scope, label: 'Nearby',  icon: <MapPin size={13} strokeWidth={2.2} /> },
           { key: 'sabha'  as Scope, label: 'Sabha',   icon: <Globe  size={13} strokeWidth={2.2} /> },
