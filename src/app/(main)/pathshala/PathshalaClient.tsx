@@ -144,8 +144,8 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
       whileTap={{ scale: 0.98 }}
       className="w-full text-left p-5 rounded-[2rem] transition-all relative overflow-hidden group"
       style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        border: '1px solid rgba(255,255,255,0.06)',
+        background: 'var(--surface-soft)',
+        border: '1px solid var(--card-border)',
         boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
       }}
       onClick={() => window.dispatchEvent(new CustomEvent('open-reader', { detail: { entry } }))}

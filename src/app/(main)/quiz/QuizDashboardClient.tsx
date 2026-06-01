@@ -84,9 +84,8 @@ const TOPICS = [
 // ── Glass style ───────────────────────────────────────────────────────────────
 
 const glass = {
-  background: 'rgba(255,255,255,0.03)',
-  backdropFilter: 'blur(12px)',
-  border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--surface-soft)',
+  border: '1px solid var(--card-border)',
 } as const;
 
 const glassAmber = {
@@ -94,7 +93,7 @@ const glassAmber = {
   border: '1px solid rgba(197, 160, 89,0.18)',
 } as const;
 
-const quizCardGlass = 'bg-white/[0.04] border border-white/[0.06] backdrop-blur-sm rounded-2xl';
+const quizCardGlass = 'rounded-2xl';
 
 function getNextDawnCountdown(timeZone: string) {
   const tz = resolveTimeZone(timeZone);
@@ -260,7 +259,7 @@ export default function QuizDashboardClient({
     ? { border: 'rgba(197,160,89,0.45)', bg: 'rgba(197,160,89,0.12)', text: '#C5A059' }
     : dailyScorePct >= 50
       ? { border: 'rgba(122,171,122,0.40)', bg: 'rgba(122,171,122,0.10)', text: '#7aab7a' }
-      : { border: 'rgba(255,255,255,0.10)', bg: 'rgba(255,255,255,0.04)', text: 'rgba(255,255,255,0.88)' };
+      : { border: 'var(--card-border)', bg: 'var(--surface-soft)', text: 'var(--text-cream)' };
 
   // 28-day activity grid — uses full activityDates (never gated)
   const activityGrid = useMemo(() => {
@@ -830,7 +829,7 @@ export default function QuizDashboardClient({
             <div className="flex items-center gap-2 mb-3">
               <span
                 className="text-[10px] font-bold uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text-dim)' }}
+                style={{ background: 'var(--surface-soft)', color: 'var(--text-dim)' }}
               >
                 Quiz Mastery
               </span>
@@ -961,11 +960,11 @@ export default function QuizDashboardClient({
           <button
             onClick={() => setProModalOpen(true)}
             className="flex items-center justify-between w-full rounded-[1.6rem] p-5"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+            style={{ background: 'var(--surface-soft)', borderColor: 'var(--card-border)' }}
           >
             <div className="flex items-center gap-4">
               <div className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.06)' }}>
+                style={{ background: 'var(--surface-soft)' }}>
                 <Lock size={18} style={{ color: 'var(--text-dim)' }} />
               </div>
               <div className="text-left">
@@ -1017,7 +1016,7 @@ export default function QuizDashboardClient({
                     {topic.label}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                    <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--surface-soft)' }}>
                       <div
                         className="h-1 rounded-full transition-all"
                         style={{
@@ -1036,7 +1035,7 @@ export default function QuizDashboardClient({
               <div
                 key={topic.key}
                 className="rounded-[1.4rem] p-4 flex items-center gap-3"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', opacity: 0.4 }}
+                style={{ background: 'var(--surface-soft)', borderColor: 'var(--card-border)', opacity: 0.4 }}
               >
                 <span className="text-2xl grayscale" aria-hidden="true">{topic.emoji}</span>
                 <div>
@@ -1218,7 +1217,7 @@ export default function QuizDashboardClient({
           {initialHistory.length === 0 ? (
             <div
               className="text-center py-16 rounded-[1.4rem]"
-              style={{ border: '1px dashed rgba(255,255,255,0.10)' }}
+              style={{ border: '1px dashed var(--card-border)' }}
             >
               <BookOpen size={28} className="mx-auto mb-3" style={{ color: 'var(--text-dim)' }} />
               <p className="text-[13px] font-semibold" style={{ color: 'var(--text-dim)' }}>No history yet</p>
