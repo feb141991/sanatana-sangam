@@ -117,9 +117,9 @@ interface Panchang {
 }
 
 interface SacredTextMeta {
-  label:        string;   // "Aaj Ka Shloka" / "Aaj Ka Shabad" etc.
+  label:        string;   // already resolved to user's language via getSacredTextLabel
   icon:         string;   // 🕉️ / ☬ / ☸️ / 🤲
-  shareLabel:   string;   // used in share sheet title
+  shareLabel:   string;   // already resolved to user's language
   accentColour: string;   // hex
   accentLight:  string;   // light tint hex
 }

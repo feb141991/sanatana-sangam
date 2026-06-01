@@ -262,7 +262,7 @@ export default async function HomePage() {
       sacredTextMeta={{
         label:       getSacredTextLabel(tradition, appLanguage),
         icon:        meta.sacredTextIcon,
-        shareLabel:  meta.sacredTextShareLabel,
+        shareLabel:  getSacredTextLabel(tradition, appLanguage),
         accentColour: meta.accentColour,
         accentLight: meta.accentLight,
       }}
