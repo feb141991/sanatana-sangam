@@ -1,0 +1,966 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
+import {
+  Bell, MapPin, X, Images, Pencil, ChevronRight, Share2, Sparkles, ChevronLeft
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { createClient } from '@/lib/supabase';
+import { type Shloka, getShlokaByLanguage } from '@/lib/shlokas';
+import type { DailySacredText } from '@/lib/sacred-texts';
+import type { Festival } from '@/lib/festivals';
+import type { DharmVeer } from '@/lib/dharm-veer';
+import { format as fmtDate } from 'date-fns';
+import { getTransliteration } from '@/lib/transliteration';
+import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import { getUnlockedRelics } from '@/lib/relics';
+import { getRelicAccent } from '@/lib/relic-accents';
+import { getGreeting, getGreetingPool, isGreetingCompatibleWithTradition } from '@/lib/traditions';
+import { getTraditionMeta } from '@/lib/tradition-config';
+import { resolveHomeHeroTheme, HOME_HERO_THEMES, type HomeHeroTheme } from '@/config/festivalThemes';
+import { localSpiritualDate } from '@/lib/sacred-time';
+import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { resolveVratSlug } from '@/lib/vrat-data';
+import MoodGlyph from '@/components/ui/MoodGlyph';
+import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
+import MantraPlayer from '@/components/ui/MantraPlayer';
+
+interface Panchang {
+  tithi:           string;
+  nakshatra:       string;
+  yoga:            string;
+  sunrise:         string;
+  sunset:          string;
+  rahuKaal:        string;
+  brahmaMuhurta?:  string;
+  abhijitMuhurat?: string;
+  tithiIndex:      number;
+}
+
+interface SacredTextMeta {
+  label:        string;
+  icon:         string;
+  shareLabel:   string;
+  accentColour: string;
+  accentLight:  string;
+}
+
+interface DailyDharmaStackState {
+  japaBeads: number;
+  japaRounds: number;
+  quizDone: boolean;
+  dharmVeerDone: boolean;
+  stotramDone: boolean;
+  kathaDone: boolean;
+  pathshalaProgress: number;
+}
+
+interface HeroSectionProps {
+  panchang: Panchang;
+  selectedDate: Date;
+  tradition: string | null;
+  sampradaya: string | null;
+  ishtaDevata: string | null;
+  userName: string;
+  userId: string;
+  avatarUrl: string | null;
+  isPro: boolean;
+  activeSymbolId: string | null;
+  karmaPoints: number;
+  japaAlreadyDoneToday: boolean;
+  japaStreak: number;
+  showFirstTimeGuidance: boolean;
+  nityaDoneToday: boolean;
+  pathshalaDoneToday: boolean;
+  dailyDharmaStackState: DailyDharmaStackState;
+  dharmVeer: DharmVeer;
+  isDark: boolean;
+  unreadCount: number;
+  onNotifBellClick: () => void;
+  moodToday: { key: string; label: string; colour: string } | null | undefined;
+  coverUrl: string | null;
+  heroThemes: HomeHeroTheme[];
+  daysUntilFestival: number | null;
+  festivals: Festival[];
+  appLanguage: string;
+  meaningLanguage: string;
+  transliterationLanguage: string;
+  showTransliteration: boolean;
+  shloka: Shloka;
+  sacredText: DailySacredText | null;
+  sacredTextMeta: SacredTextMeta;
+  onGreetingClick: () => void;
+  readToday: boolean;
+  setReadToday: (val: boolean) => void;
+  streak: number;
+  setStreak: (val: number) => void;
+  sevaScore: number;
+  onShowConfetti: () => void;
+  upcomingSacredObservance: { festival: Festival; daysLeft: number } | null;
+  upcomingSacredObservanceLabel: string | null;
+  showRashiphalNudge: boolean;
+  onDismissRashiphalNudge: () => void;
+  city: string;
+  timezone: string;
+}
+
+// ── Time-aware greeting helper ─────────────────────────────────────────────
+function getTimeGreeting(hour: number): string | null {
+  if (hour >= 5  && hour < 12) return 'Suprabhat';
+  if (hour >= 17 && hour < 20) return 'Shubh Sandhya';
+  if (hour >= 20 || hour < 5)  return 'Shubh Ratri';
+  return null;
+}
+
+function stripGreetingIcon(greeting: string) {
+  return greeting
+    .replace(/[🙏🕉️☬☸️🤲✨🌺🌸🦚🔱⚔️🪔🌟]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function shareContent(title: string, text: string) {
+  if (navigator.share) {
+    try { await navigator.share({ title, text }); return; } catch { /* cancelled */ }
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!');
+  } catch {
+    toast.error('Unable to share');
+  }
+}
+
+export function HeroSection({
+  panchang,
+  selectedDate,
+  tradition,
+  sampradaya,
+  ishtaDevata,
+  userName,
+  userId,
+  avatarUrl,
+  isPro,
+  activeSymbolId,
+  karmaPoints,
+  japaAlreadyDoneToday,
+  japaStreak,
+  showFirstTimeGuidance,
+  nityaDoneToday,
+  pathshalaDoneToday,
+  dailyDharmaStackState,
+  dharmVeer,
+  isDark,
+  unreadCount,
+  onNotifBellClick,
+  moodToday,
+  coverUrl,
+  heroThemes,
+  daysUntilFestival,
+  festivals,
+  appLanguage,
+  meaningLanguage,
+  transliterationLanguage,
+  showTransliteration,
+  shloka,
+  sacredText,
+  sacredTextMeta,
+  onGreetingClick,
+  readToday,
+  setReadToday,
+  streak,
+  setStreak,
+  sevaScore,
+  onShowConfetti,
+  upcomingSacredObservance,
+  upcomingSacredObservanceLabel,
+  showRashiphalNudge,
+  onDismissRashiphalNudge,
+  city,
+  timezone,
+}: HeroSectionProps) {
+  const supabase = useRef(createClient()).current;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const prefersReducedMotion = useReducedMotion();
+
+  const [shlokaExpanded, setShlokaExpanded] = useState(false);
+  const [shlokaModalOpen, setShlokaModalOpen] = useState(false);
+  const [heroImageFailed, setHeroImageFailed] = useState(false);
+  const [heroPicker, setHeroPicker] = useState(false);
+  const [selectedHeroId, setSelectedHeroId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('shoonaya_hero_pick');
+  });
+
+  const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
+
+  useEffect(() => {
+    if (coverUrl) setCustomCover(coverUrl);
+    else {
+      const saved = localStorage.getItem('user_cover_photo');
+      if (saved) setCustomCover(saved);
+    }
+  }, [coverUrl]);
+
+  // Sync shloka parameters with deep link focus check
+  useEffect(() => {
+    const focus = searchParams.get('focus');
+    if (focus === 'shloka') {
+      setShlokaExpanded(true);
+      setShlokaModalOpen(true);
+    }
+  }, [searchParams]);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Photo must be under 5MB'); return; }
+
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `profiles/${userId}/home_cover_${Date.now()}.${ext}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type });
+
+      if (uploadError) throw uploadError;
+
+      const { data: pubData } = supabase.storage.from('avatars').getPublicUrl(path);
+      const publicUrl = pubData.publicUrl;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ cover_url: publicUrl })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+
+      setCustomCover(publicUrl);
+      localStorage.setItem('user_cover_photo', publicUrl);
+      toast.success('Home sanctuary updated! 🙏');
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed');
+    }
+  };
+
+  const hour = new Date().getHours();
+  const timeGreeting = getTimeGreeting(hour);
+  const autoGreeting = getGreeting(tradition, sampradaya, new Date().getDate());
+  
+  const greeting = timeGreeting ?? autoGreeting;
+
+  const meta = getTraditionMeta(tradition);
+  const sacredTextTheme = meta.homeSacredTextTheme === 'pathshala'
+    ? { iconWell: 'rgba(197, 160, 89, 0.12)' }
+    : { iconWell: 'rgba(212, 120, 74, 0.13)' };
+  const effectiveMeaningLanguage = resolveEffectiveMeaningLanguage(appLanguage, meaningLanguage);
+
+  const dailyTextBase = {
+    label: sacredTextMeta.label,
+    icon: sacredTextMeta.icon,
+    shareLabel: sacredTextMeta.shareLabel,
+    source: sacredText ? sacredText.source : shloka.source,
+    original: sacredText ? sacredText.original : shloka.sanskrit,
+    transliteration: getTransliteration(
+      sacredText ? sacredText.original : shloka.sanskrit,
+      sacredText ? sacredText.transliteration : shloka.transliteration,
+      transliterationLanguage ?? 'en'
+    ),
+    meaning: sacredText ? sacredText.meaning : getShlokaByLanguage(shloka, appLanguage ?? 'en'),
+    actionLabel: sacredTextMeta.label,
+    streakLabel: sacredText ? 'sacred text streak' : 'shloka streak',
+  };
+
+  const festival = festivals[0] ?? null;
+  const localizedDailyMeaning = useLocalizedMeaning({
+    entryId: `home:${tradition ?? 'other'}:${dailyTextBase.source}:${dailyTextBase.original.slice(0, 48)}`,
+    sourceMeaning: dailyTextBase.meaning,
+    sourceLabel: dailyTextBase.source,
+    targetLanguage: effectiveMeaningLanguage,
+  });
+
+  const dailyText = {
+    ...dailyTextBase,
+    transliteration: showTransliteration ? dailyTextBase.transliteration : '',
+    meaning: localizedDailyMeaning.meaning,
+    meaningLabel: localizedDailyMeaning.label,
+  };
+
+  const heroTheme = resolveHomeHeroTheme({
+    tradition,
+    sampradaya,
+    ishtaDevata,
+    festival,
+    dbThemes: heroThemes,
+    selectedHeroId: selectedHeroId ?? undefined,
+    lockSelectedHero: Boolean(selectedHeroId),
+  });
+
+  const pickerThemes = (() => {
+    const trad = tradition ?? 'hindu';
+    const all  = [...heroThemes, ...HOME_HERO_THEMES];
+    const seen = new Set<string>();
+    return all.filter(t => {
+      if (seen.has(t.id)) return false;
+      seen.add(t.id);
+      if (!t.traditions?.length) return true;
+      return t.traditions.includes(trad);
+    });
+  })();
+
+  const handleHeroSelect = (id: string | null) => {
+    setSelectedHeroId(id);
+    if (id) localStorage.setItem('shoonaya_hero_pick', id);
+    else     localStorage.removeItem('shoonaya_hero_pick');
+    setHeroPicker(false);
+    setHeroImageFailed(false);
+  };
+
+  const isFestivalTheme = Boolean(heroTheme.festivalSlugs && heroTheme.festivalSlugs.length > 0 && daysUntilFestival === 0);
+  const activeCoverUrl = isFestivalTheme ? heroTheme.heroImage : (customCover || heroTheme.heroImage);
+  const heroFallback = meta.heroFallback;
+
+  useEffect(() => {
+    setHeroImageFailed(false);
+  }, [activeCoverUrl]);
+
+  async function markShlokaRead() {
+    if (readToday || !userId) return;
+    const tz        = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+    const today     = localSpiritualDate(tz, 4);
+    const yestObj   = new Date(today + 'T12:00:00Z');
+    yestObj.setUTCDate(yestObj.getUTCDate() - 1);
+    const yesterday = yestObj.toISOString().slice(0, 10);
+
+    const newStreak = lastShlokaDate === yesterday ? streak + 1 : 1;
+
+    setReadToday(true);
+    setStreak(newStreak);
+
+    await supabase
+      .from('profiles')
+      .update({
+        shloka_streak:    newStreak,
+        last_shloka_date: today,
+      })
+      .eq('id', userId);
+
+    try {
+      const { error: rpcError } = await supabase.rpc('increment_period_seva', { p_user_id: userId, p_points: 5 });
+      if (rpcError) throw rpcError;
+    } catch {
+      const { data } = await supabase.from('profiles').select('seva_score, weekly_seva, monthly_seva').eq('id', userId).single();
+      if (data) {
+        await supabase.from('profiles')
+          .update({ 
+            seva_score: (data.seva_score ?? 0) + 5,
+            weekly_seva: (data.weekly_seva ?? 0) + 5,
+            monthly_seva: (data.monthly_seva ?? 0) + 5
+          })
+          .eq('id', userId);
+      }
+    }
+
+    onShowConfetti();
+    setShlokaModalOpen(false);
+    const milestoneMsg = newStreak % 7 === 0
+      ? ` 🏅 ${newStreak}-day milestone!`
+      : newStreak === 1 ? ` First ${dailyText.actionLabel} of your streak! 🌱` : '';
+    toast.success(`🔥 ${newStreak}-day streak! +5 seva points${milestoneMsg}`);
+    
+    router.refresh();
+  }
+
+  function shareShloka() {
+    shareContent(dailyText.shareLabel,
+      `${dailyText.icon} ${dailyText.label} — ${dailyText.source}\n\n${dailyText.original}\n\n${dailyText.transliteration ? `${dailyText.transliteration}\n\n` : ''}${dailyText.meaningLabel}: ${dailyText.meaning}\n\n— Shared via Shoonaya`
+    );
+  }
+
+  const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
+  const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
+  const { t } = useLanguage();
+  const dailyTextLine = dailyText.original.split('\n')[0];
+
+  const lastShlokaDate = localSpiritualDate(timezone, 4);
+
+  return (
+    <>
+      <div className="relative">
+        <motion.div
+          className="divine-hero cursor-pointer"
+          style={{ perspective: 1000, minHeight: '420px', margin: 0 }}
+          whileHover={prefersReducedMotion ? {} : {
+            scale: 1.005,
+            transition: { duration: 0.4, ease: "easeOut" }
+          }}
+          whileTap={prefersReducedMotion ? {} : { scale: 0.995 }}
+        >
+          {!heroImageFailed ? (
+            <Image
+              src={activeCoverUrl}
+              alt={(!isFestivalTheme && customCover) ? "Your custom cover" : heroTheme.heroAlt}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center divine-hero-image"
+              style={{ objectPosition: (!isFestivalTheme && customCover) ? 'center' : heroTheme.objectPosition }}
+              onError={() => setHeroImageFailed(true)}
+            />
+          ) : (
+            <div className="divine-hero-fallback" aria-hidden="true">
+              <span>{heroFallback.mark}</span>
+              <strong>{heroFallback.title}</strong>
+              <small>{heroFallback.subtitle}</small>
+            </div>
+          )}
+          <div className="divine-hero-overlay" aria-hidden="true" />
+          <div className="divine-hero-readability" aria-hidden="true" />
+
+          <div className="divine-poster-motif divine-poster-motif-om" aria-hidden="true">{heroFallback.mark}</div>
+
+          {/* Hero image controls */}
+          <div className="absolute bottom-6 right-6 z-40 flex gap-2">
+            {customCover && (
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  setCustomCover(null);
+                  localStorage.removeItem('user_cover_photo');
+                  await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
+                  toast.success('Restored default cover 🙏');
+                }}
+                className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/60 transition-colors shadow-lg"
+                aria-label="Remove Custom Cover"
+              >
+                <X size={16} className="text-white/90" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={e => { e.stopPropagation(); setHeroPicker(true); }}
+              className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+              aria-label="Choose sacred backdrop"
+            >
+              <Images size={16} className="text-white/90" />
+            </button>
+            <label
+              className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border border-white/20 flex items-center justify-center cursor-pointer hover:bg-black/40 transition-colors shadow-lg"
+              aria-label="Upload custom cover"
+              onClick={e => e.stopPropagation()}
+            >
+              <Pencil size={16} className="text-white/90" />
+              <input type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} />
+            </label>
+          </div>
+        </motion.div>
+
+        {/* Transparent Header Overlay */}
+        <div
+          className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
+          style={{ paddingTop: 'max(env(safe-area-inset-top), 8px)' }}
+        >
+          <div className="px-5 flex items-center justify-between">
+            <motion.div
+              className="pointer-events-auto relative"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.15 }}
+            >
+              <button
+                onClick={onNotifBellClick}
+                className="relative w-10 h-10 rounded-full flex items-center justify-center bg-black/10 dark:bg-black/22 border border-black/5 dark:border-white/18 backdrop-blur-md transition-transform active:scale-95"
+                style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.15)' }}
+                aria-label="Notifications"
+              >
+                <Bell size={17} strokeWidth={1.8} className="text-[#F2EAD6] opacity-90" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full flex items-center justify-center text-[9px] font-bold px-1"
+                    style={{ background: '#C5A059', color: '#1c1a14', lineHeight: 1 }}>
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            </motion.div>
+
+            <motion.div
+              className="pointer-events-auto"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.18 }}
+            >
+              <Link
+                href="/discover"
+                className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md shadow-lg"
+                style={{
+                  background: isDark ? 'rgba(0,0,0,0.40)' : 'rgba(255,255,255,0.72)',
+                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'}`,
+                }}
+                aria-label="Open mood discovery"
+              >
+                {moodToday ? (
+                  <>
+                    <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider"
+                      style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,20,5,0.80)' }}
+                    >
+                      {t('feelingPrefix')} {t((`mood${moodToday.key.charAt(0).toUpperCase()}${moodToday.key.slice(1)}`) as any)}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={12} style={{ color: isDark ? 'rgba(245,220,160,0.75)' : 'rgba(100,60,10,0.60)' }} />
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-wider"
+                      style={{ color: isDark ? 'rgba(245,220,160,0.80)' : 'rgba(100,60,10,0.70)' }}
+                    >
+                      {t('moodChip')}
+                    </span>
+                  </>
+                )}
+              </Link>
+            </motion.div>
+
+            <motion.div
+              className="pointer-events-auto flex items-center gap-2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              {karmaPoints > 0 && (
+                <Link
+                  href="/my-progress"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-full backdrop-blur-md transition-transform active:scale-95"
+                  style={{
+                    background:   'rgba(197,160,89,0.18)',
+                    border:       '1px solid rgba(197,160,89,0.32)',
+                    boxShadow:    '0 2px 10px rgba(0,0,0,0.15)',
+                  }}
+                  aria-label={`${karmaPoints} karma points`}
+                >
+                  <span style={{ fontSize: 11, lineHeight: 1 }}>⭐</span>
+                  <span
+                    className="text-[10px] font-bold"
+                    style={{ color: '#F5E0A0', letterSpacing: '0.04em' }}
+                  >
+                    {karmaPoints >= 1000 ? `${Math.floor(karmaPoints / 1000)}k` : karmaPoints}
+                  </span>
+                </Link>
+              )}
+
+              <Link href="/profile" className="relative group">
+                <div className="w-11 h-11 rounded-full border-2 border-white/25 p-0.5 transition-all duration-500 group-hover:border-white/45"
+                  style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
+                  <div className="w-full h-full rounded-full overflow-hidden relative bg-white/10 backdrop-blur-sm">
+                    {avatarUrl ? (
+                      <Image src={avatarUrl} alt={userName} fill className="object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-serif text-lg text-[#F2EAD6]">
+                        {userName.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {isPro && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
+                    <Sparkles size={10} className="text-white" />
+                  </div>
+                )}
+              </Link>
+            </motion.div>
+          </div>
+
+          <div className="px-5 mt-3 pointer-events-auto">
+            {city && (
+              <motion.p
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.20em] text-[var(--divine-text)] dark:text-white mb-1 opacity-60 dark:opacity-100"
+                style={{ textShadow: isDark ? '0 1px 6px rgba(0,0,0,0.55)' : 'none' }}
+              >
+                <MapPin size={10} strokeWidth={2.5} />
+                {city}
+              </motion.p>
+            )}
+            <motion.h1
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-xl font-serif text-[var(--divine-text)] dark:text-white leading-tight cursor-pointer"
+              style={{ textShadow: isDark ? '0 2px 12px rgba(0,0,0,0.55)' : 'none' }}
+              onClick={onGreetingClick}
+            >
+              {stripGreetingIcon(greeting)},&nbsp;
+              <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
+            </motion.h1>
+
+            {panchang?.tithi && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.22 }}
+                className="mt-1.5"
+              >
+                <Link
+                  href="/panchang"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
+                  style={{ background: 'rgba(197,160,89,0.14)', backdropFilter: 'blur(8px)' }}
+                >
+                  <span className="text-[10px]">🌙</span>
+                  <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,240,200,0.90)' }}>
+                    {panchang.tithi}
+                  </span>
+                  <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
+                  <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
+                    {fmtDate(selectedDate, 'd MMM')}
+                  </span>
+                </Link>
+              </motion.div>
+            )}
+
+            <AnimatePresence>
+              {upcomingSacredObservance && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: 0.26, duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-1"
+                >
+                  <Link
+                    href={
+                      upcomingSacredObservance.festival.route_kind === 'vrat'
+                        ? `/vrat/${upcomingSacredObservance.festival.route_slug ?? resolveVratSlug(upcomingSacredObservance.festival.name)}`
+                        : `/festivals/${upcomingSacredObservance.festival.route_slug ?? ''}`
+                    }
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
+                    style={{ background: 'rgba(234,112,48,0.22)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,180,100,0.18)' }}
+                  >
+                    <span className="text-[11px]">{upcomingSacredObservance.festival.emoji || '🌙'}</span>
+                    <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,200,140,0.95)' }}>
+                      {upcomingSacredObservance.daysLeft === 0
+                        ? `Today is ${upcomingSacredObservance.festival.name}`
+                        : upcomingSacredObservance.daysLeft === 1
+                          ? `Tomorrow is ${upcomingSacredObservance.festival.name}`
+                          : `${upcomingSacredObservance.festival.name} in ${upcomingSacredObservance.daysLeft} days`}
+                    </span>
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {showRashiphalNudge && (
+                <motion.div
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: 0.30, duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-1"
+                >
+                  <Link
+                    href="/panchang?tab=rashiphal"
+                    onClick={onDismissRashiphalNudge}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
+                    style={{ background: 'rgba(139,92,246,0.20)', backdropFilter: 'blur(8px)' }}
+                  >
+                    <span className="text-[10px]">🔮</span>
+                    <span className="text-[10px] font-semibold" style={{ color: '#c4b5fd' }}>
+                      See your Rashiphal
+                    </span>
+                    <span className="text-[9px]" style={{ color: 'rgba(196,181,253,0.55)' }}>→</span>
+                  </Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Transitional Shloka ── */}
+      <div className="px-4 relative z-20 mb-0 mt-1">
+        <motion.button
+          type="button"
+          onClick={() => setShlokaModalOpen(true)}
+          className="w-full text-center pt-3 pb-0 cursor-pointer bg-transparent border-0 outline-none"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C5A059] opacity-80 mb-2 block">
+            {dailyText.label}
+          </span>
+          <p className="font-serif text-lg md:text-xl text-[var(--divine-text)] leading-relaxed italic px-4">
+            “{dailyTextLine}”
+          </p>
+          <p className="text-xs text-[var(--divine-text)] opacity-60 mt-2 px-8 line-clamp-1">
+            {dailyText.meaning}
+          </p>
+        </motion.button>
+      </div>
+
+      {/* ── Daily Sadhana Progress Strip ── */}
+      <DailySadhanaStrip
+        japaDone={japaAlreadyDoneToday}
+        nityaDone={nityaDoneToday}
+        pathshalaDone={pathshalaDoneToday}
+        japaBeads={dailyDharmaStackState.japaBeads}
+        japaRounds={dailyDharmaStackState.japaRounds}
+        quizDone={dailyDharmaStackState.quizDone}
+        dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+        dharmVeerId={dharmVeer.id}
+        pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+        tithi={panchang?.tithi}
+        tradition={tradition ?? 'hindu'}
+        isDark={isDark}
+      />
+
+      {/* ── Brahma Muhurta card ── */}
+      {panchang?.brahmaMuhurta && panchang?.sunrise && (
+        <BrahmaMuhurtaCard
+          brahmaMuhurta={panchang.brahmaMuhurta}
+          sunrise={panchang.sunrise}
+          japaAlreadyDoneToday={japaAlreadyDoneToday}
+          tradition={tradition}
+        />
+      )}
+
+      {/* ── Hero Picker Bottom Sheet ── */}
+      <AnimatePresence>
+        {heroPicker && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-end bg-black/60"
+            onClick={() => setHeroPicker(false)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="w-full rounded-t-[2rem] p-6 space-y-4 max-h-[80vh] overflow-y-auto"
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: 'linear-gradient(180deg, var(--surface-raised), var(--card-bg))',
+                borderTop: '1px solid rgba(197, 160, 89, 0.20)',
+                boxShadow: '0 -20px 48px rgba(0, 0, 0, 0.24)',
+              }}
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-serif font-bold text-white">Choose Sanctuary Backdrop</h3>
+                <button
+                  onClick={() => setHeroPicker(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10"
+                >
+                  <X size={16} className="text-white" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
+                  onClick={() => handleHeroSelect(null)}
+                  className="flex flex-col items-center gap-2 p-3 rounded-2xl border bg-white/5 border-white/10"
+                >
+                  <div className="w-full h-24 rounded-xl bg-gradient-to-br from-amber-600 to-amber-950 flex items-center justify-center font-bold text-xs text-white">
+                    Auto-Rotate 🔄
+                  </div>
+                  <span className="text-xs font-semibold text-white">Default Auto</span>
+                </button>
+
+                {pickerThemes.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => handleHeroSelect(theme.id)}
+                    className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-colors ${
+                      selectedHeroId === theme.id ? 'border-[var(--brand-primary)] bg-[rgba(197,160,89,0.1)]' : 'border-white/10 bg-white/5'
+                    }`}
+                  >
+                    <div className="w-full h-24 rounded-xl overflow-hidden relative">
+                      <Image
+                        src={theme.heroImage}
+                        alt={theme.heroAlt}
+                        fill
+                        sizes="100px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-white truncate max-w-full">
+                      {theme.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Shloka fullscreen modal ── */}
+      <AnimatePresence>
+        {shlokaModalOpen && (
+          <motion.div
+            className="fixed inset-0 z-[200] grid grid-rows-[auto,1fr,auto]"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{
+              background: isDark
+                ? 'radial-gradient(circle at 50% 18%, rgba(250,199,117,0.13), transparent 34%), radial-gradient(circle at 18% 78%, rgba(250,238,218,0.08), transparent 28%), linear-gradient(160deg,#171714 0%,#0d0d0b 100%)'
+                : 'radial-gradient(circle at 50% 18%, rgba(239,159,39,0.16), transparent 34%), radial-gradient(circle at 18% 78%, rgba(133,79,11,0.08), transparent 28%), linear-gradient(160deg,#fdfbf7 0%,#f7ead6 100%)',
+            }}
+          >
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              animate={prefersReducedMotion ? undefined : { opacity: [0.52, 0.9, 0.52], scale: [1, 1.03, 1] }}
+              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              style={{
+                background: `radial-gradient(ellipse at 50% 30%, ${sacredTextTheme.iconWell}, transparent 62%)`,
+              }}
+            />
+            {!prefersReducedMotion && (
+              <>
+                <motion.div
+                  className="absolute left-[14%] top-[18%] h-1.5 w-1.5 rounded-full"
+                  animate={{ opacity: [0.25, 1, 0.25], y: [0, -10, 0] }}
+                  transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ background: 'rgba(250,238,218,0.72)' }}
+                />
+                <motion.div
+                  className="absolute right-[18%] top-[34%] h-1 w-1 rounded-full"
+                  animate={{ opacity: [0.15, 0.9, 0.15], y: [0, -14, 0] }}
+                  transition={{ duration: 5.6, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
+                  style={{ background: 'rgba(250,199,117,0.72)' }}
+                />
+                <motion.div
+                  className="absolute left-[24%] bottom-[24%] h-1 w-1 rounded-full"
+                  animate={{ opacity: [0.18, 0.85, 0.18], y: [0, -12, 0] }}
+                  transition={{ duration: 6.2, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                  style={{ background: 'rgba(250,238,218,0.66)' }}
+                />
+              </>
+            )}
+
+            {/* Header bar */}
+            <div className="relative flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top,0px),12px)] pb-2"
+              style={{
+                background: isDark ? 'rgba(20,20,18,0.38)' : 'rgba(255,253,248,0.52)',
+                backdropFilter: 'blur(14px) saturate(120%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+              }}>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                  style={{ background: sacredTextTheme.iconWell }}>
+                  {dailyText.icon}
+                </div>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 500, color: 'var(--text-cream)' }}>
+                  {dailyText.label}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {dailyTextBase.transliteration && (
+                  <MantraPlayer
+                    text={dailyTextBase.transliteration}
+                    label={`Listen to ${dailyText.label} pronunciation`}
+                    size={15}
+                    accentColor="rgba(197,160,89,0.90)"
+                  />
+                )}
+                <button onClick={shareShloka}
+                  className="w-11 h-11 rounded-full flex items-center justify-center bg-transparent border-0 outline-none"
+                  style={{ background: sacredTextTheme.iconWell }} aria-label="Share">
+                  <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
+                </button>
+                <button onClick={() => setShlokaModalOpen(false)}
+                  className="w-[44px] h-[44px] rounded-full flex items-center justify-center bg-transparent border-0 outline-none"
+                  style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-2">
+              <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
+                style={{ background: 'rgba(197, 160, 89,0.14)', color: 'var(--brand-primary)' }}>
+                {dailyText.source}
+              </span>
+
+              <motion.div
+                className="rounded-[1.4rem] px-4 py-3"
+                initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.98 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  background: isDark ? 'rgba(255,255,255,0.055)' : 'rgba(255,255,255,0.58)',
+                  border: `1px solid ${isDark ? 'rgba(250,238,218,0.12)' : 'rgba(65,36,2,0.10)'}`,
+                  backdropFilter: 'blur(18px) saturate(125%)',
+                  WebkitBackdropFilter: 'blur(18px) saturate(125%)',
+                }}
+              >
+                <p style={{
+                  fontFamily: 'Georgia, "Noto Serif Devanagari", serif',
+                  fontSize: 'clamp(0.95rem, 3.5vw, 1.25rem)',
+                  lineHeight: 1.55,
+                  color: heroPrimaryText,
+                  whiteSpace: 'pre-line',
+                }}>
+                  {dailyText.original}
+                </p>
+              </motion.div>
+
+              {dailyTextBase.transliteration && dailyTextBase.transliteration !== dailyTextBase.original && (
+                <div className="flex items-start gap-2">
+                  <p className="italic leading-snug flex-1" style={{ color: heroSecondaryText, fontSize: '0.78rem', whiteSpace: 'pre-line' }}>
+                    {dailyTextBase.transliteration}
+                  </p>
+                </div>
+              )}
+
+              <div className="rounded-[1.2rem] px-3 py-2.5" style={{
+                background: isDark ? sacredTextTheme.iconWell : 'rgba(255,255,255,0.58)',
+                border: `1px solid ${isDark ? 'rgba(250,238,218,0.10)' : 'rgba(65,36,2,0.09)'}`,
+                backdropFilter: 'blur(14px) saturate(120%)',
+                WebkitBackdropFilter: 'blur(14px) saturate(120%)',
+              }}>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.16em] mb-1" style={{ color: 'rgba(197, 160, 89,0.65)' }}>
+                  {dailyText.meaningLabel}
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: heroSecondaryText }}>
+                  {dailyText.meaning}
+                </p>
+              </div>
+
+              <motion.button
+                onClick={markShlokaRead}
+                disabled={readToday}
+                className="w-full rounded-full py-3 text-sm font-semibold flex items-center justify-center gap-2 border-0 outline-none"
+                style={readToday
+                  ? { background: 'rgba(197, 160, 89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197, 160, 89,0.22)' }
+                  : { background: 'rgba(250,199,117,0.90)', color: '#1c1208', boxShadow: '0 14px 30px rgba(239,159,39,0.20)' }}
+                whileTap={readToday ? undefined : { scale: 0.97 }}
+              >
+                {readToday ? `✓ Marked read today` : `${dailyText.icon} Mark as read — earn 5 seva points`}
+              </motion.button>
+
+              {streak > 0 && (
+                <p className="text-center text-xs font-semibold" style={{ color: 'var(--brand-primary)' }}>
+                  🔥 {streak}-day {dailyText.streakLabel}
+                </p>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
