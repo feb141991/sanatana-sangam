@@ -192,39 +192,51 @@ export function SadhanaSection({
         )}
       </AnimatePresence>
 
-      {/* ── Quick Access pills ── */}
+      {/* ── Quick Access grid ── */}
       <div className="px-4 mb-4">
-        <div
-          className="flex gap-2 overflow-x-auto pb-0.5"
-          style={{ scrollbarWidth: 'none' } as React.CSSProperties}
-        >
+        <div className="grid grid-cols-4 gap-2.5">
           {[
-            { emoji: '🧘', label: 'Nitya',    href: '/nitya-karma' },
-            { emoji: '🧠', label: 'Quiz',     href: '/quiz' },
-            { emoji: '✨', label: 'AI Guide',  href: '/ai-chat' },
-            { emoji: '📈', label: 'Progress', href: '/my-progress' },
-            { emoji: '🛕', label: 'Tirtha',   href: '/tirtha-map' },
-            { emoji: '🪔', label: 'Sanskar',  href: '/kul/sanskara' },
-            { emoji: '🤝', label: 'Seva',     href: '/seva' },
+            { emoji: '🧘', label: 'Nitya',    href: '/nitya-karma',  bg: 'rgba(197,160,89,0.14)' },
+            { emoji: '🧠', label: 'Quiz',     href: '/quiz',          bg: 'rgba(165,148,224,0.14)' },
+            { emoji: '✨', label: 'AI Guide', href: '/ai-chat',       bg: 'rgba(139,92,246,0.14)' },
+            { emoji: '📈', label: 'Progress', href: '/my-progress',   bg: 'rgba(107,196,126,0.14)' },
+            { emoji: '🛕', label: 'Tirtha',   href: '/tirtha-map',    bg: 'rgba(255,138,101,0.14)' },
+            { emoji: '🪔', label: 'Sanskar',  href: '/kul/sanskara',  bg: 'rgba(197,160,89,0.14)' },
+            { emoji: '🤝', label: 'Seva',     href: '/seva',          bg: 'rgba(100,181,246,0.14)' },
           ].map(item => (
-            <Link
+            <motion.div
               key={item.label}
-              href={item.href}
-              className="shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full border transition-transform active:scale-95"
-              style={{
-                background:   isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,253,246,0.88)',
-                borderColor:  isDark ? 'rgba(197,160,89,0.18)' : 'rgba(197,160,89,0.22)',
-                textDecoration: 'none',
-              }}
+              whileTap={{ scale: 0.87 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
-              <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{item.emoji}</span>
-              <span
-                className="text-[12px] font-semibold"
-                style={{ color: isDark ? 'rgba(240,237,230,0.85)' : 'rgba(30,20,5,0.78)' }}
+              <Link
+                href={item.href}
+                className="flex flex-col items-center gap-1.5 rounded-[1.2rem] py-3 px-1 no-underline"
+                style={{
+                  background: isDark
+                    ? item.bg
+                    : item.bg.replace('0.14', '0.12'),
+                  border: `1px solid ${item.bg.replace('0.14', '0.3')}`,
+                }}
               >
-                {item.label}
-              </span>
-            </Link>
+                <span
+                  style={{
+                    fontSize: '2rem',
+                    lineHeight: 1,
+                    display: 'block',
+                    filter: 'drop-shadow(0px 3px 5px rgba(0,0,0,0.22)) drop-shadow(0px 1px 2px rgba(0,0,0,0.14))',
+                  }}
+                >
+                  {item.emoji}
+                </span>
+                <span
+                  className="text-[10px] font-semibold text-center leading-tight"
+                  style={{ color: isDark ? 'rgba(240,237,230,0.80)' : 'rgba(30,20,5,0.72)' }}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>

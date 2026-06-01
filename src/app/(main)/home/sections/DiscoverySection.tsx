@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { MotionItem, MotionStagger } from '@/components/motion/MotionPrimitives';
@@ -86,27 +87,30 @@ export function DiscoverySection({
           const bg = FEATURE_ICON_BG[item.href] || 'rgba(197,160,89,0.15)';
           return (
             <MotionItem key={item.title}>
+              <motion.div
+                whileTap={{ scale: 0.90 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+              >
               <Link href={item.href} className="no-underline">
                 <div
-                  className="divine-feature-card motion-lift relative flex flex-col p-4 rounded-[1.5rem]"
-                  style={{
-                    minHeight: '120px',
-                  }}
+                  className="divine-feature-card relative flex flex-col p-4 rounded-[1.5rem]"
+                  style={{ minHeight: '120px' }}
                 >
                   <span className="divine-card-motif" aria-hidden="true" />
-                  
+
                   {/* Icon container */}
                   <div
                     className="rounded-[14px] flex items-center justify-center flex-shrink-0"
-                    style={{
-                      width: '56px',
-                      height: '56px',
-                      background: bg,
-                    }}
+                    style={{ width: '56px', height: '56px', background: bg }}
                   >
                     <span
                       className="select-none"
-                      style={{ fontSize: '2.8rem', lineHeight: 1, display: 'block' }}
+                      style={{
+                        fontSize: '2.8rem',
+                        lineHeight: 1,
+                        display: 'block',
+                        filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.28)) drop-shadow(0px 1px 3px rgba(0,0,0,0.16))',
+                      }}
                       aria-hidden="true"
                     >
                       {item.emoji}
@@ -137,6 +141,7 @@ export function DiscoverySection({
                   />
                 </div>
               </Link>
+              </motion.div>
             </MotionItem>
           );
         })}
