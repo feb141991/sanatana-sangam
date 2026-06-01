@@ -2462,11 +2462,11 @@ export default function HomeDashboard({
                     >
                       <span className="text-[11px]">{upcomingSacredObservance.festival.emoji || '🌙'}</span>
                       <span className="text-[11px] font-semibold" style={{ color: 'rgba(255,200,140,0.95)' }}>
-                        {upcomingSacredObservance.festival.name}
-                      </span>
-                      <span style={{ color: 'rgba(255,200,140,0.35)', fontSize: '9px' }}>·</span>
-                      <span className="text-[11px]" style={{ color: 'rgba(255,200,140,0.65)' }}>
-                        {upcomingSacredObservanceLabel}
+                        {upcomingSacredObservance.daysLeft === 0
+                          ? `Today is ${upcomingSacredObservance.festival.name}`
+                          : upcomingSacredObservance.daysLeft === 1
+                            ? `Tomorrow is ${upcomingSacredObservance.festival.name}`
+                            : `${upcomingSacredObservance.festival.name} in ${upcomingSacredObservance.daysLeft} days`}
                       </span>
                     </Link>
                   </motion.div>
@@ -2758,16 +2758,6 @@ export default function HomeDashboard({
       </div>
 
 
-        {/* ── Sacred Days — swipeable carousel ─────────────────────────────── */}
-        {calendarLoading ? (
-          <div className="mx-4 mb-4 h-[144px] rounded-2xl animate-pulse" style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)' }} />
-        ) : (
-          <VratCarousel
-            festivals={apiFestivals}
-            isDark={isDark}
-            effectiveAppLanguage={effectiveAppLanguage}
-          />
-        )}
 
 
         {/* ── Pitru Paksha Banner ─────────────────────────────────────────── */}
@@ -2829,7 +2819,7 @@ export default function HomeDashboard({
               </span>
               <div className="festival-story-body">
                 <span className="festival-story-kicker">
-                  {daysLeft === 0 ? 'Today' : `In ${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
+                  {daysLeft === 0 ? 'Today' : daysLeft === 1 ? 'Tomorrow' : `In ${daysLeft} days`}
                   {' · '}Festival Story
                 </span>
                 <span className="festival-story-title">{f.name}</span>
