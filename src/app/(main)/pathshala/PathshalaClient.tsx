@@ -905,9 +905,17 @@ export default function PathshalaClient({
             <h2 className="premium-serif text-2xl font-bold mb-1" style={{ color: primaryText }}>
               {path.title}
             </h2>
-            <p className="text-sm mb-4" style={{ color: secondaryText }}>
+            <p className="text-sm" style={{ color: secondaryText }}>
               Lesson {resumeLesson + 1} of {path.total_lessons}
             </p>
+            {recommendation?.pathId === enrollment.path_id && recommendation.reason && (
+              <p className="text-[11px] italic mt-1 mb-4" style={{ color: meta.accentColour, opacity: 0.8 }}>
+                ✦ {recommendation.reason}
+              </p>
+            )}
+            {!(recommendation?.pathId === enrollment.path_id && recommendation?.reason) && (
+              <div className="mb-4" />
+            )}
 
             <div className="mb-4">
               <div className="flex items-center justify-between text-xs mb-1">
@@ -975,13 +983,17 @@ export default function PathshalaClient({
     );
   }
 
-  // ── Aaj ka Shloka — rotates daily with Chanakya Niti priority ────────────────
+  // ── Aaj ka Shloka — expandable in place ──────────────────────────────────────
   function DailyVersePrompt() {
+    const [expanded, setExpanded] = useState(false);
     const shlokaMeaning = getShlokaByLanguage(todayShloka, appLanguage ?? 'en');
     return (
-      <Link href="/pathshala?tab=scripture" className="block rounded-[1.8rem] overflow-hidden mb-4 motion-press"
-        style={cardStyle}>
-        <div className="p-5" style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}>
+      <div className="rounded-[1.8rem] overflow-hidden mb-4" style={cardStyle}>
+        <button
+          className="w-full text-left p-5 transition-colors active:opacity-80"
+          style={{ background: `linear-gradient(135deg, ${meta.accentColour}12 0%, transparent 100%)` }}
+          onClick={() => setExpanded(v => !v)}
+        >
           {pulse && (
             <div className="flex items-center gap-2 mb-3 bg-white/5 w-max px-2 py-0.5 rounded-full border border-white/5">
               <span className="text-[10px]">{pulse.emoji}</span>
@@ -990,22 +1002,51 @@ export default function PathshalaClient({
               </span>
             </div>
           )}
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
-            {todayShloka.source} · {t('today')}
-          </p>
-          <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
-            {todayShloka.sanskrit}
-          </p>
-        </div>
-        <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
-          <p className="text-sm leading-relaxed" style={{ color: secondaryText }}>
-            {pulse ? pulse.description : shlokaMeaning}
-          </p>
-          <p className="text-xs mt-2" style={{ color: meta.accentColour }}>
-            {t('explore')} {meta.navLibraryLabel} →
-          </p>
-        </div>
-      </Link>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: tertiaryText }}>
+                {todayShloka.source} · {t('today')}
+              </p>
+              <p className="font-[family:var(--font-deva)] font-semibold text-base leading-relaxed" style={{ color: primaryText }}>
+                {todayShloka.sanskrit}
+              </p>
+            </div>
+            <motion.span
+              animate={{ rotate: expanded ? 180 : 0 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="flex-shrink-0 mt-1 text-[var(--brand-muted)]"
+            >
+              <ChevronDown size={16} />
+            </motion.span>
+          </div>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {expanded && (
+            <motion.div
+              key="shloka-meaning"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              style={{ overflow: 'hidden' }}
+            >
+              <div className="p-4" style={{ borderTop: `1px solid ${glassBorder}`, background: 'var(--card-bg-soft)' }}>
+                <p className="text-sm leading-relaxed mb-3" style={{ color: secondaryText }}>
+                  {pulse ? pulse.description : shlokaMeaning}
+                </p>
+                <Link
+                  href="/pathshala?tab=scripture"
+                  className="text-xs font-semibold"
+                  style={{ color: meta.accentColour }}
+                >
+                  {t('explore')} {meta.navLibraryLabel} →
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     );
   }
 
@@ -1383,29 +1424,6 @@ export default function PathshalaClient({
             </motion.div>
           ) : (
             <>
-              {recommendation && (
-                <motion.section variants={itemVariants} className="px-4 mb-6">
-                  <div className="relative overflow-hidden rounded-2xl bg-[#F7EDD8] border border-[#DEC89A] p-5 shadow-sm">
-                    <Sparkles className="absolute top-4 right-4 text-[#DEC89A] w-6 h-6 opacity-60" />
-                    <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#BFA779] mb-2 flex items-center gap-1">
-                      <span>✦</span> <span>आज का पथ (Today&apos;s Path)</span>
-                    </div>
-                    <h3 className="text-lg text-[#4A3D2A] font-serif font-bold mb-1">
-                      {recommendation.pathTitle}
-                    </h3>
-                    <p className="text-sm text-[#7A6B56] italic mb-4 max-w-[85%]">
-                      {recommendation.reason}
-                    </p>
-                    <button
-                      onClick={() => router.push(`/pathshala/${recommendation.pathId}`)}
-                      className="px-5 py-2 rounded-full text-xs font-medium text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
-                      style={{ backgroundColor: meta.accentColour }}
-                    >
-                      {activePaths.some(e => e.path_id === recommendation.pathId) ? "जारी रखें (Continue)" : "शुरू करें (Begin)"}
-                    </button>
-                  </div>
-                </motion.section>
-              )}
               
               {activePaths.length > 0 ? (
                 <motion.section variants={itemVariants} className="px-4 mb-6">
