@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue } from 'framer-motion';
 import { Check, ChevronRight } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { localSpiritualDate } from '@/lib/sacred-time';
 import { useRouter } from 'next/navigation';
 
 interface DailySadhanaStripProps {
@@ -47,7 +48,10 @@ const ITEM_PALETTE: Record<string, { colour: string; bg: string }> = {
   dharmveer: { colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
 };
 
-function formatToday() { return new Date().toISOString().split('T')[0]; }
+function formatToday() {
+  const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+  return localSpiritualDate(tz, 4);
+}
 function clampPercent(v: number) { return Math.max(0, Math.min(100, Math.round(v))); }
 
 function derivePathshalaProgress(raw: unknown): number {

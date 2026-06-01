@@ -332,7 +332,8 @@ export default function HomeDashboard({
         }
       }
 
-      nextState.dharmVeerDone = localStorage.getItem(`shoonaya-dharmveer-done-${todayStr}`) === 'true';
+      // OR with server value — server is source of truth across devices
+      nextState.dharmVeerDone = dharmVeerDoneToday || localStorage.getItem(`shoonaya-dharmveer-done-${todayStr}`) === 'true';
       nextState.stotramDone = localStorage.getItem(`shoonaya-stotram-done-${todayStr}`) === 'true';
       nextState.kathaDone = localStorage.getItem(`shoonaya-katha-done-${todayStr}`) === 'true';
 
