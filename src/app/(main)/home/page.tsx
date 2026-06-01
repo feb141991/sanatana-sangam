@@ -68,142 +68,140 @@ export default async function HomePage() {
     
   if (needsOnboarding) redirect('/onboarding');
 
-  const { data: guidedPathProgress } = await supabase
-    .from('guided_path_progress')
-    .select('path_id, status, completed_at, updated_at, current_lesson, completed_lessons')
-    .eq('user_id', user.id);
-
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
-
-  // Only fetch upcoming observances (from yesterday onward) so we don't pull
-  // historical rows on every render. 90 rows covers ~3 months of daily festivals.
+  const today     = localSpiritualDate(profile?.timezone, 4);
+  const yesterday = shiftIsoDate(today, -1);
   const calendarFromDate = shiftIsoDate(new Date().toISOString().slice(0, 10), -1);
-  const { data: calendarRows } = await supabase
-    .from('observance_occurrences')
-    .select('*, observance_definitions(*)')
-    .gte('date', calendarFromDate)
-    .order('date', { ascending: true })
-    .limit(90);
+  const twentyEightDaysAgo = new Date();
+  twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
+  const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
 
-  // Tradition-aware daily sacred text.
-  // Explicit Hindu uses shlokas.ts; Sikh/Buddhist/Jain/exploring use sacred-texts.ts.
+  // Tradition-aware daily sacred text — pure computation, no I/O
   const shloka     = getTodayShloka(profile?.timezone ?? undefined);
   const sacredText = getDailySacredText(tradition, dayIndex);
+  const panchang   = getTodayPanchang(
+    profile?.latitude  ?? undefined,
+    profile?.longitude ?? undefined,
+  );
 
+  // ── Single parallel fetch — all DB queries run simultaneously ─────────────
+  // Previously these ran in 5 sequential waves. Now one round-trip.
+  const DB_TIMEOUT = 4_000;
+  const [
+    guidedResult, calendarResult, heroResult,
+    todayResult, yesterdayResult, latestStreakResult,
+    sadhanaResult, nityaResult, liveResult, malaResult,
+    sankalpaResult, dharmVeerResult,
+  ] = await Promise.allSettled([
+    // guided path progress
+    withTimeout(
+      supabase.from('guided_path_progress').select('path_id, status, completed_at, updated_at, current_lesson, completed_lessons').eq('user_id', user.id),
+      DB_TIMEOUT,
+    ),
+    // observances calendar
+    withTimeout(
+      supabase.from('observance_occurrences').select('*, observance_definitions(*)').gte('date', calendarFromDate).order('date', { ascending: true }).limit(90),
+      DB_TIMEOUT,
+    ),
+    // hero assets
+    withTimeout(
+      supabase.from('hero_assets').select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active').eq('is_active', true).order('priority', { ascending: false }),
+      DB_TIMEOUT,
+    ),
+    // today's sadhana
+    withTimeout(
+      supabase.from('daily_sadhana').select('streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done').eq('user_id', user.id).eq('date', today).maybeSingle(),
+      DB_TIMEOUT,
+    ),
+    // yesterday's sadhana
+    withTimeout(
+      supabase.from('daily_sadhana').select('japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done').eq('user_id', user.id).eq('date', yesterday).maybeSingle(),
+      DB_TIMEOUT,
+    ),
+    // latest streak row
+    withTimeout(
+      supabase.from('daily_sadhana').select('date, streak_count').eq('user_id', user.id).not('streak_count', 'is', null).order('date', { ascending: false }).limit(1).maybeSingle(),
+      DB_TIMEOUT,
+    ),
+    // 28-day sadhana history
+    withTimeout(
+      supabase.from('daily_sadhana').select('date, japa_done').eq('user_id', user.id).gte('date', historyFrom).lte('date', today),
+      DB_TIMEOUT,
+    ),
+    // nitya karma log
+    withTimeout(
+      supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
+      DB_TIMEOUT,
+    ),
+    // live darshans
+    withTimeout(
+      supabase.from('live_darshans').select('*').eq('is_active', true),
+      DB_TIMEOUT,
+    ),
+    // mala sessions today
+    withTimeout(
+      supabase.from('mala_sessions').select('id').eq('user_id', user.id).gte('completed_at', `${today}T00:00:00Z`).lte('completed_at', `${today}T23:59:59Z`).limit(1),
+      DB_TIMEOUT,
+    ),
+    // active sankalpa
+    withTimeout(
+      supabase.from('sankalpas').select('id, text, start_date, target_days, tradition').eq('user_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      DB_TIMEOUT,
+    ),
+    // dharm veer
+    getDharmVeerOfTheDay(supabase, tradition).then((d) => ({ data: d })).catch(() => ({ data: null })),
+  ]);
+
+  // Extract results — use `as any` only at the extraction boundary;
+  // downstream variables are typed explicitly below.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const guidedPathProgress = (guidedResult.status  === 'fulfilled' ? guidedResult.value.data  : null) as any[] | null;
+  const calendarRows       = (calendarResult.status === 'fulfilled' ? calendarResult.value.data : null) as any[] | null;
+  const heroAssetRows      = (heroResult.status     === 'fulfilled' ? heroResult.value.data     : null) as any[] | null;
+  const todaySadhana       = (todayResult.status    === 'fulfilled' ? todayResult.value.data    : null) as { streak_count: number | null; japa_done: boolean | null; quiz_done: boolean | null; nitya_done: boolean | null; pathshala_done: boolean | null; dharmveer_done: boolean | null } | null;
+  const yesterdaySadhana   = (yesterdayResult.status === 'fulfilled' ? yesterdayResult.value.data : null) as { japa_done: boolean | null; quiz_done: boolean | null; nitya_done: boolean | null; pathshala_done: boolean | null; dharmveer_done: boolean | null } | null;
+  const latestStreakRow     = (latestStreakResult.status === 'fulfilled' ? latestStreakResult.value.data : null) as { date: string; streak_count: number | null } | null;
+  const sadhanaHistory     = (sadhanaResult.status  === 'fulfilled' ? sadhanaResult.value.data  : null) as { date: string; japa_done: boolean }[] | null;
+  const nityaHistory       = (nityaResult.status    === 'fulfilled' ? nityaResult.value.data    : null) as { log_date: string }[] | null;
+  const liveDarshanData    = (liveResult.status     === 'fulfilled' ? liveResult.value.data     : null) as any[] | null;
+  const malaSessionsToday  = (malaResult.status     === 'fulfilled' ? malaResult.value.data     : null) as { id: string }[] | null;
+  const sankalpaRow        = (sankalpaResult.status === 'fulfilled' ? sankalpaResult.value.data : null) as { id: string; text: string; start_date: string; target_days: number | null; tradition: string | null } | null;
+  const dharmVeer: DharmVeer = (dharmVeerResult.status === 'fulfilled' ? dharmVeerResult.value.data : null) as unknown as DharmVeer
+    ?? (await getDharmVeerOfTheDay(supabase, tradition));
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
+  // Build calendar / festival data from results
   const calendarFromDb = (calendarRows ?? []).map((row) => mapOccurrenceToFestival(row));
-
   const festivalCalendar = calendarFromDb.length > 0 ? calendarFromDb : FESTIVALS_2026;
   const festivalCalendarMeta: FestivalCalendarMeta = buildFestivalCalendarMeta(
     calendarFromDb.length > 0 ? 'database' : 'fallback',
     festivalCalendar,
   );
-
-  // Tradition-aware festival: shows their tradition's next festival(s) first
   const festivals = getNextFestivals(festivalCalendar, new Date(), tradition);
   const festival  = festivals[0] ?? null;
   const daysLeft  = festival ? daysUntil(festival.date) : null;
-
-  const { data: heroAssetRows } = await supabase
-    .from('hero_assets')
-    .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active')
-    .eq('is_active', true)
-    .order('priority', { ascending: false });
 
   const heroThemes = ((heroAssetRows ?? []) as HeroAssetRow[])
     .map(mapHeroAssetToTheme)
     .filter((theme): theme is HomeHeroTheme => Boolean(theme));
 
-  const panchang = getTodayPanchang(
-    profile?.latitude  ?? undefined,
-    profile?.longitude ?? undefined,
-  );
-
-  // Japa streak from today's daily_sadhana record
-  const today = localSpiritualDate(profile?.timezone, 4);
-  const yesterday = shiftIsoDate(today, -1);
-  const { data: todaySadhana } = await supabase
-    .from('daily_sadhana')
-    .select('streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done')
-    .eq('user_id', user.id)
-    .eq('date', today)
-    .maybeSingle();
-
-  const [{ data: yesterdaySadhana }, { data: latestStreakRow }] = await Promise.all([
-    supabase
-      .from('daily_sadhana')
-      .select('japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done')
-      .eq('user_id', user.id)
-      .eq('date', yesterday)
-      .maybeSingle(),
-    supabase
-      .from('daily_sadhana')
-      .select('date, streak_count')
-      .eq('user_id', user.id)
-      .not('streak_count', 'is', null)
-      .order('date', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-
-  const twentyEightDaysAgo = new Date();
-  twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
-  const historyFrom = twentyEightDaysAgo.toISOString().slice(0, 10);
-
-  // Promise.allSettled — one slow/failing query cannot block the whole home page render.
-  // Each query is also capped at 4 s so a stalled DB connection doesn't time out the page.
-  const DB_TIMEOUT = 4_000;
-  const [sadhanaResult, nityaResult, liveResult, malaResult] = await Promise.allSettled([
-    withTimeout(
-      supabase.from('daily_sadhana').select('date, japa_done').eq('user_id', user.id).gte('date', historyFrom).lte('date', today),
-      DB_TIMEOUT,
-    ),
-    withTimeout(
-      supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
-      DB_TIMEOUT,
-    ),
-    withTimeout(
-      supabase.from('live_darshans').select('*').eq('is_active', true),
-      DB_TIMEOUT,
-    ),
-    withTimeout(
-      supabase.from('mala_sessions').select('id').eq('user_id', user.id).gte('completed_at', `${today}T00:00:00Z`).lte('completed_at', `${today}T23:59:59Z`).limit(1),
-      DB_TIMEOUT,
-    ),
-  ]);
-  const sadhanaHistory  = sadhanaResult.status  === 'fulfilled' ? sadhanaResult.value.data  : null;
-  const nityaHistory    = nityaResult.status    === 'fulfilled' ? nityaResult.value.data    : null;
-  const liveDarshanData = liveResult.status     === 'fulfilled' ? liveResult.value.data     : null;
-  const malaSessionsToday = malaResult.status   === 'fulfilled' ? malaResult.value.data     : null;
-
+  // Build active sankalpa from result
   let activeSankalpa: { id: string; text: string; start_date: string; end_date: string; tradition: string } | null = null;
-  try {
-    const { data: sankalpaRow } = await supabase
-      .from('sankalpas')
-      .select('id, text, start_date, target_days, tradition')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (sankalpaRow) {
-      const targetDays = sankalpaRow.target_days ?? 30;
-      const startMs = new Date(sankalpaRow.start_date + 'T00:00:00Z').getTime();
-      const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
-      activeSankalpa = {
-        id: sankalpaRow.id,
-        text: sankalpaRow.text,
-        start_date: sankalpaRow.start_date,
-        end_date: endDate,
-        tradition: sankalpaRow.tradition ?? tradition ?? 'hindu',
-      };
-    }
-  } catch {
-    // table may not exist yet — ignore
+  if (sankalpaRow) {
+    const targetDays = sankalpaRow.target_days ?? 30;
+    const startMs = new Date(sankalpaRow.start_date + 'T00:00:00Z').getTime();
+    const endDate = new Date(startMs + targetDays * 86_400_000).toISOString().slice(0, 10);
+    activeSankalpa = {
+      id: sankalpaRow.id,
+      text: sankalpaRow.text,
+      start_date: sankalpaRow.start_date,
+      end_date: endDate,
+      tradition: sankalpaRow.tradition ?? tradition ?? 'hindu',
+    };
   }
 
   const allStreams = resolveActiveLiveStreams(liveDarshanData ?? null);
-  const dharmVeer: DharmVeer = await getDharmVeerOfTheDay(supabase, tradition);
 
   // Build nitya set (dates with any log entry = done)
   const nityaDates = new Set((nityaHistory ?? []).map(r => r.log_date));
