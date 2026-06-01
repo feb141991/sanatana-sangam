@@ -36,7 +36,13 @@ import {
   getEntriesBySection, getPathshalaSectionDetail,
   type LibraryEntry,
 } from '@/lib/library-content';
-import { SEED_PATHS as SEED_PATHS_LIB, PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
+import {
+  SEED_PATHS as SEED_PATHS_LIB,
+  PATHSHALA_PATH_IDS,
+  getPathTitle,
+  getPathDesc,
+  type PathshalaPath,
+} from '@/lib/pathshala-paths';
 import {
   RAMAYANA_STRUCTURE, BHAGAVATAM_STRUCTURE,
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
@@ -127,10 +133,7 @@ function getEntryText(entry: LibraryEntry, meaningLabel: string) {
 }
 
 // ── Static seed paths — sourced from shared lib so server components can import too ──
-export const SEED_PATHS = SEED_PATHS_LIB as unknown as {
-  id: string; title: string; description: string;
-  difficulty: string; proRequired: boolean; tradition: string; total_lessons: number; duration_days: number;
-}[];
+export const SEED_PATHS: PathshalaPath[] = SEED_PATHS_LIB;
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
 function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
@@ -297,7 +300,6 @@ function ScriptureTab({
 }: {
   tradition: string; accentColour: string; navLabel: string; isDark: boolean; initialSectionId?: string;
 }) {
-  const { t } = useLanguage();
   const allowedSections = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
   const sections        = LIBRARY_SECTIONS.filter(s => allowedSections.includes(s.id));
 
@@ -397,7 +399,7 @@ function ScriptureTab({
             />
             {entries.length > 0 && (
               <div className="space-y-4">
-                <div className="flex items-center gap-4 px-2">
+                <div className="flex item-center gap-4 px-2">
                   <div className="h-px flex-1 bg-white/5" />
                   <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">Featured Passages</span>
                   <div className="h-px flex-1 bg-white/5" />
@@ -461,7 +463,6 @@ function ScriptureTab({
           </p>
           <div className="grid gap-3">
             {sections.map((section) => {
-              const sectionDetail = getPathshalaSectionDetail(section.id);
               return (
               <motion.button
                 key={section.id}
@@ -495,12 +496,6 @@ function ScriptureTab({
                         style={{ background: `${accentColour}15`, color: accentColour }}>
                         {section.count} passages
                       </span>
-                      {sectionDetail && (
-                        <span className="text-[10px] font-bold rounded-full px-2.5 py-0.5"
-                          style={{ background: 'var(--card-bg-soft)', color: mutedColor }}>
-                          {sectionDetail.corpusState}
-                        </span>
-                      )}
                     </div>
                   </div>
 
@@ -602,10 +597,7 @@ export default function PathshalaClient({
   }, [tradition, lat, lon]);
 
   // Show all 44 paths across all traditions in the Explore tab
-  const allPaths = SEED_PATHS as unknown as {
-    id: string; title: string; description: string;
-    difficulty: string; proRequired: boolean; tradition: string; total_lessons: number; duration_days: number;
-  }[];
+  const allPaths: PathshalaPath[] = SEED_PATHS_LIB;
 
   useEffect(() => {
     const checkTheme = () => setIsDark(document.documentElement.dataset.theme !== 'light');
@@ -921,7 +913,7 @@ export default function PathshalaClient({
               Today&apos;s Lesson
             </p>
             <h2 className="premium-serif text-2xl font-bold mb-1" style={{ color: primaryText }}>
-              {path.title}
+              {getPathTitle(path, appLanguage)}
             </h2>
             <p className="text-sm" style={{ color: secondaryText }}>
               Lesson {resumeLesson + 1} of {path.total_lessons}
@@ -1104,17 +1096,17 @@ export default function PathshalaClient({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
+                  <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{getPathTitle(path, appLanguage)}</h3>
                   <span className="text-[10px] font-semibold rounded-full px-2 py-0.5"
                     style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                     {diff.label}
                   </span>
                 </div>
-                <p className="text-xs mt-0.5 truncate" style={{ color: secondaryText }}>{path.description}</p>
+                <p className="text-xs mt-0.5 truncate" style={{ color: secondaryText }}>{getPathDesc(path, appLanguage)}</p>
               </div>
               {/* Unenroll */}
               <button
-                onClick={() => unenroll(enrollment.path_id, path.title)}
+                onClick={() => unenroll(enrollment.path_id, getPathTitle(path, appLanguage))}
                 className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center opacity-40 hover:opacity-80 transition focus:outline-none"
                 style={{ background: 'var(--card-bg-soft)', border: `1px solid ${glassBorder}` }}
                 title="Leave this Path"
@@ -1175,13 +1167,13 @@ export default function PathshalaClient({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold text-xs animate-none" style={{ color: primaryText }}>{path.title}</h3>
+                  <h3 className="font-semibold text-xs animate-none" style={{ color: primaryText }}>{getPathTitle(path, appLanguage)}</h3>
                   <span className="text-[9px] font-semibold rounded-full px-1.5 py-0.5"
                     style={{ background: diff.bg, color: diff.text, border: `1px solid ${diff.border}` }}>
                     {diff.label}
                   </span>
                 </div>
-                <p className="text-[10px] mt-0.5 truncate" style={{ color: secondaryText }}>{path.description}</p>
+                <p className="text-[10px] mt-0.5 truncate" style={{ color: secondaryText }}>{getPathDesc(path, appLanguage)}</p>
               </div>
             </div>
             <div className="mt-1.5 flex items-center justify-between gap-2">
@@ -1251,7 +1243,7 @@ export default function PathshalaClient({
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{path.title}</h3>
+              <h3 className="font-semibold text-sm" style={{ color: primaryText }}>{getPathTitle(path, appLanguage)}</h3>
               {isEnrolled ? (
                 <span className="text-[10px] font-bold uppercase tracking-widest rounded-full px-2 py-0.5"
                   style={{ background: 'var(--brand-primary)', color: 'var(--divine-bg)' }}>
@@ -1264,7 +1256,7 @@ export default function PathshalaClient({
                 </span>
               )}
             </div>
-            <p className="text-xs line-clamp-2" style={{ color: secondaryText }}>{path.description}</p>
+            <p className="text-xs line-clamp-2" style={{ color: secondaryText }}>{getPathDesc(path, appLanguage)}</p>
             {isEnrolled ? (
               <p className="text-[11px] mt-1.5 font-medium" style={{ color: meta.accentColour }}>
                 {doneLessons} of {path.total_lessons} lessons done
@@ -1419,10 +1411,10 @@ export default function PathshalaClient({
     const q = globalQuery.toLowerCase().trim();
     if (q.length < 2) return [];
     return allPaths.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q)
+      getPathTitle(p, appLanguage).toLowerCase().includes(q) ||
+      getPathDesc(p, appLanguage).toLowerCase().includes(q)
     );
-  }, [globalQuery, allPaths]);
+  }, [globalQuery, allPaths, appLanguage]);
 
   const searchScripturesResult = useMemo(() => {
     const q = globalQuery.toLowerCase().trim();
