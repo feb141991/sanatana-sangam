@@ -1,0 +1,10 @@
+# Supabase edge functions — Deno runtime, not compatible with Next.js ESLint config
+packages/sadhana-engine/supabase/functions/
+
+# Build output
+.next/
+out/
+
+# Generated files
+node_modules/
+graphify-out/
