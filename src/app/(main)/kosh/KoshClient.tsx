@@ -7,6 +7,9 @@ import { ChevronLeft, Lock, Star, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { SACRED_RELICS, getUnlockedRelics, type Relic } from '@/lib/relics';
 import PageIntro from '@/components/ui/PageIntro';
+import { RELIC_ACCENTS } from '@/lib/relic-accents';
+import { MALA_SKINS } from '@/lib/mala-skins';
+import { RELIC_FRAMES } from '@/lib/relic-frames';
 
 // ── Relic PNG assets (takes priority over emoji) ────────────────────────────
 const RELIC_ASSET: Record<string, string> = {
@@ -364,6 +367,10 @@ export default function KoshClient({
   const dimColor   = 'var(--text-dim, rgba(255,255,255,0.35))';
   const goldColor  = 'var(--brand-primary, #C5A059)';
 
+  const hasAccent = selectedRelic ? !!RELIC_ACCENTS[selectedRelic.id] : false;
+  const hasMala = selectedRelic ? (selectedRelic.id !== 'default' && !!MALA_SKINS[selectedRelic.id]) : false;
+  const hasFrame = selectedRelic ? (selectedRelic.id !== 'default' && !!RELIC_FRAMES[selectedRelic.id]) : false;
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--divine-bg)', color: inkColor }}>
       <style dangerouslySetInnerHTML={{ __html: KOSH_CSS }} />
@@ -701,13 +708,45 @@ export default function KoshClient({
                   : `Unlocked at ${selectedRelic.milestoneValue} seva points`}
               </div>
 
+              {/* Dynamic visual effect disclosure */}
+              <div className="mt-4 pt-4 border-t" style={{ borderColor: cardBorder }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em]" style={{ color: dimColor }}>
+                  When equipped
+                </p>
+                
+                <div className="mt-2.5 flex flex-wrap gap-2">
+                  {hasAccent && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: 'var(--surface-soft, rgba(255,255,255,0.05))', color: goldColor }}>
+                      🎨 Home accent
+                    </span>
+                  )}
+                  {hasMala && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: 'var(--surface-soft, rgba(255,255,255,0.05))', color: goldColor }}>
+                      📿 Japa mala
+                    </span>
+                  )}
+                  {hasFrame && (
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: 'var(--surface-soft, rgba(255,255,255,0.05))', color: goldColor }}>
+                      ✦ Profile frame
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium" style={{ background: 'var(--surface-soft, rgba(255,255,255,0.05))', color: goldColor }}>
+                    🏅 Badge on profile
+                  </span>
+                </div>
+                
+                <p className="mt-2.5 text-xs italic" style={{ color: mutedColor }}>
+                  "{selectedRelic.effect}"
+                </p>
+              </div>
+
               <div className="mt-6">
                 {activeRelicId === selectedRelic.id ? (
                   <div
                     className="w-full rounded-2xl px-4 py-3 text-center text-sm font-semibold"
                     style={{ border: `1px solid rgba(197,160,89,0.25)`, background: 'rgba(197,160,89,0.10)', color: goldColor }}
                   >
-                    Currently Active ✓
+                    Active — effects applied ✓
                   </div>
                 ) : (
                   <button
