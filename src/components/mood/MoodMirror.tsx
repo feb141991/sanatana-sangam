@@ -25,6 +25,19 @@ const ACTION_EMOJI_MAP: Record<string, string> = {
   default: '✨',
 };
 
+const TREND_LABELS: Record<NonNullable<MoodInsightMetrics['recentTrend']>, string> = {
+  improving: 'Improving',
+  steady: 'Steady',
+  needs_attention: 'Needs attention',
+};
+
+const PRACTICE_TYPE_LABELS: Record<string, string> = {
+  read: 'Reading',
+  chant: 'Chanting',
+  listen: 'Listening',
+  reflect: 'Reflection',
+};
+
 // Extracted and simplified from AIChatClient as requested
 function TypingIndicator() {
   return (
@@ -74,6 +87,9 @@ export default function MoodMirror({
   }, {} as Record<string, number>);
   const topMoodEntry = Object.entries(moodCounts).sort((a, b) => b[1] - a[1])[0];
   const topMoodConf = topMoodEntry ? moodsConfig.find((m: MoodConfig) => m.key === topMoodEntry[0]) : null;
+  const topNeed = weekInsights?.commonNeeds[0] ?? null;
+  const topTimeCommitment = weekInsights?.commonTimeCommitments[0] ?? null;
+  const topPracticeType = weekInsights?.commonPracticeTypes[0] ?? null;
 
   useEffect(() => {
     if (reflectionLoading || !reflectionSummary) {
@@ -152,6 +168,83 @@ export default function MoodMirror({
         </div>
       </section>
 
+      {weekInsights && weekInsights.totalCheckins > 0 && (
+        <section>
+          <p className="text-[9px] uppercase tracking-widest text-[var(--text-dim)] font-bold mb-3">
+            Weekly Signals
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Completion</p>
+              <p className="mt-1 text-[18px] font-semibold text-[var(--text-cream)]">{weekInsights.completionRate}%</p>
+              <p className="text-[10px] text-[var(--text-dim)]">{weekInsights.completedActions} of {weekInsights.totalCheckins} check-ins</p>
+            </div>
+            <div className="rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Mood Lift</p>
+              <p className="mt-1 text-[18px] font-semibold text-[var(--text-cream)]">
+                {weekInsights.improvementRate !== null ? `${weekInsights.improvementRate}%` : '—'}
+              </p>
+              <p className="text-[10px] text-[var(--text-dim)]">
+                {weekInsights.afterMoodLoggedCount > 0
+                  ? `${weekInsights.afterMoodLoggedCount} after-mood check-ins`
+                  : 'Log your after-mood to track lift'}
+              </p>
+            </div>
+            <div className="rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Dominant Mood</p>
+              <p className="mt-1 text-[18px] font-semibold text-[var(--text-cream)]">
+                {topMoodConf ? topMoodConf.label : '—'}
+              </p>
+              <p className="text-[10px] text-[var(--text-dim)]">{weekInsights.dominantMoodShare}% of recent check-ins</p>
+            </div>
+            <div className="rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Trend</p>
+              <p className="mt-1 text-[18px] font-semibold text-[var(--text-cream)]">
+                {weekInsights.recentTrend ? TREND_LABELS[weekInsights.recentTrend] : 'Building'}
+              </p>
+              <p className="text-[10px] text-[var(--text-dim)]">{weekInsights.streak}-day streak</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {weekInsights && weekInsights.moodBreakdown.length > 0 && (
+        <section>
+          <p className="text-[9px] uppercase tracking-widest text-[var(--text-dim)] font-bold mb-3">
+            Mood Pattern
+          </p>
+          <div className="rounded-2xl p-4 bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3">
+            {weekInsights.moodBreakdown.slice(0, 3).map((item) => {
+              const mood = moodsConfig.find((entry: MoodConfig) => entry.key === item.mood);
+              return (
+                <div key={item.mood} className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {mood ? <MoodGlyph mood={mood.key} size={14} color={mood.colour} /> : null}
+                      <span className="text-[12px] font-medium text-[var(--text-cream)] truncate">
+                        {mood?.label ?? item.mood}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-[var(--text-dim)] shrink-0">
+                      {item.count} check-ins · {item.sharePct}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-[var(--surface-soft)] overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${item.sharePct}%`,
+                        background: mood?.colour ?? 'var(--brand-primary)',
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* C. WHAT HELPED MOST */}
       {weekInsights && weekInsights.preferredActions.length > 0 && (
         <section>
@@ -160,18 +253,125 @@ export default function MoodMirror({
           </p>
           <div className="flex flex-col gap-2">
             {weekInsights.preferredActions.slice(0, 3).map((a) => {
-              const actionType = a.action ?? a.type ?? 'default';
-              const emoji = ACTION_EMOJI_MAP[actionType] || ACTION_EMOJI_MAP['default'];
+              const actionType = a.key || 'default';
+              const emoji = ACTION_EMOJI_MAP[actionType] || ACTION_EMOJI_MAP.default;
               return (
                 <div key={actionType} className="flex justify-between items-center rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]">
                   <div className="flex items-center gap-2">
                     <span className="text-base">{emoji}</span>
-                    <span className="text-[13px] text-[var(--text-cream)] font-medium capitalize">{actionType}</span>
+                    <div>
+                      <span className="block text-[13px] text-[var(--text-cream)] font-medium">{a.action}</span>
+                      <span className="block text-[10px] text-[var(--text-dim)]">{a.sharePct}% of completed actions</span>
+                    </div>
                   </div>
                   <span className="text-[10px] text-[var(--text-dim)]">{a.count} sessions</span>
                 </div>
               );
             })}
+          </div>
+        </section>
+      )}
+
+      {weekInsights && (
+        weekInsights.commonNeeds.length > 0 ||
+        weekInsights.commonTimeCommitments.length > 0 ||
+        weekInsights.commonPracticeTypes.length > 0
+      ) && (
+        <section>
+          <p className="text-[9px] uppercase tracking-widest text-[var(--text-dim)] font-bold mb-3">
+            Practice Pattern
+          </p>
+          <div className="rounded-2xl p-4 bg-[var(--card-bg)] border border-[var(--card-border)] space-y-3">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="rounded-xl p-3 border border-[var(--card-border)] bg-[var(--surface-soft)]">
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Top Need</p>
+                <p className="mt-1 text-[13px] font-medium text-[var(--text-cream)] capitalize">
+                  {topNeed ? topNeed.need : '—'}
+                </p>
+              </div>
+              <div className="rounded-xl p-3 border border-[var(--card-border)] bg-[var(--surface-soft)]">
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Time Window</p>
+                <p className="mt-1 text-[13px] font-medium text-[var(--text-cream)]">
+                  {topTimeCommitment ? topTimeCommitment.time : '—'}
+                </p>
+              </div>
+              <div className="rounded-xl p-3 border border-[var(--card-border)] bg-[var(--surface-soft)]">
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)]">Practice Mode</p>
+                <p className="mt-1 text-[13px] font-medium text-[var(--text-cream)]">
+                  {topPracticeType ? PRACTICE_TYPE_LABELS[topPracticeType.type] ?? topPracticeType.type : '—'}
+                </p>
+              </div>
+            </div>
+
+            {weekInsights.commonNeeds.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)] mb-2">Most requested need</p>
+                <div className="flex flex-wrap gap-2">
+                  {weekInsights.commonNeeds.map((item) => (
+                    <span
+                      key={item.need}
+                      className="rounded-full px-2.5 py-1 text-[10px] font-medium border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-cream)] capitalize"
+                    >
+                      {item.need} · {item.count}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {weekInsights.commonPracticeTypes.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)] mb-2">Most used practice modes</p>
+                <div className="flex flex-wrap gap-2">
+                  {weekInsights.commonPracticeTypes.map((item) => (
+                    <span
+                      key={item.type}
+                      className="rounded-full px-2.5 py-1 text-[10px] font-medium border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-cream)]"
+                    >
+                      {PRACTICE_TYPE_LABELS[item.type] ?? item.type} · {item.count}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {weekInsights.commonTimeCommitments.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-[var(--text-dim)] mb-2">Preferred time commitment</p>
+                <div className="flex flex-wrap gap-2">
+                  {weekInsights.commonTimeCommitments.map((item) => (
+                    <span
+                      key={item.time}
+                      className="rounded-full px-2.5 py-1 text-[10px] font-medium border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-cream)]"
+                    >
+                      {item.time} · {item.count}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="text-[10px] text-[var(--text-dim)] italic">
+              After-mood was logged in {weekInsights.loggedAfterMoodRate}% of check-ins, which is what powers the lift signal above.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {weekInsights && weekInsights.suggestions.length > 0 && (
+        <section>
+          <p className="text-[9px] uppercase tracking-widest text-[var(--text-dim)] font-bold mb-3">
+            Suggested Focus
+          </p>
+          <div className="flex flex-col gap-2">
+            {weekInsights.suggestions.map((suggestion) => (
+              <div
+                key={suggestion}
+                className="rounded-xl p-3 bg-[var(--card-bg)] border border-[var(--card-border)]"
+              >
+                <p className="text-[12px] leading-relaxed text-[var(--text-cream)]">{suggestion}</p>
+              </div>
+            ))}
           </div>
         </section>
       )}
