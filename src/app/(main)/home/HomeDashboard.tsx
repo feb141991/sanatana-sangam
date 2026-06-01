@@ -1050,6 +1050,18 @@ export default function HomeDashboard({
           pathshalaHref={pathshalaHref}
           isAdmin={!!isAdmin}
         />
+
+        {/* ── Seva Card — always at the bottom ── */}
+        <div className="px-4 pb-2">
+          <Link href="/seva" className="divine-seva-card motion-lift block no-underline">
+            <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />
+            <span>
+              <span className="divine-section-title">Donate / Seva</span>
+              <span className="divine-feature-copy mt-1 block">Support temples, cow seva, annadaan and more.</span>
+            </span>
+            <span className="divine-seva-cta">Donate Now</span>
+          </Link>
+        </div>
       </div>
 
       {/* ── Full date picker (tap date label in Panchang) ── */}

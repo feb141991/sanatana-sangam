@@ -357,6 +357,32 @@ export default function DharmVeerClient({
           </div>
         </section>
 
+        {/* Illustration Scene — evocative text for veers generated via AI */}
+        {hero.illustrationPrompt && (
+          <div className="pt-10 pb-4">
+            <div
+              className="rounded-[1.6rem] p-6 relative overflow-hidden"
+              style={{
+                background: 'rgba(197,160,89,0.06)',
+                border: '1px solid rgba(197,160,89,0.18)',
+              }}
+            >
+              <div
+                className="absolute inset-0 pointer-events-none opacity-[0.06]"
+                style={{
+                  background: 'radial-gradient(ellipse at 60% 20%, #C5A059, transparent 70%)',
+                }}
+              />
+              <p className="text-[10px] uppercase font-bold tracking-[0.3em] mb-4" style={{ color: '#C5A059', opacity: 0.7 }}>
+                Imagine the Scene
+              </p>
+              <p className="text-sm leading-relaxed italic" style={{ color: activeTheme.text, opacity: 0.75 }}>
+                {hero.illustrationPrompt}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Share Button */}
         <div className="flex justify-center pt-12">
           <button 

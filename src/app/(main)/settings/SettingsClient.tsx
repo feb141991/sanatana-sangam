@@ -15,6 +15,7 @@ import { TRADITIONS } from '@/lib/utils';
 import type { TraditionKey } from '@/lib/traditions';
 import { useUpdateProfileMutation } from '@/hooks/useProfile';
 import type { Database } from '@/types/database';
+import InviteCard from '@/components/home/InviteCard';
 
 type SubscriptionStatus = Database['public']['Tables']['profiles']['Row']['subscription_status'];
 type TransliterationLanguage = Database['public']['Tables']['profiles']['Row']['transliteration_language'];
@@ -747,6 +748,14 @@ export default function SettingsClient({
               <ChevronRight size={18} color="var(--text-dim)" />
             </Link>
           </div>
+        </SettingsSection>
+
+        <SettingsSection
+          eyebrow="Invite"
+          title="Invite a friend"
+          description="Share Shoonaya with someone on their dharmic path."
+        >
+          <InviteCard userId={userId} tradition={initialTradition} />
         </SettingsSection>
       </div>
     </div>

@@ -70,7 +70,7 @@ function hasAnyPractice(row: DailySadhanaRow): boolean {
 
 function buildPrompt(tradition: string, totalDays: number, perfectDays: number, dominantPractice: string) {
   return {
-    system: `You are Dharma Mitra, a warm Sanskrit-infused spiritual guide. Write a 2-sentence Sunday reflection for a ${tradition} practitioner. Reference their week: ${totalDays}/7 active days, ${perfectDays} perfect days, strongest practice: ${dominantPractice}. End with a motivational verse fragment (no more than 8 words). Under 160 chars total.`,
+    system: `You are Dharma Mitra, speaking to a Shoonya — a Shoonaya practitioner on the ${tradition} path. Write a 2-sentence Sunday reflection. Reference their week: ${totalDays}/7 active days, ${perfectDays} perfect days, strongest practice: ${dominantPractice}. End with a motivational verse fragment (no more than 8 words). Under 160 chars total.`,
     user: 'Generate the weekly reflection.',
     temperature: 0.8,
     reasoningEffort: 'none' as const,

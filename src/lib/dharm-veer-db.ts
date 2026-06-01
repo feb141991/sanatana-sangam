@@ -18,6 +18,9 @@ type DharmVeerRow = {
   teaching_local: string | null;
   moral: string;
   moral_local: string | null;
+  legacy: string | null;
+  legacy_local: string | null;
+  illustration_prompt: string | null;
   quote: string | null;
   quote_local: string | null;
   quote_source: string | null;
@@ -46,6 +49,9 @@ function toDharmVeer(row: DharmVeerRow): DharmVeer {
     teachingLocal: row.teaching_local ?? undefined,
     moral: row.moral,
     moralLocal: row.moral_local ?? undefined,
+    legacy: row.legacy ?? undefined,
+    legacyLocal: row.legacy_local ?? undefined,
+    illustrationPrompt: row.illustration_prompt ?? undefined,
     quote: row.quote
       ? { text: row.quote, attribution: row.quote_source ?? row.name }
       : undefined,
@@ -73,7 +79,7 @@ export async function getDharmVeerOfTheDay(
   const tradition = userTradition ?? 'hindu';
   const { data, error } = await supabase
     .from('dharm_veers')
-    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, quote, quote_local, quote_source, day_index')
+    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
     .gte('day_index', idx)
     .eq('tradition', tradition)
     .order('day_index')
@@ -86,7 +92,7 @@ export async function getDharmVeerOfTheDay(
 
   const { data: fallback } = await supabase
     .from('dharm_veers')
-    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, quote, quote_local, quote_source, day_index')
+    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
     .eq('day_index', idx)
     .maybeSingle();
 
@@ -103,7 +109,7 @@ export async function getDharmVeerBySlug(
 ): Promise<DharmVeer | null> {
   const { data, error } = await supabase
     .from('dharm_veers')
-    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, quote, quote_local, quote_source, day_index')
+    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
     .eq('slug', slug)
     .maybeSingle();
 

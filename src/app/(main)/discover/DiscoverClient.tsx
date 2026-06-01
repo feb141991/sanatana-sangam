@@ -98,19 +98,25 @@ function RecommendationCard({
 
   return (
     <div
-      className="w-full rounded-[1.6rem] p-4 flex flex-col overflow-hidden relative"
+      className="w-full rounded-[2rem] p-6 flex flex-col overflow-hidden relative text-left"
       style={{
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
       }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 blur-[40px] opacity-15 pointer-events-none rounded-full"
-        style={{ background: accentColour, transform: 'translate(30%,-30%)' }} />
+      {/* Subtle top glow */}
+      <div
+        className="absolute top-0 right-0 w-32 h-32 blur-[60px] opacity-20 pointer-events-none rounded-full"
+        style={{ background: accentColour, transform: 'translate(30%, -30%)' }}
+      />
 
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
-          style={{ background: `${accentColour}15`, color: accentColour }}>
+      {/* Top row */}
+      <div className="flex items-center justify-between mb-6">
+        <span
+          className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
+          style={{ background: `${accentColour}15`, color: accentColour }}
+        >
           {rec.type}
         </span>
         <span className="text-[11px] font-medium" style={{ color: 'var(--text-dim)' }}>
@@ -118,29 +124,52 @@ function RecommendationCard({
         </span>
       </div>
 
-      <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-3"
-        style={{ background: `${accentColour}15` }}>
-        <SacredIcon name={rec.icon} size={26} strokeWidth={1.6} style={{ color: accentColour }} />
+      {/* Centered Large Icon */}
+      <div className="flex justify-center mb-6">
+        <div
+          className="w-20 h-20 rounded-full flex items-center justify-center"
+          style={{ background: `${accentColour}15` }}
+        >
+          <SacredIcon name={rec.icon} size={40} strokeWidth={1.6} style={{ color: accentColour }} />
+        </div>
       </div>
 
-      <h3 className="text-xl font-bold mb-2 leading-tight premium-serif" style={{ color: 'var(--text-cream)' }}>
+      {/* Title */}
+      <h3
+        className="font-serif text-2xl font-bold text-center mb-2 leading-tight"
+        style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}
+      >
         {rec.title}
       </h3>
-      <p className="text-[13px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
+
+      {/* Description */}
+      <p
+        className="text-sm text-center mb-6 line-clamp-3 leading-relaxed"
+        style={{ color: 'var(--text-muted-warm)' }}
+      >
         {rec.description}
       </p>
 
+      {/* Why this fits */}
       {rec.explanation && (
-        <div className="rounded-2xl p-3 mb-3" style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour }}>Why this fits</p>
-          <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{rec.explanation}</p>
+        <div
+          className="rounded-2xl p-4 mb-6 text-left"
+          style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}
+        >
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour }}>
+            Why this fits
+          </p>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+            {rec.explanation}
+          </p>
         </div>
       )}
 
+      {/* CTA Button */}
       <Link
         href={rec.href}
         onClick={onClickAction}
-        className="w-full py-3 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95 block"
+        className="w-full py-4 rounded-2xl text-center text-sm font-bold transition-transform active:scale-95 block mt-auto no-underline"
         style={{ background: accentColour, color: 'var(--surface-base)' }}
       >
         {rec.actionLabel}
@@ -573,23 +602,47 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                 </div>
 
                 {recsLoading && (
-                  <div className="flex flex-col gap-3">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="w-full h-44 rounded-[1.6rem] animate-pulse"
-                        style={{ background: 'var(--card-bg)' }} />
+                  <div className="flex flex-col gap-[20px]">
+                    {[1, 2].map((i, index) => (
+                      <div key={i} className="w-full flex flex-col gap-[20px]">
+                        {index > 0 && (
+                          <div
+                            className="w-full h-[1px]"
+                            style={{ background: 'var(--card-border)' }}
+                          />
+                        )}
+                        <div
+                          className="w-full h-64 rounded-[2rem] animate-pulse"
+                          style={{ background: 'var(--card-bg)' }}
+                        />
+                      </div>
                     ))}
                   </div>
                 )}
 
                 {!recsLoading && stack.length > 0 && (
-                  <div className="flex flex-col gap-4">
-                    {stack.map(rec => (
-                      <RecommendationCard
+                  <div className="flex flex-col gap-[20px]">
+                    {stack.map((rec, index) => (
+                      <motion.div
                         key={rec.id}
-                        rec={rec}
-                        accentColour={accent}
-                        onClickAction={() => trackInteraction('click', rec.type)}
-                      />
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+                        className="w-full flex flex-col gap-[20px]"
+                      >
+                        {index > 0 && (
+                          <div
+                            className="w-full h-[1px]"
+                            style={{ background: 'var(--card-border)' }}
+                          />
+                        )}
+                        <RecommendationCard
+                          rec={rec}
+                          accentColour={accent}
+                          onClickAction={() => trackInteraction('click', rec.type)}
+                        />
+                      </motion.div>
                     ))}
                   </div>
                 )}
@@ -600,18 +653,18 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                   </div>
                 )}
 
-                <div className="flex flex-col gap-2 mt-6">
+                <div className="flex flex-col gap-3 mt-8">
                   <Link
                     href="/"
-                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
-                    style={{ background: 'var(--brand-primary-soft)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--brand-primary)' }}
+                    className="w-full py-3.5 rounded-[1.2rem] text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
+                    style={{ background: 'var(--brand-primary)', color: '#0E0E0F', boxShadow: '0 0 14px var(--brand-primary-soft)' }}
                   >
-                    ✓ Done — go home
+                    Done — go home
                   </Link>
                   <div className="flex gap-2">
                     <button
                       onClick={resetToTime}
-                      className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                      className="flex-1 py-3.5 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
                       style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
                     >
                       <RotateCcw size={13} />
@@ -619,7 +672,7 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
                     </button>
                     <button
                       onClick={resetToMood}
-                      className="flex-1 py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
+                      className="flex-1 py-3.5 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
                       style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
                     >
                       <X size={13} />

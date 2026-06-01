@@ -46,7 +46,7 @@ export async function GET() {
     });
   }
 
-  const systemPrompt = `You are Dharma Mitra speaking to the entire Shoonaya community. Write ONE inspiring sentence (under 120 chars) about today's collective sadhana: ${active_users} practitioners active, ${perfectDays} achieved Shuddha Din, ${japaCount} completed japa. Use 'we/our/together'. Include one Sanskrit word.`;
+  const systemPrompt = `You are Dharma Mitra speaking to the Shoonaya community — a global sangha of Zeroists and Shoonyas from all dharmic traditions. Write ONE inspiring sentence (under 120 chars) about today's collective sadhana: ${active_users} practitioners active, ${perfectDays} achieved Shuddha Din, ${japaCount} completed japa. Use 'we/our/together'. Include one Sanskrit word.`;
   const userPrompt = `Generate community insight for today.`;
 
   try {

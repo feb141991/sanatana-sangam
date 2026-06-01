@@ -34,6 +34,11 @@ export interface DharmVeer {
   /** The moral for a modern seeker */
   moral: string;
   moralLocal?: string;
+  /** How their legacy shaped the tradition or society */
+  legacy?: string;
+  legacyLocal?: string;
+  /** Scene description for illustration — evokes their most iconic moment */
+  illustrationPrompt?: string;
   quote?: {
     text: string;
     attribution: string;

@@ -74,6 +74,36 @@ function relicEmoji(id: string) {
   return RELIC_EMOJI[id] ?? '🔱';
 }
 
+function getRelicRarity(relic: Relic): 'common' | 'rare' | 'legendary' {
+  if (relic.milestoneValue <= 14) return 'common';
+  if (relic.milestoneValue <= 60) return 'rare';
+  return 'legendary';
+}
+
+const TRADITION_GLOW: Record<string, string> = {
+  universal: 'rgba(197,160,89,0.22)',
+  hindu:     'rgba(255,107,74,0.20)',
+  sikh:      'rgba(0,150,136,0.20)',
+  buddhist:  'rgba(255,167,38,0.20)',
+  jain:      'rgba(129,199,132,0.20)',
+};
+
+const TRADITION_BORDER: Record<string, string> = {
+  universal: 'rgba(197,160,89,0.35)',
+  hindu:     'rgba(255,107,74,0.35)',
+  sikh:      'rgba(0,150,136,0.35)',
+  buddhist:  'rgba(255,167,38,0.35)',
+  jain:      'rgba(129,199,132,0.35)',
+};
+
+const TRADITION_LABELS: Record<string, string> = {
+  universal: 'Universal · All traditions',
+  hindu:     'Hindu tradition',
+  sikh:      'Sikh tradition',
+  buddhist:  'Buddhist tradition',
+  jain:      'Jain tradition',
+};
+
 type FilterMode = 'all' | 'unlocked' | 'locked';
 
 function getRequirementCopy(relic: Relic, streak: number, sevaScore: number) {
@@ -324,8 +354,8 @@ export default function KoshClient({
                     }}
                     className="relative flex h-[100px] w-full items-center justify-center overflow-hidden rounded-2xl backdrop-blur-sm transition-transform hover:scale-[1.02]"
                     style={{
-                      border: `1px solid ${cardBorder}`,
-                      background: cardBg,
+                      border: `1px solid ${unlocked ? TRADITION_BORDER[relic.tradition] : cardBorder}`,
+                      background: unlocked ? TRADITION_GLOW[relic.tradition] : cardBg,
                       boxShadow: active ? `0 0 0 2px ${goldColor}` : undefined,
                     }}
                   >
@@ -343,10 +373,45 @@ export default function KoshClient({
                       </div>
                     )}
                     {active && (
-                      <div className="absolute top-2 right-2 rounded-full p-1" style={{ background: goldColor }}>
+                      <div className="absolute top-2 left-2 rounded-full p-1" style={{ background: goldColor }}>
                         <Star size={10} className="fill-black text-black" />
                       </div>
                     )}
+
+                    {/* Rarity badge */}
+                    {(() => {
+                      const rarity = getRelicRarity(relic);
+                      if (rarity === 'rare') {
+                        return (
+                          <span
+                            className="absolute top-1.5 right-1.5 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
+                            style={{
+                              background: 'rgba(176,190,197,0.15)',
+                              color: '#B0BEC5',
+                              border: '1px solid rgba(176,190,197,0.3)',
+                            }}
+                          >
+                            Rare
+                          </span>
+                        );
+                      }
+                      if (rarity === 'legendary') {
+                        return (
+                          <span
+                            className="absolute top-1.5 right-1.5 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider"
+                            style={{
+                              background: 'rgba(197,160,89,0.15)',
+                              color: '#C5A059',
+                              border: '1px solid rgba(197,160,89,0.3)',
+                              boxShadow: '0 0 8px rgba(197,160,89,0.4)',
+                            }}
+                          >
+                            Legendary
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
                   </button>
                   <p className="mt-2 text-center text-xs font-medium" style={{ color: unlocked ? inkColor : dimColor }}>
                     {relic.name}
@@ -385,6 +450,56 @@ export default function KoshClient({
               onClick={(event) => event.stopPropagation()}
             >
               <div className="mx-auto mb-4 h-1.5 w-14 rounded-full" style={{ background: cardBorder }} />
+
+              {/* a) Rarity badge */}
+              {(() => {
+                const rarity = getRelicRarity(selectedRelic);
+                if (rarity === 'rare') {
+                  return (
+                    <div className="flex justify-center mb-2">
+                      <span
+                        className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                        style={{
+                          background: 'rgba(176,190,197,0.15)',
+                          color: '#B0BEC5',
+                          border: '1px solid rgba(176,190,197,0.3)',
+                        }}
+                      >
+                        Rare
+                      </span>
+                    </div>
+                  );
+                }
+                if (rarity === 'legendary') {
+                  return (
+                    <div className="flex justify-center mb-2">
+                      <span
+                        className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                        style={{
+                          background: 'rgba(197,160,89,0.15)',
+                          color: '#C5A059',
+                          border: '1px solid rgba(197,160,89,0.3)',
+                          boxShadow: '0 0 8px rgba(197,160,89,0.4)',
+                        }}
+                      >
+                        Legendary
+                      </span>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+
+              {/* b) Tradition label */}
+              <div className="flex justify-center mb-4">
+                <span
+                  className="text-[10px] uppercase tracking-widest text-center"
+                  style={{ color: dimColor }}
+                >
+                  {TRADITION_LABELS[selectedRelic.tradition]}
+                </span>
+              </div>
+
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-serif text-2xl" style={{ color: inkColor }}>{selectedRelic.name}</p>
@@ -412,6 +527,17 @@ export default function KoshClient({
                 </div>
               </div>
               <p className="mt-4 mb-2 text-sm leading-relaxed" style={{ color: mutedColor }}>{selectedRelic.lore}</p>
+
+              {/* c) Milestone achievement line */}
+              <div
+                className="text-xs text-center mt-4 pt-4"
+                style={{ borderTop: `1px solid ${cardBorder}`, color: dimColor }}
+              >
+                {selectedRelic.milestoneType === 'streak'
+                  ? `Unlocked at ${selectedRelic.milestoneValue}-day streak`
+                  : `Unlocked at ${selectedRelic.milestoneValue} seva points`}
+              </div>
+
               <div className="mt-6">
                 {activeRelicId === selectedRelic.id ? (
                   <div
