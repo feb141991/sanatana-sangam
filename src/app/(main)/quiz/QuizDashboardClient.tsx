@@ -430,37 +430,153 @@ export default function QuizDashboardClient({
               <motion.div key="quiz-complete"
                 initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="px-5 py-6">
-                {/* Result banner */}
-                <div className="rounded-2xl p-5 text-center mb-4"
-                  style={{ background: resultTone.bg, border: `1px solid ${resultTone.border}` }}>
-                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold mb-1"
-                    style={{ color: 'var(--text-dim)' }}>Today&apos;s Result</p>
-                  <CountUpScore value={dailyScorePct} color={resultTone.text} />
-                  <p className="text-[13px] font-semibold mt-1" style={{ color: 'var(--text-cream)' }}>
-                    {dailyScorePct >= 80 ? 'Well held. 🙏' : dailyScorePct >= 50 ? 'Good grasp.' : 'Keep showing up.'}
-                  </p>
-                </div>
-                {dailyQuiz.fact && (
-                  <div className="rounded-2xl p-4 mb-3"
-                    style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.18)' }}>
-                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
-                      style={{ color: 'var(--brand-primary)' }}>Did You Know?</p>
-                    <p className="text-[13px] italic leading-relaxed"
-                      style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
-                      {dailyQuiz.fact}
-                    </p>
-                  </div>
+                className="px-5 py-6 flex flex-col text-center">
+                
+                {/* 1. Score icon + message */}
+                {dailyScorePct === 100 ? (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                    style={{ background: 'var(--surface-soft)', border: '2px solid #5cb85c' }}
+                  >
+                    <Check size={36} color="#5cb85c" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ 
+                      scale: 1,
+                      boxShadow: [
+                        "0 0 0 0px var(--brand-primary, rgba(197,160,89,0))", 
+                        "0 0 0 12px var(--brand-primary, rgba(197,160,89,0.2))", 
+                        "0 0 0 0px var(--brand-primary, rgba(197,160,89,0))"
+                      ]
+                    }}
+                    transition={{
+                      scale: { type: "spring", stiffness: 200, damping: 15 },
+                      boxShadow: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+                    }}
+                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
+                    style={{ background: 'var(--surface-soft)', border: '2px solid var(--brand-primary)' }}
+                  >
+                    🙏
+                  </motion.div>
                 )}
-                {dailyQuiz.explanation && (
-                  <div className="rounded-2xl p-4" style={{ background: 'var(--surface-soft)' }}>
-                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
-                      style={{ color: 'var(--text-dim)' }}>Why?</p>
-                    <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-muted-warm)' }}>
-                      {dailyQuiz.explanation}
-                    </p>
-                  </div>
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-lg font-bold font-serif mb-2"
+                  style={{ color: 'var(--text-cream)' }}
+                >
+                  {(() => {
+                    if (dailyScorePct === 100) {
+                      switch (tradition) {
+                        case 'hindu':
+                          return "Sadhu! Your dharma holds.";
+                        case 'sikh':
+                          return "Waheguru di kirpa. Well answered.";
+                        case 'buddhist':
+                          return "Right understanding. The Dhamma is clear.";
+                        case 'jain':
+                          return "Samyak Jnana. You held the truth.";
+                        default:
+                          return "Well held. 🙏";
+                      }
+                    }
+                    return "The question stays with you. That is the teaching.";
+                  })()}
+                </motion.h2>
+
+                {/* 2. Karma earned chip */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.3 }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mx-auto mb-4"
+                  style={{
+                    background: 'var(--brand-primary, rgba(197,160,89,0.12))',
+                    color: 'var(--brand-primary, #C5A059)',
+                    border: '1px solid var(--brand-primary, rgba(197,160,89,0.30))'
+                  }}
+                >
+                  ✨ {dailyScorePct === 100 ? '+10 karma' : '+2 karma'}
+                </motion.div>
+
+                {/* 3. Streak callout */}
+                {quizSaveData && quizSaveData.streak !== undefined && quizSaveData.streak > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45, duration: 0.3 }}
+                    className="flex flex-wrap items-center justify-center gap-2 mb-4"
+                  >
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                      style={{
+                        background: 'rgba(255, 112, 67, 0.12)',
+                        color: '#ff7043',
+                        border: '1px solid rgba(255, 112, 67, 0.25)'
+                      }}
+                    >
+                      🔥 {quizSaveData.streak}-day streak
+                    </span>
+                    {quizSaveData.streak_milestone && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                        style={{
+                          background: 'var(--brand-primary, rgba(197,160,89,0.12))',
+                          color: 'var(--brand-primary, #C5A059)',
+                          border: '1px solid var(--brand-primary, rgba(197,160,89,0.30))'
+                        }}
+                      >
+                        {(() => {
+                          switch (quizSaveData.streak_milestone) {
+                            case 'three_days':
+                              return "3-day Shishya 🥉";
+                            case 'week':
+                              return "7-day Gyani 🥈";
+                            case 'month':
+                              return "30-day Rishi 🏆";
+                            case 'century':
+                              return "100-day Maharishi 💎";
+                            default:
+                              return "";
+                          }
+                        })()}
+                      </span>
+                    )}
+                  </motion.div>
                 )}
+
+                {/* 4. Today's wisdom */}
+                {(dailyQuiz.fact || dailyQuiz.explanation) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6, duration: 0.4 }}
+                    className="rounded-2xl p-5 text-center mt-2"
+                    style={{
+                      background: 'rgba(197, 160, 89, 0.05)',
+                      border: '1px solid rgba(197, 160, 89, 0.15)'
+                    }}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2.5"
+                      style={{ color: 'var(--brand-primary)' }}>Today&apos;s Wisdom</p>
+                    {dailyQuiz.fact && (
+                      <p className="text-sm italic leading-relaxed font-serif mb-3" style={{ color: 'var(--text-cream)' }}>
+                        "{dailyQuiz.fact}"
+                      </p>
+                    )}
+                    {dailyQuiz.explanation && (
+                      <p className="text-xs leading-relaxed text-left" style={{ color: 'var(--text-muted-warm)' }}>
+                        {dailyQuiz.explanation}
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+
               </motion.div>
             )}
 
@@ -469,30 +585,58 @@ export default function QuizDashboardClient({
               <motion.div key="quiz-locked"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="px-5 py-6">
+                
+                {/* 1. Header row */}
                 <div className="flex items-center gap-4 mb-5">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
                     style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.28)' }}>
-                    <Check size={22} style={{ color: 'var(--brand-primary)' }} />
+                    <span className="text-xl">🙏</span>
                   </div>
                   <div>
                     <p className="text-[15px] font-bold" style={{ color: 'var(--text-cream)' }}>
                       Sadhana complete
                     </p>
                     <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-dim)' }}>
-                      {todayResponse?.is_correct ? 'Correct answer ✓' : 'Answered today'}
+                      {(() => {
+                        switch (tradition) {
+                          case 'hindu':
+                            return "Jai Shri Ram";
+                          case 'sikh':
+                            return "Waheguru";
+                          case 'buddhist':
+                            return "Namo Buddhaya";
+                          case 'jain':
+                            return "Jai Jinendra";
+                          default:
+                            return "The path continues";
+                        }
+                      })()}
                     </p>
                   </div>
-                  {todayResponse && (
-                    <div className="ml-auto text-right">
-                      <p className="text-[22px] font-bold"
-                        style={{ color: todayResponse.is_correct ? '#5cb85c' : 'var(--text-dim)',
-                                 fontFamily: 'var(--font-serif)' }}>
-                        {todayResponse.is_correct ? '100%' : '0%'}
-                      </p>
-                    </div>
-                  )}
+                  
+                  {/* 2. Result pill */}
+                  <div className="ml-auto">
+                    {(() => {
+                      const isCorrect = todayResponse ? todayResponse.is_correct : (selectedAnswer === dailyQuiz.answerIndex);
+                      if (isCorrect) {
+                        return (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
+                            style={{ background: 'rgba(92,184,92,0.12)', color: '#5cb85c', border: '1px solid rgba(92,184,92,0.25)' }}>
+                            ✓ Correct
+                          </span>
+                        );
+                      }
+                      return (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
+                          style={{ background: 'var(--surface-soft)', color: 'var(--text-dim)', border: '1px solid var(--card-border)' }}>
+                          Answered
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
-                {/* Countdown */}
+
+                {/* 3. Countdown */}
                 <div className="rounded-2xl px-4 py-3 flex items-center justify-between mb-4"
                   style={{ background: 'var(--surface-soft)' }}>
                   <span className="text-[12px]" style={{ color: 'var(--text-dim)' }}>
@@ -500,21 +644,34 @@ export default function QuizDashboardClient({
                   </span>
                   <span className="text-[13px] font-bold tabular-nums"
                     style={{ color: 'var(--text-cream)' }}>
-                    {countdownLabel}
+                    Next quiz in {countdownLabel}
                   </span>
                 </div>
-                {/* Insight */}
+
+                {/* 4. Today's wisdom card */}
                 {(dailyQuiz.fact || dailyQuiz.explanation) && (
-                  <div className="rounded-2xl p-4"
-                    style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.16)' }}>
-                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2"
+                  <div
+                    className="rounded-2xl p-5 text-center mt-2"
+                    style={{
+                      background: 'rgba(197, 160, 89, 0.05)',
+                      border: '1px solid rgba(197, 160, 89, 0.15)'
+                    }}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em] font-bold mb-2.5"
                       style={{ color: 'var(--brand-primary)' }}>Today&apos;s Wisdom</p>
-                    <p className="text-[13px] leading-relaxed italic"
-                      style={{ color: 'var(--text-cream)', fontFamily: 'var(--font-serif)' }}>
-                      {dailyQuiz.fact || dailyQuiz.explanation}
-                    </p>
+                    {dailyQuiz.fact && (
+                      <p className="text-sm italic leading-relaxed font-serif mb-3" style={{ color: 'var(--text-cream)' }}>
+                        "{dailyQuiz.fact}"
+                      </p>
+                    )}
+                    {dailyQuiz.explanation && (
+                      <p className="text-xs leading-relaxed text-left" style={{ color: 'var(--text-muted-warm)' }}>
+                        {dailyQuiz.explanation}
+                      </p>
+                    )}
                   </div>
                 )}
+
               </motion.div>
             )}
 
