@@ -649,11 +649,14 @@ export default function ProfileClient({
   async function saveProfile() {
     setSaving(true);
     // tradition is locked at signup — never include it in updates
+    // kul → legacy_family_name (profiles has no 'kul' column)
+    // kul_devata → stored separately, not a profiles column
     // date_of_birth: empty string → null (date column rejects empty strings)
-    const { tradition: _locked, date_of_birth, ...rest } = form;
+    const { tradition: _locked, date_of_birth, kul, kul_devata, ...rest } = form;
     const formToSave = {
       ...rest,
       date_of_birth: date_of_birth || null,
+      legacy_family_name: kul || null,
     };
     try {
       await updateProfileMutation.mutateAsync(formToSave);
