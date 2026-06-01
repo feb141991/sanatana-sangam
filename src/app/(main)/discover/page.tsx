@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
 import DiscoverClient from './DiscoverClient';
 
 export const metadata = { title: 'Discover — Mood-Based Guidance' };
@@ -10,13 +9,12 @@ export default async function DiscoverPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const [{ data: profile }, todayVeer, { data: sankalpa }, { data: todayObservance }] = await Promise.all([
+  const [{ data: profile }, { data: sankalpa }, { data: todayObservance }] = await Promise.all([
     supabase
       .from('profiles')
       .select('tradition, spiritual_level, transliteration_language')
       .eq('id', user.id)
       .maybeSingle(),
-    getDharmVeerOfTheDay(supabase, null).catch(() => null),
     supabase
       .from('sankalpa')
       .select('name, start_date, target_days, status')
@@ -73,13 +71,6 @@ export default async function DiscoverPage() {
       tradition={profile?.tradition ?? null}
       spiritualLevel={profile?.spiritual_level ?? null}
       transliterationLanguage={profile?.transliteration_language ?? 'en'}
-      todayVeer={todayVeer ? {
-        id:      todayVeer.id,
-        name:    todayVeer.name,
-        emoji:   todayVeer.emoji,
-        tagline: todayVeer.tagline,
-        tradition: todayVeer.tradition,
-      } : null}
       activeSankalpa={activeSankalpa}
       nextObservance={nextObservance}
     />

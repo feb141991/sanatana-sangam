@@ -104,6 +104,7 @@ export default function KoshClient({
   const [activeRelicId, setActiveRelicId] = useState(activeSymbolId);
   const [lockedHintId, setLockedHintId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [celebratingRelic, setCelebratingRelic] = useState<Relic | null>(null);
 
   const visibleRelics = useMemo(
     () => SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === tradition),
@@ -128,6 +129,33 @@ export default function KoshClient({
     if (typeof window === 'undefined') return;
     localStorage.setItem('shoonaya_last_seen_relic_count', String(unlockedCount));
   }, [unlockedCount]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Search for the first unlocked relic that hasn\'t been celebrated yet
+    const toCelebrate = visibleRelics.find((relic) => {
+      const isUnlocked = unlockedIds.has(relic.id);
+      if (!isUnlocked) return false;
+      const key = `shoonaya-relic-celebrated-${relic.id}`;
+      return !localStorage.getItem(key);
+    });
+
+    if (toCelebrate) {
+      const key = `shoonaya-relic-celebrated-${toCelebrate.id}`;
+      localStorage.setItem(key, 'true');
+      setCelebratingRelic(toCelebrate);
+      toast.success(`🔱 ${toCelebrate.name} unlocked!`);
+    }
+  }, [unlockedIds, visibleRelics]);
+
+  useEffect(() => {
+    if (!celebratingRelic) return;
+    const timer = setTimeout(() => {
+      setCelebratingRelic(null);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, [celebratingRelic]);
 
   async function setActiveRelic(relic: Relic) {
     if (saving || activeRelicId === relic.id) return;
@@ -383,7 +411,7 @@ export default function KoshClient({
                   {relicEmoji(selectedRelic.id)}
                 </div>
               </div>
-              <p className="mt-6 text-sm leading-6" style={{ color: mutedColor }}>{selectedRelic.description}</p>
+              <p className="mt-4 mb-2 text-sm leading-relaxed" style={{ color: mutedColor }}>{selectedRelic.lore}</p>
               <div className="mt-6">
                 {activeRelicId === selectedRelic.id ? (
                   <div
@@ -404,6 +432,36 @@ export default function KoshClient({
                   </button>
                 )}
               </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {celebratingRelic && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-black/75 px-6 text-center cursor-pointer"
+            onClick={() => setCelebratingRelic(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.4, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.4, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className="flex flex-col items-center justify-center"
+            >
+              <div style={{ fontSize: '5rem', marginBottom: '1.5rem', lineHeight: 1 }}>
+                {relicEmoji(celebratingRelic.id)}
+              </div>
+              <h2 className="font-serif text-2xl font-bold" style={{ color: goldColor }}>
+                {celebratingRelic.name}
+              </h2>
+              <p className="mt-2 text-xs uppercase tracking-widest font-semibold" style={{ color: dimColor }}>
+                Unlocked
+              </p>
             </motion.div>
           </motion.div>
         )}

@@ -136,6 +136,12 @@ export function SadhanaSection({
                   {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
                 </span>
               </div>
+              <span
+                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                style={{ background: 'rgba(197,160,89,0.14)', color: '#C5A059', border: '1px solid rgba(197,160,89,0.22)' }}
+              >
+                +5 seva
+              </span>
               <ChevronRight size={16} color="#C5A059" className="shrink-0" aria-hidden="true" />
             </Link>
           </motion.div>

@@ -18,6 +18,7 @@ import { useReaderControls } from '@/hooks/useReaderControls';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import PageIntro from '@/components/ui/PageIntro';
+import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -134,6 +135,23 @@ export default function DharmVeerClient({
               );
           } catch {
             // Non-fatal: keep local completion even if cross-device sync fails.
+          }
+
+          // Award seva points for reading — fire and forget
+          try {
+            const res = await fetch('/api/karma/award', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ amount: 5, reason: 'dharm_veer' }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+              toast.success('⚔️ +5 seva points — Dharm Veer complete!');
+            } else if (data?.already_awarded) {
+              // Already earned today — no toast, silently ok
+            }
+          } catch {
+            // Non-fatal
           }
         })();
       } catch {

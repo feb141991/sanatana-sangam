@@ -31,6 +31,28 @@ import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 
+const RELIC_BADGE_EMOJI: Record<string, string> = {
+  'diya-bronze':         '🪔',
+  'clay-kalash':         '🏺',
+  'incense-sandalwood':  '🪷',
+  'camphor-flame':       '🕯️',
+  'mindful-bell':        '🔔',
+  'sacred-mala':         '📿',
+  'shankha-conch':       '🐚',
+  'the-sage-halo':       '✨',
+  'trishula-gold':       '🔱',
+  'krishna-flute':       '🎶',
+  'rama-bow':            '🏹',
+  'peacock-feather':     '🦚',
+  'steel-kara':          '⭕',
+  'sacred-kirpan':       '⚔️',
+  'khanda-gold':         '☬',
+  'lotus-bloom':         '🌸',
+  'dharma-wheel-gold':   '☸️',
+  'bodhi-leaf':          '🍃',
+  'jain-swastika':       '🔯',
+};
+
 interface Panchang {
   tithi:           string;
   nakshatra:       string;
@@ -574,6 +596,14 @@ export function HeroSection({
                 {isPro && (
                   <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C5A059] rounded-full flex items-center justify-center shadow-lg border-2 border-white/20">
                     <Sparkles size={10} className="text-white" />
+                  </div>
+                )}
+                {activeSymbolId && (
+                  <div
+                    className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full border border-black/20 flex items-center justify-center backdrop-blur-md"
+                    style={{ background: 'rgba(197,160,89,0.22)', fontSize: '10px' }}
+                  >
+                    {RELIC_BADGE_EMOJI[activeSymbolId] ?? '🔱'}
                   </div>
                 )}
               </Link>
