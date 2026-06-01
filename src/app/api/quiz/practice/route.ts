@@ -338,6 +338,15 @@ export async function POST(req: NextRequest) {
     if (karmaEarned > 0) {
       try {
         await supabase.rpc('increment_karma', { p_user_id: user.id, p_amount: karmaEarned });
+        // Record in karma ledger — fire and forget, non-blocking
+        supabase.from('karma_ledger').insert({
+          user_id: user.id,
+          amount: karmaEarned,
+          reason: 'quiz_practice',
+          source_route: '/api/quiz/practice',
+        }).then(({ error }) => {
+          if (error) console.warn('[quiz/practice] ledger insert failed:', error.message);
+        });
       } catch { /* safe — rpc not yet deployed until migration runs */ }
     }
 

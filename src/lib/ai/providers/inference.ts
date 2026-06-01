@@ -27,7 +27,8 @@ function readEnvConfig() {
 
 type InferenceProviderOverride =
   | 'sarvam-hosted'
-  | 'self-hosted';
+  | 'self-hosted'
+  | 'claude-anthropic';
 
 /**
  * Returns the active inference providers, resolved from environment config.
@@ -138,6 +139,45 @@ export async function generateWithProvider(
         // A client error (e.g. 400 Bad Request) means the payload is wrong. Don't retry this on another provider.
         throw err;
       }
+    }
+  }
+
+  // Claude (Anthropic) as final fallback when all pramana providers are exhausted
+  const claudeKey = process.env.ANTHROPIC_API_KEY?.trim();
+  if (claudeKey && !isCircuitOpen('claude-anthropic', breakerConfig)) {
+    try {
+      const messages = typeof prompt === 'string'
+        ? [{ role: 'user', content: prompt }]
+        : [{ role: 'user', content: prompt.user }];
+      const body: Record<string, unknown> = {
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2048,
+        messages,
+      };
+      if (typeof prompt !== 'string' && prompt.system) {
+        body.system = prompt.system;
+      }
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': claudeKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => '');
+        throw new Error(`Claude HTTP ${res.status}: ${errBody.slice(0, 200)}`);
+      }
+      const data = await res.json() as { content?: Array<{ type: string; text?: string }> };
+      const text = data.content?.find((c) => c.type === 'text')?.text ?? '';
+      recordSuccess('claude-anthropic');
+      return { text, modelUsed: 'claude-sonnet-4-6', provider: 'claude-anthropic', finishReason: 'stop' };
+    } catch (err: any) {
+      recordFailure('claude-anthropic', err.message, breakerConfig);
+      emitError('ai', err, 'P1', { provider: 'claude-anthropic', context: { action: 'claude_fallback' } });
+      lastError = err;
     }
   }
 

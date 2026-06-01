@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+import { generateWithProvider } from '@/lib/ai/providers/inference';
 import type { DharmVeerSeed } from './dharm-veer-seeds';
 
 type GeneratedDharmVeerContent = {
@@ -12,58 +13,52 @@ type GeneratedDharmVeerContent = {
   teaching_local: string;
   moral: string;
   moral_local: string;
+  legacy: string;
+  legacy_local: string;
   quote: string;
   quote_local: string;
   quote_source: string;
+  illustration_prompt: string;
 };
 
 function extractJsonObject(raw: string): string {
   const start = raw.indexOf('{');
   const end = raw.lastIndexOf('}');
   if (start === -1 || end === -1 || end <= start) {
-    throw new Error('Claude did not return a JSON object');
+    throw new Error('Model did not return a JSON object');
   }
   return raw.slice(start, end + 1);
 }
 
 export async function generateDharmVeerContent(seed: DharmVeerSeed): Promise<GeneratedDharmVeerContent> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is not configured');
-  }
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+  const result = await generateWithProvider(
+    {
+      system: 'You are a scholar of Indic traditions. Write with depth and reverence. All prose fields under 200 words.',
+      user: `Generate Dharm Veer content for ${seed.name} (${seed.tradition}, ${seed.era} era).
+Return a JSON object with exactly these keys:
+{
+  "tagline": "one powerful sentence capturing their essence",
+  "journey": "their life path in 150 words — who they were, what shaped them",
+  "journey_local": "same in Hindi (Devanagari script), natural not translated",
+  "trial": "their defining test, sacrifice or spiritual crisis in 150 words",
+  "trial_local": "same in Hindi",
+  "teaching": "their core contribution to dharma in 120 words",
+  "teaching_local": "same in Hindi",
+  "moral": "what a modern seeker takes from their life in 100 words",
+  "moral_local": "same in Hindi",
+  "legacy": "how their life shaped the tradition, lineage, or society — lasting impact in 100 words",
+  "legacy_local": "same in Hindi",
+  "quote": "one authentic or attributed quote in English",
+  "quote_local": "the quote in their original language/script if known",
+  "quote_source": "source text or tradition",
+  "illustration_prompt": "a vivid scene description (80–120 words) suitable for a digital illustration: their most iconic moment, setting, attire, symbolic objects, mood, lighting style — written for an image generation model"
+}
+Tags for context: ${seed.tags.join(', ')}.${seed.name_local ? ` Local name: ${seed.name_local}.` : ''}`,
     },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 2200,
-      temperature: 0.5,
-      system: 'You are a scholar of Indic traditions. Write with depth and reverence. All prose under 200 words per field.',
-      messages: [
-        {
-          role: 'user',
-          content: `Generate Dharm Veer content for ${seed.name} (${seed.tradition}, ${seed.era} era).\nReturn a JSON object with exactly these keys:\n{\n  "tagline": "one powerful sentence capturing their essence",\n  "journey": "their life path in 150 words — who they were, what shaped them",\n  "journey_local": "same in Hindi (Devanagari script), natural not translated",\n  "trial": "their defining test, sacrifice or spiritual crisis in 150 words",\n  "trial_local": "same in Hindi",\n  "teaching": "their core contribution to dharma in 120 words",\n  "teaching_local": "same in Hindi",\n  "moral": "what a modern seeker takes from their life in 100 words",\n  "moral_local": "same in Hindi",\n  "quote": "one authentic or attributed quote in English",\n  "quote_local": "the quote in their original language/script if known",\n  "quote_source": "source text or tradition"\n}\nTags for context: ${seed.tags.join(', ')}.${seed.name_local ? ` Local name: ${seed.name_local}.` : ''}`,
-        },
-      ],
-    }),
-  });
+    { responseFormat: 'json' },
+  );
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => '');
-    throw new Error(`Claude ${response.status}: ${body.slice(0, 300)}`);
-  }
-
-  const data = await response.json() as {
-    content?: Array<{ type: string; text?: string }>;
-  };
-
-  const text = data.content?.find((item) => item.type === 'text')?.text ?? '';
-  const parsed = JSON.parse(extractJsonObject(text)) as GeneratedDharmVeerContent;
+  const parsed = JSON.parse(extractJsonObject(result.text)) as GeneratedDharmVeerContent;
   return parsed;
 }
 
@@ -101,9 +96,12 @@ export async function insertGeneratedDharmVeer(
     teaching_local: content.teaching_local,
     moral: content.moral,
     moral_local: content.moral_local,
+    legacy: content.legacy ?? null,
+    legacy_local: content.legacy_local ?? null,
     quote: content.quote || null,
     quote_local: content.quote_local || null,
     quote_source: content.quote_source || null,
+    illustration_prompt: content.illustration_prompt || null,
     tags: seed.tags,
     day_index: dayIndex,
     generated_by: generatedBy,

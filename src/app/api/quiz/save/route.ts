@@ -87,6 +87,15 @@ export async function POST(req: NextRequest) {
 
     try {
       await supabase.rpc('increment_karma', { p_user_id: user.id, p_amount: totalKarma });
+      // Record in karma ledger — fire and forget, non-blocking
+      supabase.from('karma_ledger').insert({
+        user_id: user.id,
+        amount: totalKarma,
+        reason: 'quiz_complete',
+        source_route: '/api/quiz/save',
+      }).then(({ error }) => {
+        if (error) console.warn('[quiz/save] ledger insert failed:', error.message);
+      });
     } catch { /* safe */ }
 
     return NextResponse.json({ 

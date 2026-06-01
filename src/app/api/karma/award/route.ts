@@ -130,6 +130,17 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
+    // Record in karma ledger — fire and forget, non-blocking
+    supabase.from('karma_ledger').insert({
+      user_id: user.id,
+      amount: amount,
+      reason: reason,
+      source_route: '/api/karma/award',
+      metadata: { ip: req.headers.get('x-forwarded-for') ?? null },
+    }).then(({ error }) => {
+      if (error) console.warn('[karma/award] ledger insert failed:', error.message);
+    });
+
     return NextResponse.json({ success: true, karma_earned: amount, reason, daily_total: dailyTotal + amount });
   } catch (err) {
     console.error('[karma/award] Failed:', err);

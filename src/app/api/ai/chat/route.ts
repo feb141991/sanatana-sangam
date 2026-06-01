@@ -11,27 +11,37 @@ const CLAUDE_MODEL = 'claude-sonnet-4-6';
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
 
-async function isDailyLimitReached(
+async function checkAndIncrementAiUsage(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
   userId: string,
   isPro: boolean
-): Promise<boolean> {
+): Promise<{ allowed: boolean; used: number; limit: number }> {
   const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const { data, error } = await supabase.rpc('increment_ai_chat_usage', {
+      p_user_id: userId,
+      p_date: today,
+      p_limit: limit,
+    });
 
-    const { count, error } = await supabase
-      .from('sadhana_events')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('event_type', 'ai_chat_message')
-      .gte('created_at', todayStart.toISOString());
+    if (error || data === null) {
+      // Fail open — don't block users if the limiter errors
+      console.warn('[ai/chat] rate limit check failed, failing open:', error);
+      return { allowed: true, used: 0, limit };
+    }
 
-    if (error) return false;
-    return (count ?? 0) >= limit;
-  } catch {
-    return false;
+    // RPC returns: { new_count: number, was_allowed: boolean }
+    const res = data as { new_count: number; was_allowed: boolean };
+    return {
+      allowed: res.was_allowed,
+      used: res.new_count,
+      limit,
+    };
+  } catch (err) {
+    console.error('[ai/chat] error inside checkAndIncrementAiUsage:', err);
+    return { allowed: true, used: 0, limit };
   }
 }
 
@@ -129,9 +139,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Your account has been suspended.' }, { status: 403 });
   }
 
-  if (await isDailyLimitReached(supabase, user.id, isPro)) {
-    const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
-    return NextResponse.json({ error: 'daily_limit_reached', limit, isPro }, { status: 429 });
+  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, isPro);
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'daily_limit_reached', used, limit, isPro },
+      { status: 429 }
+    );
   }
 
   let body: {
