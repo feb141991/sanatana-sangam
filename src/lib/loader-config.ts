@@ -35,7 +35,7 @@ export interface TraditionLoaderConfig {
 
 export const LOADER_CONFIG: Record<TraditionKey, TraditionLoaderConfig> = {
   hindu: {
-    symbol:      '\u{1F549}',        // 🕉
+    symbol:      '🐚',
     accentColor: '#C5A059',
     motionPreset: 'halo',
     messages: {
@@ -127,7 +127,7 @@ export const LOADER_CONFIG: Record<TraditionKey, TraditionLoaderConfig> = {
   },
 
   other: {
-    symbol:      '✶',           // ✶ (six-pointed star — universal)
+    symbol:      '∞',
     accentColor: '#C5A059',
     motionPreset: 'halo',
     messages: {
