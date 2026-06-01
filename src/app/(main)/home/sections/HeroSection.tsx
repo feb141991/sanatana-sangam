@@ -159,6 +159,88 @@ async function shareContent(title: string, text: string) {
   }
 }
 
+// ── Rotating Panchang pill ────────────────────────────────────────────────────
+interface PanchangPillProps {
+  panchang: { tithi: string; nakshatra: string; yoga: string };
+  selectedDate: Date;
+}
+
+const PILL_SLIDES = [
+  { key: 'tithi',    icon: '🌙', getLabel: (p: PanchangPillProps['panchang'], _d: Date) => p.tithi },
+  { key: 'nakshatra', icon: '✨', getLabel: (p: PanchangPillProps['panchang'], _d: Date) => `${p.nakshatra} · ${p.yoga}` },
+  {
+    key: 'date',
+    icon: '📅',
+    getLabel: (_p: PanchangPillProps['panchang'], d: Date) => {
+      const vs = d.getFullYear() + 57; // Vikram Samvat approximation
+      return `${fmtDate(d, 'dd MMM yyyy')} · VS ${vs}`;
+    },
+  },
+] as const;
+
+function PanchangPill({ panchang, selectedDate }: PanchangPillProps) {
+  const [idx, setIdx] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
+  const total = PILL_SLIDES.length;
+
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % total), 3500);
+    return () => clearInterval(t);
+  }, [total]);
+
+  const slide = PILL_SLIDES[idx];
+  const label = slide.getLabel(panchang, selectedDate);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.22 }}
+      className="mt-1.5"
+    >
+      <button
+        type="button"
+        onClick={() => setIdx(i => (i + 1) % total)}
+        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform overflow-hidden relative"
+        style={{ background: 'rgba(197,160,89,0.16)', backdropFilter: 'blur(8px)', minWidth: 120 }}
+        aria-label="Tap to cycle panchang info"
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={slide.key}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={prefersReducedMotion ? undefined : { opacity: 0, y: -6 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-1.5 w-full"
+          >
+            <span style={{ fontSize: 12, lineHeight: 1 }}>{slide.icon}</span>
+            <span className="text-[12px] font-semibold whitespace-nowrap" style={{ color: 'rgba(255,240,200,0.92)' }}>
+              {label}
+            </span>
+          </motion.span>
+        </AnimatePresence>
+        {/* Dot indicators */}
+        <span className="flex items-center gap-[3px] ml-1 shrink-0">
+          {PILL_SLIDES.map((s, i) => (
+            <span
+              key={s.key}
+              style={{
+                width: i === idx ? 10 : 4,
+                height: 4,
+                borderRadius: 99,
+                background: i === idx ? 'rgba(255,240,200,0.80)' : 'rgba(255,240,200,0.25)',
+                transition: 'all 0.3s ease',
+                display: 'block',
+              }}
+            />
+          ))}
+        </span>
+      </button>
+    </motion.div>
+  );
+}
+
 export function HeroSection({
   panchang,
   selectedDate,
@@ -635,27 +717,7 @@ export function HeroSection({
             </motion.h1>
 
             {panchang?.tithi && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22 }}
-                className="mt-1.5"
-              >
-                <Link
-                  href="/panchang"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full active:scale-95 transition-transform"
-                  style={{ background: 'rgba(197,160,89,0.14)', backdropFilter: 'blur(8px)' }}
-                >
-                  <span className="text-[10px]">🌙</span>
-                  <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,240,200,0.90)' }}>
-                    {panchang.tithi}
-                  </span>
-                  <span style={{ color: 'rgba(255,240,200,0.30)', fontSize: '8px' }}>·</span>
-                  <span className="text-[10px]" style={{ color: 'rgba(255,240,200,0.55)' }}>
-                    {fmtDate(selectedDate, 'd MMM')}
-                  </span>
-                </Link>
-              </motion.div>
+              <PanchangPill panchang={panchang} selectedDate={selectedDate} />
             )}
 
             <AnimatePresence>
