@@ -40,11 +40,7 @@ export default async function ProfilePage() {
     threadCountResult,
     postCountResult,
     safetyDashboard,
-    japaBeadsSum,
-    japaRoundsSum,
-    japaMinutesSum,
-    japaSessionsCount,
-    japaTopMantra,
+    malaSessionsResult,
     latestSadhanaResult,
     nityaDaysResult,
     pathshalaEntriesResult,
@@ -62,28 +58,11 @@ export default async function ProfilePage() {
       const state = await getUserSafetyState(supabase, user.id);
       return getUserSafetyDashboardData(supabase, user.id, state);
     })(),
+    // Only select the 4 columns needed — avoids fetching unused session data
     supabase
       .from('mala_sessions')
-      .select('bead_count.sum()')
+      .select('bead_count, duration_seconds, rounds, mantra')
       .eq('user_id', user.id),
-    supabase
-      .from('mala_sessions')
-      .select('rounds.sum()')
-      .eq('user_id', user.id),
-    supabase
-      .from('mala_sessions')
-      .select('duration_seconds.sum()')
-      .eq('user_id', user.id),
-    supabase
-      .from('mala_sessions')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id),
-    supabase
-      .from('mala_sessions')
-      .select('mantra')
-      .eq('user_id', user.id)
-      .not('mantra', 'is', null)
-      .order('mantra'),
     supabase
       .from('daily_sadhana')
       .select('streak_count')
@@ -107,20 +86,20 @@ export default async function ProfilePage() {
       .not('bookmarked_at', 'is', null),
   ]);
 
-  const totalBeads = Number((japaBeadsSum.data?.[0] as any)?.sum ?? 0);
-  const totalRounds = Number((japaRoundsSum.data?.[0] as any)?.sum ?? 0);
-  const totalMinutes = Math.round(Number((japaMinutesSum.data?.[0] as any)?.sum ?? 0) / 60);
-  const totalSessions = japaSessionsCount.count ?? 0;
+  const malaSessions = malaSessionsResult.data ?? [];
+  const totalBeads   = malaSessions.reduce((s, r) => s + (r.bead_count ?? 0), 0);
+  const totalRounds  = malaSessions.reduce((s, r) => s + (r.rounds ?? 0), 0);
+  const totalMinutes = Math.round(malaSessions.reduce((s, r) => s + (r.duration_seconds ?? 0), 0) / 60);
+  const totalSessions = malaSessions.length;
 
-  const mantras = japaTopMantra.data ?? [];
   const freq: Record<string, number> = {};
-  for (const r of mantras) {
+  for (const r of malaSessions) {
     if (r.mantra) freq[r.mantra] = (freq[r.mantra] ?? 0) + 1;
   }
   const topMantra = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
-  const streak = latestSadhanaResult.data?.streak_count ?? (profile?.shloka_streak ?? 0);
-  const nityaDays = nityaDaysResult.count ?? 0;
+  const streak           = latestSadhanaResult.data?.streak_count ?? (profile?.shloka_streak ?? 0);
+  const nityaDays        = nityaDaysResult.count ?? 0;
   const pathshalaEntries = pathshalaEntriesResult.count ?? 0;
   const bookmarkedVerses = bookmarkedVersesResult.count ?? 0;
 
