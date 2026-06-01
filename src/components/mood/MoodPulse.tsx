@@ -30,6 +30,7 @@ export default function MoodPulse({
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [hidden, setHidden] = useState(true);
+  const [selectedMood, setSelectedMood] = useState<MoodConfig | null>(null);
 
   const MOODS = MOODS_CONFIG.dark;
 
@@ -51,10 +52,30 @@ export default function MoodPulse({
   if (!mounted || hidden || !backendState?.isLoaded) return null;
 
   const handlePillTap = (mood: MoodConfig) => {
+    setSelectedMood(mood);
+  };
+
+  const handleDone = () => {
+    if (!selectedMood) return;
     const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(MOOD_KEY_STORAGE, mood.key);
+    localStorage.setItem(MOOD_KEY_STORAGE, selectedMood.key);
     localStorage.setItem('home_mood_date', today);
-    onOpen(mood.key);
+    localStorage.setItem('shoonaya_mood_dismissed', today);
+    fetch('/api/mood/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ before_mood: selectedMood.key, source_surface: 'home_dashboard', dismissed: true }),
+    }).catch(() => {});
+    setHidden(true);
+    onDismiss();
+  };
+
+  const handleExplore = () => {
+    if (!selectedMood) return;
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem(MOOD_KEY_STORAGE, selectedMood.key);
+    localStorage.setItem('home_mood_date', today);
+    onOpen(selectedMood.key);
   };
 
   const hasCompleted = backendState.hasCompletedToday;
@@ -110,14 +131,50 @@ export default function MoodPulse({
                   whileTap={prefersReducedMotion ? undefined : { scale: 1.08 }}
                   transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', duration: 0.2 }}
                   onClick={() => handlePillTap(mood)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-cream)] transition-colors"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-full border transition-colors"
+                  style={{
+                    background: selectedMood?.key === mood.key ? mood.bg : 'var(--surface-soft)',
+                    borderColor: selectedMood?.key === mood.key ? `${mood.colour}66` : 'var(--card-border)',
+                  }}
                 >
                   <MoodGlyph mood={mood.key} size={14} color={mood.colour} />
-                  <span className="text-xs font-medium">{mood.label}</span>
+                  <span className="text-xs font-medium" style={{ color: selectedMood?.key === mood.key ? mood.colour : 'var(--text-cream)' }}>{mood.label}</span>
                 </motion.button>
               ))}
             </div>
           </div>
+
+          {/* Confirm bar — appears after mood selected */}
+          {selectedMood && (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-2 mt-3 pt-2.5"
+              style={{ borderTop: `1px solid ${selectedMood.colour}22` }}
+            >
+              <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                <MoodGlyph mood={selectedMood.key} color={selectedMood.colour} size={12} />
+                <span className="text-[11px] font-semibold truncate" style={{ color: selectedMood.colour }}>
+                  {selectedMood.label} saved
+                </span>
+              </div>
+              <button
+                onClick={handleDone}
+                className="text-[11px] font-semibold px-3 py-1.5 rounded-full shrink-0 active:scale-95 transition-transform"
+                style={{ background: 'rgba(197,160,89,0.10)', color: 'rgba(197,160,89,0.75)' }}
+              >
+                Done ✓
+              </button>
+              <button
+                onClick={handleExplore}
+                className="text-[11px] font-bold px-3 py-1.5 rounded-full shrink-0 active:scale-95 transition-transform"
+                style={{ background: selectedMood.bg, color: selectedMood.colour }}
+              >
+                Explore →
+              </button>
+            </motion.div>
+          )}
         </div>
       )}
     </div>

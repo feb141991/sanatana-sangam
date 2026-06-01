@@ -38,148 +38,108 @@ export default function MoodPath({
 
   const transitionDuration = prefersReducedMotion ? 0 : 0.05;
 
+  const fixedCards = [
+    {
+      id: 'fixed-darshan',
+      title: tradition === 'sikh' ? 'Live Gurdwara' : tradition === 'buddhist' ? 'Live Temple' : tradition === 'jain' ? 'Live Jain Mandir' : 'Live Darshan',
+      description: 'Witness sacred aarti live',
+      actionLabel: 'Watch live',
+      href: '/live-darshan',
+      icon: 'flame' as const,
+      badge: 'Live',
+      badgeBg: '#ef4444',
+    },
+    {
+      id: 'fixed-mandali',
+      title: 'Talk to Sangat',
+      description: 'Share with your community',
+      actionLabel: 'Open Mandali',
+      href: '/mandali',
+      icon: 'sparkles' as const,
+      badge: 'Community',
+      badgeBg: null,
+    },
+    {
+      id: 'fixed-seva',
+      title: 'Do Seva',
+      description: tradition === 'sikh' ? 'Langar, simran, seva' : tradition === 'buddhist' ? 'Dana and service' : 'Temples, cow seva, annadaan',
+      actionLabel: 'Contribute',
+      href: '/seva',
+      icon: 'heart' as const,
+      badge: 'Seva',
+      badgeBg: null,
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Dynamic Recommendation Cards */}
-      {maxRecs.map((rec) => (
-        <div
-          key={rec.id}
-          className="rounded-2xl p-4 border border-[var(--card-border)] bg-[var(--card-bg)] flex flex-col gap-3"
-        >
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-[var(--surface-raised)] text-[var(--text-dim)] border border-[var(--card-border)]">
-              {rec.type}
-            </span>
-            <span className="text-[10px] text-[var(--text-dim)]">
-              {TIME_ESTIMATE[rec.type] || '5min'}
-            </span>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="mt-1">
-              <SacredIcon name={rec.icon || 'sparkles'} size={22} style={{ color: activeMood.colour }} />
-            </div>
-            <div>
-              <h3 className="text-[16px] font-serif text-[var(--text-cream)] leading-snug mb-1">
-                {rec.title}
-              </h3>
-              <p className="text-[12px] text-[var(--text-muted-warm)] leading-relaxed">
-                {rec.description}
-              </p>
-            </div>
-          </div>
-
-          <button
+    <div
+      className="-mx-5 px-5 overflow-x-auto pb-2"
+      style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
+    >
+      <div className="flex gap-3 w-max">
+        {/* Dynamic recommendation cards */}
+        {maxRecs.map((rec, i) => (
+          <motion.button
+            key={rec.id}
             onClick={() => onActionClick(rec)}
-            className="w-full h-11 rounded-xl mt-2 font-bold transition-transform active:scale-[0.98]"
-            style={{ background: activeMood.colour, color: 'var(--divine-bg)' }}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: i * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+            className="flex-shrink-0 w-36 flex flex-col rounded-2xl px-3 py-3 text-left active:scale-[0.97] transition-transform"
+            style={{
+              background: activeMood.bg,
+              border: `1px solid ${activeMood.colour}22`,
+            }}
           >
-            {rec.actionLabel}
-          </button>
-        </div>
-      ))}
+            <SacredIcon name={rec.icon || 'sparkles'} size={15} style={{ color: activeMood.colour }} />
+            <span className="text-[11px] font-bold uppercase tracking-widest mt-2 mb-1" style={{ color: activeMood.colour }}>
+              {TIME_ESTIMATE[rec.type] ?? '5 min'}
+            </span>
+            <span className="text-[13px] font-semibold leading-tight line-clamp-2 mb-1" style={{ color: 'var(--text-cream)' }}>
+              {rec.title}
+            </span>
+            <span className="text-[10px] leading-snug line-clamp-2 flex-1" style={{ color: 'var(--text-muted-warm)' }}>
+              {rec.description}
+            </span>
+            <span className="text-[11px] font-bold mt-2" style={{ color: activeMood.colour }}>
+              {rec.actionLabel} →
+            </span>
+          </motion.button>
+        ))}
 
-      {/* 3 Fixed Contextual Cards */}
-      <motion.div
-        className="flex flex-col gap-4"
-        variants={{ visible: { transition: { staggerChildren: transitionDuration } } }}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* LIVE DARSHAN */}
-        <motion.div
-          variants={fixedVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : undefined}
-          className="rounded-2xl p-4 flex items-center justify-between border border-[var(--card-border)]"
-          style={{ background: activeMood.bg }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface-soft)]">
-              <SacredIcon name="flame" size={20} style={{ color: activeMood.colour }} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <h4 className="text-sm font-bold text-[var(--text-cream)]">
-                  {tradition === 'sikh' ? 'Live Gurdwara' : tradition === 'buddhist' ? 'Live Temple' : tradition === 'jain' ? 'Live Jain Mandir' : 'Live Darshan'}
-                </h4>
-                <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase text-white" style={{ background: '#ef4444' }}>
-                  Live
-                </span>
-              </div>
-              <p className="text-[10px] text-[var(--text-muted-warm)]">Witness sacred aarti and prayers live</p>
-            </div>
-          </div>
-          <button 
-            onClick={() => onActionClick({ id: 'live', type: 'live_darshan' as any, title: 'Live Darshan', description: '', href: '/live-darshan', icon: 'flame', actionLabel: 'Watch live' })}
-            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[var(--surface-raised)] border border-[var(--card-border)] text-[var(--text-cream)]"
-            style={{ color: activeMood.colour }}
+        {/* 3 fixed contextual cards */}
+        {fixedCards.map((card, i) => (
+          <motion.button
+            key={card.id}
+            onClick={() => onActionClick({ id: card.id, type: 'discover' as const, title: card.title, description: card.description, href: card.href, icon: card.icon, actionLabel: card.actionLabel })}
+            initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+            animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { delay: (maxRecs.length + i) * 0.05, type: 'spring', stiffness: 300, damping: 24 }}
+            className="flex-shrink-0 w-36 flex flex-col rounded-2xl px-3 py-3 text-left active:scale-[0.97] transition-transform"
+            style={{
+              background: activeMood.bg,
+              border: `1px solid ${activeMood.colour}22`,
+            }}
           >
-            Watch live
-          </button>
-        </motion.div>
-
-        {/* MANDALI */}
-        <motion.div
-          variants={fixedVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : undefined}
-          className="rounded-2xl p-4 flex items-center justify-between border border-[var(--card-border)]"
-          style={{ background: activeMood.bg }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface-soft)]">
-              <SacredIcon name={'users' as any} size={20} style={{ color: activeMood.colour }} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <h4 className="text-sm font-bold text-[var(--text-cream)]">Talk to Sangat</h4>
-                <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-dim)]" style={{ color: activeMood.colour }}>
-                  Community
-                </span>
-              </div>
-              <p className="text-[10px] text-[var(--text-muted-warm)]">Share with your spiritual community</p>
-            </div>
-          </div>
-          <button 
-            onClick={() => onActionClick({ id: 'mandali', type: 'mandali' as any, title: 'Mandali', description: '', href: '/mandali', icon: 'users' as any, actionLabel: 'Open Mandali' })}
-            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[var(--surface-raised)] border border-[var(--card-border)] text-[var(--text-cream)]"
-            style={{ color: activeMood.colour }}
-          >
-            Open Mandali
-          </button>
-        </motion.div>
-
-        {/* SEVA */}
-        <motion.div
-          variants={fixedVariants}
-          transition={prefersReducedMotion ? { duration: 0 } : undefined}
-          className="rounded-2xl p-4 flex items-center justify-between border border-[var(--card-border)]"
-          style={{ background: activeMood.bg }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--surface-soft)]">
-              <SacredIcon name="heart" size={20} style={{ color: activeMood.colour }} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <h4 className="text-sm font-bold text-[var(--text-cream)]">Do Seva</h4>
-                <span className="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase border border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-dim)]" style={{ color: activeMood.colour }}>
-                  Seva
-                </span>
-              </div>
-              <p className="text-[10px] text-[var(--text-muted-warm)] max-w-[140px] truncate">
-                {tradition === 'sikh' ? 'Langar, simran, and seva' : tradition === 'buddhist' ? 'Dana and compassionate service' : 'Support temples, cow seva, annadaan'}
-              </p>
-            </div>
-          </div>
-          <button 
-            onClick={() => onActionClick({ id: 'seva', type: 'seva' as any, title: 'Seva', description: '', href: '/seva', icon: 'heart', actionLabel: 'Contribute' })}
-            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[var(--surface-raised)] border border-[var(--card-border)] text-[var(--text-cream)]"
-            style={{ color: activeMood.colour }}
-          >
-            Contribute
-          </button>
-        </motion.div>
-      </motion.div>
+            <SacredIcon name={card.icon} size={15} style={{ color: activeMood.colour }} />
+            <span
+              className="text-[10px] font-bold uppercase tracking-widest mt-2 mb-1 px-1.5 py-0.5 rounded self-start"
+              style={{ background: card.badgeBg ?? `${activeMood.colour}22`, color: card.badgeBg ? '#fff' : activeMood.colour }}
+            >
+              {card.badge}
+            </span>
+            <span className="text-[13px] font-semibold leading-tight line-clamp-2 mb-1" style={{ color: 'var(--text-cream)' }}>
+              {card.title}
+            </span>
+            <span className="text-[10px] leading-snug line-clamp-2 flex-1" style={{ color: 'var(--text-muted-warm)' }}>
+              {card.description}
+            </span>
+            <span className="text-[11px] font-bold mt-2" style={{ color: activeMood.colour }}>
+              {card.actionLabel} →
+            </span>
+          </motion.button>
+        ))}
+      </div>
     </div>
   );
 }
