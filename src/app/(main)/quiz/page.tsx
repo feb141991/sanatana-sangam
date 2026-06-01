@@ -61,6 +61,9 @@ export default async function QuizPage() {
   const recentHistory = history.filter(h => h.date >= sevenDaysAgo);
   const hasGraceAvailable = recentHistory.length < 7 && missedYesterday;
 
+  // Activity dates for the 28-day grid — always full history, never gated
+  const activityDates = history.map(h => h.date);
+
   return (
     <QuizDashboardClient
       userId={user.id}
@@ -72,6 +75,7 @@ export default async function QuizPage() {
       karmaPoints={karmaPoints}
       todayResponse={todayResponse}
       initialHistory={visibleHistory}
+      activityDates={activityDates}
       practiceSessions={sessionsResult.data ?? []}
       hasGraceAvailable={hasGraceAvailable}
     />

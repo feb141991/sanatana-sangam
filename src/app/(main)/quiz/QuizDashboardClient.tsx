@@ -63,6 +63,7 @@ interface Props {
   karmaPoints:      number;
   todayResponse:    QuizResponse | null;
   initialHistory:   QuizResponse[];
+  activityDates:    string[];
   practiceSessions: PracticeSession[];
   hasGraceAvailable: boolean;
 }
@@ -146,7 +147,7 @@ function CountUpScore({ value, color }: { value: number; color: string }) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function QuizDashboardClient({
-  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, practiceSessions, hasGraceAvailable
+  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, activityDates, practiceSessions, hasGraceAvailable
 }: Props) {
   const meta = getTraditionMeta(tradition);
   const [proModalOpen, setProModalOpen] = useState(false);
@@ -261,10 +262,34 @@ export default function QuizDashboardClient({
       ? { border: 'rgba(122,171,122,0.40)', bg: 'rgba(122,171,122,0.10)', text: '#7aab7a' }
       : { border: 'rgba(255,255,255,0.10)', bg: 'rgba(255,255,255,0.04)', text: 'rgba(255,255,255,0.88)' };
 
-  // 28-day activity grid
+  // 28-day activity grid — uses full activityDates (never gated)
   const activityGrid = useMemo(() => {
-    return generateActivityGrid(initialHistory.map(h => h.date), spiritualToday);
-  }, [initialHistory, spiritualToday]);
+    return generateActivityGrid(activityDates, spiritualToday);
+  }, [activityDates, spiritualToday]);
+
+  // Build 4-week calendar grid: array of 28 {dateStr, active, isToday, isFuture}
+  const calendarWeeks = useMemo(() => {
+    const dateSet = new Set(activityDates);
+    const todayMs = Date.UTC(
+      parseInt(spiritualToday.slice(0, 4)),
+      parseInt(spiritualToday.slice(5, 7)) - 1,
+      parseInt(spiritualToday.slice(8, 10)),
+      12, 0, 0,
+    );
+    const days = Array.from({ length: 28 }, (_, i) => {
+      const ms = todayMs - (27 - i) * 86_400_000;
+      const d = new Date(ms);
+      const dateStr = d.toISOString().slice(0, 10);
+      return {
+        dateStr,
+        active: dateSet.has(dateStr),
+        isToday: dateStr === spiritualToday,
+        dayOfWeek: d.getUTCDay(), // 0=Sun
+      };
+    });
+    // chunk into 4 weeks of 7
+    return [days.slice(0, 7), days.slice(7, 14), days.slice(14, 21), days.slice(21, 28)];
+  }, [activityDates, spiritualToday]);
 
   async function handleDailyAnswer(idx: number) {
     if (!dailyQuiz || effectiveAnswered || answerLockedRef.current) return;
@@ -852,39 +877,76 @@ export default function QuizDashboardClient({
         </div>
       )}
 
-      {/* ── Consistency strip ────────────────────────────────────────────── */}
+      {/* ── 28-Day Calendar ──────────────────────────────────────────────── */}
       <div className="px-5 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[13px] font-bold uppercase tracking-[0.14em] flex items-center gap-2" style={{ color: 'var(--text-dim)' }}>
-            <Flame size={13} />
-            28-Day Streak
+          <h2 className="text-[13px] font-bold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
+            28-Day Practice
           </h2>
-          <span className="text-[11px] font-semibold" style={{ color: meta.accentColour }}>
-            {activityGrid.filter(Boolean).length} / 28
+          <span className="text-[11px] font-semibold tabular-nums" style={{ color: meta.accentColour }}>
+            {activityGrid.filter(Boolean).length} <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>/ 28 days</span>
           </span>
         </div>
-        {/* Two rows of 14 dots */}
-        <div className="space-y-2">
-          {[activityGrid.slice(0, 14), activityGrid.slice(14)].map((row, rowIdx) => (
-            <div key={rowIdx} className="flex gap-1.5">
-              {row.map((active, i) => (
+
+        {/* Day-of-week header */}
+        <div className="grid grid-cols-7 mb-1.5">
+          {['S','M','T','W','T','F','S'].map((d, i) => (
+            <div key={i} className="text-center text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-dim)', opacity: 0.5 }}>
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* 4 weeks × 7 days */}
+        <div className="space-y-1.5">
+          {calendarWeeks.map((week, wi) => (
+            <div key={wi} className="grid grid-cols-7 gap-1.5">
+              {week.map((day, di) => (
                 <motion.div
-                  key={i}
-                  initial={{ scale: 0.6, opacity: 0 }}
+                  key={day.dateStr}
+                  initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: (rowIdx * 14 + i) * 0.018, duration: 0.22 }}
-                  className="flex-1 h-2 rounded-full"
-                  style={active
-                    ? { background: meta.accentColour, boxShadow: `0 0 6px ${meta.accentColour}60` }
-                    : { background: 'var(--surface-soft, rgba(0,0,0,0.07))' }
+                  transition={{ delay: (wi * 7 + di) * 0.012, duration: 0.2, ease: 'backOut' }}
+                  className="aspect-square rounded-lg flex items-center justify-center"
+                  style={
+                    day.isToday
+                      ? {
+                          background: day.active ? meta.accentColour : 'transparent',
+                          border: `2px solid ${meta.accentColour}`,
+                          boxShadow: day.active ? `0 0 10px ${meta.accentColour}60` : undefined,
+                        }
+                      : day.active
+                      ? {
+                          background: `${meta.accentColour}28`,
+                          border: `1px solid ${meta.accentColour}55`,
+                          boxShadow: `0 0 6px ${meta.accentColour}30`,
+                        }
+                      : {
+                          background: 'var(--surface-soft, rgba(0,0,0,0.05))',
+                          border: '1px solid transparent',
+                        }
                   }
-                />
+                >
+                  {day.active && (
+                    <div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{
+                        background: day.isToday ? (day.active ? '#fff' : meta.accentColour) : meta.accentColour,
+                        opacity: day.isToday && day.active ? 0.9 : 0.7,
+                      }}
+                    />
+                  )}
+                  {day.isToday && !day.active && (
+                    <div className="w-1 h-1 rounded-full" style={{ background: meta.accentColour, opacity: 0.6 }} />
+                  )}
+                </motion.div>
               ))}
             </div>
           ))}
         </div>
+
         <p className="text-[10px] mt-3" style={{ color: 'var(--text-dim)' }}>
-          Answer daily to keep your streak alive.
+          Each column is a day of the week · Today is highlighted
         </p>
       </div>
 
