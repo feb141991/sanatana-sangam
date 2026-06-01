@@ -565,7 +565,7 @@ export default function QuizDashboardClient({
                       style={{ color: 'var(--brand-primary)' }}>Today&apos;s Wisdom</p>
                     {dailyQuiz.fact && (
                       <p className="text-sm italic leading-relaxed font-serif mb-3" style={{ color: 'var(--text-cream)' }}>
-                        "{dailyQuiz.fact}"
+                        &ldquo;{dailyQuiz.fact}&rdquo;
                       </p>
                     )}
                     {dailyQuiz.explanation && (
@@ -660,7 +660,7 @@ export default function QuizDashboardClient({
                       style={{ color: 'var(--brand-primary)' }}>Today&apos;s Wisdom</p>
                     {dailyQuiz.fact && (
                       <p className="text-sm italic leading-relaxed font-serif mb-3" style={{ color: 'var(--text-cream)' }}>
-                        "{dailyQuiz.fact}"
+                        &ldquo;{dailyQuiz.fact}&rdquo;
                       </p>
                     )}
                     {dailyQuiz.explanation && (

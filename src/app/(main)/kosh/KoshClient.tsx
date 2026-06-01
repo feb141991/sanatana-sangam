@@ -736,7 +736,7 @@ export default function KoshClient({
                 </div>
                 
                 <p className="mt-2.5 text-xs italic" style={{ color: mutedColor }}>
-                  "{selectedRelic.effect}"
+                  &ldquo;{selectedRelic.effect}&rdquo;
                 </p>
               </div>
 
