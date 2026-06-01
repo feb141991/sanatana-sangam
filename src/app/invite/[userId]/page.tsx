@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      url: `https://shoonaya.app/invite/${userId}`,
+      url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com'}/invite/${userId}`,
       siteName: 'Shoonaya',
       type: 'website',
     },

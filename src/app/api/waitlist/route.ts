@@ -14,6 +14,9 @@ const supabase = createClient(
   { auth: { persistSession: false } }
 );
 
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+const DOMAIN = BASE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -184,7 +187,7 @@ function normaliseTradition(value: unknown): string | null {
 
 function buildShareText(foundingNumber: number): string {
   const numberLabel = foundingNumber > 0 ? `#${foundingNumber}` : 'founding member';
-  return `I just became Sthapaka ${numberLabel} of Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Join the founding members: https://shoonaya.app`;
+  return `I just became Sthapaka ${numberLabel} of Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Join the founding members: ${BASE_URL}`;
 }
 
 async function findRegistration(email: string): Promise<WaitlistRow | null> {
@@ -294,12 +297,12 @@ function buildEmailHtml(opts: {
                   : t === 'jain'     ? 'rgba(42,107,74,0.35)'
                   :                    'rgba(216,138,28,0.35)';
 
-  const shareUrl = encodeURIComponent('https://shoonaya.app');
+  const shareUrl = encodeURIComponent(BASE_URL);
   const twitterText = encodeURIComponent(
     `I'm Sthapaka #${foundingNumber} of Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding 1,000:`
   );
   const waText = encodeURIComponent(
-    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Launching June 17, 2026. Join the founding members: https://shoonaya.app`
+    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Launching June 17, 2026. Join the founding members: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `
@@ -384,7 +387,7 @@ function buildEmailHtml(opts: {
 
   <!-- CTA Button -->
   <tr><td align="center" style="padding:32px 0;">
-    <a href="https://shoonaya.app/join"
+    <a href="${BASE_URL}/join"
        style="display:inline-block;background:${accent};color:#fff;font-weight:700;padding:16px 48px;border-radius:100px;text-decoration:none;font-size:15px;letter-spacing:0.02em;">
       Enter Shoonaya on June 17 →
     </a>
@@ -424,7 +427,7 @@ async function sendWelcomeEmail(opts: {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from:    'Shoonaya <noreply@shoonaya.app>',
+        from:    `Shoonaya <noreply@${DOMAIN}>`,
         to:      [opts.email],
         subject: `${tradGreeting} — आपका स्वागत है, Sthapaka #${opts.foundingNumber} 🪔`,
         html:    buildEmailHtml(opts),

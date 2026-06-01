@@ -28,7 +28,9 @@ const SHARE_COPY: Record<string, string> = {
   jain:     "Shoonaya brings dharmic practice to daily life — japa, pathshala and community 🤲",
 };
 
-const BASE_URL = 'https://shoonaya.app';
+const BASE_URL = typeof window !== 'undefined'
+  ? window.location.origin
+  : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
 
 // Same deterministic code as HomeDashboard → InviteModal
 function generateInviteCode(userId: string): string {
@@ -138,7 +140,7 @@ export default function InviteCard({ userId, userName, tradition }: InviteCardPr
         >
           <span style={{ color: 'var(--brand-muted)' }}>Your invite link:</span>
           <span className="font-mono truncate flex-1" style={{ color: accent }}>
-            shoonaya.app/invite/{userId.slice(0, 8)}…
+            {BASE_URL.replace(/^https?:\/\//, '')}/invite/{userId.slice(0, 8)}…
           </span>
         </div>
       </div>
