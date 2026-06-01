@@ -229,7 +229,10 @@ export default function DailySadhanaStrip(props: DailySadhanaStripProps) {
         {rows.map((row, i) => (
           <button
             key={row.id} type="button" aria-label={`Go to ${row.label}`}
-            onClick={() => goTo(i)}
+            onClick={() => {
+              if (i === activeIdx) router.push(row.href);
+              else goTo(i);
+            }}
             className="flex-1 h-[3px] rounded-full overflow-hidden focus:outline-none"
             style={{ background: 'rgba(197,160,89,0.13)' }}
           >

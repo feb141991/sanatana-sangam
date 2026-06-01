@@ -103,50 +103,55 @@ export function SadhanaSection({
         />
       </div>
 
-      {/* ── Dharm Veer Card ── */}
-      <AnimatePresence>
-        {!dailyDharmaStackState.dharmVeerDone && (
-          <motion.div
-            key="dharm-veer-card"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
-            transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            className="group relative hover:scale-[1.02] transition-transform duration-300 block overflow-hidden"
-            style={{
-              background: isDark ? 'linear-gradient(145deg, #1C150A, #1A1208)' : 'linear-gradient(145deg, rgba(255, 253, 248, 0.94), rgba(255, 253, 248, 0.94))',
-              border: isDark ? '1px solid rgba(197,160,89,0.15)' : '1px solid rgba(157, 100, 60, 0.15)',
-              borderRadius: '16px',
-              margin: '0 16px 10px',
-              boxShadow: isDark ? '0 8px 32px rgba(0, 0, 0, 0.25)' : '0 8px 32px rgba(157, 100, 60, 0.05)',
-            }}
-          >
-            <Link
-              href={`/dharm-veer/${dharmVeer.id}`}
-              className="flex items-center gap-3 w-full px-4 py-3.5 pr-6 text-left no-underline"
+      {/* ── Dharm Veer Card — always visible, done state when read ── */}
+      <motion.div
+        key="dharm-veer-card"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        className="block overflow-hidden"
+        style={{
+          background: dailyDharmaStackState.dharmVeerDone
+            ? (isDark ? 'rgba(255,138,101,0.06)' : 'rgba(255,138,101,0.04)')
+            : (isDark ? 'linear-gradient(145deg, #1C150A, #1A1208)' : 'linear-gradient(145deg, rgba(255,253,248,0.94), rgba(255,253,248,0.94))'),
+          border: dailyDharmaStackState.dharmVeerDone
+            ? '1px solid rgba(255,138,101,0.18)'
+            : (isDark ? '1px solid rgba(197,160,89,0.15)' : '1px solid rgba(157,100,60,0.15)'),
+          borderRadius: '16px',
+          margin: '0 16px 10px',
+          opacity: dailyDharmaStackState.dharmVeerDone ? 0.72 : 1,
+        }}
+      >
+        <Link
+          href={`/dharm-veer/${dharmVeer.id}`}
+          className="flex items-center gap-3 w-full px-4 py-3.5 pr-6 text-left no-underline"
+        >
+          <span aria-hidden="true" className="text-[26px] leading-none shrink-0">
+            {dailyDharmaStackState.dharmVeerDone
+              ? <span style={{ fontSize: 18 }}>✓</span>
+              : <SacredIcon name="sparkles" size={18} />}
+          </span>
+          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+            <span className="font-serif tracking-[0.01em]" style={{ fontSize: '15px', fontWeight: 700, color: isDark ? '#F0EDE6' : '#1a140e' }}>
+              {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
+            </span>
+            <span className="line-clamp-1" style={{ fontSize: '12px', lineHeight: 1.45, color: isDark ? 'rgba(240,220,180,0.55)' : 'rgba(60,45,28,0.75)' }}>
+              {dailyDharmaStackState.dharmVeerDone
+                ? 'Read today · Tap to revisit'
+                : `${effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · ${effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}`}
+            </span>
+          </div>
+          {!dailyDharmaStackState.dharmVeerDone && (
+            <span
+              className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              style={{ background: 'rgba(197,160,89,0.14)', color: '#C5A059', border: '1px solid rgba(197,160,89,0.22)' }}
             >
-              <span aria-hidden="true" className="text-[26px] leading-none shrink-0">
-                <SacredIcon name="sparkles" size={18} />
-              </span>
-              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                <span className="font-serif tracking-[0.01em]" style={{ fontSize: '15px', fontWeight: 700, color: isDark ? '#F0EDE6' : '#1a140e' }}>
-                  {effectiveAppLanguage !== 'en' && dharmVeer.nameLocal ? dharmVeer.nameLocal : dharmVeer.name}
-                </span>
-                <span className="line-clamp-1" style={{ fontSize: '12px', lineHeight: 1.45, color: isDark ? 'rgba(240,220,180,0.55)' : 'rgba(60, 45, 28, 0.75)' }}>
-                  {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.dharmVeerLocal ? dharmVeerTradMeta.dharmVeerLocal : t('journeyLabel')} · {effectiveAppLanguage !== 'en' && dharmVeerTradMeta.labelLocal ? dharmVeerTradMeta.labelLocal : dharmVeerTradMeta.label}
-                </span>
-              </div>
-              <span
-                className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold"
-                style={{ background: 'rgba(197,160,89,0.14)', color: '#C5A059', border: '1px solid rgba(197,160,89,0.22)' }}
-              >
-                +5 seva
-              </span>
-              <ChevronRight size={16} color="#C5A059" className="shrink-0" aria-hidden="true" />
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              +5 seva
+            </span>
+          )}
+          <ChevronRight size={16} color={dailyDharmaStackState.dharmVeerDone ? 'rgba(255,138,101,0.4)' : '#C5A059'} className="shrink-0" aria-hidden="true" />
+        </Link>
+      </motion.div>
 
       {/* ── Daily Quiz Spark Card ── */}
       <AnimatePresence>
