@@ -245,7 +245,7 @@ export default function MoodJourneySheet({
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-5 pb-8 relative">
+        <div className="flex-1 min-h-0 overflow-y-auto px-5 pb-8 relative">
           <AnimatePresence mode="wait">
             {step === 'context' && (
               <motion.div
@@ -254,7 +254,7 @@ export default function MoodJourneySheet({
                 animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
                 transition={stepSlideConfig}
-                className="flex flex-col h-full py-4"
+                className="flex flex-col py-4"
               >
                 <div className="flex-1">
                   {!need && (
@@ -309,7 +309,7 @@ export default function MoodJourneySheet({
                 animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
                 transition={stepSlideConfig}
-                className="flex flex-col min-h-full py-4"
+                className="flex flex-col py-4"
               >
                 <div className="flex-1">
                   <MoodMirror 
@@ -337,7 +337,7 @@ export default function MoodJourneySheet({
                 animate={prefersReducedMotion ? undefined : { opacity: 1, x: 0 }}
                 exit={prefersReducedMotion ? undefined : { opacity: 0, x: -20 }}
                 transition={stepSlideConfig}
-                className="flex flex-col min-h-full py-4"
+                className="flex flex-col py-4"
               >
                 <div className="flex-1">
                   <MoodPath 
