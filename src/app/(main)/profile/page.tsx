@@ -33,88 +33,102 @@ export default async function ProfilePage() {
   const showSadhanaHighlights = Boolean(profile?.show_sadhana_highlights ?? false);
   const isOwnProfile = true;
 
-  const { count: threadCount } = await supabase
-    .from('forum_threads')
-    .select('id', { count: 'exact', head: true })
-    .eq('author_id', user.id);
+  const thirtyAgo = new Date();
+  thirtyAgo.setDate(thirtyAgo.getDate() - 30);
 
-  const { count: postCount } = await supabase
-    .from('posts')
-    .select('id', { count: 'exact', head: true })
-    .eq('author_id', user.id);
+  const [
+    threadCountResult,
+    postCountResult,
+    safetyDashboard,
+    japaBeadsSum,
+    japaRoundsSum,
+    japaMinutesSum,
+    japaSessionsCount,
+    japaTopMantra,
+    latestSadhanaResult,
+    nityaDaysResult,
+    pathshalaEntriesResult,
+    bookmarkedVersesResult,
+  ] = await Promise.all([
+    supabase
+      .from('forum_threads')
+      .select('id', { count: 'exact', head: true })
+      .eq('author_id', user.id),
+    supabase
+      .from('posts')
+      .select('id', { count: 'exact', head: true })
+      .eq('author_id', user.id),
+    (async () => {
+      const state = await getUserSafetyState(supabase, user.id);
+      return getUserSafetyDashboardData(supabase, user.id, state);
+    })(),
+    supabase
+      .from('mala_sessions')
+      .select('bead_count.sum()')
+      .eq('user_id', user.id),
+    supabase
+      .from('mala_sessions')
+      .select('rounds.sum()')
+      .eq('user_id', user.id),
+    supabase
+      .from('mala_sessions')
+      .select('duration_seconds.sum()')
+      .eq('user_id', user.id),
+    supabase
+      .from('mala_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('mala_sessions')
+      .select('mantra')
+      .eq('user_id', user.id)
+      .not('mantra', 'is', null)
+      .order('mantra'),
+    supabase
+      .from('daily_sadhana')
+      .select('streak_count')
+      .eq('user_id', user.id)
+      .order('date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('nitya_karma_log')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .gte('log_date', thirtyAgo.toISOString().slice(0, 10)),
+    supabase
+      .from('pathshala_user_state')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id),
+    supabase
+      .from('pathshala_user_state')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .not('bookmarked_at', 'is', null),
+  ]);
 
-  const safetyState = await getUserSafetyState(supabase, user.id);
-  const safetyDashboard = await getUserSafetyDashboardData(supabase, user.id, safetyState);
+  const totalBeads = Number((japaBeadsSum.data?.[0] as any)?.sum ?? 0);
+  const totalRounds = Number((japaRoundsSum.data?.[0] as any)?.sum ?? 0);
+  const totalMinutes = Math.round(Number((japaMinutesSum.data?.[0] as any)?.sum ?? 0) / 60);
+  const totalSessions = japaSessionsCount.count ?? 0;
 
-  let totalBeads = 0;
-  let totalRounds = 0;
-  let totalMinutes = 0;
-  let totalSessions = 0;
-  let streak = profile?.shloka_streak ?? 0;
-  let topMantra: string | null = null;
-  let nityaDays = 0;
-  let pathshalaEntries = 0;
-  let bookmarkedVerses = 0;
-
-  if (showSadhanaHighlights || isOwnProfile) {
-    const thirtyAgo = new Date();
-    thirtyAgo.setDate(thirtyAgo.getDate() - 30);
-
-    const [
-      japaTotalsResult,
-      latestSadhanaResult,
-      nityaDaysResult,
-      pathshalaEntriesResult,
-      bookmarkedVersesResult,
-    ] = await Promise.all([
-      supabase
-        .from('mala_sessions')
-        .select('bead_count, duration_seconds, rounds, mantra')
-        .eq('user_id', user.id),
-      supabase
-        .from('daily_sadhana')
-        .select('streak_count')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from('nitya_karma_log')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('log_date', thirtyAgo.toISOString().slice(0, 10)),
-      supabase
-        .from('pathshala_user_state')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id),
-      supabase
-        .from('pathshala_user_state')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .not('bookmarked_at', 'is', null),
-    ]);
-
-    const japaTotals = japaTotalsResult.data ?? [];
-    totalBeads = japaTotals.reduce((s, r) => s + (r.bead_count ?? 0), 0);
-    totalRounds = japaTotals.reduce((s, r) => s + (r.rounds ?? 0), 0);
-    totalMinutes = Math.round(japaTotals.reduce((s, r) => s + (r.duration_seconds ?? 0), 0) / 60);
-    totalSessions = japaTotals.length;
-    const freq: Record<string, number> = {};
-    for (const r of japaTotals) {
-      if (r.mantra) freq[r.mantra] = (freq[r.mantra] ?? 0) + 1;
-    }
-    topMantra = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
-    streak = latestSadhanaResult.data?.streak_count ?? (profile?.shloka_streak ?? 0);
-    nityaDays = nityaDaysResult.count ?? 0;
-    pathshalaEntries = pathshalaEntriesResult.count ?? 0;
-    bookmarkedVerses = bookmarkedVersesResult.count ?? 0;
+  const mantras = japaTopMantra.data ?? [];
+  const freq: Record<string, number> = {};
+  for (const r of mantras) {
+    if (r.mantra) freq[r.mantra] = (freq[r.mantra] ?? 0) + 1;
   }
+  const topMantra = Object.entries(freq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+
+  const streak = latestSadhanaResult.data?.streak_count ?? (profile?.shloka_streak ?? 0);
+  const nityaDays = nityaDaysResult.count ?? 0;
+  const pathshalaEntries = pathshalaEntriesResult.count ?? 0;
+  const bookmarkedVerses = bookmarkedVersesResult.count ?? 0;
 
   return (
     <ProfileClient
       profile={profile}
-      threadCount={threadCount ?? 0}
-      postCount={postCount ?? 0}
+      threadCount={threadCountResult.count ?? 0}
+      postCount={postCountResult.count ?? 0}
       userId={user.id}
       userEmail={user.email ?? ''}
       blockedProfiles={safetyDashboard.blockedProfiles}
