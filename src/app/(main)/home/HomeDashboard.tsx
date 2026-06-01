@@ -422,6 +422,18 @@ export default function HomeDashboard({
     } catch {}
   }, [avatarUrl, savedCity]);
 
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const shown = localStorage.getItem('shoonaya-welcome-shown-zeroists');
+      if (!shown && showFirstTimeGuidance) {
+        setShowWelcomeModal(true);
+        localStorage.setItem('shoonaya-welcome-shown-zeroists', 'true');
+      }
+    } catch {}
+  }, [showFirstTimeGuidance]);
+
   // Daily Quiz — load from localStorage cache or fetch fresh
   const _quizTrad           = tradition ?? 'hindu';
   const todayStr            = localSpiritualDate(timezone, 4);
@@ -1444,6 +1456,49 @@ export default function HomeDashboard({
               setJourneyMoodKey(null);
             }}
           />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showWelcomeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="clay-card rounded-[2.5rem] p-8 max-w-sm w-full text-center border-[#C5A059]/30 shadow-2xl relative overflow-hidden"
+            >
+              {/* Decorative ambient background */}
+              <div className="absolute inset-0 bg-gradient-to-b from-[#C5A059]/10 via-transparent to-transparent opacity-60 pointer-events-none" />
+              
+              {/* Symbol */}
+              <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/25 flex items-center justify-center text-3xl mx-auto mb-6">
+                ✨
+              </div>
+
+              {/* Header */}
+              <h2 className="text-2xl font-bold font-serif theme-ink mb-3">
+                Welcome to the Zeroists, {userName.split(' ')[0]}!
+              </h2>
+              
+              <p className="text-sm text-[var(--text-muted-warm)] leading-relaxed mb-8">
+                You are now part of the global Shoonaya mandali. Let us walk the path of sadhana, mindfulness, and sacred consistency together.
+              </p>
+
+              {/* Button */}
+              <button
+                onClick={() => setShowWelcomeModal(false)}
+                className="w-full rounded-full bg-[#C5A059] text-[#0E0E0F] font-bold py-3.5 text-sm transition-all active:scale-95 shadow-lg shadow-[#C5A059]/20"
+              >
+                Begin Journey 🙏
+              </button>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 

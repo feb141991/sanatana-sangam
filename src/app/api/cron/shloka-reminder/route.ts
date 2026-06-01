@@ -155,7 +155,7 @@ export async function GET(request: Request) {
 
     const pushResult = await sendOneSignalPush({
       userIds: insertedUserIds,
-      title: 'Your Daily Reading awaits',
+      title: 'Your sadhana awaits, Shoonya 🙏',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
       url: actionUrl,
       data: {
