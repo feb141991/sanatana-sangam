@@ -20,6 +20,7 @@ export default async function KoshPage() {
       .from('daily_sadhana')
       .select('streak_count')
       .eq('user_id', user.id)
+      .not('streak_count', 'is', null)   // same as home page — skip rows where streak not yet recorded today
       .order('date', { ascending: false })
       .limit(1)
       .maybeSingle(),

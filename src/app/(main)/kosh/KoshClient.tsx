@@ -360,11 +360,11 @@ export default function KoshClient({
   }
 
   // ── Themed CSS var shorthands ────────────────────────────────────────────────
-  const cardBg     = 'var(--card-bg, rgba(255,255,255,0.04))';
-  const cardBorder = 'var(--card-border, rgba(255,255,255,0.08))';
-  const inkColor   = 'var(--brand-ink, rgba(255,255,255,0.95))';
-  const mutedColor = 'var(--text-muted-warm, rgba(255,255,255,0.5))';
-  const dimColor   = 'var(--text-dim, rgba(255,255,255,0.35))';
+  const cardBg     = 'var(--card-bg)';
+  const cardBorder = 'var(--card-border)';
+  const inkColor   = 'var(--brand-ink)';
+  const mutedColor = 'var(--text-muted-warm)';
+  const dimColor   = 'var(--text-dim)';
   const goldColor  = 'var(--brand-primary, #C5A059)';
 
   const hasAccent = selectedRelic ? !!RELIC_ACCENTS[selectedRelic.id] : false;
