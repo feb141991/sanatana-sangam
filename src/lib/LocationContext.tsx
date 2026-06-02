@@ -33,7 +33,7 @@ interface LocationState {
   countryCode: string;
   loading:     boolean;
   error:       string | null;
-  refresh:     () => void;
+  refresh:     (force?: boolean) => void;
   showLocationSheet: boolean;
   confirmLocationRequest: () => void;
   dismissLocationSheet: () => void;
@@ -46,7 +46,7 @@ const LocationContext = createContext<LocationState>({
   countryCode: '',
   loading:     false,
   error:       null,
-  refresh:     () => {},
+  refresh:     (force?: boolean) => {},
   showLocationSheet: false,
   confirmLocationRequest: () => {},
   dismissLocationSheet: () => {},
@@ -119,7 +119,14 @@ export function LocationProvider({
 
   const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile' || pathname === '/tirtha-map';
 
-  const requestLocation = useCallback(() => {
+  const requestLocation = useCallback((force = false) => {
+    if (!force && typeof window !== 'undefined') {
+      const lastAttempt = Number(window.localStorage.getItem(AUTO_REQUEST_STORAGE_KEY) ?? '0');
+      if (lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS) return;
+    }
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
+    }
     if (!navigator.geolocation) {
       setError('Geolocation not supported by this browser');
       return;
@@ -155,12 +162,7 @@ export function LocationProvider({
     if (!shouldAutoLocate) return;
     if (typeof window === 'undefined') return;
 
-    const lastAttempt = Number(window.localStorage.getItem(AUTO_REQUEST_STORAGE_KEY) ?? '0');
-    const shouldSkipForCooldown = lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS;
-    if (shouldSkipForCooldown) return;
-
     const run = async () => {
-      window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
       const existingPerm = await navigator.permissions.query({ name: 'geolocation' }).catch(() => null);
       if (existingPerm?.state === 'granted') {
         requestLocation();
