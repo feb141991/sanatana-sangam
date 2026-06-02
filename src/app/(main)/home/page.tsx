@@ -236,9 +236,7 @@ export default async function HomePage() {
   if (activePath) {
     const plan = getPlanById(activePath.path_id);
     if (plan) {
-      const currentDay = (activePath.current_lesson ?? 0) + 1;
-      pathshalaLabel = `${plan.title} Day ${currentDay}`;
-      pathshalaHref = pathshalaDoneToday 
+      pathshalaHref = pathshalaDoneToday
         ? `/pathshala/${activePath.path_id}`
         : `/pathshala/${activePath.path_id}/lesson`;
     }
