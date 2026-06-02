@@ -15,7 +15,6 @@ import { resolveTimeZone } from '@/lib/sacred-time';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import PageIntro from '@/components/ui/PageIntro';
 import { RANK_META, computeRank, nextRankInfo } from '@/lib/rank-system';
-import { generateActivityGrid } from '@/lib/activity-grid';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -64,6 +63,7 @@ interface Props {
   todayResponse:    QuizResponse | null;
   initialHistory:   QuizResponse[];
   activityDates:    { date: string; correct: boolean }[];
+  heatmapGrid:      { dateStr: string; state: 'correct' | 'wrong' | null; isToday: boolean }[];
   spiritualToday:   string;
   practiceSessions: PracticeSession[];
   hasGraceAvailable: boolean;
@@ -147,7 +147,7 @@ function CountUpScore({ value, color }: { value: number; color: string }) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function QuizDashboardClient({
-  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, activityDates, spiritualToday, practiceSessions, hasGraceAvailable
+  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, activityDates, heatmapGrid, spiritualToday, practiceSessions, hasGraceAvailable
 }: Props) {
   const meta = getTraditionMeta(tradition);
   const [proModalOpen, setProModalOpen] = useState(false);
@@ -264,32 +264,14 @@ export default function QuizDashboardClient({
       ? { border: 'rgba(122,171,122,0.40)', bg: 'rgba(122,171,122,0.10)', text: '#7aab7a' }
       : { border: 'var(--card-border)', bg: 'var(--surface-soft)', text: 'var(--text-cream)' };
 
-  // 28-day activity grid — uses full activityDates (never gated)
-  const activityGrid = useMemo(() => {
-    return generateActivityGrid(activityDates.map(a => a.date), spiritualToday);
-  }, [activityDates, spiritualToday]);
-
-  // Heatmap: 28 days with 3 states — missed / wrong / correct
-  const heatmapWeeks = useMemo(() => {
-    // date → 'correct' | 'wrong' | null
-    const dateMap = new Map<string, 'correct' | 'wrong'>();
-    for (const { date, correct } of activityDates) {
-      dateMap.set(date, correct ? 'correct' : 'wrong');
-    }
-    const todayMs = Date.UTC(
-      parseInt(spiritualToday.slice(0, 4)),
-      parseInt(spiritualToday.slice(5, 7)) - 1,
-      parseInt(spiritualToday.slice(8, 10)),
-      12, 0, 0,
-    );
-    const days = Array.from({ length: 28 }, (_, i) => {
-      const ms  = todayMs - (27 - i) * 86_400_000;
-      const d   = new Date(ms);
-      const dateStr = d.toISOString().slice(0, 10);
-      return { dateStr, state: dateMap.get(dateStr) ?? null, isToday: dateStr === spiritualToday };
-    });
-    return [days.slice(0, 7), days.slice(7, 14), days.slice(14, 21), days.slice(21, 28)];
-  }, [activityDates, spiritualToday]);
+  // Heatmap grid is fully pre-computed on the server — no date arithmetic on client
+  const activeCount  = heatmapGrid.filter(d => d.state !== null).length;
+  const heatmapWeeks = [
+    heatmapGrid.slice(0, 7),
+    heatmapGrid.slice(7, 14),
+    heatmapGrid.slice(14, 21),
+    heatmapGrid.slice(21, 28),
+  ];
 
   async function handleDailyAnswer(idx: number) {
     if (!dailyQuiz || effectiveAnswered || answerLockedRef.current) return;
@@ -1119,7 +1101,7 @@ export default function QuizDashboardClient({
             28-Day Practice
           </h2>
           <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-dim)' }}>
-            <span className="font-bold" style={{ color: meta.accentColour }}>{activityGrid.filter(Boolean).length}</span> / 28
+            <span className="font-bold" style={{ color: meta.accentColour }}>{activeCount}</span> / 28
           </span>
         </div>
 
