@@ -202,7 +202,7 @@ export function SadhanaSection({
             { emoji: '📈', label: 'Progress', href: '/my-progress',   bg: 'rgba(107,196,126,0.14)' },
             { emoji: '🛕', label: 'Tirtha',   href: '/tirtha-map',    bg: 'rgba(255,138,101,0.14)' },
             { emoji: '🪔', label: 'Sanskar',  href: '/kul/sanskara',  bg: 'rgba(197,160,89,0.14)' },
-            { emoji: '🤝', label: 'Seva',     href: '/seva',          bg: 'rgba(100,181,246,0.14)' },
+            { emoji: '🏡', label: 'Kul',      href: '/kul',           bg: 'rgba(255,138,101,0.14)' },
           ].map(item => (
             <motion.div
               key={item.label}

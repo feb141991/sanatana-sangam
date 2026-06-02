@@ -206,9 +206,11 @@ export default function TirthaMapPage() {
       try {
         osm = await fetchNearbyTemples(lat, lon, r);
       } catch {
-        // OSM failure is non-fatal when we have curated data
+        // OSM failure is non-fatal — always show curated data regardless
         if (curated.length === 0) {
-          setGeoError('The map service is slow right now. Showing verified listings only.');
+          setGeoError('Live map data is unavailable right now. Try again in a moment.');
+        } else {
+          setGeoError('Live map data is slow — showing verified listings nearby.');
         }
       }
 
@@ -557,8 +559,14 @@ export default function TirthaMapPage() {
         )}
 
         {geoError && (
-          <div className="flex items-center gap-2 rounded-[1.1rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            <Info size={14} /> {geoError}
+          <div className="flex items-center gap-2 rounded-[1.1rem] px-4 py-3 text-sm"
+            style={{
+              background: 'rgba(197,160,89,0.10)',
+              border: '1px solid rgba(197,160,89,0.25)',
+              color: 'var(--text-muted-warm)',
+            }}>
+            <Info size={14} style={{ color: 'var(--brand-primary)', flexShrink: 0 }} />
+            <span>{geoError}</span>
           </div>
         )}
 

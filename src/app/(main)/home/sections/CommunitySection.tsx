@@ -22,7 +22,7 @@ export function CommunitySection({
   const items = [
     { label: t('liveDarshan'), href: '/live-darshan', emoji: '📺', bg: 'rgba(100,181,246,0.14)' },
     { label: t('mandali'),     href: '/mandali',       emoji: '👥', bg: 'rgba(165,148,224,0.14)' },
-    { label: t('kul'),         href: '/kul',           emoji: '🏡', bg: 'rgba(255,138,101,0.14)' },
+    { label: 'Seva',           href: '/seva',          emoji: '🤝', bg: 'rgba(100,181,246,0.14)' },
   ];
 
   return (
