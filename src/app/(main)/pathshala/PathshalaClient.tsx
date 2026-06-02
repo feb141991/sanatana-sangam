@@ -1518,6 +1518,69 @@ export default function PathshalaClient({
           initial="hidden"
           animate="visible"
         >
+          {/* DailyVersePrompt */}
+          <div className="px-4">
+            <DailyVersePrompt />
+          </div>
+
+          {/* Section 1: Today's Verse — premium immersive hero */}
+          <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
+            {/* Tradition watermark */}
+            <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
+              <span style={{
+                fontFamily: 'var(--font-deva, serif)',
+                fontSize: '16rem',
+                lineHeight: 1,
+                color: meta.accentColour,
+                opacity: isDark ? 0.032 : 0.045,
+              }}>
+                {meta.heroFallback.mark}
+              </span>
+            </div>
+
+            <div className="relative z-10">
+              {/* Eyebrow + spiritual pulse */}
+              <div className="flex items-center gap-2 mb-5">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
+                  style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
+                  <span className="text-[10px]">{meta.sacredTextIcon}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
+                    {meta.sacredTextLabel} · Today
+                  </span>
+                </div>
+                {pulse && (
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
+                    style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
+                    <span className="text-[10px]">{pulse.emoji}</span>
+                    <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
+                      {pulse.label}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Sanskrit verse — typewriter */}
+              <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
+                style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
+                {displayedVerse}
+                <motion.span
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
+                  className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
+                  style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
+                />
+              </p>
+
+              {/* Meaning */}
+              <div className="rounded-2xl p-4 mb-5 border"
+                style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                  {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
+                </p>
+              </div>
+            </div>
+          </motion.section>
+
           {/* Pill Tabs Toggle */}
           <div className="px-4 mb-4 mt-2">
             <div className="flex p-1 rounded-2xl bg-[var(--surface-soft)] gap-1">
@@ -1572,97 +1635,6 @@ export default function PathshalaClient({
 
           {activeTab === 'progress' ? (
             <div className="space-y-6">
-              {/* DailyVersePrompt */}
-              <div className="px-4">
-                <DailyVersePrompt />
-              </div>
-
-              {/* Section 1: Today's Verse — premium immersive hero */}
-              <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
-                {/* Tradition watermark */}
-                <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
-                  <span style={{
-                    fontFamily: 'var(--font-deva, serif)',
-                    fontSize: '16rem',
-                    lineHeight: 1,
-                    color: meta.accentColour,
-                    opacity: isDark ? 0.032 : 0.045,
-                  }}>
-                    {meta.heroFallback.mark}
-                  </span>
-                </div>
-
-                <div className="relative z-10">
-                  {/* Eyebrow + spiritual pulse */}
-                  <div className="flex items-center gap-2 mb-5">
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
-                      style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
-                      <span className="text-[10px]">{meta.sacredTextIcon}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
-                        {meta.sacredTextLabel} · Today
-                      </span>
-                    </div>
-                    {pulse && (
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
-                        style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
-                        <span className="text-[10px]">{pulse.emoji}</span>
-                        <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
-                          {pulse.label}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Sanskrit verse — typewriter */}
-                  <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
-                    style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
-                    {displayedVerse}
-                    <motion.span
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
-                      className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
-                      style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
-                    />
-                  </p>
-
-                  {/* Meaning */}
-                  <div className="rounded-2xl p-4 mb-5 border"
-                    style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
-                    <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                      {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
-                    </p>
-                  </div>
-
-                  {/* CTA row */}
-                  <div className="flex flex-wrap items-center gap-3">
-                    <motion.button
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => { setActiveTab('explore'); setOpenDrawer('scriptures'); }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] text-[var(--divine-bg)] focus:outline-none"
-                      style={{ background: `linear-gradient(135deg, ${meta.accentColour}, ${meta.accentColour}cc)`, boxShadow: `0 6px 20px ${meta.accentColour}35` }}
-                    >
-                      <BookOpen size={13} /> Explore {meta.navLibraryLabel}
-                    </motion.button>
-                    <motion.button
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => { setActiveTab('explore'); setOpenDrawer('paths'); }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-[12px] border focus:outline-none"
-                      style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)', color: 'var(--brand-muted)' }}
-                    >
-                      <GraduationCap size={13} /> Paths
-                    </motion.button>
-                    
-                    {shrutiStats && shrutiStats.scored_count >= 3 && communityRank !== undefined && (
-                      <Link
-                        href="/pathshala/insights"
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 text-[10px] font-bold text-amber-600 dark:text-amber-400 transition-all hover:bg-amber-500/15"
-                      >
-                        <Mic size={10} /> Your Shruti: {shrutiStats.avg_overall_score}/100 · #{communityRank} community
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </motion.section>
 
               {/* Section 2: Your Gurukul / Starters */}
               {loading ? (
