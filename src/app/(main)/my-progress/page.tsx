@@ -46,6 +46,7 @@ export default async function MyProgressPage() {
 
   const [
     { data: profile },
+    { data: shrutiStats },
     { data: malaCur },
     { data: malaPrev },
     { data: nityaLog },
@@ -64,6 +65,13 @@ export default async function MyProgressPage() {
       .select('full_name, username, tradition, is_pro, seva_score, karma_points, weekly_seva, monthly_seva')
       .eq('id', user.id)
       .single(),
+
+    // Shruti (Sanskrit recitation) stats
+    supabase
+      .from('pathshala_recitation_stats')
+      .select('avg_overall_score, avg_uccharan, avg_fluency, scored_count, unique_verses_attempted, certified_count')
+      .eq('user_id', user.id)
+      .maybeSingle(),
 
     // Japa sessions — current month (for report) + last 30d (for dashboard)
     supabase
@@ -316,6 +324,14 @@ export default async function MyProgressPage() {
         topMantra,
       }}
       sankalpas={sankalpas}
+      shrutiStats={shrutiStats ? {
+        avgScore:        Math.round(shrutiStats.avg_overall_score ?? 0),
+        avgPronunciation: Math.round(shrutiStats.avg_uccharan ?? 0),
+        avgFluency:      Math.round(shrutiStats.avg_fluency ?? 0),
+        scoredCount:     shrutiStats.scored_count ?? 0,
+        versesAttempted: shrutiStats.unique_verses_attempted ?? 0,
+        certified:       shrutiStats.certified_count ?? 0,
+      } : null}
     />
   );
 }

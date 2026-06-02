@@ -66,6 +66,14 @@ interface Props {
   karma30dBreakdown?: { reason: string; total: number }[];
   report:           ReportData;
   sankalpas:        any[];
+  shrutiStats:      {
+    avgScore: number;
+    avgPronunciation: number;
+    avgFluency: number;
+    scoredCount: number;
+    versesAttempted: number;
+    certified: number;
+  } | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -1543,6 +1551,7 @@ export default function MyProgressClient({
   karma30dBreakdown = [],
   report,
   sankalpas,
+  shrutiStats,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -2067,6 +2076,52 @@ export default function MyProgressClient({
                 h1={h1}
                 muted={muted}
               />
+            </motion.div>
+          )}
+
+          {/* ── Shruti (Sanskrit recitation) scores ── */}
+          {shrutiStats && shrutiStats.scoredCount >= 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+              className="rounded-[1.6rem] p-5"
+              style={{ background: isDark ? 'rgba(197,160,89,0.07)' : 'rgba(197,160,89,0.06)', border: '1px solid rgba(197,160,89,0.18)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.75)' }}>Shruti · Recitation</p>
+                  <p className="text-[13px] font-semibold mt-0.5" style={{ color: h1 }}>Sanskrit pronunciation score</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[2.2rem] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: shrutiStats.avgScore >= 80 ? '#5cb85c' : shrutiStats.avgScore >= 60 ? '#C5A059' : h1 }}>
+                    {shrutiStats.avgScore}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>/ 100 avg</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {[
+                  { label: 'Uccharan', value: shrutiStats.avgPronunciation, sub: 'Pronunciation' },
+                  { label: 'Fluency',  value: shrutiStats.avgFluency,       sub: 'Flow' },
+                  { label: 'Verses',   value: shrutiStats.versesAttempted,  sub: 'Attempted' },
+                ].map(s => (
+                  <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.6)' }}>
+                    <p className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>{s.value}</p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider mt-0.5" style={{ color: muted }}>{s.label}</p>
+                    <p className="text-[9px] mt-0.5" style={{ color: muted, opacity: 0.7 }}>{s.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-[11px]" style={{ color: muted }}>
+                  {shrutiStats.scoredCount} recitation{shrutiStats.scoredCount !== 1 ? 's' : ''} scored
+                  {shrutiStats.certified > 0 && ` · ${shrutiStats.certified} certified 🏅`}
+                </p>
+                <Link href="/pathshala" className="text-[11px] font-semibold" style={{ color: '#C5A059' }}>
+                  Practice →
+                </Link>
+              </div>
             </motion.div>
           )}
 
