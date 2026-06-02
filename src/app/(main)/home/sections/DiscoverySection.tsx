@@ -43,7 +43,11 @@ export function DiscoverySection({
   const cards = [
     {
       title: pathshalaLabel || 'Pathshala',
-      description: pathshalaDoneToday ? 'All lessons complete today! 🌟' : 'Continue your pathshala study.',
+      description: pathshalaDoneToday
+        ? 'All lessons complete today! 🌟'
+        : pathshalaHref !== '/pathshala'
+          ? 'Continue your path →'
+          : 'Explore scripture & paths',
       href: pathshalaHref || '/pathshala',
       emoji: '📖',
     },
