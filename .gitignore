@@ -44,3 +44,4 @@ venv/
 *.js.bak
 .idea/
 .env.production
+.env.production
