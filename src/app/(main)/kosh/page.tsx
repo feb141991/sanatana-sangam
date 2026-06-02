@@ -10,7 +10,7 @@ export default async function KoshPage() {
     redirect('/login');
   }
 
-  const [{ data: profile }, { data: latestSadhana }] = await Promise.all([
+  const [{ data: profile }, { data: latestSadhana }, { data: maxSadhana }] = await Promise.all([
     supabase
       .from('profiles')
       .select('seva_score, shloka_streak, tradition, active_symbol_id')
@@ -24,9 +24,17 @@ export default async function KoshPage() {
       .order('date', { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from('daily_sadhana')
+      .select('streak_count')
+      .eq('user_id', user.id)
+      .order('streak_count', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const streak = latestSadhana?.streak_count ?? profile?.shloka_streak ?? 0;
+  const longestStreak = maxSadhana?.streak_count ?? 0;
 
   return (
     <KoshClient
@@ -35,6 +43,7 @@ export default async function KoshPage() {
       sevaScore={profile?.seva_score ?? 0}
       tradition={profile?.tradition ?? 'hindu'}
       activeSymbolId={(profile as { active_symbol_id?: string | null } | null)?.active_symbol_id ?? null}
+      longestStreak={longestStreak}
     />
   );
 }

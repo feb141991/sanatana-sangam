@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, Lock, Star, X } from 'lucide-react';
@@ -161,7 +162,7 @@ function RelicIcon({
 
   const shadowStyle = unlocked
     ? `drop-shadow(0 ${size * 0.07}px ${size * 0.14}px rgba(0,0,0,0.55)) drop-shadow(0 ${size * 0.02}px ${size * 0.06}px rgba(0,0,0,0.35)) drop-shadow(0 0 ${size * 0.22}px ${glowColor})`
-    : 'grayscale(1) brightness(0.7)';  // lighter — still visible in light mode
+    : 'grayscale(0.85) brightness(0.85)';  // lighter — still visible in light mode
 
   const animClass = animate && unlocked
     ? (rarity === 'legendary' ? 'kosh-float-legend' : 'kosh-float')
@@ -179,7 +180,7 @@ function RelicIcon({
           height: size,
           objectFit: 'contain',
           filter: shadowStyle,
-          opacity: unlocked ? 1 : 0.55,  // locked: visible but clearly faded
+          opacity: unlocked ? 1 : 0.65,  // locked: visible but clearly faded
         }}
       />
     );
@@ -193,7 +194,7 @@ function RelicIcon({
         lineHeight: 1,
         display: 'block',
         filter: shadowStyle,
-        opacity: unlocked ? 1 : 0.55,
+        opacity: unlocked ? 1 : 0.65,
       }}
     >
       {relicEmoji(id)}
@@ -202,6 +203,12 @@ function RelicIcon({
 }
 
 const KOSH_CSS = `
+:root {
+  --kosh-stat-pill-bg: rgba(197, 160, 89, 0.12);
+  --kosh-stat-pill-border: rgba(197, 160, 89, 0.25);
+  --kosh-lock-badge-bg: rgba(0, 0, 0, 0.25);
+  --kosh-lock-badge-color: rgba(255, 255, 255, 0.7);
+}
 @keyframes kosh-float {
   0%,100% { transform: translateY(0px) rotate(-1deg); }
   50%      { transform: translateY(-5px) rotate(1deg); }
@@ -269,12 +276,14 @@ export default function KoshClient({
   tradition,
   activeSymbolId,
   userId,
+  longestStreak,
 }: {
   streak: number;
   sevaScore: number;
   tradition: string;
   activeSymbolId: string | null;
   userId: string;
+  longestStreak?: number;
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<FilterMode>('all');
@@ -283,6 +292,23 @@ export default function KoshClient({
   const [lockedHintId, setLockedHintId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [celebratingRelic, setCelebratingRelic] = useState<Relic | null>(null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const dismissed = sessionStorage.getItem('kosh-symbol-banner-dismissed');
+      if (dismissed === 'true') {
+        setBannerDismissed(true);
+      }
+    }
+  }, []);
+
+  const dismissBanner = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('kosh-symbol-banner-dismissed', 'true');
+    }
+    setBannerDismissed(true);
+  };
 
   const visibleRelics = useMemo(
     () => SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === tradition),
@@ -302,6 +328,21 @@ export default function KoshClient({
     if (filter === 'locked') return visibleRelics.filter((relic) => !unlockedIds.has(relic.id));
     return visibleRelics;
   }, [filter, unlockedIds, visibleRelics]);
+
+  const activeRelic = useMemo(() => {
+    if (!activeRelicId) return null;
+    return SACRED_RELICS.find((r) => r.id === activeRelicId) ?? null;
+  }, [activeRelicId]);
+
+  const motivationalCopy = useMemo(() => {
+    if (!nextRelic || nextRelic.milestoneType !== 'streak') return null;
+    const remaining = nextRelic.milestoneValue - streak;
+    if (remaining > 14) return 'Build one day at a time 🙏';
+    if (remaining >= 8 && remaining <= 14) return "Keep going — you're building something real";
+    if (remaining >= 3 && remaining <= 7) return `Almost there — ${remaining} more days`;
+    if (remaining >= 1 && remaining <= 2) return 'One more day of sadhana unlocks this 🔥';
+    return null;
+  }, [nextRelic, streak]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -397,6 +438,40 @@ export default function KoshClient({
             <p className="mt-1 text-sm" style={{ color: goldColor, opacity: 0.65 }}>
               {unlockedCount} of {totalVisible} relics unlocked
             </p>
+            <div className="mt-2.5 flex flex-wrap gap-2 items-center">
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                style={{
+                  color: 'var(--brand-primary)',
+                  background: 'var(--kosh-stat-pill-bg)',
+                  border: '1px solid var(--kosh-stat-pill-border)',
+                }}
+              >
+                🔥 {streak} day streak
+              </span>
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                style={{
+                  color: 'var(--brand-primary)',
+                  background: 'var(--kosh-stat-pill-bg)',
+                  border: '1px solid var(--kosh-stat-pill-border)',
+                }}
+              >
+                ⭐ {sevaScore} seva points
+              </span>
+              {longestStreak !== undefined && longestStreak > streak && (
+                <span
+                  className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium"
+                  style={{
+                    color: 'var(--text-muted-warm)',
+                    background: 'var(--kosh-stat-pill-bg)',
+                    border: '1px solid var(--kosh-stat-pill-border)',
+                  }}
+                >
+                  🏆 Best: {longestStreak} days
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -435,6 +510,80 @@ export default function KoshClient({
               <div className="mt-2 flex justify-between text-[11px]" style={{ color: dimColor }}>
                 <span>{nextRelic.milestoneType === 'streak' ? `${streak}/${nextRelic.milestoneValue} days` : `${sevaScore}/${nextRelic.milestoneValue} points`}</span>
                 <span>{nextRelic.milestoneType === 'streak' ? 'Streak relic' : 'Seva relic'}</span>
+              </div>
+              {motivationalCopy && (
+                <p className="mt-2 text-center text-xs font-medium" style={{ color: goldColor }}>
+                  {motivationalCopy}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeRelicId && activeRelic && !bannerDismissed && (
+          <div className="mt-6 relative">
+            <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: cardBorder }}>
+              <div className="flex items-center gap-3">
+                <RelicIcon id={activeRelic.id} size={40} unlocked={true} animate={true} rarity={getRelicRarity(activeRelic)} />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: goldColor, opacity: 0.7 }}>Your active symbol</p>
+                  <h3 className="font-serif text-lg leading-tight" style={{ color: inkColor }}>{activeRelic.name}</h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={dismissBanner}
+                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[rgba(197,160,89,0.08)] transition-colors"
+                style={{ color: mutedColor }}
+                aria-label="Dismiss banner"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="divide-y" style={{ borderColor: cardBorder }}>
+              {/* Row 1: Home */}
+              <div className="py-3 flex items-center justify-between gap-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">🏠</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold leading-tight" style={{ color: inkColor }}>Home</p>
+                    <p className="text-xs mt-0.5" style={{ color: mutedColor }}>Accent colour across your dashboard</p>
+                  </div>
+                </div>
+                <Link href="/home" className="text-xs font-semibold flex items-center gap-1 hover:underline shrink-0" style={{ color: goldColor }}>
+                  See it →
+                </Link>
+              </div>
+
+              {/* Row 2: Japa */}
+              {MALA_SKINS[activeRelic.id] && (
+                <div className="py-3 flex items-center justify-between gap-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">📿</span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold leading-tight" style={{ color: inkColor }}>Japa</p>
+                      <p className="text-xs mt-0.5" style={{ color: mutedColor }}>Mala bead colour during practice</p>
+                    </div>
+                  </div>
+                  <Link href="/bhakti/mala" className="text-xs font-semibold flex items-center gap-1 hover:underline shrink-0" style={{ color: goldColor }}>
+                    See it →
+                  </Link>
+                </div>
+              )}
+
+              {/* Row 3: Profile */}
+              <div className="py-3 flex items-center justify-between gap-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">👤</span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold leading-tight" style={{ color: inkColor }}>Profile</p>
+                    <p className="text-xs mt-0.5" style={{ color: mutedColor }}>Badge and avatar frame</p>
+                  </div>
+                </div>
+                <Link href="/profile" className="text-xs font-semibold flex items-center gap-1 hover:underline shrink-0" style={{ color: goldColor }}>
+                  See it →
+                </Link>
               </div>
             </div>
           </div>
@@ -526,10 +675,14 @@ export default function KoshClient({
                       rarity={getRelicRarity(relic)}
                     />
                     {!unlocked && (
-                      <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
-                        <div className="rounded-full p-2" style={{ border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(0,0,0,0.35)' }}>
-                          <Lock size={14} style={{ color: mutedColor }} />
-                        </div>
+                      <div
+                        className="absolute bottom-1.5 right-1.5 rounded-full p-1"
+                        style={{
+                          background: 'var(--kosh-lock-badge-bg)',
+                          backdropFilter: 'blur(4px)',
+                        }}
+                      >
+                        <Lock size={10} style={{ color: 'var(--kosh-lock-badge-color)' }} />
                       </div>
                     )}
                     {active && (
