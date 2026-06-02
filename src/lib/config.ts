@@ -19,16 +19,18 @@ export const API = {
 
   /** OpenStreetMap Overpass — temple / place-of-worship data (no API key needed) */
   OVERPASS: {
-    /** Primary + fallback mirrors, tried in order */
+    /** Primary + fallback mirrors, tried in order.
+     *  overpass-api.de removed — returning 406 as of 2026-06.
+     *  overpass.openstreetmap.ru removed — connection refused.
+     */
     MIRRORS: [
-      'https://overpass-api.de/api/interpreter',
       'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.openstreetmap.ru/api/interpreter',
+      'https://overpass-api.de/api/interpreter',
     ] as const,
     /** Overpass QL query-level timeout (seconds) — sent inside the query body */
     QUERY_TIMEOUT_S:    25,
     /** JS fetch() abort timeout per mirror attempt (ms) */
-    FETCH_TIMEOUT_MS:   30_000,
+    FETCH_TIMEOUT_MS:   15_000,
     /** Default search radius in metres */
     DEFAULT_RADIUS_M:   10_000,
     /** Maximum results to render in the UI */
