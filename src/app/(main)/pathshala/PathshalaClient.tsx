@@ -1513,73 +1513,74 @@ export default function PathshalaClient({
           </div>
         </div>
 
+        {/* DailyVersePrompt */}
+        <div className="px-4">
+          <DailyVersePrompt />
+        </div>
+
+        {/* Section 1: Today's Verse — premium immersive hero */}
+        <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
+          {/* Tradition watermark */}
+          <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
+            <span style={{
+              fontFamily: 'var(--font-deva, serif)',
+              fontSize: '16rem',
+              lineHeight: 1,
+              color: meta.accentColour,
+              opacity: isDark ? 0.032 : 0.045,
+            }}>
+              {meta.heroFallback.mark}
+            </span>
+          </div>
+
+          <div className="relative z-10">
+            {/* Eyebrow + spiritual pulse */}
+            <div className="flex items-center gap-2 mb-5">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
+                style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
+                <span className="text-[10px]">{meta.sacredTextIcon}</span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
+                  {meta.sacredTextLabel} · Today
+                </span>
+              </div>
+              {pulse && (
+                <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
+                  style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
+                  <span className="text-[10px]">{pulse.emoji}</span>
+                  <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
+                    {pulse.label}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Sanskrit verse — typewriter */}
+            <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
+              style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
+              {displayedVerse}
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
+                className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
+                style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
+              />
+            </p>
+
+            {/* Meaning */}
+            <div className="rounded-2xl p-4 mb-0 border"
+              style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* DailyVersePrompt */}
-          <div className="px-4">
-            <DailyVersePrompt />
-          </div>
-
-          {/* Section 1: Today's Verse — premium immersive hero */}
-          <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
-            {/* Tradition watermark */}
-            <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
-              <span style={{
-                fontFamily: 'var(--font-deva, serif)',
-                fontSize: '16rem',
-                lineHeight: 1,
-                color: meta.accentColour,
-                opacity: isDark ? 0.032 : 0.045,
-              }}>
-                {meta.heroFallback.mark}
-              </span>
-            </div>
-
-            <div className="relative z-10">
-              {/* Eyebrow + spiritual pulse */}
-              <div className="flex items-center gap-2 mb-5">
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"
-                  style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
-                  <span className="text-[10px]">{meta.sacredTextIcon}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
-                    {meta.sacredTextLabel} · Today
-                  </span>
-                </div>
-                {pulse && (
-                  <div className="flex items-center gap-1 px-2 py-1 rounded-full border"
-                    style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}>
-                    <span className="text-[10px]">{pulse.emoji}</span>
-                    <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ color: 'var(--brand-muted)' }}>
-                      {pulse.label}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Sanskrit verse — typewriter */}
-              <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
-                style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
-                {displayedVerse}
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
-                  className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
-                  style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
-                />
-              </p>
-
-              {/* Meaning */}
-              <div className="rounded-2xl p-4 mb-5 border"
-                style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                  {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
-                </p>
-              </div>
-            </div>
-          </motion.section>
 
           {/* Pill Tabs Toggle */}
           <div className="px-4 mb-4 mt-2">
