@@ -76,6 +76,7 @@ export default async function QuizPage() {
       todayResponse={todayResponse}
       initialHistory={visibleHistory}
       activityDates={activityDates}
+      spiritualToday={todayStr}
       practiceSessions={sessionsResult.data ?? []}
       hasGraceAvailable={hasGraceAvailable}
     />

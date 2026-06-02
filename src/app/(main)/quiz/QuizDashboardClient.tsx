@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
-import { localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
+import { resolveTimeZone } from '@/lib/sacred-time';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import PageIntro from '@/components/ui/PageIntro';
 import { RANK_META, computeRank, nextRankInfo } from '@/lib/rank-system';
@@ -64,6 +64,7 @@ interface Props {
   todayResponse:    QuizResponse | null;
   initialHistory:   QuizResponse[];
   activityDates:    { date: string; correct: boolean }[];
+  spiritualToday:   string;
   practiceSessions: PracticeSession[];
   hasGraceAvailable: boolean;
 }
@@ -146,7 +147,7 @@ function CountUpScore({ value, color }: { value: number; color: string }) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function QuizDashboardClient({
-  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, activityDates, practiceSessions, hasGraceAvailable
+  userName, tradition, timezone, appLanguage, isPro, karmaPoints, todayResponse, initialHistory, activityDates, spiritualToday, practiceSessions, hasGraceAvailable
 }: Props) {
   const meta = getTraditionMeta(tradition);
   const [proModalOpen, setProModalOpen] = useState(false);
@@ -160,7 +161,9 @@ export default function QuizDashboardClient({
   const [quizSaveData, setQuizSaveData] = useState<{ streak?: number; streak_milestone?: string | null } | null>(null);
   const [transitionDirection, setTransitionDirection] = useState(1);
   const answerLockedRef = useRef(false);
-  const spiritualToday = localSpiritualDate(timezone, 4);
+  // spiritualToday comes from the server — never recomputed on client
+  // This ensures the 28-day heatmap window matches the server-fetched data
+  // on every device regardless of browser clock or timezone quirks.
   const quizAnsweredKey = `shoonaya-quiz-daily-answered-${tradition}-${appLanguage}-${spiritualToday}`;
 
   useEffect(() => {
