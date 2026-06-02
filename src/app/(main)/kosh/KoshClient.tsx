@@ -162,7 +162,7 @@ function RelicIcon({
 
   const shadowStyle = unlocked
     ? `drop-shadow(0 ${size * 0.07}px ${size * 0.14}px rgba(0,0,0,0.55)) drop-shadow(0 ${size * 0.02}px ${size * 0.06}px rgba(0,0,0,0.35)) drop-shadow(0 0 ${size * 0.22}px ${glowColor})`
-    : 'grayscale(0.85) brightness(0.85)';  // lighter — still visible in light mode
+    : `grayscale(0.85) brightness(0.85) drop-shadow(0 ${size * 0.07}px ${size * 0.14}px rgba(0,0,0,0.35)) drop-shadow(0 ${size * 0.02}px ${size * 0.06}px rgba(0,0,0,0.2))`;  // same depth as unlocked, no glow
 
   const animClass = animate && unlocked
     ? (rarity === 'legendary' ? 'kosh-float-legend' : 'kosh-float')
