@@ -117,7 +117,7 @@ export function LocationProvider({
   const [error,       setError]       = useState<string | null>(null);
   const [showLocationSheet, setShowLocationSheet] = useState(false);
 
-  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile';
+  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile' || pathname === '/tirtha-map';
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {

@@ -225,10 +225,13 @@ export default function TirthaMapPage() {
   }, []);
 
   useEffect(() => {
-    if (!searched && !locLoading) {
-      loadTemples(MAP.DEFAULT_CENTER[0], MAP.DEFAULT_CENTER[1], radius);
-    }
-  }, [loadTemples, locLoading, radius, searched]);
+    // Wait until location has settled (locLoading=false) before first load
+    if (searched || locLoading) return;
+    const lat = coords?.lat ?? MAP.DEFAULT_CENTER[0];
+    const lon = coords?.lon ?? MAP.DEFAULT_CENTER[1];
+    if (coords) setCenter([lat, lon]);
+    loadTemples(lat, lon, radius);
+  }, [loadTemples, locLoading, coords, radius, searched]);
 
   async function searchCity() {
     if (!cityInput.trim()) return;
@@ -483,7 +486,16 @@ export default function TirthaMapPage() {
               <p className="text-sm font-medium text-[color:var(--text-cream)]">{seasonalCue.label}</p>
               <p className="mt-1 text-xs leading-relaxed text-[color:var(--text-muted)]">{seasonalCue.description}</p>
               <button
-                onClick={() => setSmartFilter(seasonalCue.filterHint)}
+                onClick={async () => {
+                  setSmartFilter(seasonalCue.filterHint);
+                  // If temples not loaded yet, load at user's location first
+                  if (!searched) {
+                    const lat = coords?.lat ?? MAP.DEFAULT_CENTER[0];
+                    const lon = coords?.lon ?? MAP.DEFAULT_CENTER[1];
+                    if (lat !== MAP.DEFAULT_CENTER[0] || lon !== MAP.DEFAULT_CENTER[1]) setCenter([lat, lon]);
+                    await loadTemples(lat, lon, radius);
+                  }
+                }}
                 className="mt-3 rounded-full border border-[rgba(197, 160, 89,0.18)] px-3 py-1.5 text-[11px] font-medium text-[color:var(--brand-primary)]"
               >
                 Show relevant places
