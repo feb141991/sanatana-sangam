@@ -270,7 +270,13 @@ export default function TirthaMapPage() {
         loadTemples(next[0], next[1], radius);
         refreshLocation();
       },
-      () => setGeoError('Location access was not granted. You can still search by city.'),
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          setGeoError('Location permission denied. To fix: go to your device Settings → Safari/Chrome → Location → Allow for this site. Then tap again.');
+        } else {
+          setGeoError('Could not get your location. Try searching by city instead.');
+        }
+      },
       { timeout: 9000, enableHighAccuracy: false }
     );
   }
@@ -462,10 +468,13 @@ export default function TirthaMapPage() {
             <div className="flex gap-2">
               <button
                 onClick={useMyLocation}
-                disabled={loading || locLoading}
-                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] px-4 py-3 text-sm font-medium text-[#1c1c1a] disabled:opacity-60"
+                disabled={loading && !locLoading}
+                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] px-4 py-3 text-sm font-medium text-[#1c1c1a] disabled:opacity-60 active:scale-[0.97] transition-transform"
               >
-                <Navigation size={15} /> Use my location
+                {locLoading
+                  ? <><span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#1c1c1a]/30 border-t-[#1c1c1a]" /> Locating…</>
+                  : <><Navigation size={15} /> Use my location</>
+                }
               </button>
               <button
                 onClick={() => setSmartFilter('saved')}
