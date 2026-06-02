@@ -77,6 +77,8 @@ export async function getDharmVeerOfTheDay(
   const idx = (dayOfYear % count) + 1;
 
   const tradition = userTradition ?? 'hindu';
+
+  // 1. Try same-tradition hero at or after today's index
   const { data, error } = await supabase
     .from('dharm_veers')
     .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
@@ -90,14 +92,30 @@ export async function getDharmVeerOfTheDay(
     return toDharmVeer(data as DharmVeerRow);
   }
 
-  const { data: fallback } = await supabase
+  // 2. Wrap around: same-tradition hero from the beginning of the list
+  const { data: wrapped } = await supabase
     .from('dharm_veers')
     .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
-    .eq('day_index', idx)
+    .eq('tradition', tradition)
+    .order('day_index')
+    .limit(1)
     .maybeSingle();
 
-  if (fallback) {
-    return toDharmVeer(fallback as DharmVeerRow);
+  if (wrapped) {
+    return toDharmVeer(wrapped as DharmVeerRow);
+  }
+
+  // 3. Any tradition — at or after today's index
+  const { data: anyTrad } = await supabase
+    .from('dharm_veers')
+    .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, day_index')
+    .gte('day_index', idx)
+    .order('day_index')
+    .limit(1)
+    .maybeSingle();
+
+  if (anyTrad) {
+    return toDharmVeer(anyTrad as DharmVeerRow);
   }
 
   return getFallbackDharmVeerOfTheDay(userTradition);

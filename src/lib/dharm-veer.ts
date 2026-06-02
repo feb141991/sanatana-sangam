@@ -547,13 +547,11 @@ export function getDharmVeerOfTheDay(userTradition?: string | null): DharmVeer {
     return DHARM_VEERS[slot % DHARM_VEERS.length];
   }
 
-  // Build a weighted pool: same-tradition heroes appear twice
+  // Build a weighted pool: same-tradition heroes appear twice, others once.
+  // This ensures variety — never stuck cycling only 8 (or 1) heroes.
   const same  = DHARM_VEERS.filter(h => h.tradition === userTradition);
-  
-  // If user has a tradition, strictly cycle through their own heroes
-  if (same.length > 0) {
-    return same[slot % same.length];
-  }
+  const other = DHARM_VEERS.filter(h => h.tradition !== userTradition);
+  const pool  = [...same, ...same, ...other]; // tradition heroes weighted 2×
 
-  return DHARM_VEERS[slot % DHARM_VEERS.length];
+  return pool[slot % pool.length];
 }
