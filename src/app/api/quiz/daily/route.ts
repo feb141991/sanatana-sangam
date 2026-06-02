@@ -116,20 +116,20 @@ export async function GET(req: NextRequest) {
     }, { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } });
   }
 
-  // 2. Not found → fetch last 7 days of questions to avoid repetition
-  const sevenDaysAgo = new Date(dateStr);
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+  // 2. Not found → fetch last 90 days of questions to avoid repetition
+  const ninetyDaysAgo = new Date(dateStr);
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+  const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
 
   const { data: recentRows } = await supabase
     .from('daily_quiz' as unknown as 'quiz_responses')
     .select('question')
     .eq('tradition', tradition)
     .eq('language', requestedLanguage)
-    .gte('date', sevenDaysAgoStr)
+    .gte('date', ninetyDaysAgoStr)
     .lt('date', dateStr)
     .order('date', { ascending: false })
-    .limit(7);
+    .limit(90);
 
   const recentQuestions = (recentRows as unknown as { question: string }[] | null)
     ?.map(r => r.question)
