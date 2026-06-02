@@ -916,55 +916,44 @@ export default function HomeDashboard({
       />
 
       <div className="space-y-4">
-        {/* ── Streak Freeze Banner ── */}
-        <div className="px-4 mt-3 mb-2">
-          <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
-            background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
-            borderColor: isDark ? 'rgba(125,211,252,0.18)' : 'rgba(96,165,250,0.22)',
-          }}>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: isDark ? '#7DD3FC' : '#2563EB' }}>
-                Streak Freeze
-              </p>
-              <p className="text-xs mt-1" style={{ color: isDark ? 'rgba(185,220,255,0.65)' : 'rgba(37,99,235,0.65)' }}>
-                {freezeCount === 0 && !isPro
-                  ? 'Get 3 tokens/month with Zenith'
-                  : 'Miss one day without losing your streak'}
-              </p>
-              {freezeCount === 0 && !isPro && (
-                <Link
-                  href="/settings/subscription"
-                  className="inline-block mt-1 text-[10px] font-bold"
-                  style={{ color: '#7DD3FC' }}
-                >
-                  Upgrade → Zenith ↗
-                </Link>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {Array.from({ length: 3 }, (_, index) => {
-                const filled = index < freezeCount;
-                return (
-                  <div
-                    key={`freeze-slot-${index}`}
-                    className="flex h-6 w-6 items-center justify-center rounded-full"
-                    style={{
-                      border: `1.5px solid ${filled ? '#7DD3FC' : (isDark ? 'rgba(125,211,252,0.30)' : 'rgba(96,165,250,0.35)')}`,
-                      background: filled ? 'rgba(125,211,252,0.20)' : 'transparent',
-                    }}
-                    title={filled ? 'Freeze token available' : 'Freeze token used'}
-                  >
-                    {filled ? (
-                      <span style={{ fontSize: 13, lineHeight: 1 }}>🧊</span>
-                    ) : (
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'block', background: isDark ? 'rgba(125,211,252,0.20)' : 'rgba(96,165,250,0.18)' }} />
-                    )}
-                  </div>
-                );
-              })}
+        {/* ── Streak Freeze — only show when user has tokens or is Pro ── */}
+        {(freezeCount > 0 || isPro) && (
+          <div className="px-4 mt-3 mb-2">
+            <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
+              background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
+              borderColor: isDark ? 'rgba(125,211,252,0.18)' : 'rgba(96,165,250,0.22)',
+            }}>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: isDark ? '#7DD3FC' : '#2563EB' }}>
+                  Streak Freeze
+                </p>
+                <p className="text-xs mt-1" style={{ color: isDark ? 'rgba(185,220,255,0.65)' : 'rgba(37,99,235,0.65)' }}>
+                  Miss one day without losing your streak
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {Array.from({ length: 3 }, (_, index) => {
+                  const filled = index < freezeCount;
+                  return (
+                    <div
+                      key={`freeze-slot-${index}`}
+                      className="flex h-6 w-6 items-center justify-center rounded-full"
+                      style={{
+                        border: `1.5px solid ${filled ? '#7DD3FC' : (isDark ? 'rgba(125,211,252,0.30)' : 'rgba(96,165,250,0.35)')}`,
+                        background: filled ? 'rgba(125,211,252,0.20)' : 'transparent',
+                      }}
+                    >
+                      {filled
+                        ? <span style={{ fontSize: 13, lineHeight: 1 }}>🧊</span>
+                        : <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'block', background: isDark ? 'rgba(125,211,252,0.20)' : 'rgba(96,165,250,0.18)' }} />
+                      }
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {showFreezeBanner && (
           <div className="px-4 mb-2">
