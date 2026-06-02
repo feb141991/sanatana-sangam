@@ -431,25 +431,35 @@ export default function LandingPage() {
                 Take Shoonaya with you, everywhere.
               </h2>
               <p className="text-amber-100/55 text-sm leading-relaxed mb-8">
-                Add Shoonaya to your home screen for the full app experience —
-                home-screen install, sacred-time reminders, and a calmer app-shell experience on supported browsers.
+                Your daily sadhana, sacred texts, japa mala, and Mandali — all in one place.
+                Available on Android now. iOS coming soon.
               </p>
 
               <div className="space-y-3">
-                {/* Android / Chrome install */}
+                {/* Google Play */}
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.shoonaya.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.02]"
+                  style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}
+                >
+                  <Download size={17} />
+                  Download on Google Play
+                </a>
                 {canInstall && (
                   <button
                     onClick={install}
-                    className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.02]"
-                    style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}
+                    className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm border transition-all hover:bg-white/5"
+                    style={{ borderColor: 'rgba(212,166,70,0.3)', color: '#d4a645' }}
                   >
-                    <Download size={17} />
+                    <Smartphone size={17} />
                     Add to Home Screen
                   </button>
                 )}
                 <Link href="/signup"
                   className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm border transition-all hover:bg-white/5"
-                  style={{ borderColor: 'rgba(212,166,70,0.3)', color: '#d4a645' }}
+                  style={{ borderColor: 'rgba(212,166,70,0.15)', color: '#d4a645' }}
                 >
                   <ArrowRight size={17} />
                   Open Web App
@@ -457,11 +467,7 @@ export default function LandingPage() {
               </div>
 
               <p className="mt-5 text-[11px] text-amber-100/30 leading-relaxed">
-                <span className="font-semibold text-amber-100/50">iOS Safari:</span> tap the Share button → &ldquo;Add to Home Screen&rdquo;
-                <br />
-                <span className="font-semibold text-amber-100/50">Android Chrome:</span> tap menu → &ldquo;Add to Home Screen&rdquo;
-                <br />
-                No App Store needed. Updates automatically.
+                iOS App Store listing coming June 2026.
               </p>
             </div>
 
