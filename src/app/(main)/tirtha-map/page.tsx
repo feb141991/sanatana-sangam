@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import nextDynamic from 'next/dynamic';
@@ -224,14 +224,27 @@ export default function TirthaMapPage() {
     }
   }, []);
 
+  // Track last loaded coords to avoid redundant fetches and allow real coords
+  // to override a DEFAULT_CENTER load once LocationContext resolves.
+  const lastLoadedRef = useRef<{ lat: number; lon: number } | null>(null);
+
   useEffect(() => {
-    // Wait until location has settled (locLoading=false) before first load
-    if (searched || locLoading) return;
+    if (locLoading) return; // wait for LocationContext to settle
+
     const lat = coords?.lat ?? MAP.DEFAULT_CENTER[0];
     const lon = coords?.lon ?? MAP.DEFAULT_CENTER[1];
+
+    // Skip if we already loaded at these exact coords
+    if (
+      lastLoadedRef.current &&
+      Math.abs(lastLoadedRef.current.lat - lat) < 0.001 &&
+      Math.abs(lastLoadedRef.current.lon - lon) < 0.001
+    ) return;
+
+    lastLoadedRef.current = { lat, lon };
     if (coords) setCenter([lat, lon]);
     loadTemples(lat, lon, radius);
-  }, [loadTemples, locLoading, coords, radius, searched]);
+  }, [loadTemples, locLoading, coords, radius]);
 
   async function searchCity() {
     if (!cityInput.trim()) return;
@@ -497,11 +510,11 @@ export default function TirthaMapPage() {
               <button
                 onClick={async () => {
                   setSmartFilter(seasonalCue.filterHint);
-                  // If temples not loaded yet, load at user's location first
-                  if (!searched) {
+                  // Also trigger a location load if temples haven't loaded yet
+                  if (temples.length === 0) {
                     const lat = coords?.lat ?? MAP.DEFAULT_CENTER[0];
                     const lon = coords?.lon ?? MAP.DEFAULT_CENTER[1];
-                    if (lat !== MAP.DEFAULT_CENTER[0] || lon !== MAP.DEFAULT_CENTER[1]) setCenter([lat, lon]);
+                    if (coords) setCenter([lat, lon]);
                     await loadTemples(lat, lon, radius);
                   }
                 }}
