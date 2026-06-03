@@ -300,7 +300,7 @@ export default function LandingPage() {
       {/* ── HERO ── */}
       <motion.section
         style={{ opacity: heroOpacity }}
-        className="relative min-h-[80vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-8 pb-16"
+        className="relative min-h-[72vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-8 pb-16"
       >
         {/* Background */}
         <motion.div
@@ -428,24 +428,36 @@ export default function LandingPage() {
 
         {/* Scroll indicator */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[#C5A059]/30"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            boxShadow: [
+              '0 4px 20px rgba(197, 160, 89, 0.1)',
+              '0 4px 30px rgba(197, 160, 89, 0.25)',
+              '0 4px 20px rgba(197, 160, 89, 0.1)',
+            ],
+          }}
+          transition={{
+            opacity: { delay: 1.5, duration: 0.5 },
+            y: { delay: 1.5, duration: 0.5 },
+            boxShadow: { repeat: Infinity, duration: 3, ease: 'easeInOut' },
+          }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full border bg-black/60 border-[#C5A059]/50 backdrop-blur-md px-6 py-2.5 z-30"
         >
           <button
             onClick={() => {
               document.getElementById('shoonaya-content')?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-widest text-[#C5A059]/30 hover:text-[#C5A059] transition-colors"
+            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#ede8de] hover:text-[#C5A059] transition-colors"
             style={{ fontFamily: 'var(--font-inter), sans-serif' }}
           >
-            ENTER THE SHOONAYA ↓
+            <span>Enter the Shoonaya</span>
             <motion.div
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+              animate={{ y: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
             >
-              <ChevronDown size={18} />
+              <ChevronDown size={16} className="text-[#C5A059]" />
             </motion.div>
           </button>
         </motion.div>

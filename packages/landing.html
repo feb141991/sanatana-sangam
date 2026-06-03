@@ -128,8 +128,10 @@ nav {
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
 .scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(197,160,89,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(197,160,89,0.38);color:rgba(197,160,89,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
-#explore-btn:hover { background:rgba(197,160,89,0.10);border-color:rgba(197,160,89,0.70);color:#C5A059; }
+#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.75);border:1.5px solid rgba(197,160,89,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197, 160, 89, 0.15); }
+#explore-btn:hover { background:rgba(197,160,89,0.18);border-color:rgba(197,160,89,0.95);color:#C5A059; }
+@keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+.explore-arrow { display: inline-block; animation: bounceArrow 1.4s ease-in-out infinite; color:#C5A059; margin-left:6px; font-weight:700; }
 body.landing-entered #splash {
   position:relative;
   inset:auto;
@@ -814,7 +816,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Shoonaya &nbsp;↓</button>
+  <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow">↓</span></button>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
