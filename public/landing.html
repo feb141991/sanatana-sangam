@@ -3257,6 +3257,36 @@ fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
 let mainPageInitialised = false;
+function triggerExplore() {
+  if (document.body.classList.contains('landing-entered')) return;
+  const btn = document.getElementById('explore-btn');
+  if (btn) btn.click();
+}
+
+// Enable entering the page via mouse wheel / trackpad scroll
+document.getElementById('splash').addEventListener('wheel', function (e) {
+  if (e.deltaY > 12) {
+    triggerExplore();
+  }
+}, { passive: true });
+
+// Enable entering the page via touch swipe up (mobile scroll)
+let touchStartY = 0;
+document.getElementById('splash').addEventListener('touchstart', function (e) {
+  if (e.touches && e.touches[0]) {
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.getElementById('splash').addEventListener('touchend', function (e) {
+  if (e.changedTouches && e.changedTouches[0]) {
+    const touchEndY = e.changedTouches[0].clientY;
+    if (touchStartY - touchEndY > 45) { // Swipe up
+      triggerExplore();
+    }
+  }
+}, { passive: true });
+
 document.getElementById('explore-btn').addEventListener('click', function () {
   const main   = document.getElementById('main-page');
   document.body.classList.add('landing-entered');

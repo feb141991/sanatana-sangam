@@ -909,7 +909,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
+  <button id="explore-btn">Enter the Shoonaya &nbsp;↓</button>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
@@ -955,7 +955,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- Hero section removed — signup is now in the splash entry screen -->
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
-<div class="stats-band reveal">
+<div class="stats-band reveal" id="shoonaya-content">
   <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Founding Members</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="38">0</span></div><div class="stat-label">Countries Represented</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
@@ -2019,7 +2019,7 @@ function gcRestart(){
 <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-top">
-    <div class="footer-brand">Sanatan <span>Sangam</span></div>
+    <div class="footer-brand">Shoo<span>naya</span></div>
     <div class="footer-links">
       <a href="/about">About</a>
       <a href="/privacy">Privacy</a>
@@ -3589,6 +3589,36 @@ fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
 let mainPageInitialised = false;
+function triggerExplore() {
+  if (document.body.classList.contains('landing-entered')) return;
+  const btn = document.getElementById('explore-btn');
+  if (btn) btn.click();
+}
+
+// Enable entering the page via mouse wheel / trackpad scroll
+document.getElementById('splash').addEventListener('wheel', function (e) {
+  if (e.deltaY > 12) {
+    triggerExplore();
+  }
+}, { passive: true });
+
+// Enable entering the page via touch swipe up (mobile scroll)
+let touchStartY = 0;
+document.getElementById('splash').addEventListener('touchstart', function (e) {
+  if (e.touches && e.touches[0]) {
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.getElementById('splash').addEventListener('touchend', function (e) {
+  if (e.changedTouches && e.changedTouches[0]) {
+    const touchEndY = e.changedTouches[0].clientY;
+    if (touchStartY - touchEndY > 45) { // Swipe up
+      triggerExplore();
+    }
+  }
+}, { passive: true });
+
 document.getElementById('explore-btn').addEventListener('click', function () {
   const main   = document.getElementById('main-page');
   document.body.classList.add('landing-entered');
@@ -3611,7 +3641,12 @@ document.getElementById('explore-btn').addEventListener('click', function () {
       }
     }
     setTimeout(() => {
-      main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const target = document.getElementById('shoonaya-content');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 120);
   });
 });
