@@ -162,11 +162,27 @@ function RotatingVerse() {
         className="text-center"
       >
         <p className="text-2xl md:text-3xl font-bold"
-          style={{ color: '#f0c040', fontFamily: 'var(--font-deva, serif)' }}>
+          style={{
+            color: '#f5f0e8',
+            fontFamily: 'var(--font-devanagari), var(--font-serif), serif',
+            textShadow: '0 2px 16px rgba(0, 0, 0, 0.65)'
+          }}>
           {v.original}
         </p>
-        <p className="text-sm text-amber-200/70 mt-1 italic">{v.translit}</p>
-        <p className="text-xs text-white/50 mt-1">{v.meaning}</p>
+        <p className="text-sm mt-1 italic"
+          style={{
+            color: 'rgba(245, 240, 232, 0.78)',
+            fontFamily: 'var(--font-serif), serif'
+          }}>
+          {v.translit}
+        </p>
+        <p className="text-xs mt-1"
+          style={{
+            color: 'rgba(245, 240, 232, 0.65)',
+            fontFamily: 'var(--font-inter), sans-serif'
+          }}>
+          {v.meaning}
+        </p>
       </motion.div>
     </AnimatePresence>
   );
@@ -250,30 +266,30 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#0e0b07]">
+    <div className="relative min-h-screen overflow-x-hidden bg-[#0C0A07]">
 
       {/* ── NAV ── */}
       <nav className="sticky top-0 z-50 px-4 pt-3">
         <div className="max-w-6xl mx-auto px-4 h-14 rounded-2xl flex items-center justify-between"
-          style={{ background: 'rgba(20,14,6,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(212,166,70,0.18)' }}>
+          style={{ background: 'rgba(12,10,7,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(197,160,89,0.18)' }}>
           <div className="flex items-center gap-2">
             <img
               src="/icons/logo.png"
               alt="Shoonaya"
               className="w-8 h-8 rounded-xl object-cover"
             />
-            <span className="font-bold text-base text-amber-100">
-              Shoo<span style={{ color: '#d4a645' }}>naya</span>
+            <span className="font-bold text-base text-[#ede8de]">
+              Shoo<span style={{ color: '#C5A059' }}>naya</span>
             </span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login"
-              className="text-sm font-medium text-amber-200/70 hover:text-amber-100 transition-colors hidden sm:block">
+              className="text-sm font-medium text-[#ede8de]/70 hover:text-[#ede8de] transition-colors hidden sm:block">
               Sign in
             </Link>
             <Link href="/signup"
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-              style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}>
+              style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', color: '#0C0A07', fontFamily: 'var(--font-inter), sans-serif' }}>
               Join Free <ArrowRight size={14} />
             </Link>
           </div>
@@ -291,9 +307,9 @@ export default function LandingPage() {
           className="absolute inset-0"
         >
           <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(140,90,10,0.22) 0%, transparent 70%)' }} />
+            style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(197,160,89,0.16) 0%, transparent 70%)' }} />
           <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 40% at 30% 70%, rgba(90,50,120,0.12) 0%, transparent 60%)' }} />
+            style={{ background: 'radial-gradient(ellipse 60% 40% at 30% 70%, rgba(212,120,74,0.08) 0%, transparent 60%)' }} />
           <StarField />
         </motion.div>
 
@@ -301,10 +317,10 @@ export default function LandingPage() {
         <div
           className="absolute text-[14rem] font-bold select-none pointer-events-none"
           style={{
-            color: 'rgba(212,166,70,0.04)',
+            color: 'rgba(197,160,89,0.03)',
             top: '10%', right: '5%',
             animation: 'floatY 8s ease-in-out infinite, spin 60s linear infinite',
-            fontFamily: 'serif',
+            fontFamily: 'var(--font-serif), serif',
           }}
           aria-hidden
         >
@@ -321,9 +337,10 @@ export default function LandingPage() {
           {/* Chip */}
           <motion.div variants={fadeUp} custom={0}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6 border"
-              style={{ background: 'rgba(212,166,70,0.15)',
-                       borderColor: 'rgba(212,166,70,0.4)',
-                       color: '#f0c040' }}>
+              style={{ background: 'rgba(197,160,89,0.08)',
+                       borderColor: 'rgba(197,160,89,0.3)',
+                       color: '#C5A059',
+                       fontFamily: 'var(--font-inter), sans-serif' }}>
               🚀 Launching June 17, 2026 — {mounted ? `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.mins}m ${timeLeft.secs}s` : 'Calculating...'}
             </div>
           </motion.div>
@@ -331,11 +348,12 @@ export default function LandingPage() {
           {/* Headline */}
           <motion.h1
             variants={fadeUp} custom={1}
-            className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white"
+            className="text-5xl md:text-7xl font-light leading-tight mb-6 text-white tracking-tight"
+            style={{ fontFamily: 'var(--font-serif), serif' }}
           >
             Find your
             <br />
-            <span style={{ background: 'linear-gradient(135deg, #f0c040, #d4a645, #a07830)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               infinite.
             </span>
           </motion.h1>
@@ -343,7 +361,8 @@ export default function LandingPage() {
           {/* Subheading */}
           <motion.p
             variants={fadeUp} custom={2}
-            className="text-lg md:text-xl text-amber-100/60 max-w-2xl mx-auto mb-8 leading-relaxed"
+            className="text-lg md:text-xl text-[#b0aa9e] max-w-2xl mx-auto mb-8 leading-relaxed"
+            style={{ fontFamily: 'var(--font-inter), sans-serif' }}
           >
             Shoonaya is the void that holds all traditions. Hindu, Sikh, Buddhist, and Jain
             dharma — sadhana, scripture, community, and seva — in one sacred home.
@@ -353,12 +372,12 @@ export default function LandingPage() {
           <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
             <Link href="/signup"
               className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}>
+              style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', color: '#0C0A07', fontFamily: 'var(--font-inter), sans-serif' }}>
               <Heart size={18} /> Begin Your Journey
             </Link>
             <Link href="/login"
               className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base border transition-all hover:bg-white/5"
-              style={{ borderColor: 'rgba(212,166,70,0.3)', color: '#d4a645' }}>
+              style={{ borderColor: 'rgba(197, 160, 89, 0.3)', color: '#C5A059', fontFamily: 'var(--font-inter), sans-serif' }}>
               Sign In
             </Link>
           </motion.div>
@@ -367,9 +386,9 @@ export default function LandingPage() {
           <motion.div
             variants={fadeUp} custom={4}
             className="rounded-2xl border px-6 py-5 mx-auto max-w-md"
-            style={{ background: 'rgba(212,166,70,0.06)', borderColor: 'rgba(212,166,70,0.15)' }}
+            style={{ background: 'rgba(20, 18, 14, 0.45)', borderColor: 'rgba(197, 160, 89, 0.15)', backdropFilter: 'blur(12px)' }}
           >
-            <p className="text-[10px] uppercase tracking-widest text-amber-400/50 font-semibold mb-3">From the Shastra</p>
+            <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold mb-3" style={{ fontFamily: 'var(--font-inter), sans-serif' }}>From the Shastra</p>
             <RotatingVerse />
           </motion.div>
         </motion.div>
@@ -379,13 +398,14 @@ export default function LandingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-amber-400/30"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[#C5A059]/30"
         >
           <button
             onClick={() => {
               document.getElementById('shoonaya-content')?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-widest text-amber-400/30 hover:text-amber-200 transition-colors"
+            className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-widest text-[#C5A059]/30 hover:text-[#C5A059] transition-colors"
+            style={{ fontFamily: 'var(--font-inter), sans-serif' }}
           >
             ENTER THE SHOONAYA ↓
             <motion.div
@@ -406,13 +426,13 @@ export default function LandingPage() {
               key={s.label}
               variants={fadeUp} custom={i}
               className="rounded-2xl p-5 text-center border"
-              style={{ background: 'rgba(212,166,70,0.06)', borderColor: 'rgba(212,166,70,0.12)' }}
+              style={{ background: 'rgba(20, 18, 14, 0.92)', borderColor: 'rgba(197, 160, 89, 0.13)', fontFamily: 'var(--font-inter), sans-serif' }}
             >
               <div className="text-3xl font-bold mb-1"
-                style={{ background: 'linear-gradient(135deg, #f0c040, #a07830)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {s.value}
               </div>
-              <div className="text-xs text-amber-100/50">{s.label}</div>
+              <div className="text-xs text-[#ede8de] opacity-50">{s.label}</div>
             </motion.div>
           ))}
         </div>
