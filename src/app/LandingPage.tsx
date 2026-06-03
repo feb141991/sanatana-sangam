@@ -196,7 +196,7 @@ function usePwaInstall() {
 }
 
 // ─── Section wrapper with scroll reveal ──────────────────────────────────────
-function Section({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function Section({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) {
   const ref  = useRef(null);
   const seen = useInView(ref, { once: true, amount: 0.15 });
   return (
@@ -206,6 +206,7 @@ function Section({ children, className = '' }: { children: React.ReactNode; clas
       initial="hidden"
       animate={seen ? 'visible' : 'hidden'}
       className={className}
+      id={id}
     >
       {children}
     </motion.section>
@@ -219,6 +220,35 @@ export default function LandingPage() {
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
   const heroScale   = useTransform(scrollY, [0, 500], [1, 1.04]);
 
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const target = new Date('2026-06-17T00:00:00Z').getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const difference = target - now;
+
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, mins, secs });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-[#0e0b07]">
 
@@ -227,7 +257,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 h-14 rounded-2xl flex items-center justify-between"
           style={{ background: 'rgba(20,14,6,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(212,166,70,0.18)' }}>
           <div className="flex items-center gap-2">
-            <BrandMark size="sm" />
+            <img
+              src="/icons/logo.png"
+              alt="Shoonaya"
+              className="w-8 h-8 rounded-xl object-cover"
+            />
             <span className="font-bold text-base text-amber-100">
               Shoo<span style={{ color: '#d4a645' }}>naya</span>
             </span>
@@ -286,10 +320,11 @@ export default function LandingPage() {
         >
           {/* Chip */}
           <motion.div variants={fadeUp} custom={0}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold mb-8 border"
-              style={{ background: 'rgba(212,166,70,0.10)', borderColor: 'rgba(212,166,70,0.25)', color: '#d4a645' }}>
-              <Sparkles size={13} />
-              Ancient wisdom for seekers
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6 border"
+              style={{ background: 'rgba(212,166,70,0.15)',
+                       borderColor: 'rgba(212,166,70,0.4)',
+                       color: '#f0c040' }}>
+              🚀 Launching June 17, 2026 — {mounted ? `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.mins}m ${timeLeft.secs}s` : 'Calculating...'}
             </div>
           </motion.div>
 
@@ -346,18 +381,25 @@ export default function LandingPage() {
           transition={{ delay: 1.5, duration: 0.5 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-amber-400/30"
         >
-          <span className="text-[10px] uppercase tracking-widest">Discover</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+          <button
+            onClick={() => {
+              document.getElementById('sangam-content')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-widest text-amber-400/30 hover:text-amber-200 transition-colors"
           >
-            <ChevronDown size={18} />
-          </motion.div>
+            ENTER THE SANGAM ↓
+            <motion.div
+              animate={{ y: [0, 6, 0] }}
+              transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+            >
+              <ChevronDown size={18} />
+            </motion.div>
+          </button>
         </motion.div>
       </motion.section>
 
       {/* ── STATS ── */}
-      <Section className="max-w-5xl mx-auto px-4 py-16">
+      <Section id="sangam-content" className="max-w-5xl mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {STATS.map((s, i) => (
             <motion.div
@@ -540,7 +582,15 @@ export default function LandingPage() {
       {/* ── FINAL CTA ── */}
       <Section className="max-w-3xl mx-auto px-4 py-24 text-center">
         <motion.div variants={fadeUp} custom={0} className="mb-6 flex justify-center">
-          <BrandMark size="lg" />
+          <span
+            style={{
+              fontFamily: 'var(--font-cormorant), Georgia, serif',
+              color: '#d4a645',
+            }}
+            className="text-4xl font-bold tracking-wide"
+          >
+            शून्य
+          </span>
         </motion.div>
         <motion.h2
           variants={fadeUp} custom={1}
@@ -569,7 +619,11 @@ export default function LandingPage() {
       <footer className="py-8 px-4 border-t" style={{ borderColor: 'rgba(212,166,70,0.08)' }}>
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-amber-100/30">
           <div className="flex items-center gap-2">
-            <BrandMark size="sm" />
+            <img
+              src="/icons/logo.png"
+              alt="Shoonaya"
+              className="w-6 h-6 rounded-lg object-cover"
+            />
             <span>Shoonaya — शून्य</span>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-5">
