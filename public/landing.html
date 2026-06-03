@@ -814,7 +814,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
+  <button id="explore-btn">Enter the Shoonaya &nbsp;↓</button>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
@@ -847,7 +847,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- Hero section removed — signup is now in the splash entry screen -->
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
-<div class="stats-band reveal" id="sangam-content">
+<div class="stats-band reveal" id="shoonaya-content">
   <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Founding Members</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="38">0</span></div><div class="stat-label">Countries Represented</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
@@ -3279,7 +3279,7 @@ document.getElementById('explore-btn').addEventListener('click', function () {
       }
     }
     setTimeout(() => {
-      const target = document.getElementById('sangam-content');
+      const target = document.getElementById('shoonaya-content');
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {

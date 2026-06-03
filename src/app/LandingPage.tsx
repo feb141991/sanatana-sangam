@@ -383,11 +383,11 @@ export default function LandingPage() {
         >
           <button
             onClick={() => {
-              document.getElementById('sangam-content')?.scrollIntoView({ behavior: 'smooth' });
+              document.getElementById('shoonaya-content')?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="flex flex-col items-center gap-1 text-[10px] uppercase tracking-widest text-amber-400/30 hover:text-amber-200 transition-colors"
           >
-            ENTER THE SANGAM ↓
+            ENTER THE SHOONAYA ↓
             <motion.div
               animate={{ y: [0, 6, 0] }}
               transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
@@ -399,7 +399,7 @@ export default function LandingPage() {
       </motion.section>
 
       {/* ── STATS ── */}
-      <Section id="sangam-content" className="max-w-5xl mx-auto px-4 py-16">
+      <Section id="shoonaya-content" className="max-w-5xl mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {STATS.map((s, i) => (
             <motion.div
