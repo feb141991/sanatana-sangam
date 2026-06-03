@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useInView, AnimatePresence, useScroll, useTransform, type Variants } from 'framer-motion';
 import {
   Users, MapPin, BookOpen, Heart, Star, ArrowRight,
@@ -304,12 +305,44 @@ export default function LandingPage() {
         {/* Background */}
         <motion.div
           style={{ scale: heroScale }}
-          className="absolute inset-0"
+          className="absolute inset-0 z-0 pointer-events-none"
         >
-          <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(197,160,89,0.16) 0%, transparent 70%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'radial-gradient(ellipse 60% 40% at 30% 70%, rgba(212,120,74,0.08) 0%, transparent 60%)' }} />
+          {/* Cover image sanctuary backdrop */}
+          <Image
+            src="/assets/images/heroes/all/default.webp"
+            alt="Shoonaya Devotional Sanctuary Backdrop"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center divine-hero-image"
+            style={{
+              objectPosition: 'center 25%',
+              filter: 'saturate(0.72) contrast(0.84) brightness(0.70)'
+            }}
+          />
+          {/* Blending gradients */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 80%, #0C0A07 100%)',
+              zIndex: 1,
+            }}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-[45%]"
+            style={{
+              background: 'radial-gradient(ellipse at 50% 90%, rgba(12, 10, 7, 0.8) 0%, transparent 70%), linear-gradient(180deg, transparent 0%, rgba(12, 10, 7, 0.4) 40%, #0C0A07 100%)',
+              zIndex: 2,
+            }}
+          />
+          {/* Ambient gold radial mist */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(197,160,89,0.1) 0%, transparent 70%)',
+              zIndex: 3,
+            }}
+          />
           <StarField />
         </motion.div>
 
@@ -386,7 +419,7 @@ export default function LandingPage() {
           <motion.div
             variants={fadeUp} custom={4}
             className="rounded-2xl border px-6 py-5 mx-auto max-w-md"
-            style={{ background: 'rgba(20, 18, 14, 0.45)', borderColor: 'rgba(197, 160, 89, 0.15)', backdropFilter: 'blur(12px)' }}
+            style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', backdropFilter: 'blur(16px)' }}
           >
             <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold mb-3" style={{ fontFamily: 'var(--font-inter), sans-serif' }}>From the Shastra</p>
             <RotatingVerse />
@@ -426,7 +459,7 @@ export default function LandingPage() {
               key={s.label}
               variants={fadeUp} custom={i}
               className="rounded-2xl p-5 text-center border"
-              style={{ background: 'rgba(20, 18, 14, 0.92)', borderColor: 'rgba(197, 160, 89, 0.13)', fontFamily: 'var(--font-inter), sans-serif' }}
+              style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', fontFamily: 'var(--font-inter), sans-serif' }}
             >
               <div className="text-3xl font-bold mb-1"
                 style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -459,8 +492,8 @@ export default function LandingPage() {
               whileHover={{ scale: 1.02, y: -4 }}
               className="rounded-2xl border p-5 cursor-default transition-shadow hover:shadow-xl"
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                borderColor: `${f.accent}22`,
+                background: 'var(--card-bg)',
+                borderColor: 'var(--card-border)',
               }}
             >
               <div className="text-3xl mb-3">{f.emoji}</div>
@@ -478,8 +511,9 @@ export default function LandingPage() {
           variants={fadeUp} custom={0}
           className="max-w-4xl mx-auto rounded-3xl border overflow-hidden"
           style={{
-            background: 'linear-gradient(135deg, rgba(212,166,70,0.12) 0%, rgba(90,50,10,0.08) 100%)',
-            borderColor: 'rgba(212,166,70,0.20)',
+            background: 'linear-gradient(135deg, rgba(197,160,89,0.08) 0%, rgba(20,18,14,0.92) 100%)',
+            borderColor: 'var(--card-border)',
+            backdropFilter: 'blur(12px)',
           }}
         >
           <div className="grid md:grid-cols-2 gap-0">
@@ -576,7 +610,7 @@ export default function LandingPage() {
               key={t.name}
               variants={fadeUp} custom={i}
               className="rounded-2xl border p-6"
-              style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(212,166,70,0.10)' }}
+              style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
             >
               <div className="flex gap-0.5 mb-4">
                 {[...Array(5)].map((_, j) => (
