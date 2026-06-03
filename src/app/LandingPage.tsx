@@ -283,7 +283,7 @@ export default function LandingPage() {
       {/* ── HERO ── */}
       <motion.section
         style={{ opacity: heroOpacity }}
-        className="relative min-h-[92vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-8 pb-24"
+        className="relative min-h-[80vh] flex flex-col items-center justify-center overflow-hidden px-4 pt-8 pb-16"
       >
         {/* Background */}
         <motion.div
