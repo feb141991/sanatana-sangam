@@ -30,9 +30,9 @@ const fontVars = [
 ].join(' ');
 
 export const metadata: Metadata = {
-  title:       'Shoonaya — Find your infinite.',
-  description: 'Ancient wisdom for modern seekers. Daily Panchang, Sanskrit recitation with AI scoring (Shruti), Japa, Pathshala study, and Kul family spaces — for Hindu, Sikh, Buddhist, and Jain traditions.',
-  keywords:    ['panchang', 'japa', 'mantra', 'Sanskrit', 'bhakti', 'dharma', 'Hindu', 'Sikh', 'Buddhist', 'Jain', 'meditation', 'sadhana', 'kirtan', 'Vedanta', 'spiritual'],
+  title:       'Shoonaya App | Sanatan, Sikh, Jain & Buddhist Spiritual App',
+  description: 'Shoonaya is a spiritual app for Daily Dharma, Panchang, scripture, japa, festivals, and community across Sanatan, Hindu, Sikh, Jain, and Buddhist traditions.',
+  keywords:    ['panchang', 'japa', 'mantra', 'Sanskrit', 'bhakti', 'dharma', 'Hindu', 'Sikh', 'Buddhist', 'Jain', 'Sanatan', 'meditation', 'sadhana', 'kirtan', 'Vedanta', 'spiritual app'],
   manifest:    '/manifest.json',
   icons: {
     icon:        [
@@ -107,8 +107,8 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Shoonaya — Find Your Infinite',
-    description: 'Daily Panchang · Sanskrit Recitation · Japa · Pathshala · Kul',
+    title: 'Shoonaya App | Find Your Infinity',
+    description: 'Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.',
     siteName: 'Shoonaya',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Shoonaya' }],
     type: 'website',
@@ -116,8 +116,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Shoonaya — Find Your Infinite',
-    description: 'Ancient wisdom for modern seekers across all dharmic traditions.',
+    title: 'Shoonaya App | Find Your Infinity',
+    description: 'Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.',
     images: ['/og-image.png'],
   },
   other: {
