@@ -118,8 +118,19 @@ export default function OnboardingClient({
 
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
+  const [age, setAge] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
+
+  // Auto-recommend life stage from age
+  const recommendedStage = (() => {
+    const n = parseInt(age, 10);
+    if (isNaN(n)) return null;
+    if (n <= 25) return 'brahmacharya';
+    if (n <= 50) return 'grihastha';
+    if (n <= 75) return 'vanaprastha';
+    return 'sannyasa';
+  })();
   const [nameStory, setNameStory] = useState<any>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
@@ -338,7 +349,7 @@ export default function OnboardingClient({
       </div>
 
       <div className="px-5">
-        {step > 1 && step < 9 ? (
+        {step > 1 ? (
           <button onClick={goBack} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-transparent text-[var(--brand-muted)] hover:bg-[rgba(62,42,31,0.05)] transition-colors">
             <ChevronLeft size={18} />
           </button>
@@ -498,6 +509,35 @@ export default function OnboardingClient({
                     </button>
                   ))}
                 </div>
+
+                {/* Age */}
+                <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mb-2">Your Age</p>
+                <div className="flex items-center gap-3 mb-2">
+                  <input
+                    type="number"
+                    min="5"
+                    max="120"
+                    value={age}
+                    onChange={e => {
+                      setAge(e.target.value);
+                      const n = parseInt(e.target.value, 10);
+                      if (!isNaN(n)) {
+                        if (n <= 25) setLifeStage('brahmacharya');
+                        else if (n <= 50) setLifeStage('grihastha');
+                        else if (n <= 75) setLifeStage('vanaprastha');
+                        else setLifeStage('sannyasa');
+                      }
+                    }}
+                    placeholder="e.g. 28"
+                    className="w-28 rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] px-4 py-3 outline-none text-[var(--brand-primary-strong)] text-center text-lg font-semibold"
+                  />
+                  {recommendedStage && (
+                    <span className="text-xs text-[var(--brand-muted)] leading-snug">
+                      ✨ Suggested: <span className="font-semibold text-[var(--premium-gold)] capitalize">{LIFE_STAGES.find(s => s.key === recommendedStage)?.label}</span>
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-[var(--brand-muted)] mb-5 opacity-70">Enter your age to get a recommendation, or select manually below.</p>
 
                 {/* Gender */}
                 <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mb-3">Gender</p>
@@ -1036,45 +1076,38 @@ export default function OnboardingClient({
             {/* Step 9: Ready */}
             {step === 9 && (
               <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
-                <h1 className="text-3xl font-medium mb-4 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                {/* Tradition symbol */}
+                <div
+                  className="w-20 h-20 flex items-center justify-center rounded-full mb-6"
+                  style={{ background: 'rgba(200,146,74,0.1)', border: '1.5px solid rgba(200,146,74,0.3)' }}
+                >
+                  <span className="text-4xl">{TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}</span>
+                </div>
+
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   {readyCopy.heading}
                 </h1>
-                <p className="text-[var(--brand-muted)] mb-8">{readyCopy.body}</p>
+                <p className="text-[var(--brand-muted)] mb-2 leading-relaxed">{readyCopy.body}</p>
+                <p className="text-xs text-[var(--brand-muted)] mb-8 opacity-60 italic">
+                  Welcome to the Zeroists — seekers who find everything in nothing.
+                </p>
 
-                <div className="w-full mb-6">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--brand-muted)] mb-3 text-left">App Theme</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {THEMES.map(t => (
-                      <button key={t.key}
-                        type="button"
-                        onClick={() => {
-                          setTheme(t.key as any);
-                          setPreference?.(t.key as any); // apply immediately
-                        }}
-                        className="flex flex-col items-center gap-2 rounded-2xl py-4 border transition-all"
-                        style={theme === t.key
-                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', color: 'var(--brand-primary-strong)', borderWidth: '1.5px' }
-                          : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', color: 'var(--brand-muted)', borderWidth: '1px' }
-                        }
-                      >
-                        <div 
-                          className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white mb-1"
-                          style={{
-                            borderColor: 'rgba(200, 146, 74, 0.3)',
-                            padding: '12px'
-                          }}
-                        >
-                          <span className="text-xl">{t.icon}</span>
-                        </div>
-                        <span className="font-semibold text-sm" style={{ color: theme === t.key ? 'var(--brand-primary-strong)' : 'var(--brand-muted)' }}>
-                          {t.label}
-                        </span>
-                        <span className="text-[10px] text-center leading-tight" style={{ color: 'var(--brand-muted)', opacity: 0.7 }}>
-                          {t.desc}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+                {/* Warm sanctuary cards */}
+                <div className="w-full grid grid-cols-3 gap-3 mb-8">
+                  {[
+                    { emoji: '📿', label: 'Daily Japa', desc: 'Mantra & mala' },
+                    { emoji: '📅', label: 'Panchang', desc: 'Tithi & muhurta' },
+                    { emoji: '👥', label: 'Mandali', desc: 'Your sangat' },
+                  ].map(item => (
+                    <div key={item.label}
+                      className="flex flex-col items-center gap-1.5 rounded-2xl py-4 px-2"
+                      style={{ background: 'rgba(200,146,74,0.06)', border: '1px solid rgba(200,146,74,0.15)' }}
+                    >
+                      <span className="text-2xl">{item.emoji}</span>
+                      <span className="text-[11px] font-semibold text-[var(--brand-primary-strong)]">{item.label}</span>
+                      <span className="text-[9px] text-[var(--brand-muted)]">{item.desc}</span>
+                    </div>
+                  ))}
                 </div>
 
                 <div className="w-full space-y-3">
@@ -1084,7 +1117,7 @@ export default function OnboardingClient({
                     disabled={saving}
                     className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-60 hover:opacity-90 transition-opacity"
                   >
-                    Start Japa Now →
+                    {saving ? 'Setting up…' : 'Begin my Sadhana →'}
                   </button>
                   <button
                     type="button"
@@ -1092,7 +1125,7 @@ export default function OnboardingClient({
                     disabled={saving}
                     className="text-[var(--brand-muted)] text-sm underline"
                   >
-                    Go to home
+                    Explore the Sanctuary first
                   </button>
                 </div>
               </div>
