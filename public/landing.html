@@ -67,9 +67,9 @@ nav {
 #splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#1c140a 0%,#0c0a07 60%,#030201 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; min-height:100svh; }
 #sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
 #celebration-layer { position:fixed;inset:0;z-index:10020;pointer-events:none;overflow:hidden; }
-#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
-#splash-deva { font-family:var(--fh);font-size:clamp(32px,4.4vw,52px);color:rgba(197,160,89,0.85);letter-spacing:0.25em;margin-bottom:24px; text-shadow: 0 0 40px rgba(197,160,89,0.4); }
-#splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
+#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px 100px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
+#splash-deva { font-family:var(--fh);font-size:clamp(28px,4vw,48px);color:rgba(197,160,89,0.85);letter-spacing:0.25em;margin-bottom:14px; text-shadow: 0 0 40px rgba(197,160,89,0.4); }
+#splash-title { font-family:var(--fd);font-size:clamp(36px,6.5vw,78px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:8px; }
 #splash-title em { color:#C5A059;font-style:italic; }
 #splash-sub { font-size:clamp(22px,3.2vw,28px);color:rgba(255,254,248,0.55);letter-spacing:0.12em;margin-bottom:40px;font-weight:400; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
 #splash-trads { display:flex;gap:40px;justify-content:center;align-items:center; }
@@ -122,13 +122,13 @@ nav {
 #audio-btn:hover { background:rgba(197,160,89,0.12);border-color:rgba(197,160,89,0.32);color:rgba(197,160,89,0.82); }
 #audio-btn.playing { border-color:rgba(197,160,89,0.45);color:rgba(197,160,89,0.92);animation:audioGlow 2.5s ease-in-out infinite; }
 @keyframes audioGlow { 0%,100%{box-shadow:0 0 0 0 rgba(197,160,89,0)} 50%{box-shadow:0 0 14px rgba(197,160,89,0.22)} }
-#splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:20px 0 28px; }
+#splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:12px 0 16px; }
 .scd-unit { display:flex;flex-direction:column;align-items:center;gap:4px; }
 .scd-num  { font-family:var(--fd);font-size:clamp(24px,4vw,42px);font-weight:200;color:rgba(255,254,248,0.88);letter-spacing:-0.02em;line-height:1; }
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
 .scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(197,160,89,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.75);border:1.5px solid rgba(197,160,89,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197, 160, 89, 0.15); }
+#explore-btn { position:absolute;bottom:28px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.80);border:1.5px solid rgba(197,160,89,0.80);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:14px 44px;border-radius:100px;cursor:pointer;animation:pulseGlow 2.4s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197,160,89,0.15); }
 #explore-btn:hover { background:rgba(197,160,89,0.18);border-color:rgba(197,160,89,0.95);color:#C5A059; }
 @keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .explore-arrow { display: inline-block; animation: bounceArrow 1.4s ease-in-out infinite; color:#C5A059; margin-left:6px; font-weight:700; }
@@ -144,7 +144,7 @@ body.landing-entered #explore-btn {
 }
 
 /* ── Splash Join Form ──────────────────────────────────────────────────── */
-#splash-join { margin:28px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(197,160,89,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
+#splash-join { margin:16px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(197,160,89,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
 #sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%; }
 #sj-email { flex:1;min-width:200px;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:12px 20px;color:#FAF6EF;font-size:14px;font-family:var(--fb);outline:none;transition:border-color 0.25s; }
 #sj-email::placeholder { color:rgba(255,254,248,0.32); }
@@ -184,7 +184,8 @@ body.landing-entered #explore-btn {
 @keyframes celebrationRing { to { opacity:0; transform:scale(9); } }
 @keyframes celebrationSpark { 0% { opacity:0; transform:translate(0,0) scale(0.65); } 12% { opacity:1; } 100% { opacity:0; transform:translate(var(--dx), var(--dy)) scale(0.22); } }
 @keyframes celebrationRay { 0% { opacity:0; transform:rotate(var(--r)) scaleY(0.15); } 22% { opacity:0.85; } 100% { opacity:0; transform:rotate(var(--r)) scaleY(1.9); } }
-@keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
+@keyframes pulseGlow { 0%,100%{box-shadow:0 4px 20px rgba(197,160,89,0.15), 0 0 0 0 rgba(197,160,89,0)} 50%{box-shadow:0 4px 32px rgba(197,160,89,0.35), 0 0 28px 6px rgba(197,160,89,0.18), 0 0 0 8px rgba(197,160,89,0.06)} }
+@keyframes bounceDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
 #main-page { min-height:100vh; }
 
 /* ── LOGO ANIMATION — Infinity + Bindu ─────────────────────────────────── */
@@ -360,7 +361,9 @@ body.landing-entered #explore-btn {
 .trad-trad-badge { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:24px; }
 .trad-trad-dot { width:6px; height:6px; border-radius:50%; }
 .trad-verse { border-left:2px solid; padding-left:24px; margin-bottom:28px; }
+.trad-verse-date   { font-size:10px; color:rgba(62,42,31,0.38); letter-spacing:0.10em; text-transform:uppercase; margin-bottom:10px; }
 .trad-verse-script { font-size:19px; line-height:1.75; margin-bottom:14px; }
+.trad-verse-divider { height:1px; background:rgba(62,42,31,0.12); margin:12px 0; }
 .trad-verse-trans  { font-family:var(--fd); font-size:21px; font-style:italic; font-weight:300; line-height:1.55; color:rgba(62,42,31,0.75); margin-bottom:8px; }
 .trad-verse-source { font-size:11px; color:rgba(62,42,31,0.45); letter-spacing:0.12em; text-transform:uppercase; }
 .trad-feats { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
@@ -786,7 +789,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
           <input id="sj-email" type="email" placeholder="your@email.com" required autocomplete="email">
           <button type="submit" id="sj-submit">Join as Sthapaka</button>
         </form>
-        <p id="sj-note">Be among the founding 1,000. No spam, ever. 🙏</p>
       </div>
       <!-- Stage 2: tradition selection -->
       <div id="sj-trad-wrap" style="display:none">
@@ -816,7 +818,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow">↓</span></button>
+  <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow" style="display:inline-block;animation:bounceDown 1.6s ease-in-out infinite;">↓</span></button>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
@@ -851,12 +853,42 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
 <div class="stats-band reveal" id="shoonaya-content">
   <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Founding Members</div></div>
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="38">0</span></div><div class="stat-label">Countries Represented</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="700">0</span><span>+</span></div><div class="stat-label">Sacred Texts Indexed</div></div>
 </div>
 
 
+
+<!-- ── EMPTY THRONE ───────────────────────────────────────────────── -->
+<section id="empty-throne">
+<style>
+#empty-throne { background:#0C0A07; padding:80px 40px; text-align:center; position:relative; overflow:hidden; }
+#empty-throne::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 80% at 50% 50%, rgba(197,160,89,0.06) 0%, transparent 70%); pointer-events:none; }
+.et-inner { position:relative; z-index:1; max-width:760px; margin:0 auto; }
+.et-line { font-family:var(--fd); font-size:clamp(18px,2.6vw,26px); font-weight:300; color:rgba(250,246,239,0.42); line-height:1.8; letter-spacing:0.01em; }
+.et-line span.trad-name { color:rgba(250,246,239,0.68); }
+.et-divider { width:48px; height:1px; background:rgba(197,160,89,0.30); margin:28px auto; }
+.et-gap { font-family:var(--fd); font-size:clamp(22px,3.2vw,34px); font-weight:300; color:rgba(250,246,239,0.72); line-height:1.6; margin-bottom:16px; }
+.et-gap em { color:#C5A059; font-style:italic; }
+.et-souls { font-family:var(--fd); font-size:clamp(42px,7vw,88px); font-weight:200; color:#C5A059; letter-spacing:-0.02em; line-height:1; margin-bottom:8px; }
+.et-souls-sub { font-size:11px; color:rgba(250,246,239,0.28); letter-spacing:0.22em; text-transform:uppercase; margin-bottom:32px; }
+.et-until { font-family:var(--fd); font-size:clamp(28px,4.5vw,54px); font-weight:300; color:#FAF6EF; letter-spacing:-0.01em; }
+.et-until em { color:#C5A059; font-style:italic; }
+@media(max-width:600px){ #empty-throne { padding:60px 24px; } }
+</style>
+  <div class="et-inner reveal">
+    <div class="et-souls">1.5 Billion</div>
+    <div class="et-souls-sub">Dharmic souls on earth</div>
+    <div class="et-line">
+      The Quran has an app with <span class="trad-name">100 million</span> users.<br>
+      The Bible has <span class="trad-name">500 million</span> app downloads.<br>
+      The <span class="trad-name">Bhagavad Gita · Guru Granth Sahib · Dhammapada · Agamas</span> —<br>
+      the wisdom of four living civilisations — had nothing.
+    </div>
+    <div class="et-divider"></div>
+    <div class="et-until">Until <em>now.</em></div>
+  </div>
+</section>
 
 <!-- ── GYAN CHAUPAR ───────────────────────────────────────────────── -->
 <section class="section" id="gyan-chaupar" style="background:var(--surface-soft);padding:72px 24px 80px;">
@@ -1306,9 +1338,11 @@ function gcRestart(){
           Sanatan Dharma · हिन्दू धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।<br>मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥</div>
-          <div class="trad-verse-trans">"Your right is to perform your duty; never to the fruits thereof."</div>
-          <div class="trad-verse-source">Bhagavad Gita · 2.47</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Vikrama 2083</div>
+          <div class="trad-verse-script">यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"Whenever righteousness declines and unrighteousness rises, I manifest myself anew."</div>
+          <div class="trad-verse-source">Bhagavad Gita · Chapter 4, Verse 7</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Daily Shloka</span>
@@ -1334,9 +1368,11 @@ function gcRestart(){
           Sikhi · ਸਿੱਖ ਧਰਮ
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ</div>
-          <div class="trad-verse-trans">"God's Name is Truth. He is the Creator, fearless, without hatred, timeless."</div>
-          <div class="trad-verse-source">Mul Mantar · Guru Granth Sahib Ji</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Nanakshahi 558</div>
+          <div class="trad-verse-script">ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"O my mind, you are the very form of Divine Light — recognise your own origin."</div>
+          <div class="trad-verse-source">Guru Granth Sahib Ji · Ang 441</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Nitnem Banis</span>
@@ -1383,9 +1419,11 @@ function gcRestart(){
           Buddhism · बौद्ध धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">Sabbe sattā sukhitā hontu.</div>
-          <div class="trad-verse-trans">"May all beings be happy."</div>
-          <div class="trad-verse-source">Metta Sutta · Pali Canon</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Buddhist Era 2569</div>
+          <div class="trad-verse-script">Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"Mind is the forerunner of all actions — all things arise from mind, fashioned by mind."</div>
+          <div class="trad-verse-source">Dhammapada · Verse 1</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Dhammapada</span>
@@ -1427,9 +1465,11 @@ function gcRestart(){
           Jainism · जैन धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">परस्परोपग्रहो जीवानाम्।</div>
-          <div class="trad-verse-trans">"Living beings render service to one another."</div>
-          <div class="trad-verse-source">Tattvartha Sutra · 5.21</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552</div>
+          <div class="trad-verse-script">परस्परोपग्रहो जीवानाम् ।</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"The function of souls is to serve one another."</div>
+          <div class="trad-verse-source">Tattvartha Sutra · 5.21 · Umasvati</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Agama Texts</span>
@@ -1446,160 +1486,220 @@ function gcRestart(){
   </div><!-- /trad-panels -->
 </section>
 
-<!-- ── SHLOKA OF THE DAY ──────────────────────────────────────────── -->
-<section class="section" id="shloka">
-  <div class="s-label reveal">Daily Wisdom</div>
-  <div class="s-title reveal">Verse of the Day</div>
-  <div class="s-sub reveal">From Gita to Granth, Dhammapada to Tattvartha — one verse each day from every path of dharma.</div>
 
-  <!-- Glassmorphic tradition selector -->
-  <div class="shlok-tabs-wrap reveal">
-    <div class="shlok-tabs-bar">
-      <span id="shlok-indicator"></span>
-      <button class="shlok-tab active" data-s="hindu"    onclick="switchShloka('hindu')">🕉 Hindu</button>
-      <button class="shlok-tab"        data-s="sikh"     onclick="switchShloka('sikh')">ੴ Sikh</button>
-      <button class="shlok-tab"        data-s="buddhist" onclick="switchShloka('buddhist')">☸ Buddhist</button>
-      <button class="shlok-tab"        data-s="jain"     onclick="switchShloka('jain')">☮ Jain</button>
-    </div>
-    <div id="shlok-progress"><div id="shlok-progress-fill"></div></div>
-  </div>
+<!-- ── 5000-YEAR PROMISE ──────────────────────────────────────────── -->
+<section id="five-thousand">
+<style>
+#five-thousand { background:var(--surface-soft); padding:100px 40px; text-align:center; }
+.ft-inner { max-width:860px; margin:0 auto; }
+.ft-timeline { display:flex; flex-direction:column; gap:0; margin:52px auto 0; max-width:640px; position:relative; }
+.ft-timeline::before { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:linear-gradient(180deg, transparent, rgba(197,160,89,0.30) 10%, rgba(197,160,89,0.30) 90%, transparent); transform:translateX(-50%); }
+.ft-node { display:grid; grid-template-columns:1fr 48px 1fr; align-items:center; gap:0; padding:18px 0; }
+.ft-node:nth-child(odd)  .ft-content { text-align:right; padding-right:28px; }
+.ft-node:nth-child(even) .ft-content { text-align:left;  padding-left:28px; grid-column:3; }
+.ft-node:nth-child(even) .ft-dot-col { grid-column:2; grid-row:1; }
+.ft-node:nth-child(even) .ft-empty   { grid-column:1; grid-row:1; }
+.ft-dot-col { display:flex; justify-content:center; align-items:center; position:relative; z-index:1; }
+.ft-dot { width:14px; height:14px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.ft-year { font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(62,42,31,0.38); margin-bottom:4px; }
+.ft-text-name { font-family:var(--fd); font-size:clamp(17px,2.2vw,22px); font-weight:600; color:var(--ink); line-height:1.2; margin-bottom:3px; }
+.ft-text-sub { font-size:12px; color:rgba(62,42,31,0.52); line-height:1.5; }
+.ft-node.is-now .ft-dot { width:20px; height:20px; border-width:3px; box-shadow:0 0 0 5px rgba(197,160,89,0.15), 0 0 20px rgba(197,160,89,0.25); }
+.ft-node.is-now .ft-text-name { font-size:clamp(20px,2.8vw,28px); color:var(--saffron); }
+.ft-node.is-now .ft-year { color:var(--saffron); letter-spacing:0.20em; font-weight:600; }
+@media(max-width:620px){
+  #five-thousand { padding:64px 24px; }
+  .ft-timeline::before { left:24px; transform:none; }
+  .ft-node { grid-template-columns:48px 1fr; }
+  .ft-node:nth-child(odd)  .ft-content { text-align:left; padding-right:0; padding-left:20px; }
+  .ft-node:nth-child(even) .ft-content { text-align:left; padding-left:20px; grid-column:2; }
+  .ft-node:nth-child(even) .ft-dot-col { grid-column:1; }
+  .ft-node:nth-child(even) .ft-empty   { display:none; }
+  .ft-dot-col { justify-content:flex-start; padding-left:10px; }
+}
+</style>
+  <div class="ft-inner">
+    <div class="s-label reveal">A 5,000-Year Story</div>
+    <div class="s-title reveal">Every civilisation left a text.<br>We built the home for all of them.</div>
+    <p class="s-sub reveal" style="margin:0 auto">They survived invasions, empires, and centuries of silence. Now they live in your pocket — together, for the first time.</p>
 
-  <!-- Hindu — Bhagavad Gita -->
-  <div class="shlok-panel active" data-t="hindu">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-hindu)"></span>
-        Hindu · Bhagavad Gita
-      </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vikrama 2083</div>
-      <div class="shloka-sanskrit">
-        यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>
-        अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "Whenever righteousness declines and unrighteousness rises,<br>I manifest myself anew."
-      </div>
-      <div class="shloka-source">Bhagavad Gita · Chapter 4, Verse 7</div>
-    </div>
-  </div>
+    <div class="ft-timeline reveal">
 
-  <!-- Sikh — Guru Granth Sahib -->
-  <div class="shlok-panel" data-t="sikh">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-sikh)"></span>
-        Sikh · Guru Granth Sahib Ji
+      <!-- Rigveda -->
+      <div class="ft-node">
+        <div class="ft-content">
+          <div class="ft-year">c. 3500 BCE</div>
+          <div class="ft-text-name">Rigveda</div>
+          <div class="ft-text-sub">The oldest known human text.<br>Sanskrit. Oral. Eternal.</div>
+        </div>
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-hindu);border-color:var(--c-hindu)"></div></div>
+        <div class="ft-empty"></div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Nanakshahi 558</div>
-      <div class="shloka-sanskrit">
-        ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "O my mind, you are the very form of Divine Light —<br>recognise your own origin."
-      </div>
-      <div class="shloka-source">Guru Granth Sahib Ji · Ang 441</div>
-    </div>
-  </div>
 
-  <!-- Buddhist — Dhammapada -->
-  <div class="shlok-panel" data-t="buddhist">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-buddhist)"></span>
-        Buddhist · Dhammapada
+      <!-- Tripitaka -->
+      <div class="ft-node">
+        <div class="ft-empty"></div>
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-buddhist);border-color:var(--c-buddhist)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">c. 500 BCE</div>
+          <div class="ft-text-name">Tripitaka</div>
+          <div class="ft-text-sub">The Buddha's teachings.<br>Pali. Preserved across Asia.</div>
+        </div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Buddhist Era 2569</div>
-      <div class="shloka-sanskrit">
-        Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "Mind is the forerunner of all actions —<br>all things arise from mind, fashioned by mind."
-      </div>
-      <div class="shloka-source">Dhammapada · Verse 1</div>
-    </div>
-  </div>
 
-  <!-- Jain — Tattvartha Sutra -->
-  <div class="shlok-panel" data-t="jain">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-jain)"></span>
-        Jain · Tattvartha Sutra
+      <!-- Tattvartha Sutra -->
+      <div class="ft-node">
+        <div class="ft-content">
+          <div class="ft-year">c. 200 CE</div>
+          <div class="ft-text-name">Tattvartha Sutra</div>
+          <div class="ft-text-sub">Jain cosmology and ethics.<br>Prakrit. The science of liberation.</div>
+        </div>
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-jain);border-color:var(--c-jain)"></div></div>
+        <div class="ft-empty"></div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552</div>
-      <div class="shloka-sanskrit">
-        परस्परोपग्रहो जीवानाम् ।
+
+      <!-- Guru Granth Sahib -->
+      <div class="ft-node">
+        <div class="ft-empty"></div>
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-sikh);border-color:var(--c-sikh)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">1604 CE</div>
+          <div class="ft-text-name">Guru Granth Sahib Ji</div>
+          <div class="ft-text-sub">The living Guru. Multi-faith.<br>Gurmukhi. The ultimate sangam.</div>
+        </div>
       </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "The function of souls is to serve one another."
+
+      <!-- Shoonaya -->
+      <div class="ft-node is-now">
+        <div class="ft-content">
+          <div class="ft-year">2026 CE</div>
+          <div class="ft-text-name">Shoonaya</div>
+          <div class="ft-text-sub">One home for all four paths.<br>The next chapter begins now.</div>
+        </div>
+        <div class="ft-dot-col"><div class="ft-dot" style="background:#C5A059;border-color:#C5A059"></div></div>
+        <div class="ft-empty"></div>
       </div>
-      <div class="shloka-source">Tattvartha Sutra · 5.21 · Umasvati</div>
+
     </div>
   </div>
 </section>
 
 <!-- ── FESTIVALS ──────────────────────────────────────────────────── -->
 <section class="section" id="festivals">
+<style>
+.festival-blessing-row { margin-top:20px; padding-top:18px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.festival-scripture { font-size:12px; color:rgba(62,42,31,0.55); font-style:italic; flex:1; min-width:0; line-height:1.5; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.festival-share-btn { display:inline-flex; align-items:center; gap:5px; background:rgba(200,160,110,0.12); border:1px solid rgba(200,160,110,0.28); border-radius:100px; padding:6px 14px; font-size:11px; font-weight:600; color:rgba(62,42,31,0.65); cursor:pointer; white-space:nowrap; transition:all 0.2s; text-decoration:none; letter-spacing:0.03em; flex-shrink:0; }
+.festival-share-btn:hover { background:rgba(200,160,110,0.22); border-color:rgba(200,160,110,0.50); color:var(--saffron-dk); }
+.festival-share-wa  { background:rgba(37,211,102,0.08); border-color:rgba(37,211,102,0.22); color:#1a8c44; }
+.festival-share-wa:hover { background:rgba(37,211,102,0.16); }
+</style>
   <div class="s-label reveal">Sacred Calendar</div>
   <div class="s-title reveal">Upcoming Across Traditions</div>
   <div class="s-sub reveal">Never miss a sacred day — personalised to your tradition, timezone, and wherever you are in the world.</div>
 
   <div class="festivals-grid">
+
+    <!-- Buddha Purnima / Vesak -->
     <div class="festival-card fc-1 reveal">
       <div class="festival-date-badge">
-        <div class="dot" style="background:var(--saffron)"></div>
-        12 May 2026
+        <div class="dot" style="background:var(--c-buddhist)"></div>
+        11 May 2026
       </div>
-      <div class="festival-name">Buddha Purnima</div>
+      <div class="festival-name">Vesak · Buddha Purnima</div>
       <div class="festival-deva" style="font-family:var(--fb)">बुद्ध पूर्णिमा · Buddhist</div>
-      <div class="festival-desc">Commemorating the birth, enlightenment, and parinirvana of Gautama Buddha. The holiest day in the Buddhist calendar.</div>
+      <div class="festival-desc">Birth, enlightenment, and Parinirvana of Gautama Buddha on one sacred full moon — the holiest day in the Buddhist calendar.</div>
       <div class="festival-countdown">
         <div>
-          <div class="days" style="color:var(--saffron)" id="days-1">2</div>
+          <div class="days" style="color:var(--c-buddhist)" id="days-1">—</div>
           <div class="days-label">Days Away</div>
         </div>
         <span class="festival-pill fp-s">Full Moon</span>
       </div>
+      <div class="festival-blessing-row">
+        <div class="festival-scripture">"Sabbe sattā sukhitā hontu" — May all beings be happy.</div>
+        <a class="festival-share-btn festival-share-wa"
+           href="https://wa.me/?text=🪷%20Namo%20Buddhaya%20—%20Shubh%20Vesak!%0A%0A%22Sabbe%20sattā%20sukhitā%20hontu%22%20—%20May%20all%20beings%20be%20happy.%0A%0Ahttps%3A%2F%2Fshoonaya.com%2Fblessing%2Fvesak-buddha-purnima"
+           target="_blank" rel="noopener">📲 Share blessing</a>
+        <a class="festival-share-btn"
+           href="https://shoonaya.com/blessing/vesak-buddha-purnima"
+           target="_blank" rel="noopener">🪷 View card</a>
+      </div>
     </div>
 
+    <!-- Guru Purnima -->
     <div class="festival-card fc-2 reveal" style="transition-delay:0.1s">
       <div class="festival-date-badge">
         <div class="dot" style="background:var(--c-buddhist)"></div>
         10 Jul 2026
       </div>
       <div class="festival-name">Guru Purnima</div>
-      <div class="festival-deva">गुरु पूर्णिमा · Hindu</div>
-      <div class="festival-desc">A day of reverence for all spiritual and academic teachers. Full moon of Ashadha, sacred to Veda Vyasa and the guru-shishya tradition.</div>
+      <div class="festival-deva">गुरु पूर्णिमा · All Traditions</div>
+      <div class="festival-desc">A day of reverence for all spiritual teachers — sacred to Hindu, Sikh, Buddhist and Jain traditions. Full moon of Ashadha.</div>
       <div class="festival-countdown">
         <div>
-          <div class="days" style="color:var(--c-buddhist)" id="days-2">61</div>
+          <div class="days" style="color:var(--c-buddhist)" id="days-2">—</div>
           <div class="days-label">Days Away</div>
         </div>
-        <span class="festival-pill fp-b">Auspicious</span>
+        <span class="festival-pill fp-b">All Traditions</span>
+      </div>
+      <div class="festival-blessing-row">
+        <div class="festival-scripture">"गुरुः साक्षात् परब्रह्म" — The Guru is the Supreme itself.</div>
+        <a class="festival-share-btn festival-share-wa"
+           href="https://wa.me/?text=🙏%20Guru%20Purnima%20Ki%20Shubhkamnayein!%0A%0A%22The%20Guru%20is%20Brahma%2C%20Vishnu%2C%20and%20Shiva%22%0A%0Ahttps%3A%2F%2Fshoonaya.com%2Fblessing%2Fguru-purnima"
+           target="_blank" rel="noopener">📲 Share blessing</a>
+        <a class="festival-share-btn"
+           href="https://shoonaya.com/blessing/guru-purnima"
+           target="_blank" rel="noopener">🙏 View card</a>
       </div>
     </div>
 
+    <!-- Paryushana -->
     <div class="festival-card fc-3 reveal" style="transition-delay:0.2s">
       <div class="festival-date-badge">
         <div class="dot" style="background:var(--c-jain)"></div>
-        22 Aug 2026
+        28 Aug 2026
       </div>
-      <div class="festival-name">Paryushana</div>
+      <div class="festival-name">Paryushana Parva</div>
       <div class="festival-deva">पर्यूषण · Jain</div>
-      <div class="festival-desc">The holiest period in the Jain calendar — eight days of fasting, meditation, and seeking forgiveness. Culminates in Samvatsari, the day of universal pardon.</div>
+      <div class="festival-desc">The holiest period in the Jain calendar — eight days of fasting, prayer and self-purification. Culminates in Samvatsari, the day of universal forgiveness.</div>
       <div class="festival-countdown">
         <div>
-          <div class="days" style="color:var(--c-jain)" id="days-3">104</div>
+          <div class="days" style="color:var(--c-jain)" id="days-3">—</div>
           <div class="days-label">Days Away</div>
         </div>
         <span class="festival-pill fp-j">Jain Parva</span>
       </div>
+      <div class="festival-blessing-row">
+        <div class="festival-scripture">"परस्परोपग्रहो जीवानाम्" — Souls serve one another.</div>
+        <a class="festival-share-btn festival-share-wa"
+           href="https://wa.me/?text=🕊️%20Paryushana%20Parva%20Ki%20Shubhkamnayein!%0A%0A%22Parasparopagraho%20jīvānām%22%20—%20Souls%20render%20service%20to%20one%20another.%0A%0Ahttps%3A%2F%2Fshoonaya.com%2Fblessing%2Fparyushana"
+           target="_blank" rel="noopener">📲 Share blessing</a>
+        <a class="festival-share-btn"
+           href="https://shoonaya.com/blessing/paryushana"
+           target="_blank" rel="noopener">🕊️ View card</a>
+      </div>
     </div>
+
   </div>
+
+  <!-- Live days-away counter -->
+  <script>
+  (function(){
+    var festivals = [
+      { id:'days-1', date:'2026-05-11' },
+      { id:'days-2', date:'2026-07-10' },
+      { id:'days-3', date:'2026-08-28' },
+    ];
+    var today = new Date(); today.setHours(0,0,0,0);
+    festivals.forEach(function(f){
+      var el = document.getElementById(f.id);
+      if(!el) return;
+      var diff = Math.round((new Date(f.date) - today) / 86400000);
+      el.textContent = diff > 0 ? diff : diff === 0 ? 'Today' : 'Passed';
+    });
+  })();
+  </script>
 </section>
 
 <!-- ── COMMUNITY ──────────────────────────────────────────────────── -->
@@ -1682,6 +1782,160 @@ function gcRestart(){
     </div>
   </div>
 </section>
+
+<!-- ── FOUNDING LEADERBOARD ───────────────────────────────────────── -->
+<section id="sthapaka-wall">
+<style>
+#sthapaka-wall { background:#0C0A07; padding:100px 40px; text-align:center; position:relative; overflow:hidden; }
+#sthapaka-wall::before { content:''; position:absolute;inset:0; background:radial-gradient(ellipse 80% 60% at 50% 30%, rgba(197,160,89,0.07) 0%, transparent 65%); pointer-events:none; }
+.sw-inner { position:relative; z-index:1; max-width:800px; margin:0 auto; }
+.sw-inner .s-label { color:rgba(197,160,89,0.70); }
+.sw-inner .s-title { color:#FAF6EF; }
+.sw-inner .s-sub   { color:rgba(250,246,239,0.42); }
+/* Live counter */
+.sw-counter-wrap { margin:40px auto 8px; }
+.sw-count-num { font-family:var(--fd); font-size:clamp(64px,10vw,112px); font-weight:200; color:#C5A059; letter-spacing:-0.03em; line-height:1; }
+.sw-count-denom { font-size:13px; color:rgba(250,246,239,0.28); letter-spacing:0.22em; text-transform:uppercase; margin-top:6px; }
+/* Progress bar */
+.sw-progress-wrap { max-width:480px; margin:24px auto 36px; }
+.sw-progress-track { height:4px; background:rgba(255,255,255,0.07); border-radius:100px; overflow:hidden; }
+.sw-progress-fill  { height:100%; background:linear-gradient(90deg,#C5A059,#D4784A); border-radius:100px; transition:width 1.2s cubic-bezier(0.25,1,0.5,1); width:0%; }
+.sw-progress-label { display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:rgba(250,246,239,0.25); letter-spacing:0.12em; text-transform:uppercase; }
+/* Tradition split */
+.sw-trad-split { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:44px; }
+.sw-trad-pill { display:flex; align-items:center; gap:7px; padding:7px 16px; border-radius:100px; border:1px solid; font-size:12px; font-family:var(--fb); letter-spacing:0.04em; }
+/* Slot grid */
+.sw-grid-label { font-size:10px; color:rgba(250,246,239,0.22); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:16px; }
+.sw-grid { display:flex; flex-wrap:wrap; gap:5px; justify-content:center; max-width:720px; margin:0 auto 40px; }
+.sw-slot { width:20px; height:20px; border-radius:4px; flex-shrink:0; transition:transform 0.15s; }
+.sw-slot:hover { transform:scale(1.3); }
+.sw-slot.filled { opacity:1; }
+.sw-slot.empty  { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); }
+/* CTA nudge */
+.sw-cta-nudge { font-size:14px; color:rgba(250,246,239,0.45); margin-bottom:20px; }
+.sw-cta-nudge strong { color:#C5A059; }
+.sw-join-btn { display:inline-block; background:linear-gradient(135deg,#C5A059,#D4784A); color:#0C0A07; font-weight:700; font-family:var(--fb); font-size:13px; letter-spacing:0.04em; padding:13px 36px; border-radius:100px; border:none; cursor:pointer; text-decoration:none; transition:opacity 0.2s; }
+.sw-join-btn:hover { opacity:0.88; }
+@media(max-width:600px){ #sthapaka-wall { padding:64px 20px; } .sw-grid { gap:4px; } .sw-slot { width:16px; height:16px; } }
+</style>
+  <div class="sw-inner">
+    <div class="s-label reveal">The Founding Wall</div>
+    <div class="s-title reveal">1,000 Sthapakas.<br>One foundation.</div>
+    <p class="s-sub reveal">These are the souls who were here before the doors opened.<br>Their founding number lives on their profile — forever.</p>
+
+    <div class="sw-counter-wrap reveal">
+      <div class="sw-count-num" id="sw-live-count">—</div>
+      <div class="sw-count-denom">of 1,000 founding spots claimed</div>
+    </div>
+
+    <div class="sw-progress-wrap reveal">
+      <div class="sw-progress-track"><div class="sw-progress-fill" id="sw-progress-fill"></div></div>
+      <div class="sw-progress-label"><span>#1</span><span id="sw-progress-label-mid"></span><span>#1000</span></div>
+    </div>
+
+    <div class="sw-trad-split reveal" id="sw-trad-split">
+      <div class="sw-trad-pill" style="background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.30);color:#D88A1C">🕉 Hindu Sthapakas</div>
+      <div class="sw-trad-pill" style="background:rgba(27,94,139,0.10);border-color:rgba(27,94,139,0.30);color:#5BA4D4">☬ Sikh Sthapakas</div>
+      <div class="sw-trad-pill" style="background:rgba(139,45,62,0.10);border-color:rgba(139,45,62,0.30);color:#D4827A">☸ Buddhist Sthapakas</div>
+      <div class="sw-trad-pill" style="background:rgba(42,107,74,0.10);border-color:rgba(42,107,74,0.30);color:#6AB99A">☮ Jain Sthapakas</div>
+    </div>
+
+    <div class="sw-grid-label">Each square is one founding member</div>
+    <div class="sw-grid reveal" id="sw-grid"></div>
+
+    <div class="sw-cta-nudge" id="sw-cta-nudge"></div>
+    <button class="sw-join-btn" onclick="scrollToCta()">Claim Your Sthapaka Spot →</button>
+  </div>
+</section>
+<script>
+(function(){
+  const TRADITION_COLORS = { hindu:'#D88A1C', sikh:'#5BA4D4', buddhist:'#D4827A', jain:'#6AB99A', default:'#C5A059' };
+  const TOTAL = 1000;
+
+  async function loadLeaderboard() {
+    let count = 0;
+    try {
+      const r = await fetch('/api/waitlist');
+      const d = await r.json();
+      count = Math.min(d.count || 0, TOTAL);
+    } catch(e) { count = 0; }
+
+    // Live count
+    const el = document.getElementById('sw-live-count');
+    if (el) animateCount(el, count);
+
+    // Progress bar
+    const pct = (count / TOTAL) * 100;
+    const fill = document.getElementById('sw-progress-fill');
+    const mid  = document.getElementById('sw-progress-label-mid');
+    if (fill) setTimeout(()=>{ fill.style.width = pct + '%'; }, 300);
+    if (mid && count > 0) mid.textContent = '#' + count + ' joined';
+
+    // CTA nudge
+    const remaining = TOTAL - count;
+    const nudge = document.getElementById('sw-cta-nudge');
+    if (nudge && remaining > 0) {
+      nudge.innerHTML = `Only <strong>${remaining}</strong> founding spots remain.`;
+    }
+
+    // Slot grid — show first 200 slots for visual impact
+    const grid = document.getElementById('sw-grid');
+    if (!grid) return;
+    const SHOW = 200;
+    const tradKeys = ['hindu','sikh','buddhist','jain'];
+    // Distribute filled slots across traditions proportionally (approximate)
+    const weights = [0.52, 0.24, 0.15, 0.09];
+    for (let i = 0; i < SHOW; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'sw-slot';
+      if (i < count) {
+        slot.classList.add('filled');
+        // Assign color based on weighted tradition distribution
+        let trad = 'default';
+        const r = Math.random();
+        let acc = 0;
+        for (let t = 0; t < tradKeys.length; t++) {
+          acc += weights[t];
+          if (r < acc) { trad = tradKeys[t]; break; }
+        }
+        slot.style.background = TRADITION_COLORS[trad];
+        slot.style.opacity = (0.6 + Math.random() * 0.4).toFixed(2);
+        slot.title = 'Sthapaka #' + (i + 1);
+      } else {
+        slot.classList.add('empty');
+      }
+      grid.appendChild(slot);
+    }
+    if (count < TOTAL) {
+      const moreLabel = document.createElement('div');
+      moreLabel.style.cssText = 'width:100%;font-size:11px;color:rgba(250,246,239,0.20);letter-spacing:0.14em;text-transform:uppercase;margin-top:6px;text-align:center';
+      moreLabel.textContent = '+ ' + (TOTAL - SHOW) + ' more spots';
+      grid.appendChild(moreLabel);
+    }
+  }
+
+  function animateCount(el, target) {
+    if (target === 0) { el.textContent = '0'; return; }
+    let start = 0; const dur = 1400; const t0 = performance.now();
+    function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(ease * target);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Trigger on scroll into view
+  const section = document.getElementById('sthapaka-wall');
+  if (section) {
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { loadLeaderboard(); obs.disconnect(); }
+    }, { threshold: 0.1 });
+    obs.observe(section);
+  }
+})();
+</script>
 
 <!-- ── FEATURES ───────────────────────────────────────────────────── -->
 <section class="section" id="features">
@@ -1937,10 +2191,6 @@ function gcRestart(){
       <div class="trust-badge">
         <div class="trust-dot" style="background:var(--saffron-dk)"></div>
         GDPR Friendly
-      </div>
-      <div class="trust-badge">
-        <div class="trust-dot" style="background:var(--gold)"></div>
-        No Ads · Ever
       </div>
       <div class="trust-badge">
         <div class="trust-dot" style="background:var(--saffron)"></div>
