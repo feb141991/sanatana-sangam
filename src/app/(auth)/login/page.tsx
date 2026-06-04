@@ -130,12 +130,7 @@ function LoginForm() {
       onClick={() => handleOAuth('google')}
       className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-300 bg-white py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533.5 544.3" className="w-5 h-5">
-        <path fill="#EA4335" d="M533.5 278.4c0-17.9-1.6-35.1-4.6-51.7H272v97.8h146.9c-6.3 34-25.1 62.9-53.4 82.1v68.5h86.3c50.5-46.5 79.7-115 79.7-197.7"/>
-        <path fill="#34A853" d="M272 544.3c71.6 0 131.7-23.6 175.6-64.1l-86.3-68.5c-23.9 16-54.5 25.5-89.3 25.5-68.7 0-127-46.4-147.8-108.9H37.7v68.8c44.4 86.9 134.9 147.2 234.3 147.2"/>
-        <path fill="#4A90E2" d="M124.2 327.3c-10.4-30.9-10.4-64.1 0-95l-86.5-68.8c-37.5 72.9-37.5 159.5 0 232.4l86.5-68.6"/>
-        <path fill="#FBBC05" d="M272 107.7c39.2-.6 76.9 14.6 105.5 42.1l78.9-78.9C424.5 24.6 349 0 272 0 172.6 0 82.1 60.3 37.7 147.2l86.5 68.8C145 154.1 203.3 107.7 272 107.7"/>
-      </svg>
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EA4335] text-[11px] font-bold text-white">G</span>
       Continue with Google
     </button>
     <button

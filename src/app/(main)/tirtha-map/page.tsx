@@ -298,8 +298,9 @@ export default function TirthaMapPage() {
   async function ensurePlace(temple: Temple) {
     if (!userId) throw new Error('Please sign in to save visits.');
     const row = templeToPlaceRow(temple, userId);
+    // Best-effort metadata upsert — do not block check-in/save if this fails
     const { error } = await supabase.from('tirtha_places').upsert(row, { onConflict: 'id' });
-    if (error) throw error;
+    if (error) console.warn('[tirtha] tirtha_places upsert failed (non-fatal):', error.message);
     return row.id;
   }
 
