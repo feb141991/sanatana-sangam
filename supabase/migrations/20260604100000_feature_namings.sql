@@ -24,11 +24,13 @@ create table if not exists public.feature_namings (
 alter table public.feature_namings enable row level security;
 
 -- Anyone can read public namings
+drop policy if exists "feature_namings_public_read" on public.feature_namings;
 create policy "feature_namings_public_read"
   on public.feature_namings for select
   using (is_public = true);
 
 -- Only service role can insert/update (admin-only operation)
+drop policy if exists "feature_namings_service_write" on public.feature_namings;
 create policy "feature_namings_service_write"
   on public.feature_namings for all
   using (auth.role() = 'service_role');

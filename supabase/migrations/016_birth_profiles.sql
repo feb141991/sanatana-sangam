@@ -76,6 +76,7 @@ create unique index if not exists idx_birth_profiles_one_primary
 alter table birth_profiles enable row level security;
 
 -- Authenticated users can manage their own profiles
+drop policy if exists "Users manage own birth profiles" on birth_profiles;
 create policy "Users manage own birth profiles"
   on birth_profiles for all
   using (auth.uid() = owner_id)
@@ -93,6 +94,7 @@ begin
 end;
 $$;
 
+drop trigger if exists birth_profiles_updated_at on birth_profiles;
 create trigger birth_profiles_updated_at
   before update on birth_profiles
   for each row execute function update_birth_profiles_updated_at();

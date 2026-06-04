@@ -28,7 +28,11 @@ CREATE TABLE IF NOT EXISTS public.dharm_veer_daily (
 );
 
 ALTER TABLE public.dharm_veer_daily ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read" ON public.dharm_veer_daily;
 CREATE POLICY "Public read" ON public.dharm_veer_daily FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Service insert" ON public.dharm_veer_daily;
 CREATE POLICY "Service insert" ON public.dharm_veer_daily FOR INSERT WITH CHECK (true);
 
 CREATE INDEX IF NOT EXISTS dharm_veer_daily_tradition_date
