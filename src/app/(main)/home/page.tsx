@@ -24,7 +24,8 @@ import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 // Fix 5: Revalidate home page every 5 minutes (ISR) — avoids full SSR on each visit
-export const revalidate = 300;
+// No revalidate — home page is user-specific (auth cookies), ISR would cache
+// one user's data and serve it to others causing 403s at the edge.
 
 // Fix 4: Cache live darshan DB fetch for the duration of this server render
 const fetchLiveDarshans = cache(async () => {
