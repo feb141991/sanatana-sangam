@@ -11,6 +11,14 @@ function bucket(v: number, step = 0.01) {
   return Math.round(v / step) * step;
 }
 
+function stableId(str: string): number {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
 function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371;
   const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -42,7 +50,7 @@ async function fetchFromGeoapify(lat: number, lon: number, radiusM: number): Pro
         const coords = f.geometry?.coordinates ?? [];
         return {
           _religion: religion,
-          id: Math.abs(parseInt(p.place_id?.replace(/[^0-9]/g, '').slice(0, 9) ?? '0', 10)),
+          id: stableId(p.place_id ?? `${p.lat ?? coords[1]},${p.lon ?? coords[0]}`),
           lat: p.lat ?? coords[1] ?? 0,
           lon: p.lon ?? coords[0] ?? 0,
           tags: {

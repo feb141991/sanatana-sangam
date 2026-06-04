@@ -345,6 +345,7 @@ export default function TirthaMapPage() {
       const { error } = await supabase.from('tirtha_checkins').insert({
         user_id: userId,
         place_id: placeId,
+        visited_at: new Date().toISOString(),
         privacy: checkInPrivacy,
         darshan_mood: checkInMood,
         intention: intention.trim() || null,
