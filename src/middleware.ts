@@ -51,6 +51,17 @@ const ALWAYS_PUBLIC_PREFIX = [
 ];
 
 export async function middleware(req: NextRequest) {
+  try {
+    return await middlewareHandler(req);
+  } catch (err) {
+    // Never let an unhandled throw reach Vercel's edge — it returns 403.
+    // Fall through and let the request proceed normally.
+    console.error('[middleware] unhandled error:', err);
+    return NextResponse.next();
+  }
+}
+
+async function middlewareHandler(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
 
