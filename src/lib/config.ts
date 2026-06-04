@@ -19,32 +19,38 @@ export const API = {
 
   /** OpenStreetMap Overpass — temple / place-of-worship data (no API key needed) */
   OVERPASS: {
-    /** Primary + fallback mirrors, tried in order.
-     *  overpass-api.de removed — returning 406 as of 2026-06.
-     *  overpass.openstreetmap.ru removed — connection refused.
-     */
+    /** Mirrors tried in order. Server-side proxy at /api/tirtha/places uses these;
+     *  the browser never calls Overpass directly (avoids CORS + client timeouts). */
     MIRRORS: [
       'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.fr/api/interpreter',
+      'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter',
       'https://overpass-api.de/api/interpreter',
     ] as const,
     /** Overpass QL query-level timeout (seconds) — sent inside the query body */
-    QUERY_TIMEOUT_S:    25,
+    QUERY_TIMEOUT_S:    28,
     /** JS fetch() abort timeout per mirror attempt (ms) */
-    FETCH_TIMEOUT_MS:   15_000,
+    FETCH_TIMEOUT_MS:   18_000,
     /** Default search radius in metres */
     DEFAULT_RADIUS_M:   10_000,
     /** Maximum results to render in the UI */
     MAX_RESULTS:        25,
   },
 
-  /** Nominatim (OpenStreetMap) — geocoding & reverse-geocoding (no API key needed) */
+  /** Geoapify — primary geocoding (free tier: 3 000 calls/day, no credit card).
+   *  Falls back to Nominatim when GEOAPIFY_API_KEY is not set. */
+  GEOAPIFY: {
+    GEOCODE: 'https://api.geoapify.com/v1/geocode/search',
+    TIMEOUT_MS: 6_000,
+  },
+
+  /** Nominatim (OpenStreetMap) — geocoding fallback when Geoapify is unavailable */
   NOMINATIM: {
     BASE:     'https://nominatim.openstreetmap.org',
     SEARCH:   'https://nominatim.openstreetmap.org/search',
     REVERSE:  'https://nominatim.openstreetmap.org/reverse',
-    /** JS fetch() abort timeout (ms) */
     TIMEOUT_MS: 10_000,
-    /** User-Agent sent with every request (OSM policy requires one) */
     USER_AGENT: 'SanatanaSangam/1.0',
   },
 

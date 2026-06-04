@@ -1,14 +1,23 @@
 import type { Metadata } from 'next';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { cache } from 'react';
 import { calculatePanchang } from '@/lib/panchang';
 import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
 import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import PanchangHub from './PanchangHub';
 
+// Revalidate once per day — panchang data changes daily at midnight IST.
+// This serves the page from Vercel's edge cache for all visitors,
+// eliminating cold-start latency and Supabase auth overhead on every hit.
+export const revalidate = 86400;
+
+// Memoised per-request so generateMetadata and the page share one calculation.
+const getPanchang = cache(() => {
+  return calculatePanchang(new Date(), UJJAIN_LAT, UJJAIN_LON);
+});
+
 export async function generateMetadata(): Promise<Metadata> {
-  const today = new Date();
-  const panchang = calculatePanchang(today, UJJAIN_LAT, UJJAIN_LON);
-  const dateStr = today.toLocaleDateString('en-IN', {
+  const panchang = getPanchang();
+  const dateStr = new Date().toLocaleDateString('en-IN', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -30,32 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PanchangHubPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default function PanchangHubPage() {
+  const panchang = getPanchang();
 
-  let lat       = 28.6139; // Default: New Delhi
-  let lon       = 77.2090;
-  let tradition = 'hindu';
-  let timezone: string | undefined;
-  let userRashi: string | null = null;
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('latitude, longitude, tradition, timezone, rashi')
-      .eq('id', user.id)
-      .single();
-    if (profile?.latitude)  lat       = profile.latitude;
-    if (profile?.longitude) lon       = profile.longitude;
-    if (profile?.tradition) tradition = profile.tradition;
-    if (profile?.timezone)  timezone  = profile.timezone;
-    if (profile?.rashi)     userRashi = profile.rashi;
-  }
-
-  const today = new Date();
-  const panchang = calculatePanchang(today, lat, lon, timezone);
-  
   const panchangSchema = {
     "@context": "https://schema.org",
     "@type": "Dataset",
@@ -83,7 +69,9 @@ export default async function PanchangHubPage() {
         ]}
       />
       <JsonLd data={panchangSchema} />
-      <PanchangHub panchang={panchang as any} userRashi={userRashi} tradition={tradition} />
+      {/* userRashi and tradition are fetched client-side in PanchangHub
+          so this page can be fully cached at the edge. */}
+      <PanchangHub panchang={panchang as any} />
     </>
   );
 }

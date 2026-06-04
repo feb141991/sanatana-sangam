@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { createClient } from '@/lib/supabase';
 
 interface PanchangData {
   tithi:           string;
@@ -20,8 +21,8 @@ interface PanchangData {
 
 interface Props {
   panchang: PanchangData;
-  userRashi: string | null;
-  tradition: string;
+  // Removed: userRashi and tradition are now fetched client-side
+  // so the page can be statically cached at the edge.
 }
 
 const RASHI_MAP: Record<string, { symbol: string; sa: string; en: string }> = {
@@ -46,10 +47,27 @@ const TRADITION_EMOJIS: Record<string, string> = {
   jain:     '🤲',
 };
 
-export default function PanchangHub({ panchang, userRashi, tradition }: Props) {
+export default function PanchangHub({ panchang }: Props) {
   const { t } = useLanguage();
   const today = useMemo(() => new Date(), []);
-  
+
+  const [userRashi, setUserRashi] = useState<string | null>(null);
+  const [tradition, setTradition] = useState('hindu');
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('rashi, tradition')
+        .eq('id', data.user.id)
+        .single();
+      if (profile?.rashi)     setUserRashi(profile.rashi);
+      if (profile?.tradition) setTradition(profile.tradition);
+    });
+  }, []);
+
   const dateStr = useMemo(() => {
     return today.toLocaleDateString('en-IN', {
       weekday: 'short',

@@ -153,7 +153,7 @@ export default function OnboardingClient({
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [tradition, setTradition] = useState<string>(initialTradition || '');
-  const [goal, setGoal] = useState<string>('');
+  const [goals, setGoals] = useState<string[]>([]);
   const [name, setName] = useState<string>(initialName || '');
   const [saving, setSaving] = useState(false);
 
@@ -359,7 +359,7 @@ export default function OnboardingClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tradition,
-          goal,
+          goal: goals.join(','),
           name,
           life_stage: lifeStage,
           date_of_birth: dob || null,
@@ -818,29 +818,29 @@ export default function OnboardingClient({
                     { key: 'knowledge', emoji: '📚', label: 'Study the sacred texts', sub: 'Gita, Granth, Dhammapada, Agamas' },
                     { key: 'new_guide', emoji: '🌱', label: "I'm new — guide me gently", sub: 'Begin from the very first step' }
                   ].map((item) => {
-                    const selected = goal === item.key;
+                    const selected = goals.includes(item.key);
                     return (
                       <button
                         key={item.key}
                         type="button"
-                        onClick={() => setGoal(item.key)}
+                        onClick={() => setGoals(prev => selected ? prev.filter(g => g !== item.key) : [...prev, item.key])}
                         className="w-full flex items-center gap-4 rounded-2xl p-4 text-left border transition-all duration-300 transform active:scale-[0.99] relative overflow-hidden"
                         style={selected
-                          ? { 
-                              borderColor: 'var(--premium-gold)', 
+                          ? {
+                              borderColor: 'var(--premium-gold)',
                               background: 'rgba(200, 146, 74, 0.06)',
                               borderWidth: '1.5px',
                               transform: 'scale(1.01)'
                             }
-                          : { 
-                              borderColor: 'var(--premium-border)', 
+                          : {
+                              borderColor: 'var(--premium-border)',
                               background: 'rgba(255, 255, 255, 0.7)',
                               borderWidth: '1px'
                             }
                         }
                       >
                         {/* Left Emoji Container */}
-                        <div 
+                        <div
                           className="w-12 h-12 flex items-center justify-center rounded-full border shrink-0"
                           style={{
                             backgroundColor: 'rgba(200, 146, 74, 0.08)',
@@ -860,9 +860,9 @@ export default function OnboardingClient({
                           </p>
                         </div>
 
-                        {/* Right Selection Indicator */}
-                        <div 
-                          className="w-5 h-5 rounded-full border flex items-center justify-center shrink-0"
+                        {/* Right Selection Indicator — checkbox style for multi-select */}
+                        <div
+                          className="w-5 h-5 rounded-md border flex items-center justify-center shrink-0"
                           style={{
                             borderColor: selected ? 'var(--premium-gold)' : 'var(--premium-border)',
                             backgroundColor: selected ? 'var(--premium-gold)' : 'transparent',
@@ -879,8 +879,8 @@ export default function OnboardingClient({
 
                 <button
                   type="button"
-                  disabled={!goal}
-                  onClick={() => goNext(5)}
+                  disabled={goals.length === 0}
+                  onClick={() => goNext(tradition === 'hindu' ? 5 : 6)}
                   className="w-full mt-6 rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 transition-all hover:opacity-90"
                 >
                   Continue →
@@ -1003,13 +1003,13 @@ export default function OnboardingClient({
                 <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
                 <div className="space-y-3 mt-6">
                   {GOALS.map((item) => {
-                    const selected = goal === item.key;
+                    const selected = goals.includes(item.key);
                     return (
                       <button
                         key={item.key}
                         type="button"
                         onClick={() => {
-                          setGoal(item.key);
+                          setGoals(prev => selected ? prev.filter(g => g !== item.key) : [...prev, item.key]);
                           setTimeout(() => {
                             setDirection(1);
                             setStep(7);
@@ -1421,7 +1421,7 @@ export default function OnboardingClient({
                 </h1>
                 <p className="text-[var(--brand-muted)] mb-2 leading-relaxed">{readyCopy.body}</p>
                 <p className="text-xs text-[var(--brand-muted)] mb-8 opacity-60 italic">
-                  Welcome to the Zeroists — seekers who find everything in nothing.
+                  Welcome, Zeroist.
                 </p>
 
                 {/* Warm sanctuary cards */}
@@ -1457,7 +1457,7 @@ export default function OnboardingClient({
                     disabled={saving}
                     className="text-[var(--brand-muted)] text-sm underline"
                   >
-                    Explore the Sanctuary first
+                    Explore the Shoonaya
                   </button>
                 </div>
               </div>

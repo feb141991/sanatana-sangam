@@ -73,7 +73,7 @@ Do not include any extra text, markdown wrappers, or explanations outside the JS
     const userMessage = `Generate the spiritual name story for the name "${name}" in the "${tradition}" tradition.`;
 
     const aiResult = await generateWithProvider(
-      { system: systemPrompt, user: userMessage, maxOutputTokens: 1500 },
+      { system: systemPrompt, user: userMessage, maxOutputTokens: 2048 },
       { responseFormat: 'json' }
     );
     let responseText = (aiResult.text ?? '').trim();
@@ -83,11 +83,25 @@ Do not include any extra text, markdown wrappers, or explanations outside the JS
       responseText = responseText.replace(/^```json\s*/, '').replace(/```$/, '').trim();
     }
 
+    // Attempt to recover truncated JSON by closing any open braces/brackets
+    if (responseText && !responseText.endsWith('}')) {
+      const openBraces = (responseText.match(/\{/g) || []).length;
+      const closeBraces = (responseText.match(/\}/g) || []).length;
+      const missing = openBraces - closeBraces;
+      if (missing > 0) {
+        // Truncate to the last complete string value and close the object
+        const lastComplete = responseText.lastIndexOf('",');
+        if (lastComplete > 0) {
+          responseText = responseText.slice(0, lastComplete + 1) + '}';
+        }
+      }
+    }
+
     let parsedData;
     try {
       parsedData = JSON.parse(responseText);
     } catch (parseError) {
-      console.error('[POST /api/name-story/generate] Failed to parse Claude response:', responseText);
+      console.error('[POST /api/name-story/generate] Failed to parse AI response:', responseText?.slice(0, 300));
       return NextResponse.json({ error: 'AI returned invalid structured content. Please try again.' }, { status: 502 });
     }
 
