@@ -192,6 +192,104 @@ body.landing-entered #explore-btn {
 @keyframes celebrationRay { 0% { opacity:0; transform:rotate(var(--r)) scaleY(0.15); } 22% { opacity:0.85; } 100% { opacity:0; transform:rotate(var(--r)) scaleY(1.9); } }
 @keyframes pulseGlow { 0%,100%{box-shadow:0 4px 20px rgba(197,160,89,0.15), 0 0 0 0 rgba(197,160,89,0)} 50%{box-shadow:0 4px 32px rgba(197,160,89,0.35), 0 0 28px 6px rgba(197,160,89,0.18), 0 0 0 8px rgba(197,160,89,0.06)} }
 @keyframes bounceDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+
+/* ── Global reveal animations ────────────────────────────────────────────── */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideLeft  { from{opacity:0;transform:translateX(20px)}  to{opacity:1;transform:translateX(0)} }
+
+/* Shimmer on Coming Soon pills */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.anim-shimmer {
+  background: linear-gradient(90deg, rgba(197,160,89,0.55) 25%, rgba(255,240,200,0.90) 50%, rgba(197,160,89,0.55) 75%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.8s linear infinite;
+}
+
+/* Coming Soon status pill override */
+.phone-status.cs-pill {
+  background: rgba(197,160,89,0.12);
+  border: 1px solid rgba(197,160,89,0.28);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.dl-btn-disabled { opacity:0.55; cursor:not-allowed; pointer-events:none; }
+.dl-coming-tag { font-size:9px!important; letter-spacing:0.12em!important; text-transform:uppercase; }
+
+/* Reveal: items animate in as they scroll into view */
+.reveal { opacity:0; transform:translateY(20px); transition:opacity 0.65s ease, transform 0.65s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+/* Stagger children inside a reveal parent */
+.reveal-stagger > * { opacity:0; transform:translateY(18px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.reveal-stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0s; }
+.reveal-stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
+.reveal-stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
+.reveal-stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
+.reveal-stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.32s; }
+.reveal-stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.40s; }
+.reveal-stagger.visible > *:nth-child(n+7) { opacity:1; transform:none; transition-delay:0.48s; }
+
+/* s-label: slide down from above */
+.s-label.reveal { transform:translateY(-10px); }
+.s-label.visible { transform:translateY(0); }
+
+/* Section title: slightly bigger entrance */
+.s-title.reveal { transform:translateY(28px); transition-duration:0.75s; }
+.s-title.visible { transform:translateY(0); }
+
+/* Floating orb animation on feature cards */
+@keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.feature-card:hover { animation: floatCard 3s ease-in-out infinite; }
+
+/* Timeline dots pulse in sequence */
+.ft-node .ft-dot { transform:scale(0); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.ft-timeline.visible .ft-node:nth-child(1) .ft-dot { transform:scale(1); transition-delay:0.1s; }
+.ft-timeline.visible .ft-node:nth-child(2) .ft-dot { transform:scale(1); transition-delay:0.25s; }
+.ft-timeline.visible .ft-node:nth-child(3) .ft-dot { transform:scale(1); transition-delay:0.40s; }
+.ft-timeline.visible .ft-node:nth-child(4) .ft-dot { transform:scale(1); transition-delay:0.55s; }
+.ft-timeline.visible .ft-node:nth-child(5) .ft-dot { transform:scale(1); transition-delay:0.70s; }
+.ft-timeline .ft-node .ft-content { opacity:0; transform:translateX(14px); transition:opacity 0.4s ease, transform 0.4s ease; }
+.ft-timeline.visible .ft-node:nth-child(1) .ft-content { opacity:1; transform:none; transition-delay:0.15s; }
+.ft-timeline.visible .ft-node:nth-child(2) .ft-content { opacity:1; transform:none; transition-delay:0.30s; }
+.ft-timeline.visible .ft-node:nth-child(3) .ft-content { opacity:1; transform:none; transition-delay:0.45s; }
+.ft-timeline.visible .ft-node:nth-child(4) .ft-content { opacity:1; transform:none; transition-delay:0.60s; }
+.ft-timeline.visible .ft-node:nth-child(5) .ft-content { opacity:1; transform:none; transition-delay:0.75s; }
+
+/* Kids Zone feature grid stagger */
+.kz-features { } /* grid is already defined */
+.kz-feat { opacity:0; transform:translateY(16px) scale(0.97); transition:opacity 0.45s ease, transform 0.45s ease; }
+.kz-features.visible .kz-feat:nth-child(1) { opacity:1; transform:none; transition-delay:0.00s; }
+.kz-features.visible .kz-feat:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
+.kz-features.visible .kz-feat:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
+.kz-features.visible .kz-feat:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
+.kz-features.visible .kz-feat:nth-child(5) { opacity:1; transform:none; transition-delay:0.32s; }
+.kz-features.visible .kz-feat:nth-child(6) { opacity:1; transform:none; transition-delay:0.40s; }
+
+/* Stats band count-up already exists; add a pop on load */
+.stats-band.visible .stat-item { animation:scaleIn 0.5s cubic-bezier(0.34,1.4,0.64,1) both; }
+.stats-band.visible .stat-item:nth-child(1) { animation-delay:0s; }
+.stats-band.visible .stat-item:nth-child(2) { animation-delay:0.1s; }
+.stats-band.visible .stat-item:nth-child(3) { animation-delay:0.2s; }
+
+/* Founding leaderboard slots stagger */
+#cc-grid .cc-card { opacity:0; transform:scale(0.94); transition:opacity 0.4s ease, transform 0.4s ease; }
+#cocreator-wall.visible .cc-card:nth-child(1) { opacity:1; transform:none; transition-delay:0.00s; }
+#cocreator-wall.visible .cc-card:nth-child(2) { opacity:1; transform:none; transition-delay:0.06s; }
+#cocreator-wall.visible .cc-card:nth-child(3) { opacity:1; transform:none; transition-delay:0.12s; }
+#cocreator-wall.visible .cc-card:nth-child(4) { opacity:1; transform:none; transition-delay:0.18s; }
+#cocreator-wall.visible .cc-card:nth-child(5) { opacity:1; transform:none; transition-delay:0.24s; }
+#cocreator-wall.visible .cc-card:nth-child(6) { opacity:1; transform:none; transition-delay:0.30s; }
+#cocreator-wall.visible .cc-card:nth-child(7) { opacity:1; transform:none; transition-delay:0.36s; }
+#cocreator-wall.visible .cc-card:nth-child(8) { opacity:1; transform:none; transition-delay:0.42s; }
 #main-page { min-height:100vh; }
 
 /* ── LOGO ANIMATION — Infinity + Bindu ─────────────────────────────────── */
@@ -849,7 +947,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     <li><a href="#festivals">Festivals</a></li>
     <li><a href="#community">Community</a></li>
     <li><a href="#features">Features</a></li>
-    <li><a href="#download">App</a></li>
+    <li><a href="#download">Web App</a></li>
   </ul>
   <button class="nav-cta" onclick="scrollToCta()">Get Early Access</button>
 </nav>
@@ -2157,7 +2255,7 @@ function gcRestart(){
     <div class="kz-title reveal">A dharmic world<br>built for <em>little seekers.</em></div>
     <p class="kz-sub reveal">The Kids Zone gives every child a living connection to their tradition — through stories, songs, and sacred play. Parents get a child who knows who they are.</p>
 
-    <div class="kz-features reveal">
+    <div class="kz-features reveal" id="kz-features-grid">
       <div class="kz-feat">
         <div class="kz-feat-icon">📖</div>
         <div class="kz-feat-name">Dharma Stories</div>
@@ -2204,15 +2302,17 @@ function gcRestart(){
   </div>
 </section>
 
-<!-- ── APP DOWNLOAD ───────────────────────────────────────────────── -->
+<!-- ── APP / WEB ───────────────────────────────────────────────── -->
 <section class="download-section" id="download">
-  <div class="s-label reveal" style="text-align:center">Now Live on Web · Mobile Coming Soon</div>
-  <div class="s-title reveal" style="text-align:center">The Sangam in your pocket</div>
-  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Your daily sadhana, community, and sacred calendar — already live at <strong>shoonaya.app</strong> and arriving on iOS &amp; Android on June 17, 2026.</p>
+  <div class="s-label reveal" style="text-align:center">Web App · Launching June 17, 2026</div>
+  <div class="s-title reveal" style="text-align:center">Your sacred home,<br>on every screen.</div>
+  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Shoonaya launches on web on June 17, 2026. Use it in your browser on any device — phone, tablet, or desktop. iOS &amp; Android native apps are coming soon after.</p>
 
   <div class="download-phones reveal">
-    <a class="phone-mockup main" href="https://sanatana-sangam-two.vercel.app/login" aria-label="Log in to Shoonaya web app">
-      <span class="phone-status live"><span class="pulse-dot"></span>Live web</span>
+
+    <!-- Web — primary -->
+    <a class="phone-mockup main" href="https://shoonaya.com" aria-label="Open Shoonaya web app">
+      <span class="phone-status live"><span class="pulse-dot"></span>Web · Jun 17</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.4"/>
@@ -2221,8 +2321,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">Use it today</div>
-        <p class="phone-desc">Open the full web app now for sadhana, Pathshala, Panchang, Mandali, and Kul.</p>
+        <div class="phone-label">Web App</div>
+        <p class="phone-desc">Full experience in any browser — sadhana, Panchang, Kul, Mandali, Pathshala, and more. No install needed.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -2230,8 +2330,10 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </a>
+
+    <!-- iOS — coming soon -->
     <div class="phone-mockup sikh">
-      <span class="phone-status"><span class="pulse-dot"></span>iOS soon</span>
+      <span class="phone-status cs-pill anim-shimmer">🌱 Coming Soon</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <path d="M20.5 4.5c.1 2.4-1.6 4.5-3.8 4.8-.3-2.2 1.3-4.3 3.8-4.8Z" fill="currentColor" opacity=".85"/>
@@ -2239,8 +2341,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">iPhone ready</div>
-        <p class="phone-desc">Native reminders, daily practice flow, and calm mobile-first rituals are being prepared.</p>
+        <div class="phone-label">iPhone App</div>
+        <p class="phone-desc">Native iOS app with tradition-aware push notifications, offline scripture, and home-screen widgets.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -2248,8 +2350,10 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </div>
+
+    <!-- Android — coming soon -->
     <div class="phone-mockup jain">
-      <span class="phone-status"><span class="pulse-dot"></span>Android soon</span>
+      <span class="phone-status cs-pill anim-shimmer">🌱 Coming Soon</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <path d="M9 12.5h14v10.8c0 2.3-1.9 4.2-4.2 4.2h-5.6C10.9 27.5 9 25.6 9 23.3V12.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
@@ -2258,8 +2362,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">Android ready</div>
-        <p class="phone-desc">Built for fast access to mala, sacred calendar, family, and community wherever you are.</p>
+        <div class="phone-label">Android App</div>
+        <p class="phone-desc">Full Android experience with daily reminders, sacred calendar, and community — wherever you are.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -2267,37 +2371,38 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </div>
+
   </div>
 
   <div class="download-buttons reveal">
-    <!-- App Store -->
-    <a class="dl-btn" href="#" onclick="return false;" title="Coming soon">
+    <!-- App Store — coming soon -->
+    <a class="dl-btn dl-btn-disabled" href="#" onclick="return false;" title="Coming soon after web launch">
       <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.1)"/>
-        <path d="M17.5 8.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM10 22l2.5-4.5L15 21l2.5-4.5L20 22" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M11 13.5l4-6 4 6" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.08)"/>
+        <path d="M17.5 8.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM10 22l2.5-4.5L15 21l2.5-4.5L20 22" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M11 13.5l4-6 4 6" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div class="dl-btn-text">
         <span class="dl-btn-sub">Download on the</span>
         <span class="dl-btn-name">App Store</span>
       </div>
-      <div class="dl-coming-tag">Soon</div>
+      <div class="dl-coming-tag anim-shimmer">Coming Soon</div>
     </a>
-    <!-- Google Play -->
-    <a class="dl-btn" href="#" onclick="return false;" title="Coming soon">
+    <!-- Google Play — coming soon -->
+    <a class="dl-btn dl-btn-disabled" href="#" onclick="return false;" title="Coming soon after web launch">
       <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.1)"/>
-        <path d="M9 8l12 7-12 7V8z" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.08)"/>
+        <path d="M9 8l12 7-12 7V8z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linejoin="round"/>
       </svg>
       <div class="dl-btn-text">
         <span class="dl-btn-sub">Get it on</span>
         <span class="dl-btn-name">Google Play</span>
       </div>
-      <div class="dl-coming-tag">Soon</div>
+      <div class="dl-coming-tag anim-shimmer">Coming Soon</div>
     </a>
   </div>
 
-  <p class="download-note">Mobile apps arriving June 17, 2026 · <span class="download-notify-link" onclick="scrollToCta()">Join as a founding member</span> to be first in line</p>
+  <p class="download-note">Web launching June 17, 2026 · Native iOS &amp; Android apps coming after launch · <span class="download-notify-link" onclick="scrollToCta()">Join as Sthapaka</span> to be first in line</p>
 </section>
 
 <!-- ── CTA / PRE-REGISTER ─────────────────────────────────────────── -->
@@ -2580,12 +2685,18 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 /* ─── SCROLL REVEAL ──────────────────────────────────────────────────────── */
-// IntersectionObserver handles below-fold elements as user scrolls
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
   });
 }, { threshold: 0.06 });
+
+// Additional observer for parent-controlled stagger animations
+const staggerObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); staggerObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
 
 // setTimeout guarantees the browser has fully laid out the newly-visible #main-page
 // before we check which elements are in the viewport (RAF alone is not sufficient
@@ -2595,11 +2706,21 @@ setTimeout(() => {
   document.querySelectorAll('.reveal').forEach(el => {
     const r = el.getBoundingClientRect();
     if (r.bottom > 0 && r.top < vh + 80) {
-      // In or just below initial viewport — show immediately
       el.classList.add('visible');
     } else {
-      // Below fold — let IntersectionObserver handle it on scroll
       revealObs.observe(el);
+    }
+  });
+
+  // Observe stagger-parent elements
+  ['.ft-timeline', '.kz-features', '.stats-band', '#cocreator-wall', '#sthapaka-wall'].forEach(sel => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < vh + 80) {
+      el.classList.add('visible');
+    } else {
+      staggerObs.observe(el);
     }
   });
 }, 80);
@@ -3794,7 +3915,7 @@ document.getElementById('explore-btn').addEventListener('click', function () {
   <div class="pwa-icon">🪔</div>
   <div class="pwa-text">
     <div class="pwa-title">Add Shoonaya to your Home Screen</div>
-    <div class="pwa-sub">Use it like an app — until iOS &amp; Android launch on June 17</div>
+    <div class="pwa-sub">Add to Home Screen for a native app feel — available now</div>
   </div>
   <button id="pwa-install-btn">Install</button>
   <button id="pwa-dismiss-btn" aria-label="Dismiss">×</button>
