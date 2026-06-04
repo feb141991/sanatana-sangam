@@ -163,20 +163,31 @@ export default function OnboardingClient({
 
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
-  const [age, setAge] = useState('');
+  const [dob, setDob] = useState(''); // YYYY-MM-DD
   const [rashi, setRashi] = useState('');
+
+  // Derive age from DOB and auto-suggest life stage
+  const dobAge = (() => {
+    if (!dob) return null;
+    const today = new Date();
+    const birth = new Date(dob);
+    if (isNaN(birth.getTime())) return null;
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
+  })();
+
+  const recommendedStage = (() => {
+    if (dobAge === null) return null;
+    if (dobAge <= 25) return 'brahmacharya';
+    if (dobAge <= 50) return 'grihastha';
+    if (dobAge <= 75) return 'vanaprastha';
+    return 'sannyasa';
+  })();
   const [nakshatra, setNakshatra] = useState('');
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
 
-  // Auto-recommend life stage from age
-  const recommendedStage = (() => {
-    const n = parseInt(age, 10);
-    if (isNaN(n)) return null;
-    if (n <= 25) return 'brahmacharya';
-    if (n <= 50) return 'grihastha';
-    if (n <= 75) return 'vanaprastha';
-    return 'sannyasa';
-  })();
   const [nameStory, setNameStory] = useState<any>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
@@ -351,6 +362,7 @@ export default function OnboardingClient({
           goal,
           name,
           life_stage: lifeStage,
+          date_of_birth: dob || null,
           gender,
           nakshatra: nakshatra || null,
           rashi: rashi || null,
@@ -516,9 +528,53 @@ export default function OnboardingClient({
                   </div>
                 )}
                 <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
-                  Your Stage of Life
+                  When were you born?
                 </h1>
-                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                <p className="text-[var(--brand-muted)] text-sm mb-5">
+                  Your date of birth helps personalise your Panchang, life-stage guidance, and Jyotish readings.
+                </p>
+
+                {/* DOB picker */}
+                <div className="mb-6">
+                  <input
+                    type="date"
+                    value={dob}
+                    max={new Date().toISOString().slice(0, 10)}
+                    min="1920-01-01"
+                    onChange={e => {
+                      setDob(e.target.value);
+                      // Auto-suggest life stage from DOB
+                      if (e.target.value) {
+                        const today = new Date();
+                        const birth = new Date(e.target.value);
+                        let age = today.getFullYear() - birth.getFullYear();
+                        const m = today.getMonth() - birth.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                        if (age <= 25) setLifeStage('brahmacharya');
+                        else if (age <= 50) setLifeStage('grihastha');
+                        else if (age <= 75) setLifeStage('vanaprastha');
+                        else setLifeStage('sannyasa');
+                      }
+                    }}
+                    className="w-full rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] px-5 py-4 outline-none text-[var(--brand-primary-strong)] text-base"
+                    style={{ colorScheme: 'light' }}
+                  />
+                  {dobAge !== null && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-xs text-[var(--brand-muted)]">Age: <span className="font-semibold text-[var(--brand-primary-strong)]">{dobAge}</span></span>
+                      {recommendedStage && (
+                        <span className="text-xs text-[var(--brand-muted)]">
+                          · ✨ Suggested stage: <span className="font-semibold text-[var(--premium-gold)]">{LIFE_STAGES.find(s => s.key === recommendedStage)?.label}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <h2 className="text-lg font-semibold text-[var(--brand-primary-strong)] mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Your Stage of Life
+                </h2>
+                <p className="text-[var(--brand-muted)] text-xs mb-4">
                   Your duties shift with each stage. This shapes your Nitya Karma and guidance.
                 </p>
 
@@ -556,35 +612,6 @@ export default function OnboardingClient({
                     </button>
                   ))}
                 </div>
-
-                {/* Age */}
-                <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mb-2">Your Age</p>
-                <div className="flex items-center gap-3 mb-2">
-                  <input
-                    type="number"
-                    min="5"
-                    max="120"
-                    value={age}
-                    onChange={e => {
-                      setAge(e.target.value);
-                      const n = parseInt(e.target.value, 10);
-                      if (!isNaN(n)) {
-                        if (n <= 25) setLifeStage('brahmacharya');
-                        else if (n <= 50) setLifeStage('grihastha');
-                        else if (n <= 75) setLifeStage('vanaprastha');
-                        else setLifeStage('sannyasa');
-                      }
-                    }}
-                    placeholder="e.g. 28"
-                    className="w-28 rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] px-4 py-3 outline-none text-[var(--brand-primary-strong)] text-center text-lg font-semibold"
-                  />
-                  {recommendedStage && (
-                    <span className="text-xs text-[var(--brand-muted)] leading-snug">
-                      ✨ Suggested: <span className="font-semibold text-[var(--premium-gold)] capitalize">{LIFE_STAGES.find(s => s.key === recommendedStage)?.label}</span>
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] text-[var(--brand-muted)] mb-5 opacity-70">Enter your age to get a recommendation, or select manually below.</p>
 
                 {/* Gender */}
                 <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mb-3">Gender</p>
