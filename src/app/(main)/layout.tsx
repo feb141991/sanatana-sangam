@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getAuthUser } from '@/lib/auth-cache';
+import { getAuthUser, getSupabaseClient } from '@/lib/auth-cache';
 import BottomNav from '@/components/layout/BottomNav';
 import AIChatFABWrapper from '@/components/layout/AIChatFABWrapper';
 import { TraditionSync } from '@/components/providers/TraditionSync';
@@ -16,7 +15,8 @@ export default async function MainLayout({
 }) {
   const user = await getAuthUser();
   const userId = user?.id ?? '';
-  const supabase = await createServerSupabaseClient();
+  // Reuse the same cached client — prevents token-refresh divergence
+  const supabase = await getSupabaseClient();
 
   let savedLat:         number | null = null;
   let savedLon:         number | null = null;

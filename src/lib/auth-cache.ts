@@ -8,8 +8,14 @@ import { createServerSupabaseClient } from './supabase-server';
  * network call is made per request regardless of how many Server
  * Components import this.
  */
+// Single cached Supabase client per request — prevents token-refresh
+// divergence when multiple server components create separate clients.
+export const getSupabaseClient = cache(async () => {
+  return createServerSupabaseClient();
+});
+
 export const getAuthUser = cache(async () => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   return user;
 });

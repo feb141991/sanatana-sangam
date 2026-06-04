@@ -1,5 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getAuthUser } from '@/lib/auth-cache';
+import { getAuthUser, getSupabaseClient } from '@/lib/auth-cache';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
 import HomeDashboard from './HomeDashboard';
@@ -29,7 +28,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 
 // Fix 4: Cache live darshan DB fetch for the duration of this server render
 const fetchLiveDarshans = cache(async () => {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getSupabaseClient();
   const { data } = await supabase.from('live_darshans').select('*').eq('is_active', true);
   return data ?? null;
 });
@@ -66,7 +65,7 @@ export default async function HomePage() {
 
   if (!user) redirect('/');
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getSupabaseClient();
 
   const { data: profile } = await supabase
     .from('profiles')
