@@ -315,6 +315,12 @@ export default function ProfileClient({
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
+  const [drawersMounted, setDrawersMounted] = useState(false);
+  // Mount drawers/modals after first paint — they're never visible on load
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawersMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
@@ -1651,8 +1657,8 @@ export default function ProfileClient({
         </motion.div>
       </div>
 
-      {/* ── Drawers (Zenith Modals) ── */}
-      <BottomDrawer
+      {/* ── Drawers (Zenith Modals) — deferred until after first paint ── */}
+      {drawersMounted && <><BottomDrawer
         isOpen={koshOpen}
         onClose={() => setKoshOpen(false)}
         title="Sacred Kosh"
@@ -2453,7 +2459,7 @@ export default function ProfileClient({
             </div>
           </button>
         </div>
-      </BottomDrawer>
+      </BottomDrawer></>}
     </motion.div>
   );
 }

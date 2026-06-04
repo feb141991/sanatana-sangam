@@ -2270,6 +2270,12 @@ export default function JapaClient({
 
   // ── Screen + selection state ─────────────────────────────────────────────
   const [screen,    setScreen]    = useState<Screen>('launcher');
+  // Deferred mount — sub-screens never rendered until first activated
+  const [mountedJapaScreens, setMountedJapaScreens] = useState<Set<Screen>>(new Set(['launcher']));
+  function goToJapaScreen(s: Screen) {
+    setMountedJapaScreens(prev => new Set([...prev, s]));
+    setScreen(s);
+  }
   const [malaId,    setMalaId]    = useState<MalaId>((meta.japaRecommendedMalas[0] ?? 'sandalwood') as MalaId);
   const [mantraId,  setMantraId]  = useState<SelectedMantraId>(defaultMantraId);
   const [customMantra, setCustomMantra] = useState<CustomMantra | null>(null);
@@ -2754,13 +2760,13 @@ export default function JapaClient({
 
   const handleConfirmMala = () => {
     try { localStorage.setItem(STORAGE_MALA, malaId); } catch { /* ok */ }
-    setScreen('chooseMantra');
+    goToJapaScreen('chooseMantra');
   };
 
   const handleConfirmMantra = () => {
     try { localStorage.setItem(STORAGE_MANTRA, mantraId); } catch { /* ok */ }
     enterBrowserFullscreen();
-    setScreen('practice');
+    goToJapaScreen('practice');
   };
 
   const handleStartPractice = () => {
@@ -2770,7 +2776,7 @@ export default function JapaClient({
       localStorage.setItem(STORAGE_BG, bgSceneId);
     } catch { /* ok */ }
     enterBrowserFullscreen();
-    setScreen('practice');
+    goToJapaScreen('practice');
   };
 
   const handleReset = () => {
@@ -2914,13 +2920,13 @@ export default function JapaClient({
           accentColor={meta.accentColour}
           onTargetChange={setTargetRounds}
           onStart={handleStartPractice}
-          onCustomize={() => setScreen('chooseMala')}
+          onCustomize={() => goToJapaScreen('chooseMala')}
           onBack={() => router.back()}
           japaAlreadyDoneToday={japaAlreadyDoneToday}
         />
       )}
 
-      {screen === 'chooseMala' && (
+      {mountedJapaScreens.has('chooseMala') && screen === 'chooseMala' && (
         <ChooseMalaScreen
           key="chooseMala"
           isDark={isDark}
@@ -2933,7 +2939,7 @@ export default function JapaClient({
         />
       )}
 
-      {screen === 'chooseMantra' && (
+      {mountedJapaScreens.has('chooseMantra') && screen === 'chooseMantra' && (
         <ChooseMantraScreen
           key="chooseMantra"
           isDark={isDark}
@@ -2949,7 +2955,7 @@ export default function JapaClient({
         />
       )}
 
-      {screen === 'practice' && (
+      {mountedJapaScreens.has('practice') && screen === 'practice' && (
         <motion.div
           key="practice"
           className="flex flex-col"
@@ -3027,7 +3033,7 @@ export default function JapaClient({
             <button
               onClick={() => {
                 if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-                setScreen('chooseMantra');
+                goToJapaScreen('chooseMantra');
               }}
               className="text-center flex-1 px-3 py-1.5 mx-2 rounded-full border transition-colors"
               style={{

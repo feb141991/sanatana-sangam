@@ -1562,6 +1562,12 @@ export default function MyProgressClient({
   const { resolvedTheme } = useThemePreference();
   const isDark    = resolvedTheme === 'dark';
   const [showReport, setShowReport]     = useState(false);
+  const [belowFoldMounted, setBelowFoldMounted] = useState(false);
+  // Mount below-fold sections after first paint
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setBelowFoldMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
   const [midpointRefreshKey, setMidpointRefreshKey] = useState(0);
 
@@ -2130,8 +2136,8 @@ export default function MyProgressClient({
             </motion.div>
           )}
 
-          {/* ── Advanced Analytics (Zenith) ── */}
-          <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />
+          {/* ── Advanced Analytics (Zenith) — deferred until after first paint ── */}
+          {belowFoldMounted && <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />}
 
           {/* ── Deep-dive links row ── */}
           <motion.div
@@ -2155,15 +2161,17 @@ export default function MyProgressClient({
             ))}
           </motion.div>
 
-          {/* ── Achievement Shields (compact preview → full page) ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-            <ShieldBadgesPreview
-              streak={streak}
-              totalSessions={totalJapaSessions}
-              isDark={isDark}
-            />
-          </motion.section>
+          {/* ── Achievement Shields — deferred until after first paint ── */}
+          {belowFoldMounted && (
+            <motion.section
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
+              <ShieldBadgesPreview
+                streak={streak}
+                totalSessions={totalJapaSessions}
+                isDark={isDark}
+              />
+            </motion.section>
+          )}
 
           {/* ── Day-of-week chart ── */}
           <motion.section

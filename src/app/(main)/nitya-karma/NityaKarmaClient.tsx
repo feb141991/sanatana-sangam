@@ -1112,6 +1112,12 @@ export default function NityaKarmaClient({
   // ── Screen navigation (hub → sub-screen, like Japa multi-screen) ─────────
   type NityaScreen = 'hub' | 'dincharya' | 'ashrama' | 'journey';
   const [nityaScreen, setNityaScreen] = useState<NityaScreen>('hub');
+  // Deferred mount — sub-screens are never rendered until first activated
+  const [mountedScreens, setMountedScreens] = useState<Set<NityaScreen>>(new Set(['hub']));
+  function goToScreen(s: NityaScreen) {
+    setMountedScreens(prev => new Set([...prev, s]));
+    setNityaScreen(s);
+  }
   // ── Inline Ashrama setup (for users with null life_stage) ─────────────────
   const [localLifeStage,    setLocalLifeStage]   = useState<string | null>(lifeStage);
   const [localGenderCtx,    setLocalGenderCtx]   = useState<string | null>(genderContext);
@@ -1687,7 +1693,7 @@ export default function NityaKarmaClient({
 
               {/* ① Dincharya — FREE */}
               <motion.button
-                onClick={() => setNityaScreen('dincharya')}
+                onClick={() => goToScreen('dincharya')}
                 whileTap={{ scale: 0.975 }}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1755,7 +1761,7 @@ export default function NityaKarmaClient({
 
               {/* ③ Ashrama Dharma — PRO */}
               <motion.button
-                onClick={() => isPro ? setNityaScreen('ashrama') : setShowProSheet(true)}
+                onClick={() => isPro ? goToScreen('ashrama') : setShowProSheet(true)}
                 whileTap={{ scale: 0.975 }}
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -1813,7 +1819,7 @@ export default function NityaKarmaClient({
         {/* ════════════════════════════════════════════════════════════════════
             SCREEN 1 — Dincharya (7-step morning routine, FREE)
         ════════════════════════════════════════════════════════════════════ */}
-        {nityaScreen === 'dincharya' && (
+        {mountedScreens.has('dincharya') && nityaScreen === 'dincharya' && (
           <motion.div
             key="dincharya"
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
@@ -1960,7 +1966,7 @@ export default function NityaKarmaClient({
                   style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
                 <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>
-                <button onClick={() => isPro ? setNityaScreen('journey') : setShowProSheet(true)}
+                <button onClick={() => isPro ? goToScreen('journey') : setShowProSheet(true)}
                   className="px-4 py-2 rounded-xl text-xs font-semibold"
                   style={{ background: `${accent}18`, color: accent }}>✦ Guided Plans</button>
               </div>
@@ -1979,7 +1985,7 @@ export default function NityaKarmaClient({
         {/* ════════════════════════════════════════════════════════════════════
             SCREEN 2 — Ashrama Dharma (life-stage duties, PRO)
         ════════════════════════════════════════════════════════════════════ */}
-        {nityaScreen === 'ashrama' && (
+        {mountedScreens.has('ashrama') && nityaScreen === 'ashrama' && (
           <motion.div
             key="ashrama"
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
@@ -2110,7 +2116,7 @@ export default function NityaKarmaClient({
         {/* ════════════════════════════════════════════════════════════════════
             SCREEN 3 — Journey (Guided Plans + 30-day calendar, PRO)
         ════════════════════════════════════════════════════════════════════ */}
-        {nityaScreen === 'journey' && (
+        {mountedScreens.has('journey') && nityaScreen === 'journey' && (
           <motion.div
             key="journey"
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
