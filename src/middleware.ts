@@ -48,6 +48,8 @@ const ALWAYS_PUBLIC_PREFIX = [
   '/invite/',
   '/auth/',
   '/sthapaka/',
+  '/sitemap',
+  '/robots',
 ];
 
 export async function middleware(req: NextRequest) {
