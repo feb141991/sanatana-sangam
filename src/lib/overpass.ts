@@ -10,6 +10,10 @@ import { API } from '@/lib/config';
 
 export interface Temple {
   id:          number;
+  /** Stable string slug for curated temples (e.g. 'uk-neasden-baps').
+   *  When present, tirthaPlaceId() uses this instead of the numeric id
+   *  so curated temples always have a unique, collision-free place_id. */
+  slug?:       string;
   lat:         number;
   lon:         number;
   name:        string;

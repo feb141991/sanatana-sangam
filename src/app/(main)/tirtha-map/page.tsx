@@ -188,7 +188,8 @@ export default function TirthaMapPage() {
       // Curated temples: instant, pure client-side, always works
       const curatedRaw = getCuratedNearbyTemples(lat, lon, r);
       const curated: Temple[] = curatedRaw.map((t) => ({
-        id: parseInt(t.id.replace(/[^0-9]/g, '').slice(0, 8) || '0', 10),
+        id: 0,
+        slug: t.id,
         lat: t.lat,
         lon: t.lon,
         name: t.name,
@@ -322,7 +323,8 @@ export default function TirthaMapPage() {
         await ensurePlace(temple);
         const { error } = await supabase.from('tirtha_saves').upsert({ user_id: userId, place_id: placeId }, { onConflict: 'user_id,place_id' });
         if (error) throw error;
-        await refreshPassport(userId);
+        // Optimistic update — badge appears instantly without waiting for DB round-trip
+        setSaves((current) => [...current, { id: '', place_id: placeId, created_at: new Date().toISOString(), note: null }]);
         setNotice('Saved to your Tirtha Passport.');
       }
     } catch (error) {
@@ -356,7 +358,10 @@ export default function TirthaMapPage() {
       if (error) throw error;
 
       await supabase.from('tirtha_saves').upsert({ user_id: userId, place_id: placeId }, { onConflict: 'user_id,place_id' });
-      await refreshPassport(userId);
+      // Optimistic update — "Visited" badge and passport count appear immediately
+      const now = new Date().toISOString();
+      setVisits((current) => [{ id: '', place_id: placeId, visited_at: now, privacy: checkInPrivacy, darshan_mood: checkInMood, intention: intention.trim() || null, reflection: reflection.trim() || null, companions: companions.trim() || null, pradakshina_count: pradakshinaCount, seva_note: null }, ...current]);
+      setSaves((current) => current.some((s) => s.place_id === placeId) ? current : [...current, { id: '', place_id: placeId, created_at: now, note: null }]);
       setCheckInTemple(null);
       setIntention('');
       setReflection('');
