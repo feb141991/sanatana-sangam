@@ -77,12 +77,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to award karma points for Satsang completion' }, { status: 500 });
     }
 
-    const res = rpcData as { status: string; karma_earned: number };
-    if (res.status === 'already_awarded') {
-      return NextResponse.json({ error: 'Satsang karma already awarded today.', already_awarded: true }, { status: 429 });
-    }
-    if (res.status === 'daily_cap_reached') {
-      return NextResponse.json({ error: 'Daily karma cap reached.', daily_cap_reached: true }, { status: 429 });
+    const awarded = rpcData as number;
+    if (awarded <= 0) {
+      return NextResponse.json({ error: 'Satsang karma already awarded today or daily cap reached.', already_awarded: true }, { status: 429 });
     }
 
     return NextResponse.json({ success: true });

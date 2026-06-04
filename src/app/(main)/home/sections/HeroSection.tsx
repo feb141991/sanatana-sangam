@@ -783,6 +783,18 @@ export function HeroSection({
 
       {/* ── Transitional Shloka ── */}
       <div className="px-4 relative z-20 mb-0 mt-1">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setCorrectionModalOpen(true);
+          }}
+          className="absolute top-2 right-6 p-1 z-30 text-[var(--brand-muted)] opacity-60 hover:opacity-100 transition-opacity"
+          style={{ fontSize: '16px' }}
+          title="Report translation issue"
+        >
+          🚩
+        </button>
         <motion.button
           type="button"
           onClick={() => setShlokaModalOpen(true)}

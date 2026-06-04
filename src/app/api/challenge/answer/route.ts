@@ -92,9 +92,9 @@ export async function POST(req: NextRequest) {
 
       if (awardError) console.error('[challenge/answer] Karma award error:', awardError.message);
       else {
-        const result = awardData as { status: string; karma_earned: number };
-        if (result.status === 'ok') {
-          karmaEarned += 3;
+        const awarded = awardData as number;
+        if (awarded > 0) {
+          karmaEarned += awarded;
         }
       }
     }
@@ -125,9 +125,9 @@ export async function POST(req: NextRequest) {
 
       if (packAwardErr) console.error('[challenge/answer] Pack completion karma error:', packAwardErr.message);
       else {
-        const result = packAward as { status: string; karma_earned: number };
-        if (result.status === 'ok') {
-          karmaEarned += 15;
+        const awarded = packAward as number;
+        if (awarded > 0) {
+          karmaEarned += awarded;
         }
       }
 
@@ -145,9 +145,9 @@ export async function POST(req: NextRequest) {
 
         if (perfectAwardErr) console.error('[challenge/answer] Perfect score karma error:', perfectAwardErr.message);
         else {
-          const result = perfectAward as { status: string; karma_earned: number };
-          if (result.status === 'ok') {
-            karmaEarned += 25;
+          const awarded = perfectAward as number;
+          if (awarded > 0) {
+            karmaEarned += awarded;
           }
         }
       }
@@ -208,9 +208,9 @@ export async function POST(req: NextRequest) {
 
         if (monthAwardErr) console.error('[challenge/answer] Month completion karma error:', monthAwardErr.message);
         else {
-          const result = monthAward as { status: string; karma_earned: number };
-          if (result.status === 'ok') {
-            karmaEarned += 50;
+          const awarded = monthAward as number;
+          if (awarded > 0) {
+            karmaEarned += awarded;
           }
         }
 

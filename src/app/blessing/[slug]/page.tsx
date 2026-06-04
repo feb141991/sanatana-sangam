@@ -307,10 +307,11 @@ export default async function BlessingPage({
             fetch('/api/karma/award', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ reason: 'blessing_shared', amount: 10 })
-            }).catch(function(err) {
-              console.error('Failed to award sharing karma:', err);
-            });
+              body: JSON.stringify({ 
+                reason: 'blessing_shared', 
+                amount: 10 
+              })
+            }).catch(function() {});
           });
         });
 

@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       whatsapp_number?: string;
       whatsapp_opt_in?: boolean;
       rashi?: string | null;
+      nakshatra?: string | null;
     } | null;
 
     const tradition = body?.tradition?.trim();
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
       whatsapp_number?: string | null;
       whatsapp_opt_in?: boolean;
       rashi?: string | null;
+      nakshatra?: string | null;
     } = {
       onboarding_completed: true,
     };
@@ -64,6 +66,7 @@ export async function POST(req: NextRequest) {
     if (body?.gender) updatePayload.gender_context = body.gender;
     if (body?.interests) updatePayload.seeking = body.interests;
     if (body?.rashi !== undefined) updatePayload.rashi = body.rashi || null;
+    if (body?.nakshatra !== undefined) updatePayload.nakshatra = body.nakshatra || null;
 
     // Validate phone number format if provided
     let cleanWhatsApp: string | null = null;

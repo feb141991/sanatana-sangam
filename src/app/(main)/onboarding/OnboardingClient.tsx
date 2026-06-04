@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 10;
 const COUNTRY_CODES = [
   { code: '+91', flag: '🇮🇳', name: 'India' },
   { code: '+1', flag: '🇺🇸', name: 'USA' },
@@ -95,6 +95,36 @@ const RASHIS = [
   { key: 'meena',      label: 'Meena',      sanskrit: 'मीन',      symbol: '♓', dates: 'Mar 14 – Apr 13' },
 ] as const;
 
+const NAKSHATRAS = [
+  { key: 'ashwini',           label: 'Ashwini',           sanskrit: 'अश्विनी',        ruler: 'Ketu',    deity: 'Ashwini Kumaras', symbol: '🐴' },
+  { key: 'bharani',           label: 'Bharani',           sanskrit: 'भरणी',           ruler: 'Venus',   deity: 'Yama',            symbol: '⚖️' },
+  { key: 'krittika',          label: 'Krittika',          sanskrit: 'कृत्तिका',       ruler: 'Sun',     deity: 'Agni',            symbol: '🔥' },
+  { key: 'rohini',            label: 'Rohini',            sanskrit: 'रोहिणी',         ruler: 'Moon',    deity: 'Brahma',          symbol: '🌙' },
+  { key: 'mrigashira',        label: 'Mrigashira',        sanskrit: 'मृगशिरा',        ruler: 'Mars',    deity: 'Soma',            symbol: '🦌' },
+  { key: 'ardra',             label: 'Ardra',             sanskrit: 'आर्द्रा',        ruler: 'Rahu',    deity: 'Rudra',           symbol: '💧' },
+  { key: 'punarvasu',         label: 'Punarvasu',         sanskrit: 'पुनर्वसु',       ruler: 'Jupiter', deity: 'Aditi',           symbol: '⭐' },
+  { key: 'pushya',            label: 'Pushya',            sanskrit: 'पुष्य',          ruler: 'Saturn',  deity: 'Brihaspati',      symbol: '🌸' },
+  { key: 'ashlesha',          label: 'Ashlesha',          sanskrit: 'आश्लेषा',        ruler: 'Mercury', deity: 'Naga',            symbol: '🐍' },
+  { key: 'magha',             label: 'Magha',             sanskrit: 'मघा',            ruler: 'Ketu',    deity: 'Pitrs',           symbol: '👑' },
+  { key: 'purva_phalguni',    label: 'Purva Phalguni',    sanskrit: 'पूर्व फाल्गुनी', ruler: 'Venus',   deity: 'Bhaga',           symbol: '🌺' },
+  { key: 'uttara_phalguni',   label: 'Uttara Phalguni',   sanskrit: 'उत्तर फाल्गुनी', ruler: 'Sun',     deity: 'Aryaman',         symbol: '☀️' },
+  { key: 'hasta',             label: 'Hasta',             sanskrit: 'हस्त',           ruler: 'Moon',    deity: 'Savitar',         symbol: '✋' },
+  { key: 'chitra',            label: 'Chitra',            sanskrit: 'चित्रा',         ruler: 'Mars',    deity: 'Vishwakarma',     symbol: '💎' },
+  { key: 'swati',             label: 'Swati',             sanskrit: 'स्वाती',         ruler: 'Rahu',    deity: 'Vayu',            symbol: '🍃' },
+  { key: 'vishakha',          label: 'Vishakha',          sanskrit: 'विशाखा',         ruler: 'Jupiter', deity: 'Indra-Agni',      symbol: '⚡' },
+  { key: 'anuradha',          label: 'Anuradha',          sanskrit: 'अनुराधा',        ruler: 'Saturn',  deity: 'Mitra',           symbol: '🤝' },
+  { key: 'jyeshtha',          label: 'Jyeshtha',          sanskrit: 'ज्येष्ठा',       ruler: 'Mercury', deity: 'Indra',           symbol: '🛡️' },
+  { key: 'mula',              label: 'Mula',              sanskrit: 'मूल',            ruler: 'Ketu',    deity: 'Nirriti',         symbol: '🌿' },
+  { key: 'purva_ashadha',     label: 'Purva Ashadha',     sanskrit: 'पूर्वाषाढ़',     ruler: 'Venus',   deity: 'Apas',            symbol: '🌊' },
+  { key: 'uttara_ashadha',    label: 'Uttara Ashadha',    sanskrit: 'उत्तराषाढ़',     ruler: 'Sun',     deity: 'Vishwadevas',     symbol: '🏆' },
+  { key: 'shravana',          label: 'Shravana',          sanskrit: 'श्रवण',          ruler: 'Moon',    deity: 'Vishnu',          symbol: '👂' },
+  { key: 'dhanishta',         label: 'Dhanishta',         sanskrit: 'धниष्ठा',        ruler: 'Mars',    deity: 'Ashta Vasus',     symbol: '🥁' },
+  { key: 'shatabhisha',       label: 'Shatabhisha',       sanskrit: 'शतभिषा',         ruler: 'Rahu',    deity: 'Varuna',          symbol: '💫' },
+  { key: 'purva_bhadrapada',  label: 'Purva Bhadrapada',  sanskrit: 'पूर्व भाद्रपद',  ruler: 'Jupiter', deity: 'Aja Ekapada',     symbol: '⚔️' },
+  { key: 'uttara_bhadrapada', label: 'Uttara Bhadrapada', sanskrit: 'उत्तर भाद्रपद',  ruler: 'Saturn',  deity: 'Ahir Budhnya',    symbol: '🌊' },
+  { key: 'revati',            label: 'Revati',            sanskrit: 'रेवती',          ruler: 'Mercury', deity: 'Pushan',          symbol: '🐟' },
+] as const;
+
 const THEMES = [
   { key: 'system', label: 'System',  desc: 'Follow this device', icon: '🖥' },
   { key: 'dark',   label: 'Dark',    desc: 'Temple evening mode', icon: '🌙' },
@@ -135,7 +165,7 @@ export default function OnboardingClient({
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
   const [rashi, setRashi] = useState('');
-  const [interests, setInterests] = useState<string[]>([]);
+  const [nakshatra, setNakshatra] = useState('');
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
 
   // Auto-recommend life stage from age
@@ -275,11 +305,11 @@ export default function OnboardingClient({
   }, []);
 
   useEffect(() => {
-    if (step === 5) {
+    if (step === 6) {
       if (direction > 0) {
-        setStep(6);
+        setStep(7);
       } else {
-        setStep(4);
+        setStep(5);
       }
     }
   }, [step, direction]);
@@ -291,8 +321,8 @@ export default function OnboardingClient({
 
   const currentTitle = useMemo(() => {
     if (step === 2) return 'Which path do you walk?';
-    if (step === 5) return getGoalHeading(tradition);
-    if (step === 6) return 'What shall we call you?';
+    if (step === 6) return getGoalHeading(tradition);
+    if (step === 7) return 'What shall we call you?';
     return '';
   }, [step, tradition]);
 
@@ -322,7 +352,7 @@ export default function OnboardingClient({
           name,
           life_stage: lifeStage,
           gender,
-          interests,
+          nakshatra: nakshatra || null,
           rashi: rashi || null,
           whatsapp_number: fullWhatsAppNumber,
           whatsapp_opt_in: whatsappOptIn && otpVerified,
@@ -614,7 +644,7 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 4: Interests */}
+            {/* Step 4: What calls you here? */}
             {step === 4 && (
               <div>
                 {tradition && (
@@ -635,16 +665,18 @@ export default function OnboardingClient({
                 <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   What calls you here?
                 </h1>
-                <p className="text-[var(--brand-muted)] text-sm mb-6">This shapes your entire Shoonaya experience.</p>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                  This shapes everything — your feed, your guidance, your path.
+                </p>
 
                 <div className="space-y-3">
                   {[
-                    { key: 'daily_practice', label: 'I want to deepen my daily Sadhana', emoji: '🪔' },
-                    { key: 'deeper_faith', label: "I'm searching for my Ishta Devata / path", emoji: '🔱' },
-                    { key: 'community', label: 'I want to find my Mandali (community)', emoji: '👥' },
-                    { key: 'peace', label: "I carry questions science can't answer", emoji: '🌌' },
-                    { key: 'knowledge', label: 'I want to study the sacred texts', emoji: '📚' },
-                    { key: 'new_guide', label: "I'm new — guide me gently", emoji: '🌱' },
+                    { key: 'daily_practice', emoji: '🪔', label: 'Deepen my daily Sadhana', sub: 'Japa, meditation, nitya karma' },
+                    { key: 'deeper_faith', emoji: '🔱', label: 'Find my Ishta Devata / path', sub: "Discover your tradition's heart" },
+                    { key: 'community', emoji: '👥', label: 'Find my Mandali', sub: 'Sangat, community, belonging' },
+                    { key: 'peace', emoji: '🌌', label: "Questions science can't answer", sub: 'Philosophy, meaning, moksha' },
+                    { key: 'knowledge', emoji: '📚', label: 'Study the sacred texts', sub: 'Gita, Granth, Dhammapada, Agamas' },
+                    { key: 'new_guide', emoji: '🌱', label: "I'm new — guide me gently", sub: 'Begin from the very first step' }
                   ].map((item) => {
                     const selected = goal === item.key;
                     return (
@@ -656,29 +688,50 @@ export default function OnboardingClient({
                         style={selected
                           ? { 
                               borderColor: 'var(--premium-gold)', 
-                              background: 'rgba(200, 146, 74, 0.08)',
+                              background: 'rgba(200, 146, 74, 0.06)',
                               borderWidth: '1.5px',
+                              transform: 'scale(1.01)'
                             }
                           : { 
                               borderColor: 'var(--premium-border)', 
                               background: 'rgba(255, 255, 255, 0.7)',
-                              borderWidth: '1px',
+                              borderWidth: '1px'
                             }
                         }
                       >
+                        {/* Left Emoji Container */}
                         <div 
-                          className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                          className="w-12 h-12 flex items-center justify-center rounded-full border shrink-0"
                           style={{
-                            borderColor: 'rgba(200, 146, 74, 0.3)',
-                            padding: '12px'
+                            backgroundColor: 'rgba(200, 146, 74, 0.08)',
+                            borderColor: 'rgba(200, 146, 74, 0.25)',
                           }}
                         >
                           <span className="text-xl">{item.emoji}</span>
                         </div>
-                        <span className="font-medium text-[var(--brand-primary-strong)] text-sm flex-1">{item.label}</span>
-                        {selected && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-[var(--premium-gold)] shadow-[0_0_8px_var(--premium-gold)]" />
-                        )}
+
+                        {/* Middle Text Container */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[15px] font-semibold text-[var(--brand-primary-strong)] leading-tight">
+                            {item.label}
+                          </p>
+                          <p className="text-[11px] text-[var(--brand-muted)] mt-1">
+                            {item.sub}
+                          </p>
+                        </div>
+
+                        {/* Right Selection Indicator */}
+                        <div 
+                          className="w-5 h-5 rounded-full border flex items-center justify-center shrink-0"
+                          style={{
+                            borderColor: selected ? 'var(--premium-gold)' : 'var(--premium-border)',
+                            backgroundColor: selected ? 'var(--premium-gold)' : 'transparent',
+                          }}
+                        >
+                          {selected && (
+                            <span className="text-white text-[10px] font-bold">✓</span>
+                          )}
+                        </div>
                       </button>
                     );
                   })}
@@ -695,8 +748,102 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 5: Goals (renumbered from 3) */}
+            {/* Step 5: Birth Nakshatra */}
             {step === 5 && (
+              <div>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Your Birth Nakshatra
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-2 leading-relaxed">
+                  The lunar mansion at your birth — more precise than your Rashi. Shapes your mantra, muhurta timing, and daily guidance.
+                </p>
+                <p className="text-[10px] text-[var(--brand-muted)] opacity-70 mb-5 leading-normal">
+                  Not sure? Check a Janma Kundali app with your birth date, time and place — or skip for now.
+                </p>
+
+                {/* Scrollable Nakshatras Grid */}
+                <div className="max-h-[320px] overflow-y-auto pr-1 border border-[var(--premium-border)] rounded-2xl bg-white/40 p-2 space-y-1">
+                  <div className="grid grid-cols-3 gap-2">
+                    {NAKSHATRAS.map((n) => {
+                      const selected = nakshatra === n.key;
+                      return (
+                        <button
+                          key={n.key}
+                          type="button"
+                          onClick={() => setNakshatra(selected ? '' : n.key)}
+                          className="flex flex-col items-center gap-1 rounded-xl py-3 px-2 border transition-all"
+                          style={selected
+                            ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.09)', borderWidth: '1.5px' }
+                            : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', borderWidth: '1px' }
+                          }
+                        >
+                          <span className="text-xl">{n.symbol}</span>
+                          <span className="text-[11px] font-semibold text-[var(--brand-primary-strong)] truncate max-w-full text-center">
+                            {n.label}
+                          </span>
+                          <span className="text-[9px] text-[var(--brand-muted)] font-serif text-center">
+                            {n.sanskrit}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Detail strip when selected */}
+                {nakshatra && (() => {
+                  const selectedNak = NAKSHATRAS.find(n => n.key === nakshatra);
+                  if (!selectedNak) return null;
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-center text-[var(--premium-gold)] bg-[rgba(200,146,74,0.06)] rounded-xl p-2.5 mt-2 border border-[rgba(200,146,74,0.15)]"
+                    >
+                      {selectedNak.symbol} {selectedNak.label} · Ruled by {selectedNak.ruler} · Deity: {selectedNak.deity}
+                    </motion.div>
+                  );
+                })()}
+
+                <div className="mt-6 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(6)}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 transition-all hover:opacity-90"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNakshatra('');
+                      goNext(6);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 6: Goals (renumbered from 3, bypassed) */}
+            {step === 6 && (
               <div>
                 {tradition && (
                   <div className="flex justify-center mb-6">
@@ -725,7 +872,7 @@ export default function OnboardingClient({
                           setGoal(item.key);
                           setTimeout(() => {
                             setDirection(1);
-                            setStep(6);
+                            setStep(7);
                           }, 300);
                         }}
                         className="w-full rounded-full px-4 py-3 text-left flex items-center gap-3 border transition-all"
@@ -751,8 +898,8 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 6: Name (renumbered from 4) */}
-            {step === 6 && (
+            {/* Step 7: Name (renumbered from 4) */}
+            {step === 7 && (
               <div>
                 {tradition && (
                   <div className="flex justify-center mb-6">
@@ -781,20 +928,20 @@ export default function OnboardingClient({
                   <button
                     type="button"
                     disabled={!canContinueFromName}
-                    onClick={() => goNext(7)}
+                    onClick={() => goNext(8)}
                     className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-60 hover:opacity-90 transition-opacity"
                   >
                     Continue →
                   </button>
-                  <button type="button" onClick={() => goNext(7)} className="w-full text-[var(--brand-muted)] text-sm underline">
+                  <button type="button" onClick={() => goNext(8)} className="w-full text-[var(--brand-muted)] text-sm underline">
                     Skip for now
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Step 7: Name Story Generation/Preview */}
-            {step === 7 && (
+            {/* Step 8: Name Story Generation/Preview */}
+            {step === 8 && (
               <div className="text-left">
                 {tradition && (
                   <div className="flex justify-center mb-6">
@@ -867,7 +1014,7 @@ export default function OnboardingClient({
                       </button>
                       <button
                         type="button"
-                        onClick={() => goNext(8)}
+                        onClick={() => goNext(9)}
                         className="w-full text-[var(--brand-muted)] text-sm underline py-2 text-center"
                       >
                         No, skip this
@@ -921,7 +1068,7 @@ export default function OnboardingClient({
                     
                     <button
                       type="button"
-                      onClick={() => goNext(8)}
+                      onClick={() => goNext(9)}
                       className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 transition-all hover:opacity-90"
                     >
                       Continue →
@@ -931,8 +1078,8 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 8: WhatsApp Reminders (Optional) */}
-            {step === 8 && (
+            {/* Step 9: WhatsApp Reminders (Optional) */}
+            {step === 9 && (
               <div>
                 {tradition && (
                   <div className="flex justify-center mb-6">
@@ -1094,7 +1241,7 @@ export default function OnboardingClient({
                   ) : (
                     <button
                       type="button"
-                      onClick={() => goNext(9)}
+                      onClick={() => goNext(10)}
                       className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
                     >
                       Continue →
@@ -1108,7 +1255,7 @@ export default function OnboardingClient({
                       setOtpSent(false);
                       setOtpVerified(false);
                       setOtpValue('');
-                      goNext(9);
+                      goNext(10);
                     }}
                     className="w-full text-[var(--brand-muted)] text-sm underline"
                   >
@@ -1118,8 +1265,8 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 9: Ready */}
-            {step === 9 && (
+            {/* Step 10: Ready */}
+            {step === 10 && (
               <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
                 {/* Tradition symbol */}
                 <div

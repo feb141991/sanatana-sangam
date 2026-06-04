@@ -97,27 +97,19 @@ export async function POST(req: NextRequest) {
 
     if (error) throw error;
 
-    const result = data as { status: string; karma_earned: number; daily_total: number };
+    const awarded = data as number;
 
-    if (result.status === 'already_awarded') {
+    if (awarded <= 0) {
       return NextResponse.json(
-        { error: `Karma for '${reason}' already awarded today.`, already_awarded: true },
-        { status: 429 },
-      );
-    }
-
-    if (result.status === 'daily_cap_reached') {
-      return NextResponse.json(
-        { error: `Daily karma cap of ${MAX_KARMA_PER_DAY} reached.`, daily_cap_reached: true },
+        { error: `No karma awarded today for '${reason}' (either already awarded or daily cap reached).`, already_awarded: true },
         { status: 429 },
       );
     }
 
     return NextResponse.json({
       success:      true,
-      karma_earned: result.karma_earned,
+      karma_earned: awarded,
       reason,
-      daily_total:  result.daily_total,
     });
   } catch (err) {
     console.error('[karma/award] Failed:', err);

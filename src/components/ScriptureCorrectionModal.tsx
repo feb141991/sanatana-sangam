@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { X, Loader2 } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -13,16 +12,13 @@ interface Props {
 }
 
 export default function ScriptureCorrectionModal({ isOpen, onClose, scriptureSource, verseText }: Props) {
-  const { resolvedTheme } = useThemePreference();
-  const isDark = resolvedTheme === 'dark';
-
   const [suggestedCorrection, setSuggestedCorrection] = useState('');
   const [reasonDetails, setReasonDetails] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!suggestedCorrection.trim()) {
       setError('Suggested correction is required.');
@@ -44,8 +40,13 @@ export default function ScriptureCorrectionModal({ isOpen, onClose, scriptureSou
         }),
       });
 
-      const data = await res.json();
+      if (res.status === 401) {
+        setError('Sign in to submit corrections');
+        setLoading(false);
+        return;
+      }
 
+      const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || 'Failed to submit translation correction.');
       }
@@ -66,45 +67,31 @@ export default function ScriptureCorrectionModal({ isOpen, onClose, scriptureSou
     onClose();
   };
 
-  // Theme styles
-  const overlayBg = 'rgba(0, 0, 0, 0.4)';
-  const modalBg = isDark ? '#1a0e08' : '#FAF6EF';
-  const modalBorder = isDark ? '1px solid rgba(200, 146, 74, 0.25)' : '1px solid rgba(200, 160, 110, 0.35)';
-  const textColor = isDark ? '#F5ECD7' : '#3E2A1F';
-  const labelColor = isDark ? 'rgba(245, 236, 215, 0.45)' : 'rgba(62, 42, 31, 0.55)';
-  const inputBg = isDark ? 'rgba(255, 255, 255, 0.03)' : '#FFFFFF';
-  const inputBorder = isDark ? 'rgba(200, 146, 74, 0.15)' : 'rgba(200, 160, 110, 0.25)';
-
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex flex-col justify-end sm:justify-center p-0 sm:p-4 overflow-x-hidden overflow-y-auto">
           {/* Backdrop */}
           <motion.div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={handleClose}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200]"
           />
 
-          {/* Modal Container */}
+          {/* Modal Card */}
           <motion.div
-            className="relative z-10 w-full max-w-lg rounded-2xl overflow-hidden shadow-xl p-6"
-            style={{
-              background: modalBg,
-              color: textColor,
-              border: modalBorder,
-            }}
-            initial={{ scale: 0.95, y: 15, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, y: 15, opacity: 0 }}
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 50, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+            className="relative w-full max-w-sm mx-auto mt-auto sm:my-auto rounded-[24px] bg-white border border-[var(--premium-border)] shadow-[0_8px_40px_rgba(62,42,31,0.12)] p-6 z-[201]"
           >
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              className="absolute top-4 right-4 p-1 text-[var(--brand-muted)] hover:opacity-80 transition-opacity"
               aria-label="Close modal"
             >
               <X size={18} />
@@ -112,21 +99,14 @@ export default function ScriptureCorrectionModal({ isOpen, onClose, scriptureSou
 
             {success ? (
               /* Success State */
-              <div className="text-center py-6">
-                <CheckCircle2 size={48} className="mx-auto text-emerald-500 mb-4" />
-                <h3
-                  className="text-xl font-serif font-bold mb-2"
-                  style={{ fontFamily: 'var(--font-serif)' }}
-                >
-                  Report Received
-                </h3>
-                <p className="text-sm mb-6 leading-relaxed" style={{ color: labelColor }}>
-                  Thank you — our scholars will review this suggested translation correction. 🙏
+              <div className="text-center py-6 flex flex-col items-center gap-4">
+                <div className="text-4xl">🙏</div>
+                <p className="text-sm font-serif font-semibold text-[var(--brand-primary-strong)]">
+                  Thank you — our scholars will review this.
                 </p>
                 <button
                   onClick={handleClose}
-                  className="px-6 py-2.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: '#C8924A' }}
+                  className="w-full bg-[var(--premium-gold)] text-white font-bold rounded-full py-3.5 hover:opacity-90 transition-opacity"
                 >
                   Close
                 </button>
@@ -134,103 +114,85 @@ export default function ScriptureCorrectionModal({ isOpen, onClose, scriptureSou
             ) : (
               /* Form State */
               <form onSubmit={handleSubmit} className="space-y-4">
-                <h3
-                  className="text-xl font-bold font-serif"
-                  style={{ fontFamily: 'var(--font-serif)', color: textColor }}
-                >
-                  Report a Translation Issue
-                </h3>
-
-                {/* Read-Only Source */}
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
-                    Scripture Source
-                  </label>
-                  <div
-                    className="mt-1 px-3 py-2 rounded-xl text-xs font-semibold"
-                    style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)' }}
-                  >
-                    {scriptureSource}
+                {/* Header */}
+                <div className="flex items-center gap-3 pr-8">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--premium-gold-soft)] text-xl shrink-0">
+                    📜
                   </div>
+                  <h3
+                    className="text-[18px] font-bold text-[var(--brand-primary-strong)] leading-tight font-serif"
+                    style={{ fontFamily: 'var(--font-serif), Playfair Display, serif' }}
+                  >
+                    Report a Translation Issue
+                  </h3>
                 </div>
 
-                {/* Read-Only Original Verse */}
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
-                    Original Verse Text
-                  </label>
-                  <div
-                    className="mt-1 px-3 py-2 rounded-xl text-xs italic leading-relaxed line-clamp-3 overflow-hidden"
-                    style={{
-                      background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                      fontFamily: 'Georgia, serif',
-                    }}
-                  >
+                {/* Body Content */}
+                <div className="space-y-3">
+                  {/* Read-Only Source Chip */}
+                  <div className="flex">
+                    <span className="bg-[var(--premium-gold-soft)] border border-[var(--premium-border)] rounded-full px-3 py-1 text-xs font-semibold text-[var(--premium-gold)]">
+                      {scriptureSource}
+                    </span>
+                  </div>
+
+                  {/* Original Verse Preview */}
+                  <div className="bg-[var(--premium-ivory)] border border-[var(--premium-border)] rounded-xl p-3 text-sm italic font-serif text-[var(--brand-muted)] line-clamp-3">
                     {verseText}
                   </div>
+
+                  {/* Suggested Correction Textarea */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[11px] uppercase tracking-wider font-semibold text-[var(--brand-muted)]">
+                      Your suggested correction *
+                    </label>
+                    <textarea
+                      required
+                      rows={4}
+                      value={suggestedCorrection}
+                      onChange={(e) => setSuggestedCorrection(e.target.value)}
+                      placeholder="Enter the correct translation..."
+                      className="w-full bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] rounded-xl p-3 text-sm outline-none resize-none transition-all"
+                    />
+                  </div>
+
+                  {/* Reason Textarea */}
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[11px] uppercase tracking-wider font-semibold text-[var(--brand-muted)]">
+                      Reference or reason
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={reasonDetails}
+                      onChange={(e) => setReasonDetails(e.target.value)}
+                      placeholder="e.g. Cross-referenced with Swami Gambhirananda, Gita Press edition, verse 2.47"
+                      className="w-full bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] rounded-xl p-3 text-sm outline-none resize-none transition-all"
+                    />
+                  </div>
                 </div>
 
-                {/* Suggested Correction */}
-                <div>
-                  <label htmlFor="suggested-correction" className="text-[10px] font-bold uppercase tracking-wider flex justify-between" style={{ color: labelColor }}>
-                    <span>Suggested Correction *</span>
-                    <span className="text-[9px] lowercase italic font-normal text-amber-600 dark:text-amber-400">Required</span>
-                  </label>
-                  <textarea
-                    id="suggested-correction"
-                    required
-                    value={suggestedCorrection}
-                    onChange={(e) => setSuggestedCorrection(e.target.value)}
-                    placeholder="Enter the correct translation or text..."
-                    rows={3}
-                    className="mt-1 w-full px-3 py-2 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#C8924A] transition-all"
-                    style={{ background: inputBg, border: `1px solid ${inputBorder}` }}
-                  />
-                </div>
-
-                {/* Reason / Reference */}
-                <div>
-                  <label htmlFor="reason-details" className="text-[10px] font-bold uppercase tracking-wider" style={{ color: labelColor }}>
-                    Reason / Reference
-                  </label>
-                  <textarea
-                    id="reason-details"
-                    value={reasonDetails}
-                    onChange={(e) => setReasonDetails(e.target.value)}
-                    placeholder="e.g. Cross-referenced with Swami Gambhirananda translation"
-                    rows={2}
-                    className="mt-1 w-full px-3 py-2 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#C8924A] transition-all"
-                    style={{ background: inputBg, border: `1px solid ${inputBorder}` }}
-                  />
-                </div>
-
-                {/* Error Banner */}
+                {/* Inline Error Text */}
                 {error && (
-                  <div className="flex items-center gap-2 text-xs text-rose-500 font-semibold mt-2">
-                    <AlertCircle size={14} className="shrink-0" />
-                    <span>{error}</span>
+                  <div className="text-xs text-rose-500 font-semibold leading-relaxed">
+                    {error}
                   </div>
                 )}
 
-                {/* Actions */}
-                <div className="pt-2 flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="px-4 py-2.5 rounded-full text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-6 py-2.5 rounded-full text-xs font-semibold text-white flex items-center gap-1.5 transition-opacity hover:opacity-90 disabled:opacity-50"
-                    style={{ backgroundColor: '#C8924A' }}
-                  >
-                    {loading && <Loader2 size={12} className="animate-spin" />}
-                    Submit Report
-                  </button>
-                </div>
+                {/* Submit Footer */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-[var(--premium-gold)] text-white font-bold rounded-full py-3.5 hover:opacity-90 disabled:opacity-50 transition-opacity flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>Submit for Review 🙏</>
+                  )}
+                </button>
               </form>
             )}
           </motion.div>
