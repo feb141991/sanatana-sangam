@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import { redirect } from 'next/navigation';
 import PathshalaClient from './PathshalaClient';
 
@@ -8,9 +9,10 @@ export default async function PathshalaPage({
 }: {
   searchParams: Promise<{ tab?: string; entryId?: string; sectionId?: string }>;
 }) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) redirect('/');
+
+  const supabase = await createServerSupabaseClient();
 
   const [{ data: profile }, { data: shrutiStats }] = await Promise.all([
     supabase

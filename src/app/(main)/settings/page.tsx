@@ -1,17 +1,19 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import SettingsClient from './SettingsClient';
 import type { Database } from '@/types/database';
 
 type SubscriptionStatus = Database['public']['Tables']['profiles']['Row']['subscription_status'];
 
 export default async function SettingsPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   if (!user) {
     redirect('/login');
   }
+
+  const supabase = await createServerSupabaseClient();
 
   const { data: profile } = await supabase
     .from('profiles')

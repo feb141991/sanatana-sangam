@@ -1,13 +1,15 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import { getUserSafetyDashboardData, getUserSafetyState } from '@/lib/user-safety';
 import { redirect } from 'next/navigation';
 import ProfileClient from './ProfileClient';
 import type { Profile } from '@/types/database';
 
 export default async function ProfilePage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) redirect('/login');
+
+  const supabase = await createServerSupabaseClient();
 
   let profile: (Profile & { show_sadhana_highlights?: boolean | null }) | null = null;
 

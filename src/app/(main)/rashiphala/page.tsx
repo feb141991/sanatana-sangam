@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import RashiphalClient from './RashiphalClient';
 
@@ -9,13 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default async function RashiphalaPage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   let userRashi: string | null = null;
   let timezone = 'Asia/Kolkata';
 
   if (user) {
+    const supabase = await createServerSupabaseClient();
     const { data: profile } = await supabase
       .from('profiles')
       .select('rashi, timezone')

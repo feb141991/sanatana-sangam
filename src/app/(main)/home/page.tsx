@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import { redirect } from 'next/navigation';
+import { cache } from 'react';
 import HomeDashboard from './HomeDashboard';
 import { getTodayShloka } from '@/lib/shlokas';
 import {
@@ -20,6 +22,16 @@ import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
+
+// Fix 5: Revalidate home page every 5 minutes (ISR) — avoids full SSR on each visit
+export const revalidate = 300;
+
+// Fix 4: Cache live darshan DB fetch for the duration of this server render
+const fetchLiveDarshans = cache(async () => {
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase.from('live_darshans').select('*').eq('is_active', true);
+  return data ?? null;
+});
 
 /** Wraps a promise with a timeout — resolves with null after timeoutMs instead of blocking.
  *  Accepts PromiseLike so Supabase PostgrestFilterBuilder (which is a thenable, not a
@@ -49,10 +61,11 @@ function hasAnyCoreCompletion(row: {
 }
 
 export default async function HomePage() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   if (!user) redirect('/');
+
+  const supabase = await createServerSupabaseClient();
 
   const { data: profile } = await supabase
     .from('profiles')

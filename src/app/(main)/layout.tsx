@@ -1,22 +1,26 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import BottomNav from '@/components/layout/BottomNav';
-import AIChatFAB from '@/components/layout/AIChatFAB';
+import dynamic from 'next/dynamic';
 import { TraditionSync } from '@/components/providers/TraditionSync';
 import { LocationProvider } from '@/lib/LocationContext';
 import { EngineProvider } from '@/contexts/EngineContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 
+const AIChatFAB = dynamic(() => import('@/components/layout/AIChatFAB'), {
+  ssr: false,
+});
+
 export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
+  const user = await getAuthUser();
   const userId = user?.id ?? '';
+  const supabase = await createServerSupabaseClient();
 
   let savedLat:         number | null = null;
   let savedLon:         number | null = null;
