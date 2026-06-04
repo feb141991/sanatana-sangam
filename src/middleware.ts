@@ -52,6 +52,20 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
 
+  // ── Step 0: Logged-in users hitting / go straight to /home ────────────────
+  // (must run before the rewrite in next.config.js serves landing.html)
+  if (pathname === '/') {
+    // Only do a quick cookie check here — full session validation is heavy in edge.
+    // The app cookie set by Supabase is named 'sb-*-auth-token'.
+    const hasSbCookie = [...req.cookies.getAll()].some(c => c.name.includes('-auth-token') && c.value.length > 10);
+    if (hasSbCookie) {
+      const homeUrl = req.nextUrl.clone();
+      homeUrl.pathname = '/home';
+      homeUrl.search = '';
+      return NextResponse.redirect(homeUrl);
+    }
+  }
+
   // ── Step 1: ?preview=KEY in URL → set cookie + redirect to clean URL ───────
   const previewParam = req.nextUrl.searchParams.get('preview');
   if (previewParam && envPreviewKey && previewParam === envPreviewKey) {
