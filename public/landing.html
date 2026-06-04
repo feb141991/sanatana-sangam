@@ -865,36 +865,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 
 
 
-<!-- ── EMPTY THRONE ───────────────────────────────────────────────── -->
-<section id="empty-throne">
-<style>
-#empty-throne { background:#0C0A07; padding:80px 40px; text-align:center; position:relative; overflow:hidden; }
-#empty-throne::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 80% at 50% 50%, rgba(197,160,89,0.06) 0%, transparent 70%); pointer-events:none; }
-.et-inner { position:relative; z-index:1; max-width:760px; margin:0 auto; }
-.et-line { font-family:var(--fd); font-size:clamp(18px,2.6vw,26px); font-weight:300; color:rgba(250,246,239,0.42); line-height:1.8; letter-spacing:0.01em; }
-.et-line span.trad-name { color:rgba(250,246,239,0.68); }
-.et-divider { width:48px; height:1px; background:rgba(197,160,89,0.30); margin:28px auto; }
-.et-gap { font-family:var(--fd); font-size:clamp(22px,3.2vw,34px); font-weight:300; color:rgba(250,246,239,0.72); line-height:1.6; margin-bottom:16px; }
-.et-gap em { color:#C5A059; font-style:italic; }
-.et-souls { font-family:var(--fd); font-size:clamp(42px,7vw,88px); font-weight:200; color:#C5A059; letter-spacing:-0.02em; line-height:1; margin-bottom:8px; }
-.et-souls-sub { font-size:11px; color:rgba(250,246,239,0.28); letter-spacing:0.22em; text-transform:uppercase; margin-bottom:32px; }
-.et-until { font-family:var(--fd); font-size:clamp(28px,4.5vw,54px); font-weight:300; color:#FAF6EF; letter-spacing:-0.01em; }
-.et-until em { color:#C5A059; font-style:italic; }
-@media(max-width:600px){ #empty-throne { padding:60px 24px; } }
-</style>
-  <div class="et-inner reveal">
-    <div class="et-souls">1.5 Billion</div>
-    <div class="et-souls-sub">Dharmic souls on earth</div>
-    <div class="et-line">
-      The Quran has an app with <span class="trad-name">100 million</span> users.<br>
-      The Bible has <span class="trad-name">500 million</span> app downloads.<br>
-      The <span class="trad-name">Bhagavad Gita · Guru Granth Sahib · Dhammapada · Agamas</span> —<br>
-      the wisdom of four living civilisations — had nothing.
-    </div>
-    <div class="et-divider"></div>
-    <div class="et-until">Until <em>now.</em></div>
-  </div>
-</section>
 
 <!-- ── GYAN CHAUPAR ───────────────────────────────────────────────── -->
 <section class="section" id="gyan-chaupar" style="background:var(--surface-soft);padding:72px 24px 80px;">
@@ -1496,97 +1466,114 @@ function gcRestart(){
 <!-- ── 5000-YEAR PROMISE ──────────────────────────────────────────── -->
 <section id="five-thousand">
 <style>
-#five-thousand { background:var(--surface-soft); padding:100px 40px; text-align:center; }
-.ft-inner { max-width:860px; margin:0 auto; }
-.ft-timeline { display:flex; flex-direction:column; gap:0; margin:52px auto 0; max-width:640px; position:relative; }
-.ft-timeline::before { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background:linear-gradient(180deg, transparent, rgba(197,160,89,0.30) 10%, rgba(197,160,89,0.30) 90%, transparent); transform:translateX(-50%); }
-.ft-node { display:grid; grid-template-columns:1fr 48px 1fr; align-items:center; gap:0; padding:18px 0; }
-.ft-node:nth-child(odd)  .ft-content { text-align:right; padding-right:28px; }
-.ft-node:nth-child(even) .ft-content { text-align:left;  padding-left:28px; grid-column:3; }
-.ft-node:nth-child(even) .ft-dot-col { grid-column:2; grid-row:1; }
-.ft-node:nth-child(even) .ft-empty   { grid-column:1; grid-row:1; }
+#five-thousand { background:var(--surface-soft); padding:100px 40px; }
+.ft-grid { display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; max-width:1040px; margin:0 auto; }
+/* Left: pitch copy */
+.ft-left { }
+.ft-left .s-label { text-align:left; margin-bottom:14px; }
+.ft-left .s-title { text-align:left; margin-bottom:20px; }
+.ft-left .ft-pitch { font-size:15px; color:rgba(62,42,31,0.58); line-height:1.85; margin-bottom:28px; }
+.ft-stat-row { display:flex; gap:24px; flex-wrap:wrap; }
+.ft-stat { }
+.ft-stat-num { font-family:var(--fd); font-size:36px; font-weight:600; color:var(--saffron-dk); line-height:1; }
+.ft-stat-label { font-size:11px; color:rgba(62,42,31,0.45); letter-spacing:0.10em; text-transform:uppercase; margin-top:4px; }
+/* Right: timeline */
+.ft-timeline { display:flex; flex-direction:column; gap:0; position:relative; }
+.ft-timeline::before { content:''; position:absolute; left:20px; top:0; bottom:0; width:1px; background:linear-gradient(180deg, transparent, rgba(197,160,89,0.35) 8%, rgba(197,160,89,0.35) 92%, transparent); }
+.ft-node { display:grid; grid-template-columns:40px 1fr; align-items:center; gap:16px; padding:16px 0; }
 .ft-dot-col { display:flex; justify-content:center; align-items:center; position:relative; z-index:1; }
-.ft-dot { width:14px; height:14px; border-radius:50%; border:2px solid; flex-shrink:0; }
-.ft-year { font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(62,42,31,0.38); margin-bottom:4px; }
-.ft-text-name { font-family:var(--fd); font-size:clamp(17px,2.2vw,22px); font-weight:600; color:var(--ink); line-height:1.2; margin-bottom:3px; }
-.ft-text-sub { font-size:12px; color:rgba(62,42,31,0.52); line-height:1.5; }
-.ft-node.is-now .ft-dot { width:20px; height:20px; border-width:3px; box-shadow:0 0 0 5px rgba(197,160,89,0.15), 0 0 20px rgba(197,160,89,0.25); }
-.ft-node.is-now .ft-text-name { font-size:clamp(20px,2.8vw,28px); color:var(--saffron); }
-.ft-node.is-now .ft-year { color:var(--saffron); letter-spacing:0.20em; font-weight:600; }
-@media(max-width:620px){
+.ft-dot { width:12px; height:12px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.ft-year { font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(62,42,31,0.35); margin-bottom:3px; }
+.ft-text-name { font-family:var(--fd); font-size:clamp(16px,2vw,20px); font-weight:600; color:var(--ink); line-height:1.2; margin-bottom:2px; }
+.ft-text-sub { font-size:11px; color:rgba(62,42,31,0.48); line-height:1.5; }
+.ft-node.is-now .ft-dot { width:18px; height:18px; border-width:2.5px; box-shadow:0 0 0 4px rgba(197,160,89,0.15), 0 0 16px rgba(197,160,89,0.20); }
+.ft-node.is-now .ft-text-name { font-size:clamp(18px,2.4vw,24px); color:var(--saffron); }
+.ft-node.is-now .ft-year { color:var(--saffron); font-weight:600; }
+@media(max-width:760px){
   #five-thousand { padding:64px 24px; }
-  .ft-timeline::before { left:24px; transform:none; }
-  .ft-node { grid-template-columns:48px 1fr; }
-  .ft-node:nth-child(odd)  .ft-content { text-align:left; padding-right:0; padding-left:20px; }
-  .ft-node:nth-child(even) .ft-content { text-align:left; padding-left:20px; grid-column:2; }
-  .ft-node:nth-child(even) .ft-dot-col { grid-column:1; }
-  .ft-node:nth-child(even) .ft-empty   { display:none; }
-  .ft-dot-col { justify-content:flex-start; padding-left:10px; }
+  .ft-grid { grid-template-columns:1fr; gap:48px; }
+  .ft-left .s-label, .ft-left .s-title { text-align:center; }
+  .ft-left .ft-pitch { text-align:center; }
+  .ft-stat-row { justify-content:center; }
 }
 </style>
-  <div class="ft-inner">
-    <div class="s-label reveal">A 5,000-Year Story</div>
-    <div class="s-title reveal">Every civilisation left a text.<br>We built the home for all of them.</div>
-    <p class="s-sub reveal" style="margin:0 auto">They survived invasions, empires, and centuries of silence. Now they live in your pocket — together, for the first time.</p>
+  <div class="ft-grid">
 
+    <!-- LEFT: pitch copy -->
+    <div class="ft-left reveal">
+      <div class="s-label">A 5,000-Year Story</div>
+      <div class="s-title" style="font-size:clamp(28px,4vw,46px)">Four traditions.<br>One home.<br><em style="color:var(--saffron)">For the first time.</em></div>
+      <p class="ft-pitch">
+        The Bhagavad Gita. The Guru Granth Sahib Ji. The Dhammapada. The Agamas.<br><br>
+        Four living traditions — each with thousands of years of wisdom, millions of daily practitioners, and a global diaspora seeking connection with their roots.<br><br>
+        They have always deserved a home worthy of them. Shoonaya is that home.
+      </p>
+      <div class="ft-stat-row">
+        <div class="ft-stat">
+          <div class="ft-stat-num">1.5B+</div>
+          <div class="ft-stat-label">Dharmic souls worldwide</div>
+        </div>
+        <div class="ft-stat">
+          <div class="ft-stat-num">700+</div>
+          <div class="ft-stat-label">Sacred texts indexed</div>
+        </div>
+        <div class="ft-stat">
+          <div class="ft-stat-num">5,000</div>
+          <div class="ft-stat-label">Years of wisdom</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: timeline -->
     <div class="ft-timeline reveal">
 
-      <!-- Rigveda -->
       <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-hindu);border-color:var(--c-hindu)"></div></div>
         <div class="ft-content">
           <div class="ft-year">c. 3500 BCE</div>
           <div class="ft-text-name">Rigveda</div>
-          <div class="ft-text-sub">The oldest known human text.<br>Sanskrit. Oral. Eternal.</div>
+          <div class="ft-text-sub">The oldest known human text. Sanskrit. Oral. Eternal.</div>
         </div>
-        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-hindu);border-color:var(--c-hindu)"></div></div>
-        <div class="ft-empty"></div>
       </div>
 
-      <!-- Tripitaka -->
       <div class="ft-node">
-        <div class="ft-empty"></div>
         <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-buddhist);border-color:var(--c-buddhist)"></div></div>
         <div class="ft-content">
           <div class="ft-year">c. 500 BCE</div>
           <div class="ft-text-name">Tripitaka</div>
-          <div class="ft-text-sub">The Buddha's teachings.<br>Pali. Preserved across Asia.</div>
+          <div class="ft-text-sub">The Buddha's teachings. Pali. Preserved across Asia.</div>
         </div>
       </div>
 
-      <!-- Tattvartha Sutra -->
       <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-jain);border-color:var(--c-jain)"></div></div>
         <div class="ft-content">
           <div class="ft-year">c. 200 CE</div>
           <div class="ft-text-name">Tattvartha Sutra</div>
-          <div class="ft-text-sub">Jain cosmology and ethics.<br>Prakrit. The science of liberation.</div>
+          <div class="ft-text-sub">Jain cosmology and ethics. The science of liberation.</div>
         </div>
-        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-jain);border-color:var(--c-jain)"></div></div>
-        <div class="ft-empty"></div>
       </div>
 
-      <!-- Guru Granth Sahib -->
       <div class="ft-node">
-        <div class="ft-empty"></div>
         <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-sikh);border-color:var(--c-sikh)"></div></div>
         <div class="ft-content">
           <div class="ft-year">1604 CE</div>
           <div class="ft-text-name">Guru Granth Sahib Ji</div>
-          <div class="ft-text-sub">The living Guru. Multi-faith.<br>Gurmukhi. The ultimate sangam.</div>
+          <div class="ft-text-sub">The living Guru. Multi-faith. The ultimate sangam.</div>
         </div>
       </div>
 
-      <!-- Shoonaya -->
       <div class="ft-node is-now">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:#C5A059;border-color:#C5A059"></div></div>
         <div class="ft-content">
           <div class="ft-year">2026 CE</div>
           <div class="ft-text-name">Shoonaya</div>
-          <div class="ft-text-sub">One home for all four paths.<br>The next chapter begins now.</div>
+          <div class="ft-text-sub">One home for all four paths. The next chapter begins now.</div>
         </div>
-        <div class="ft-dot-col"><div class="ft-dot" style="background:#C5A059;border-color:#C5A059"></div></div>
-        <div class="ft-empty"></div>
       </div>
 
     </div>
+
   </div>
 </section>
 
@@ -1621,31 +1608,32 @@ function gcRestart(){
     { date:'2026-01-14', name:'Makar Sankranti',       deva:'मकर संक्रांति',    trad:'hindu',    pill:'Harvest',      slug:'',              verse:'"Surya moves into Capricorn — the light returns."', color:'var(--c-hindu)'  },
     { date:'2026-01-23', name:'Vasant Panchami',        deva:'वसंत पंचमी',      trad:'hindu',    pill:'Spring',       slug:'',              verse:'"Saraswati, goddess of all wisdom, bless this day."', color:'var(--c-hindu)' },
     { date:'2026-02-17', name:'Maha Shivaratri',        deva:'महा शिवरात्रि',   trad:'hindu',    pill:'Great Night',  slug:'maha-shivaratri', verse:'"ॐ नमः शिवाय — I bow to the auspicious one."', color:'var(--c-hindu)'  },
-    { date:'2026-03-03', name:'Holi',                   deva:'होली',             trad:'hindu',    pill:'Festival',     slug:'holi',          verse:'"Splash with love, sing with joy — बुरा न मानो होली है!"', color:'var(--c-hindu)' },
+    { date:'2026-03-04', name:'Holi',                   deva:'होली',             trad:'hindu',    pill:'Festival',     slug:'holi',          verse:'"Splash with love, sing with joy — बुरा न मानो होली है!"', color:'var(--c-hindu)' },
     { date:'2026-03-19', name:'Gudi Padwa',             deva:'गुडी पाडवा',      trad:'hindu',    pill:'New Year',     slug:'',              verse:'"A new year begins — may it bring dharma and abundance."', color:'var(--c-hindu)' },
     { date:'2026-03-27', name:'Ram Navami',             deva:'राम नवमी',         trad:'hindu',    pill:'Auspicious',   slug:'ram-navami',    verse:'"रामो विग्रहवान् धर्मः — Rama is dharma itself."', color:'var(--c-hindu)' },
+    { date:'2026-03-31', name:'Mahavir Jayanti',        deva:'महावीर जयंती',    trad:'jain',     pill:'Jayanti',      slug:'mahavir-jayanti', verse:'"अहिंसा परमो धर्मः — Non-violence is the highest dharma."', color:'var(--c-jain)' },
     { date:'2026-04-11', name:'Hanuman Jayanti',        deva:'हनुमान जयंती',    trad:'hindu',    pill:'Jayanti',      slug:'',              verse:'"Jai Hanuman gyan gun sagar — ocean of wisdom and virtue."', color:'var(--c-hindu)' },
     { date:'2026-04-14', name:'Baisakhi',               deva:'ਵਿਸਾਖੀ',          trad:'sikh',     pill:'Harvest',      slug:'baisakhi',      verse:'"Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh ☬"', color:'var(--c-sikh)'   },
     { date:'2026-04-21', name:'Akshaya Tritiya',        deva:'अक्षय तृतीया',    trad:'hindu',    pill:'Auspicious',   slug:'',              verse:'"The inexhaustible day — every good deed multiplies."', color:'var(--c-hindu)' },
-    { date:'2026-05-11', name:'Vesak · Buddha Purnima',deva:'बुद्ध पूर्णिमा',  trad:'buddhist', pill:'Full Moon',    slug:'vesak-buddha-purnima', verse:'"Sabbe sattā sukhitā hontu — May all beings be happy."', color:'var(--c-buddhist)' },
+    { date:'2026-05-01', name:'Vesak · Buddha Purnima',deva:'बुद्ध पूर्णिमा',  trad:'buddhist', pill:'Full Moon',    slug:'vesak-buddha-purnima', verse:'"Sabbe sattā sukhitā hontu — May all beings be happy."', color:'var(--c-buddhist)' },
     // Sikh
     { date:'2026-01-05', name:'Guru Gobind Singh Gurpurab', deva:'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ', trad:'sikh', pill:'Gurpurab', slug:'guru-gobind-singh-gurpurab', verse:'"Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh ☬"', color:'var(--c-sikh)' },
-    { date:'2026-06-06', name:'Guru Arjan Dev Martyrdom', deva:'ਗੁਰੂ ਅਰਜਨ ਦੇਵ', trad:'sikh',  pill:'Shaheedi',   slug:'',              verse:'"Tera kiya meetha laage — Thy will, O Waheguru, is sweet."', color:'var(--c-sikh)'  },
-    { date:'2026-06-23', name:'Jagannath Rath Yatra',  deva:'जगन्नाथ रथ यात्रा', trad:'hindu', pill:'Yatra',       slug:'',              verse:'"Lord of the Universe — the chariot rolls on sacred ground."', color:'var(--c-hindu)' },
-    { date:'2026-07-07', name:'Guru Har Krishan Gurpurab', deva:'ਗੁਰੂ ਹਰਕ੍ਰਿਸ਼ਨ', trad:'sikh', pill:'Gurpurab',   slug:'',              verse:'"Dhan dhan raam daas gur — Blessed, blessed is the Guru."', color:'var(--c-sikh)'  },
-    { date:'2026-07-10', name:'Guru Purnima',          deva:'गुरु पूर्णिमा',    trad:'all',      pill:'All Traditions', slug:'guru-purnima', verse:'"गुरुः साक्षात् परब्रह्म — The Guru is the Supreme itself."', color:'var(--gold)'   },
-    { date:'2026-07-10', name:'Asalha Puja · Dharma Day', deva:'धम्म चक्क',    trad:'buddhist', pill:'Dharma Day',  slug:'asalha-puja',   verse:'"Dhammaṃ saraṇaṃ gacchāmi — I take refuge in the Dharma."', color:'var(--c-buddhist)' },
-    { date:'2026-07-11', name:'Vassa Begins',          deva:'वस्सा',            trad:'buddhist', pill:'Rains Retreat',slug:'',             verse:'"Three months of stillness — the sangha turns inward."', color:'var(--c-buddhist)' },
-    { date:'2026-08-11', name:'Raksha Bandhan',        deva:'रक्षा बंधन',       trad:'hindu',    pill:'Auspicious',  slug:'',              verse:'"The bond of love — stronger than any thread."', color:'var(--c-hindu)'   },
-    { date:'2026-08-19', name:'Krishna Janmashtami',   deva:'श्री कृष्ण जन्माष्टमी', trad:'hindu', pill:'Midnight', slug:'krishna-janmashtami', verse:'"Whenever dharma declines, I manifest myself anew."', color:'var(--c-hindu)' },
-    { date:'2026-08-23', name:'Ganesh Chaturthi',      deva:'गणेश चतुर्थी',     trad:'hindu',    pill:'10-Day',      slug:'ganesh-chaturthi', verse:'"Vakratunda Mahakaya — remove all obstacles, O Lord."', color:'var(--c-hindu)' },
-    { date:'2026-08-28', name:'Paryushana Parva',      deva:'पर्यूषण',           trad:'jain',     pill:'Jain Parva',  slug:'paryushana',    verse:'"Parasparopagraho jīvānām — Souls serve one another."', color:'var(--c-jain)'   },
-    { date:'2026-08-31', name:'Ullambana · Ancestor Day', deva:'पितृ दिवस',     trad:'buddhist', pill:'Ancestors',   slug:'',              verse:'"Transfer merit to departed souls — may they be at peace."', color:'var(--c-buddhist)' },
-    { date:'2026-09-04', name:'Samvatsari',            deva:'संवत्सरी',           trad:'jain',     pill:'Forgiveness', slug:'samvatsari',    verse:'"Khamemi savve jīve — I forgive all beings, may all forgive me."', color:'var(--c-jain)' },
-    { date:'2026-09-20', name:'Navratri Begins',       deva:'नवरात्रि',           trad:'hindu',    pill:'9 Nights',   slug:'navratri',      verse:'"Sarvamangalamangalye — O Devi, auspicious in all things."', color:'var(--c-hindu)' },
-    { date:'2026-09-29', name:'Dussehra',              deva:'दशहरा',              trad:'hindu',    pill:'Victory',     slug:'',              verse:'"Dharma triumphs — the bow of Rama, the end of Ravana."', color:'var(--c-hindu)' },
-    { date:'2026-10-29', name:'Diwali',                deva:'दीपावली',            trad:'all',      pill:'Festival of Light', slug:'diwali', verse:'"तमसो मा ज्योतिर्गमय — Lead me from darkness into light."', color:'var(--gold)'   },
-    { date:'2026-10-29', name:'Bandhi Chhor Divas',   deva:'ਬੰਦੀ ਛੋੜ ਦਿਵਸ',   trad:'sikh',     pill:'Liberation',  slug:'bandhi-chhor-divas', verse:'"Guru Hargobind walked free — and brought 52 kings with him."', color:'var(--c-sikh)' },
+    { date:'2026-06-18', name:'Guru Arjan Dev Martyrdom', deva:'ਗੁਰੂ ਅਰਜਨ ਦੇਵ', trad:'sikh',  pill:'Shaheedi',   slug:'',              verse:'"Tera kiya meetha laage — Thy will, O Waheguru, is sweet."', color:'var(--c-sikh)'  },
+    { date:'2026-07-16', name:'Jagannath Rath Yatra',  deva:'जगन्नाथ रथ यात्रा', trad:'hindu', pill:'Yatra',       slug:'',              verse:'"Lord of the Universe — the chariot rolls on sacred ground."', color:'var(--c-hindu)' },
+    { date:'2026-07-29', name:'Guru Purnima',          deva:'गुरु पूर्णिमा',    trad:'all',      pill:'All Traditions', slug:'guru-purnima', verse:'"गुरुः साक्षात् परब्रह्म — The Guru is the Supreme itself."', color:'var(--gold)'   },
+    { date:'2026-07-29', name:'Asalha Puja · Dharma Day', deva:'धम्म चक्क',    trad:'buddhist', pill:'Dharma Day',  slug:'asalha-puja',   verse:'"Dhammaṃ saraṇaṃ gacchāmi — I take refuge in the Dharma."', color:'var(--c-buddhist)' },
+    { date:'2026-07-30', name:'Vassa Begins',          deva:'वस्सा',            trad:'buddhist', pill:'Rains Retreat',slug:'',             verse:'"Three months of stillness — the sangha turns inward."', color:'var(--c-buddhist)' },
+    { date:'2026-08-07', name:'Guru Har Krishan Gurpurab', deva:'ਗੁਰੂ ਹਰਕ੍ਰਿਸ਼ਨ', trad:'sikh', pill:'Gurpurab',   slug:'',              verse:'"Dhan dhan raam daas gur — Blessed, blessed is the Guru."', color:'var(--c-sikh)'  },
+    { date:'2026-08-28', name:'Raksha Bandhan',        deva:'रक्षा बंधन',       trad:'hindu',    pill:'Auspicious',  slug:'',              verse:'"The bond of love — stronger than any thread."', color:'var(--c-hindu)'   },
+    { date:'2026-08-30', name:'Paryushana Parva',      deva:'पर्यूषण',           trad:'jain',     pill:'Jain Parva',  slug:'paryushana',    verse:'"Parasparopagraho jīvānām — Souls serve one another."', color:'var(--c-jain)'   },
+    { date:'2026-09-03', name:'Krishna Janmashtami',   deva:'श्री कृष्ण जन्माष्टमी', trad:'hindu', pill:'Midnight', slug:'krishna-janmashtami', verse:'"Whenever dharma declines, I manifest myself anew."', color:'var(--c-hindu)' },
+    { date:'2026-09-06', name:'Samvatsari',            deva:'संवत्सरी',           trad:'jain',     pill:'Forgiveness', slug:'samvatsari',    verse:'"Khamemi savve jīve — I forgive all beings, may all forgive me."', color:'var(--c-jain)' },
+    { date:'2026-09-14', name:'Ganesh Chaturthi',      deva:'गणेश चतुर्थी',     trad:'hindu',    pill:'10-Day',      slug:'ganesh-chaturthi', verse:'"Vakratunda Mahakaya — remove all obstacles, O Lord."', color:'var(--c-hindu)' },
+    { date:'2026-09-23', name:'Ullambana · Ancestor Day', deva:'पितृ दिवस',     trad:'buddhist', pill:'Ancestors',   slug:'',              verse:'"Transfer merit to departed souls — may they be at peace."', color:'var(--c-buddhist)' },
+    { date:'2026-10-11', name:'Navratri Begins',       deva:'नवरात्रि',           trad:'hindu',    pill:'9 Nights',   slug:'navratri',      verse:'"Sarvamangalamangalye — O Devi, auspicious in all things."', color:'var(--c-hindu)' },
+    { date:'2026-10-20', name:'Dussehra',              deva:'दशहरा',              trad:'hindu',    pill:'Victory',     slug:'',              verse:'"Dharma triumphs — the bow of Rama, the end of Ravana."', color:'var(--c-hindu)' },
+    { date:'2026-11-08', name:'Diwali',                deva:'दीपावली',            trad:'all',      pill:'Festival of Light', slug:'diwali', verse:'"तमसो मा ज्योतिर्गमय — Lead me from darkness into light."', color:'var(--gold)'   },
+    { date:'2026-11-08', name:'Bandhi Chhor Divas',   deva:'ਬੰਦੀ ਛੋੜ ਦਿਵਸ',   trad:'sikh',     pill:'Liberation',  slug:'bandhi-chhor-divas', verse:'"Guru Hargobind walked free — and brought 52 kings with him."', color:'var(--c-sikh)' },
     { date:'2026-11-23', name:'Guru Nanak Gurpurab',  deva:'ਗੁਰੂ ਨਾਨਕ ਜਯੰਤੀ', trad:'sikh',     pill:'Gurpurab',    slug:'guru-nanak-gurpurab', verse:'"Nanak naam chardi kala, tere bhane sarbatt da bhala ☬"', color:'var(--c-sikh)' },
     { date:'2026-12-03', name:'Gita Jayanti',          deva:'गीता जयंती',        trad:'hindu',    pill:'Scripture',   slug:'gita-jayanti',  verse:'"कर्मण्येवाधिकारस्ते — Your right is to act, never to the fruits."', color:'var(--c-hindu)' },
     { date:'2026-12-08', name:'Bodhi Day',             deva:'बोधि दिवस',         trad:'buddhist', pill:'Enlightenment', slug:'bodhi-day',   verse:'"Mind is the forerunner of all actions — Dhammapada 1."', color:'var(--c-buddhist)' },
