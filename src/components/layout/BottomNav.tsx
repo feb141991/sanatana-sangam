@@ -120,7 +120,7 @@ export default function BottomNav({ isGuest = false }: Props) {
   }) {
     if (isCenter) {
       return (
-        <Link href={href} className="flex-1 flex justify-center relative" style={{ marginTop: '-22px' }} prefetch={href === '/home' || href === '/guest' ? undefined : false}>
+        <Link href={href} className="flex-1 flex justify-center relative" style={{ marginTop: '-22px' }} prefetch={false}>
           <motion.div
             whileTap={{ scale: 0.92 }}
             className="flex flex-col items-center"
@@ -151,7 +151,7 @@ export default function BottomNav({ isGuest = false }: Props) {
 
     return (
       <Link href={href} className="flex-1 flex flex-col items-center py-2 relative"
-        prefetch={href === '/home' || href === '/guest' ? undefined : false}>
+        prefetch={false}>
         <motion.div whileTap={{ scale: 0.9 }} className="flex flex-col items-center">
           <Icon size={22} className={isActive ? 'text-[#C5A059]' : 'text-[var(--text-dim)]'} />
           <span className={cn(
