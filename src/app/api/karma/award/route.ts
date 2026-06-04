@@ -26,6 +26,13 @@ const ALLOWED_KARMA_REASONS = new Set([
   'sankalpa_milestone',
   'kul_event',
   'ai_chat_response',
+  // Community & co-creation seva
+  'blessing_shared',         // Shared a festival blessing card
+  'scripture_correction',    // Submitted a translation correction
+  'new_member_welcome',      // Welcomed a new Kul/community member
+  'satsang_hosted',          // Hosted a virtual satsang
+  'family_prayer_upload',    // Uploaded a family prayer to the archive
+  'content_flagged',         // Flagged incorrect content (reviewed + confirmed)
 ]);
 
 export async function POST(req: NextRequest) {

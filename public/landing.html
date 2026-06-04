@@ -2019,6 +2019,193 @@ function gcRestart(){
   </div>
 </section>
 
+<!-- ── CO-CREATOR WALL ────────────────────────────────────────────── -->
+<section id="cocreator-wall" class="section on-cream">
+<style>
+#cocreator-wall { padding:100px 40px; }
+.cc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; margin-top:48px; }
+.cc-card { background:rgba(255,253,249,0.98); border:1px solid rgba(200,160,110,0.22); border-radius:18px; padding:24px; position:relative; overflow:hidden; transition:transform 0.2s, border-color 0.2s; }
+.cc-card:hover { transform:translateY(-3px); border-color:rgba(200,160,110,0.45); }
+.cc-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.cc-card.trad-hindu::before  { background:var(--c-hindu); }
+.cc-card.trad-sikh::before   { background:var(--c-sikh); }
+.cc-card.trad-buddhist::before { background:var(--c-buddhist); }
+.cc-card.trad-jain::before   { background:var(--c-jain); }
+.cc-card.trad-none::before   { background:var(--gold); }
+.cc-feature-name { font-family:var(--fd); font-size:20px; font-weight:600; color:var(--ink); margin-bottom:4px; line-height:1.2; }
+.cc-feature-desc { font-size:12px; color:rgba(62,42,31,0.52); line-height:1.5; margin-bottom:16px; }
+.cc-divider { height:1px; background:rgba(200,160,110,0.18); margin-bottom:14px; }
+.cc-named-by { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(62,42,31,0.38); margin-bottom:4px; }
+.cc-sthapaka { font-size:13px; color:var(--saffron-dk); font-weight:600; }
+.cc-number { font-size:11px; color:rgba(62,42,31,0.38); }
+/* Empty slot */
+.cc-card.cc-empty { background:rgba(200,160,110,0.04); border-style:dashed; }
+.cc-empty-label { font-size:11px; color:rgba(62,42,31,0.28); letter-spacing:0.10em; text-transform:uppercase; text-align:center; padding:20px 0; }
+.cc-slots-remaining { text-align:center; margin-top:28px; font-size:13px; color:rgba(62,42,31,0.45); }
+.cc-slots-remaining strong { color:var(--saffron-dk); }
+@media(max-width:600px){ #cocreator-wall { padding:64px 20px; } .cc-grid { grid-template-columns:1fr 1fr; gap:12px; } }
+</style>
+  <div class="s-label reveal">Co-Creator Wall</div>
+  <div class="s-title reveal">Features named by<br>founding members.</div>
+  <p class="s-sub reveal">The first 100 Sthapakas name a Shoonaya feature — forever attributed on every screen it appears. This is their legacy, built into the product itself.</p>
+
+  <div class="cc-grid reveal" id="cc-grid">
+    <!-- Populated by JS from /api/feature-namings -->
+    <!-- Show 8 placeholder slots while loading -->
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #1</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #2</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #3</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #4</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #5</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #6</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #7</div></div>
+    <div class="cc-card cc-empty"><div class="cc-empty-label">Awaiting Sthapaka #8</div></div>
+  </div>
+  <div class="cc-slots-remaining" id="cc-slots-msg">
+    <strong>100 naming rights</strong> reserved for the first 100 Sthapakas — claimed on launch day.
+  </div>
+</section>
+<script>
+(function(){
+  async function loadNamings() {
+    try {
+      const r = await fetch('/api/feature-namings');
+      const d = await r.json();
+      const namings = d.namings || [];
+      if (!namings.length) return; // keep placeholders
+
+      const grid = document.getElementById('cc-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const TRAD_SYMBOL = { hindu:'🕉', sikh:'☬', buddhist:'☸', jain:'☮' };
+
+      namings.forEach(function(n) {
+        const card = document.createElement('div');
+        const tradClass = n.tradition ? 'trad-' + n.tradition : 'trad-none';
+        card.className = 'cc-card ' + tradClass;
+        card.innerHTML =
+          '<div class="cc-feature-name">' + n.feature_name + '</div>' +
+          (n.feature_desc ? '<div class="cc-feature-desc">' + n.feature_desc + '</div>' : '') +
+          '<div class="cc-divider"></div>' +
+          '<div class="cc-named-by">Named by</div>' +
+          '<div class="cc-sthapaka">' +
+            (n.tradition && TRAD_SYMBOL[n.tradition] ? TRAD_SYMBOL[n.tradition] + ' ' : '') +
+            n.named_by +
+          '</div>' +
+          '<div class="cc-number">Sthapaka #' + n.sthapaka_number + '</div>';
+        grid.appendChild(card);
+      });
+
+      // Add remaining empty slots up to 8 visible
+      const toShow = Math.max(0, 8 - namings.length);
+      for (let i = 0; i < toShow; i++) {
+        const el = document.createElement('div');
+        el.className = 'cc-card cc-empty';
+        el.innerHTML = '<div class="cc-empty-label">Awaiting Sthapaka #' + (namings.length + i + 1) + '</div>';
+        grid.appendChild(el);
+      }
+
+      const remaining = 100 - namings.length;
+      const msg = document.getElementById('cc-slots-msg');
+      if (msg && remaining > 0) {
+        msg.innerHTML = '<strong>' + remaining + ' naming rights</strong> still available — for Sthapakas #' + (namings.length + 1) + '–#100.';
+      } else if (msg) {
+        msg.innerHTML = 'All 100 naming rights claimed. <strong>The wall is complete.</strong>';
+      }
+    } catch(e) { /* keep placeholders */ }
+  }
+
+  const sec = document.getElementById('cocreator-wall');
+  if (sec) {
+    new IntersectionObserver(function(entries, obs) {
+      if (entries[0].isIntersecting) { loadNamings(); obs.disconnect(); }
+    }, { threshold: 0.1 }).observe(sec);
+  }
+})();
+</script>
+
+<!-- ── KIDS ZONE ──────────────────────────────────────────────────── -->
+<section id="kids-zone" style="background:#0C0A07; padding:100px 40px; text-align:center; position:relative; overflow:hidden;">
+<style>
+#kids-zone::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 75% 65% at 50% 40%, rgba(197,160,89,0.07) 0%, transparent 65%); pointer-events:none; }
+.kz-inner { position:relative; z-index:1; max-width:760px; margin:0 auto; }
+.kz-coming-pill { display:inline-flex; align-items:center; gap:8px; background:rgba(197,160,89,0.10); border:1px solid rgba(197,160,89,0.30); border-radius:100px; padding:6px 18px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#C5A059; margin-bottom:28px; }
+.kz-title { font-family:var(--fd); font-size:clamp(32px,5.5vw,62px); font-weight:300; color:#FAF6EF; line-height:1.08; letter-spacing:-0.01em; margin-bottom:16px; }
+.kz-title em { color:#C5A059; font-style:italic; }
+.kz-sub { font-size:15px; color:rgba(250,246,239,0.45); line-height:1.7; max-width:540px; margin:0 auto 48px; }
+.kz-features { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:680px; margin:0 auto 48px; }
+.kz-feat { background:rgba(255,255,255,0.04); border:1px solid rgba(197,160,89,0.14); border-radius:16px; padding:24px 20px; text-align:left; }
+.kz-feat-icon { font-size:26px; margin-bottom:12px; }
+.kz-feat-name { font-family:var(--fd); font-size:16px; font-weight:600; color:#FAF6EF; margin-bottom:6px; }
+.kz-feat-desc { font-size:11px; color:rgba(250,246,239,0.40); line-height:1.55; }
+.kz-sthapaka-box { background:rgba(197,160,89,0.08); border:1px solid rgba(197,160,89,0.25); border-radius:20px; padding:32px 40px; max-width:520px; margin:0 auto; }
+.kz-sthapaka-title { font-family:var(--fd); font-size:22px; font-weight:400; color:#FAF6EF; margin-bottom:8px; }
+.kz-sthapaka-sub { font-size:13px; color:rgba(250,246,239,0.45); margin-bottom:20px; line-height:1.6; }
+.kz-sthapaka-perks { text-align:left; margin-bottom:24px; }
+.kz-perk { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:rgba(250,246,239,0.58); padding:8px 0; border-bottom:1px solid rgba(197,160,89,0.10); line-height:1.5; }
+.kz-perk:last-child { border-bottom:none; }
+.kz-perk-dot { color:#C5A059; font-size:14px; flex-shrink:0; margin-top:1px; }
+.kz-cta-btn { display:inline-block; background:linear-gradient(135deg,#C5A059,#D4784A); color:#0C0A07; font-weight:700; font-size:13px; letter-spacing:0.04em; padding:13px 36px; border-radius:100px; border:none; cursor:pointer; text-decoration:none; transition:opacity 0.2s; }
+.kz-cta-btn:hover { opacity:0.88; }
+@media(max-width:600px){
+  #kids-zone { padding:64px 20px; }
+  .kz-features { grid-template-columns:1fr 1fr; }
+  .kz-sthapaka-box { padding:24px 20px; }
+}
+</style>
+  <div class="kz-inner">
+    <div class="kz-coming-pill reveal">🌱 Coming Soon · Sthapaka Early Access</div>
+    <div class="kz-title reveal">A dharmic world<br>built for <em>little seekers.</em></div>
+    <p class="kz-sub reveal">The Kids Zone gives every child a living connection to their tradition — through stories, songs, and sacred play. Parents get a child who knows who they are.</p>
+
+    <div class="kz-features reveal">
+      <div class="kz-feat">
+        <div class="kz-feat-icon">📖</div>
+        <div class="kz-feat-name">Dharma Stories</div>
+        <div class="kz-feat-desc">Ramayana, Jataka Tales, Sikh Saakhis, Jain Panchtantra — narrated and illustrated for ages 4–14.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🎵</div>
+        <div class="kz-feat-name">Kids Mantras</div>
+        <div class="kz-feat-desc">Guided shloka and shabad learning — phonetically broken down for young voices. Parents get notified on completion.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🗓️</div>
+        <div class="kz-feat-name">Festival Explorer</div>
+        <div class="kz-feat-desc">Age-appropriate explanations of every festival — with a "Tell your grandparent" prompt built in.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🌍</div>
+        <div class="kz-feat-name">Dharma Explorers</div>
+        <div class="kz-feat-desc">A gentle discovery game across all 4 traditions — builds cross-tradition literacy from childhood.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">👨‍👩‍👧</div>
+        <div class="kz-feat-name">Parent Dashboard</div>
+        <div class="kz-feat-desc">See what your child learned this week — with conversation starters to bring it home.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🏆</div>
+        <div class="kz-feat-name">Sharable Milestones</div>
+        <div class="kz-feat-desc">When your child completes a story, they get a shareable card — designed to delight grandparents.</div>
+      </div>
+    </div>
+
+    <div class="kz-sthapaka-box reveal">
+      <div class="kz-sthapaka-title">Sthapaka Families get first access.</div>
+      <div class="kz-sthapaka-sub">Join as a Sthapaka and your family receives Kids Zone beta access the day it launches — plus one founding perk that outlasts the app.</div>
+      <div class="kz-sthapaka-perks">
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>Beta access before public launch — shape what gets built</span></div>
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span><strong style="color:rgba(250,246,239,0.75)">Founding Family Certificate</strong> — "Shoonaya Founding Family #[N]", your child's name, printable forever</span></div>
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>First 1,000 Kids badge on your child's profile — permanent, public, irreversible</span></div>
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>Vote on which traditions and stories get built first</span></div>
+      </div>
+      <button class="kz-cta-btn" onclick="scrollToCta()">Join as Sthapaka — Secure Family Access →</button>
+    </div>
+  </div>
+</section>
+
 <!-- ── APP DOWNLOAD ───────────────────────────────────────────────── -->
 <section class="download-section" id="download">
   <div class="s-label reveal" style="text-align:center">Now Live on Web · Mobile Coming Soon</div>
