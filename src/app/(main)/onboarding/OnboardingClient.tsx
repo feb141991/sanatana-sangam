@@ -129,6 +129,16 @@ export default function OnboardingClient({
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    if (step === 5) {
+      if (direction > 0) {
+        setStep(6);
+      } else {
+        setStep(4);
+      }
+    }
+  }, [step, direction]);
+
   const progressPct = (step / TOTAL_STEPS) * 100;
   const readyCopy = READY_COPY[tradition] ?? READY_COPY.hindu;
 
@@ -171,7 +181,10 @@ export default function OnboardingClient({
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to complete onboarding');
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        throw new Error(errBody?.error || 'Failed to complete onboarding');
+      }
 
       queryClient.invalidateQueries({ queryKey: queryKeys.profile(userId) }).catch(() => {});
       router.replace(nextPath);
@@ -365,35 +378,53 @@ export default function OnboardingClient({
             {step === 4 && (
               <div>
                 <h1 className="text-3xl font-medium mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
-                  What draws you here?
+                  What calls you here?
                 </h1>
-                <p className="text-white/40 text-sm mb-6">Choose what resonates. This shapes your home screen.</p>
+                <p className="text-white/40 text-sm mb-6">This shapes your entire Shoonaya experience.</p>
 
-                <div className="grid grid-cols-2 gap-3">
-                  {INTERESTS.map(item => {
-                    const selected = interests.includes(item.key);
+                <div className="space-y-3">
+                  {[
+                    { key: 'daily_practice', label: 'I want to deepen my daily Sadhana', emoji: '🪔' },
+                    { key: 'deeper_faith', label: "I'm searching for my Ishta Devata / path", emoji: '🔱' },
+                    { key: 'community', label: 'I want to find my Mandali (community)', emoji: '👥' },
+                    { key: 'peace', label: "I carry questions science can't answer", emoji: '🌌' },
+                    { key: 'knowledge', label: 'I want to study the sacred texts', emoji: '📚' },
+                    { key: 'new_guide', label: "I'm new — guide me gently", emoji: '🌱' },
+                  ].map((item) => {
+                    const selected = goal === item.key;
                     return (
-                      <button key={item.key}
+                      <button
+                        key={item.key}
                         type="button"
-                        onClick={() => setInterests(prev =>
-                          prev.includes(item.key) ? prev.filter(k => k !== item.key) : [...prev, item.key]
-                        )}
-                        className="rounded-2xl p-4 text-left border transition-all"
+                        onClick={() => setGoal(item.key)}
+                        className="w-full flex items-center gap-4 rounded-2xl p-4 text-left border transition-all duration-300 transform active:scale-[0.99] relative overflow-hidden"
                         style={selected
-                          ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.10)' }
-                          : { borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }
+                          ? { 
+                              borderColor: '#C8924A', 
+                              background: 'rgba(200, 146, 74, 0.08)',
+                            }
+                          : { 
+                              borderColor: 'rgba(255, 255, 255, 0.06)', 
+                              background: 'rgba(255, 255, 255, 0.03)',
+                            }
                         }
                       >
-                        <span className="text-2xl block mb-2">{item.emoji}</span>
-                        <p className="font-semibold text-white/90 text-sm">{item.label}</p>
-                        <p className="text-[11px] text-white/40 mt-0.5">{item.desc}</p>
+                        <span className="text-2xl">{item.emoji}</span>
+                        <span className="font-medium text-white/90 text-sm flex-1">{item.label}</span>
+                        {selected && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#C8924A] shadow-[0_0_8px_#C8924A]" />
+                        )}
                       </button>
                     );
                   })}
                 </div>
-                <p className="text-center text-[11px] text-white/25 mt-4">Select any that resonate — or none at all</p>
 
-                <button type="button" onClick={() => goNext(5)} className="w-full mt-5 rounded-full bg-[#C5A059] text-black font-bold py-4">
+                <button
+                  type="button"
+                  disabled={!goal}
+                  onClick={() => goNext(5)}
+                  className="w-full mt-6 rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-40 transition-all hover:opacity-90"
+                >
                   Continue →
                 </button>
               </div>

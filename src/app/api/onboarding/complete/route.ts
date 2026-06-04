@@ -31,8 +31,9 @@ export async function POST(req: NextRequest) {
       .from('profiles')
       .select('full_name')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
+    // maybeSingle returns null data (not error) when no row found — that's fine
     if (existingError) throw existingError;
 
     const updatePayload: {
@@ -51,7 +52,12 @@ export async function POST(req: NextRequest) {
 
     if (tradition) updatePayload.tradition = tradition;
     if (goal) updatePayload.onboarding_goal = goal;
-    if (name && name !== existingProfile?.full_name) updatePayload.full_name = name;
+    // Always ensure full_name is set — especially for Google OAuth users
+    if (name) {
+      updatePayload.full_name = name;
+    } else if (!existingProfile?.full_name) {
+      updatePayload.full_name = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Seeker';
+    }
     if (body?.life_stage) updatePayload.life_stage = body.life_stage;
     if (body?.gender) updatePayload.gender_context = body.gender;
     if (body?.interests) updatePayload.seeking = body.interests;
