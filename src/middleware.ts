@@ -20,9 +20,10 @@ const PUBLIC_ADMIN_PATHS = [
   '/api/admin/auth',
 ];
 
-// These paths are always public — no gate
+// Always public — landing, auth, marketing, static assets
 const ALWAYS_PUBLIC_EXACT = new Set([
   '/',
+  '/landing.html',   // internal rewrite target — must be public to avoid loop
   '/join',
   '/about',
   '/contact',
@@ -46,27 +47,14 @@ const ALWAYS_PUBLIC_PREFIX = [
   '/name/',
   '/discover/',
   '/invite/',
+  '/auth/',
 ];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
 
-  // ── Step 0: Logged-in users hitting / go straight to /home ────────────────
-  // (must run before the rewrite in next.config.js serves landing.html)
-  if (pathname === '/') {
-    // Only do a quick cookie check here — full session validation is heavy in edge.
-    // The app cookie set by Supabase is named 'sb-*-auth-token'.
-    const hasSbCookie = [...req.cookies.getAll()].some(c => c.name.includes('-auth-token') && c.value.length > 10);
-    if (hasSbCookie) {
-      const homeUrl = req.nextUrl.clone();
-      homeUrl.pathname = '/home';
-      homeUrl.search = '';
-      return NextResponse.redirect(homeUrl);
-    }
-  }
-
-  // ── Step 1: ?preview=KEY in URL → set cookie + redirect to clean URL ───────
+  // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────
   const previewParam = req.nextUrl.searchParams.get('preview');
   if (previewParam && envPreviewKey && previewParam === envPreviewKey) {
     const cleanUrl = req.nextUrl.clone();
@@ -76,13 +64,13 @@ export async function middleware(req: NextRequest) {
       httpOnly: true,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
+      maxAge: 60 * 60 * 24 * 30,
       path: '/',
     });
     return res;
   }
 
-  // ── Step 2: Coming-soon gate ────────────────────────────────────────────────
+  // ── Step 2: Coming-soon gate ───────────────────────────────────────────────
   const appOpen = process.env.APP_OPEN === 'true';
 
   if (!appOpen) {
@@ -91,21 +79,44 @@ export async function middleware(req: NextRequest) {
       ALWAYS_PUBLIC_PREFIX.some(p => pathname.startsWith(p));
 
     if (!isPublic) {
-      const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? '';
-      const hasAccess = envPreviewKey
-        ? previewCookie === envPreviewKey
-        : false; // no PREVIEW_KEY set = nobody gets in (except APP_OPEN=true)
+      // Logged-in users (Supabase auth cookie present) always get through.
+      // The gate is for anonymous visitors only — we don't want to lock out
+      // existing users who already have accounts.
+      const hasSbCookie = [...req.cookies.getAll()].some(
+        c => c.name.includes('-auth-token') && c.value.length > 10
+      );
 
-      if (!hasAccess) {
-        const landingUrl = req.nextUrl.clone();
-        landingUrl.pathname = '/';
-        landingUrl.search = '';
-        return NextResponse.redirect(landingUrl);
+      if (!hasSbCookie) {
+        const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? '';
+        const hasPreviewAccess = envPreviewKey
+          ? previewCookie === envPreviewKey
+          : false;
+
+        if (!hasPreviewAccess) {
+          const landingUrl = req.nextUrl.clone();
+          landingUrl.pathname = '/';
+          landingUrl.search = '';
+          return NextResponse.redirect(landingUrl);
+        }
       }
     }
   }
 
-  // ── Step 3: Admin guard (unchanged) ────────────────────────────────────────
+  // ── Step 3: Logged-in users at / → go to /home ────────────────────────────
+  // Placed AFTER the gate so it only fires when access is already granted.
+  if (pathname === '/') {
+    const hasSbCookie = [...req.cookies.getAll()].some(
+      c => c.name.includes('-auth-token') && c.value.length > 10
+    );
+    if (hasSbCookie) {
+      const homeUrl = req.nextUrl.clone();
+      homeUrl.pathname = '/home';
+      homeUrl.search = '';
+      return NextResponse.redirect(homeUrl);
+    }
+  }
+
+  // ── Step 4: Admin guard (unchanged) ───────────────────────────────────────
   const isAdminPage = pathname.startsWith('/admin');
   const isAdminApi  = pathname.startsWith('/api/admin');
 
@@ -138,7 +149,8 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match everything except static assets
-    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf)).*)',
+    // Match everything except static files — .html excluded to prevent
+    // the beforeFiles rewrite (/→/landing.html) from re-triggering middleware
+    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|html)).*)',
   ],
 };
