@@ -157,6 +157,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          * Light users get #FAF6EF. No flicker on either theme.
          */}
         <style dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://www.shoonaya.com/#organization",
+                "name": "Shoonaya",
+                "url": "https://www.shoonaya.com",
+                "logo": "https://www.shoonaya.com/icons/icon-512x512.png",
+                "description": "Shoonaya is a spiritual companion app for Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.",
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://www.shoonaya.com/#website",
+                "url": "https://www.shoonaya.com",
+                "name": "Shoonaya",
+                "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+              },
+            ],
+          })}}
+        />
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script
           // biome-ignore lint: intentional inline script

@@ -25,6 +25,7 @@ const ALWAYS_PUBLIC_EXACT = new Set([
   '/',
   '/join',
   '/about',
+  '/what-is-shoonaya',
   '/contact',
   '/privacy',
   '/terms',
