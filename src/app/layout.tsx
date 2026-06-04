@@ -122,6 +122,7 @@ export const metadata: Metadata = {
   },
   other: {
     'mobile-web-app-capable': 'yes',
+    'google-adsense-account': 'ca-pub-6518026066446033',
   },
 };
 
@@ -210,6 +211,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Script>
           </>
         )}
+        {/* ── Google AdSense ── */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6518026066446033"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Analytics />
         <SpeedInsights />
       </body>
