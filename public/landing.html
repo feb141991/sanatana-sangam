@@ -3831,7 +3831,7 @@ function sthapakaGoogleSignup() {
   var btn = document.getElementById('sj-google-btn');
   if (btn) { btn.textContent = 'Redirecting…'; btn.disabled = true; }
 
-  var redirectTo = encodeURIComponent(window.location.origin + '/auth/sthapaka-callback');
+  var redirectTo = encodeURIComponent('https://shoonaya.com/auth/sthapaka-callback');
   var oauthUrl = 'https://mnbwodcswxoojndytngu.supabase.co/auth/v1/authorize'
     + '?provider=google'
     + '&redirect_to=' + redirectTo
