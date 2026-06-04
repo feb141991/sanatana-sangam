@@ -22,11 +22,11 @@ export const API = {
     /** Mirrors tried in order. Server-side proxy at /api/tirtha/places uses these;
      *  the browser never calls Overpass directly (avoids CORS + client timeouts). */
     MIRRORS: [
+      'https://overpass.openstreetmap.fr/api/interpreter',   // fastest — 0.4s
       'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.openstreetmap.fr/api/interpreter',
       'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter',
       'https://overpass-api.de/api/interpreter',
+      // private.coffee excluded — consistently 504
     ] as const,
     /** Overpass QL query-level timeout (seconds) — sent inside the query body */
     QUERY_TIMEOUT_S:    28,
