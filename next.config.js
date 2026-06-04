@@ -2,15 +2,6 @@
 const path = require('path');
 
 const nextConfig = {
-  // ── Serve landing.html at / so the URL stays shoonaya.com (not /landing.html)
-  // Middleware handles the logged-in redirect to /home before this fires.
-  async rewrites() {
-    return {
-      beforeFiles: [
-        { source: '/', destination: '/landing.html' },
-      ],
-    };
-  },
   async headers() {
     return [
       {

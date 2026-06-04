@@ -23,7 +23,6 @@ const PUBLIC_ADMIN_PATHS = [
 // Always public — landing, auth, marketing, static assets
 const ALWAYS_PUBLIC_EXACT = new Set([
   '/',
-  '/landing.html',   // internal rewrite target — must be public to avoid loop
   '/join',
   '/about',
   '/contact',
