@@ -3,10 +3,10 @@ import { unstable_cache } from 'next/cache';
 import { API } from '@/lib/config';
 import { getCuratedNearbyTemples } from '@/lib/diaspora-temples';
 
-// Allow up to 30 s so Overpass has a fighting chance on slow days
 export const maxDuration = 30;
 
-// Bucket coords to ~1 km grid so nearby searches share cache entries
+const DHARMIC_RELIGIONS = new Set(['hindu', 'sikh', 'buddhist', 'jain']);
+
 function bucket(v: number, step = 0.01) {
   return Math.round(v / step) * step;
 }
@@ -21,27 +21,53 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Curated temples converted to Overpass element shape — always instant
-function getCuratedElements(lat: number, lon: number, radiusM: number) {
-  const radiusKm = radiusM / 1000;
-  return getCuratedNearbyTemples(lat, lon, radiusM).map((t) => ({
-    id: parseInt(t.id.replace(/[^0-9]/g, '').slice(0, 8) || '0', 10),
-    lat: t.lat,
-    lon: t.lon,
-    _curated: true,
-    tags: {
-      name: t.name,
-      religion: t.tradition,
-      'addr:city': t.city,
-      website: t.website,
-      opening_hours: t.opening,
-      deity: t.deity,
-      denomination: t.sampradaya,
-    },
-  })).filter((t) => haversineKm(lat, lon, t.lat, t.lon) <= radiusKm);
+// ── Geoapify Places API (primary) ───────────────────────────────────────────
+async function fetchFromGeoapify(lat: number, lon: number, radiusM: number): Promise<any[]> {
+  const apiKey = process.env.GEOAPIFY_API_KEY?.trim();
+  if (!apiKey) return [];
+
+  const url = `https://api.geoapify.com/v2/places?categories=religion.place_of_worship&filter=circle:${lon},${lat},${radiusM}&limit=100&apiKey=${apiKey}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8_000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) return [];
+    const data = await res.json() as { features?: any[] };
+
+    return (data.features ?? [])
+      .map((f: any) => {
+        const p = f.properties ?? {};
+        const raw = p.datasource?.raw ?? {};
+        const religion = (raw.religion ?? '').toLowerCase();
+        const coords = f.geometry?.coordinates ?? [];
+        return {
+          _religion: religion,
+          id: Math.abs(parseInt(p.place_id?.replace(/[^0-9]/g, '').slice(0, 9) ?? '0', 10)),
+          lat: p.lat ?? coords[1] ?? 0,
+          lon: p.lon ?? coords[0] ?? 0,
+          tags: {
+            name:             p.name,
+            religion,
+            'addr:housenumber': raw['addr:housenumber'],
+            'addr:street':      raw['addr:street'],
+            'addr:city':        p.city ?? raw['addr:city'],
+            website:            raw.website,
+            phone:              raw.phone,
+            opening_hours:      raw.opening_hours,
+            deity:              raw['hindu:deity'] ?? raw.deity,
+            denomination:       raw.denomination,
+          },
+        };
+      })
+      .filter((e: any) => DHARMIC_RELIGIONS.has(e._religion) && e.lat !== 0);
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
-// Try each Overpass mirror with a tight per-mirror timeout
+// ── Overpass (fallback) ──────────────────────────────────────────────────────
 async function fetchFromOverpass(lat: number, lon: number, radiusM: number): Promise<any[]> {
   const query = `
 [out:json][timeout:20];
@@ -58,35 +84,60 @@ async function fetchFromOverpass(lat: number, lon: number, radiusM: number): Pro
 out center tags;
   `.trim();
 
-  const body = `data=${encodeURIComponent(query)}`;
-
   for (const mirror of API.OVERPASS.MIRRORS) {
     const controller = new AbortController();
-    // 8 s per mirror — tight enough to try 2–3 mirrors within maxDuration
     const timer = setTimeout(() => controller.abort(), 8_000);
     try {
       const res = await fetch(mirror, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body,
+        body: `data=${encodeURIComponent(query)}`,
         signal: controller.signal,
       });
       if (!res.ok) continue;
       const json = await res.json() as { elements?: any[] };
       return json.elements ?? [];
     } catch {
-      // timed out or network error — try next mirror
+      // try next mirror
     } finally {
       clearTimeout(timer);
     }
   }
-  return []; // all mirrors failed — return empty, curated data covers the gap
+  return [];
 }
 
-function getCachedPlaces(latB: number, lonB: number, radiusM: number) {
+// ── Curated (always instant) ─────────────────────────────────────────────────
+function getCuratedElements(lat: number, lon: number, radiusM: number) {
+  return getCuratedNearbyTemples(lat, lon, radiusM).map((t) => ({
+    id: parseInt(t.id.replace(/[^0-9]/g, '').slice(0, 8) || '0', 10),
+    lat: t.lat,
+    lon: t.lon,
+    _curated: true,
+    tags: {
+      name: t.name,
+      religion: t.tradition,
+      'addr:city': t.city,
+      website: t.website,
+      opening_hours: t.opening,
+      deity: t.deity,
+      denomination: t.sampradaya,
+    },
+  }));
+}
+
+// ── Cache wrapper (6 hours per bucketed location) ────────────────────────────
+function getCachedElements(latB: number, lonB: number, radiusM: number) {
   return unstable_cache(
-    () => fetchFromOverpass(latB, lonB, radiusM),
-    [`tirtha-osm-${latB}-${lonB}-${radiusM}`],
+    async () => {
+      // Try Geoapify first — fast and reliable with our API key
+      const geo = await fetchFromGeoapify(latB, lonB, radiusM);
+      if (geo.length > 0) return { elements: geo, source: 'geoapify' };
+
+      // Fallback to Overpass if Geoapify returns nothing (key missing, quota hit)
+      const osm = await fetchFromOverpass(latB, lonB, radiusM);
+      return { elements: osm, source: 'overpass' };
+    },
+    [`tirtha-places-${latB}-${lonB}-${radiusM}`],
     { revalidate: 6 * 60 * 60, tags: ['tirtha-places'] }
   )();
 }
@@ -103,30 +154,33 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'lat and lon are required' }, { status: 400 });
   }
 
-  // Curated temples: synchronous, always available, zero network cost
+  // Curated: always instant, always available
   const curated = getCuratedElements(lat, lon, radiusM);
 
-  // OSM via Overpass: best-effort, cached 6 h, gracefully returns [] on failure
+  // Geoapify → Overpass: cached 6 hours, graceful empty on failure
   const latB = bucket(lat);
   const lonB = bucket(lon);
-  let osmElements: any[] = [];
+  let fetched: any[] = [];
+  let source = 'curated';
   try {
-    osmElements = await getCachedPlaces(latB, lonB, radiusM);
+    const result = await getCachedElements(latB, lonB, radiusM);
+    fetched = result.elements;
+    source = result.source;
   } catch {
-    // Overpass completely unreachable — curated data is sufficient
+    // all remote sources failed — curated covers the gap
   }
 
-  // Deduplicate: drop OSM entries within 250 m of a curated temple
-  const dedupedOsm = osmElements.filter((osm) => {
-    const osmLat = osm.lat ?? osm.center?.lat ?? 0;
-    const osmLon = osm.lon ?? osm.center?.lon ?? 0;
-    return !curated.some((c) => haversineKm(c.lat, c.lon, osmLat, osmLon) < DEDUP_KM);
+  // Drop remote results within 250m of a curated temple to avoid duplicates
+  const dedupedRemote = fetched.filter((r) => {
+    const rLat = r.lat ?? r.center?.lat ?? 0;
+    const rLon = r.lon ?? r.center?.lon ?? 0;
+    return !curated.some((c) => haversineKm(c.lat, c.lon, rLat, rLon) < DEDUP_KM);
   });
 
-  // Curated first, OSM appended
-  const elements = [...curated, ...dedupedOsm];
+  const elements = [...curated, ...dedupedRemote];
 
-  return NextResponse.json({ elements, source: osmElements.length > 0 ? 'osm+curated' : 'curated' }, {
-    headers: { 'Cache-Control': 'public, s-maxage=21600, stale-while-revalidate=3600' },
-  });
+  return NextResponse.json(
+    { elements, source: curated.length > 0 ? `${source}+curated` : source },
+    { headers: { 'Cache-Control': 'public, s-maxage=21600, stale-while-revalidate=3600' } }
+  );
 }
