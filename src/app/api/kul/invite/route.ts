@@ -40,6 +40,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'You are not a member of this Kul' }, { status: 403 });
   }
 
+  // ── Member limit: free = 3, Kul Pro = 6 ──────────────────────────────────
+  const [{ count: currentCount }, { data: kulRow }] = await Promise.all([
+    supabase.from('kul_members').select('id', { count: 'exact', head: true }).eq('kul_id', kulId),
+    supabase.from('kuls').select('is_pro').eq('id', kulId).single(),
+  ]);
+  const limit = kulRow?.is_pro ? 6 : 3;
+  if ((currentCount ?? 0) >= limit) {
+    const upgradeMsg = kulRow?.is_pro
+      ? `Your Kul has reached the maximum of ${limit} members.`
+      : `Free Kuls are limited to 3 members. Upgrade to Kul Pro for up to 6 family members.`;
+    return NextResponse.json({
+      error: 'member_limit_reached',
+      message: upgradeMsg,
+      upgrade_url: '/settings/subscription',
+    }, { status: 403 });
+  }
+
   // Don't let someone invite themselves
   if (toUserId === user.id) {
     return NextResponse.json({ error: 'Cannot invite yourself' }, { status: 400 });

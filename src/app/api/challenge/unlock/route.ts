@@ -10,6 +10,21 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Zenith users never need to unlock — packs are auto-open via /challenge/current
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('is_pro, subscription_status')
+      .eq('id', user.id)
+      .single();
+
+    const isZenith = userProfile?.is_pro === true ||
+      userProfile?.subscription_status === 'pro' ||
+      userProfile?.subscription_status === 'kul_pro';
+
+    if (isZenith) {
+      return NextResponse.json({ success: true, unlocked: true, message: 'Zenith members have all packs unlocked.' });
+    }
+
     const { pack_id, method } = await req.json();
 
     if (!pack_id || (method !== 'ad' && method !== 'seva')) {

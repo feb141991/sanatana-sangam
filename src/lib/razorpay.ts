@@ -7,6 +7,17 @@ export const PLAN_IDS = {
   kul_annual:     process.env.RAZORPAY_PLAN_KUL_ANNUAL     ?? '',
 };
 
+// ─── Sthapaka Lifetime Pass ────────────────────────────────────────────────
+// One-time Razorpay order (not a subscription) — ₹4,999 / $60
+// Grants lifetime Zenith to Sthapakas #1–#1000.
+// Set RAZORPAY_LIFETIME_AMOUNT_PAISE in Vercel (499900 = ₹4999).
+export const LIFETIME_PASS = {
+  amount_paise: parseInt(process.env.RAZORPAY_LIFETIME_AMOUNT_PAISE ?? '499900', 10),
+  currency:     'INR',
+  name:         'Sthapaka Lifetime Pass',
+  description:  'Lifetime Zenith access for founding members of Shoonaya — forever.',
+};
+
 // Lazy singleton — only instantiated at request time, not at module load / build time.
 // Avoids "key_id is mandatory" crash when env vars are absent during Next.js build.
 let _client: Razorpay | null = null;

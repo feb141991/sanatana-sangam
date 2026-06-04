@@ -33,6 +33,25 @@ export async function POST(request: Request) {
   }
 
   const event = payload.event;
+
+  // ── Lifetime pass: order.paid fires for one-time payments ─────────────────
+  if (event === 'order.paid') {
+    const orderNotes = payload.payload?.order?.entity?.notes ?? {};
+    if (orderNotes.plan === 'lifetime' && orderNotes.user_id) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      await supabase.from('profiles').update({
+        is_pro: true,
+        subscription_status: 'pro',
+        entitlement_source: 'lifetime',
+        subscription_expires_at: null,
+      }).eq('id', orderNotes.user_id);
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
+  }
+
   const entity = payload.payload?.subscription?.entity ?? {};
   const notes = entity.notes ?? {};
   const userId = notes.user_id;
@@ -91,25 +110,55 @@ export async function POST(request: Request) {
     console.error('Supabase update error', updError);
   }
 
-  // Handle Kul activation
+  // ── Kul Pro activation: propagate Zenith to all family members ───────────
   if (event === 'subscription.activated' && plan.includes('kul')) {
-    const { data: kulMembers, error: kmErr } = await supabase
+    const { data: kulMember } = await supabase
       .from('kul_members')
       .select('kul_id')
       .eq('user_id', userId)
-      .single();
-    if (!kmErr && kulMembers?.kul_id) {
+      .eq('role', 'guardian')
+      .maybeSingle();
+
+    if (kulMember?.kul_id) {
       const proExpires = new Date();
       if (billing === 'annual') {
         proExpires.setFullYear(proExpires.getFullYear() + 1);
       } else {
         proExpires.setMonth(proExpires.getMonth() + 1);
       }
-      await supabase.from('kul').update({
-        is_pro: true,
+
+      // Mark the kul itself as pro
+      await supabase.from('kuls').update({
+        is_pro:           true,
         pro_activated_at: new Date().toISOString(),
-        pro_expires_at: proExpires.toISOString(),
-      }).eq('id', kulMembers.kul_id);
+        pro_expires_at:   proExpires.toISOString(),
+        pro_activated_by: userId,
+      }).eq('id', kulMember.kul_id);
+
+      // Propagate Zenith to all kul members via DB function
+      await supabase.rpc('propagate_kul_pro', {
+        p_kul_id:     kulMember.kul_id,
+        p_expires_at: proExpires.toISOString(),
+      });
+    }
+  }
+
+  // ── Kul Pro cancellation: revoke family members' access ──────────────────
+  if (event === 'subscription.cancelled' && plan.includes('kul')) {
+    const { data: kulMember } = await supabase
+      .from('kul_members')
+      .select('kul_id')
+      .eq('user_id', userId)
+      .eq('role', 'guardian')
+      .maybeSingle();
+
+    if (kulMember?.kul_id) {
+      await supabase.from('kuls').update({
+        is_pro: false,
+        pro_expires_at: new Date().toISOString(),
+      }).eq('id', kulMember.kul_id);
+
+      await supabase.rpc('revoke_kul_pro', { p_kul_id: kulMember.kul_id });
     }
   }
 

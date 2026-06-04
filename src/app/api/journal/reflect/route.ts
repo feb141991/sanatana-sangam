@@ -11,6 +11,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // ── Pro gate: AI reflection is a Zenith feature ───────────────────────
+    const { data: gateProfile } = await supabase
+      .from('profiles')
+      .select('is_pro, subscription_status')
+      .eq('id', user.id)
+      .single();
+
+    const isPro = gateProfile?.is_pro === true ||
+      gateProfile?.subscription_status === 'pro' ||
+      gateProfile?.subscription_status === 'kul_pro';
+
+    if (!isPro) {
+      return NextResponse.json({
+        error: 'upgrade_required',
+        message: 'AI reflections are a Zenith feature. Upgrade to unlock weekly, monthly and quarterly spiritual reflections.',
+        upgrade_url: '/settings/subscription',
+      }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => null) as {
       period?: 'weekly' | 'monthly' | 'quarterly';
     } | null;
@@ -61,7 +80,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // Fetch user profile metadata to contextualize reflection
+    // Fetch user profile metadata to contextualize reflection (reuse pro check profile where possible)
     const { data: profile } = await supabase
       .from('profiles')
       .select('tradition, sampradaya, seeking, spiritual_level')
