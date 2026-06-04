@@ -302,6 +302,18 @@ export default async function BlessingPage({
 
       {/* Copy link script */}
       <script dangerouslySetInnerHTML={{ __html: `
+        document.querySelectorAll('.share-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            fetch('/api/karma/award', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason: 'blessing_shared', amount: 10 })
+            }).catch(function(err) {
+              console.error('Failed to award sharing karma:', err);
+            });
+          });
+        });
+
         document.getElementById('copy-btn').addEventListener('click', function() {
           navigator.clipboard.writeText('${pageUrl}').then(function() {
             var btn = document.getElementById('copy-btn');

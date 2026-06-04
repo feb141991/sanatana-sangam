@@ -1118,13 +1118,13 @@ function SadhanaScorecard({
       </div>
 
       {/* ── Karma 30d breakdown ── */}
-      {karma30dTotal > 0 && (
-        <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(197,160,89,0.05)' : 'rgba(255,248,230,0.90)', border: '1px solid rgba(197,160,89,0.16)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.65)' }}>Karma Earned · 30 days</p>
-            <span className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>+{karma30dTotal}</span>
-          </div>
-          <div className="space-y-2">
+      <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(197,160,89,0.05)' : 'rgba(255,248,230,0.90)', border: '1px solid rgba(197,160,89,0.16)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.65)' }}>Karma Earned · 30 days</p>
+          <span className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>+{karma30dTotal}</span>
+        </div>
+        {karma30dTotal > 0 && (
+          <div className="space-y-2 mb-4">
             {karma30dBreakdown.map(({ reason, total }) => {
               const maxKarma = karma30dBreakdown[0]?.total ?? 1;
               return (
@@ -1142,8 +1142,13 @@ function SadhanaScorecard({
               );
             })}
           </div>
+        )}
+        <div className="flex justify-end">
+          <Link href="/my-progress/ledger" className="text-xs font-semibold hover:underline" style={{ color: '#C8924A' }}>
+            View Seva History →
+          </Link>
         </div>
-      )}
+      </div>
     </div>
   );
 }

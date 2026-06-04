@@ -28,6 +28,7 @@ import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
 
 // ─── Parchment palette — solid, no opacity tricks ────────────────────────────
 const getPalette = (isDark: boolean) => isDark ? {
@@ -155,6 +156,7 @@ export default function CanonicalReader({
   const [explainLoading,       setExplainLoading]       = useState(false);
   const [explainResult,        setExplainResult]        = useState<ExplainResult | null>(null);
   const [explainUpgradeNeeded, setExplainUpgradeNeeded] = useState(false);
+  const [correctionModalOpen,  setCorrectionModalOpen]  = useState(false);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const entry       = entries[verseIndex];
@@ -559,14 +561,24 @@ export default function CanonicalReader({
             >
               {/* Source chip + title */}
               <div className="text-center mb-8">
-                <div
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4"
-                  style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: P.accent }} />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: P.accentDeep }}>
-                    {entry.source}
-                  </span>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                    style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: P.accent }} />
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: P.accentDeep }}>
+                      {entry.source}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCorrectionModalOpen(true)}
+                    className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors animate-fade-in"
+                    title="Report translation issue"
+                  >
+                    <span className="text-xs">🚩</span>
+                  </button>
                 </div>
                 <h2
                   className="font-bold leading-snug"
@@ -823,7 +835,12 @@ export default function CanonicalReader({
             </div>
           )}
         </div>
-
+      <ScriptureCorrectionModal
+        isOpen={correctionModalOpen}
+        onClose={() => setCorrectionModalOpen(false)}
+        scriptureSource={entry.source}
+        verseText={entry.original || entry.fullText || ''}
+      />
     </ReaderShell>
   );
 

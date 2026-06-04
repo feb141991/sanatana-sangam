@@ -3,6 +3,8 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { getTierFromScore } from '@/lib/seva-tiers';
+import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
 
 const FREE_DAILY_LIMIT = 5;
 const PRO_DAILY_LIMIT = 200;
@@ -14,9 +16,8 @@ type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
 async function checkAndIncrementAiUsage(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
   userId: string,
-  isPro: boolean
+  limit: number
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
-  const limit = isPro ? PRO_DAILY_LIMIT : FREE_DAILY_LIMIT;
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
   try {
@@ -130,7 +131,7 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro, is_banned, tradition, sampradaya, city, country, seeking, app_language, meaning_language, transliteration_language, spiritual_level, timezone')
+    .select('is_pro, is_banned, tradition, sampradaya, city, country, seeking, app_language, meaning_language, transliteration_language, spiritual_level, timezone, seva_score')
     .eq('id', user.id)
     .single();
 
@@ -139,7 +140,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Your account has been suspended.' }, { status: 403 });
   }
 
-  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, isPro);
+  const tier = getTierFromScore(profile?.seva_score ?? 0);
+  const dailyLimit = isPro ? 200 : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? 5);
+
+  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, dailyLimit);
   if (!allowed) {
     return NextResponse.json(
       { error: 'daily_limit_reached', used, limit, isPro },

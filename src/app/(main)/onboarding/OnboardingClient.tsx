@@ -104,6 +104,7 @@ export default function OnboardingClient({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { setPreference } = useThemePreference();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
   const [tradition, setTradition] = useState<string>(initialTradition || '');
@@ -118,10 +119,127 @@ export default function OnboardingClient({
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
-  const { setPreference } = useThemePreference();
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
   const [nameStory, setNameStory] = useState<any>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
+
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
+  useEffect(() => {
+    let timer: any;
+    if (otpCooldown > 0) {
+      timer = setInterval(() => {
+        setOtpCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [otpCooldown]);
+
+  const handleOtpChange = (val: string, index: number) => {
+    const cleaned = val.replace(/\D/g, '');
+    if (!cleaned && val !== '') return;
+    
+    const chars = otpValue.split('');
+    while (chars.length < 6) chars.push('');
+    chars[index] = cleaned;
+    const newOtpValue = chars.join('').slice(0, 6);
+    setOtpValue(newOtpValue);
+    setOtpError('');
+
+    if (cleaned && index < 5) {
+      const nextInput = document.getElementById(`otp-${index + 1}`);
+      nextInput?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Backspace') {
+      const chars = otpValue.split('');
+      while (chars.length < 6) chars.push('');
+      if (!chars[index] && index > 0) {
+        chars[index - 1] = '';
+        setOtpValue(chars.join('').slice(0, 6));
+        const prevInput = document.getElementById(`otp-${index - 1}`);
+        prevInput?.focus();
+      } else {
+        chars[index] = '';
+        setOtpValue(chars.join('').slice(0, 6));
+      }
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pasted.length === 6) {
+      setOtpValue(pasted);
+      document.getElementById('otp-5')?.focus();
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!whatsappNumberOnly) {
+      toast.error("Please enter a phone number.");
+      return;
+    }
+    if (whatsappNumberOnly.length < 7 || whatsappNumberOnly.length > 15) {
+      toast.error("Please enter a valid phone number (7 to 15 digits).");
+      return;
+    }
+    
+    setOtpError('');
+    const phone = `${whatsappCountryCode}${whatsappNumberOnly}`;
+    const toastId = toast.loading('Sending verification code...');
+    
+    try {
+      const res = await fetch('/api/auth/whatsapp-otp/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Failed to send OTP');
+      
+      setOtpSent(true);
+      setOtpCooldown(30);
+      toast.success('Verification code sent to WhatsApp!', { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || 'Could not send verification code.', { id: toastId });
+      setOtpError(err.message || 'Could not send verification code.');
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    const code = otpValue;
+    if (code.length !== 6) {
+      setOtpError('Please enter a 6-digit code');
+      return;
+    }
+    
+    setOtpError('');
+    const phone = `${whatsappCountryCode}${whatsappNumberOnly}`;
+    const toastId = toast.loading('Verifying code...');
+    
+    try {
+      const res = await fetch('/api/auth/whatsapp-otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Invalid or expired code');
+      
+      setOtpVerified(true);
+      setOtpSent(false);
+      toast.success('WhatsApp number verified successfully!', { id: toastId });
+    } catch (err: any) {
+      toast.error(err.message || 'Verification failed.', { id: toastId });
+      setOtpError(err.message || 'Verification failed. Please check the code.');
+    }
+  };
 
   const [greetIdx, setGreetIdx] = useState(0);
   useEffect(() => {
@@ -165,7 +283,9 @@ export default function OnboardingClient({
     if (saving) return;
     setSaving(true);
     try {
-      const fullWhatsAppNumber = whatsappNumberOnly ? `${whatsappCountryCode}${whatsappNumberOnly}` : null;
+      const fullWhatsAppNumber = (whatsappOptIn && otpVerified)
+        ? `${whatsappCountryCode}${whatsappNumberOnly}`
+        : null;
       const res = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -177,7 +297,7 @@ export default function OnboardingClient({
           gender,
           interests,
           whatsapp_number: fullWhatsAppNumber,
-          whatsapp_opt_in: whatsappOptIn,
+          whatsapp_opt_in: whatsappOptIn && otpVerified,
         }),
       });
 
@@ -197,11 +317,11 @@ export default function OnboardingClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#0E0E0F] flex flex-col text-white/90">
+    <div className="min-h-screen flex flex-col text-[var(--brand-primary-strong)]" style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(200, 146, 74, 0.08) 0%, transparent 60%), var(--premium-ivory)' }}>
       <div className="px-5 pt-6 pb-3">
-        <div className="h-1 w-full rounded-full bg-white/[0.06] overflow-hidden">
+        <div className="h-1 w-full rounded-full bg-[var(--premium-border)] overflow-hidden">
           <motion.div
-            className="h-full bg-[#C5A059]"
+            className="h-full bg-[var(--premium-gold)]"
             animate={{ width: `${progressPct}%` }}
             transition={SPRING}
           />
@@ -211,7 +331,7 @@ export default function OnboardingClient({
             <div
               key={index}
               className="h-2 w-2 rounded-full"
-              style={{ background: index + 1 <= step ? '#C5A059' : 'rgba(255,255,255,0.16)' }}
+              style={{ background: index + 1 <= step ? 'var(--premium-gold)' : 'var(--premium-border)' }}
             />
           ))}
         </div>
@@ -219,7 +339,7 @@ export default function OnboardingClient({
 
       <div className="px-5">
         {step > 1 && step < 9 ? (
-          <button onClick={goBack} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04]">
+          <button onClick={goBack} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent bg-transparent text-[var(--brand-muted)] hover:bg-[rgba(62,42,31,0.05)] transition-colors">
             <ChevronLeft size={18} />
           </button>
         ) : (
@@ -251,8 +371,8 @@ export default function OnboardingClient({
                       transition={{ duration: 0.4 }}
                       className="text-center"
                     >
-                      <p className="text-2xl font-serif text-[#C5A059] mb-1">{GREETINGS[greetIdx].script}</p>
-                      <p className="text-[11px] uppercase tracking-[0.25em] text-white/30">{GREETINGS[greetIdx].text}</p>
+                      <p className="text-2xl font-serif text-[var(--premium-gold)] mb-1">{GREETINGS[greetIdx].script}</p>
+                      <p className="text-[11px] uppercase tracking-[0.25em] text-[var(--brand-muted)] opacity-70 mb-1">{GREETINGS[greetIdx].text}</p>
                     </motion.div>
                   </AnimatePresence>
                 </div>
@@ -261,18 +381,18 @@ export default function OnboardingClient({
                 <div className="flex gap-2 mb-8">
                   {GREETINGS.map((_, i) => (
                     <div key={i} className="w-1.5 h-1.5 rounded-full transition-colors duration-300"
-                      style={{ background: i === greetIdx ? '#C5A059' : 'rgba(255,255,255,0.18)' }} />
+                      style={{ background: i === greetIdx ? 'var(--premium-gold)' : 'var(--premium-border)' }} />
                   ))}
                 </div>
 
-                <h1 className="text-3xl font-medium mb-3 text-white" style={{ fontFamily: 'var(--font-serif)' }}>
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   Your sacred journey begins
                 </h1>
-                <p className="text-white/40 mb-10 text-sm leading-relaxed max-w-xs">
+                <p className="text-[var(--brand-muted)] mb-10 text-sm leading-relaxed max-w-xs">
                   A daily companion for dharmic living — across all traditions
                 </p>
                 <button onClick={() => goNext(2)}
-                  className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 text-[15px]">
+                  className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 text-[15px] hover:opacity-90 transition-opacity">
                   Begin →
                 </button>
               </div>
@@ -280,7 +400,7 @@ export default function OnboardingClient({
 
             {step === 2 && (
               <div>
-                <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
                 <div className="grid grid-cols-2 gap-3 mt-6">
                   {TRADITIONS.map((item) => {
                     const selected = tradition === item.key;
@@ -294,12 +414,24 @@ export default function OnboardingClient({
                             setStep(3);
                           }, 400);
                         }}
-                        className="rounded-2xl p-4 text-left bg-white/[0.04] border border-white/[0.06]"
-                        style={selected ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.08)' } : undefined}
+                        className="rounded-2xl p-4 text-left border transition-all"
+                        style={
+                          selected
+                            ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', borderWidth: '1.5px' }
+                            : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', borderWidth: '1px' }
+                        }
                       >
-                        <div className="text-2xl mb-3">{item.emoji}</div>
-                        <div className="font-semibold">{item.label}</div>
-                        <div className="text-sm text-white/50 mt-1">{item.desc}</div>
+                        <div 
+                          className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] mb-3 bg-white shrink-0"
+                          style={{
+                            borderColor: 'rgba(200, 146, 74, 0.3)',
+                            padding: '12px'
+                          }}
+                        >
+                          <span className="text-xl">{item.emoji}</span>
+                        </div>
+                        <div className="font-semibold text-[var(--brand-primary-strong)]">{item.label}</div>
+                        <div className="text-sm text-[var(--brand-muted)] mt-1">{item.desc}</div>
                       </button>
                     );
                   })}
@@ -310,10 +442,25 @@ export default function OnboardingClient({
             {/* Step 3: Life Stage + Gender */}
             {step === 3 && (
               <div>
-                <h1 className="text-3xl font-medium mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   Your Stage of Life
                 </h1>
-                <p className="text-white/40 text-sm mb-6">
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
                   Your duties shift with each stage. This shapes your Nitya Karma and guidance.
                 </p>
 
@@ -325,27 +472,35 @@ export default function OnboardingClient({
                       onClick={() => setLifeStage(stage.key)}
                       className="w-full flex items-center gap-4 rounded-2xl p-4 text-left border transition-all"
                       style={lifeStage === stage.key
-                        ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.10)' }
-                        : { borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }
+                        ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', borderWidth: '1.5px' }
+                        : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', borderWidth: '1px' }
                       }
                     >
-                      <span className="text-2xl">{stage.emoji}</span>
+                      <div 
+                        className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                        style={{
+                          borderColor: 'rgba(200, 146, 74, 0.3)',
+                          padding: '12px'
+                        }}
+                      >
+                        <span className="text-xl">{stage.emoji}</span>
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-white/90">{stage.label}</span>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/40">{stage.age}</span>
+                          <span className="font-semibold text-[var(--brand-primary-strong)]">{stage.label}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--premium-border)] text-[var(--brand-primary-strong)]">{stage.age}</span>
                         </div>
-                        <p className="text-xs text-white/40 mt-0.5">{stage.desc}</p>
+                        <p className="text-xs text-[var(--brand-muted)] mt-0.5">{stage.desc}</p>
                       </div>
                       {lifeStage === stage.key && (
-                        <div className="w-5 h-5 rounded-full bg-[#C5A059] flex items-center justify-center text-black text-[10px] font-bold">✓</div>
+                        <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
                       )}
                     </button>
                   ))}
                 </div>
 
                 {/* Gender */}
-                <p className="text-[11px] uppercase tracking-widest text-white/30 mb-3">Gender</p>
+                <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mb-3">Gender</p>
                 <div className="flex gap-2">
                   {GENDERS.map(g => (
                     <button key={g.key}
@@ -353,8 +508,8 @@ export default function OnboardingClient({
                       onClick={() => setGender(g.key)}
                       className="flex-1 py-3 rounded-2xl text-sm font-medium border transition-all"
                       style={gender === g.key
-                        ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.10)', color: '#C5A059' }
-                        : { borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)', color: 'rgba(255,255,255,0.50)' }
+                        ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', color: 'var(--brand-primary-strong)', borderWidth: '1.5px' }
+                        : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', color: 'var(--brand-muted)', borderWidth: '1px' }
                       }
                     >
                       {g.emoji} {g.label}
@@ -366,21 +521,36 @@ export default function OnboardingClient({
                   type="button"
                   onClick={() => goNext(4)}
                   disabled={!lifeStage}
-                  className="w-full mt-6 rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-40"
+                  className="w-full mt-6 rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
                 >
                   Continue →
                 </button>
-                <button type="button" onClick={() => goNext(4)} className="w-full mt-3 text-white/25 text-xs underline">Skip for now</button>
+                <button type="button" onClick={() => goNext(4)} className="w-full mt-3 text-[var(--brand-muted)] text-xs underline">Skip for now</button>
               </div>
             )}
 
             {/* Step 4: Interests */}
             {step === 4 && (
               <div>
-                <h1 className="text-3xl font-medium mb-1" style={{ fontFamily: 'var(--font-serif)' }}>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   What calls you here?
                 </h1>
-                <p className="text-white/40 text-sm mb-6">This shapes your entire Shoonaya experience.</p>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">This shapes your entire Shoonaya experience.</p>
 
                 <div className="space-y-3">
                   {[
@@ -400,19 +570,29 @@ export default function OnboardingClient({
                         className="w-full flex items-center gap-4 rounded-2xl p-4 text-left border transition-all duration-300 transform active:scale-[0.99] relative overflow-hidden"
                         style={selected
                           ? { 
-                              borderColor: '#C8924A', 
+                              borderColor: 'var(--premium-gold)', 
                               background: 'rgba(200, 146, 74, 0.08)',
+                              borderWidth: '1.5px',
                             }
                           : { 
-                              borderColor: 'rgba(255, 255, 255, 0.06)', 
-                              background: 'rgba(255, 255, 255, 0.03)',
+                              borderColor: 'var(--premium-border)', 
+                              background: 'rgba(255, 255, 255, 0.7)',
+                              borderWidth: '1px',
                             }
                         }
                       >
-                        <span className="text-2xl">{item.emoji}</span>
-                        <span className="font-medium text-white/90 text-sm flex-1">{item.label}</span>
+                        <div 
+                          className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                          style={{
+                            borderColor: 'rgba(200, 146, 74, 0.3)',
+                            padding: '12px'
+                          }}
+                        >
+                          <span className="text-xl">{item.emoji}</span>
+                        </div>
+                        <span className="font-medium text-[var(--brand-primary-strong)] text-sm flex-1">{item.label}</span>
                         {selected && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#C8924A] shadow-[0_0_8px_#C8924A]" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-[var(--premium-gold)] shadow-[0_0_8px_var(--premium-gold)]" />
                         )}
                       </button>
                     );
@@ -423,7 +603,7 @@ export default function OnboardingClient({
                   type="button"
                   disabled={!goal}
                   onClick={() => goNext(5)}
-                  className="w-full mt-6 rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-40 transition-all hover:opacity-90"
+                  className="w-full mt-6 rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 transition-all hover:opacity-90"
                 >
                   Continue →
                 </button>
@@ -433,7 +613,22 @@ export default function OnboardingClient({
             {/* Step 5: Goals (renumbered from 3) */}
             {step === 5 && (
               <div>
-                <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
                 <div className="space-y-3 mt-6">
                   {GOALS.map((item) => {
                     const selected = goal === item.key;
@@ -448,11 +643,22 @@ export default function OnboardingClient({
                             setStep(6);
                           }, 300);
                         }}
-                        className="w-full rounded-full px-4 py-3 text-left bg-white/[0.04] border border-white/[0.06] flex items-center gap-3"
-                        style={selected ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.08)' } : undefined}
+                        className="w-full rounded-full px-4 py-3 text-left flex items-center gap-3 border transition-all"
+                        style={selected 
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', borderWidth: '1.5px' } 
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', borderWidth: '1px' }
+                        }
                       >
-                        <span className="text-xl">{item.emoji}</span>
-                        <span className="font-medium">{item.label}</span>
+                        <div 
+                          className="w-10 h-10 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                          style={{
+                            borderColor: 'rgba(200, 146, 74, 0.3)',
+                            padding: '8px'
+                          }}
+                        >
+                          <span className="text-base">{item.emoji}</span>
+                        </div>
+                        <span className="font-medium text-[var(--brand-primary-strong)]">{item.label}</span>
                       </button>
                     );
                   })}
@@ -463,24 +669,39 @@ export default function OnboardingClient({
             {/* Step 6: Name (renumbered from 4) */}
             {step === 6 && (
               <div>
-                <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
-                <p className="text-white/50 mb-6">This is how you&apos;ll appear to your Mandali</p>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
+                <p className="text-[var(--brand-muted)] mb-6">This is how you&apos;ll appear to your Mandali</p>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name or spiritual name"
-                  className="w-full rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none"
+                  className="w-full rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] placeholder-[var(--brand-muted)]/50"
                 />
                 <div className="mt-6 space-y-3">
                   <button
                     type="button"
                     disabled={!canContinueFromName}
                     onClick={() => goNext(7)}
-                    className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-60"
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-60 hover:opacity-90 transition-opacity"
                   >
                     Continue →
                   </button>
-                  <button type="button" onClick={() => goNext(7)} className="w-full text-white/40 text-sm underline">
+                  <button type="button" onClick={() => goNext(7)} className="w-full text-[var(--brand-muted)] text-sm underline">
                     Skip for now
                   </button>
                 </div>
@@ -490,31 +711,46 @@ export default function OnboardingClient({
             {/* Step 7: Name Story Generation/Preview */}
             {step === 7 && (
               <div className="text-left">
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 {!nameStory && !nameStoryLoading ? (
                   <div>
-                    <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+                    <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                       Discover your Name Story
                     </h1>
-                    <p className="text-white/50 mb-6 leading-relaxed text-sm">
+                    <p className="text-[var(--brand-muted)] mb-6 leading-relaxed text-sm">
                       Every dharmic name carries a distinct vibration. Would you like to discover the etymological roots and spiritual significance of your name?
                     </p>
                     
                     {!name.trim() ? (
                       <div className="mb-6">
-                        <label className="block text-[11px] uppercase tracking-wider text-white/40 mb-1.5 font-semibold">
+                        <label className="block text-[11px] uppercase tracking-wider text-[var(--brand-muted)] mb-1.5 font-semibold">
                           Please enter a name first
                         </label>
                         <input
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Your name or spiritual name"
-                          className="w-full rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/90"
+                          className="w-full rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] placeholder-[var(--brand-muted)]/50"
                         />
                       </div>
                     ) : (
-                      <div className="p-5 rounded-2xl bg-white/[0.02] border border-[#C5A059]/20 text-center mb-6">
-                        <span className="text-[10px] uppercase tracking-widest text-[#C5A059] block mb-1 font-semibold">Analyzing Significance For</span>
-                        <span className="text-xl font-serif text-white">{name}</span>
+                      <div className="p-5 rounded-2xl bg-white border border-[var(--premium-border)] text-center mb-6">
+                        <span className="text-[10px] uppercase tracking-widest text-[var(--premium-gold)] block mb-1 font-semibold">Analyzing Significance For</span>
+                        <span className="text-xl font-serif text-[var(--brand-primary-strong)]">{name}</span>
                       </div>
                     )}
 
@@ -539,7 +775,7 @@ export default function OnboardingClient({
                             setNameStoryLoading(false);
                           }
                         }}
-                        className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-60 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                        className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-60 flex items-center justify-center gap-2 transition-all hover:opacity-90"
                       >
                         <Sparkles size={16} />
                         <span>Yes, reveal it →</span>
@@ -547,7 +783,7 @@ export default function OnboardingClient({
                       <button
                         type="button"
                         onClick={() => goNext(8)}
-                        className="w-full text-white/40 text-sm underline py-2 text-center"
+                        className="w-full text-[var(--brand-muted)] text-sm underline py-2 text-center"
                       >
                         No, skip this
                       </button>
@@ -556,42 +792,42 @@ export default function OnboardingClient({
                 ) : nameStoryLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <div className="relative w-16 h-16 mb-6">
-                      <div className="absolute inset-0 rounded-full border-2 border-t-[#C5A059] border-white/10 animate-spin" />
+                      <div className="absolute inset-0 rounded-full border-2 border-t-[var(--premium-gold)] border-[var(--premium-border)] animate-spin" />
                     </div>
-                    <h2 className="text-xl font-serif text-white mb-2">Invoking Cosmic Etymology</h2>
-                    <p className="text-xs text-white/45 max-w-xs leading-relaxed">
+                    <h2 className="text-xl font-serif text-[var(--brand-primary-strong)] mb-2">Invoking Cosmic Etymology</h2>
+                    <p className="text-xs text-[var(--brand-muted)] max-w-xs leading-relaxed">
                       Decoding sacred scripts and scripture databases to discover the meaning of {name}...
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <h1 className="text-2xl font-medium text-center" style={{ fontFamily: 'var(--font-serif)' }}>
+                    <h1 className="text-2xl font-medium text-center text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                       Your Name Story
                     </h1>
                     
-                    <div className="rounded-2xl border border-[#C5A059]/25 bg-[#C5A059]/[0.01] p-6 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-radial-gradient from-[#C5A059]/[0.02] to-transparent pointer-events-none" />
+                    <div className="rounded-2xl border border-[var(--premium-border)] bg-white/90 p-6 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-radial-gradient from-[var(--premium-gold)]/[0.02] to-transparent pointer-events-none" />
                       
                       <div className="text-center mb-4">
-                        <span className="text-[10px] uppercase tracking-widest text-[#C5A059] block mb-1">
+                        <span className="text-[10px] uppercase tracking-widest text-[var(--premium-gold)] block mb-1">
                           {nameStory.origin_tradition || tradition}
                         </span>
-                        <h2 className="text-2xl font-serif text-white">{nameStory.name_input}</h2>
-                        <p className="text-xs font-serif italic text-white/80 mt-1">“{nameStory.meaning_summary}”</p>
+                        <h2 className="text-2xl font-serif text-[var(--brand-primary-strong)]">{nameStory.name_input}</h2>
+                        <p className="text-xs font-serif italic text-[var(--brand-primary-strong)] mt-1">“{nameStory.meaning_summary}”</p>
                       </div>
                       
-                      <div className="h-px bg-white/[0.08] my-4" />
+                      <div className="h-px bg-[var(--premium-border)] my-4" />
                       
-                      <p className="text-xs text-white/60 leading-relaxed mb-4">
+                      <p className="text-xs text-[var(--brand-primary-strong)] leading-relaxed mb-4">
                         {nameStory.etymology_text}
                       </p>
                       
                       {nameStory.scripture_line && (
-                        <div className="p-3.5 rounded-xl bg-[#C5A059]/[0.03] border border-[#C5A059]/10 text-center">
-                          <p className="text-xs font-serif text-white/95 italic leading-relaxed mb-1.5 whitespace-pre-line">
+                        <div className="p-3.5 rounded-xl bg-[rgba(200,146,74,0.06)] border border-[rgba(200,146,74,0.15)] text-center">
+                          <p className="text-xs font-serif text-[var(--brand-primary-strong)] italic leading-relaxed mb-1.5 whitespace-pre-line">
                             {nameStory.scripture_line}
                           </p>
-                          <p className="text-[9px] uppercase tracking-wider text-[#C5A059] font-semibold">
+                          <p className="text-[9px] uppercase tracking-wider text-[var(--premium-gold)] font-semibold">
                             — {nameStory.scripture_source}
                           </p>
                         </div>
@@ -601,7 +837,7 @@ export default function OnboardingClient({
                     <button
                       type="button"
                       onClick={() => goNext(8)}
-                      className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 transition-all hover:opacity-90"
+                      className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 transition-all hover:opacity-90"
                     >
                       Continue →
                     </button>
@@ -613,10 +849,25 @@ export default function OnboardingClient({
             {/* Step 8: WhatsApp Reminders (Optional) */}
             {step === 8 && (
               <div>
-                <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+                {tradition && (
+                  <div className="flex justify-center mb-6">
+                    <div 
+                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
+                      style={{
+                        borderColor: 'rgba(200, 146, 74, 0.3)',
+                        padding: '12px'
+                      }}
+                    >
+                      <span className="text-xl">
+                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   Daily Reminders
                 </h1>
-                <p className="text-white/50 mb-6">
+                <p className="text-[var(--brand-muted)] mb-6">
                   Receive tradition-aware daily reminders, shlokas, and blessings directly on WhatsApp.
                 </p>
 
@@ -626,25 +877,33 @@ export default function OnboardingClient({
                     <select
                       value={whatsappCountryCode}
                       onChange={(e) => setWhatsappCountryCode(e.target.value)}
-                      className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/80 shrink-0 max-w-[100px]"
+                      disabled={otpVerified}
+                      className="rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] shrink-0 max-w-[100px] disabled:opacity-50"
                     >
                       {COUNTRY_CODES.map((c) => (
-                        <option key={`${c.code}-${c.name}`} value={c.code} className="bg-[#0E0E0F]">
+                        <option key={`${c.code}-${c.name}`} value={c.code} className="bg-white text-[var(--brand-primary-strong)]">
                           {c.flag} {c.code}
                         </option>
                       ))}
                     </select>
-                    <input
-                      type="tel"
-                      value={whatsappNumberOnly}
-                      onChange={(e) => {
-                        // Keep only digits
-                        const cleaned = e.target.value.replace(/\D/g, '');
-                        setWhatsappNumberOnly(cleaned);
-                      }}
-                      placeholder="WhatsApp number"
-                      className="flex-1 rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/90"
-                    />
+                    <div className="relative flex-1">
+                      <input
+                        type="tel"
+                        value={whatsappNumberOnly}
+                        disabled={otpVerified}
+                        onChange={(e) => {
+                          const cleaned = e.target.value.replace(/\D/g, '');
+                          setWhatsappNumberOnly(cleaned);
+                        }}
+                        placeholder="WhatsApp number"
+                        className="w-full rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] p-4 outline-none text-[var(--brand-primary-strong)] disabled:opacity-50 disabled:pr-10 placeholder-[var(--brand-muted)]/50"
+                      />
+                      {otpVerified && (
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-600 font-semibold text-sm">
+                          ✅
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Opt-in Checkbox */}
@@ -652,46 +911,121 @@ export default function OnboardingClient({
                     <input
                       type="checkbox"
                       checked={whatsappOptIn}
-                      onChange={(e) => setWhatsappOptIn(e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded accent-[#C5A059] border-white/[0.08] bg-white/[0.04]"
+                      disabled={otpVerified}
+                      onChange={(e) => {
+                        setWhatsappOptIn(e.target.checked);
+                        if (!e.target.checked) {
+                          setOtpSent(false);
+                          setOtpError('');
+                          setOtpValue('');
+                        }
+                      }}
+                      className="mt-1 w-4 h-4 rounded accent-[var(--premium-gold)] border-[var(--premium-border)] bg-white disabled:opacity-50"
                     />
                     <div className="text-left">
-                      <span className="text-sm font-medium text-white/80">
+                      <span className="text-sm font-medium text-[var(--brand-primary-strong)]">
                         Opt-in to tradition-aware daily reminders on WhatsApp
                       </span>
-                      <p className="text-xs text-white/40 mt-0.5">
+                      <p className="text-xs text-[var(--brand-muted)] mt-0.5">
                         We will never spam you. You can opt-out at any time.
                       </p>
                     </div>
                   </label>
+
+                  {/* Verified state banner */}
+                  {otpVerified && (
+                    <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-700 font-medium">
+                      <span>✅ WhatsApp number verified successfully.</span>
+                    </div>
+                  )}
+
+                  {/* OTP 6-Digit Inputs (Smooth Slide Down) */}
+                  <AnimatePresence>
+                    {whatsappOptIn && otpSent && !otpVerified && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden space-y-4 pt-2"
+                      >
+                        <p className="text-xs text-[var(--brand-muted)] text-left">Enter the 6-digit code sent to your WhatsApp:</p>
+                        <div className="flex justify-between gap-2" onPaste={handleOtpPaste}>
+                          {Array.from({ length: 6 }).map((_, idx) => (
+                            <input
+                              key={idx}
+                              id={`otp-${idx}`}
+                              type="text"
+                              maxLength={1}
+                              value={otpValue[idx] || ''}
+                              onChange={(e) => handleOtpChange(e.target.value, idx)}
+                              onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                              className="w-12 h-12 rounded-xl text-center text-xl font-bold bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] text-[var(--brand-primary-strong)] outline-none"
+                            />
+                          ))}
+                        </div>
+                        
+                        {otpError && (
+                          <p className="text-xs text-rose-600 font-semibold text-left">{otpError}</p>
+                        )}
+                        
+                        <div className="flex justify-between items-center">
+                          {otpCooldown > 0 ? (
+                            <span className="text-xs text-[var(--brand-muted)]">Resend code in {otpCooldown}s</span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleSendOtp}
+                              className="text-xs text-[var(--premium-gold)] underline hover:opacity-80 font-medium"
+                            >
+                              Resend Code
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="mt-8 space-y-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (whatsappOptIn && !whatsappNumberOnly) {
-                        toast.error("Please enter your WhatsApp number to opt-in.");
-                        return;
-                      }
-                      if (whatsappNumberOnly && (whatsappNumberOnly.length < 7 || whatsappNumberOnly.length > 15)) {
-                        toast.error("Please enter a valid phone number (7 to 15 digits).");
-                        return;
-                      }
-                      goNext(9);
-                    }}
-                    className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4"
-                  >
-                    Continue →
-                  </button>
+                  {whatsappOptIn && !otpVerified ? (
+                    otpSent ? (
+                      <button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
+                      >
+                        Verify Code
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
+                      >
+                        Send verification code
+                      </button>
+                    )
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => goNext(9)}
+                      className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 hover:opacity-90 transition-all"
+                    >
+                      Continue →
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => {
                       setWhatsappOptIn(false);
                       setWhatsappNumberOnly('');
+                      setOtpSent(false);
+                      setOtpVerified(false);
+                      setOtpValue('');
                       goNext(9);
                     }}
-                    className="w-full text-white/40 text-sm underline"
+                    className="w-full text-[var(--brand-muted)] text-sm underline"
                   >
                     Skip for now
                   </button>
@@ -702,13 +1036,13 @@ export default function OnboardingClient({
             {/* Step 9: Ready */}
             {step === 9 && (
               <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
-                <h1 className="text-3xl font-medium mb-4" style={{ fontFamily: 'var(--font-serif)' }}>
+                <h1 className="text-3xl font-medium mb-4 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                   {readyCopy.heading}
                 </h1>
-                <p className="text-white/60 mb-8">{readyCopy.body}</p>
+                <p className="text-[var(--brand-muted)] mb-8">{readyCopy.body}</p>
 
                 <div className="w-full mb-6">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-white/30 mb-3 text-left">App Theme</p>
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--brand-muted)] mb-3 text-left">App Theme</p>
                   <div className="grid grid-cols-3 gap-2">
                     {THEMES.map(t => (
                       <button key={t.key}
@@ -719,15 +1053,23 @@ export default function OnboardingClient({
                         }}
                         className="flex flex-col items-center gap-2 rounded-2xl py-4 border transition-all"
                         style={theme === t.key
-                          ? { borderColor: '#C5A059', background: 'rgba(197,160,89,0.14)', color: '#C5A059' }
-                          : { borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)' }
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', color: 'var(--brand-primary-strong)', borderWidth: '1.5px' }
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', color: 'var(--brand-muted)', borderWidth: '1px' }
                         }
                       >
-                        <span className="text-2xl">{t.icon}</span>
-                        <span className="font-semibold text-sm" style={{ color: theme === t.key ? '#C5A059' : 'rgba(255,255,255,0.70)' }}>
+                        <div 
+                          className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white mb-1"
+                          style={{
+                            borderColor: 'rgba(200, 146, 74, 0.3)',
+                            padding: '12px'
+                          }}
+                        >
+                          <span className="text-xl">{t.icon}</span>
+                        </div>
+                        <span className="font-semibold text-sm" style={{ color: theme === t.key ? 'var(--brand-primary-strong)' : 'var(--brand-muted)' }}>
                           {t.label}
                         </span>
-                        <span className="text-[10px] text-center leading-tight" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                        <span className="text-[10px] text-center leading-tight" style={{ color: 'var(--brand-muted)', opacity: 0.7 }}>
                           {t.desc}
                         </span>
                       </button>
@@ -740,7 +1082,7 @@ export default function OnboardingClient({
                     type="button"
                     onClick={() => complete('/japa')}
                     disabled={saving}
-                    className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-60"
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-60 hover:opacity-90 transition-opacity"
                   >
                     Start Japa Now →
                   </button>
@@ -748,7 +1090,7 @@ export default function OnboardingClient({
                     type="button"
                     onClick={() => complete('/home')}
                     disabled={saving}
-                    className="text-white/40 text-sm underline"
+                    className="text-[var(--brand-muted)] text-sm underline"
                   >
                     Go to home
                   </button>

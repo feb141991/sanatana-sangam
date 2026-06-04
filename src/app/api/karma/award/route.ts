@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { amount, reason } = body;
+    const { amount, reason, target_user_id } = body;
 
     if (typeof amount !== 'number' || amount <= 0 || amount > MAX_KARMA_PER_AWARD) {
       return NextResponse.json(
@@ -64,15 +64,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    let finalAmount = amount;
+    let metadata: any = null;
+
+    if (reason === 'new_member_welcome' && target_user_id) {
+      // Fetch both users' tradition from profiles
+      const [callerRes, targetRes] = await Promise.all([
+        supabase.from('profiles').select('tradition').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('tradition').eq('id', target_user_id).maybeSingle()
+      ]);
+
+      const callerTradition = callerRes.data?.tradition;
+      const targetTradition = targetRes.data?.tradition;
+
+      if (callerTradition && targetTradition && callerTradition !== targetTradition) {
+        finalAmount = amount + 10;
+        metadata = { cross_tradition: true, welcomed_user_id: target_user_id };
+      }
+    }
+
     const today = new Date().toISOString().slice(0, 10);
 
     const { data, error } = await supabase.rpc('award_karma', {
       p_user_id:      user.id,
       p_reason:       reason,
-      p_amount:       amount,
+      p_amount:       finalAmount,
       p_date:         today,
       p_daily_cap:    MAX_KARMA_PER_DAY,
       p_source_route: '/api/karma/award',
+      p_metadata:     metadata,
     });
 
     if (error) throw error;

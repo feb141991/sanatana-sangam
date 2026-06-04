@@ -30,6 +30,7 @@ import MoodGlyph from '@/components/ui/MoodGlyph';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
+import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
 
 const RELIC_BADGE_EMOJI: Record<string, string> = {
   'diya-bronze':         '🪔',
@@ -296,6 +297,7 @@ export function HeroSection({
 
   const [shlokaExpanded, setShlokaExpanded] = useState(false);
   const [shlokaModalOpen, setShlokaModalOpen] = useState(false);
+  const [correctionModalOpen, setCorrectionModalOpen] = useState(false);
   const [heroImageFailed, setHeroImageFailed] = useState(false);
   const [heroPicker, setHeroPicker] = useState(false);
   const [selectedHeroId, setSelectedHeroId] = useState<string | null>(() => {
@@ -982,10 +984,20 @@ export function HeroSection({
 
             {/* Content */}
             <div className="relative min-h-0 overflow-y-auto px-5 py-2 flex w-full max-w-2xl mx-auto flex-col justify-start gap-2">
-              <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
-                style={{ background: 'rgba(197, 160, 89,0.14)', color: 'var(--brand-primary)' }}>
-                {dailyText.source}
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="self-start text-[10px] font-semibold px-3 py-1 rounded-full"
+                  style={{ background: 'rgba(197, 160, 89,0.14)', color: 'var(--brand-primary)' }}>
+                  {dailyText.source}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCorrectionModalOpen(true)}
+                  className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  title="Report translation issue"
+                >
+                  <span className="text-xs">🚩</span>
+                </button>
+              </div>
 
               <motion.div
                 className="rounded-[1.4rem] px-4 py-3"
@@ -1053,6 +1065,13 @@ export function HeroSection({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ScriptureCorrectionModal
+        isOpen={correctionModalOpen}
+        onClose={() => setCorrectionModalOpen(false)}
+        scriptureSource={dailyText.source}
+        verseText={dailyText.original}
+      />
     </>
   );
 }

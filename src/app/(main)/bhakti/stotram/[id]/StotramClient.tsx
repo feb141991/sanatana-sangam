@@ -18,6 +18,7 @@ import { useReaderControls } from '@/hooks/useReaderControls';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import ReaderShell from '@/components/reader/ReaderShell';
+import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
 
 // ─── Direct Translations for Major Stotrams & Mantras ─────────────────────────
 const STOTRAM_TRANSLATIONS: Record<string, Record<number, { hi: string; pa: string }>> = {
@@ -259,6 +260,9 @@ function StotramReader({ id }: { id: string }) {
 
   const [activeVerse, setActiveVerse] = useState<number | null>(null);
   const [showAll,     setShowAll]     = useState(false);
+  const [correctionModalOpen, setCorrectionModalOpen] = useState(false);
+  const [correctionSource, setCorrectionSource] = useState('');
+  const [correctionVerse, setCorrectionVerse] = useState('');
 
   const [preferences, setPreferences] = useState<ReadablePreferences>(() =>
     resolveReadablePreferences({ appLanguage: contextLang, meaningLanguage: contextLang })
@@ -925,6 +929,18 @@ function StotramReader({ id }: { id: string }) {
 
                           {/* Verse Action panel */}
                           <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--divine-border)]/5">
+                            <button
+                              onClick={() => {
+                                setCorrectionSource(`${stotram.title} - Verse ${verse.number}`);
+                                setCorrectionVerse(verse.sanskrit);
+                                setCorrectionModalOpen(true);
+                              }}
+                              className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95"
+                              title="Report translation issue"
+                              aria-label={`Report issue for verse ${verse.number}`}
+                            >
+                              <span className="text-xs">🚩</span>
+                            </button>
                             <button onClick={() => copyVerse(verse)} className="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--surface-base)]/20 transition-all hover:bg-[var(--surface-base)]/40 active:scale-95" title="Copy Verse" aria-label={`Copy verse ${verse.number}`}>
                               <Copy size={11} style={{ color: accentColor }} />
                             </button>
@@ -1040,6 +1056,12 @@ function StotramReader({ id }: { id: string }) {
           </div>
         </div>
       )}
+      <ScriptureCorrectionModal
+        isOpen={correctionModalOpen}
+        onClose={() => setCorrectionModalOpen(false)}
+        scriptureSource={correctionSource}
+        verseText={correctionVerse}
+      />
     </ReaderShell>
   );
 }
