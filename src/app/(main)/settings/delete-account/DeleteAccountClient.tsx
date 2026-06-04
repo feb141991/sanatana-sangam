@@ -31,6 +31,8 @@ type DeleteAccountClientProps = {
   sevaScore: number;
   relicsUnlocked: number;
   exportAvailable: boolean;
+  journalCount: number;
+  journalDaysSpanned: number;
 };
 
 export default function DeleteAccountClient({
@@ -42,6 +44,8 @@ export default function DeleteAccountClient({
   sevaScore,
   relicsUnlocked,
   exportAvailable,
+  journalCount,
+  journalDaysSpanned,
 }: DeleteAccountClientProps) {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -212,6 +216,17 @@ export default function DeleteAccountClient({
                     Your {streak}-day streak will be lost forever. This action also removes your karma, seva history, and unlocked relics.
                   </p>
                 </div>
+
+                {journalCount > 0 && (
+                  <div className="mt-4 rounded-2xl border p-4" style={{ borderColor: 'rgba(212, 106, 106, 0.25)', background: 'rgba(212, 106, 106, 0.08)' }}>
+                    <div className="flex gap-2.5">
+                      <AlertTriangle size={18} color="#d46a6a" className="mt-0.5 shrink-0" />
+                      <p className="text-sm leading-relaxed" style={{ color: '#e58b8b' }}>
+                        You have {journalCount} journal entries spanning {journalDaysSpanned} days. These cannot be recovered.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6 flex flex-col gap-3">
                   <button

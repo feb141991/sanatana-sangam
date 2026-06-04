@@ -10,7 +10,7 @@ import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sa
 // Mood state is stored in localStorage (home_mood_date / home_mood_key) on the
 // client, so we can't query it server-side. Instead we send a universal noon
 // notification to all users who have push enabled — it acts as a friendly
-// "how are you feeling?" check-in that deep-links to /discover.
+// "how are you feeling?" check-in that deep-links to /discover/mood.
 //
 // Idempotency: uses notification_key "mood-checkin:<date>" so the row is
 // inserted only once per local date even if the cron fires twice.
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
 
   try {
     const baseUrl   = new URL(request.url).origin;
-    const actionPath = '/discover';
+    const actionPath = '/discover/mood';
     const actionUrl  = new URL(actionPath, baseUrl).toString();
     const now        = new Date();
     const targetLocalHour = 12; // noon local time

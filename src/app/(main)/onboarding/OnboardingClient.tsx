@@ -3,13 +3,30 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 9;
+const COUNTRY_CODES = [
+  { code: '+91', flag: '🇮🇳', name: 'India' },
+  { code: '+1', flag: '🇺🇸', name: 'USA' },
+  { code: '+44', flag: '🇬🇧', name: 'UK' },
+  { code: '+61', flag: '🇦🇺', name: 'Australia' },
+  { code: '+971', flag: '🇦🇪', name: 'UAE' },
+  { code: '+65', flag: '🇸🇬', name: 'Singapore' },
+  { code: '+1', flag: '🇨🇦', name: 'Canada' },
+  { code: '+60', flag: '🇲🇾', name: 'Malaysia' },
+  { code: '+27', flag: '🇿🇦', name: 'South Africa' },
+  { code: '+81', flag: '🇯🇵', name: 'Japan' },
+  { code: '+49', flag: '🇩🇪', name: 'Germany' },
+  { code: '+33', flag: '🇫🇷', name: 'France' },
+  { code: '+86', flag: '🇨🇳', name: 'China' },
+  { code: '+55', flag: '🇧🇷', name: 'Brazil' },
+  { code: '+92', flag: '🇵🇰', name: 'Pakistan' },
+];
 const SPRING = { type: 'spring', stiffness: 300, damping: 30 } as const;
 
 const TRADITIONS = [
@@ -94,11 +111,17 @@ export default function OnboardingClient({
   const [name, setName] = useState<string>(initialName || '');
   const [saving, setSaving] = useState(false);
 
+  const [whatsappCountryCode, setWhatsappCountryCode] = useState('+91');
+  const [whatsappNumberOnly, setWhatsappNumberOnly] = useState('');
+  const [whatsappOptIn, setWhatsappOptIn] = useState(false);
+
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const { setPreference } = useThemePreference();
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
+  const [nameStory, setNameStory] = useState<any>(null);
+  const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
   const [greetIdx, setGreetIdx] = useState(0);
   useEffect(() => {
@@ -132,10 +155,20 @@ export default function OnboardingClient({
     if (saving) return;
     setSaving(true);
     try {
+      const fullWhatsAppNumber = whatsappNumberOnly ? `${whatsappCountryCode}${whatsappNumberOnly}` : null;
       const res = await fetch('/api/onboarding/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tradition, goal, name, life_stage: lifeStage, gender, interests }),
+        body: JSON.stringify({
+          tradition,
+          goal,
+          name,
+          life_stage: lifeStage,
+          gender,
+          interests,
+          whatsapp_number: fullWhatsAppNumber,
+          whatsapp_opt_in: whatsappOptIn,
+        }),
       });
 
       if (!res.ok) throw new Error('Failed to complete onboarding');
@@ -172,7 +205,7 @@ export default function OnboardingClient({
       </div>
 
       <div className="px-5">
-        {step > 1 && step < 7 ? (
+        {step > 1 && step < 9 ? (
           <button onClick={goBack} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04]">
             <ChevronLeft size={18} />
           </button>
@@ -423,8 +456,220 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 7: Ready (renumbered from 5) */}
+            {/* Step 7: Name Story Generation/Preview */}
             {step === 7 && (
+              <div className="text-left">
+                {!nameStory && !nameStoryLoading ? (
+                  <div>
+                    <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+                      Discover your Name Story
+                    </h1>
+                    <p className="text-white/50 mb-6 leading-relaxed text-sm">
+                      Every dharmic name carries a distinct vibration. Would you like to discover the etymological roots and spiritual significance of your name?
+                    </p>
+                    
+                    {!name.trim() ? (
+                      <div className="mb-6">
+                        <label className="block text-[11px] uppercase tracking-wider text-white/40 mb-1.5 font-semibold">
+                          Please enter a name first
+                        </label>
+                        <input
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Your name or spiritual name"
+                          className="w-full rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/90"
+                        />
+                      </div>
+                    ) : (
+                      <div className="p-5 rounded-2xl bg-white/[0.02] border border-[#C5A059]/20 text-center mb-6">
+                        <span className="text-[10px] uppercase tracking-widest text-[#C5A059] block mb-1 font-semibold">Analyzing Significance For</span>
+                        <span className="text-xl font-serif text-white">{name}</span>
+                      </div>
+                    )}
+
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        disabled={!name.trim()}
+                        onClick={async () => {
+                          setNameStoryLoading(true);
+                          try {
+                            const res = await fetch('/api/name-story/generate', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ name, tradition }),
+                            });
+                            const body = await res.json();
+                            if (!res.ok) throw new Error(body.error || 'Failed to generate');
+                            setNameStory(body.data);
+                          } catch (err: any) {
+                            toast.error(err.message || 'Could not generate name story.');
+                          } finally {
+                            setNameStoryLoading(false);
+                          }
+                        }}
+                        className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 disabled:opacity-60 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                      >
+                        <Sparkles size={16} />
+                        <span>Yes, reveal it →</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => goNext(8)}
+                        className="w-full text-white/40 text-sm underline py-2 text-center"
+                      >
+                        No, skip this
+                      </button>
+                    </div>
+                  </div>
+                ) : nameStoryLoading ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="relative w-16 h-16 mb-6">
+                      <div className="absolute inset-0 rounded-full border-2 border-t-[#C5A059] border-white/10 animate-spin" />
+                    </div>
+                    <h2 className="text-xl font-serif text-white mb-2">Invoking Cosmic Etymology</h2>
+                    <p className="text-xs text-white/45 max-w-xs leading-relaxed">
+                      Decoding sacred scripts and scripture databases to discover the meaning of {name}...
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <h1 className="text-2xl font-medium text-center" style={{ fontFamily: 'var(--font-serif)' }}>
+                      Your Name Story
+                    </h1>
+                    
+                    <div className="rounded-2xl border border-[#C5A059]/25 bg-[#C5A059]/[0.01] p-6 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-radial-gradient from-[#C5A059]/[0.02] to-transparent pointer-events-none" />
+                      
+                      <div className="text-center mb-4">
+                        <span className="text-[10px] uppercase tracking-widest text-[#C5A059] block mb-1">
+                          {nameStory.origin_tradition || tradition}
+                        </span>
+                        <h2 className="text-2xl font-serif text-white">{nameStory.name_input}</h2>
+                        <p className="text-xs font-serif italic text-white/80 mt-1">“{nameStory.meaning_summary}”</p>
+                      </div>
+                      
+                      <div className="h-px bg-white/[0.08] my-4" />
+                      
+                      <p className="text-xs text-white/60 leading-relaxed mb-4">
+                        {nameStory.etymology_text}
+                      </p>
+                      
+                      {nameStory.scripture_line && (
+                        <div className="p-3.5 rounded-xl bg-[#C5A059]/[0.03] border border-[#C5A059]/10 text-center">
+                          <p className="text-xs font-serif text-white/95 italic leading-relaxed mb-1.5 whitespace-pre-line">
+                            {nameStory.scripture_line}
+                          </p>
+                          <p className="text-[9px] uppercase tracking-wider text-[#C5A059] font-semibold">
+                            — {nameStory.scripture_source}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() => goNext(8)}
+                      className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4 transition-all hover:opacity-90"
+                    >
+                      Continue →
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 8: WhatsApp Reminders (Optional) */}
+            {step === 8 && (
+              <div>
+                <h1 className="text-3xl font-medium mb-3" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Daily Reminders
+                </h1>
+                <p className="text-white/50 mb-6">
+                  Receive tradition-aware daily reminders, shlokas, and blessings directly on WhatsApp.
+                </p>
+
+                <div className="space-y-4">
+                  {/* Phone input row */}
+                  <div className="flex gap-2">
+                    <select
+                      value={whatsappCountryCode}
+                      onChange={(e) => setWhatsappCountryCode(e.target.value)}
+                      className="rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/80 shrink-0 max-w-[100px]"
+                    >
+                      {COUNTRY_CODES.map((c) => (
+                        <option key={`${c.code}-${c.name}`} value={c.code} className="bg-[#0E0E0F]">
+                          {c.flag} {c.code}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="tel"
+                      value={whatsappNumberOnly}
+                      onChange={(e) => {
+                        // Keep only digits
+                        const cleaned = e.target.value.replace(/\D/g, '');
+                        setWhatsappNumberOnly(cleaned);
+                      }}
+                      placeholder="WhatsApp number"
+                      className="flex-1 rounded-2xl bg-white/[0.04] border border-white/[0.06] p-4 outline-none text-white/90"
+                    />
+                  </div>
+
+                  {/* Opt-in Checkbox */}
+                  <label className="flex items-start gap-3 cursor-pointer py-2">
+                    <input
+                      type="checkbox"
+                      checked={whatsappOptIn}
+                      onChange={(e) => setWhatsappOptIn(e.target.checked)}
+                      className="mt-1 w-4 h-4 rounded accent-[#C5A059] border-white/[0.08] bg-white/[0.04]"
+                    />
+                    <div className="text-left">
+                      <span className="text-sm font-medium text-white/80">
+                        Opt-in to tradition-aware daily reminders on WhatsApp
+                      </span>
+                      <p className="text-xs text-white/40 mt-0.5">
+                        We will never spam you. You can opt-out at any time.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="mt-8 space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (whatsappOptIn && !whatsappNumberOnly) {
+                        toast.error("Please enter your WhatsApp number to opt-in.");
+                        return;
+                      }
+                      if (whatsappNumberOnly && (whatsappNumberOnly.length < 7 || whatsappNumberOnly.length > 15)) {
+                        toast.error("Please enter a valid phone number (7 to 15 digits).");
+                        return;
+                      }
+                      goNext(9);
+                    }}
+                    className="w-full rounded-full bg-[#C5A059] text-black font-bold py-4"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWhatsappOptIn(false);
+                      setWhatsappNumberOnly('');
+                      goNext(9);
+                    }}
+                    className="w-full text-white/40 text-sm underline"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 9: Ready */}
+            {step === 9 && (
               <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
                 <h1 className="text-3xl font-medium mb-4" style={{ fontFamily: 'var(--font-serif)' }}>
                   {readyCopy.heading}

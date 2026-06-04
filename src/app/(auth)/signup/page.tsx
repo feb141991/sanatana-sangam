@@ -149,6 +149,7 @@ export default function SignupPage() {
   const [showPass,   setShowPass]   = useState(false);
   const [inviteCode,  setInviteCode]  = useState('');
   const [claimToken,  setClaimToken]  = useState('');
+  const [utmSource,   setUtmSource]   = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [quoteIdx, setQuoteIdx] = useState(0);
   const [factIdx, setFactIdx] = useState(0);
@@ -168,6 +169,7 @@ export default function SignupPage() {
     const params = new URLSearchParams(window.location.search);
     setInviteCode(params.get('ref')?.trim().toUpperCase() ?? '');
     setClaimToken(params.get('claim_token')?.trim() ?? '');
+    setUtmSource(params.get('utm_source')?.trim() ?? params.get('source')?.trim() ?? '');
 
     const interval = setInterval(() => {
       setQuoteIdx(prev => (prev + 1) % QUOTES.length);
@@ -199,7 +201,11 @@ export default function SignupPage() {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
           '/onboarding' + (claimToken ? `?claim_token=${encodeURIComponent(claimToken)}` : '')
         )}`,
-          data: { ...profilePayload, referred_by_code: inviteCode || null },
+          data: { 
+            ...profilePayload, 
+            referred_by_code: inviteCode || null,
+            referral_source: utmSource || null
+          },
         },
       });
 

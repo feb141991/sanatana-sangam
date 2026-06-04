@@ -27,6 +27,8 @@
     { "path": "/api/cron/generate-dharm-veer", "schedule": "0 1 * * *" },
     { "path": "/api/cron/japa-reminder", "schedule": "0 2 * * *" },
     { "path": "/api/cron/festival-email", "schedule": "0 7 * * *" },
-    { "path": "/api/digest/generate", "schedule": "0 23 * * *" }
+    { "path": "/api/digest/generate", "schedule": "0 23 * * *" },
+    { "path": "/api/whatsapp/send-daily", "schedule": "0 6 * * *" },
+    { "path": "/api/cron/journal-anniversary", "schedule": "0 8 * * *" }
   ]
 }

@@ -603,7 +603,7 @@ export function HeroSection({
               transition={{ delay: 0.18 }}
             >
               <Link
-                href="/discover"
+                href="/discover/mood"
                 className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md shadow-lg"
                 style={{
                   background: isDark ? 'rgba(0,0,0,0.40)' : 'rgba(255,255,255,0.72)',

@@ -72,10 +72,14 @@ const SCRIPT_STYLE: Record<string, string> = {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function BlessingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ ref?: string }>;
 }) {
   const { slug } = await params;
+  const resolvedSearchParams = await searchParams;
+  const ref = resolvedSearchParams?.ref?.trim() ?? '';
   const b = getBlessingBySlug(slug);
   if (!b) notFound();
 
@@ -291,7 +295,7 @@ export default async function BlessingPage({
           Shoonaya is the first digital home for Hindu, Sikh, Buddhist &amp; Jain wisdom.<br/>
           One home. Four traditions. Launching June 17, 2026.
         </div>
-        <Link className="cta-btn" href="/?from=blessing">
+        <Link className="cta-btn" href={ref ? `/?ref=${encodeURIComponent(ref)}&from=blessing` : "/?from=blessing"}>
           Join as Sthapaka →
         </Link>
       </div>

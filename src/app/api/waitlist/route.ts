@@ -247,9 +247,11 @@ async function updateExistingRegistration(
     name: string | null;
     source: string | null;
     timezone: string | null;
+    referred_by_number?: number | null;
+    referral_source?: string | null;
   }
 ): Promise<void> {
-  const patch: Record<string, string> = {};
+  const patch: Record<string, any> = {};
 
   if (updates.tradition && updates.tradition !== row.tradition) {
     patch.tradition = updates.tradition;
@@ -257,6 +259,8 @@ async function updateExistingRegistration(
   if (updates.name) patch.name = updates.name;
   if (updates.source) patch.source = updates.source;
   if (updates.timezone) patch.timezone = updates.timezone;
+  if (updates.referred_by_number) patch.referred_by_number = updates.referred_by_number;
+  if (updates.referral_source) patch.referral_source = updates.referral_source;
 
   if (!Object.keys(patch).length) return;
 
@@ -462,11 +466,23 @@ export async function POST(req: NextRequest) {
     const source = textOrNull(body.source) ?? 'landing';
     const timezone = textOrNull(body.timezone);
 
+    const url = new URL(req.url);
+    const queryRef = url.searchParams.get('ref')?.trim();
+    const querySource = url.searchParams.get('utm_source')?.trim() ?? url.searchParams.get('source')?.trim();
+
+    const refRaw = body.ref ? String(body.ref).trim() : (queryRef || null);
+    const referred_by_number = refRaw && /^\d+$/.test(refRaw) ? parseInt(refRaw, 10) : null;
+    
+    const referral_source = textOrNull(body.referral_source) 
+      ?? textOrNull(body.utm_source) 
+      ?? textOrNull(querySource) 
+      ?? (refRaw ? 'direct' : null);
+
     // ── Check if already registered ─────────────────────────────────────────
     const existing = await findRegistration(emailLower);
 
     if (existing) {
-      await updateExistingRegistration(existing, { tradition, name, source, timezone });
+      await updateExistingRegistration(existing, { tradition, name, source, timezone, referred_by_number, referral_source });
       const foundingNumber = await ensureFoundingNumber(existing);
 
       return NextResponse.json(
@@ -490,6 +506,8 @@ export async function POST(req: NextRequest) {
         name,
         source,
         timezone,
+        referred_by_number,
+        referral_source,
       })
       .select('id, founding_number, tradition, email_sent')
       .single();
