@@ -921,8 +921,62 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       </div>
     </div>
   </div>
+  <!-- PWA install button — shown in hero for visibility -->
+  <button id="pwa-hero-btn" style="display:none;margin:14px auto 0;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:10px 24px;color:rgba(250,246,239,0.75);font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;align-items:center;gap:8px;transition:all 0.2s;" onclick="pwaInstall()">
+    <span style="font-size:16px">📲</span> Add to Home Screen
+  </button>
+
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
   <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow" style="display:inline-block;animation:bounceDown 1.6s ease-in-out infinite;">↓</span></button>
+</div>
+
+<!-- iOS Install Modal -->
+<div id="pwa-ios-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);">
+  <div style="background:#1a1510;border:1px solid rgba(197,160,89,0.25);border-radius:28px 28px 0 0;padding:32px 28px 48px;width:100%;max-width:520px;text-align:center;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:100px;margin:0 auto 28px;"></div>
+    <div style="font-size:36px;margin-bottom:12px;">🪔</div>
+    <div style="font-family:var(--fd);font-size:22px;font-weight:400;color:#FAF6EF;margin-bottom:8px;">Add Shoonaya to<br>your Home Screen</div>
+    <div style="font-size:13px;color:rgba(250,246,239,0.45);margin-bottom:32px;line-height:1.6;">Use it like a native app — instant access,<br>no App Store needed.</div>
+    <!-- Step 1 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v10M10 2l-3 3M10 2l3 3" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 13v4a1 1 0 001 1h12a1 1 0 001-1v-4" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap the Share button</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">The box with an arrow pointing up, at the bottom of Safari</div>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="#C5A059" stroke-width="1.6"/>
+          <path d="M10 7v6M7 10h6" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap "Add to Home Screen"</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">Scroll down in the Share sheet to find this option</div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:28px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10l4 4 8-8" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap "Add" — you're done!</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">Shoonaya appears on your home screen like an app</div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('pwa-ios-modal').style.display='none'" style="width:100%;background:linear-gradient(135deg,#C5A059,#D4784A);color:#0C0A07;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.04em;">Got it 🙏</button>
+  </div>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
@@ -3887,102 +3941,77 @@ document.getElementById('explore-btn').addEventListener('click', function () {
 </script>
 
 <!-- ── PWA: Service Worker + Install Prompt ──────────────────────── -->
-<style>
-#pwa-install-bar {
-  position:fixed; bottom:0; left:0; right:0; z-index:9998;
-  background:#0C0A07; border-top:1px solid rgba(197,160,89,0.25);
-  padding:12px 20px; display:none; align-items:center; gap:12px;
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-}
-#pwa-install-bar .pwa-icon { font-size:26px; flex-shrink:0; }
-#pwa-install-bar .pwa-text { flex:1; }
-#pwa-install-bar .pwa-title { font-size:13px; font-weight:600; color:#FAF6EF; letter-spacing:0.02em; }
-#pwa-install-bar .pwa-sub   { font-size:11px; color:rgba(250,246,239,0.42); margin-top:2px; }
-#pwa-install-btn {
-  background:linear-gradient(135deg,#C5A059,#D4784A);
-  color:#0C0A07; border:none; border-radius:100px;
-  padding:9px 22px; font-size:12px; font-weight:700;
-  letter-spacing:0.04em; cursor:pointer; white-space:nowrap; flex-shrink:0;
-}
-#pwa-dismiss-btn {
-  background:none; border:none; color:rgba(250,246,239,0.30);
-  font-size:18px; cursor:pointer; padding:4px; flex-shrink:0; line-height:1;
-}
-@media(max-width:400px){ #pwa-install-bar { flex-wrap:wrap; } }
-</style>
-
-<div id="pwa-install-bar" role="banner" aria-label="Install Shoonaya app">
-  <div class="pwa-icon">🪔</div>
-  <div class="pwa-text">
-    <div class="pwa-title">Add Shoonaya to your Home Screen</div>
-    <div class="pwa-sub">Add to Home Screen for a native app feel — available now</div>
-  </div>
-  <button id="pwa-install-btn">Install</button>
-  <button id="pwa-dismiss-btn" aria-label="Dismiss">×</button>
-</div>
-
 <script>
+/* ── PWA: Service Worker + Unified Install Logic ─────────────────────────── */
 (function(){
+
+  var deferredPrompt = null;
+  var isInstalled = window.matchMedia('(display-mode: standalone)').matches
+                 || window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var isDismissed = sessionStorage.getItem('pwa-dismissed');
+
   /* Register service worker */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('/sw.js').catch(function(e){
-        console.log('[SW] Registration failed:', e);
-      });
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
     });
   }
 
-  /* PWA install prompt */
-  var deferredPrompt = null;
-  var bar = document.getElementById('pwa-install-bar');
-  var installBtn = document.getElementById('pwa-install-btn');
-  var dismissBtn = document.getElementById('pwa-dismiss-btn');
-
-  /* Don't show if already installed or dismissed this session */
-  if (window.matchMedia('(display-mode: standalone)').matches || sessionStorage.getItem('pwa-dismissed')) {
-    bar = null;
+  /* Show hero button helper */
+  function showHeroBtn(label) {
+    var btn = document.getElementById('pwa-hero-btn');
+    if (!btn || isInstalled || isDismissed) return;
+    btn.style.display = 'inline-flex';
+    if (label) btn.childNodes[1].textContent = ' ' + label;
   }
 
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    deferredPrompt = e;
-    if (bar) {
-      bar.style.display = 'flex';
-    }
-  });
-
-  if (installBtn) {
-    installBtn.addEventListener('click', function(){
-      if (!deferredPrompt) return;
+  /* Global install handler — called by onclick on both buttons */
+  window.pwaInstall = function() {
+    if (deferredPrompt) {
+      /* Android / Chrome — native one-click */
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(result){
-        if (result.outcome === 'accepted') {
-          bar && (bar.style.display = 'none');
+      deferredPrompt.userChoice.then(function(r){
+        if (r.outcome === 'accepted') {
+          var btn = document.getElementById('pwa-hero-btn');
+          if (btn) btn.style.display = 'none';
+          sessionStorage.setItem('pwa-dismissed', '1');
         }
         deferredPrompt = null;
       });
-    });
-  }
-
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', function(){
-      bar && (bar.style.display = 'none');
-      sessionStorage.setItem('pwa-dismissed', '1');
-    });
-  }
-
-  /* iOS Safari: show a manual "Add to Home Screen" hint since it doesn't fire beforeinstallprompt */
-  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-  var isInStandalone = window.navigator.standalone;
-  if (isIOS && !isInStandalone && bar && !sessionStorage.getItem('pwa-dismissed')) {
-    bar.style.display = 'flex';
-    if (installBtn) {
-      installBtn.textContent = 'How to Install';
-      installBtn.addEventListener('click', function(){
-        alert('To install Shoonaya:\n\n1. Tap the Share button (□↑) in Safari\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" — Shoonaya will appear on your home screen 🪔');
-      }, { once: true });
+    } else if (isIOS) {
+      /* iOS Safari — show step-by-step modal */
+      var modal = document.getElementById('pwa-ios-modal');
+      if (modal) modal.style.display = 'flex';
     }
+  };
+
+  /* Close iOS modal on backdrop tap */
+  var modal = document.getElementById('pwa-ios-modal');
+  if (modal) {
+    modal.addEventListener('click', function(e){
+      if (e.target === modal) modal.style.display = 'none';
+    });
   }
+
+  /* Android/Chrome: capture install prompt */
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    showHeroBtn('Add to Home Screen');
+  });
+
+  /* iOS: always show the button (we can always show instructions) */
+  if (isIOS && !isInstalled && !isDismissed) {
+    showHeroBtn('Add to Home Screen');
+  }
+
+  /* Hide if already installed */
+  if (isInstalled) {
+    var btn = document.getElementById('pwa-hero-btn');
+    if (btn) btn.style.display = 'none';
+  }
+
 })();
 </script>
 </body>
