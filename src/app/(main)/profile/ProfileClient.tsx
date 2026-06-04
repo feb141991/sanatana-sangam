@@ -38,6 +38,8 @@ import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
+import { InviteModal } from '@/app/(main)/home/sections/InviteModal';
+
 import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
 import InviteCard from '@/components/home/InviteCard';
 
@@ -2319,80 +2321,11 @@ export default function ProfileClient({
       </BottomDrawer>
 
       <AnimatePresence>
-        {inviteOpen && (() => {
-          const code = generateInviteCode(userId);
-          const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
-          const link = `${baseUrl}/join?ref=${code}`;
-          
-          const onCopy = async () => {
-            try {
-              await navigator.clipboard.writeText(link);
-              toast.success('Invite link copied! 🙏');
-            } catch {
-              toast.error('Failed to copy');
-            }
-          };
-
-          const onShare = async () => {
-            const shareText = `Join me on Shoonaya — your dharmic home.\n\nInvite code: ${code}\n${link}`;
-            if (typeof navigator !== 'undefined' && navigator.share) {
-              try {
-                await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link });
-              } catch (err) {
-                if ((err as Error).name !== 'AbortError') onCopy();
-              }
-            } else {
-              onCopy();
-            }
-          };
-
-          return (
-            <motion.div className="fixed inset-0 z-[150] flex items-end" onClick={() => setInviteOpen(false)}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-              <motion.div className="relative w-full rounded-t-[3.5rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
-                style={{ background: 'var(--surface-raised)', borderTop: '1px solid var(--card-border)', boxShadow: 'var(--profile-shadow)' }}
-                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-                transition={{ type: 'spring', damping: 28, stiffness: 180 }}>
-                <div className="w-16 h-1.5 rounded-full mx-auto mb-4 bg-[#C5A059]/30" />
-                <div className="flex items-center justify-between mb-2">
-                  <div className="space-y-1">
-                    <h3 className="text-3xl font-medium theme-ink premium-serif">Expand the circle</h3>
-                    <p className="text-sm theme-muted">Invite your Mandali</p>
-                  </div>
-                  <button onClick={() => setInviteOpen(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all hover:bg-white/10 active:scale-90">
-                    <X size={22} className="text-[#F2EAD6]/40" />
-                  </button>
-                </div>
-                
-                <div className="space-y-6">
-                  <p className="text-sm theme-muted leading-relaxed">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
-                  
-                  <div className="relative group cursor-pointer" onClick={onCopy}>
-                    <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner overflow-hidden relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <p className="text-[11px] mb-4 font-black uppercase tracking-[0.3em] text-[#C5A059]/40 relative z-10">Personal Invite Code</p>
-                      <p className="text-5xl font-serif font-black tracking-[0.15em] text-[#C5A059] uppercase drop-shadow-2xl relative z-10">{code}</p>
-                      <div className="absolute top-4 right-4 text-[#C5A059]/40 group-hover:text-[#C5A059] transition-colors">
-                        <Star size={16} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <button onClick={onCopy} className="py-5 rounded-2xl font-medium text-sm bg-[var(--card-bg-soft)] border border-[var(--card-border)] theme-ink transition-all hover:border-[var(--brand-primary)] active:scale-95 flex items-center justify-center gap-2">
-                      Copy Link
-                    </button>
-                    <button onClick={onShare} className="py-5 rounded-2xl font-medium text-sm bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2">
-                      🙏 Share Now
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          );
-        })()}
+        {inviteOpen && (
+          <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+        )}
       </AnimatePresence>
+
 
       {/* ── Kul Invite Modal (Sacred Invite) ── */}
       <AnimatePresence>
