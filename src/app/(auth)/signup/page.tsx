@@ -267,7 +267,8 @@ export default function SignupPage() {
       </div>
 
       {/* ── RIGHT SIDE: Minimalist benefits + 3 CTAs ────────────────────── */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 bg-[var(--premium-ivory)] overflow-y-auto">
+      <div className="w-full lg:w-1/2 min-h-screen overflow-y-auto bg-[var(--premium-ivory)]">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md py-6">
           {/* Card */}
           <div className="bg-white/70 backdrop-blur-[40px] rounded-[2.8rem] border border-[var(--premium-border)] shadow-xl px-8 pt-10 pb-8">
@@ -401,6 +402,7 @@ export default function SignupPage() {
             </Link>
           </div>
         </motion.div>
+        </div>
       </div>
 
       <style jsx global>{`

@@ -30,8 +30,11 @@ export async function GET(request: Request) {
   try {
     // ── 1. Exchange code for session ─────────────────────────────────────
     const supabase = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.exchangeCodeForSession(code)
-      .then(() => supabase.auth.getUser());
+    const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    if (exchangeError) {
+      return NextResponse.redirect(`${origin}/?sthapaka_error=auth_failed`);
+    }
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user?.email) {
       return NextResponse.redirect(`${origin}/?sthapaka_error=auth_failed`);
