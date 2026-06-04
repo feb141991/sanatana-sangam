@@ -8,12 +8,8 @@ import {
   Inter,
   Cormorant_Garamond,
   Noto_Sans_Devanagari,
-  Noto_Sans_Tamil,
-  Noto_Sans_Bengali,
+
   Noto_Sans_Gurmukhi,
-  Noto_Sans_Telugu,
-  Noto_Sans_Kannada,
-  Noto_Sans_Malayalam,
 } from 'next/font/google';
 
 // ── Editorial Latin fonts ────────────────────────────────────────────────────
@@ -22,23 +18,13 @@ const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['400', '500'
 
 // ── Indic script fonts ────────────────────────────────────────────────────────
 const notoDevanagari = Noto_Sans_Devanagari({ subsets: ['devanagari'], weight: ['400','600'], variable: '--font-deva',     display: 'swap' });
-const notoTamil      = Noto_Sans_Tamil({      subsets: ['tamil'],      weight: ['400','600'], variable: '--font-tamil',    display: 'swap' });
-const notoBengali    = Noto_Sans_Bengali({    subsets: ['bengali'],    weight: ['400','600'], variable: '--font-bengali',  display: 'swap' });
 const notoGurmukhi   = Noto_Sans_Gurmukhi({  subsets: ['gurmukhi'],   weight: ['400','600'], variable: '--font-gurmukhi', display: 'swap' });
-const notoTelugu     = Noto_Sans_Telugu({     subsets: ['telugu'],     weight: ['400','600'], variable: '--font-telugu',   display: 'swap' });
-const notoKannada    = Noto_Sans_Kannada({    subsets: ['kannada'],    weight: ['400','600'], variable: '--font-kannada',  display: 'swap' });
-const notoMalayalam  = Noto_Sans_Malayalam({  subsets: ['malayalam'],  weight: ['400','600'], variable: '--font-malayalam', display: 'swap' });
 
 const fontVars = [
   inter.variable,
   cormorant.variable,
   notoDevanagari.variable,
-  notoTamil.variable,
-  notoBengali.variable,
   notoGurmukhi.variable,
-  notoTelugu.variable,
-  notoKannada.variable,
-  notoMalayalam.variable,
 ].join(' ');
 
 export const metadata: Metadata = {
