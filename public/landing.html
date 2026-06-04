@@ -134,7 +134,8 @@ nav {
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
 .scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(197,160,89,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:28px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.80);border:1.5px solid rgba(197,160,89,0.80);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:14px 44px;border-radius:100px;cursor:pointer;animation:pulseGlow 2.4s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197,160,89,0.15); }
+#splash-bottom { position:absolute;bottom:24px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 24px; }
+#explore-btn { background:rgba(12,10,7,0.80);border:1.5px solid rgba(197,160,89,0.80);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:14px 44px;border-radius:100px;cursor:pointer;animation:pulseGlow 2.4s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197,160,89,0.15); }
 #explore-btn:hover { background:rgba(197,160,89,0.18);border-color:rgba(197,160,89,0.95);color:#C5A059; }
 @keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .explore-arrow { display: inline-block; animation: bounceArrow 1.4s ease-in-out infinite; color:#C5A059; margin-left:6px; font-weight:700; }
@@ -938,13 +939,13 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       </div>
     </div>
   </div>
-  <!-- PWA install button — shown in hero for visibility -->
-  <button id="pwa-hero-btn" style="display:none;margin:14px auto 0;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:10px 24px;color:rgba(250,246,239,0.75);font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;align-items:center;gap:8px;transition:all 0.2s;" onclick="pwaInstall()">
-    <span style="font-size:16px">📲</span> Add to Home Screen
-  </button>
-
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow" style="display:inline-block;animation:bounceDown 1.6s ease-in-out infinite;">↓</span></button>
+  <div id="splash-bottom">
+    <button id="pwa-hero-btn" style="display:none;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:10px 24px;color:rgba(250,246,239,0.75);font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.06em;cursor:pointer;align-items:center;gap:8px;transition:all 0.2s;" onclick="pwaInstall()">
+      <span style="font-size:16px">📲</span> Add to Home Screen
+    </button>
+    <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow" style="display:inline-block;animation:bounceDown 1.6s ease-in-out infinite;">↓</span></button>
+  </div>
 </div>
 
 <!-- iOS Install Modal -->
