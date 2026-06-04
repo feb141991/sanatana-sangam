@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -50,13 +50,13 @@ import MoodJourneySheet from '@/components/mood/MoodJourneySheet';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import { FESTIVALS_2026 } from '@/lib/festivals';
+import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
 import { HeroSection } from './sections/HeroSection';
 import { CalendarSection } from './sections/CalendarSection';
-import { SadhanaSection } from './sections/SadhanaSection';
-import { CommunitySection } from './sections/CommunitySection';
-import { DiscoverySection } from './sections/DiscoverySection';
+
+const BelowFoldSections = dynamic(() => import('./BelowFoldSections'), { ssr: false });
 
 // ── Refactored Modals & Sheets ──
 import { DatePickerModal } from './sections/DatePickerModal';
@@ -994,76 +994,50 @@ export default function HomeDashboard({
           isDark={isDark}
         />
 
-        {/* ── Section 3: Sadhana Section ── */}
-        <SadhanaSection
-          userId={userId}
-          userName={userName}
-          tradition={tradition}
-          sampradaya={sampradaya}
-          isPro={isPro}
-          japaAlreadyDoneToday={japaAlreadyDoneToday}
-          nityaDoneToday={nityaDoneToday}
-          activeSankalpa={activeSankalpa ?? null}
-          sankalpaCheckedToday={sankalpaCheckedToday}
-          onSankalpaCheckin={handleSankalpaCheckin}
-          onSetSankalpa={() => setShowSankalpSheet(true)}
-          onSankalpaComplete={() => {
-            if (activeSankalpa) {
-              fetch('/api/sankalpa', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
-              }).then(() => fetchSankalpa());
-            }
-          }}
-          isDark={isDark}
-          readToday={readToday}
-          dailyDharmaStackState={dailyDharmaStackState}
-          dharmVeer={dharmVeer}
-          appLanguage={appLanguage ?? 'en'}
-          onOpenMoodJourney={(moodKey) => setJourneyMoodKey(moodKey)}
-          onDismissMood={handleMoodPulseDismiss}
-          backendMoodState={backendMoodState}
-          quiz={quiz}
-          quizAnswered={quizAnswered}
-          quizStreak={quizStreak}
-          onOpenQuiz={() => setQuizModalOpen(true)}
-        />
-
-        {/* ── Section 4: Community Section ── */}
-        <CommunitySection
-          userId={userId}
-          userName={userName}
-          tradition={tradition}
-          isPro={isPro}
-          sevaScore={sevaScore}
-          isDark={isDark}
-          onInviteClick={() => setInviteOpen(true)}
-        />
-
-        {/* ── Section 5: Discovery Section ── */}
-        <DiscoverySection
-          tradition={tradition}
-          isDark={isDark}
-          isPro={isPro}
-          pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
-          pathshalaDoneToday={pathshalaDoneToday}
-          pathshalaLabel={pathshalaLabel}
-          pathshalaHref={pathshalaHref}
-          isAdmin={!!isAdmin}
-        />
-
-        {/* ── Seva Card — always at the bottom ── */}
-        <div className="px-4 pb-2">
-          <Link href="/seva" className="divine-seva-card motion-lift block no-underline">
-            <span className="divine-card-motif divine-card-motif-large" aria-hidden="true" />
-            <span>
-              <span className="divine-section-title">Donate / Seva</span>
-              <span className="divine-feature-copy mt-1 block">Support temples, cow seva, annadaan and more.</span>
-            </span>
-            <span className="divine-seva-cta">Donate Now</span>
-          </Link>
-        </div>
+        {/* ── Below Fold Sections (Lazy-loaded) ── */}
+        <Suspense fallback={null}>
+          <BelowFoldSections
+            userId={userId}
+            userName={userName}
+            tradition={tradition}
+            sampradaya={sampradaya}
+            isPro={isPro}
+            japaAlreadyDoneToday={japaAlreadyDoneToday}
+            nityaDoneToday={nityaDoneToday}
+            activeSankalpa={activeSankalpa ?? null}
+            sankalpaCheckedToday={sankalpaCheckedToday}
+            onSankalpaCheckin={handleSankalpaCheckin}
+            onSetSankalpa={() => setShowSankalpSheet(true)}
+            onSankalpaComplete={() => {
+              if (activeSankalpa) {
+                fetch('/api/sankalpa', {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ id: activeSankalpa.id, status: 'completed' })
+                }).then(() => fetchSankalpa());
+              }
+            }}
+            isDark={isDark}
+            readToday={readToday}
+            dailyDharmaStackState={dailyDharmaStackState}
+            dharmVeer={dharmVeer}
+            appLanguage={appLanguage ?? 'en'}
+            onOpenMoodJourney={(moodKey) => setJourneyMoodKey(moodKey)}
+            onDismissMood={handleMoodPulseDismiss}
+            backendMoodState={backendMoodState}
+            quiz={quiz}
+            quizAnswered={quizAnswered}
+            quizStreak={quizStreak}
+            onOpenQuiz={() => setQuizModalOpen(true)}
+            sevaScore={sevaScore}
+            onInviteClick={() => setInviteOpen(true)}
+            pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+            pathshalaDoneToday={pathshalaDoneToday}
+            pathshalaLabel={pathshalaLabel}
+            pathshalaHref={pathshalaHref}
+            isAdmin={!!isAdmin}
+          />
+        </Suspense>
       </div>
 
       {/* ── Full date picker (tap date label in Panchang) ── */}
