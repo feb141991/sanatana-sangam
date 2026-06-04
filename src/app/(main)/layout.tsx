@@ -2,14 +2,12 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getAuthUser } from '@/lib/auth-cache';
 import BottomNav from '@/components/layout/BottomNav';
-import dynamic from 'next/dynamic';
+import AIChatFABWrapper from '@/components/layout/AIChatFABWrapper';
 import { TraditionSync } from '@/components/providers/TraditionSync';
 import { LocationProvider } from '@/lib/LocationContext';
 import { EngineProvider } from '@/contexts/EngineContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
-
-const AIChatFAB = dynamic(() => import('@/components/layout/AIChatFAB'), { ssr: false });
 
 export default async function MainLayout({
   children,
@@ -76,7 +74,7 @@ export default async function MainLayout({
           </EngineProvider>
         </main>
         <BottomNav isGuest={!user} />
-        <AIChatFAB userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
+        <AIChatFABWrapper userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
         {/* Persist tradition to localStorage for cold-start loader */}
         {user && <TraditionSync tradition={tradition} />}
       </div>
