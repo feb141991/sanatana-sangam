@@ -631,33 +631,146 @@ export default function OnboardingClient({
                   ))}
                 </div>
 
-                {/* Rashi */}
-                <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mt-5 mb-2">Your Rashi <span className="normal-case text-[var(--brand-muted)] opacity-60">(Vedic Moon Sign)</span></p>
-                <p className="text-[10px] text-[var(--brand-muted)] opacity-60 mb-3">Used to personalise festival dates, muhurtas &amp; guidance.</p>
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  {RASHIS.map(r => (
-                    <button key={r.key} type="button"
-                      onClick={() => setRashi(r.key)}
-                      className="flex flex-col items-center gap-0.5 rounded-xl py-2.5 px-1 border transition-all"
-                      style={rashi === r.key
-                        ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.09)', borderWidth: '1.5px' }
-                        : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
-                      }
-                    >
-                      <span className="text-base">{r.symbol}</span>
-                      <span className="text-[11px] font-semibold text-[var(--brand-primary-strong)]">{r.label}</span>
-                      <span className="text-[9px] text-[var(--brand-muted)] font-serif">{r.sanskrit}</span>
-                    </button>
-                  ))}
+                {/* Rashi Section */}
+                <div 
+                  className="mt-5 rounded-3xl p-5"
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    border: '1px solid var(--premium-border)',
+                    boxShadow: '0 4px 24px rgba(62,42,31,0.08)'
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-9 h-9 rounded-full flex items-center justify-center text-lg"
+                        style={{
+                          backgroundColor: 'rgba(200,146,74,0.1)',
+                          border: '1px solid rgba(200,146,74,0.2)'
+                        }}
+                      >
+                        🌙
+                      </div>
+                      <div>
+                        <div className="text-[15px] font-semibold text-[var(--brand-primary-strong)] leading-tight">Your Rashi</div>
+                        <div className="text-[11px] text-[var(--brand-muted)] mt-0.5">Vedic Moon Sign</div>
+                      </div>
+                    </div>
+                    {rashi && (
+                      <div 
+                        className="px-3 py-1 rounded-full text-[10px] font-semibold"
+                        style={{
+                          backgroundColor: 'rgba(200,146,74,0.15)',
+                          color: 'var(--brand-primary-strong)',
+                          border: '1px solid var(--premium-gold)'
+                        }}
+                      >
+                        {RASHIS.find(r => r.key === rashi)?.label}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2">
+                    {RASHIS.map(r => {
+                      const selected = rashi === r.key;
+                      const rashiColors: Record<string, string> = {
+                        mesha: '#E85D4A', vrishabha: '#2D9E5F', mithuna: '#4A90D9', karka: '#7B5EA7',
+                        simha: '#F0A500', kanya: '#5B8C5A', tula: '#D4698A', vrishchika: '#C0392B',
+                        dhanu: '#E67E22', makara: '#5D6D7E', kumbha: '#2E86C1', meena: '#1ABC9C'
+                      };
+                      const c = rashiColors[r.key] || '#C8924A';
+                      
+                      return (
+                        <button
+                          key={r.key}
+                          type="button"
+                          onClick={() => setRashi(r.key)}
+                          className={`flex flex-col items-center justify-center gap-1 py-3 rounded-2xl aspect-square transition-transform duration-300 transform ${selected ? 'scale-[1.06] z-10' : 'scale-100'}`}
+                          style={selected
+                            ? { 
+                                background: 'linear-gradient(135deg, rgba(200,146,74,0.15), rgba(200,146,74,0.05))', 
+                                border: '2px solid var(--premium-gold)',
+                                boxShadow: '0 0 0 3px rgba(200,146,74,0.12)'
+                              }
+                            : { 
+                                background: 'rgba(250,246,239,0.8)', 
+                                border: '1px solid var(--premium-border)' 
+                              }
+                          }
+                        >
+                          <div 
+                            className="w-[44px] h-[44px] rounded-full flex items-center justify-center text-[22px]"
+                            style={{
+                              background: `radial-gradient(135deg, ${c}22, ${c}08)`,
+                              border: `1.5px solid ${c}40`,
+                              filter: `drop-shadow(0 2px 4px ${c}30)`
+                            }}
+                          >
+                            {r.symbol}
+                          </div>
+                          <div className="text-[10px] font-bold text-[var(--brand-primary-strong)] mt-1">{r.label}</div>
+                          <div className="text-[9px] font-serif text-[var(--brand-muted)] opacity-80">{r.sanskrit}</div>
+                          <div className="text-[8px] text-[var(--brand-muted)] opacity-60 mt-0.5">{r.dates}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <AnimatePresence>
+                    {rashi && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 16 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-3 p-4 rounded-2xl flex items-center gap-3"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(200,146,74,0.08), rgba(200,146,74,0.03))',
+                          border: '1px solid rgba(200,146,74,0.2)'
+                        }}
+                      >
+                        {(() => {
+                          const r = RASHIS.find(x => x.key === rashi)!;
+                          const rashiColors: Record<string, string> = {
+                            mesha: '#E85D4A', vrishabha: '#2D9E5F', mithuna: '#4A90D9', karka: '#7B5EA7',
+                            simha: '#F0A500', kanya: '#5B8C5A', tula: '#D4698A', vrishchika: '#C0392B',
+                            dhanu: '#E67E22', makara: '#5D6D7E', kumbha: '#2E86C1', meena: '#1ABC9C'
+                          };
+                          const c = rashiColors[r.key] || '#C8924A';
+                          return (
+                            <>
+                              <div 
+                                className="w-12 h-12 rounded-full flex items-center justify-center text-[28px] shrink-0"
+                                style={{
+                                  background: `radial-gradient(135deg, ${c}22, ${c}08)`,
+                                  border: `1.5px solid ${c}40`,
+                                  filter: `drop-shadow(0 2px 4px ${c}30)`
+                                }}
+                              >
+                                {r.symbol}
+                              </div>
+                              <div>
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-[18px] text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{r.label}</span>
+                                  <span className="text-[13px] text-[var(--brand-muted)] font-serif">{r.sanskrit}</span>
+                                </div>
+                                <div className="text-[11px] text-[var(--premium-gold)] font-medium mt-0.5">
+                                  Vedic dates: {r.dates}
+                                </div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-                {rashi && (
-                  <p className="text-[10px] text-center text-[var(--premium-gold)] mb-1">
-                    {RASHIS.find(r => r.key === rashi)?.dates}
-                  </p>
-                )}
-                <button type="button" onClick={() => { setRashi(''); }} className="w-full mb-4 text-[var(--brand-muted)] text-[10px] underline">
-                  I don&apos;t know my Rashi
-                </button>
+                
+                <div className="flex justify-center mt-4 mb-4">
+                  <button type="button" onClick={() => setRashi('')} className="text-[11px] text-[var(--brand-muted)] underline decoration-[var(--brand-muted)]/40 hover:decoration-[var(--brand-muted)] underline-offset-2 transition-all">
+                    I don&apos;t know my Rashi
+                  </button>
+                </div>
 
                 <button
                   type="button"
