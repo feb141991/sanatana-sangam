@@ -61,6 +61,32 @@ export async function middleware(req: NextRequest) {
   }
 }
 
+/** Decode JWT payload without verification — just to read exp claim.
+ *  Only used to avoid redirecting users with visibly expired tokens. */
+function jwtExp(token: string): number | null {
+  try {
+    const payload = token.split('.')[1];
+    if (!payload) return null;
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof decoded.exp === 'number' ? decoded.exp : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Returns true if there's a non-expired Supabase auth token in cookies. */
+function hasValidSbCookie(req: NextRequest): boolean {
+  const nowSec = Math.floor(Date.now() / 1000);
+  return [...req.cookies.getAll()].some(c => {
+    if (!c.name.includes('-auth-token') || c.value.length < 10) return false;
+    const exp = jwtExp(c.value);
+    // If we can't decode exp, assume valid (refresh will happen server-side)
+    if (exp === null) return true;
+    // Allow 30s clock skew
+    return exp > nowSec - 30;
+  });
+}
+
 async function middlewareHandler(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
@@ -93,11 +119,7 @@ async function middlewareHandler(req: NextRequest) {
       // Logged-in users (Supabase auth cookie present) always get through.
       // The gate is for anonymous visitors only — we don't want to lock out
       // existing users who already have accounts.
-      const hasSbCookie = [...req.cookies.getAll()].some(
-        c => c.name.includes('-auth-token') && c.value.length > 10
-      );
-
-      if (!hasSbCookie) {
+      if (!hasValidSbCookie(req)) {
         const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? '';
         const hasPreviewAccess = envPreviewKey
           ? previewCookie === envPreviewKey
@@ -116,10 +138,7 @@ async function middlewareHandler(req: NextRequest) {
   // ── Step 3: Logged-in users at / → go to /home ────────────────────────────
   // Placed AFTER the gate so it only fires when access is already granted.
   if (pathname === '/') {
-    const hasSbCookie = [...req.cookies.getAll()].some(
-      c => c.name.includes('-auth-token') && c.value.length > 10
-    );
-    if (hasSbCookie) {
+    if (hasValidSbCookie(req)) {
       const homeUrl = req.nextUrl.clone();
       homeUrl.pathname = '/home';
       homeUrl.search = '';
