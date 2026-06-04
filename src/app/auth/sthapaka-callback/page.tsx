@@ -22,18 +22,25 @@ export default function SthapakaCallbackPage() {
       try {
         const supabase = createClient();
 
-        // Let Supabase parse the hash and establish the session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // Parse tokens directly from the hash fragment
+        const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
+        const accessToken  = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token') || '';
 
-        // If session not set yet, give it a moment (hash processing is async)
-        let user = session?.user;
-        if (!user) {
-          await new Promise(r => setTimeout(r, 800));
-          const { data: { user: u } } = await supabase.auth.getUser();
-          user = u ?? undefined;
+        if (!accessToken) {
+          window.location.href = '/?sthapaka_error=auth_failed';
+          return;
         }
 
-        if (!user?.email) {
+        // Set the session explicitly from the hash tokens
+        const { data: { session }, error: sessionError } = await supabase.auth.setSession({
+          access_token:  accessToken,
+          refresh_token: refreshToken,
+        });
+
+        const user = session?.user;
+
+        if (sessionError || !user?.email) {
           window.location.href = '/?sthapaka_error=auth_failed';
           return;
         }
