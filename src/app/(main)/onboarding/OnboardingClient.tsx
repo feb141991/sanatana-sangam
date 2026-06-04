@@ -80,6 +80,21 @@ const INTERESTS = [
   { key: 'community',     label: 'Community',        desc: 'Mandali, sangat, wisdom',           emoji: '🤝' },
 ] as const;
 
+const RASHIS = [
+  { key: 'mesha',      label: 'Mesha',      sanskrit: 'मेष',      symbol: '♈', dates: 'Apr 14 – May 14' },
+  { key: 'vrishabha',  label: 'Vrishabha',  sanskrit: 'वृषभ',     symbol: '♉', dates: 'May 15 – Jun 14' },
+  { key: 'mithuna',    label: 'Mithuna',    sanskrit: 'मिथुन',    symbol: '♊', dates: 'Jun 15 – Jul 14' },
+  { key: 'karka',      label: 'Karka',      sanskrit: 'कर्क',     symbol: '♋', dates: 'Jul 15 – Aug 14' },
+  { key: 'simha',      label: 'Simha',      sanskrit: 'सिंह',     symbol: '♌', dates: 'Aug 15 – Sep 15' },
+  { key: 'kanya',      label: 'Kanya',      sanskrit: 'कन्या',    symbol: '♍', dates: 'Sep 16 – Oct 15' },
+  { key: 'tula',       label: 'Tula',       sanskrit: 'तुला',     symbol: '♎', dates: 'Oct 16 – Nov 14' },
+  { key: 'vrishchika', label: 'Vrishchika', sanskrit: 'वृश्चिक',  symbol: '♏', dates: 'Nov 15 – Dec 14' },
+  { key: 'dhanu',      label: 'Dhanu',      sanskrit: 'धनु',      symbol: '♐', dates: 'Dec 15 – Jan 13' },
+  { key: 'makara',     label: 'Makara',     sanskrit: 'मकर',      symbol: '♑', dates: 'Jan 14 – Feb 12' },
+  { key: 'kumbha',     label: 'Kumbha',     sanskrit: 'कुम्भ',   symbol: '♒', dates: 'Feb 13 – Mar 13' },
+  { key: 'meena',      label: 'Meena',      sanskrit: 'मीन',      symbol: '♓', dates: 'Mar 14 – Apr 13' },
+] as const;
+
 const THEMES = [
   { key: 'system', label: 'System',  desc: 'Follow this device', icon: '🖥' },
   { key: 'dark',   label: 'Dark',    desc: 'Temple evening mode', icon: '🌙' },
@@ -119,6 +134,7 @@ export default function OnboardingClient({
   const [lifeStage, setLifeStage] = useState('');
   const [gender, setGender] = useState('');
   const [age, setAge] = useState('');
+  const [rashi, setRashi] = useState('');
   const [interests, setInterests] = useState<string[]>([]);
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
 
@@ -307,6 +323,7 @@ export default function OnboardingClient({
           life_stage: lifeStage,
           gender,
           interests,
+          rashi: rashi || null,
           whatsapp_number: fullWhatsAppNumber,
           whatsapp_opt_in: whatsappOptIn && otpVerified,
         }),
@@ -557,11 +574,39 @@ export default function OnboardingClient({
                   ))}
                 </div>
 
+                {/* Rashi */}
+                <p className="text-[11px] uppercase tracking-widest text-[var(--brand-muted)] mt-5 mb-2">Your Rashi <span className="normal-case text-[var(--brand-muted)] opacity-60">(Vedic Moon Sign)</span></p>
+                <p className="text-[10px] text-[var(--brand-muted)] opacity-60 mb-3">Used to personalise festival dates, muhurtas &amp; guidance.</p>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {RASHIS.map(r => (
+                    <button key={r.key} type="button"
+                      onClick={() => setRashi(r.key)}
+                      className="flex flex-col items-center gap-0.5 rounded-xl py-2.5 px-1 border transition-all"
+                      style={rashi === r.key
+                        ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.09)', borderWidth: '1.5px' }
+                        : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
+                      }
+                    >
+                      <span className="text-base">{r.symbol}</span>
+                      <span className="text-[11px] font-semibold text-[var(--brand-primary-strong)]">{r.label}</span>
+                      <span className="text-[9px] text-[var(--brand-muted)] font-serif">{r.sanskrit}</span>
+                    </button>
+                  ))}
+                </div>
+                {rashi && (
+                  <p className="text-[10px] text-center text-[var(--premium-gold)] mb-1">
+                    {RASHIS.find(r => r.key === rashi)?.dates}
+                  </p>
+                )}
+                <button type="button" onClick={() => { setRashi(''); }} className="w-full mb-4 text-[var(--brand-muted)] text-[10px] underline">
+                  I don&apos;t know my Rashi
+                </button>
+
                 <button
                   type="button"
                   onClick={() => goNext(4)}
                   disabled={!lifeStage}
-                  className="w-full mt-6 rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
                 >
                   Continue →
                 </button>
