@@ -9,9 +9,7 @@ import { EngineProvider } from '@/contexts/EngineContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 
-const AIChatFAB = dynamic(() => import('@/components/layout/AIChatFAB'), {
-  ssr: false,
-});
+const AIChatFAB = dynamic(() => import('@/components/layout/AIChatFAB'), { ssr: false });
 
 export default async function MainLayout({
   children,
