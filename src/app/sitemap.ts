@@ -9,13 +9,36 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/bhakti`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/pathshala`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/japa`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/discover`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/panchang`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${BASE_URL}/pricing`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    // Core landing
+    { url: `${BASE_URL}`,                  lastModified: new Date(), changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${BASE_URL}/pricing`,          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${BASE_URL}/about`,            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+
+    // High search-intent pages — daily content, should rank for panchang/rashiphala queries
+    { url: `${BASE_URL}/panchang`,         lastModified: new Date(), changeFrequency: 'daily',   priority: 1.0 },
+    { url: `${BASE_URL}/panchang/today`,   lastModified: new Date(), changeFrequency: 'daily',   priority: 1.0 },
+    { url: `${BASE_URL}/rashiphala`,       lastModified: new Date(), changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${BASE_URL}/kundali`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/tirtha-map`,       lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
+
+    // Content / learning
+    { url: `${BASE_URL}/bhakti`,           lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/bhakti/aarti`,     lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/bhakti/stotram`,   lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/pathshala`,        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/discover`,         lastModified: new Date(), changeFrequency: 'daily',   priority: 0.7 },
+    { url: `${BASE_URL}/mantras`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+
+    // Practice tools
+    { url: `${BASE_URL}/japa`,             lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/vrat`,             lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+    { url: `${BASE_URL}/sadhana`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.6 },
+    { url: `${BASE_URL}/nitya-karma`,      lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.6 },
+
+    // Public / legal
+    { url: `${BASE_URL}/privacy`,          lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+    { url: `${BASE_URL}/terms`,            lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+    { url: `${BASE_URL}/contact`,          lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
   ];
 
   const vratRoutes: MetadataRoute.Sitemap = Object.keys(VRAT_DATABASE).map(slug => ({

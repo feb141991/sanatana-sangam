@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
-Sitemap: https://shoonaya.app/sitemap.xml
+Sitemap: https://shoonaya.com/sitemap.xml
