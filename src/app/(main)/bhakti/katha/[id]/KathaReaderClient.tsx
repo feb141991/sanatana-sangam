@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
-import type { Katha } from '@/lib/katha-library';
+import type { Katha } from '@/types/katha';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';

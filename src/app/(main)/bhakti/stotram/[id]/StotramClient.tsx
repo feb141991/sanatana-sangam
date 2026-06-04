@@ -5,8 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Repeat, Copy, Check, Share2, Square, Loader2, SkipBack } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { DEVOTIONAL_STARTER_TRACKS } from '@/lib/devotional-audio';
+import type { Stotram } from '@/lib/stotrams';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { Suspense, use } from 'react';
 import toast from 'react-hot-toast';
@@ -242,15 +242,19 @@ function AudioPanel({ trackId, autoplay, accentColor, onFinished }: {
 }
 
 // ─── Main stotram reader ──────────────────────────────────────────────────────
-function StotramReader({ id }: { id: string }) {
+function StotramReader({ id, stotram: stotramProp, deityMeta: deityMetaProp }: {
+  id: string;
+  stotram: Stotram | undefined;
+  deityMeta: Record<string, any> | null;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
   const autoplay = searchParams.get('autoplay') === '1';
 
-  const stotram = getStotramById(id);
-  const deityMeta = stotram ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : null;
+  const stotram = stotramProp;
+  const deityMeta = deityMetaProp;
   // Pass language hint to TTS so Sanskrit goes to Bhashini sa-m1 voice and
   // Hindi / Awadhi / other Devanagari languages go to Sarvam hi-IN.
   const ttsLanguageHint = stotram?.language?.toLowerCase().startsWith('sanskrit') ? 'sa' : 'hi';
@@ -1067,11 +1071,19 @@ function StotramReader({ id }: { id: string }) {
 }
 
 
-export default function StotramPage({ params }: { params: Promise<{ id: string }> }) {
+export default function StotramPage({
+  params,
+  stotram,
+  deityMeta,
+}: {
+  params: Promise<{ id: string }>;
+  stotram: Stotram | undefined;
+  deityMeta: Record<string, any> | null;
+}) {
   const { id } = use(params);
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="text-3xl">🙏</span></div>}>
-      <StotramReader id={id} />
+      <StotramReader id={id} stotram={stotram} deityMeta={deityMeta} />
     </Suspense>
   );
 }

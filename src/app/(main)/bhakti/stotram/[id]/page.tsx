@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getStotramById } from '@/lib/stotrams';
+import { getStotramById, DEITY_META } from '@/lib/stotrams';
 import { GeoArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { extractStotramGeo } from '@/lib/seo/geo-extractors';
 import StotramClient from './StotramClient';
@@ -41,7 +41,8 @@ export default async function StotramPage({ params }: Props) {
   
   const geo = extractStotramGeo(stotram);
   const canonicalUrl = `https://shoonaya.com/bhakti/stotram/${decodedId}`;
-  
+  const deityMeta = stotram.deity ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : (DEITY_META.universal ?? null);
+
   return (
     <>
       <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
@@ -51,7 +52,7 @@ export default async function StotramPage({ params }: Props) {
         { name: 'Stotrams', url: 'https://shoonaya.com/bhakti/browse' },
         { name: stotram.title, url: canonicalUrl }
       ]} />
-      <StotramClient params={params} />
+      <StotramClient params={params} stotram={stotram} deityMeta={deityMeta} />
     </>
   );
 }
