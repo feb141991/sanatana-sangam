@@ -836,6 +836,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 }
 </style>
 
+<style>
    #sj-google-btn {
      width: 100% !important;
      padding: 16px !important;
@@ -846,6 +847,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
    @media (max-width: 480px) {
      #sj-google-btn { font-size: 14px !important; }
    }
+</style>
 
 <style id="general-mobile-css">
 @media (max-width: 480px) {
@@ -4243,7 +4245,8 @@ document.getElementById('explore-btn').addEventListener('click', function () {
      var drawer = document.getElementById('mobile-drawer');
      drawer.style.pointerEvents = 'auto';
      panel.style.transform = 'translateX(0)';
-     backdrop.style.background = 'rgba(0,0,0,0.4)';
+     backdrop.style.background = 'rgba(0,0,0,0.55)';
+     backdrop.style.pointerEvents = 'auto';
    }
    function closeDrawer() {
      var panel = document.getElementById('mobile-drawer-panel');
@@ -4251,10 +4254,10 @@ document.getElementById('explore-btn').addEventListener('click', function () {
      var drawer = document.getElementById('mobile-drawer');
      panel.style.transform = 'translateX(-100%)';
      backdrop.style.background = 'rgba(0,0,0,0)';
+     backdrop.style.pointerEvents = 'none';
      setTimeout(function(){ drawer.style.pointerEvents = 'none'; }, 280);
    }
    document.getElementById('nav-hamburger').addEventListener('click', openDrawer);
-   document.getElementById('drawer-close').addEventListener('click', closeDrawer);
    document.getElementById('mobile-drawer-backdrop').addEventListener('click', closeDrawer);
 
   /* Register service worker */
@@ -4354,41 +4357,49 @@ document.querySelectorAll('.faq-q').forEach(function(btn) {
      position:fixed; inset:0; z-index:9998;
      display:flex; pointer-events:none;
    ">
-     <div id="mobile-drawer-backdrop" style="
-       flex:1; background:rgba(0,0,0,0); 
-       transition:background 0.28s;
-     "></div>
      <div id="mobile-drawer-panel" style="
-       position:absolute; left:0; top:0; bottom:0; width:260px;
-       background:#faf6ef; padding:24px 20px 40px;
+       position:absolute; left:0; top:0; bottom:0; width:240px;
+       background:#1a1208; padding:24px 16px 40px;
        transform:translateX(-100%); transition:transform 0.28s ease;
-       display:flex; flex-direction:column; gap:8px; overflow-y:auto;
-       box-shadow: 4px 0 24px rgba(62,42,31,0.12);
+       display:flex; flex-direction:column; gap:4px; overflow-y:auto;
+       box-shadow: 4px 0 32px rgba(0,0,0,0.55);
+       border-right:1px solid rgba(197,160,89,0.18);
      ">
-       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-         <span style="font-family:var(--fd);font-size:20px;font-weight:600;color:#C5A059">Shoonaya</span>
-         <button id="drawer-close" style="background:none;border:none;cursor:pointer;font-size:22px;color:rgba(62,42,31,0.5);">✕</button>
+       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+         <div style="display:flex;align-items:center;gap:10px;">
+           <img src="/icons/icon-192x192.png" alt="Shoonaya" style="width:32px;height:32px;border-radius:8px;">
+           <span style="font-family:var(--fd);font-size:18px;font-weight:600;color:#C5A059">Shoonaya</span>
+         </div>
+         <button id="drawer-close" onclick="closeDrawer()" style="background:none;border:none;cursor:pointer;font-size:20px;color:rgba(250,246,239,0.45);padding:4px;line-height:1;">✕</button>
        </div>
        <style>
        #mobile-drawer-panel a {
-         display:block; padding:14px 12px; border-radius:12px;
-         font-family:var(--fb); font-size:15px; font-weight:500;
-         color:rgba(62,42,31,0.75); text-decoration:none;
+         display:block; padding:12px 14px; border-radius:10px;
+         font-family:var(--fb); font-size:14px; font-weight:500;
+         color:rgba(250,246,239,0.72); text-decoration:none;
          transition:background 0.15s;
        }
-       #mobile-drawer-panel a:hover { background:rgba(197,160,89,0.1); }
+       #mobile-drawer-panel a:hover { background:rgba(197,160,89,0.12); color:#FAF6EF; }
+       #mobile-drawer-panel a.drawer-highlight { color:#C5A059; font-weight:600; }
        </style>
+       <a href="#gyan-chaupar" class="drawer-highlight" onclick="closeDrawer()">♟ Play</a>
+       <a href="#traditions" onclick="closeDrawer()">Traditions</a>
+       <a href="#shloka" onclick="closeDrawer()">Wisdom</a>
+       <a href="#festivals" onclick="closeDrawer()">Festivals</a>
        <a href="#community" onclick="closeDrawer()">Community</a>
        <a href="#features" onclick="closeDrawer()">Features</a>
-       <a href="#panchang" onclick="closeDrawer()">Panchang</a>
-       <a href="#download" onclick="closeDrawer()">Download</a>
+       <a href="#download" onclick="closeDrawer()">Web App</a>
        <div style="margin-top:auto;padding-top:24px;">
          <button onclick="closeDrawer(); document.querySelector('.nav-cta')?.click();"
-           style="width:100%;background:#C5A059;color:#fff;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;">
+           style="width:100%;background:linear-gradient(135deg,#C5A059,#D4784A);color:#0C0A07;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;">
            Get Early Access
          </button>
        </div>
      </div>
+     <div id="mobile-drawer-backdrop" style="
+       position:absolute; inset:0; background:rgba(0,0,0,0);
+       transition:background 0.28s;
+     "></div>
    </div>
 
 

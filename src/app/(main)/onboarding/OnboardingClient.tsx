@@ -1421,7 +1421,7 @@ export default function OnboardingClient({
                 </h1>
                 <p className="text-[var(--brand-muted)] mb-2 leading-relaxed">{readyCopy.body}</p>
                 <p className="text-xs text-[var(--brand-muted)] mb-8 opacity-60 italic">
-                  Welcome, Zeroist.
+                  Your sanctuary awaits.
                 </p>
 
                 {/* Warm sanctuary cards */}

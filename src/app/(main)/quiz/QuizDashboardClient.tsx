@@ -1094,90 +1094,122 @@ export default function QuizDashboardClient({
         </div>
       )}
 
-      {/* ── 28-Day Heatmap ───────────────────────────────────────────────── */}
+      {/* ── 28-Day Heatmap (Pro) ─────────────────────────────────────────── */}
       <div className="px-5 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-[13px] font-bold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
+          <h2 className="text-[13px] font-bold uppercase tracking-[0.14em] flex items-center gap-2" style={{ color: 'var(--text-dim)' }}>
             28-Day Practice
+            {!isPro && (
+              <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full" style={{ background: 'rgba(197,160,89,0.15)', color: '#C5A059' }}>
+                Pro
+              </span>
+            )}
           </h2>
-          <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-dim)' }}>
-            <span className="font-bold" style={{ color: meta.accentColour }}>{activeCount}</span> / 28
-          </span>
+          {isPro && (
+            <span className="text-[11px] tabular-nums" style={{ color: 'var(--text-dim)' }}>
+              <span className="font-bold" style={{ color: meta.accentColour }}>{activeCount}</span> / 28
+            </span>
+          )}
         </div>
 
-        {/* Day-of-week labels */}
-        <div className="grid grid-cols-7 gap-1 mb-1">
-          {['S','M','T','W','T','F','S'].map((d, i) => (
-            <p key={i} className="text-center text-[9px] font-semibold" style={{ color: 'var(--text-dim)', opacity: 0.45 }}>{d}</p>
-          ))}
-        </div>
-
-        {/* 4 rows × 7 cols heatmap */}
-        <div className="space-y-1">
-          {heatmapWeeks.map((week, wi) => (
-            <div key={wi} className="grid grid-cols-7 gap-1">
-              {week.map((day, di) => {
-                const isCorrect = day.state === 'correct';
-                const isWrong   = day.state === 'wrong';
-                const isEmpty   = day.state === null;
-                return (
-                  <motion.div
-                    key={day.dateStr}
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: (wi * 7 + di) * 0.01, duration: 0.18, ease: 'backOut' }}
-                    className="aspect-square rounded-md"
-                    style={
-                      day.isToday
-                        ? {
-                            background: isCorrect
-                              ? meta.accentColour
-                              : isWrong
-                              ? `${meta.accentColour}40`
-                              : 'transparent',
-                            outline: `2px solid ${meta.accentColour}`,
-                            outlineOffset: '1px',
-                            boxShadow: isCorrect ? `0 0 8px ${meta.accentColour}70` : undefined,
-                          }
-                        : isCorrect
-                        ? {
-                            background: meta.accentColour,
-                            boxShadow: `0 0 6px ${meta.accentColour}50`,
-                          }
-                        : isWrong
-                        ? {
-                            background: `${meta.accentColour}35`,
-                          }
-                        : {
-                            background: 'var(--surface-soft, rgba(0,0,0,0.06))',
-                          }
-                    }
-                  />
-                );
-              })}
+        {isPro ? (
+          <>
+            {/* Day-of-week labels */}
+            <div className="grid grid-cols-7 gap-1 mb-1">
+              {['S','M','T','W','T','F','S'].map((d, i) => (
+                <p key={i} className="text-center text-[9px] font-semibold" style={{ color: 'var(--text-dim)', opacity: 0.45 }}>{d}</p>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Legend */}
-        <div className="flex items-center gap-4 mt-3">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: meta.accentColour }} />
-            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Correct</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: `${meta.accentColour}35` }} />
-            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Answered</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-sm" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.06))' }} />
-            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Missed</span>
-          </div>
-          <div className="flex items-center gap-1.5 ml-auto">
-            <div className="w-2.5 h-2.5 rounded-sm" style={{ outline: `2px solid ${meta.accentColour}`, outlineOffset: '1px' }} />
-            <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Today</span>
-          </div>
-        </div>
+            {/* 4 rows × 7 cols heatmap */}
+            <div className="space-y-1">
+              {heatmapWeeks.map((week, wi) => (
+                <div key={wi} className="grid grid-cols-7 gap-1">
+                  {week.map((day, di) => {
+                    const isCorrect = day.state === 'correct';
+                    const isWrong   = day.state === 'wrong';
+                    return (
+                      <motion.div
+                        key={day.dateStr}
+                        initial={{ opacity: 0, scale: 0.6 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: (wi * 7 + di) * 0.01, duration: 0.18, ease: 'backOut' }}
+                        className="aspect-square rounded-md"
+                        style={
+                          day.isToday
+                            ? {
+                                background: isCorrect
+                                  ? meta.accentColour
+                                  : isWrong
+                                  ? `${meta.accentColour}40`
+                                  : 'transparent',
+                                outline: `2px solid ${meta.accentColour}`,
+                                outlineOffset: '1px',
+                                boxShadow: isCorrect ? `0 0 8px ${meta.accentColour}70` : undefined,
+                              }
+                            : isCorrect
+                            ? {
+                                background: meta.accentColour,
+                                boxShadow: `0 0 6px ${meta.accentColour}50`,
+                              }
+                            : isWrong
+                            ? {
+                                background: `${meta.accentColour}35`,
+                              }
+                            : {
+                                background: 'var(--surface-soft, rgba(0,0,0,0.06))',
+                              }
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* Legend */}
+            <div className="flex items-center gap-4 mt-3">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: meta.accentColour }} />
+                <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Correct</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: `${meta.accentColour}35` }} />
+                <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Answered</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ background: 'var(--surface-soft, rgba(0,0,0,0.06))' }} />
+                <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Missed</span>
+              </div>
+              <div className="flex items-center gap-1.5 ml-auto">
+                <div className="w-2.5 h-2.5 rounded-sm" style={{ outline: `2px solid ${meta.accentColour}`, outlineOffset: '1px' }} />
+                <span className="text-[9px]" style={{ color: 'var(--text-dim)' }}>Today</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <button
+            onClick={() => setProModalOpen(true)}
+            className="relative w-full rounded-2xl overflow-hidden"
+            style={{ border: '1px solid rgba(197,160,89,0.2)' }}
+          >
+            {/* Blurred ghost heatmap */}
+            <div className="grid grid-cols-7 gap-1 p-3" style={{ filter: 'blur(3px)', pointerEvents: 'none', opacity: 0.45 }}>
+              {Array.from({ length: 28 }).map((_, i) => (
+                <div key={i} className="aspect-square rounded-md" style={{
+                  background: i % 5 === 0 ? meta.accentColour : i % 3 === 0 ? `${meta.accentColour}40` : 'var(--surface-soft, rgba(0,0,0,0.06))'
+                }} />
+              ))}
+            </div>
+            {/* Lock overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5"
+              style={{ background: 'rgba(12,10,7,0.6)', backdropFilter: 'blur(1px)' }}>
+              <span className="text-base">🔒</span>
+              <span className="text-[11px] font-semibold" style={{ color: '#C5A059' }}>Unlock with Pro</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-dim)' }}>Track your 28-day journey</span>
+            </div>
+          </button>
+        )}
       </div>
 
       {/* ── History ──────────────────────────────────────────────────────── */}

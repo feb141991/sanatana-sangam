@@ -664,6 +664,45 @@ export default function TirthaMapPage() {
           <p className="mt-3 text-xs leading-relaxed text-[color:var(--text-muted)]">
             Visits are private by default. Family, Mandali, and public signals will only activate when explicitly selected.
           </p>
+
+          {visits.length > 0 && (
+            <div className="mt-4">
+              <p className="type-card-label mb-2">Recent visits</p>
+              <div className="space-y-2">
+                {visits.slice(0, 5).map((visit) => {
+                  const temple = temples.find((t) => tirthaPlaceId(t) === visit.place_id);
+                  const moodEmoji = visit.darshan_mood === 'peaceful' ? '🕊️' : visit.darshan_mood === 'blissful' ? '🌸' : visit.darshan_mood === 'devotional' ? '🪔' : visit.darshan_mood === 'energised' ? '⚡' : '🙏';
+                  return (
+                    <button
+                      key={visit.id || visit.visited_at}
+                      onClick={() => temple && setSelected(temple)}
+                      className="flex w-full items-center gap-3 rounded-[1rem] p-2.5 text-left transition-colors"
+                      style={{ background: 'rgba(197,160,89,0.06)', border: '1px solid rgba(197,160,89,0.12)' }}
+                    >
+                      <span className="text-lg leading-none">{moodEmoji}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[12px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          {temple?.name ?? 'Sacred place'}
+                        </p>
+                        <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                          {visit.visited_at ? new Date(visit.visited_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date unknown'}
+                        </p>
+                      </div>
+                      {visit.privacy === 'public' && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(197,160,89,0.15)', color: '#C5A059' }}>public</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {visits.length === 0 && userId && (
+            <p className="mt-3 text-[11px] text-center" style={{ color: 'var(--text-muted)' }}>
+              No visits yet. Tap a temple and save your darshan ✨
+            </p>
+          )}
         </section>
 
         <section className="space-y-3">

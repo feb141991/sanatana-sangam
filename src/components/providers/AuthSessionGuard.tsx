@@ -10,45 +10,50 @@
  * Mounted once in the root layout. Renders nothing.
  */
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 
+// Hard navigation ensures browser sends the next request with no stale cookies,
+// breaking the middleware ↔ client redirect loop.
+function redirectToLanding() {
+  window.location.replace('/');
+}
+
 export default function AuthSessionGuard() {
-  const router = useRouter();
+  // Prevent double-redirect when both SIGNED_OUT event and getSession() error
+  // fire at the same time (e.g. on expired refresh token).
+  const redirecting = useRef(false);
 
   useEffect(() => {
     const supabase = createClient();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event) => {
-        if (event === 'TOKEN_REFRESHED') {
-          // Session refreshed successfully — nothing to do
-          return;
-        }
-
+      (event) => {
         if (event === 'SIGNED_OUT') {
-          // Session ended — redirect to landing
-          router.replace('/');
-          return;
+          if (redirecting.current) return;
+          redirecting.current = true;
+          redirectToLanding();
         }
       }
     );
 
-    // Also handle refresh token errors by listening to getSession failures
-    // This catches the refresh_token_not_found case proactively on mount
+    // Proactively check for bad refresh tokens on mount.
+    // Only fires once; ref guard prevents racing with the SIGNED_OUT event above.
     supabase.auth.getSession().then(({ error }) => {
-      if (error?.message?.includes('Refresh Token') ||
-          error?.message?.includes('refresh_token') ||
-          (error as any)?.code === 'refresh_token_not_found') {
-        supabase.auth.signOut({ scope: 'local' }).then(() => {
-          router.replace('/');
-        });
-      }
+      if (!error) return;
+      const msg = error.message ?? '';
+      const isTokenError =
+        msg.includes('Refresh Token') ||
+        msg.includes('refresh_token') ||
+        (error as any)?.code === 'refresh_token_not_found';
+      if (!isTokenError) return;
+      if (redirecting.current) return;
+      redirecting.current = true;
+      supabase.auth.signOut({ scope: 'local' }).finally(redirectToLanding);
     });
 
     return () => subscription.unsubscribe();
-  }, [router]);
+  }, []);
 
   return null;
 }
