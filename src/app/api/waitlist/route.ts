@@ -8,11 +8,20 @@ import { createClient } from '@supabase/supabase-js';
 // Body: { email, tradition?, name?, source?, timezone? }
 // ──────────────────────────────────────────────────────────────────────────────
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+export const dynamic = 'force-dynamic';
+
+// Lazily initialized — createClient is never called at module import time
+// (which happens during Next.js build when env vars are absent).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+function db() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (_sb ??= createClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  ));
+}
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
 const DOMAIN = BASE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -30,7 +39,7 @@ export async function OPTIONS() {
 // ─── GET — live waitlist count ─────────────────────────────────────────────────
 export async function GET() {
   try {
-    const { count, error } = await supabase
+    const { count, error } = await db()
       .from('waitlist')
       .select('*', { count: 'exact', head: true });
     if (error) throw error;
@@ -191,7 +200,7 @@ function buildShareText(foundingNumber: number): string {
 }
 
 async function findRegistration(email: string): Promise<WaitlistRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from('waitlist')
     .select('id, founding_number, tradition, email_sent')
     .ilike('email', email)
@@ -208,7 +217,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
     return row.founding_number;
   }
 
-  const { data: latest } = await supabase
+  const { data: latest } = await db()
     .from('waitlist')
     .select('founding_number')
     .not('founding_number', 'is', null)
@@ -219,7 +228,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
   const nextNumber = ((latest?.founding_number as number | null | undefined) ?? 0) + 1;
 
 
-  const { data: updated, error } = await supabase
+  const { data: updated, error } = await db()
     .from('waitlist')
     .update({ founding_number: nextNumber })
     .eq('id', row.id)
@@ -231,7 +240,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
     return updated.founding_number;
   }
 
-  const { data: reread } = await supabase
+  const { data: reread } = await db()
     .from('waitlist')
     .select('founding_number')
     .eq('id', row.id)
@@ -264,7 +273,7 @@ async function updateExistingRegistration(
 
   if (!Object.keys(patch).length) return;
 
-  const { error } = await supabase
+  const { error } = await db()
     .from('waitlist')
     .update(patch)
     .eq('id', row.id);
@@ -498,7 +507,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Insert new registration (founding_number auto-assigned via sequence) ─
-    const { data: inserted, error: insertError } = await supabase
+    const { data: inserted, error: insertError } = await db()
       .from('waitlist')
       .insert({
         email:     emailLower,
@@ -540,7 +549,7 @@ export async function POST(req: NextRequest) {
     void sendWelcomeEmail({ email: emailLower, name: name ?? undefined, tradition: tradition ?? undefined, foundingNumber });
 
     // Mark email_sent flag (best-effort)
-    void supabase
+    void db()
       .from('waitlist')
       .update({ email_sent: true })
       .eq('email', emailLower);

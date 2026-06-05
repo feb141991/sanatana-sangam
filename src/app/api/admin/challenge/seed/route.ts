@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+export const dynamic = 'force-dynamic';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+function db() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (_sb ??= createClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  ));
+}
 
 interface QuestionInput {
   question_number: number;
@@ -60,7 +67,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Upsert Monthly Challenge
-    const { data: challengeData, error: challengeError } = await supabase
+    const { data: challengeData, error: challengeError } = await db()
       .from('monthly_challenges')
       .upsert(
         { month, theme, theme_sub: theme_sub ?? null, updated_at: new Date().toISOString() },
@@ -82,7 +89,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Upsert challenge pack
-      const { data: packData, error: packError } = await supabase
+      const { data: packData, error: packError } = await db()
         .from('challenge_packs')
         .upsert(
           {
@@ -120,7 +127,7 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        const { error: questionError } = await supabase
+        const { error: questionError } = await db()
           .from('challenge_questions')
           .upsert(
             {

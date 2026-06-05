@@ -6,11 +6,18 @@ import { createClient } from '@supabase/supabase-js';
 // POST — admin-only: record a new naming (requires ADMIN_SECRET header)
 // ──────────────────────────────────────────────────────────────────────────
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+export const dynamic = 'force-dynamic';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+function db() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (_sb ??= createClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  ));
+}
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +31,7 @@ export async function OPTIONS() {
 
 // ── GET — public list ──────────────────────────────────────────────────────
 export async function GET() {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from('feature_namings')
     .select('feature_slug, feature_name, feature_category, feature_desc, sthapaka_number, named_by, tradition, named_on')
     .eq('is_public', true)
@@ -64,7 +71,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await db()
       .from('feature_namings')
       .upsert({
         feature_slug,
