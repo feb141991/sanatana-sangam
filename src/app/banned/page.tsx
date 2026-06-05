@@ -1,16 +1,17 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { motion } from 'framer-motion';
 import { ShieldAlert, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
 export default function BannedPage() {
-  const supabase = createClient();
   const router = useRouter();
 
   async function handleSignOut() {
-    await supabase.auth.signOut();
+    await createClient().auth.signOut();
     router.push('/');
   }
 
