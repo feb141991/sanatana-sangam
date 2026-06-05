@@ -3,10 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint: untyped DB schema — tirtha_places not in generated types
 let _sb: ReturnType<typeof createClient<any>> | undefined;
 function db() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (_sb ??= createClient<any>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,

@@ -49,8 +49,7 @@ export async function POST(req: NextRequest) {
       updated_at:         new Date().toISOString(),
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const admin = createAdminClient() as any;
+    const admin = createAdminClient() as unknown as { from: (t: string) => any };
     const { error } = await admin
       .from('tirtha_places')
       .upsert(row, { onConflict: 'id' });
