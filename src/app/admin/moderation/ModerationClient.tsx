@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -37,7 +37,7 @@ interface Report {
 export default function ModerationClient({ initialReports }: { initialReports: Report[] }) {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [filter, setFilter] = useState<'all' | 'pending' | 'resolved'>('all');
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
 
   const handleAction = async (report: Report, action: 'resolve' | 'dismiss' | 'delete' | 'ban') => {
     try {

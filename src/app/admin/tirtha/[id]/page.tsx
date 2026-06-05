@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+export const dynamic = 'force-dynamic';
+
+import { useState, useEffect, useRef, use } from 'react';
 import { 
   ArrowLeft, MapPin, Users, Globe, 
   Shield, Settings, Star, Mail,
@@ -16,7 +18,7 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
   const [loading, setLoading] = useState(true);
   const [mandali, setMandali] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
-  const supabase = createClient();
+  const supabase = useRef(createClient()).current;
 
   useEffect(() => {
     async function fetchChapterData() {

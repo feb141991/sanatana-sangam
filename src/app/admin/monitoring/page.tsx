@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { generateHealthReport } from '@/lib/monitoring/aggregation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
