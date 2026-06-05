@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 // Handles the implicit OAuth flow where Supabase returns
 // #access_token=... in the URL hash instead of ?code=
 // Reads the token, gets the user, registers on waitlist, redirects to landing.
