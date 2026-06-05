@@ -13,11 +13,18 @@ import { createClient } from '@supabase/supabase-js';
 //      so the landing page can show the founding number reveal
 // ─────────────────────────────────────────────────────────────────────────────
 
-const serviceSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+export const dynamic = 'force-dynamic';
+
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+const serviceSupabase = new Proxy({} as ReturnType<typeof createClient<any>>, {
+  get: (_, p, r) => Reflect.get(
+    (_sb ??= createClient<any>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } }
+    )), p, r
+  ),
+});
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
