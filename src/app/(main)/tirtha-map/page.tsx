@@ -298,9 +298,16 @@ export default function TirthaMapPage() {
   async function ensurePlace(temple: Temple) {
     if (!userId) throw new Error('Please sign in to save visits.');
     const row = templeToPlaceRow(temple, userId);
-    // Best-effort metadata upsert — do not block check-in/save if this fails
-    const { error } = await supabase.from('tirtha_places').upsert(row, { onConflict: 'id' });
-    if (error) console.warn('[tirtha] tirtha_places upsert failed (non-fatal):', error.message);
+    // Use the server route (service role) so RLS doesn't block the upsert.
+    const res = await fetch('/api/tirtha/place', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(row),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? `Failed to register place (${res.status})`);
+    }
     return row.id;
   }
 

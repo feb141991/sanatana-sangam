@@ -16,7 +16,7 @@
  *   refresh     : () => void
  */
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { API, LOCATION } from '@/lib/config';
 import PermissionSheet from '@/components/ui/PermissionSheet';
@@ -116,6 +116,9 @@ export function LocationProvider({
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
   const [showLocationSheet, setShowLocationSheet] = useState(false);
+  // Tracks whether we've already attempted auto-location this session so we
+  // don't re-ask every time the user navigates back to /home or /tirtha-map.
+  const autoLocateAttempted = useRef(false);
 
   const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile' || pathname === '/tirtha-map';
 
@@ -156,11 +159,16 @@ export function LocationProvider({
     );
   }, []);
 
-  // Ask for location lazily, only on location-aware screens, and not on every launch.
+  // Ask for location lazily, only on location-aware screens, and not on every navigation.
   useEffect(() => {
+    // Already have coords from DB props or from a previous fetch this session
     if (savedLat && savedLon) return;
+    if (coords) return;
     if (!shouldAutoLocate) return;
     if (typeof window === 'undefined') return;
+    // Only attempt once per session — prevents re-asking on every /home visit
+    if (autoLocateAttempted.current) return;
+    autoLocateAttempted.current = true;
 
     const run = async () => {
       const existingPerm = await navigator.permissions.query({ name: 'geolocation' }).catch(() => null);
@@ -193,7 +201,7 @@ export function LocationProvider({
         globalThis.clearTimeout(timeoutId);
       }
     };
-  }, [requestLocation, savedLat, savedLon, shouldAutoLocate]);
+  }, [requestLocation, savedLat, savedLon, shouldAutoLocate, coords]);
 
   const confirmLocationRequest = useCallback(() => {
     setShowLocationSheet(false);
