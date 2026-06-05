@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase with Service Role Key to bypass RLS for background jobs
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const dynamic = 'force-dynamic';
+
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+const supabaseAdmin = {
+  from: (t: string) => (_sb ??= createClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )).from(t),
+};
 
 export async function GET(request: Request) {
   // 1. Verify Authorization — unconditional: locked if CRON_SECRET is unset.

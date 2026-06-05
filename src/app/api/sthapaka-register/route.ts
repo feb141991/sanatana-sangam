@@ -5,11 +5,19 @@ import { createClient } from '@supabase/supabase-js';
 // access_token from the URL hash (implicit OAuth flow).
 // Receives { email, name } and registers/looks up the waitlist entry.
 
-const serviceSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { persistSession: false } }
-);
+export const dynamic = 'force-dynamic';
+
+let _sb: ReturnType<typeof createClient<any>> | undefined;
+function serviceSupabase_() {
+  return (_sb ??= createClient<any>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  ));
+}
+const serviceSupabase = new Proxy({} as ReturnType<typeof createClient<any>>, {
+  get: (_, p, r) => Reflect.get(serviceSupabase_(), p, r),
+});
 
 export async function POST(request: Request) {
   try {
