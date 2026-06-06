@@ -1267,12 +1267,17 @@ export default function NityaKarmaClient({
     return (localStorage.getItem('ashrama_women_mode') as 'traditional' | 'modern') ?? 'traditional';
   });
   const [dutyChecks,    setDutyChecks]   = useState<Set<string>>(() => {
-    // Local daily check-ins — stored per spiritual day in sessionStorage
+    // Local daily check-ins — grihastha uses localStorage (user+day keyed),
+    // other stages fall back to sessionStorage.
     if (typeof window === 'undefined') return new Set<string>();
     try {
       const today = localSpiritualDate(timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
-      const raw   = sessionStorage.getItem(`ashrama_checks:${today}`);
-      return raw ? new Set(JSON.parse(raw)) : new Set<string>();
+      if (lifeStage === 'grihastha') {
+        const raw = localStorage.getItem(`grihastha-duties-${userId}-${today}`);
+        return raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set<string>();
+      }
+      const raw = sessionStorage.getItem(`ashrama_checks:${today}`);
+      return raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set<string>();
     } catch { return new Set<string>(); }
   });
 
@@ -1780,7 +1785,11 @@ export default function NityaKarmaClient({
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       try {
-        sessionStorage.setItem(`ashrama_checks:${spiritualToday}`, JSON.stringify([...next]));
+        if (localLifeStage === 'grihastha') {
+          localStorage.setItem(`grihastha-duties-${userId}-${spiritualToday}`, JSON.stringify([...next]));
+        } else {
+          sessionStorage.setItem(`ashrama_checks:${spiritualToday}`, JSON.stringify([...next]));
+        }
       } catch {}
       return next;
     });
@@ -2738,6 +2747,44 @@ export default function NityaKarmaClient({
                 </div>
               </div>
               )}
+
+              {/* ── Grihastha all-done celebration ──────────────────────────── */}
+              <AnimatePresence>
+                {localLifeStage && _stageMeta && ashramaDoneCount === _duties.length && _duties.length > 0 && (
+                  <motion.div
+                    key="grihastha-alldone"
+                    initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 8 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className="rounded-3xl p-6 text-center space-y-3 border"
+                    style={{
+                      background: `linear-gradient(135deg, ${_stageMeta.accent}20, ${_stageMeta.accent}0a)`,
+                      borderColor: `${_stageMeta.accent}30`,
+                    }}
+                  >
+                    <motion.div
+                      className="text-4xl"
+                      animate={{ scale: [0.8, 1.15, 1] }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      🙏
+                    </motion.div>
+                    <p className="font-bold text-[color:var(--brand-ink)] text-[15px]">
+                      {_stageMeta.label} Dharma fulfilled today
+                    </p>
+                    {streak && streak.current_streak > 0 && (
+                      <p className="text-[12px]" style={{ color: 'var(--text-dim)' }}>
+                        <Flame size={12} className="inline mb-0.5 mr-0.5 text-orange-400" />
+                        {streak.current_streak}-day streak · Keep going
+                      </p>
+                    )}
+                    <p className="text-[11px] leading-relaxed" style={{ color: `${_stageMeta.accent}cc` }}>
+                      {_stageMeta.subtitle}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
