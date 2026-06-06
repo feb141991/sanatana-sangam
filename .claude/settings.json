@@ -1,5 +1,15 @@
 {
   "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"Knowledge capture check: if this session made durable architecture, product, ritual, naming, or tradeoff decisions, run the shoonaya-knowledge-curator agent and update .claude/knowledge/INDEX.md. Skip for routine bug fixes or mechanical edits.\"}}'"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Glob|Grep",
