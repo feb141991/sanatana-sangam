@@ -4,6 +4,29 @@ const path = require('path');
 const nextConfig = {
   async headers() {
     return [
+      // ── PWA static assets — long cache ───────────────────────────────────
+      {
+        source: '/icons/(.*)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/splash/(.*)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/manifest.json',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' }],
+      },
+      // ── Service worker — never cache so updates are instant ───────────────
+      {
+        source: '/OneSignalSDKWorker.js',
+        headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }],
+      },
+      {
+        source: '/sw.js',
+        headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }],
+      },
+      // ── All pages — security headers ──────────────────────────────────────
       {
         source: '/(.*)',
         headers: [

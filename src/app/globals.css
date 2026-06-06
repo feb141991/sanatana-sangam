@@ -6,6 +6,40 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ─── PWA / Mobile Hardening ─────────────────────────────────────────────── */
+
+/* Prevent iOS callout menus on long-press on UI chrome */
+button, a, [role="button"], nav {
+  -webkit-touch-callout: none;
+}
+
+/* Prevent text selection on interactive elements — feels like native app */
+button, a, label, [role="button"], nav {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* iOS input auto-zoom prevention:
+   Any focused input < 16px triggers Safari to zoom.
+   Font-size floor stops that without disabling user pinch-zoom (WCAG 1.4.4). */
+input, select, textarea {
+  font-size: max(16px, 1em);
+}
+
+/* iOS momentum scrolling in scrollable regions */
+.overflow-y-auto, .overflow-x-auto, [class*="overflow-y-scroll"],
+.overscroll-contain {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* PWA standalone mode — prevent pull-to-refresh fighting page scroll */
+@media (display-mode: standalone) {
+  html, body {
+    overscroll-behavior-y: contain;
+  }
 }
 
 /* ─── 120fps Zenith Performance Layer ─── */
@@ -217,8 +251,6 @@ html[data-practice-immersive='true'] body {
 
 /* ── Reset & base ──────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
 
 html,
 body {
