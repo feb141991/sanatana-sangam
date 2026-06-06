@@ -667,10 +667,7 @@ export default function TirthaMapPage() {
           </section>
         )}
 
-        <div className="h-[285px] overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] shadow-card">
-          <TirthaMapComponent temples={filtered} center={center} loading={loading} liveMatches={liveMatches} />
-        </div>
-
+        {/* ── Passport section first — renders instantly, no Leaflet dependency ── */}
         <section className="rounded-[1.7rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] p-4">
           <div className="mb-3 flex items-center justify-between">
             <div>
@@ -761,9 +758,9 @@ export default function TirthaMapPage() {
             return (
               <motion.article
                 key={placeId}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.36, delay: Math.min(index * 0.035, 0.18), ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] bg-[var(--surface-raised)] shadow-card"
               >
                 <button
@@ -826,6 +823,11 @@ export default function TirthaMapPage() {
             );
           })}
         </section>
+
+        {/* ── Map loads below the fold — Leaflet only fetches after temple list renders ── */}
+        <div className="h-[285px] overflow-hidden rounded-[1.75rem] border border-[rgba(197, 160, 89,0.16)] shadow-card">
+          <TirthaMapComponent temples={filtered} center={center} loading={loading} liveMatches={liveMatches} />
+        </div>
       </div>
 
       <AnimatePresence>

@@ -13,7 +13,19 @@ import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
 import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp, ThreadWithAuthor } from '@/types/database';
-import VichaarClient from '../vichaar-sabha/VichaarClient';
+// VichaarClient is 955 lines — lazy-load it so it doesn't block initial parse/hydration.
+// Only users who switch to "Sabha" scope will trigger the download.
+const VichaarClient = dynamic(() => import('../vichaar-sabha/VichaarClient'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-3 animate-pulse pt-2">
+      <div className="h-10 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+    </div>
+  ),
+});
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
