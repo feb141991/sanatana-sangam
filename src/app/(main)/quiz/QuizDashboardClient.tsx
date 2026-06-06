@@ -202,15 +202,24 @@ export default function QuizDashboardClient({
 
   useEffect(() => {
     try {
+      // Primary key (tradition + language + date) — exact match
       const answeredRaw = localStorage.getItem(quizAnsweredKey);
       if (answeredRaw !== null && answeredRaw !== '') {
         setSelectedAnswer(Number(answeredRaw));
+        setDailyAnswered(true);
+        return;
+      }
+      // Fallback: date-only key so tradition/language changes don't re-expose the question.
+      // Written alongside the primary key when the user answers.
+      const dateKey = `shoonaya-quiz-answered-date`;
+      const storedDate = localStorage.getItem(dateKey);
+      if (storedDate === spiritualToday) {
         setDailyAnswered(true);
       }
     } catch {
       // fail open
     }
-  }, [quizAnsweredKey]);
+  }, [quizAnsweredKey, spiritualToday]);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -279,6 +288,8 @@ export default function QuizDashboardClient({
     setSelectedAnswer(idx);
     try {
       localStorage.setItem(quizAnsweredKey, String(idx));
+      // Backup date-only key so tradition/language changes don't re-expose the question
+      localStorage.setItem('shoonaya-quiz-answered-date', spiritualToday);
     } catch {
       // fail open
     }
@@ -480,11 +491,10 @@ export default function QuizDashboardClient({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.3 }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mx-auto mb-4"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mx-auto mb-4 theme-ink"
                   style={{
-                    background: 'var(--brand-primary, rgba(197,160,89,0.12))',
-                    color: 'var(--brand-primary, #C5A059)',
-                    border: '1px solid var(--brand-primary, rgba(197,160,89,0.30))'
+                    background: 'rgba(197,160,89,0.22)',
+                    border: '1px solid rgba(197,160,89,0.40)'
                   }}
                 >
                   ✨ {dailyScorePct === 100 ? '+10 karma' : '+2 karma'}
@@ -498,21 +508,19 @@ export default function QuizDashboardClient({
                     transition={{ delay: 0.45, duration: 0.3 }}
                     className="flex flex-wrap items-center justify-center gap-2 mb-4"
                   >
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold theme-ink"
                       style={{
-                        background: 'rgba(255, 112, 67, 0.12)',
-                        color: '#ff7043',
-                        border: '1px solid rgba(255, 112, 67, 0.25)'
+                        background: 'rgba(255, 112, 67, 0.18)',
+                        border: '1px solid rgba(255, 112, 67, 0.35)'
                       }}
                     >
                       🔥 {quizSaveData.streak}-day streak
                     </span>
                     {quizSaveData.streak_milestone && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold theme-ink"
                         style={{
-                          background: 'var(--brand-primary, rgba(197,160,89,0.12))',
-                          color: 'var(--brand-primary, #C5A059)',
-                          border: '1px solid var(--brand-primary, rgba(197,160,89,0.30))'
+                          background: 'rgba(197,160,89,0.20)',
+                          border: '1px solid rgba(197,160,89,0.38)'
                         }}
                       >
                         {(() => {
