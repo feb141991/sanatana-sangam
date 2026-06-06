@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { requireUserNotBanned } from '@/lib/api-guards';
-
-const FREE_DAILY_LIMIT = 5;
-const PRO_DAILY_LIMIT = 200;
+import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 
 export async function GET(req: Request) {
   const supabase = await createServerSupabaseClient();

@@ -354,7 +354,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         const data = await res.json().catch(() => ({}));
         if (data?.error === 'daily_limit_reached') {
           // Surface the limit hit as a system message with upgrade CTA
-          const limit = data.limit ?? 5;
+          const limit = data.limit ?? 25;
           setMessages(prev => [...prev.filter(m => m.id !== assistantId), {
             id:        newId(),
             role:      'model',

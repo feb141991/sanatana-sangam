@@ -6,10 +6,9 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTierFromScore } from '@/lib/seva-tiers';
 import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const FREE_DAILY_LIMIT   = 5;
-const PRO_DAILY_LIMIT    = 200;
 const GEMINI_MODEL       = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
