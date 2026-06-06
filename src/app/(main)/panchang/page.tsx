@@ -11,7 +11,7 @@ import PanchangHub from './PanchangHub';
 // the midnight cron avoids stale-while-revalidate gaps entirely.
 // The /api/cron/panchang-revalidate route calls revalidatePath('/panchang')
 // at midnight IST so the page is always warm for the day.
-export const revalidate = 86400;
+export const revalidate = 0;
 export const preferredRegion = 'iad1'; // US East — nearest to Supabase default region
 
 // Memoised per-request so generateMetadata and the page share one calculation.
