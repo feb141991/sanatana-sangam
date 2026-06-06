@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const { data, error } = await supabase
       .from('journal_reflections')
-      .select('*')
+      .select('id, user_id, generated_at, period, reflection_text, entry_ids, themes, is_shared_to_kul')
       .eq('user_id', user.id)
       .order('generated_at', { ascending: false })
       .limit(1)

@@ -12,7 +12,7 @@ const getCachedHero = unstable_cache(
     // Try daily cache table first
     const { data: daily } = await admin
       .from('dharm_veer_daily')
-      .select('*')
+      .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, quote, quote_local, quote_source, tags, date')
       .eq('slug', slug)
       .order('date', { ascending: false })
       .limit(1)
@@ -21,7 +21,7 @@ const getCachedHero = unstable_cache(
     // Fallback to legacy table
     const { data } = await admin
       .from('dharm_veers')
-      .select('*')
+      .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, tags')
       .eq('slug', slug)
       .maybeSingle();
     return data ?? null;

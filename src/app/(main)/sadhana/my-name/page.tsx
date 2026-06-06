@@ -21,7 +21,7 @@ export default async function MyNamePage() {
       .single(),
     supabase
       .from('name_stories')
-      .select('*')
+      .select('id, user_id, name_input, tradition, etymology_text, deity_connection, origin_tradition, historical_bearers, meaning_summary, scripture_line, scripture_source, generated_at, is_public, share_slug')
       .eq('user_id', user.id)
       .maybeSingle(),
   ]);

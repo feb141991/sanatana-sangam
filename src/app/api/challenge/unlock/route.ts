@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     // 1. Fetch the pack details
     const { data: pack, error: packError } = await supabase
       .from('challenge_packs')
-      .select('*')
+      .select('id, is_free')
       .eq('id', pack_id)
       .maybeSingle();
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     // 2. Check if pack is already unlocked
     const { data: progress, error: progressError } = await supabase
       .from('user_challenge_progress')
-      .select('*')
+      .select('unlocked')
       .eq('user_id', user.id)
       .eq('pack_id', pack_id)
       .maybeSingle();

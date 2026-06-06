@@ -194,7 +194,7 @@ export async function fetchKulData(userId: string): Promise<KulData> {
 
   if (kulId) {
     const [kulRes, membersRes, tasksRes, msgsRes, familyRes, eventsRes] = await Promise.all([
-      supabase.from('kuls').select('*').eq('id', kulId).single(),
+      supabase.from('kuls').select('id, name, invite_code, avatar_emoji, cover_url, created_by, created_at').eq('id', kulId).single(),
       supabase.from('kul_members')
         .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, active_symbol_id, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata, is_banned, ban_reason, karma_points, weekly_seva)')
         .eq('kul_id', kulId),
@@ -208,7 +208,7 @@ export async function fetchKulData(userId: string): Promise<KulData> {
         .order('created_at', { ascending: false })
         .limit(60),
       supabase.from('kul_family_members')
-        .select('*')
+        .select('id, kul_id, name, role, gender, birth_year, birth_date, birth_place, death_year, death_date, marriage_date, parent_id, spouse_id, linked_user_id, notes, photo_url, is_alive, generation, display_order')
         .eq('kul_id', kulId)
         .order('generation', { ascending: true })
         .order('display_order', { ascending: true }),

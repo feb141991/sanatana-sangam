@@ -52,7 +52,7 @@ export default async function DiscoverPiecePage({ params }: Props) {
   // 1. Fetch current piece
   const { data: piece, error } = await supabase
     .from('discover_content')
-    .select('*')
+    .select('id, slug, title, subtitle, tradition, category, hook_question, body_short, body_full, scripture_line, scripture_source, app_deep_link, og_image_url, published, created_at')
     .eq('slug', resolvedParams.slug)
     .eq('published', true)
     .maybeSingle();

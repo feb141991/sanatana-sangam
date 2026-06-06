@@ -72,7 +72,7 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
           .order('created_at', { ascending: true }),
         supabase
           .from('event_rsvps')
-          .select('*')
+          .select('id, post_id, user_id, status, created_at, updated_at')
           .in('post_id', postIds),
       ]);
 

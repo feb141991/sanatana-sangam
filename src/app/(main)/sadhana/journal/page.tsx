@@ -21,13 +21,13 @@ export default async function JournalPage() {
       .single(),
     supabase
       .from('journal_entries')
-      .select('*')
+      .select('id, user_id, entry_date, content, mood, tradition_context, tags, is_shared_to_kul, ai_reflection_generated, created_at')
       .eq('user_id', user.id)
       .order('entry_date', { ascending: false })
       .limit(30),
     supabase
       .from('journal_reflections')
-      .select('*')
+      .select('id, user_id, generated_at, period, reflection_text, entry_ids, themes, is_shared_to_kul')
       .eq('user_id', user.id)
       .order('generated_at', { ascending: false })
       .limit(1)

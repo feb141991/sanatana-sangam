@@ -27,14 +27,14 @@ export default async function PathshalaInsightsPage() {
 
     supabase
       .from('pathshala_recitation_stats')
-      .select('*')
+      .select('user_id, avg_overall_score, scored_count, unique_verses_attempted, certified_count, total_recordings')
       .eq('user_id', user.id)
       .maybeSingle(),
   ]);
 
   const { count: betterCount } = await supabase
     .from('pathshala_recitation_stats')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .gt('avg_overall_score', shrutiStats?.avg_overall_score ?? 0)
     .gte('scored_count', 3);
 
@@ -42,7 +42,7 @@ export default async function PathshalaInsightsPage() {
 
   const { count: totalReciters } = await supabase
     .from('pathshala_recitation_stats')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .gte('scored_count', 3);
 
   return (

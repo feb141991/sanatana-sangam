@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const { data: sankalpa, error } = await supabase
       .from('sankalpas')
-      .select('*')
+      .select('id, user_id, text, related_practice, target_days, start_date, end_date, status, created_at, updated_at')
       .eq('user_id', user.id)
       .eq('status', 'active')
       .gte('end_date', todayStr)

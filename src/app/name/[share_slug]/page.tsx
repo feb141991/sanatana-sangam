@@ -112,7 +112,7 @@ export default async function NameStorySharePage({
   const supabase = await createServerSupabaseClient();
   const { data: story, error } = await supabase
     .from('name_stories')
-    .select('*')
+    .select('id, name_input, tradition, origin_tradition, meaning_summary, etymology_text, deity_connection, historical_bearers, scripture_line, scripture_source, share_slug')
     .eq('share_slug', share_slug)
     .maybeSingle();
 

@@ -41,7 +41,7 @@ export default async function ChallengePage() {
   // 3. Fetch challenge details
   let { data: challenge } = await supabase
     .from('monthly_challenges')
-    .select('*')
+    .select('id, month, title, description, tradition, theme, theme_sub, cover_image_url, created_at')
     .eq('month', currentMonth)
     .maybeSingle();
 
@@ -49,7 +49,7 @@ export default async function ChallengePage() {
   if (!challenge) {
     const { data: latestChallenge } = await supabase
       .from('monthly_challenges')
-      .select('*')
+      .select('id, month, title, description, tradition, theme, theme_sub, cover_image_url, created_at')
       .order('month', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -70,7 +70,7 @@ export default async function ChallengePage() {
   // 4. Fetch packs
   const { data: packs } = await supabase
     .from('challenge_packs')
-    .select('*')
+    .select('id, pack_number, title, is_free, challenge_id')
     .eq('challenge_id', challenge.id)
     .order('pack_number', { ascending: true });
 
@@ -80,7 +80,7 @@ export default async function ChallengePage() {
   const { data: questions } = packIds.length > 0
     ? await supabase
         .from('challenge_questions')
-        .select('*')
+        .select('id, pack_id, question_number, question_text, options, correct_option_idx, explanation')
         .in('pack_id', packIds)
         .order('question_number', { ascending: true })
     : { data: [] };
@@ -89,7 +89,7 @@ export default async function ChallengePage() {
   const { data: progressList } = packIds.length > 0
     ? await supabase
         .from('user_challenge_progress')
-        .select('*')
+        .select('pack_id, unlocked, completed, score, answers')
         .eq('user_id', user.id)
         .in('pack_id', packIds)
     : { data: [] };

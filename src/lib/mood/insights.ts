@@ -207,7 +207,7 @@ export async function getMoodInsights(days: number): Promise<MoodInsightMetrics>
 
   const { data: checkins, error } = await supabase
     .from('user_mood_checkins')
-    .select('*')
+    .select('id, user_id, before_mood, after_mood, completed_action, clicked_action, completed_at, context_need, context_time, context_type, session_status, dismissed, source_surface, recommended_action_type, recommended_action_target, reflection_note, closed_at, recommendations_shown, skipped_actions, created_at')
     .eq('user_id', user.id)
     .eq('dismissed', false)
     .neq('session_status', 'abandoned')

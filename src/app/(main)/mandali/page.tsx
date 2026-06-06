@@ -72,7 +72,7 @@ export default async function MandaliPage() {
           .order('created_at', { ascending: true })
       : Promise.resolve({ data: [] }),
     postIds.length > 0
-      ? supabase.from('event_rsvps').select('*').in('post_id', postIds)
+      ? supabase.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIds)
       : Promise.resolve({ data: [] }),
     needsBlend
       ? supabase
