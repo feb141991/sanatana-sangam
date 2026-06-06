@@ -5,41 +5,36 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTierFromScore } from '@/lib/seva-tiers';
 import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
+import { generateWithProvider } from '@/lib/ai/providers/inference';
 
-const FREE_DAILY_LIMIT = 5;
-const PRO_DAILY_LIMIT = 200;
-const CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
-const CLAUDE_MODEL = 'claude-sonnet-4-6';
+// ─── Config ────────────────────────────────────────────────────────────────
+const FREE_DAILY_LIMIT   = 5;
+const PRO_DAILY_LIMIT    = 200;
+// Anthropic is the streaming fallback when Sarvam / Pramana is unavailable
+const CLAUDE_URL         = 'https://api.anthropic.com/v1/messages';
+const CLAUDE_MODEL       = 'claude-sonnet-4-6';
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
 
+// ─── Rate-limit helpers ────────────────────────────────────────────────────
 async function checkAndIncrementAiUsage(
   supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
   userId: string,
   limit: number
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-
+  const today = new Date().toISOString().slice(0, 10);
   try {
     const { data, error } = await supabase.rpc('increment_ai_chat_usage', {
       p_user_id: userId,
       p_date: today,
       p_limit: limit,
     });
-
     if (error || data === null) {
-      // Fail open — don't block users if the limiter errors
       console.warn('[ai/chat] rate limit check failed, failing open:', error);
       return { allowed: true, used: 0, limit };
     }
-
-    // RPC returns: { new_count: number, was_allowed: boolean }
     const res = data as { new_count: number; was_allowed: boolean };
-    return {
-      allowed: res.was_allowed,
-      used: res.new_count,
-      limit,
-    };
+    return { allowed: res.was_allowed, used: res.new_count, limit };
   } catch (err) {
     console.error('[ai/chat] error inside checkAndIncrementAiUsage:', err);
     return { allowed: true, used: 0, limit };
@@ -61,6 +56,7 @@ async function recordAiChatEvent(
   }
 }
 
+// ─── System prompt ──────────────────────────────────────────────────────────
 function buildSystemPrompt(input: {
   tradition: string | null;
   rank: string | null;
@@ -99,6 +95,7 @@ function buildSystemPrompt(input: {
   ].join('\n');
 }
 
+// ─── Build conversation history for Anthropic format ───────────────────────
 function buildAnthropicMessages(history: ChatHistoryMessage[], message: string) {
   const trimmedHistory = history
     .filter((item) => item.text?.trim())
@@ -110,16 +107,43 @@ function buildAnthropicMessages(history: ChatHistoryMessage[], message: string) 
 
   return [
     ...trimmedHistory,
-    {
-      role: 'user',
-      content: [{ type: 'text', text: message.trim() }],
-    },
+    { role: 'user', content: [{ type: 'text', text: message.trim() }] },
   ];
 }
 
+// ─── Build conversation text for Pramana (Sarvam) format ───────────────────
+function buildPramanaUserMessage(history: ChatHistoryMessage[], message: string) {
+  const recent = history
+    .filter((item) => item.text?.trim())
+    .slice(-6); // keep last 6 turns for context
+
+  if (recent.length === 0) return message.trim();
+
+  const contextLines = recent.map((m) =>
+    `${m.role === 'model' ? 'Assistant' : 'User'}: ${m.text.trim()}`
+  );
+  return `${contextLines.join('\n')}\nUser: ${message.trim()}`;
+}
+
+// ─── Helper: wrap a complete text as a plain-text stream chunk ─────────────
+function textAsStream(text: string): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(encoder.encode(text));
+      controller.close();
+    },
+  });
+}
+
+// ─── Main handler ───────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  // Determine which providers are available
+  const sarvamKey    = process.env.SARVAM_API_KEY?.trim();
   const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (!anthropicKey) {
+
+  // Neither provider is configured
+  if (!sarvamKey && !anthropicKey) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
   }
 
@@ -141,7 +165,7 @@ export async function POST(req: NextRequest) {
   }
 
   const tier = getTierFromScore(profile?.seva_score ?? 0);
-  const dailyLimit = isPro ? 200 : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? 5);
+  const dailyLimit = isPro ? PRO_DAILY_LIMIT : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? FREE_DAILY_LIMIT);
 
   const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, dailyLimit);
   if (!allowed) {
@@ -175,37 +199,76 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Message is required' }, { status: 400 });
   }
 
-  const tradition = body.tradition ?? profile?.tradition ?? null;
-  const sampradaya = body.sampradaya ?? profile?.sampradaya ?? null;
-  const city = body.city ?? profile?.city ?? null;
-  const country = body.country ?? profile?.country ?? null;
-  const seeking = body.seeking ?? profile?.seeking ?? [];
-  const responseLanguage = body.language || body.appLanguage || profile?.app_language || 'en';
-  const meaningLanguage = body.meaningLanguage ?? profile?.meaning_language ?? 'en';
+  const tradition             = body.tradition ?? profile?.tradition ?? null;
+  const sampradaya            = body.sampradaya ?? profile?.sampradaya ?? null;
+  const city                  = body.city ?? profile?.city ?? null;
+  const country               = body.country ?? profile?.country ?? null;
+  const seeking               = body.seeking ?? profile?.seeking ?? [];
+  const responseLanguage      = body.language || body.appLanguage || profile?.app_language || 'en';
+  const meaningLanguage       = body.meaningLanguage ?? profile?.meaning_language ?? 'en';
   const transliterationLanguage = body.transliterationLanguage ?? profile?.transliteration_language ?? 'en';
-  const timeZone = profile?.timezone ?? 'Asia/Kolkata';
-  const spiritualDate = localSpiritualDate(timeZone, 4);
-  const systemPrompt = buildSystemPrompt({
-    tradition,
-    rank: profile?.spiritual_level ?? null,
-    sampradaya,
-    city,
-    country,
-    seeking,
-    language: responseLanguage,
-    meaningLanguage,
-    transliterationLanguage,
+  const timeZone              = profile?.timezone ?? 'Asia/Kolkata';
+  const spiritualDate         = localSpiritualDate(timeZone, 4);
+  const systemPrompt          = buildSystemPrompt({
+    tradition, rank: profile?.spiritual_level ?? null,
+    sampradaya, city, country, seeking,
+    language: responseLanguage, meaningLanguage, transliterationLanguage,
     spiritualDate,
   });
 
   const startTime = Date.now();
+
+  // ── Path A: Sarvam / Pramana (default) ─────────────────────────────────────
+  // Sarvam is the primary provider. When configured it handles the request and
+  // returns a complete text response emitted as a single-chunk plain-text stream
+  // (the client reads chunks progressively so single-chunk works correctly).
+  if (sarvamKey) {
+    try {
+      const userMessage = buildPramanaUserMessage(body.history ?? [], body.message);
+      const result = await generateWithProvider(
+        { system: systemPrompt, user: userMessage, maxOutputTokens: 900 },
+        { providerOverride: 'sarvam-hosted' }
+      );
+
+      await recordAiChatEvent(supabase, user.id);
+      emitEvent({
+        severity: 'P3',
+        domain: 'ai',
+        route: '/api/ai/chat',
+        latency_ms: Date.now() - startTime,
+        provider: result.provider ?? 'sarvam-hosted',
+        model: result.modelUsed ?? 'sarvam',
+        context: { status: 'generated', output_length: result.text.length },
+      });
+
+      return new Response(textAsStream(result.text), {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch (err: any) {
+      // If Sarvam fails and Anthropic is available, fall through to Path B.
+      // If Anthropic is not available, return the error immediately.
+      if (!anthropicKey) {
+        emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', latency_ms: Date.now() - startTime });
+        return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
+      }
+      // Log and fall through to Anthropic
+      emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', context: { action: 'fallback_to_anthropic' } });
+    }
+  }
+
+  // ── Path B: Anthropic streaming (fallback / Sarvam not configured) ─────────
+  const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
 
   try {
     const anthropicResponse = await fetch(CLAUDE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
+        'x-api-key': anthropicKey!,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
@@ -213,13 +276,7 @@ export async function POST(req: NextRequest) {
         max_tokens: 900,
         temperature: 0.6,
         stream: true,
-        system: [
-          {
-            type: 'text',
-            text: systemPrompt,
-            cache_control: { type: 'ephemeral' },
-          },
-        ],
+        system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
         messages: buildAnthropicMessages(body.history ?? [], body.message),
       }),
     });
@@ -236,12 +293,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
     const upstreamReader = anthropicResponse.body.getReader();
-    let sseBuffer = '';
+    let sseBuffer    = '';
     let assistantText = '';
-    let completed = false;
+    let completed    = false;
     const pendingChunks: string[] = [];
 
     const stream = new ReadableStream<Uint8Array>({
@@ -266,12 +321,7 @@ export async function POST(req: NextRequest) {
               latency_ms: Date.now() - startTime,
               provider: 'anthropic',
               model: CLAUDE_MODEL,
-              context: {
-                status: 'generated',
-                text_length: body.message.length,
-                output_length: assistantText.length,
-                cached_system_prompt: true,
-              },
+              context: { status: 'generated', output_length: assistantText.length, cached_system_prompt: true },
             });
             controller.close();
             return;
@@ -288,33 +338,23 @@ export async function POST(req: NextRequest) {
 
             for (const line of lines) {
               if (line.startsWith('event:')) eventType = line.slice(6).trim();
-              if (line.startsWith('data:')) dataLines.push(line.slice(5).trim());
+              if (line.startsWith('data:'))  dataLines.push(line.slice(5).trim());
             }
 
             const rawData = dataLines.join('\n');
             if (!rawData || rawData === '[DONE]') continue;
 
             let parsed: any;
-            try {
-              parsed = JSON.parse(rawData);
-            } catch {
-              continue;
-            }
+            try { parsed = JSON.parse(rawData); } catch { continue; }
 
             if (eventType === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
               const chunk = parsed.delta.text ?? '';
-              if (chunk) {
-                pendingChunks.push(chunk);
-              }
+              if (chunk) pendingChunks.push(chunk);
             }
 
             if (eventType === 'error') {
               const err = new Error(parsed?.error?.message ?? 'Anthropic stream failed');
-              emitError('ai', err, 'P2', {
-                route: '/api/ai/chat',
-                provider: 'anthropic',
-                latency_ms: Date.now() - startTime,
-              });
+              emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'anthropic', latency_ms: Date.now() - startTime });
               controller.error(err);
               return;
             }
@@ -323,11 +363,7 @@ export async function POST(req: NextRequest) {
       },
       async cancel() {
         if (!completed) {
-          try {
-            await upstreamReader.cancel();
-          } catch {
-            // ignore
-          }
+          try { await upstreamReader.cancel(); } catch { /* ignore */ }
         }
       },
     });
@@ -339,11 +375,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err: any) {
-    emitError('ai', err, 'P2', {
-      route: '/api/ai/chat',
-      provider: 'anthropic',
-      latency_ms: Date.now() - startTime,
-    });
+    emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'anthropic', latency_ms: Date.now() - startTime });
     return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
   }
 }
