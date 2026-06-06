@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     // 2. Fetch monthly challenge for current month
     let { data: challenge, error: challengeError } = await supabase
       .from('monthly_challenges')
-      .select('*')
+      .select('id, month, theme, theme_sub, created_at, updated_at')
       .eq('month', currentMonth)
       .maybeSingle();
 
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     if (!challenge) {
       const { data: latestChallenge, error: latestError } = await supabase
         .from('monthly_challenges')
-        .select('*')
+        .select('id, month, theme, theme_sub, created_at, updated_at')
         .order('month', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     // 3. Fetch challenge packs
     const { data: packs, error: packsError } = await supabase
       .from('challenge_packs')
-      .select('*')
+      .select('id, pack_number, title, is_free, challenge_id')
       .eq('challenge_id', challengeId)
       .order('pack_number', { ascending: true });
 
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
     // 4. Fetch all questions for these packs
     const { data: questions, error: questionsError } = await supabase
       .from('challenge_questions')
-      .select('*')
+      .select('id, question_number, question_text, options, correct_option_idx, explanation, pack_id')
       .in('pack_id', packIds)
       .order('question_number', { ascending: true });
 
@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
     // 5. Fetch user progress for these packs
     const { data: progressList, error: progressError } = await supabase
       .from('user_challenge_progress')
-      .select('*')
+      .select('pack_id, unlocked, completed, score, answers')
       .eq('user_id', user.id)
       .in('pack_id', packIds);
 

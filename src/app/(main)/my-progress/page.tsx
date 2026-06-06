@@ -76,7 +76,7 @@ export default async function MyProgressPage() {
     // Japa sessions — current month (for report) + last 30d (for dashboard)
     supabase
       .from('mala_sessions')
-      .select('*')
+      .select('id, mantra, mantra_id, count, bead_count, target_count, rounds, duration_seconds, duration_secs, completed_at, spiritual_date, date, created_at')
       .eq('user_id', user.id)
       .gte('created_at', thirtyAgo)
       .lte('created_at', today + 'T23:59:59')
@@ -85,7 +85,7 @@ export default async function MyProgressPage() {
     // Japa sessions — previous calendar month (for month-over-month in report)
     supabase
       .from('mala_sessions')
-      .select('*')
+      .select('id, mantra, mantra_id, count, bead_count, target_count, rounds, duration_seconds, duration_secs, completed_at, spiritual_date, date, created_at')
       .eq('user_id', user.id)
       .gte('created_at', prevMonthStart)
       .lte('created_at', prevMonthEnd + 'T23:59:59'),
@@ -125,7 +125,7 @@ export default async function MyProgressPage() {
     // All-time session count (for achievement shields)
     supabase
       .from('mala_sessions')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id),
 
     // Mandali contribution count
@@ -223,7 +223,7 @@ export default async function MyProgressPage() {
   try {
     const { data } = await supabase
       .from('sankalpas')
-      .select('*')
+      .select('id, text, tradition, target_days, start_date, end_date, status')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(12);

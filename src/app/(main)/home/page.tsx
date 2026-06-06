@@ -29,7 +29,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 // Fix 4: Cache live darshan DB fetch for the duration of this server render
 const fetchLiveDarshans = cache(async () => {
   const supabase = await getSupabaseClient();
-  const { data } = await supabase.from('live_darshans').select('*').eq('is_active', true);
+  const { data } = await supabase.from('live_darshans').select('id, title, location, schedule, category, tradition, current_video_id, is_active').eq('is_active', true);
   return data ?? null;
 });
 
@@ -154,7 +154,7 @@ export default async function HomePage() {
     ),
     // live darshans
     withTimeout(
-      supabase.from('live_darshans').select('*').eq('is_active', true),
+      supabase.from('live_darshans').select('id, title, location, schedule, category, tradition, current_video_id, is_active').eq('is_active', true),
       DB_TIMEOUT,
     ),
     // mala sessions today

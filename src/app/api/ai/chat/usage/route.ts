@@ -24,7 +24,7 @@ export async function GET(req: Request) {
 
   const { count, error } = await supabase
     .from('sadhana_events')
-    .select('*', { count: 'exact', head: true })
+    .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
     .eq('event_type', 'ai_chat_message')
     .gte('created_at', todayStart.toISOString());

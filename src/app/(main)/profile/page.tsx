@@ -22,7 +22,7 @@ export default async function ProfilePage() {
   if (profileWithHighlights.error) {
     const fallbackProfile = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, show_sadhana_highlights')
       .eq('id', user.id)
       .single();
     profile = fallbackProfile.data
@@ -74,16 +74,16 @@ export default async function ProfilePage() {
       .maybeSingle(),
     supabase
       .from('nitya_karma_log')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .gte('log_date', thirtyAgo.toISOString().slice(0, 10)),
     supabase
       .from('pathshala_user_state')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id),
     supabase
       .from('pathshala_user_state')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .not('bookmarked_at', 'is', null),
   ]);

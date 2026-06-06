@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     // 1. Fetch question details
     const { data: question, error: questionError } = await supabase
       .from('challenge_questions')
-      .select('*')
+      .select('id, pack_id, correct_option_idx, explanation')
       .eq('id', question_id)
       .maybeSingle();
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     // 2. Fetch pack details
     const { data: pack, error: packError } = await supabase
       .from('challenge_packs')
-      .select('*')
+      .select('id, is_free, challenge_id')
       .eq('id', question.pack_id)
       .maybeSingle();
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     // 3. Fetch user progress for this pack
     let { data: progress, error: progressError } = await supabase
       .from('user_challenge_progress')
-      .select('*')
+      .select('unlocked, completed, score, answers')
       .eq('user_id', user.id)
       .eq('pack_id', pack.id)
       .maybeSingle();
