@@ -53,11 +53,15 @@ export default function PanchangHub({ panchang }: Props) {
 
   const [userRashi, setUserRashi] = useState<string | null>(null);
   const [tradition, setTradition] = useState('hindu');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showRashiPicker, setShowRashiPicker] = useState(false);
+  const [savingRashi, setSavingRashi] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) return;
+      setUserId(data.user.id);
       const { data: profile } = await supabase
         .from('profiles')
         .select('rashi, tradition')
@@ -67,6 +71,19 @@ export default function PanchangHub({ panchang }: Props) {
       if (profile?.tradition) setTradition(profile.tradition);
     });
   }, []);
+
+  async function saveRashi(rashi: string) {
+    if (!userId || savingRashi) return;
+    setSavingRashi(true);
+    try {
+      const supabase = createClient();
+      await supabase.from('profiles').update({ rashi }).eq('id', userId);
+      setUserRashi(rashi);
+      setShowRashiPicker(false);
+    } finally {
+      setSavingRashi(false);
+    }
+  }
 
   const dateStr = useMemo(() => {
     return today.toLocaleDateString('en-IN', {
@@ -157,31 +174,74 @@ export default function PanchangHub({ panchang }: Props) {
         </Link>
 
         {/* Card B: Rashiphala */}
-        <Link href="/rashiphala" className="group flex items-center gap-4 p-4 rounded-2xl bg-white/80 border transition-all hover:bg-white shadow-sm"
+        <div className="rounded-2xl bg-white/80 border shadow-sm overflow-hidden"
           style={{ borderColor: 'var(--premium-border)' }}>
-          <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0"
-            style={{ background: 'var(--premium-gold-soft)', color: 'var(--premium-gold)' }}>
-            {rashiObj ? rashiObj.symbol : '✨'}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-serif text-[18px] font-bold leading-tight" style={{ color: 'var(--brand-primary-strong)' }}>
-              Your Rashiphala
-            </h2>
-            <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }}>
-              {rashiObj ? (
-                <>
-                  <span className="font-semibold text-gray-800">{rashiObj.sa}</span> · Today&apos;s reading
-                </>
-              ) : (
-                <span className="italic">Set your Rashi to personalise</span>
-              )}
-            </p>
-            <span className="inline-block text-[10px] font-bold uppercase tracking-wider mt-2" style={{ color: 'var(--premium-gold)' }}>
-              Daily · Weekly · Monthly
-            </span>
-          </div>
-          <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
-        </Link>
+          <Link href="/rashiphala" className="group flex items-center gap-4 p-4 transition-all hover:bg-white">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl flex-shrink-0"
+              style={{ background: 'var(--premium-gold-soft)', color: 'var(--premium-gold)' }}>
+              {rashiObj ? rashiObj.symbol : '✨'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-serif text-[18px] font-bold leading-tight" style={{ color: 'var(--brand-primary-strong)' }}>
+                Your Rashiphala
+              </h2>
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-muted)' }}>
+                {rashiObj ? (
+                  <>
+                    <span className="font-semibold text-gray-800">{rashiObj.sa}</span> · Today&apos;s reading
+                  </>
+                ) : (
+                  <span className="italic">Set your Rashi below to personalise</span>
+                )}
+              </p>
+              <span className="inline-block text-[10px] font-bold uppercase tracking-wider mt-2" style={{ color: 'var(--premium-gold)' }}>
+                Daily · Weekly · Monthly
+              </span>
+            </div>
+            <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+
+          {/* Inline Rashi picker — shown when rashi not set OR picker open */}
+          {(showRashiPicker || !userRashi) && (
+            <div className="px-4 pb-4 pt-1 border-t" style={{ borderColor: 'var(--premium-border)' }}>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--premium-gold)' }}>
+                  {userRashi ? 'Change your Rashi' : '✦ Set your Rashi for personalised readings'}
+                </p>
+                {userRashi && showRashiPicker && (
+                  <button onClick={() => setShowRashiPicker(false)} className="text-[10px] underline" style={{ color: 'var(--brand-muted)' }}>Cancel</button>
+                )}
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {Object.entries(RASHI_MAP).map(([key, r]) => (
+                  <button
+                    key={key}
+                    disabled={savingRashi}
+                    onClick={() => saveRashi(key)}
+                    className="flex flex-col items-center gap-0.5 rounded-xl py-2 px-1 text-center transition-all border"
+                    style={{
+                      background: userRashi === key ? 'var(--premium-gold-soft)' : 'white',
+                      borderColor: userRashi === key ? 'var(--premium-gold)' : 'var(--premium-border)',
+                    }}
+                  >
+                    <span className="text-base leading-none">{r.symbol}</span>
+                    <span className="text-[9px] font-semibold leading-tight" style={{ color: userRashi === key ? 'var(--premium-gold)' : 'var(--brand-muted)' }}>{r.en}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Change link if rashi is already set */}
+          {userRashi && !showRashiPicker && (
+            <button
+              onClick={() => setShowRashiPicker(true)}
+              className="w-full text-center pb-3 text-[10px] underline"
+              style={{ color: 'var(--brand-muted)' }}
+            >
+              Change Rashi
+            </button>
+          )}
+        </div>
 
         {/* Card C: Kundali */}
         <Link href="/kundali" className="group flex items-center gap-4 p-4 rounded-2xl bg-white/80 border transition-all hover:bg-white shadow-sm"

@@ -466,6 +466,7 @@ export default function ProfileClient({
     transliteration_language: (liveProfile as any)?.transliteration_language ?? 'en',
     date_of_birth:    (liveProfile as any)?.date_of_birth    ?? '',
     gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
+    rashi:            (liveProfile as any)?.rashi            ?? '',
   });
 
   const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
@@ -1899,6 +1900,50 @@ export default function ProfileClient({
                 </select>
               </div>
             </div>
+
+            {/* Rashi — used for Rashiphala personalisation and daily alerts */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <label className="block text-xs font-medium theme-muted px-1">Moon sign (Rashi)</label>
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)' }}>
+                  Used for Rashiphala
+                </span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { key: 'aries',       emoji: '♈', label: 'Mesha' },
+                  { key: 'taurus',      emoji: '♉', label: 'Vrishabha' },
+                  { key: 'gemini',      emoji: '♊', label: 'Mithuna' },
+                  { key: 'cancer',      emoji: '♋', label: 'Karka' },
+                  { key: 'leo',         emoji: '♌', label: 'Simha' },
+                  { key: 'virgo',       emoji: '♍', label: 'Kanya' },
+                  { key: 'libra',       emoji: '♎', label: 'Tula' },
+                  { key: 'scorpio',     emoji: '♏', label: 'Vrishchika' },
+                  { key: 'sagittarius', emoji: '♐', label: 'Dhanu' },
+                  { key: 'capricorn',   emoji: '♑', label: 'Makara' },
+                  { key: 'aquarius',    emoji: '♒', label: 'Kumbha' },
+                  { key: 'pisces',      emoji: '♓', label: 'Meena' },
+                ].map((r) => (
+                  <button
+                    key={r.key}
+                    type="button"
+                    onClick={() => setForm({ ...form, rashi: form.rashi === r.key ? '' : r.key })}
+                    className="flex flex-col items-center gap-0.5 rounded-xl py-2 px-1 text-center transition-all border"
+                    style={{
+                      background: form.rashi === r.key ? 'rgba(197,160,89,0.14)' : 'var(--surface-soft)',
+                      borderColor: form.rashi === r.key ? 'rgba(197,160,89,0.5)' : 'var(--card-border)',
+                    }}
+                  >
+                    <span className="text-base leading-none">{r.emoji}</span>
+                    <span className="text-[9px] font-semibold leading-tight theme-muted">{r.label}</span>
+                  </button>
+                ))}
+              </div>
+              {!form.rashi && (
+                <p className="text-[10px] theme-muted px-1">Set your Vedic moon sign to get personalised daily Rashiphala readings.</p>
+              )}
+            </div>
+          </div>
           </div>
 
           {(activeTradition === 'hindu') && (
