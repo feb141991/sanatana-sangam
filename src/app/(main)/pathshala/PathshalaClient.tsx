@@ -58,6 +58,7 @@ import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import PageIntro from '@/components/ui/PageIntro';
+import { shareShlokaCard } from '@/lib/share/nitya-card-data';
 
 // ── Difficulty badges — theme-aware so they read clearly on dark and light ─────
 function getDiffStyle(difficulty: string, isDark: boolean) {
@@ -592,6 +593,7 @@ export default function PathshalaClient({
 
   // ── Premium UX state ──────────────────────────────────────────────────────────
   const [displayedVerse, setDisplayedVerse] = useState('');
+  const [sharingVerse, setSharingVerse] = useState(false);
   const [diffFilter, setDiffFilter] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>('all');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const scriptureRef = useRef<HTMLDivElement>(null);
@@ -1562,9 +1564,36 @@ export default function PathshalaClient({
             </p>
 
             {/* Meaning */}
-            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+            <p className="text-[13.5px] leading-relaxed mb-4" style={{ color: 'var(--brand-muted)' }}>
               {getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
             </p>
+
+            {/* Share button */}
+            <motion.button
+              whileTap={{ scale: 0.94 }}
+              disabled={sharingVerse}
+              onClick={async () => {
+                setSharingVerse(true);
+                try {
+                  await shareShlokaCard({
+                    tradition,
+                    userName,
+                    sanskrit: todayShloka.sanskrit,
+                    translation: getShlokaByLanguage(todayShloka, appLanguage ?? 'en'),
+                    source: todayShloka.source,
+                  });
+                } catch (err: any) {
+                  if (err?.name !== 'AbortError') toast.error('Could not share. Try again.');
+                } finally {
+                  setSharingVerse(false);
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-opacity disabled:opacity-60"
+              style={{ background: `${meta.accentColour}18`, color: meta.accentColour, border: `1px solid ${meta.accentColour}30` }}
+            >
+              <Share2 size={13} />
+              {sharingVerse ? 'Crafting card…' : 'Share this verse'}
+            </motion.button>
           </div>
         </motion.section>
 

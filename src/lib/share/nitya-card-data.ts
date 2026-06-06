@@ -191,6 +191,8 @@ export function buildNityaShareCardData({
       return buildNityaQuoteCardData({ stats, tradition, userName });
     case 'monthly_report':
       return buildNityaMonthlyCardData({ stats, tradition, userName, month });
+    default:
+      return buildNityaMilestoneCardData({ stats, tradition, userName });
   }
 }
 
@@ -237,4 +239,40 @@ export async function shareNityaCardImage({
   anchor.click();
   anchor.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * Generate and share a tradition-themed shloka/verse card.
+ * Used from Pathshala's verse hero section.
+ */
+export async function shareShlokaCard({
+  tradition,
+  userName,
+  sanskrit,
+  translation,
+  source,
+}: {
+  tradition: string;
+  userName: string;
+  sanskrit: string;
+  translation: string;
+  source: string;
+}): Promise<void> {
+  const meta = getTraditionMeta(tradition);
+  const data: NityaShareCardData = {
+    tradition,
+    accentColor: meta.accentColour,
+    symbol: meta.symbol,
+    userName,
+    milestoneLabel: meta.label,
+    sanskrit,
+    translation,
+    source,
+  };
+  await shareNityaCardImage({
+    type: 'shloka_verse',
+    data,
+    fileName: 'shoonaya-shloka.png',
+    shareText: `"${translation}"\n— ${source}\n\nShoonaya Pathshala`,
+  });
 }

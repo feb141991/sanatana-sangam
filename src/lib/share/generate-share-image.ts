@@ -5,7 +5,8 @@ export type NityaCardType =
   | 'week_summary'
   | 'morning_complete'
   | 'sadhana_quote'
-  | 'monthly_report';
+  | 'monthly_report'
+  | 'shloka_verse';
 
 export interface NityaShareCardData {
   tradition: string;
@@ -29,6 +30,10 @@ export interface NityaShareCardData {
   consistencyScore?: number;
   peakHourLabel?: string;
   month?: string;
+  // shloka_verse
+  sanskrit?: string;
+  translation?: string;
+  source?: string;
 }
 
 const TRADITION_BG_GRADIENT: Record<string, [string, string]> = {
@@ -44,6 +49,7 @@ const CARD_DIMENSIONS: Record<NityaCardType, [number, number]> = {
   morning_complete: [1080, 1080],
   sadhana_quote:    [1080, 1080],
   monthly_report:   [1080, 1350],
+  shloka_verse:     [1080, 1080],
 };
 
 export const TRADITION_SHARE_QUOTES: Record<string, string[]> = {
@@ -496,6 +502,129 @@ function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaShareCard
   ctx.fillText(month, 540, 1240);
 }
 
+// Tradition-specific ornament patterns for the shloka card background
+const TRADITION_ORNAMENTS: Record<string, { dots: boolean; mandala: boolean; grid: boolean }> = {
+  hindu:    { dots: false, mandala: true,  grid: false },
+  sikh:     { dots: false, mandala: false, grid: true  },
+  buddhist: { dots: true,  mandala: false, grid: false },
+  jain:     { dots: true,  mandala: false, grid: false },
+};
+
+function renderShlokaVerse(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1080;
+
+  // ── Background ──
+  const [bg1, bg2] = getTraditionColors(data.tradition);
+  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+  bgGrad.addColorStop(0, bg1);
+  bgGrad.addColorStop(1, bg2);
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Radial glow
+  const glow = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, 480);
+  glow.addColorStop(0, `${data.accentColor}2e`);
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Tradition ornament ──
+  const orn = TRADITION_ORNAMENTS[data.tradition] ?? TRADITION_ORNAMENTS.hindu;
+  if (orn.dots) {
+    ctx.fillStyle = `${data.accentColor}18`;
+    for (let x = 0; x < W; x += 54) {
+      for (let y = 0; y < H; y += 54) {
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+  if (orn.grid) {
+    ctx.strokeStyle = `${data.accentColor}12`;
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 72) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 72) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+  if (orn.mandala) {
+    // Concentric decorative rings centred on the symbol
+    for (let r = 80; r <= 380; r += 60) {
+      ctx.strokeStyle = `${data.accentColor}${r < 200 ? '1a' : '0d'}`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(W / 2, 230, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  // ── Tradition symbol ──
+  const symY = 200;
+  ctx.font = '110px serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(255,255,255,0.88)';
+  ctx.fillText(data.symbol, W / 2, symY);
+
+  // Accent line below symbol
+  ctx.strokeStyle = `${data.accentColor}60`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.32, symY + 74);
+  ctx.lineTo(W * 0.68, symY + 74);
+  ctx.stroke();
+
+  // ── Sanskrit verse ──
+  const sanskrit = data.sanskrit ?? data.quote ?? '';
+  ctx.font = '500 48px "Noto Sans Devanagari", "Siddhanta", serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.96)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const verseEndY = wrapText(ctx, sanskrit, W / 2, 360, 860, 72, 4);
+
+  // ── Decorative divider ──
+  const divY = Math.min(verseEndY + 28, 610);
+  ctx.strokeStyle = `${data.accentColor}40`;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 10]);
+  ctx.beginPath();
+  ctx.moveTo(W * 0.22, divY);
+  ctx.lineTo(W * 0.78, divY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Diamond centre
+  ctx.save();
+  ctx.translate(W / 2, divY);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillStyle = data.accentColor;
+  ctx.fillRect(-6, -6, 12, 12);
+  ctx.restore();
+
+  // ── Translation ──
+  const translation = data.translation ?? '';
+  ctx.font = '400 36px Georgia, "Times New Roman", serif';
+  ctx.fillStyle = `${data.accentColor}e0`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const transEndY = wrapText(ctx, translation, W / 2, divY + 52, 820, 56, 4);
+
+  // ── Source attribution ──
+  if (data.source) {
+    ctx.font = 'italic 300 26px Georgia, "Times New Roman", serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`— ${data.source}`, W / 2, Math.min(transEndY + 32, 880));
+  }
+
+  // ── Branding ──
+  drawBranding(ctx, W, 1020, data.accentColor, 'Shoonaya · Pathshala');
+}
+
 export async function generateNityaShareCard(
   type: NityaCardType,
   data: NityaShareCardData
@@ -525,6 +654,9 @@ export async function generateNityaShareCard(
         break;
       case 'monthly_report':
         renderMonthlyReport(ctx, data);
+        break;
+      case 'shloka_verse':
+        renderShlokaVerse(ctx, data);
         break;
     }
 
