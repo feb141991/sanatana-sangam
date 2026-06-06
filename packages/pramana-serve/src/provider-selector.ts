@@ -1,6 +1,7 @@
 import type { PramanaInferenceProvider } from '@sangam/pramana-core';
 import { SelfHostedProvider } from './providers/self-hosted';
 import { SarvamProvider } from './providers/sarvam';
+import { GeminiProvider } from './providers/gemini';
 
 // ---------------------------------------------------------------------------
 // Provider Registry & Config-Based Selection
@@ -29,6 +30,10 @@ export interface ProviderSelectorConfig {
   selfHostedModel?: string;
   /** Self-hosted API key / token. */
   selfHostedApiKey?: string;
+  /** API key for Google Gemini provider. */
+  geminiApiKey?: string;
+  /** Gemini model override (default: gemini-2.0-flash). */
+  geminiModel?: string;
 }
 
 /**
@@ -57,9 +62,14 @@ export function buildProviderRegistry(
       })
     );
   } else {
-    // Register an unconfigured stub so the selector can report it
     registry.set('self-hosted', new SelfHostedProvider());
   }
+
+  // Register the Google Gemini provider
+  registry.set('google-gemini', new GeminiProvider({
+    apiKey: config.geminiApiKey,
+    model: config.geminiModel,
+  }));
 
   return registry;
 }
@@ -102,10 +112,12 @@ export function selectProviders(
   addProvider(config.activeProvider);
 
   const fallbackOrder = config.activeProvider === 'sarvam-hosted'
-    ? ['self-hosted']
-    : config.activeProvider === 'self-hosted'
-      ? ['sarvam-hosted']
-      : ['sarvam-hosted', 'self-hosted'];
+    ? ['google-gemini', 'self-hosted']
+    : config.activeProvider === 'google-gemini'
+      ? ['sarvam-hosted', 'self-hosted']
+      : config.activeProvider === 'self-hosted'
+        ? ['sarvam-hosted', 'google-gemini']
+        : ['sarvam-hosted', 'google-gemini', 'self-hosted'];
 
   for (const id of fallbackOrder) {
     addProvider(id);

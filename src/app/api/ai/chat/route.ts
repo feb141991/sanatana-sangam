@@ -10,9 +10,7 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 // ─── Config ────────────────────────────────────────────────────────────────
 const FREE_DAILY_LIMIT   = 5;
 const PRO_DAILY_LIMIT    = 200;
-// Anthropic is the streaming fallback when Sarvam / Pramana is unavailable
-const CLAUDE_URL         = 'https://api.anthropic.com/v1/messages';
-const CLAUDE_MODEL       = 'claude-sonnet-4-6';
+const GEMINI_MODEL       = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
 
@@ -95,23 +93,7 @@ function buildSystemPrompt(input: {
   ].join('\n');
 }
 
-// ─── Build conversation history for Anthropic format ───────────────────────
-function buildAnthropicMessages(history: ChatHistoryMessage[], message: string) {
-  const trimmedHistory = history
-    .filter((item) => item.text?.trim())
-    .slice(-12)
-    .map((item) => ({
-      role: item.role === 'model' ? 'assistant' : 'user',
-      content: [{ type: 'text', text: item.text.trim() }],
-    }));
-
-  return [
-    ...trimmedHistory,
-    { role: 'user', content: [{ type: 'text', text: message.trim() }] },
-  ];
-}
-
-// ─── Build conversation text for Pramana (Sarvam) format ───────────────────
+// ─── Build conversation text for Pramana / Gemini format ───────────────────
 function buildPramanaUserMessage(history: ChatHistoryMessage[], message: string) {
   const recent = history
     .filter((item) => item.text?.trim())
@@ -139,11 +121,10 @@ function textAsStream(text: string): ReadableStream<Uint8Array> {
 // ─── Main handler ───────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   // Determine which providers are available
-  const sarvamKey    = process.env.SARVAM_API_KEY?.trim();
-  const anthropicKey = process.env.ANTHROPIC_API_KEY?.trim();
+  const sarvamKey = process.env.SARVAM_API_KEY?.trim();
+  const geminiKey = process.env.GEMINI_API_KEY?.trim();
 
-  // Neither provider is configured
-  if (!sarvamKey && !anthropicKey) {
+  if (!sarvamKey && !geminiKey) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
   }
 
@@ -248,134 +229,77 @@ export async function POST(req: NextRequest) {
         },
       });
     } catch (err: any) {
-      // If Sarvam fails and Anthropic is available, fall through to Path B.
-      // If Anthropic is not available, return the error immediately.
-      if (!anthropicKey) {
+      // If Sarvam fails and Gemini is available, fall through to Path B.
+      if (!geminiKey) {
         emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', latency_ms: Date.now() - startTime });
         return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
       }
-      // Log and fall through to Anthropic
-      emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', context: { action: 'fallback_to_anthropic' } });
+      emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', context: { action: 'fallback_to_gemini' } });
     }
   }
 
-  // ── Path B: Anthropic streaming (fallback / Sarvam not configured) ─────────
-  const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-
+  // ── Path B: Gemini (fallback / Sarvam not configured) ──────────────────────
   try {
-    const anthropicResponse = await fetch(CLAUDE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey!,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 900,
-        temperature: 0.6,
-        stream: true,
-        system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
-        messages: buildAnthropicMessages(body.history ?? [], body.message),
-      }),
-    });
+    const userMessage = buildPramanaUserMessage(body.history ?? [], body.message);
+    const payload = {
+      contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      generationConfig: { maxOutputTokens: 900, temperature: 0.6 },
+    };
 
-    if (!anthropicResponse.ok || !anthropicResponse.body) {
-      const errorBody = await anthropicResponse.text().catch(() => '');
-      emitError('ai', new Error(`Anthropic ${anthropicResponse.status}: ${errorBody}`), 'P2', {
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!geminiResponse.ok) {
+      const errorBody = await geminiResponse.text().catch(() => '');
+      emitError('ai', new Error(`Gemini ${geminiResponse.status}: ${errorBody}`), 'P2', {
         route: '/api/ai/chat',
-        provider: 'anthropic',
+        provider: 'google-gemini',
       });
       return NextResponse.json(
-        { error: anthropicResponse.status === 429 ? 'AI service is busy. Try again shortly.' : 'AI service error' },
-        { status: anthropicResponse.status === 429 ? 429 : 500 }
+        { error: geminiResponse.status === 429 ? 'AI service is busy. Try again shortly.' : 'AI service error' },
+        { status: geminiResponse.status === 429 ? 429 : 500 }
       );
     }
 
-    const upstreamReader = anthropicResponse.body.getReader();
-    let sseBuffer    = '';
-    let assistantText = '';
-    let completed    = false;
-    const pendingChunks: string[] = [];
+    const data = await geminiResponse.json() as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> }; finishReason?: string }>;
+    };
+    const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
 
-    const stream = new ReadableStream<Uint8Array>({
-      async pull(controller) {
-        while (true) {
-          const queuedChunk = pendingChunks.shift();
-          if (queuedChunk) {
-            assistantText += queuedChunk;
-            controller.enqueue(encoder.encode(queuedChunk));
-            return;
-          }
+    if (!text.trim()) {
+      return NextResponse.json({ error: 'AI service error' }, { status: 500 });
+    }
 
-          const { done, value } = await upstreamReader.read();
-
-          if (done) {
-            completed = true;
-            await recordAiChatEvent(supabase, user.id);
-            emitEvent({
-              severity: 'P3',
-              domain: 'ai',
-              route: '/api/ai/chat',
-              latency_ms: Date.now() - startTime,
-              provider: 'anthropic',
-              model: CLAUDE_MODEL,
-              context: { status: 'generated', output_length: assistantText.length, cached_system_prompt: true },
-            });
-            controller.close();
-            return;
-          }
-
-          sseBuffer += decoder.decode(value, { stream: true });
-          const events = sseBuffer.split('\n\n');
-          sseBuffer = events.pop() ?? '';
-
-          for (const event of events) {
-            const lines = event.split('\n');
-            let eventType = '';
-            const dataLines: string[] = [];
-
-            for (const line of lines) {
-              if (line.startsWith('event:')) eventType = line.slice(6).trim();
-              if (line.startsWith('data:'))  dataLines.push(line.slice(5).trim());
-            }
-
-            const rawData = dataLines.join('\n');
-            if (!rawData || rawData === '[DONE]') continue;
-
-            let parsed: any;
-            try { parsed = JSON.parse(rawData); } catch { continue; }
-
-            if (eventType === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
-              const chunk = parsed.delta.text ?? '';
-              if (chunk) pendingChunks.push(chunk);
-            }
-
-            if (eventType === 'error') {
-              const err = new Error(parsed?.error?.message ?? 'Anthropic stream failed');
-              emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'anthropic', latency_ms: Date.now() - startTime });
-              controller.error(err);
-              return;
-            }
-          }
-        }
-      },
-      async cancel() {
-        if (!completed) {
-          try { await upstreamReader.cancel(); } catch { /* ignore */ }
-        }
-      },
+    await recordAiChatEvent(supabase, user.id);
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/ai/chat',
+      latency_ms: Date.now() - startTime,
+      provider: 'google-gemini',
+      model: GEMINI_MODEL,
+      context: { status: 'generated', output_length: text.length },
     });
 
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Cache-Control': 'no-store',
-      },
-    });
+    const encoder = new TextEncoder();
+    return new Response(
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encoder.encode(text));
+          controller.close();
+        },
+      }),
+      { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } }
+    );
   } catch (err: any) {
-    emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'anthropic', latency_ms: Date.now() - startTime });
+    emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'google-gemini', latency_ms: Date.now() - startTime });
     return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
   }
 }

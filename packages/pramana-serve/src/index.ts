@@ -28,4 +28,5 @@ export { type PramanaGatewayMetadata } from "./gateway-metadata";
 export * from './corpus';
 export * from './providers/sarvam';
 export * from './providers/self-hosted';
+export * from './providers/gemini';
 export * from './provider-selector';

@@ -22,6 +22,8 @@ function readEnvConfig() {
     selfHostedUrl: process.env.PRAMANA_SELF_HOSTED_URL?.trim() || undefined,
     selfHostedModel: process.env.PRAMANA_SELF_HOSTED_MODEL?.trim() || undefined,
     selfHostedApiKey: process.env.PRAMANA_SELF_HOSTED_API_KEY?.trim() || undefined,
+    geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
+    geminiModel: process.env.PRAMANA_GEMINI_MODEL?.trim() || undefined,
   };
 }
 
@@ -151,41 +153,43 @@ export async function generateWithProvider(
     }
   }
 
-  // Claude (Anthropic) as final fallback when all pramana providers are exhausted
-  const claudeKey = process.env.ANTHROPIC_API_KEY?.trim();
-  if (claudeKey && !isCircuitOpen('claude-anthropic', breakerConfig)) {
+  // Google Gemini as final fallback when all pramana providers are exhausted
+  const geminiKey = process.env.GEMINI_API_KEY?.trim();
+  if (geminiKey && !isCircuitOpen('google-gemini', breakerConfig)) {
     try {
-      const messages = typeof prompt === 'string'
-        ? [{ role: 'user', content: prompt }]
-        : [{ role: 'user', content: prompt.user }];
-      const body: Record<string, unknown> = {
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
-        messages,
+      const geminiModel = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
+      const userText = typeof prompt === 'string' ? prompt : (prompt.user ?? '');
+      const systemText = typeof prompt !== 'string' ? (prompt.system ?? '') : '';
+      const maxTokens = typeof prompt !== 'string' ? (prompt.maxOutputTokens ?? 900) : 900;
+
+      const payload: Record<string, unknown> = {
+        contents: [{ role: 'user', parts: [{ text: userText }] }],
+        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.3 },
       };
-      if (typeof prompt !== 'string' && prompt.system) {
-        body.system = prompt.system;
+      if (systemText) {
+        payload['systemInstruction'] = { parts: [{ text: systemText }] };
       }
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': claudeKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify(body),
-      });
+
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }
+      );
       if (!res.ok) {
         const errBody = await res.text().catch(() => '');
-        throw new Error(`Claude HTTP ${res.status}: ${errBody.slice(0, 200)}`);
+        throw new Error(`Gemini HTTP ${res.status}: ${errBody.slice(0, 200)}`);
       }
-      const data = await res.json() as { content?: Array<{ type: string; text?: string }> };
-      const text = data.content?.find((c) => c.type === 'text')?.text ?? '';
-      recordSuccess('claude-anthropic');
-      return { text, modelUsed: 'claude-sonnet-4-6', provider: 'claude-anthropic', finishReason: 'stop' };
+      const data = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> }; finishReason?: string }> };
+      const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+      if (!text.trim()) throw new Error('Gemini returned empty response');
+      recordSuccess('google-gemini');
+      return { text, modelUsed: geminiModel, provider: 'google-gemini', finishReason: data.candidates?.[0]?.finishReason ?? 'stop' };
     } catch (err: any) {
-      recordFailure('claude-anthropic', err.message, breakerConfig);
-      emitError('ai', err, 'P1', { provider: 'claude-anthropic', context: { action: 'claude_fallback' } });
+      recordFailure('google-gemini', err.message, breakerConfig);
+      emitError('ai', err, 'P1', { provider: 'google-gemini', context: { action: 'gemini_fallback' } });
       lastError = err;
     }
   }
