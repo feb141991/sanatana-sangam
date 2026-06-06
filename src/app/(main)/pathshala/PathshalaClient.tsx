@@ -1513,13 +1513,8 @@ export default function PathshalaClient({
           </div>
         </div>
 
-        {/* DailyVersePrompt */}
-        <div className="px-4">
-          <DailyVersePrompt />
-        </div>
-
-        {/* Section 1: Today's Verse — premium immersive hero */}
-        <motion.section variants={itemVariants} className="relative px-4 pt-8 pb-6 overflow-hidden">
+        {/* Section 1: Today's Verse — immersive hero */}
+        <motion.section variants={itemVariants} className="relative px-4 pt-5 pb-6 overflow-hidden">
           {/* Tradition watermark */}
           <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none overflow-hidden">
             <span style={{
@@ -1540,7 +1535,7 @@ export default function PathshalaClient({
                 style={{ background: `${meta.accentColour}14`, borderColor: `${meta.accentColour}28` }}>
                 <span className="text-[10px]">{meta.sacredTextIcon}</span>
                 <span className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: meta.accentColour }}>
-                  {meta.sacredTextLabel} · Today
+                  {todayShloka.source} · Today
                 </span>
               </div>
               {pulse && (
@@ -1555,24 +1550,21 @@ export default function PathshalaClient({
             </div>
 
             {/* Sanskrit verse — typewriter */}
-            <p className="font-[family:var(--font-deva)] text-[1.55rem] leading-relaxed mb-3 min-h-[3.5rem]"
+            <p className="font-[family:var(--font-deva)] text-[1.45rem] leading-relaxed mb-4 min-h-[3rem]"
               style={{ color: 'var(--brand-ink)', letterSpacing: '0.01em' }}>
               {displayedVerse}
               <motion.span
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 0.9, repeat: displayedVerse.length < verseText.length ? Infinity : 0 }}
-                className="inline-block w-[2px] h-[1.4rem] ml-1 align-middle rounded-full"
+                className="inline-block w-[2px] h-[1.3rem] ml-1 align-middle rounded-full"
                 style={{ background: meta.accentColour, opacity: displayedVerse.length < verseText.length ? 1 : 0 }}
               />
             </p>
 
             {/* Meaning */}
-            <div className="rounded-2xl p-4 mb-0 border"
-              style={{ background: `${meta.accentColour}0a`, borderColor: `${meta.accentColour}20` }}>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                {pulse ? pulse.description : getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
-              </p>
-            </div>
+            <p className="text-[13.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+              {getShlokaByLanguage(todayShloka, appLanguage ?? 'en')}
+            </p>
           </div>
         </motion.section>
 
