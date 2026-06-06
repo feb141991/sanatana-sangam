@@ -89,6 +89,15 @@ function getTraditionColors(tradition: string) {
   return TRADITION_BG_GRADIENT[tradition] ?? TRADITION_BG_GRADIENT.hindu;
 }
 
+function loadCanvasImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Unable to load image: ${src}`));
+    image.src = src;
+  });
+}
+
 function drawLinearBackground(ctx: CanvasRenderingContext2D, width: number, height: number, colors: [string, string]) {
   const bg = ctx.createLinearGradient(0, 0, 0, height);
   bg.addColorStop(0, colors[0]);
@@ -126,6 +135,54 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: n
   ctx.lineTo(x, y + radius);
   ctx.quadraticCurveTo(x, y, x + radius, y);
   ctx.closePath();
+}
+
+async function drawShoonayaDailyFooter(
+  ctx: CanvasRenderingContext2D,
+  y: number,
+  accentColor: string,
+) {
+  const logoWidth = 178;
+  const logoHeight = 28;
+  const separator = '·';
+  const label = 'Daily Sādhana';
+  const separatorWidth = 18;
+
+  ctx.font = '300 30px -apple-system, sans-serif';
+  const labelWidth = ctx.measureText(label).width;
+  const totalWidth = logoWidth + separatorWidth + labelWidth;
+  const startX = 540 - totalWidth / 2;
+
+  try {
+    const logo = await loadCanvasImage('/assets/images/logos/river-light/river-light-horizontal.png');
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.drawImage(
+      logo,
+      805,
+      318,
+      1020,
+      145,
+      startX,
+      y - logoHeight / 2 - 1,
+      logoWidth,
+      logoHeight,
+    );
+    ctx.restore();
+  } catch {
+    ctx.font = '300 30px -apple-system, sans-serif';
+    ctx.fillStyle = `${accentColor}aa`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Shoonaya', startX, y);
+  }
+
+  ctx.font = '300 30px -apple-system, sans-serif';
+  ctx.fillStyle = `${accentColor}aa`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(separator, startX + logoWidth + 7, y);
+  ctx.fillText(label, startX + logoWidth + separatorWidth, y);
 }
 
 function fillRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, color: string) {
@@ -729,9 +786,7 @@ export async function generateSadhanaShareImage({
     }
 
     // Branding — bottom
-    ctx.font = '300 32px -apple-system, sans-serif';
-    ctx.fillStyle = accentColor + 'aa';
-    ctx.fillText('Shoonaya · Daily Sādhana', 540, 980);
+    await drawShoonayaDailyFooter(ctx, 980, accentColor);
 
     // Fine line above branding
     ctx.strokeStyle = accentColor + '33';
@@ -745,9 +800,7 @@ export async function generateSadhanaShareImage({
     if (activeSymbolId) {
       const relic = SACRED_RELICS.find((r) => r.id === activeSymbolId);
       if (relic?.imageUrl) {
-        const relicImg = new Image();
-        relicImg.src = relic.imageUrl;
-        await new Promise((resolve) => { relicImg.onload = resolve; });
+        const relicImg = await loadCanvasImage(relic.imageUrl);
         // Draw in bottom-right corner of the card, 32×32px, with circular clip:
         ctx.save();
         ctx.beginPath();

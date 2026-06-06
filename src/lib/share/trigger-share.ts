@@ -29,11 +29,19 @@ export async function triggerSadhanaShare({
 
     const file = new File([blob], 'sadhana.png', { type: 'image/png' });
 
+    const shareTitle = 'My Sādhana';
+    const shareText = 'Practicing with Shoonaya 🙏';
+
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({
         files: [file],
-        title: 'My Sādhana',
-        text: 'Practicing with Shoonaya 🙏',
+        title: shareTitle,
+        text: shareText,
+      });
+    } else if (navigator.share) {
+      await navigator.share({
+        title: shareTitle,
+        text: shareText,
       });
     } else {
       // Fallback: download

@@ -63,6 +63,10 @@ function extractJsonBlock(raw: string): string {
   return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 }
 
+function hasDailyQuizGenerationProvider(): boolean {
+  return Boolean(process.env.SARVAM_API_KEY?.trim());
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const rawTradition = searchParams.get('tradition') ?? 'hindu';
@@ -92,7 +96,7 @@ export async function GET(req: NextRequest) {
   const supabase = createAdminClient();
   const { data } = await supabase
     .from('daily_quiz' as unknown as 'quiz_responses')
-    .select('*')
+    .select('id, question, options, answer_index, explanation, fact, source, tradition, date')
     .eq('tradition', tradition)
     .eq('language', requestedLanguage)
     .eq('date', dateStr)
@@ -114,6 +118,22 @@ export async function GET(req: NextRequest) {
       date: existingQuiz.date,
       daily_quiz_id: existingQuiz.id,
     }, { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } });
+  }
+
+  const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
+  const fallbackPool = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
+  const fallbackArr = Array.isArray(fallbackPool) ? fallbackPool : [fallbackPool];
+  const fallbackQuiz = fallbackArr[dayOfYear % fallbackArr.length];
+  const fallbackLanguage = DAILY_FALLBACK_QUIZ[requestedLanguage] && (langFallbacks[tradition] || langFallbacks['all']) ? undefined : 'en';
+
+  if (!hasDailyQuizGenerationProvider()) {
+    return NextResponse.json(
+      { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true }, degraded: true },
+      { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } },
+    );
   }
 
   // 2. Not found → fetch last 90 days of questions to avoid repetition
@@ -139,15 +159,6 @@ export async function GET(req: NextRequest) {
   const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
   const prompt = buildPrompt(tradition, dateStr, requestedLanguage, recentQuestions);
   const startTime = Date.now();
-
-  const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-  const fallbackPool = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
-  const fallbackArr = Array.isArray(fallbackPool) ? fallbackPool : [fallbackPool];
-  const fallbackQuiz = fallbackArr[dayOfYear % fallbackArr.length];
-  const fallbackLanguage = DAILY_FALLBACK_QUIZ[requestedLanguage] && (langFallbacks[tradition] || langFallbacks['all']) ? undefined : 'en';
 
   try {
     const result = await generateWithProvider(

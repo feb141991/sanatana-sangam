@@ -162,7 +162,7 @@ export function SadhanaSection({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8, height: 0, marginBottom: 0 }}
             transition={{ duration: 0.38 }}
-            className="quiz-spark-card compact cursor-pointer group mb-3 mx-4"
+            className="quiz-spark-card quiz-spark-card-immersive compact cursor-pointer group mb-3"
             onClick={onOpenQuiz}
           >
             <div className="flex items-center justify-between gap-4">

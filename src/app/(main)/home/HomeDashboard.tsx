@@ -48,6 +48,7 @@ import { withOneSignal } from '@/lib/onesignal';
 import MoodPulse from '@/components/mood/MoodPulse';
 import MoodJourneySheet from '@/components/mood/MoodJourneySheet';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
+import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 import dynamic from 'next/dynamic';
@@ -74,6 +75,34 @@ interface Panchang {
   brahmaMuhurta?:  string;
   abhijitMuhurat?: string;
   tithiIndex:      number;
+}
+
+type DailySparkQuiz = {
+  type: 'fact' | 'quiz';
+  question: string;
+  options?: string[];
+  answerIndex?: number;
+  explanation?: string;
+  fact: string;
+  source: string;
+  daily_quiz_id?: string;
+  fallbackLanguage?: string;
+  degraded?: boolean;
+};
+
+function getFallbackDailySpark(tradition: string, language: string, dateStr: string): DailySparkQuiz {
+  const languagePool = DAILY_FALLBACK_QUIZ[language] ?? DAILY_FALLBACK_QUIZ.en;
+  const traditionPool = languagePool[tradition] ?? languagePool.all ?? DAILY_FALLBACK_QUIZ.en.all;
+  const dayMs = new Date(`${dateStr}T00:00:00Z`).getTime();
+  const dayIndex = Number.isFinite(dayMs) ? Math.floor(dayMs / 86_400_000) : 0;
+  const fallback = traditionPool[Math.abs(dayIndex) % traditionPool.length] ?? DAILY_FALLBACK_QUIZ.en.all[0];
+
+  return {
+    ...fallback,
+    type: 'quiz',
+    fallbackLanguage: DAILY_FALLBACK_QUIZ[language] ? undefined : 'en',
+    degraded: true,
+  };
 }
 
 interface SacredTextMeta {
@@ -402,9 +431,7 @@ export default function HomeDashboard({
   const [quizStreak, setQuizStreak] = useState<number>(0);
   const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
 
-  const [quiz, setQuiz]               = useState<{
-    type: 'fact' | 'quiz'; question: string; options?: string[]; answerIndex?: number; explanation?: string; fact: string; source: string; daily_quiz_id?: string;
-  } | null | 'loading' | 'error'>(null);
+  const [quiz, setQuiz]               = useState<DailySparkQuiz | null | 'loading' | 'error'>(null);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null);
 
   const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
@@ -531,8 +558,11 @@ export default function HomeDashboard({
       }
     } catch { /* ignore */ }
 
-    setQuiz('loading');
     const trad = tradition ?? 'hindu';
+    const fallbackQuiz = getFallbackDailySpark(trad, effectiveLang, todayStr);
+    setQuiz(fallbackQuiz);
+    setQuizDailyId(null);
+
     const langParam = appLanguage ? `&language=${appLanguage}` : '';
     fetch(`/api/quiz/daily?tradition=${trad}&date=${todayStr}${langParam}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
@@ -547,8 +577,10 @@ export default function HomeDashboard({
           .then(data => { if (data?.streak) setQuizStreak(data.streak); })
           .catch(() => {});
       })
-      .catch(() => setQuiz('error'));
-  }, [tradition, appLanguage, todayStr, QUIZ_ANSWERED_KEY, QUIZ_CACHE_KEY]);
+      .catch(() => {
+        setQuiz(fallbackQuiz);
+      });
+  }, [tradition, appLanguage, effectiveLang, todayStr, QUIZ_ANSWERED_KEY, QUIZ_CACHE_KEY]);
 
   async function handleQuizAnswer(idx: number) {
     if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
@@ -1360,7 +1392,7 @@ export default function HomeDashboard({
                 <div className="space-y-8">
                   <p className="text-xl font-medium leading-tight theme-ink">{quiz.question}</p>
 
-                  {(quiz as any).fallbackLanguage === 'en' && appLanguage && appLanguage !== 'en' && (
+                  {quiz.fallbackLanguage === 'en' && appLanguage && appLanguage !== 'en' && (
                     <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
                       <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400">
                         Translation unavailable today. Showing English fallback.
