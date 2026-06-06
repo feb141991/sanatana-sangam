@@ -74,7 +74,7 @@ export default async function MainLayout({
           </EngineProvider>
         </main>
         <BottomNav isGuest={!user} />
-        <AIChatFABWrapper userId={userId} tradition={tradition} userName={userName} isGuest={!user} />
+        <AIChatFABWrapper userId={userId} tradition={tradition} userName={userName} isGuest={!user} appLanguage={appLanguage} />
         {/* Persist tradition to localStorage for cold-start loader */}
         {user && <TraditionSync tradition={tradition} />}
       </div>

@@ -8,6 +8,7 @@ export default function AIChatFABWrapper(props: {
   tradition: string;
   userName: string;
   isGuest: boolean;
+  appLanguage?: string;
 }) {
   return <AIChatFAB {...props} />;
 }

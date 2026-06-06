@@ -91,11 +91,18 @@ interface Message {
 }
 
 interface Props {
-  userId:    string;
-  tradition: string;
-  userName:  string;
-  isGuest?:  boolean;
+  userId:      string;
+  tradition:   string;
+  userName:    string;
+  isGuest?:    boolean;
+  appLanguage?: string;
 }
+
+const LANG_OPTIONS = [
+  { value: 'en', label: 'EN' },
+  { value: 'hi', label: 'हि' },
+  { value: 'pa', label: 'ਪੰ' },
+] as const;
 
 const FAB_SIZE   = 52;
 const FAB_RIGHT  = 16; // initial right offset (px)
@@ -222,7 +229,7 @@ function TypingIndicator() {
   );
 }
 
-export default function AIChatFAB({ userId, tradition, userName, isGuest = false }: Props) {
+export default function AIChatFAB({ userId, tradition, userName, isGuest = false, appLanguage = 'en' }: Props) {
   const [open,            setOpen]           = useState(false);
   const [messages,        setMessages]       = useState<Message[]>([]);
   const [input,           setInput]          = useState('');
@@ -233,6 +240,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
   const [constraints,     setConstraints]    = useState({ left: 0, right: 0, top: 0, bottom: 0 });
   const [aiUsage,         setAiUsage]        = useState<{ used: number; limit: number; isPro: boolean } | null>(null);
   const [hasStreamedToken, setHasStreamedToken] = useState(false);
+  const [responseLanguage, setResponseLanguage] = useState<string>(appLanguage);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
@@ -340,7 +348,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ message: msgText, history, tradition }),
+        body:    JSON.stringify({ message: msgText, history, tradition, language: responseLanguage, appLanguage: responseLanguage }),
       });
       if (res.status === 429) {
         const data = await res.json().catch(() => ({}));
@@ -448,6 +456,22 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Language selector */}
+                  <select
+                    value={responseLanguage}
+                    onChange={e => setResponseLanguage(e.target.value)}
+                    aria-label="Reply language"
+                    className="px-1.5 py-1 rounded-lg text-[10px] border transition outline-none cursor-pointer"
+                    style={{
+                      background:  'var(--surface-raised)',
+                      borderColor: 'rgba(197, 160, 89,0.22)',
+                      color:       'var(--brand-muted)',
+                    }}
+                  >
+                    {LANG_OPTIONS.map(o => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
                   {!isEmpty && (
                     <button onClick={clearChat}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs border transition"

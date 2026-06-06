@@ -85,7 +85,7 @@ function buildSystemPrompt(input: {
     `User location: ${location}.`,
     `User is seeking: ${goals}.`,
     `Today's spiritual date: ${input.spiritualDate}.`,
-    `Preferred response language: ${input.language ?? 'en'}.`,
+    `IMPORTANT: You MUST respond in the language indicated by the code "${input.language ?? 'en'}". Do not switch to any other language unless the user explicitly requests it in their message. en = English, hi = Hindi (Devanagari script), pa = Punjabi (Gurmukhi script).`,
     `Meaning language preference: ${input.meaningLanguage ?? 'en'}.`,
     `Transliteration preference: ${input.transliterationLanguage ?? 'en'}.`,
     'If you use Sanskrit, Gurmukhi, Pali, or Prakrit, add transliteration only when it improves comprehension.',
