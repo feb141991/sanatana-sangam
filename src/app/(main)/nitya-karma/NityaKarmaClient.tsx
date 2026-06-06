@@ -2309,7 +2309,7 @@ export default function NityaKarmaClient({
           >
             <SubHeader
               title={meta.nityaKarmaTitle}
-              subtitle={`${meta.symbol} Morning Dinacharya`}
+              subtitle="Nitya Karma · Morning"
               onBack={() => setNityaScreen('hub')}
             />
 
