@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal, Navigation } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, ChevronRight, CornerDownRight, MoreHorizontal, Navigation } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
@@ -1272,7 +1272,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   ];
 
   return (
-    <div className="space-y-4 fade-in">
+    <div className="space-y-4 fade-in pt-4">
 
       {/* ── Mandali Header ── */}
       <div className="surface-soft-card decorative-orbit rounded-[1.8rem] p-5">
@@ -1335,7 +1335,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           onClick={primaryMandaliAction.onClick}
           className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-[var(--surface-soft)] decorative-orbit"
         >
-          <p className="type-card-label">Start here</p>
+          <div className="flex items-center justify-between">
+            <p className="type-card-label">Start here</p>
+            <ChevronRight size={14} className="theme-muted" />
+          </div>
           <div className="flex items-start justify-between gap-3 mt-3">
             <div>
               <p className="type-card-heading">{primaryMandaliAction.label}</p>

@@ -323,14 +323,31 @@ export default function TirthaMapPage() {
     setNotice('');
     try {
       if (alreadySaved) {
-        const { error } = await supabase.from('tirtha_saves').delete().eq('user_id', userId).eq('place_id', placeId);
-        if (error) throw error;
+        // Remove via service-role API to bypass RLS
+        const res = await fetch('/api/tirtha/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place_id: placeId, action: 'unsave' }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error ?? `Failed to unsave (${res.status})`);
+        }
         setSaves((current) => current.filter((save) => save.place_id !== placeId));
         setNotice('Removed from saved places.');
       } else {
+        // Ensure the place exists in tirtha_places (service role)
         await ensurePlace(temple);
-        const { error } = await supabase.from('tirtha_saves').upsert({ user_id: userId, place_id: placeId }, { onConflict: 'user_id,place_id' });
-        if (error) throw error;
+        // Save via service-role API to bypass RLS
+        const res = await fetch('/api/tirtha/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place_id: placeId, action: 'save' }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error ?? `Failed to save (${res.status})`);
+        }
         // Optimistic update — badge appears instantly without waiting for DB round-trip
         setSaves((current) => [...current, { id: '', place_id: placeId, created_at: new Date().toISOString(), note: null }]);
         setNotice('Saved to your Tirtha Passport.');
@@ -351,23 +368,31 @@ export default function TirthaMapPage() {
     setSubmittingCheckIn(true);
     setNotice('');
     try {
+      // Ensure the place exists in tirtha_places first (service role)
       const placeId = await ensurePlace(checkInTemple);
-      const { error } = await supabase.from('tirtha_checkins').insert({
-        user_id: userId,
-        place_id: placeId,
-        visited_at: new Date().toISOString(),
-        privacy: checkInPrivacy,
-        darshan_mood: checkInMood,
-        intention: intention.trim() || null,
-        reflection: reflection.trim() || null,
-        companions: companions.trim() || null,
-        pradakshina_count: pradakshinaCount,
-      });
-      if (error) throw error;
 
-      await supabase.from('tirtha_saves').upsert({ user_id: userId, place_id: placeId }, { onConflict: 'user_id,place_id' });
-      // Optimistic update — "Visited" badge and passport count appear immediately
+      // Insert check-in via service-role API to bypass RLS on tirtha_checkins
       const now = new Date().toISOString();
+      const res = await fetch('/api/tirtha/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          place_id: placeId,
+          visited_at: now,
+          privacy: checkInPrivacy,
+          darshan_mood: checkInMood,
+          intention: intention.trim() || null,
+          reflection: reflection.trim() || null,
+          companions: companions.trim() || null,
+          pradakshina_count: pradakshinaCount,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Failed to save visit (${res.status})`);
+      }
+
+      // Optimistic update — "Visited" badge and passport count appear immediately
       setVisits((current) => [{ id: '', place_id: placeId, visited_at: now, privacy: checkInPrivacy, darshan_mood: checkInMood, intention: intention.trim() || null, reflection: reflection.trim() || null, companions: companions.trim() || null, pradakshina_count: pradakshinaCount, seva_note: null }, ...current]);
       setSaves((current) => current.some((s) => s.place_id === placeId) ? current : [...current, { id: '', place_id: placeId, created_at: now, note: null }]);
       setCheckInTemple(null);

@@ -913,7 +913,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 }
 
 @media (max-width: 768px) {
-  #nav-hamburger { display: flex !important; }
+  #nav-hamburger { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
 }
 
 /* FIX 3B: Email + avatar circle misalignment */
@@ -1113,10 +1113,10 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav id="nav">
   
-  <button id="nav-hamburger" aria-label="Menu" style="display:none; color:var(--ink); padding:8px; cursor:pointer; background:none; border:none;">
-    <span style="display:block;width:20px;height:2px;background:currentColor;margin:4px 0"></span>
-    <span style="display:block;width:20px;height:2px;background:currentColor;margin:4px 0"></span>
-    <span style="display:block;width:20px;height:2px;background:currentColor;margin:4px 0"></span>
+  <button id="nav-hamburger" aria-label="Menu" style="display:none; color:var(--ink); padding:8px; cursor:pointer; background:none; border:none; width:36px; height:36px; border-radius:8px; transition:background 0.2s;">
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
   </button>
   <a class="nav-logo" href="#">
     <img
