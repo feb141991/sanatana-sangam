@@ -34,7 +34,7 @@ const CONFIGS: Record<PermissionType, {
     why: 'Sunrise, Rahu Kaal, and muhurta timings vary by your exact coordinates.',
     benefit: 'Your Panchang, Tirtha map, and nearby Mandali all become location-precise.',
     allowLabel: 'Share Location',
-    denyLabel: 'Use default (Ujjain)',
+    denyLabel: 'Skip for now',
   },
   notifications: {
     emoji: '🔔',
@@ -53,7 +53,7 @@ export default function PermissionSheet({ type, open, onAllow, onDeny }: Permiss
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[200] flex items-end justify-center p-4 pb-8"
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         >
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onDeny} />
@@ -64,8 +64,8 @@ export default function PermissionSheet({ type, open, onAllow, onDeny }: Permiss
               border: '1px solid rgba(197,160,89,0.22)',
               boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
             }}
-            initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 40, opacity: 0 }} transition={{ duration: 0.28 }}
+            initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.92, opacity: 0 }} transition={{ duration: 0.22 }}
           >
             <button onClick={onDeny}
               className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"

@@ -210,7 +210,22 @@ export function LocationProvider({
 
   const dismissLocationSheet = useCallback(() => {
     setShowLocationSheet(false);
-  }, []);
+    // Silently resolve an approximate location from IP so downstream features
+    // (Panchang, Tirtha map) have something better than a hardcoded fallback.
+    if (!coords) {
+      fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) })
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null)
+        .then((data: { latitude?: number; longitude?: number; city?: string; country_name?: string; country_code?: string } | null) => {
+          if (data?.latitude && data?.longitude) {
+            setCoords({ lat: data.latitude, lon: data.longitude });
+            if (data.city)         setCity(data.city);
+            if (data.country_name) setCountry(data.country_name);
+            if (data.country_code) setCountryCode(data.country_code.toUpperCase());
+          }
+        });
+    }
+  }, [coords]);
 
   return (
     <LocationContext.Provider value={{
