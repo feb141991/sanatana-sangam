@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback, Suspense } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
@@ -136,6 +136,8 @@ interface Props {
   activeSymbolId?:     string | null;
   activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string | null } | null;
   karmaPoints?:        number;
+  rhythmMode?:         string | null;
+  displayStreak?:      number;
 }
 
 type DailyDharmaStackState = {
@@ -157,6 +159,8 @@ const EMPTY_DAILY_DHARMA_STACK_STATE: DailyDharmaStackState = {
   kathaDone: false,
   pathshalaProgress: 0,
 };
+
+const EVENING_NUDGE_KEY = 'shoonaya-dinacharya-evening-nudge-v1';
 
 function clampDailyProgress(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -262,6 +266,8 @@ export default function HomeDashboard({
   activeSymbolId = null,
   activeSankalpa: initialActiveSankalpa = null,
   karmaPoints = 0,
+  rhythmMode = 'morning',
+  displayStreak = 0,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -294,6 +300,7 @@ export default function HomeDashboard({
   const [streak,           setStreak]           = useState(initialStreak);
   const [freezeCount,      setFreezeCount]      = useState(streakFreezeCount);
   const [freezeBannerDismissed, setFreezeBannerDismissed] = useState(false);
+  const [eveningNudgeDismissed, setEveningNudgeDismissed] = useState(false);
   const [freezeApplying,   setFreezeApplying]   = useState(false);
   const [dailyDharmaStackState, setDailyDharmaStackState] = useState<DailyDharmaStackState>(EMPTY_DAILY_DHARMA_STACK_STATE);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
@@ -759,6 +766,41 @@ export default function HomeDashboard({
     (dailyDharmaStackState.quizDone ? 1 : 0) +
     (dailyDharmaStackState.dharmVeerDone ? 1 : 0);
 
+  const showEveningNudge = useMemo(() => {
+    if (rhythmMode !== 'morning') return false;
+    if (typeof window === 'undefined') return false;
+    if (eveningNudgeDismissed) return false;
+    try {
+      if (localStorage.getItem(EVENING_NUDGE_KEY)) return false;
+      const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+      const locallyDone = localStorage.getItem(`shoonaya-nitya-done-${today}`) === 'true';
+      if (!nityaDoneToday && !locallyDone) return false;
+    } catch { return false; }
+    return displayStreak >= 14;
+  }, [rhythmMode, displayStreak, nityaDoneToday, eveningNudgeDismissed]);
+
+  function dismissEveningNudge() {
+    try { localStorage.setItem(EVENING_NUDGE_KEY, 'true'); } catch {}
+    setEveningNudgeDismissed(true);
+  }
+
+  async function addEveningMomentsFromNudge() {
+    dismissEveningNudge();
+    try {
+      const response = await fetch('/api/user/rhythm-mode', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'full_day' }),
+      });
+      if (!response.ok) throw new Error('Failed to update rhythm mode');
+      toast.success('Evening Moments added to your rhythm 🪔');
+      router.refresh();
+    } catch (error) {
+      console.error('[Home rhythm mode]', error);
+      toast.error('Could not add Evening Moments right now.');
+    }
+  }
+
   const [perfectDayCeremonyOpen, setPerfectDayCeremonyOpen] = useState(false);
   const [perfectDayInsight, setPerfectDayInsight] = useState<string | null>(null);
   const prevCompletedCountRef = useRef(completedCount);
@@ -999,6 +1041,49 @@ export default function HomeDashboard({
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {showEveningNudge && (
+          <div className="px-4 mb-2">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border px-4 py-4"
+              style={{ background: isDark ? 'rgba(197,160,89,0.12)' : 'rgba(197,160,89,0.14)', borderColor: 'rgba(197,160,89,0.24)' }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shrink-0" style={{ background: 'rgba(197,160,89,0.16)' }}>
+                  🪔
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold" style={{ color: isDark ? 'rgba(255,248,225,0.95)' : 'var(--brand-ink)' }}>
+                    14 days of morning. Ready to close the day?
+                  </p>
+                  <p className="text-xs leading-relaxed mt-1" style={{ color: isDark ? 'rgba(255,248,225,0.66)' : 'var(--brand-muted)' }}>
+                    Your morning sadhana is stable. Evening Moments — lighting the diya, a short prayer — take 5 minutes and complete the daily arc.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void addEveningMomentsFromNudge()}
+                      className="rounded-full px-4 py-2 text-xs font-bold"
+                      style={{ background: '#C5A059', color: '#1c1208' }}
+                    >
+                      Add Evening Moments
+                    </button>
+                    <button
+                      type="button"
+                      onClick={dismissEveningNudge}
+                      className="rounded-full border px-4 py-2 text-xs font-semibold"
+                      style={{ borderColor: 'rgba(197,160,89,0.28)', color: isDark ? 'rgba(255,248,225,0.68)' : 'var(--brand-muted)' }}
+                    >
+                      Not yet
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         )}
 

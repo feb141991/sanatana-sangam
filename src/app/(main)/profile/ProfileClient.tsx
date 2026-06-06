@@ -1944,7 +1944,6 @@ export default function ProfileClient({
               )}
             </div>
           </div>
-          </div>
 
           {(activeTradition === 'hindu') && (
             <div className="space-y-6">

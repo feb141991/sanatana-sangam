@@ -9,14 +9,21 @@ type PushPreferencePayload = {
   quiz_reminder_time?: string;
   nitya_reminder_enabled?: boolean;
   nitya_reminder_time?: string;
+  wants_madhyahn_reminder?: boolean;
+  madhyahn_reminder_time?: string;
+  wants_evening_reminder?: boolean;
+  evening_reminder_time?: string;
 };
 
 type PushPreferenceKey = keyof PushPreferencePayload;
+type PushPreferenceUpdates = ProfileUpdate & PushPreferencePayload;
 
 const TIME_FIELDS = [
   'japa_reminder_time',
   'quiz_reminder_time',
   'nitya_reminder_time',
+  'madhyahn_reminder_time',
+  'evening_reminder_time',
 ] as const satisfies readonly PushPreferenceKey[];
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -41,7 +48,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    const updates: ProfileUpdate = {};
+    const updates: PushPreferenceUpdates = {};
 
     if ('japa_reminder_enabled' in rawBody) {
       if (typeof rawBody.japa_reminder_enabled !== 'boolean') {
@@ -65,6 +72,20 @@ export async function PATCH(req: NextRequest) {
       updates.wants_nitya_reminders = rawBody.nitya_reminder_enabled;
     }
 
+    if ('wants_madhyahn_reminder' in rawBody) {
+      if (typeof rawBody.wants_madhyahn_reminder !== 'boolean') {
+        return NextResponse.json({ error: 'wants_madhyahn_reminder must be a boolean' }, { status: 400 });
+      }
+      updates.wants_madhyahn_reminder = rawBody.wants_madhyahn_reminder;
+    }
+
+    if ('wants_evening_reminder' in rawBody) {
+      if (typeof rawBody.wants_evening_reminder !== 'boolean') {
+        return NextResponse.json({ error: 'wants_evening_reminder must be a boolean' }, { status: 400 });
+      }
+      updates.wants_evening_reminder = rawBody.wants_evening_reminder;
+    }
+
     for (const field of TIME_FIELDS) {
       if (!(field in rawBody)) continue;
       const value = rawBody[field];
@@ -80,7 +101,7 @@ export async function PATCH(req: NextRequest) {
 
     const { error } = await supabase
       .from('profiles')
-      .update(updates)
+      .update(updates as never)
       .eq('id', user.id);
 
     if (error) throw error;

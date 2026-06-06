@@ -69,7 +69,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, streak_freeze_count, last_freeze_used, active_symbol_id, onboarding_completed, onboarding_goal')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, streak_freeze_count, last_freeze_used, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
     .eq('id', user.id)
     .single();
 
@@ -104,7 +104,7 @@ export default async function HomePage() {
   const [
     guidedResult, calendarResult, heroResult,
     todayResult, yesterdayResult, latestStreakResult,
-    sadhanaResult, nityaResult, liveResult, malaResult,
+    sadhanaResult, nityaResult, nityaStreakResult, liveResult, malaResult,
     sankalpaResult, dharmVeerResult,
   ] = await Promise.allSettled([
     // guided path progress
@@ -147,6 +147,11 @@ export default async function HomePage() {
       supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
       DB_TIMEOUT,
     ),
+    // nitya karma morning streak
+    withTimeout(
+      supabase.from('nitya_karma_streaks').select('current_streak').eq('user_id', user.id).maybeSingle(),
+      DB_TIMEOUT,
+    ),
     // live darshans
     withTimeout(
       supabase.from('live_darshans').select('*').eq('is_active', true),
@@ -176,6 +181,7 @@ export default async function HomePage() {
   const latestStreakRow     = (latestStreakResult.status === 'fulfilled' ? latestStreakResult.value.data : null) as { date: string; streak_count: number | null } | null;
   const sadhanaHistory     = (sadhanaResult.status  === 'fulfilled' ? sadhanaResult.value.data  : null) as { date: string; japa_done: boolean }[] | null;
   const nityaHistory       = (nityaResult.status    === 'fulfilled' ? nityaResult.value.data    : null) as { log_date: string }[] | null;
+  const nityaStreakRow     = (nityaStreakResult.status === 'fulfilled' ? nityaStreakResult.value.data : null) as { current_streak: number | null } | null;
   const liveDarshanData    = (liveResult.status     === 'fulfilled' ? liveResult.value.data     : null) as any[] | null;
   const malaSessionsToday  = (malaResult.status     === 'fulfilled' ? malaResult.value.data     : null) as { id: string }[] | null;
   const sankalpaRow        = (sankalpaResult.status === 'fulfilled' ? sankalpaResult.value.data : null) as { id: string; text: string; start_date: string; target_days: number | null; tradition: string | null } | null;
@@ -314,6 +320,8 @@ export default async function HomePage() {
       activeSymbolId={(profile as any)?.active_symbol_id ?? null}
       activeSankalpa={activeSankalpa}
       karmaPoints={(profile as any)?.karma_points ?? 0}
+      rhythmMode={(profile as any)?.nitya_rhythm_mode ?? 'morning'}
+      displayStreak={nityaStreakRow?.current_streak ?? 0}
     />
   );
 }

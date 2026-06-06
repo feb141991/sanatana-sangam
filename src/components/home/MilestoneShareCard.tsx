@@ -19,6 +19,11 @@
 import { useState, useCallback } from 'react';
 import { Share2, X, Flame, Copy, Check } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import {
+  buildNityaMilestoneCardData,
+  resolveNityaMilestoneLabel,
+  shareNityaCardImage,
+} from '@/lib/share/nitya-card-data';
 
 const MILESTONES = [7, 21, 40, 108] as const;
 type Milestone = (typeof MILESTONES)[number];
@@ -88,6 +93,24 @@ export default function MilestoneShareCard({
     const url  = `${base}/invite/${userId}`;
     const text = `${copy.body}\n\n${url}`;
 
+    try {
+      const currentTradition = tradition ?? 'hindu';
+      const data = buildNityaMilestoneCardData({
+        stats: {
+          streak: japaStreak,
+          bestStreak: japaStreak,
+          milestoneLabel: resolveNityaMilestoneLabel(currentTradition, japaStreak),
+        },
+        tradition: currentTradition,
+        userName: userName ?? 'Shoonaya seeker',
+      });
+      await shareNityaCardImage({ type: 'streak_milestone', data, fileName: 'streak.png' });
+      dismiss();
+      return;
+    } catch {
+      /* canvas or image share failed — fall back to text */
+    }
+
     if (navigator.share) {
       try {
         await navigator.share({ title: `Shoonaya — ${copy.title}`, text: copy.body, url });
@@ -104,7 +127,7 @@ export default function MilestoneShareCard({
     } catch {
       dismiss();
     }
-  }, [milestone, userId, dismiss]);
+  }, [milestone, userId, dismiss, japaStreak, tradition, userName]);
 
   if (!milestone || dismissed) return null;
 

@@ -27,6 +27,11 @@ export default async function SettingsPage() {
       quiz_reminder_time,
       nitya_reminder_enabled,
       nitya_reminder_time,
+      nitya_rhythm_mode,
+      wants_madhyahn_reminder,
+      madhyahn_reminder_time,
+      wants_evening_reminder,
+      evening_reminder_time,
       subscription_status
     `)
     .eq('id', user.id)
@@ -43,6 +48,11 @@ export default async function SettingsPage() {
       initialQuizReminderTime={profile?.quiz_reminder_time ?? '08:00'}
       initialNityaReminderEnabled={profile?.nitya_reminder_enabled ?? false}
       initialNityaReminderTime={profile?.nitya_reminder_time ?? '06:30'}
+      initialWantsMadhyahnReminder={profile?.wants_madhyahn_reminder ?? false}
+      initialMadhyahnReminderTime={profile?.madhyahn_reminder_time ?? '12:00'}
+      initialWantsEveningReminder={profile?.wants_evening_reminder ?? false}
+      initialEveningReminderTime={profile?.evening_reminder_time ?? '18:30'}
+      initialNityaRhythmMode={profile?.nitya_rhythm_mode ?? 'morning'}
       subscriptionStatus={(profile?.subscription_status ?? 'free') as SubscriptionStatus}
     />
   );

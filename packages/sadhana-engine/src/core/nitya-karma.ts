@@ -23,7 +23,12 @@ export type NityaStep =
   | 'sandhya_done'
   | 'japa_done'
   | 'shloka_done'
-  | 'aarti_done';
+  | 'aarti_done'
+  | 'madhyahn_done'
+  | 'sandhya_diya_done'
+  | 'evening_vandana_done'
+  | 'svadhyaya_ratri_done'
+  | 'shayana_done';
 
 export interface NityaSequenceStep {
   id: NityaStep;

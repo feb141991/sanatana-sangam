@@ -27,6 +27,10 @@ type NotificationPreferencesState = {
   quiz_reminder_time: string;
   nitya_reminder_enabled: boolean;
   nitya_reminder_time: string;
+  wants_madhyahn_reminder: boolean;
+  madhyahn_reminder_time: string;
+  wants_evening_reminder: boolean;
+  evening_reminder_time: string;
 };
 
 type SectionCopy = {
@@ -228,6 +232,10 @@ function sameNotificationState(
     && a.quiz_reminder_time === b.quiz_reminder_time
     && a.nitya_reminder_enabled === b.nitya_reminder_enabled
     && a.nitya_reminder_time === b.nitya_reminder_time
+    && a.wants_madhyahn_reminder === b.wants_madhyahn_reminder
+    && a.madhyahn_reminder_time === b.madhyahn_reminder_time
+    && a.wants_evening_reminder === b.wants_evening_reminder
+    && a.evening_reminder_time === b.evening_reminder_time
   );
 }
 
@@ -387,6 +395,11 @@ export default function SettingsClient({
   initialQuizReminderTime,
   initialNityaReminderEnabled,
   initialNityaReminderTime,
+  initialWantsMadhyahnReminder,
+  initialMadhyahnReminderTime,
+  initialWantsEveningReminder,
+  initialEveningReminderTime,
+  initialNityaRhythmMode,
   subscriptionStatus,
 }: {
   userId: string;
@@ -398,6 +411,11 @@ export default function SettingsClient({
   initialQuizReminderTime: string;
   initialNityaReminderEnabled: boolean;
   initialNityaReminderTime: string;
+  initialWantsMadhyahnReminder: boolean;
+  initialMadhyahnReminderTime: string;
+  initialWantsEveningReminder: boolean;
+  initialEveningReminderTime: string;
+  initialNityaRhythmMode: string;
   subscriptionStatus: SubscriptionStatus;
 }) {
   const router = useRouter();
@@ -427,6 +445,10 @@ export default function SettingsClient({
     quiz_reminder_time: initialQuizReminderTime,
     nitya_reminder_enabled: initialNityaReminderEnabled,
     nitya_reminder_time: initialNityaReminderTime,
+    wants_madhyahn_reminder: initialWantsMadhyahnReminder,
+    madhyahn_reminder_time: initialMadhyahnReminderTime,
+    wants_evening_reminder: initialWantsEveningReminder,
+    evening_reminder_time: initialEveningReminderTime,
   });
   const [savedNotificationState, setSavedNotificationState] = useState<NotificationPreferencesState>({
     japa_reminder_enabled: initialJapaReminderEnabled,
@@ -435,6 +457,10 @@ export default function SettingsClient({
     quiz_reminder_time: initialQuizReminderTime,
     nitya_reminder_enabled: initialNityaReminderEnabled,
     nitya_reminder_time: initialNityaReminderTime,
+    wants_madhyahn_reminder: initialWantsMadhyahnReminder,
+    madhyahn_reminder_time: initialMadhyahnReminderTime,
+    wants_evening_reminder: initialWantsEveningReminder,
+    evening_reminder_time: initialEveningReminderTime,
   });
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [savingTradition, setSavingTradition] = useState(false);
@@ -693,6 +719,38 @@ export default function SettingsClient({
                 nitya_reminder_time: value,
               }))}
             />
+            {initialNityaRhythmMode !== 'morning' ? (
+              <>
+                <ReminderRow
+                  label="Midday Sandhya"
+                  hint="A brief pause at noon for your midday practice"
+                  enabled={notificationState.wants_madhyahn_reminder}
+                  time={notificationState.madhyahn_reminder_time}
+                  onToggle={() => setNotificationState((current) => ({
+                    ...current,
+                    wants_madhyahn_reminder: !current.wants_madhyahn_reminder,
+                  }))}
+                  onTimeChange={(value) => setNotificationState((current) => ({
+                    ...current,
+                    madhyahn_reminder_time: value,
+                  }))}
+                />
+                <ReminderRow
+                  label="Evening Moments"
+                  hint="Diya and evening prayer as the day closes"
+                  enabled={notificationState.wants_evening_reminder}
+                  time={notificationState.evening_reminder_time}
+                  onToggle={() => setNotificationState((current) => ({
+                    ...current,
+                    wants_evening_reminder: !current.wants_evening_reminder,
+                  }))}
+                  onTimeChange={(value) => setNotificationState((current) => ({
+                    ...current,
+                    evening_reminder_time: value,
+                  }))}
+                />
+              </>
+            ) : null}
           </div>
         </SettingsSection>
 

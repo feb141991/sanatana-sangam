@@ -4,7 +4,10 @@ import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
 // ─── Nitya Karma — Daily Morning Sequence ────────────────────────────────────
 //
-// 7-step tradition-aware morning routine.
+// Nitya Karma — tradition-aware Dinacharya (daily rhythm).
+// Currently exposes Morning section (7 steps). Midday,
+// Evening, and Night sections are built but gated behind
+// nitya_rhythm_mode user preference.
 // Steps are persisted in nitya_karma_log (one row per step per day).
 //
 // SPIRITUAL DAY: In Sanatana Dharma a new day begins at Brahma Muhurta (dawn),
@@ -18,7 +21,7 @@ import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 //   engine.nityaKarma.getStreak(userId)          → current / longest streak
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -48,6 +51,13 @@ import { useReaderControls } from '@/hooks/useReaderControls';
 import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import PageIntro from '@/components/ui/PageIntro';
 import { withOneSignal } from '@/lib/onesignal';
+import {
+  buildNityaMorningCardData,
+  buildNityaMonthlyCardData,
+  resolveNityaMilestoneLabel,
+  shareNityaCardImage,
+  type NityaShareStats,
+} from '@/lib/share/nitya-card-data';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -103,17 +113,66 @@ function getStepMessage(stepId: string): string {
 //   2. Snana          — sacred bath cleanses and prepares the body
 //   3. Tilak          — apply sacred mark; sankalpa (resolve) is set AFTER bath, BEFORE worship
 //   4. Vandana        — morning salutation: arghya to Surya, Gayatri, pranayama
-//   5. Puja / Aarti   — deity worship; Aarti is the culminating flame offering
-//   6. Japa           — mantra repetition with mala in a purified and worshipped space
+//   5. Japa           — mantra repetition after Vandana while the mind is collected
+//   6. Puja / Aarti   — deity worship; Aarti is the culminating flame offering
 //   7. Shloka Paath   — Svadhyaya (self-study) closes the Nitya cycle; scripture read last
 const FALLBACK_STEPS: NityaSequenceStep[] = [
   { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta', icon: 'moon' as SacredIconName, minutes: 0,  description: 'Wake in the pre-dawn hour — the veil between the human and the divine is thinnest here', completed: false },
   { id: 'snana_done',          label: 'Snana',          icon: 'water' as SacredIconName, minutes: 10, description: 'Sacred bath — water purifies body, prana, and subtle body before you enter the worship space', completed: false },
   { id: 'tilak_done',          label: 'Tilak',          icon: 'flame' as SacredIconName, minutes: 2,  description: 'Apply the sacred mark and set your sankalpa — this is the threshold gesture that opens the day\'s worship', completed: false },
   { id: 'sandhya_done',        label: 'Vandana',        icon: 'heart' as SacredIconName, minutes: 15, description: 'Morning salutation — offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition\'s prayers', completed: false },
-  { id: 'aarti_done',          label: 'Puja / Aarti',   icon: 'flame' as SacredIconName, minutes: 20, description: 'Worship your ishtadevata with panchopachar or shodashopachara; conclude with Aarti — the lamp of devotion', completed: false },
-  { id: 'japa_done',           label: 'Japa',           icon: 'music' as SacredIconName, minutes: 30, description: 'Mantra japa — one mala (108 repetitions) in the purified space, mind anchored by the naam', completed: false },
+  { id: 'japa_done',           label: 'Japa',           icon: 'music' as SacredIconName, minutes: 30, description: 'Mantra japa — one mala (108 repetitions) after Vandana, while the mind is still anchored in the sacred. The deity receives a collected, not a scattered, devotee.', completed: false },
+  { id: 'aarti_done',          label: 'Puja / Aarti',   icon: 'flame' as SacredIconName, minutes: 20, description: 'Puja and Aarti — bring your purified, nama-saturated mind to the deity. Panchopachar or shodashopachara offering; conclude with the circling of the lamp.', completed: false },
   { id: 'shloka_done',         label: 'Shloka Paath',   icon: 'book' as SacredIconName, minutes: 10, description: 'Svadhyaya — read or recite a passage from your tradition\'s scripture; let the word enter the day', completed: false },
+];
+
+const MIDDAY_STEPS: NityaSequenceStep[] = [
+  {
+    id: 'madhyahn_done',
+    label: 'Madhyahn Sandhya',
+    icon: 'sun' as SacredIconName,
+    minutes: 5,
+    description: 'Pause at noon — offer brief Surya namaskar or recite the Madhyahn Gayatri. Two minutes holds the thread between morning and evening.',
+    completed: false,
+  },
+];
+
+const EVENING_STEPS: NityaSequenceStep[] = [
+  {
+    id: 'sandhya_diya_done',
+    label: 'Sandhya Diya',
+    icon: 'flame' as SacredIconName,
+    minutes: 5,
+    description: 'Light the evening lamp at dusk — the Deepa Puja marks the transition from day to night. Offer the light to your ishtadevata.',
+    completed: false,
+  },
+  {
+    id: 'evening_vandana_done',
+    label: 'Evening Vandana',
+    icon: 'heart' as SacredIconName,
+    minutes: 10,
+    description: 'Sandhyavandanam or tradition\'s evening prayer — thank the day, offer arghya, and set the mind toward rest.',
+    completed: false,
+  },
+];
+
+const NIGHT_STEPS: NityaSequenceStep[] = [
+  {
+    id: 'svadhyaya_ratri_done',
+    label: 'Ratri Svadhyaya',
+    icon: 'book' as SacredIconName,
+    minutes: 10,
+    description: 'Evening scripture study — a few lines of the Gita, Upanishad, or a teacher\'s commentary. Let the word enter sleep.',
+    completed: false,
+  },
+  {
+    id: 'shayana_done',
+    label: 'Shayana Mantra',
+    icon: 'moon' as SacredIconName,
+    minutes: 2,
+    description: 'Recite the Shayana mantra before lying down — Karācharan kṛtaṁ vāk — surrendering the day\'s actions to the divine.',
+    completed: false,
+  },
 ];
 
 // ── Tradition-aware step labels ────────────────────────────────────────────────
@@ -129,6 +188,11 @@ const STEP_LABELS: Record<string, Record<string, { label: string; icon: SacredIc
     aarti_done:          { label: 'Ardas',          icon: 'heart' as SacredIconName, description: 'Offer Ardas — the Sikh prayer of supplication for the sangat, the panth, and all of creation' },
     japa_done:           { label: 'Jaap + Chaupai', icon: 'music' as SacredIconName, description: 'Recite Jaap Sahib and Chaupai Sahib — the banis of power, protection, and divine praise' },
     shloka_done:         { label: 'Hukamnama',      icon: 'scroll' as SacredIconName, description: 'Receive today\'s Hukamnama — the divine order from Guru Granth Sahib Ji; this word is your guidance for the day' },
+    madhyahn_done:        { label: 'Midday Simran',    icon: 'sparkles' as SacredIconName, description: 'Waheguru naam in the middle of the day — brief but complete. Even one conscious breath is simran.' },
+    sandhya_diya_done:    { label: 'Rehras Sahib',     icon: 'book' as SacredIconName, description: 'Recite Rehras Sahib at dusk — the evening bani that closes the active day with gratitude and surrender.' },
+    evening_vandana_done: { label: 'Ardas + Hukam',    icon: 'heart' as SacredIconName, description: 'Evening Ardas followed by the Hukamnama — receive the divine order that will hold the night.' },
+    svadhyaya_ratri_done: { label: 'Sohila Sahib',     icon: 'moon' as SacredIconName, description: 'Recite Sohila Sahib before sleep — the night bani of peace, the last words before rest.' },
+    shayana_done:         { label: 'Waheguru Simran',  icon: 'sparkles' as SacredIconName, description: 'Fall asleep in naam — let Waheguru be the last thought before sleep takes the mind.' },
   },
   buddhist: {
     // Buddhist morning sequence: Early Rising → Purification → Precepts → Metta → Puja/Offerings → Sitting → Dhamma
@@ -139,6 +203,11 @@ const STEP_LABELS: Record<string, Record<string, { label: string; icon: SacredIc
     aarti_done:          { label: 'Puja / Offerings',   icon: 'flame' as SacredIconName, description: 'Offer flowers, incense, and light before the Buddha image — the three gems are honoured, merit is made' },
     japa_done:           { label: 'Sitting Practice',   icon: 'moon' as SacredIconName, description: 'Silent breath or mantra meditation — cultivate samatha and vipassana in a purified and worshipped space' },
     shloka_done:         { label: 'Dhamma Reading',     icon: 'book' as SacredIconName, description: 'Study a passage from the Dhammapada, Sutta Pitaka, or a teacher\'s commentary — let the teaching close the practice' },
+    madhyahn_done:        { label: 'Mindful Pause',      icon: 'compass' as SacredIconName, description: 'Three conscious breaths at midday. No technique. Just awareness of this moment, this breath.' },
+    sandhya_diya_done:    { label: 'Evening Puja',       icon: 'flame' as SacredIconName, description: 'Offer incense and light before the shrine at dusk — the three gems are honoured, the day made whole.' },
+    evening_vandana_done: { label: 'Evening Sitting',    icon: 'moon' as SacredIconName, description: '10 minutes of samatha at dusk — the day\'s events settle into stillness before sleep.' },
+    svadhyaya_ratri_done: { label: 'Dhamma Reading',     icon: 'book' as SacredIconName, description: 'A passage from the Dhammapada or a teacher\'s text — let the teaching carry into sleep.' },
+    shayana_done:         { label: 'Metta at Rest',      icon: 'heart' as SacredIconName, description: 'Radiate loving-kindness lying down — begin with yourself, expand to all beings. Then sleep.' },
   },
   jain: {
     // Jain morning sequence: Brahma Muhurta → Shaucha → Sthapana → Samayika → Puja → Navkar → Agam
@@ -149,6 +218,11 @@ const STEP_LABELS: Record<string, Record<string, { label: string; icon: SacredIc
     aarti_done:          { label: 'Puja / Aarti',    icon: 'flame' as SacredIconName, description: 'Ashtaprakari Puja (eight offerings) before the Tirthankar; conclude with diya Aarti' },
     japa_done:           { label: 'Navkar Mantra',   icon: 'music' as SacredIconName, description: 'Recite Navkar Mantra 108 times — salutation to the five supreme beings who have conquered the self' },
     shloka_done:         { label: 'Agam Path',       icon: 'book' as SacredIconName, description: 'Study from the Agam — the canonical Jain texts; let scripture seal the morning and seed the intellect' },
+    madhyahn_done:        { label: 'Madhyahn Samayika', icon: 'heart' as SacredIconName, description: 'Brief equanimity vow at noon — even 10 minutes of samayika protects the ahimsa of the afternoon.' },
+    sandhya_diya_done:    { label: 'Sayam Pratikraman', icon: 'flame' as SacredIconName, description: 'Evening Pratikraman — confess and release the violence of thought, word, and deed from the day.' },
+    evening_vandana_done: { label: 'Navkar Simran',     icon: 'music' as SacredIconName, description: 'Recite Navkar Mantra in the evening — salutation to the five supreme ones who hold the light through night.' },
+    svadhyaya_ratri_done: { label: 'Agam Chintan',      icon: 'book' as SacredIconName, description: 'Evening Agam reflection — one teaching from the canonical texts to carry into sleep.' },
+    shayana_done:         { label: 'Kshamapana',        icon: 'heart' as SacredIconName, description: 'Seek forgiveness before sleep — Micchami Dukkadam to all beings for any harm done today.' },
   },
 };
 
@@ -161,6 +235,47 @@ function getDefaultSteps(tradition: string): NityaSequenceStep[] {
     icon:        overrides[step.id]?.icon        ?? step.icon,
     description: overrides[step.id]?.description ?? step.description,
   }));
+}
+
+function applyTraditionStepLabels(steps: NityaSequenceStep[], tradition: string): NityaSequenceStep[] {
+  const overrides = STEP_LABELS[tradition];
+  if (!overrides) return steps;
+  return steps.map(step => ({
+    ...step,
+    label:       overrides[step.id]?.label       ?? step.label,
+    icon:        overrides[step.id]?.icon        ?? step.icon,
+    description: overrides[step.id]?.description ?? step.description,
+  }));
+}
+
+type NityaRhythmMode = 'morning' | 'full_day' | 'advanced';
+
+interface NityaSectionsEnabled {
+  morning: boolean;
+  midday: boolean;
+  evening: boolean;
+  night: boolean;
+}
+
+const DEFAULT_NITYA_SECTIONS: NityaSectionsEnabled = {
+  morning: true,
+  midday: false,
+  evening: false,
+  night: false,
+};
+
+const EVENING_NUDGE_KEY = 'shoonaya-dinacharya-evening-nudge-v1';
+
+function normalizeNityaRhythmMode(mode: string | null | undefined): NityaRhythmMode {
+  return mode === 'full_day' || mode === 'advanced' ? mode : 'morning';
+}
+
+function normalizeNityaSectionsEnabled(value: Partial<NityaSectionsEnabled> | null | undefined): NityaSectionsEnabled {
+  return {
+    ...DEFAULT_NITYA_SECTIONS,
+    ...(value ?? {}),
+    morning: true,
+  };
 }
 
 // todayDateString is replaced by localSpiritualDate(timezone) — see Props.
@@ -941,6 +1056,8 @@ interface Props {
   showTransliteration?: boolean;
   scriptureScript?: string | null;
   isPro?:        boolean;
+  nityaRhythmMode?: string | null;
+  nityaSectionsEnabled?: Partial<NityaSectionsEnabled> | null;
 }
 
 export default function NityaKarmaClient({
@@ -956,6 +1073,8 @@ export default function NityaKarmaClient({
   showTransliteration,
   scriptureScript,
   isPro: initialIsPro = false,
+  nityaRhythmMode,
+  nityaSectionsEnabled,
 }: Props) {
   // Compute "today" as a spiritual date: before 4 AM local = still yesterday.
   // This is re-evaluated each render — if the app is left open across Brahma
@@ -968,6 +1087,8 @@ export default function NityaKarmaClient({
   const accent              = meta.accentColour;
   const livePremium         = usePremium();
   const isPro               = initialIsPro || livePremium;
+  const rhythmMode          = normalizeNityaRhythmMode(nityaRhythmMode);
+  const _sectionsEnabled    = normalizeNityaSectionsEnabled(nityaSectionsEnabled);
   const { term }            = useVocabulary(tradition);
   const readablePreferences = resolveReadablePreferences({
     appLanguage,
@@ -1096,6 +1217,7 @@ export default function NityaKarmaClient({
 
   const [steps,         setSteps]        = useState<NityaSequenceStep[]>([]);
   const [doneCustomIds, setDoneCustomIds] = useState<Set<string>>(new Set());
+  const [doneStepIds,   setDoneStepIds]   = useState<Set<string>>(new Set());
   const [vratRouteInfo, setVratRouteInfo] = useState<{ route_kind: string | null; route_slug: string | null } | null>(null);
   const [greeting,      setGreeting]     = useState('');
   const [panchang,      setPanchang]     = useState<any>(null);
@@ -1105,6 +1227,7 @@ export default function NityaKarmaClient({
   const [justCompleted, setJustCompleted]= useState<string | null>(null);
   const [dayRecords,    setDayRecords]   = useState<DayRecord[]>([]);
   const [showProSheet,  setShowProSheet] = useState(false);
+  const [showRhythmSheet, setShowRhythmSheet] = useState(false);
   const [showCustom,    setShowCustom]   = useState(false);
   const [custom,        setCustom]       = useState<NityaCustom>({ labels: {}, descriptions: {}, alertTime: '04:30', extraSteps: [] });
   const [showConfetti,  setShowConfetti] = useState(false);
@@ -1114,9 +1237,21 @@ export default function NityaKarmaClient({
   const [nityaScreen, setNityaScreen] = useState<NityaScreen>('hub');
   // Deferred mount — sub-screens are never rendered until first activated
   const [mountedScreens, setMountedScreens] = useState<Set<NityaScreen>>(new Set(['hub']));
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['midday', 'evening']));
+  const [showMorningSharePrompt, setShowMorningSharePrompt] = useState(false);
+  const [sharingMorningCard, setSharingMorningCard] = useState(false);
+  const [sharingMonthCard, setSharingMonthCard] = useState(false);
   function goToScreen(s: NityaScreen) {
     setMountedScreens(prev => new Set([...prev, s]));
     setNityaScreen(s);
+  }
+
+  function toggleSectionOpen(section: string) {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(section)) next.delete(section); else next.add(section);
+      return next;
+    });
   }
   // ── Inline Ashrama setup (for users with null life_stage) ─────────────────
   const [localLifeStage,    setLocalLifeStage]   = useState<string | null>(lifeStage);
@@ -1222,6 +1357,7 @@ export default function NityaKarmaClient({
       });
       if (!cancelled) {
         setDoneCustomIds(customDoneIds);
+        setDoneStepIds(doneIds);
       }
 
       return baseSteps.map(s => ({ ...s, completed: s.completed || doneIds.has(s.id) }));
@@ -1276,6 +1412,7 @@ export default function NityaKarmaClient({
 
       // Optimistic UI update
       setSteps(prev => prev.map(s => s.id === stepId ? { ...s, completed: true } : s));
+      setDoneStepIds(prev => new Set([...prev, stepId]));
       if (stepId.startsWith('custom_')) {
         setDoneCustomIds(prev => new Set([...prev, stepId]));
       }
@@ -1422,6 +1559,138 @@ export default function NityaKarmaClient({
   const allDone        = completedCount === totalSteps && totalSteps > 0;
   const vataDays       = panchang?.vrata ?? null;
 
+  const buildExtendedSteps = (baseSteps: NityaSequenceStep[]) => (
+    applyTraditionStepLabels(baseSteps, tradition).map(step => ({
+      ...step,
+      completed: doneStepIds.has(step.id),
+    }))
+  );
+  const middaySteps = buildExtendedSteps(MIDDAY_STEPS);
+  const eveningSteps = buildExtendedSteps(EVENING_STEPS);
+  const nightSteps = buildExtendedSteps(NIGHT_STEPS);
+  const shouldShowMidday = rhythmMode === 'full_day' || (rhythmMode === 'advanced' && isPro);
+  const shouldShowEvening = rhythmMode === 'full_day' || (rhythmMode === 'advanced' && isPro);
+  const shouldShowNight = rhythmMode === 'advanced' && isPro;
+  const activeExtendedSteps = [
+    ...(shouldShowMidday ? middaySteps : []),
+    ...(shouldShowEvening ? eveningSteps : []),
+    ...(shouldShowNight ? nightSteps : []),
+  ];
+  const fullDayTotal = FALLBACK_STEPS.length + activeExtendedSteps.length;
+  const fullDayDone = Math.min(completedCount, FALLBACK_STEPS.length) + activeExtendedSteps.filter(step => step.completed).length;
+  const fullDayPct = fullDayTotal > 0 ? Math.round((fullDayDone / fullDayTotal) * 100) : 0;
+  const displayStreak = streak?.current_streak ?? 0;
+  const shareMonthLabel = new Date(`${spiritualToday}T12:00:00`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  const morningShareKey = `shoonaya-nitya-shared-${spiritualToday}`;
+  const nityaShareStats = useMemo<NityaShareStats>(() => {
+    const currentMonth = spiritualToday.slice(0, 7);
+    const monthRecords = dayRecords.filter(day => day.date.startsWith(currentMonth));
+    const activeDays = monthRecords.filter(day => day.count > 0).length;
+    const fullMorningDays = monthRecords.filter(day => day.count >= FALLBACK_STEPS.length).length;
+    const dow = Array(7).fill(0) as number[];
+    monthRecords.forEach(day => {
+      const index = (new Date(`${day.date}T12:00:00`).getDay() + 6) % 7;
+      dow[index] += day.count;
+    });
+    const consistencyScore = monthRecords.length > 0
+      ? Math.round((activeDays / monthRecords.length) * 100)
+      : 0;
+
+    return {
+      activeDays,
+      bestStreak: streak?.longest_streak ?? displayStreak,
+      consistencyScore,
+      dow,
+      fullMorningDays,
+      milestoneLabel: resolveNityaMilestoneLabel(tradition, displayStreak),
+      peakHourLabel: 'Morning sadhana',
+      stepsCompletedToday: completedCount,
+      streak: displayStreak,
+    };
+  }, [completedCount, dayRecords, displayStreak, spiritualToday, streak?.longest_streak, tradition]);
+  const [eveningNudgeDismissed, setEveningNudgeDismissed] = useState(false);
+  const showEveningNudge = useMemo(() => {
+    if (rhythmMode !== 'morning') return false;
+    if (typeof window === 'undefined') return false;
+    if (eveningNudgeDismissed) return false;
+    try {
+      if (localStorage.getItem(EVENING_NUDGE_KEY)) return false;
+    } catch { return false; }
+    return displayStreak >= 14;
+  }, [rhythmMode, displayStreak, eveningNudgeDismissed]);
+
+  function dismissEveningNudge() {
+    try { localStorage.setItem(EVENING_NUDGE_KEY, 'true'); } catch {}
+    setEveningNudgeDismissed(true);
+  }
+
+  useEffect(() => {
+    if (!allDone) {
+      setShowMorningSharePrompt(false);
+      return;
+    }
+    try {
+      setShowMorningSharePrompt(!localStorage.getItem(morningShareKey));
+    } catch {
+      setShowMorningSharePrompt(false);
+    }
+  }, [allDone, morningShareKey]);
+
+  async function shareMorningCompletionCard() {
+    if (sharingMorningCard) return;
+    setSharingMorningCard(true);
+    try {
+      const data = buildNityaMorningCardData({
+        stats: nityaShareStats,
+        tradition,
+        userName,
+        todayTithi: panchang?.tithi ?? panchang?.tithiName ?? undefined,
+      });
+      await shareNityaCardImage({ type: 'morning_complete', data, fileName: 'morning.png' });
+      try { localStorage.setItem(morningShareKey, 'true'); } catch {}
+      setShowMorningSharePrompt(false);
+    } catch {
+      toast.error('Could not generate card');
+    } finally {
+      setSharingMorningCard(false);
+    }
+  }
+
+  async function shareMonthlyReportCard() {
+    if (sharingMonthCard) return;
+    setSharingMonthCard(true);
+    try {
+      const data = buildNityaMonthlyCardData({
+        stats: nityaShareStats,
+        tradition,
+        userName,
+        month: shareMonthLabel,
+      });
+      await shareNityaCardImage({ type: 'monthly_report', data, fileName: 'month.png' });
+    } catch {
+      toast.error('Could not generate card');
+    } finally {
+      setSharingMonthCard(false);
+    }
+  }
+
+  async function addEveningMomentsFromNudge() {
+    dismissEveningNudge();
+    try {
+      const response = await fetch('/api/user/rhythm-mode', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'full_day' }),
+      });
+      if (!response.ok) throw new Error('Failed to update rhythm mode');
+      toast.success('Evening Moments added to your rhythm 🪔');
+      router.refresh();
+    } catch (error) {
+      console.error('[Nitya rhythm mode]', error);
+      toast.error('Could not add Evening Moments right now.');
+    }
+  }
+
   function getVratHref(festival: { name: string; route_kind?: string | null; route_slug?: string | null }): string | null {
     if (festival.route_kind === 'vrat') {
       return festival.route_slug || resolveVratSlug(festival.name);
@@ -1492,6 +1761,185 @@ export default function NityaKarmaClient({
     });
   }
 
+  function RhythmUpgradeSheet() {
+    return createPortal(
+      <AnimatePresence>
+        <motion.div
+          className="fixed inset-0"
+          style={{ zIndex: 9998, background: 'rgba(0,0,0,0.62)' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowRhythmSheet(false)}
+        />
+        <motion.div
+          className="fixed inset-x-0 bottom-0 rounded-t-[2rem] px-5 pt-4 pb-6"
+          style={{
+            zIndex: 9999,
+            background: 'var(--surface-raised)',
+            border: '1px solid rgba(197, 160, 89,0.18)',
+            borderBottom: 'none',
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)',
+          }}
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 34 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="flex justify-center pb-4">
+            <div className="w-10 h-1 rounded-full" style={{ background: 'var(--border-subtle)' }} />
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl" style={{ background: `${accent}16` }}>
+                🪔
+              </div>
+              <div className="flex-1">
+                <p className="text-base font-bold text-[color:var(--brand-ink)]">Full-Day Dinacharya</p>
+                <p className="text-xs leading-relaxed mt-1" style={{ color: 'var(--brand-muted)' }}>
+                  Add gentle midday and evening anchors without changing your morning streak. Morning remains the core discipline; the full-day rhythm simply helps you close the day with awareness.
+                </p>
+              </div>
+            </div>
+            <div className="rounded-2xl px-4 py-3 space-y-2" style={{ background: `${accent}0D`, border: `1px solid ${accent}20` }}>
+              <p className="text-xs text-[color:var(--brand-ink)] font-semibold">What gets added</p>
+              <p className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>Midday pause · Evening lamp · Evening vandana</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowRhythmSheet(false)}
+              className="w-full rounded-2xl py-3 text-sm font-bold"
+              style={{ background: accent, color: '#1c1208' }}
+            >
+              Got it
+            </button>
+          </div>
+        </motion.div>
+      </AnimatePresence>,
+      document.body
+    );
+  }
+
+  function SectionCard({
+    title,
+    emoji,
+    steps: sectionSteps,
+    mode,
+    completed,
+    onToggle,
+  }: {
+    title: string;
+    emoji: string;
+    steps: NityaSequenceStep[];
+    mode: 'optional' | 'active';
+    completed: boolean;
+    onToggle: (step?: NityaSequenceStep) => void;
+  }) {
+    if (mode === 'optional') {
+      return (
+        <div className="rounded-2xl border px-4 py-4 flex items-center gap-3 bg-[var(--surface-soft)]" style={{ borderColor: `${accent}18` }}>
+          <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl shrink-0" style={{ background: `${accent}10` }}>{emoji}</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{title}</p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--brand-muted)' }}>Light the lamp. Close the day.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onToggle()}
+            className="text-xs font-semibold underline underline-offset-2 shrink-0"
+            style={{ color: accent }}
+          >
+            + Add this
+          </button>
+        </div>
+      );
+    }
+
+    const doneCount = sectionSteps.filter(step => step.completed).length;
+    const sectionKey = title.toLowerCase();
+    const isOpen = openSections.has(sectionKey);
+
+    return (
+      <div className="rounded-2xl border overflow-hidden bg-[var(--surface-soft)]" style={{ borderColor: completed ? `${accent}32` : `${accent}18` }}>
+        <button
+          type="button"
+          onClick={() => toggleSectionOpen(sectionKey)}
+          className="w-full px-4 py-3 flex items-center gap-3 text-left"
+        >
+          <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg shrink-0" style={{ background: `${accent}12` }}>{emoji}</div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[color:var(--brand-ink)]">{title} · {doneCount}/{sectionSteps.length}</p>
+            <p className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>
+              {completed ? 'Complete for this section' : 'Optional day-rhythm anchor'}
+            </p>
+          </div>
+          <ChevronDown
+            size={16}
+            style={{ color: accent, transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 180ms ease' }}
+          />
+        </button>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-4 space-y-2">
+                {sectionSteps.map(step => {
+                  const isBusy = busySteps.has(step.id);
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => onToggle(step)}
+                      disabled={step.completed || isBusy}
+                      className="w-full rounded-xl border px-3 py-3 flex items-center gap-3 text-left"
+                      style={{
+                        background: step.completed ? `${accent}08` : 'rgba(255,255,255,0.025)',
+                        borderColor: step.completed ? `${accent}24` : 'rgba(255,255,255,0.06)',
+                      }}
+                    >
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${accent}12` }}>
+                        {isBusy
+                          ? <Loader2 size={16} className="animate-spin" style={{ color: accent }} />
+                          : step.completed
+                            ? <CheckCircle2 size={18} className="text-green-400" />
+                            : <SacredIcon name={step.icon as SacredIconName} size={18} strokeWidth={1.7} style={{ color: 'var(--brand-primary)' }} />
+                        }
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className={`text-[13px] font-semibold ${step.completed ? 'line-through text-[color:var(--brand-muted)]' : 'text-[color:var(--brand-ink)]'}`}>
+                            {step.label}
+                          </p>
+                          {step.minutes > 0 && (
+                            <span className="text-[10px] font-medium rounded-full px-2 py-0.5" style={{ background: `${accent}14`, color: accent }}>
+                              {step.minutes}m
+                            </span>
+                          )}
+                        </div>
+                        {!step.completed && (
+                          <p className="text-[11px] mt-0.5 leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
+                            {step.description}
+                          </p>
+                        )}
+                      </div>
+                      {!step.completed && !isBusy && <Circle size={18} className="text-[var(--divine-text)]/20 dark:text-white/20 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
   // ── Shared header used by all sub-screens ─────────────────────────────────
   function SubHeader({ title, subtitle, onBack }: { title: string; subtitle: string; onBack: () => void }) {
     return (
@@ -1523,6 +1971,19 @@ export default function NityaKarmaClient({
               >
                 <BarChart2 size={16} style={{ color: accent }} />
               </Link>
+              {displayStreak >= 7 && (
+                <button
+                  type="button"
+                  onClick={shareMonthlyReportCard}
+                  disabled={sharingMonthCard}
+                  className="h-9 rounded-full flex items-center gap-1.5 px-3 border border-[#C5A059]/15 text-xs font-semibold"
+                  style={{ background: `${accent}14`, color: accent }}
+                  title="Share monthly report"
+                >
+                  <span aria-hidden="true">↗</span>
+                  {sharingMonthCard ? 'Sharing' : 'Share month'}
+                </button>
+              )}
               {nityaScreen === 'dincharya' && (
                 <button onClick={() => setShowCustom(true)}
                   className="w-9 h-9 rounded-full flex items-center justify-center border border-[#C5A059]/15"
@@ -1552,7 +2013,7 @@ export default function NityaKarmaClient({
       <PageIntro
         pageKey="nitya-karma"
         steps={[
-          { emoji: '🌅', title: 'Nitya Seva', body: 'Your morning routine. Complete each practice to earn karma and mark the day.' },
+          { emoji: '🌅', title: 'Nitya Seva', body: 'Your Dinacharya — the sacred structure of the day. Complete each morning practice to earn karma and hold your streak.' },
           { emoji: '✓', title: 'Mark complete', body: 'Tap each item as you finish it. All done = strip marked complete for today.' },
         ]}
       />
@@ -1712,7 +2173,7 @@ export default function NityaKarmaClient({
                       style={{ background: 'rgba(34,197,94,0.15)', color: 'rgb(34,197,94)' }}>FREE</span>
                   </div>
                   <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                    Your daily morning sequence · 7 sacred steps
+                    Nitya Karma · Morning
                   </p>
                   <div className="mt-2 flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: `${accent}18` }}>
@@ -1827,7 +2288,7 @@ export default function NityaKarmaClient({
           >
             <SubHeader
               title={meta.nityaKarmaTitle}
-              subtitle={`${meta.symbol} Your 7-step morning sequence`}
+              subtitle={`${meta.symbol} Morning Dinacharya`}
               onBack={() => setNityaScreen('hub')}
             />
 
@@ -1835,7 +2296,7 @@ export default function NityaKarmaClient({
             {loading ? (
               <div className="flex items-center justify-center gap-3 pt-20">
                 <Loader2 size={22} className="animate-spin" style={{ color: accent }} />
-                <span className="text-sm text-[color:var(--brand-muted)]">Getting your morning sequence…</span>
+                <span className="text-sm text-[color:var(--brand-muted)]">Loading your Dinacharya…</span>
               </div>
             ) : (
               <div className="px-4 space-y-3">
@@ -1940,37 +2401,170 @@ export default function NityaKarmaClient({
 
           {/* All done */}
           {allDone && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                className="rounded-3xl p-6 text-center space-y-3 border border-[#C5A059]/15"
+                style={{ background: `linear-gradient(135deg, ${accent}20, ${accent}10)` }}
+              >
+                <motion.div className="text-5xl" animate={{ scale: [0.8, 1.15, 1] }} transition={{ duration: 0.5 }}>🙏</motion.div>
+                <p className="font-bold text-[color:var(--brand-ink)] text-lg">Full Nitya Karma Complete!</p>
+                {streak && (
+                  <p className="text-[color:var(--brand-muted)] text-sm">
+                    <Flame size={13} className="inline mb-0.5 mr-0.5 text-orange-400" />
+                    {streak.current_streak}-day streak · Longest: {streak.longest_streak} days
+                  </p>
+                )}
+                <div className="mt-2 mx-auto max-w-xs rounded-2xl px-4 py-3 flex items-start gap-2.5"
+                  style={{ background: `${accent}14`, border: `1px solid ${accent}30` }}>
+                  <Sunrise size={16} style={{ color: accent }} className="shrink-0 mt-0.5" />
+                  <p className="text-xs leading-relaxed text-left" style={{ color: accent }}>
+                    Locked for today. Come back tomorrow — Brahma Muhurta opens{' '}
+                    <span className="font-semibold">{nextBrahmaMuhurtaText()}</span>.
+                  </p>
+                </div>
+                <div className="flex justify-center gap-3 pt-1 flex-wrap">
+                  <Link href="/bhakti/mala" className="px-4 py-2 rounded-xl text-xs font-semibold"
+                    style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
+                  <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
+                    style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>
+                  <button onClick={() => isPro ? goToScreen('journey') : setShowProSheet(true)}
+                    className="px-4 py-2 rounded-xl text-xs font-semibold"
+                    style={{ background: `${accent}18`, color: accent }}>✦ Guided Plans</button>
+                </div>
+              </motion.div>
+              <AnimatePresence>
+                {showMorningSharePrompt && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 16 }}
+                    className="relative rounded-2xl border p-4"
+                    style={{ background: 'var(--surface-soft)', borderColor: `${accent}35` }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setShowMorningSharePrompt(false)}
+                      className="absolute right-3 top-3 rounded-full p-1 opacity-60"
+                      aria-label="Dismiss morning share prompt"
+                    >
+                      <X size={14} style={{ color: 'var(--brand-muted)' }} />
+                    </button>
+                    <p className="text-sm font-semibold text-[color:var(--brand-ink)]">Beautiful morning 🌅</p>
+                    <p className="mt-1 text-xs text-[color:var(--brand-muted)]">Share how you started the day →</p>
+                    <button
+                      type="button"
+                      onClick={shareMorningCompletionCard}
+                      disabled={sharingMorningCard}
+                      className="mt-3 rounded-full px-4 py-2 text-xs font-semibold transition active:scale-[0.98]"
+                      style={{ background: accent, color: '#0E0E0F' }}
+                    >
+                      {sharingMorningCard ? 'Crafting…' : "Share this morning's card"}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
+
+          {showEveningNudge && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-              className="rounded-3xl p-6 text-center space-y-3 border border-[#C5A059]/15"
-              style={{ background: `linear-gradient(135deg, ${accent}20, ${accent}10)` }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border px-4 py-4 space-y-3"
+              style={{ background: `${accent}12`, borderColor: `${accent}28` }}
             >
-              <motion.div className="text-5xl" animate={{ scale: [0.8, 1.15, 1] }} transition={{ duration: 0.5 }}>🙏</motion.div>
-              <p className="font-bold text-[color:var(--brand-ink)] text-lg">Full Nitya Karma Complete!</p>
-              {streak && (
-                <p className="text-[color:var(--brand-muted)] text-sm">
-                  <Flame size={13} className="inline mb-0.5 mr-0.5 text-orange-400" />
-                  {streak.current_streak}-day streak · Longest: {streak.longest_streak} days
-                </p>
-              )}
-              <div className="mt-2 mx-auto max-w-xs rounded-2xl px-4 py-3 flex items-start gap-2.5"
-                style={{ background: `${accent}14`, border: `1px solid ${accent}30` }}>
-                <Sunrise size={16} style={{ color: accent }} className="shrink-0 mt-0.5" />
-                <p className="text-xs leading-relaxed text-left" style={{ color: accent }}>
-                  Locked for today. Come back tomorrow — Brahma Muhurta opens{' '}
-                  <span className="font-semibold">{nextBrahmaMuhurtaText()}</span>.
-                </p>
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shrink-0" style={{ background: `${accent}18` }}>
+                  🪔
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-bold text-[color:var(--brand-ink)]">14 days of morning. Ready to close the day?</p>
+                  <p className="text-xs leading-relaxed mt-1" style={{ color: 'var(--brand-muted)' }}>
+                    Your morning sadhana is stable. Evening Moments — lighting the diya, a short prayer — take 5 minutes and complete the daily arc.
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-center gap-3 pt-1 flex-wrap">
-                <Link href="/bhakti/mala" className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>Japa Counter</Link>
-                <Link href="/pathshala" className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>Pathshala</Link>
-                <button onClick={() => isPro ? goToScreen('journey') : setShowProSheet(true)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold"
-                  style={{ background: `${accent}18`, color: accent }}>✦ Guided Plans</button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => void addEveningMomentsFromNudge()}
+                  className="rounded-full px-4 py-2 text-xs font-bold"
+                  style={{ background: accent, color: '#1c1208' }}
+                >
+                  Add Evening Moments
+                </button>
+                <button
+                  type="button"
+                  onClick={dismissEveningNudge}
+                  className="rounded-full px-4 py-2 text-xs font-semibold border"
+                  style={{ borderColor: `${accent}24`, color: 'var(--brand-muted)' }}
+                >
+                  Not yet
+                </button>
               </div>
             </motion.div>
+          )}
+
+          {rhythmMode === 'morning' && (
+            <SectionCard
+              title="Evening Moments"
+              emoji="🪔"
+              steps={EVENING_STEPS}
+              mode="optional"
+              completed={false}
+              onToggle={() => setShowRhythmSheet(true)}
+            />
+          )}
+
+          {(shouldShowMidday || shouldShowEvening || shouldShowNight) && (
+            <div className="rounded-2xl border px-4 py-3 flex items-center justify-between gap-3 bg-[var(--surface-soft)]"
+              style={{ borderColor: `${accent}18` }}>
+              <div>
+                <p className="text-xs font-semibold text-[color:var(--brand-ink)]">
+                  Full day: {fullDayDone}/{fullDayTotal} · {fullDayPct}%
+                </p>
+                <p className="text-[11px]" style={{ color: 'var(--brand-muted)' }}>
+                  Morning completion remains separate
+                </p>
+              </div>
+              <span className="text-[10px] font-bold rounded-full px-2 py-1" style={{ background: `${accent}14`, color: accent }}>
+                {rhythmMode === 'advanced' && isPro ? 'Advanced' : 'Full-Day'}
+              </span>
+            </div>
+          )}
+
+          {shouldShowMidday && (
+            <SectionCard
+              title="Midday"
+              emoji="🌞"
+              steps={middaySteps}
+              mode="active"
+              completed={middaySteps.every(step => step.completed)}
+              onToggle={(step) => { if (step) void markStep(step.id, step.completed); }}
+            />
+          )}
+
+          {shouldShowEvening && (
+            <SectionCard
+              title="Evening"
+              emoji="🪔"
+              steps={eveningSteps}
+              mode="active"
+              completed={eveningSteps.every(step => step.completed)}
+              onToggle={(step) => { if (step) void markStep(step.id, step.completed); }}
+            />
+          )}
+
+          {shouldShowNight && (
+            <SectionCard
+              title="Night"
+              emoji="🌙"
+              steps={nightSteps}
+              mode="active"
+              completed={nightSteps.every(step => step.completed)}
+              onToggle={(step) => { if (step) void markStep(step.id, step.completed); }}
+            />
           )}
 
           {/* Streak card */}
@@ -2178,6 +2772,7 @@ export default function NityaKarmaClient({
 
       {/* Modals */}
       <PremiumActivateModal open={showProSheet} onClose={() => setShowProSheet(false)} />
+      {showRhythmSheet && <RhythmUpgradeSheet />}
       {showCustom && isPro && (
         <NityaCustomSheet
           userId={userId}
