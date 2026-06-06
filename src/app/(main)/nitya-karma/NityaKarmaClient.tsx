@@ -108,20 +108,20 @@ function getStepMessage(stepId: string): string {
 }
 
 // ── Static fallback steps ─────────────────────────────────────────────────────
-// Liturgical order per Dharmashastra / Gita Press Nitya Karma Puja Prakash:
+// Correct morning sequence:
 //   1. Brahma Muhurta — rise in the auspicious pre-dawn hour
 //   2. Snana          — sacred bath cleanses and prepares the body
-//   3. Tilak          — apply sacred mark; sankalpa (resolve) is set AFTER bath, BEFORE worship
-//   4. Vandana        — morning salutation: arghya to Surya, Gayatri, pranayama
-//   5. Japa           — mantra repetition after Vandana while the mind is collected
+//   3. Tilak          — apply sacred mark; set sankalpa before worship
+//   4. Japa           — silent mantra practice done first, in the stillness after bath
+//   5. Vandana        — formal morning salutation: arghya to Surya, Gayatri, pranayama
 //   6. Puja / Aarti   — deity worship; Aarti is the culminating flame offering
-//   7. Shloka Paath   — Svadhyaya (self-study) closes the Nitya cycle; scripture read last
+//   7. Shloka Paath   — Svadhyaya (self-study) closes the Nitya cycle
 const FALLBACK_STEPS: NityaSequenceStep[] = [
   { id: 'woke_brahma_muhurta', label: 'Brahma Muhurta', icon: 'moon' as SacredIconName, minutes: 0,  description: 'Wake in the pre-dawn hour — the veil between the human and the divine is thinnest here', completed: false },
   { id: 'snana_done',          label: 'Snana',          icon: 'water' as SacredIconName, minutes: 10, description: 'Sacred bath — water purifies body, prana, and subtle body before you enter the worship space', completed: false },
   { id: 'tilak_done',          label: 'Tilak',          icon: 'flame' as SacredIconName, minutes: 2,  description: 'Apply the sacred mark and set your sankalpa — this is the threshold gesture that opens the day\'s worship', completed: false },
+  { id: 'japa_done',           label: 'Japa',           icon: 'music' as SacredIconName, minutes: 30, description: 'Mantra japa — done first in the stillness after bath, before the formal ritual begins. One mala (108 repetitions) while the mind is fresh and unscattered.', completed: false },
   { id: 'sandhya_done',        label: 'Vandana',        icon: 'heart' as SacredIconName, minutes: 15, description: 'Morning salutation — offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition\'s prayers', completed: false },
-  { id: 'japa_done',           label: 'Japa',           icon: 'music' as SacredIconName, minutes: 30, description: 'Mantra japa — one mala (108 repetitions) after Vandana, while the mind is still anchored in the sacred. The deity receives a collected, not a scattered, devotee.', completed: false },
   { id: 'aarti_done',          label: 'Puja / Aarti',   icon: 'flame' as SacredIconName, minutes: 20, description: 'Puja and Aarti — bring your purified, nama-saturated mind to the deity. Panchopachar or shodashopachara offering; conclude with the circling of the lamp.', completed: false },
   { id: 'shloka_done',         label: 'Shloka Paath',   icon: 'book' as SacredIconName, minutes: 10, description: 'Svadhyaya — read or recite a passage from your tradition\'s scripture; let the word enter the day', completed: false },
 ];
