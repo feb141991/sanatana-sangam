@@ -3,23 +3,11 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 // ─── POST /api/premium/activate ──────────────────────────────────────────────
-// Early-access only. Disabled when ENABLE_EARLY_ACCESS_PRO !== 'true'.
-// Idempotent — safe to call multiple times; will not downgrade an existing
-// subscription or reset the activated_at timestamp.
+// Early-access: open to all users. Idempotent — safe to call multiple times;
+// will not downgrade an existing paid subscription.
 
 export async function POST() {
-  // ── Gate 1: env flag ───────────────────────────────────────────────────────
-  if (process.env.ENABLE_EARLY_ACCESS_PRO !== 'true') {
-    return NextResponse.json(
-      {
-        error: 'Early-access activation is disabled.',
-        hint:  'Production entitlements must come from the billing provider.',
-      },
-      { status: 409 }
-    );
-  }
-
-  // ── Gate 2: authenticated user ─────────────────────────────────────────────
+  // ── Gate: authenticated user ───────────────────────────────────────────────
   const supabase = await createServerSupabaseClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
