@@ -328,8 +328,8 @@ function ShareInsightsSheet({
       const data = buildNityaShareCardData({ type, stats, tradition, userName, todayTithi, month });
       await shareNityaCardImage({ type, data, fileName: `shoonaya-${type}.png` });
       onClose();
-    } catch {
-      toast.error('Could not generate card');
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') toast.error('Could not generate card');
     } finally {
       setGenerating(null);
     }
@@ -584,8 +584,8 @@ export default function NityaInsightsClient({ logs, tradition, userName }: Props
     try {
       const data = buildNityaShareCardData({ type, stats, tradition, userName, month });
       await shareNityaCardImage({ type, data, fileName: `shoonaya-${type}.png` });
-    } catch {
-      toast.error('Could not generate card');
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') toast.error('Could not generate card');
     } finally {
       setQuickGenerating(null);
     }

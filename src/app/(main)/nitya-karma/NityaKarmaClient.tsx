@@ -1557,6 +1557,13 @@ export default function NityaKarmaClient({
   const totalSteps     = displaySteps.length;
   const progressPct    = totalSteps > 0 ? (completedCount / totalSteps) * 100 : 0;
   const allDone        = completedCount === totalSteps && totalSteps > 0;
+
+  // Core morning-only metrics — unaffected by Pro custom steps.
+  // Used exclusively for: (a) morning share prompt trigger, (b) morning_complete card data.
+  // FALLBACK_STEPS is always exactly the 7 canonical morning steps.
+  const coreMorningDone           = FALLBACK_STEPS.every(s => doneStepIds.has(s.id));
+  const coreMorningCompletedCount = FALLBACK_STEPS.filter(s => doneStepIds.has(s.id)).length;
+
   const vataDays       = panchang?.vrata ?? null;
 
   const buildExtendedSteps = (baseSteps: NityaSequenceStep[]) => (
@@ -1604,7 +1611,7 @@ export default function NityaKarmaClient({
       fullMorningDays,
       milestoneLabel: resolveNityaMilestoneLabel(tradition, displayStreak),
       peakHourLabel: 'Morning sadhana',
-      stepsCompletedToday: completedCount,
+      stepsCompletedToday: coreMorningCompletedCount, // core 7 only, never inflated by custom Pro steps
       streak: displayStreak,
     };
   }, [completedCount, dayRecords, displayStreak, spiritualToday, streak?.longest_streak, tradition]);
@@ -1624,8 +1631,10 @@ export default function NityaKarmaClient({
     setEveningNudgeDismissed(true);
   }
 
+  // Trigger on the 7 canonical morning steps only — not on custom Pro steps.
+  // A Pro user who has 9 steps shouldn't have to wait until step 9 to see the share prompt.
   useEffect(() => {
-    if (!allDone) {
+    if (!coreMorningDone) {
       setShowMorningSharePrompt(false);
       return;
     }
@@ -1634,7 +1643,7 @@ export default function NityaKarmaClient({
     } catch {
       setShowMorningSharePrompt(false);
     }
-  }, [allDone, morningShareKey]);
+  }, [coreMorningDone, morningShareKey]);
 
   async function shareMorningCompletionCard() {
     if (sharingMorningCard) return;
@@ -1649,8 +1658,15 @@ export default function NityaKarmaClient({
       await shareNityaCardImage({ type: 'morning_complete', data, fileName: 'morning.png' });
       try { localStorage.setItem(morningShareKey, 'true'); } catch {}
       setShowMorningSharePrompt(false);
-    } catch {
-      toast.error('Could not generate card');
+    } catch (err: any) {
+      // AbortError = user cancelled native share sheet — already handled inside shareNityaCardImage,
+      // but guard here too in case of direct throws from other paths.
+      if (err?.name !== 'AbortError' && err?.message !== 'card_generation_failed') {
+        toast.error('Could not generate card');
+      } else if (err?.message === 'card_generation_failed') {
+        toast.error('Could not generate card');
+      }
+      // AbortError: silent — user just closed the sheet, not an error
     } finally {
       setSharingMorningCard(false);
     }
@@ -1667,8 +1683,10 @@ export default function NityaKarmaClient({
         month: shareMonthLabel,
       });
       await shareNityaCardImage({ type: 'monthly_report', data, fileName: 'month.png' });
-    } catch {
-      toast.error('Could not generate card');
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        toast.error('Could not generate card');
+      }
     } finally {
       setSharingMonthCard(false);
     }

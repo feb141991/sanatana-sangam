@@ -198,21 +198,34 @@ export async function shareNityaCardImage({
   type,
   data,
   fileName,
+  shareText,
+  shareUrl,
 }: {
   type: NityaCardType;
   data: NityaShareCardData;
   fileName: string;
+  /** Optional text to include alongside the image in native share sheet */
+  shareText?: string;
+  /** Optional URL to include in native share (e.g. invite link) */
+  shareUrl?: string;
 }) {
   const blob = await generateNityaShareCard(type, data);
   if (!blob) throw new Error('card_generation_failed');
 
   const file = new File([blob], fileName, { type: 'image/png' });
   if (navigator.canShare?.({ files: [file] })) {
-    await navigator.share({
-      title: 'Shoonaya Nitya Karma',
-      text: 'My Nitya Karma practice',
-      files: [file],
-    });
+    try {
+      await navigator.share({
+        title: 'Shoonaya Nitya Karma',
+        text: shareText ?? 'My Nitya Karma practice',
+        url: shareUrl,
+        files: [file],
+      });
+    } catch (err: any) {
+      // AbortError = user dismissed the native share sheet — treat as neutral, not failure
+      if (err?.name === 'AbortError') return;
+      throw err;
+    }
     return;
   }
 

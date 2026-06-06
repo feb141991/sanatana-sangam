@@ -104,11 +104,23 @@ export default function MilestoneShareCard({
         tradition: currentTradition,
         userName: userName ?? 'Shoonaya seeker',
       });
-      await shareNityaCardImage({ type: 'streak_milestone', data, fileName: 'streak.png' });
+      // Pass the invite URL so it appears alongside the image in the native share sheet.
+      // On WhatsApp this means the recipient gets the visual card + a tappable invite link.
+      await shareNityaCardImage({
+        type: 'streak_milestone',
+        data,
+        fileName: 'streak.png',
+        shareText: copy.body,
+        shareUrl: url,
+      });
       dismiss();
       return;
-    } catch {
-      /* canvas or image share failed — fall back to text */
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        // User dismissed share sheet — neutral, not a failure
+        return;
+      }
+      /* canvas or actual share error — fall back to text */
     }
 
     if (navigator.share) {
