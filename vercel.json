@@ -1,6 +1,7 @@
 {
   "installCommand": "npm install --legacy-peer-deps --force",
   "crons": [
+    { "path": "/api/cron/panchang-revalidate", "schedule": "31 18 * * *" },
     { "path": "/api/cron/reset-leaderboard", "schedule": "30 0 * * *" },
     { "path": "/api/cron/weekly-summary", "schedule": "0 1 * * 0" },
     { "path": "/api/cron/sankalpa-checkin", "schedule": "30 1 * * *" },

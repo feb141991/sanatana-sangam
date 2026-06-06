@@ -516,7 +516,9 @@ export function HeroSection({
               alt={(!isFestivalTheme && customCover) ? "Your custom cover" : heroTheme.heroAlt}
               fill
               priority
-              sizes="100vw"
+              fetchPriority="high"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 640px, 672px"
+              quality={80}
               className="object-cover object-center divine-hero-image"
               style={{ objectPosition: (!isFestivalTheme && customCover) ? 'center' : heroTheme.objectPosition }}
               onError={() => setHeroImageFailed(true)}

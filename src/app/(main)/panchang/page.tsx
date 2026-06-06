@@ -5,13 +5,14 @@ import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
 import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import PanchangHub from './PanchangHub';
 
-// Revalidate once per day — panchang data changes daily at midnight IST.
-// This serves the page from Vercel's edge cache for all visitors,
-// eliminating cold-start latency and Supabase auth overhead on every hit.
-// preferredRegion 'auto' ensures the serverless function runs in the region
-// closest to the visitor for minimal cold-start overhead.
+// Panchang is fully static — no auth, no cookies, pure computation.
+// ISR with 86400s caused ~509s TTFB on cache miss (cold ISR function spinup
+// + astronomia cold-load). Using revalidate=0 + on-demand revalidation via
+// the midnight cron avoids stale-while-revalidate gaps entirely.
+// The /api/cron/panchang-revalidate route calls revalidatePath('/panchang')
+// at midnight IST so the page is always warm for the day.
 export const revalidate = 86400;
-export const preferredRegion = 'auto';
+export const preferredRegion = 'iad1'; // US East — nearest to Supabase default region
 
 // Memoised per-request so generateMetadata and the page share one calculation.
 const getPanchang = cache(() => {
