@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const { data: profiles, error } = await supabase
     .from('profiles')
     .select('id, timezone, onesignal_player_id')
-    .eq('nitya_sections_enabled->evening', 'true')
+    .eq('nitya_sections_enabled->>evening', 'true')
     .not('onesignal_player_id', 'is', null);
 
   if (error) {

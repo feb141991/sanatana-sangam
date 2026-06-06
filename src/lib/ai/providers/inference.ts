@@ -1,4 +1,4 @@
-import { selectProvider, selectProviders } from '@sangam/pramana-serve';
+import { selectProvider, selectProviders, GeminiProvider } from '@sangam/pramana-serve';
 import type { PramanaInferenceProvider, InferenceRequest, InferenceResponse } from '@sangam/pramana-core';
 import type { AIPromptSpec, AITextResult } from '@/lib/ai/contracts';
 import { isCircuitOpen, recordSuccess, recordFailure } from '@/lib/monitoring/circuit-breaker';
@@ -156,37 +156,14 @@ export async function generateWithProvider(
   // Google Gemini as final fallback when all pramana providers are exhausted
   const geminiKey = process.env.GEMINI_API_KEY?.trim();
   if (geminiKey && !isCircuitOpen('google-gemini', breakerConfig)) {
+    const geminiProvider = new GeminiProvider({
+      apiKey: geminiKey,
+      model: process.env.PRAMANA_GEMINI_MODEL?.trim(),
+    });
     try {
-      const geminiModel = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
-      const userText = typeof prompt === 'string' ? prompt : (prompt.user ?? '');
-      const systemText = typeof prompt !== 'string' ? (prompt.system ?? '') : '';
-      const maxTokens = typeof prompt !== 'string' ? (prompt.maxOutputTokens ?? 900) : 900;
-
-      const payload: Record<string, unknown> = {
-        contents: [{ role: 'user', parts: [{ text: userText }] }],
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.3 },
-      };
-      if (systemText) {
-        payload['systemInstruction'] = { parts: [{ text: systemText }] };
-      }
-
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      );
-      if (!res.ok) {
-        const errBody = await res.text().catch(() => '');
-        throw new Error(`Gemini HTTP ${res.status}: ${errBody.slice(0, 200)}`);
-      }
-      const data = await res.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> }; finishReason?: string }> };
-      const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
-      if (!text.trim()) throw new Error('Gemini returned empty response');
+      const response: InferenceResponse = await geminiProvider.generate(request);
       recordSuccess('google-gemini');
-      return { text, modelUsed: geminiModel, provider: 'google-gemini', finishReason: data.candidates?.[0]?.finishReason ?? 'stop' };
+      return { text: response.text, modelUsed: response.modelUsed, provider: response.provider, finishReason: response.finishReason };
     } catch (err: any) {
       recordFailure('google-gemini', err.message, breakerConfig);
       emitError('ai', err, 'P1', { provider: 'google-gemini', context: { action: 'gemini_fallback' } });
