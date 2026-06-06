@@ -10,6 +10,7 @@ import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
+import AiReportButton from '@/components/ai/AiReportButton';
 
 async function readStreamedChatResponse(
   response: Response,
@@ -146,7 +147,7 @@ function VerseChip({ verse }: { verse: ScriptureRef }) {
   );
 }
 
-function MessageBubble({ msg }: { msg: Message }) {
+function MessageBubble({ msg, userId, prevUserText }: { msg: Message; userId: string; prevUserText?: string }) {
   const isUser = msg.role === 'user';
   return (
     <div className={`flex gap-2 mb-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
@@ -180,6 +181,14 @@ function MessageBubble({ msg }: { msg: Message }) {
           {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           {msg.fromRag && <span className="ml-1.5 text-orange-400">📖</span>}
         </span>
+        {!isUser && (
+          <AiReportButton
+            userId={userId}
+            messageId={msg.id}
+            aiText={msg.text}
+            userPrompt={prevUserText}
+          />
+        )}
       </div>
     </div>
   );
@@ -514,7 +523,15 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 </div>
               ) : (
                 <>
-                  {messages.map(msg => <MessageBubble key={msg.id} msg={msg} />)}
+                  {messages.map((msg, idx) => {
+                    let prevUserText: string | undefined;
+                    if (msg.role === 'model') {
+                      for (let i = idx - 1; i >= 0; i--) {
+                        if (messages[i].role === 'user') { prevUserText = messages[i].text; break; }
+                      }
+                    }
+                    return <MessageBubble key={msg.id} msg={msg} userId={userId} prevUserText={prevUserText} />;
+                  })}
                   {loading && <TypingIndicator />}
                   <div ref={messagesEndRef} />
                 </>

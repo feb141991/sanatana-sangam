@@ -10,6 +10,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
 import SacredIcon from '@/components/ui/SacredIcon';
+import AiReportButton from '@/components/ai/AiReportButton';
 
 async function readStreamedChatResponse(
   response: Response,
@@ -120,7 +121,7 @@ const SUGGESTIONS_BY_TRADITION: Record<string, string[]> = {
 };
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
-function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transliterationLanguage?: string }) {
+function MessageBubble({ msg, userId, prevUserText, transliterationLanguage }: { msg: Message; userId: string; prevUserText?: string; transliterationLanguage?: string }) {
   const isUser = msg.role === 'user';
   return (
     <motion.div
@@ -198,6 +199,14 @@ function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transli
             </span>
           )}
         </div>
+        {!isUser && (
+          <AiReportButton
+            userId={userId}
+            messageId={msg.id}
+            aiText={msg.text}
+            userPrompt={prevUserText}
+          />
+        )}
       </div>
     </motion.div>
   );
@@ -570,7 +579,23 @@ export default function AIChatClient({
           </div>
         )}
 
-        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} transliterationLanguage={transliterationLanguage} />)}
+        {messages.map((msg, idx) => {
+          let prevUserText: string | undefined;
+          if (msg.role === 'model') {
+            for (let i = idx - 1; i >= 0; i--) {
+              if (messages[i].role === 'user') { prevUserText = messages[i].text; break; }
+            }
+          }
+          return (
+            <MessageBubble
+              key={msg.id}
+              msg={msg}
+              userId={userId}
+              prevUserText={prevUserText}
+              transliterationLanguage={transliterationLanguage}
+            />
+          );
+        })}
         {loading && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>

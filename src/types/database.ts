@@ -253,10 +253,14 @@ export interface Database {
           status: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
           admin_note: string | null;
           created_at: string;
+          // metadata stores AI-report context (ai_response, user_prompt, model, etc.).
+          // content_author_id is passed as '' for AI reports — no real author UUID exists.
+          metadata: Record<string, unknown> | null;
         };
         Insert: Omit<Database['public']['Tables']['content_reports']['Row'], 'id' | 'created_at' | 'status' | 'admin_note'> & {
           status?: Database['public']['Tables']['content_reports']['Row']['status'];
           admin_note?: string | null;
+          metadata?: Record<string, unknown> | null;
         };
         Update: Partial<Database['public']['Tables']['content_reports']['Insert']>;
       };
