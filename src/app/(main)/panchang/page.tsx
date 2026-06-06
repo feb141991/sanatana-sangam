@@ -8,7 +8,10 @@ import PanchangHub from './PanchangHub';
 // Revalidate once per day — panchang data changes daily at midnight IST.
 // This serves the page from Vercel's edge cache for all visitors,
 // eliminating cold-start latency and Supabase auth overhead on every hit.
+// preferredRegion 'auto' ensures the serverless function runs in the region
+// closest to the visitor for minimal cold-start overhead.
 export const revalidate = 86400;
+export const preferredRegion = 'auto';
 
 // Memoised per-request so generateMetadata and the page share one calculation.
 const getPanchang = cache(() => {
