@@ -1,5 +1,5 @@
+'use client';
 // Served by the service worker when the user is offline and no cached page exists.
-export const dynamic = 'force-static';
 
 export default function OfflinePage() {
   return (
