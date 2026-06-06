@@ -112,7 +112,6 @@ export default function SeekersNearYou({ userId, profile }: Props) {
   }, [profile?.latitude, profile?.longitude, profile?.city, userId]);
 
   if (!profile?.latitude && !profile?.city) return null;
-  if (!loading && nearby.length === 0) return null;
 
   return (
     <div
@@ -125,6 +124,10 @@ export default function SeekersNearYou({ userId, profile }: Props) {
 
       {loading ? (
         <p className="text-sm theme-dim">Looking for nearby seekers…</p>
+      ) : nearby.length === 0 ? (
+        <p className="text-sm" style={{ color: 'var(--brand-muted)' }}>
+          No seekers found nearby yet — as more Zeroists join from your area they&apos;ll appear here.
+        </p>
       ) : (
         <div className="flex flex-wrap gap-3">
           {nearby.map((p) => (
