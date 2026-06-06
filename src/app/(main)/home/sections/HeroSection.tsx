@@ -851,7 +851,7 @@ export function HeroSection({
                   Ask Dharma Mitra
                 </p>
                 <p className="text-[10px] leading-snug mt-0.5" style={{ color: 'rgba(197,160,89,0.65)' }}>
-                  About today's mantra &amp; how to chant it
+                  About today&apos;s mantra &amp; how to chant it
                 </p>
               </Link>
               <button

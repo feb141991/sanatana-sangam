@@ -1542,13 +1542,16 @@ export default function NityaKarmaClient({
   }
 
   // Apply custom labels and merge extra Pro steps
-  const displaySteps: NityaSequenceStep[] = [
+  // Memoised so the array reference is stable and doesn't force downstream
+  // useEffect hooks (that list displaySteps as a dependency) to re-run every render.
+  const displaySteps: NityaSequenceStep[] = useMemo(() => [
     ...applyCustomLabels(steps, custom),
     ...(isPro ? custom.extraSteps.map(es => ({
       id: es.id, label: es.label, icon: es.icon, minutes: es.minutes,
       description: 'Custom practice', completed: doneCustomIds.has(es.id),
     } as NityaSequenceStep)) : []),
-  ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [steps, custom, isPro, doneCustomIds]);
 
   const displayStepsRef = useRef(displaySteps);
   useEffect(() => { displayStepsRef.current = displaySteps; }, [displaySteps]);
