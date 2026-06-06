@@ -129,6 +129,9 @@ interface HeroSectionProps {
   upcomingSacredObservanceLabel: string | null;
   showRashiphalNudge: boolean;
   onDismissRashiphalNudge: () => void;
+  /** Dharma Mitra mantra nudge — dismissible, stored in localStorage */
+  showDharmaMitraNudge: boolean;
+  onDismissDharmaMitraNudge: () => void;
   city: string;
   timezone: string;
 }
@@ -287,6 +290,8 @@ export function HeroSection({
   upcomingSacredObservanceLabel,
   showRashiphalNudge,
   onDismissRashiphalNudge,
+  showDharmaMitraNudge,
+  onDismissDharmaMitraNudge,
   city,
   timezone,
 }: HeroSectionProps) {
@@ -817,6 +822,52 @@ export function HeroSection({
           </p>
         </motion.button>
       </div>
+
+      {/* ── Dharma Mitra mantra nudge — small pop-card, dismiss-to-kill ── */}
+      <AnimatePresence>
+        {showDharmaMitraNudge && (
+          <motion.div
+            initial={{ opacity: 0, y: 6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.94, y: -4 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-4 mt-2 mb-1"
+          >
+            <div
+              className="flex items-center gap-3 rounded-2xl px-3.5 py-2.5"
+              style={{
+                background: 'rgba(197,160,89,0.10)',
+                border: '1px solid rgba(197,160,89,0.22)',
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              <span className="text-base leading-none flex-shrink-0">🪔</span>
+              <Link
+                href="/ai-chat?prompt=Tell+me+about+today%27s+mantra+and+how+to+chant+it"
+                onClick={onDismissDharmaMitraNudge}
+                className="flex-1 min-w-0"
+              >
+                <p className="text-[11px] font-semibold leading-snug" style={{ color: 'var(--brand-primary-strong)' }}>
+                  Ask Dharma Mitra
+                </p>
+                <p className="text-[10px] leading-snug mt-0.5" style={{ color: 'rgba(197,160,89,0.65)' }}>
+                  About today's mantra &amp; how to chant it
+                </p>
+              </Link>
+              <button
+                onClick={(e) => { e.stopPropagation(); onDismissDharmaMitraNudge(); }}
+                aria-label="Dismiss"
+                className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full transition-opacity opacity-50 hover:opacity-100"
+                style={{ color: 'var(--brand-primary)' }}
+              >
+                <svg viewBox="0 0 12 12" className="w-2.5 h-2.5" fill="currentColor">
+                  <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Daily Sadhana Progress Strip ── */}
       <DailySadhanaStrip

@@ -391,6 +391,7 @@ export default function HomeDashboard({
 
   const [showSankalpSheet, setShowSankalpSheet] = useState(false);
   const [showRashiphalNudge, setShowRashiphalNudge] = useState(false);
+  const [showDharmaMitraNudge, setShowDharmaMitraNudge] = useState(false);
   const [quizStreak, setQuizStreak] = useState<number>(0);
   const [quizMilestone, setQuizMilestone] = useState<string | null>(null);
 
@@ -488,6 +489,18 @@ export default function HomeDashboard({
       const val = localStorage.getItem(key);
       if (!val) {
         const timer = setTimeout(() => setShowRashiphalNudge(true), 3000);
+        return () => clearTimeout(timer);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Dharma Mitra mantra nudge — show once, permanent dismiss via localStorage
+  useEffect(() => {
+    try {
+      const dismissed = localStorage.getItem('shoonaya-dharma-mitra-mantra-nudge-v1');
+      if (!dismissed) {
+        // Delay slightly so it doesn't fight with page load animations
+        const timer = setTimeout(() => setShowDharmaMitraNudge(true), 1800);
         return () => clearTimeout(timer);
       }
     } catch { /* ignore */ }
@@ -910,6 +923,11 @@ export default function HomeDashboard({
               await OS.User.addTag('wants_rashiphal', '1');
             }
           }).catch(() => {});
+        }}
+        showDharmaMitraNudge={showDharmaMitraNudge}
+        onDismissDharmaMitraNudge={() => {
+          try { localStorage.setItem('shoonaya-dharma-mitra-mantra-nudge-v1', 'yes'); } catch {}
+          setShowDharmaMitraNudge(false);
         }}
         city={displayCity}
         timezone={timezone}
