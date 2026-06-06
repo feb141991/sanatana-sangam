@@ -43,6 +43,7 @@ import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
+import MilestoneShareCard from '@/components/home/MilestoneShareCard';
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
@@ -1089,6 +1090,9 @@ export default function NityaKarmaClient({
   const isPro               = initialIsPro || livePremium;
   const rhythmMode          = normalizeNityaRhythmMode(nityaRhythmMode);
   const _sectionsEnabled    = normalizeNityaSectionsEnabled(nityaSectionsEnabled);
+  const nityaSubtitle       = rhythmMode === 'advanced' ? 'Nitya Karma · Advanced'
+                            : rhythmMode === 'full_day' ? 'Nitya Karma · Poorna Dinacharya'
+                            : 'Nitya Karma · Morning';
   const { term }            = useVocabulary(tradition);
   const readablePreferences = resolveReadablePreferences({
     appLanguage,
@@ -2194,7 +2198,7 @@ export default function NityaKarmaClient({
                       style={{ background: 'rgba(34,197,94,0.15)', color: 'rgb(34,197,94)' }}>FREE</span>
                   </div>
                   <p className="text-[11.5px] leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                    Nitya Karma · Morning
+                    {nityaSubtitle}
                   </p>
                   <div className="mt-2 flex items-center gap-2">
                     <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: `${accent}18` }}>
@@ -2309,7 +2313,7 @@ export default function NityaKarmaClient({
           >
             <SubHeader
               title={meta.nityaKarmaTitle}
-              subtitle="Nitya Karma · Morning"
+              subtitle={nityaSubtitle}
               onBack={() => setNityaScreen('hub')}
             />
 
@@ -2419,6 +2423,16 @@ export default function NityaKarmaClient({
               </motion.button>
             );
           })}
+
+          {/* Streak milestone share card — shown when today's streak hits 7/21/40/108 */}
+          {streak && streak.current_streak > 0 && (
+            <MilestoneShareCard
+              japaStreak={streak.current_streak}
+              userId={userId}
+              userName={userName}
+              tradition={tradition}
+            />
+          )}
 
           {/* All done */}
           {allDone && (
