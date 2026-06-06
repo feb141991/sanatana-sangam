@@ -1581,6 +1581,7 @@ export default function PathshalaClient({
                     sanskrit: todayShloka.sanskrit,
                     translation: getShlokaByLanguage(todayShloka, appLanguage ?? 'en'),
                     source: todayShloka.source,
+                    streak: shrutiStats?.streak ?? 1,
                   });
                 } catch (err: any) {
                   if (err?.name !== 'AbortError') toast.error('Could not share. Try again.');

@@ -30,18 +30,10 @@ export interface NityaShareCardData {
   consistencyScore?: number;
   peakHourLabel?: string;
   month?: string;
-  // shloka_verse
   sanskrit?: string;
   translation?: string;
   source?: string;
 }
-
-const TRADITION_BG_GRADIENT: Record<string, [string, string]> = {
-  hindu:    ['#120600', '#2a0e00'],
-  sikh:     ['#00061a', '#000f2e'],
-  buddhist: ['#1a0008', '#2d0010'],
-  jain:     ['#0a0a00', '#1a1a00'],
-};
 
 const CARD_DIMENSIONS: Record<NityaCardType, [number, number]> = {
   streak_milestone: [1080, 1080],
@@ -85,10 +77,6 @@ function toBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
   return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
-function getTraditionColors(tradition: string) {
-  return TRADITION_BG_GRADIENT[tradition] ?? TRADITION_BG_GRADIENT.hindu;
-}
-
 function loadCanvasImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -96,31 +84,6 @@ function loadCanvasImage(src: string): Promise<HTMLImageElement> {
     image.onerror = () => reject(new Error(`Unable to load image: ${src}`));
     image.src = src;
   });
-}
-
-function drawLinearBackground(ctx: CanvasRenderingContext2D, width: number, height: number, colors: [string, string]) {
-  const bg = ctx.createLinearGradient(0, 0, 0, height);
-  bg.addColorStop(0, colors[0]);
-  bg.addColorStop(1, colors[1]);
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
-}
-
-function drawRadialBurst(ctx: CanvasRenderingContext2D, width: number, height: number, inner: string, accentColor: string) {
-  ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, width, height);
-  const bg = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width * 0.72);
-  bg.addColorStop(0, inner);
-  bg.addColorStop(0.52, inner);
-  bg.addColorStop(1, '#000000');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, width, height);
-
-  const glow = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, 420);
-  glow.addColorStop(0, `${accentColor}30`);
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, width, height);
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
@@ -137,6 +100,592 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: n
   ctx.closePath();
 }
 
+function fillRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, color: string) {
+  roundRect(ctx, x, y, width, height, radius);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function strokeRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, color: string, lineWidth = 2) {
+  roundRect(ctx, x, y, width, height, radius);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.stroke();
+}
+
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines = 10
+) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = '';
+
+  for (const word of words) {
+    const testLine = line ? `${line} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+      if (lines.length >= maxLines - 1) break;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line && lines.length < maxLines) lines.push(line);
+
+  lines.forEach((lineText, index) => ctx.fillText(lineText, x, y + index * lineHeight));
+  return y + lines.length * lineHeight;
+}
+
+function wrapAndFitText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  options: { fontBase: string, maxSize: number, minSize: number, maxLines: number, lineHeightRatio: number, weight?: string }
+) {
+  let size = options.maxSize;
+  let lines: string[] = [];
+  const weight = options.weight ?? '400';
+  
+  while (size >= options.minSize) {
+    ctx.font = `${weight} ${size}px ${options.fontBase}`;
+    const words = text.split(/\s+/).filter(Boolean);
+    lines = [];
+    let line = '';
+    for (const word of words) {
+      const testLine = line ? `${line} ${word}` : word;
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = testLine;
+      }
+    }
+    if (line) lines.push(line);
+    
+    if (lines.length <= options.maxLines) {
+      break;
+    }
+    size -= 2;
+  }
+  
+  const lineHeight = size * options.lineHeightRatio;
+  lines.slice(0, options.maxLines).forEach((lineText, index) => {
+    ctx.fillText(lineText, x, y + index * lineHeight);
+  });
+  return y + Math.min(lines.length, options.maxLines) * lineHeight;
+}
+
+function getDefaultQuote(data: NityaShareCardData) {
+  if (data.quote) return data.quote;
+  const quotes = TRADITION_SHARE_QUOTES[data.tradition] ?? TRADITION_SHARE_QUOTES.hindu;
+  return quotes[(data.streak ?? 0) % quotes.length];
+}
+
+// ── SHARED PREMIUM HELPERS ───────────────────────────────────────────────────
+
+async function drawPremiumParchmentBackground(ctx: CanvasRenderingContext2D, width: number, height: number, tradition: string) {
+  const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+  bgGrad.addColorStop(0, '#FDFBF7');
+  bgGrad.addColorStop(1, '#F4ECE1');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, width, height);
+
+  const glow = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) * 0.6);
+  glow.addColorStop(0, '#ffffffb3');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  const bgMap: Record<string, string> = {
+    hindu: '/darshan/krishna.webp',
+    sikh: '/darshan/guru_nanak.webp',
+    buddhist: '/darshan/buddha.webp',
+    jain: '/darshan/mahavir.webp',
+  };
+  const bgSrc = bgMap[tradition];
+  if (bgSrc) {
+    try {
+      const img = await loadCanvasImage(bgSrc);
+      ctx.save();
+      ctx.globalAlpha = 0.06;
+      const scale = Math.max(width / img.width, height / img.height);
+      const iw = img.width * scale;
+      const ih = img.height * scale;
+      ctx.drawImage(img, width / 2 - iw / 2, height / 2 - ih / 2, iw, ih);
+      ctx.restore();
+    } catch (e) {
+      // ignore
+    }
+  }
+}
+
+function drawPremiumPanel(ctx: CanvasRenderingContext2D, bounds: { x: number, y: number, w: number, h: number }) {
+  strokeRoundRect(ctx, bounds.x, bounds.y, bounds.w, bounds.h, 24, '#D4AF37', 2);
+  strokeRoundRect(ctx, bounds.x + 12, bounds.y + 12, bounds.w - 24, bounds.h - 24, 16, '#D4AF3766', 1);
+}
+
+async function drawShoonayaBrandHeader(ctx: CanvasRenderingContext2D, width: number) {
+  const logoW = 178;
+  const logoH = 28;
+  try {
+    const logo = await loadCanvasImage('/assets/images/logos/river-light/river-light-horizontal.png');
+    ctx.save();
+    fillRoundRect(ctx, width / 2 - logoW / 2 - 24, 70 - 12, logoW + 48, logoH + 24, (logoH + 24) / 2, '#0F172A');
+    ctx.drawImage(logo, 805, 318, 1020, 145, width / 2 - logoW / 2, 70, logoW, logoH);
+    ctx.restore();
+  } catch {
+    ctx.font = '600 24px -apple-system, sans-serif';
+    ctx.fillStyle = '#1A1A1A';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Shoonaya', width / 2, 84);
+  }
+}
+
+function drawTraditionBadge(ctx: CanvasRenderingContext2D, width: number, y: number, label: string) {
+  ctx.font = '600 20px -apple-system, sans-serif';
+  const badgeWidth = ctx.measureText(label).width + 40;
+  fillRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 40, 20, '#0F172A');
+  strokeRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 40, 20, '#D4AF37', 2);
+  ctx.fillStyle = '#D4AF37';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, width / 2, y + 20);
+}
+
+function drawOrnamentalDivider(ctx: CanvasRenderingContext2D, width: number, y: number) {
+  ctx.strokeStyle = '#D4AF3740';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 10]);
+  ctx.beginPath();
+  ctx.moveTo(width * 0.22, y);
+  ctx.lineTo(width * 0.78, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.save();
+  ctx.translate(width / 2, y);
+  ctx.rotate(Math.PI / 4);
+  ctx.fillStyle = '#D4AF37';
+  ctx.fillRect(-6, -6, 12, 12);
+  ctx.restore();
+}
+
+function drawMetricLine(ctx: CanvasRenderingContext2D, width: number, y: number, text: string) {
+  ctx.font = '600 22px -apple-system, sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, width / 2, y);
+}
+
+function drawShoonayaFooter(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const footerY = height - 90;
+  ctx.font = '400 16px -apple-system, sans-serif';
+  ctx.fillStyle = '#94A3B8';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Read · Reflect · Share', width / 2, footerY - 26);
+
+  const pillWidth = 180;
+  fillRoundRect(ctx, width / 2 - pillWidth / 2, footerY, pillWidth, 40, 20, '#0F172A');
+  ctx.font = '600 18px -apple-system, sans-serif';
+  ctx.fillStyle = '#D4AF37';
+  ctx.fillText('shoonaya.com', width / 2, footerY + 20);
+}
+
+function getTraditionLabel(tradition: string) {
+  return tradition.charAt(0).toUpperCase() + tradition.slice(1);
+}
+
+function getStreakLabel(streak?: number) {
+  return streak && streak > 0 ? streak : 1;
+}
+
+// ── PHASE 1 & 2 RENDERERS ───────────────────────────────────────────────────
+
+async function renderShlokaVerse(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1080;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  const titleMap: Record<string, string> = {
+    hindu: 'Aaj Ka Shloka',
+    sikh: 'Aaj Da Shabad',
+    buddhist: 'Aaj Ka Dhamma',
+    jain: 'Aaj Ka Sutra',
+  };
+  const title = titleMap[data.tradition] ?? 'Aaj Ka Verse';
+
+  ctx.font = '700 42px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(title, W / 2, 170);
+
+  drawTraditionBadge(ctx, W, 210, `${getTraditionLabel(data.tradition)} · Day ${getStreakLabel(data.streak)}`);
+
+  const sanskrit = data.sanskrit ?? data.quote ?? '';
+  let scriptFont = '"Noto Sans Devanagari", "Siddhanta", serif';
+  let verseLineHeightRatio = 1.5;
+  if (data.tradition === 'sikh') {
+    scriptFont = '"Noto Sans Gurmukhi", serif';
+  } else if (data.tradition === 'buddhist') {
+    scriptFont = 'Georgia, serif';
+    verseLineHeightRatio = 1.4;
+  } else if (data.tradition === 'jain') {
+    scriptFont = '"Noto Sans Devanagari", "Siddhanta", serif';
+  }
+
+  ctx.fillStyle = '#0F172A';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const verseEndY = wrapAndFitText(ctx, sanskrit, W / 2, 340, 860, {
+    fontBase: scriptFont,
+    weight: '500',
+    maxSize: 48,
+    minSize: 32,
+    maxLines: 6,
+    lineHeightRatio: verseLineHeightRatio
+  });
+
+  const sourceLineY = verseEndY + 40;
+  if (data.source) {
+    ctx.font = '600 24px -apple-system, sans-serif';
+    ctx.fillStyle = '#B45309';
+    ctx.fillText(`— ${data.source}`, W / 2, sourceLineY);
+  }
+
+  const meaningY = sourceLineY + 60;
+  ctx.font = '700 22px -apple-system, sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.fillText('MEANING', W / 2, meaningY);
+
+  const translation = data.translation ?? '';
+  ctx.fillStyle = '#1E293B';
+  wrapAndFitText(ctx, translation, W / 2, meaningY + 46, 860, {
+    fontBase: 'Georgia, serif',
+    weight: '400',
+    maxSize: 36,
+    minSize: 24,
+    maxLines: 4,
+    lineHeightRatio: 1.45
+  });
+
+  const streak = getStreakLabel(data.streak);
+  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred reading streak` : `Completed today`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+async function renderMorningComplete(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1080;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · Morning Complete`);
+
+  if (data.todayTithi) {
+    ctx.font = '600 24px -apple-system, sans-serif';
+    ctx.fillStyle = '#B45309';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${data.todayTithi} — Auspicious completion`, W / 2, 250);
+  }
+
+  // Large Checkmark
+  ctx.beginPath();
+  ctx.arc(W / 2, 450, 120, 0, Math.PI * 2);
+  ctx.fillStyle = '#D4AF3720';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(W / 2, 450, 100, 0, Math.PI * 2);
+  ctx.fillStyle = '#D4AF37';
+  ctx.fill();
+  ctx.font = '700 112px -apple-system, sans-serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✓', W / 2, 443);
+
+  ctx.font = '700 72px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.fillText('Morning complete', W / 2, 650);
+
+  ctx.font = '600 32px -apple-system, sans-serif';
+  ctx.fillStyle = '#475569';
+  ctx.fillText(`${data.stepsCompletedToday ?? 0} of ${data.totalSteps ?? 7} sacred steps`, W / 2, 720);
+
+  const dateLabel = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
+  ctx.font = '600 28px -apple-system, sans-serif';
+  ctx.fillStyle = '#94A3B8';
+  ctx.fillText(dateLabel, W / 2, 770);
+
+  drawOrnamentalDivider(ctx, W, 860);
+
+  const streak = getStreakLabel(data.streak);
+  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred morning streak` : `Completed today`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+async function renderStreakMilestone(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1080;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
+
+  ctx.font = '120px serif';
+  ctx.fillStyle = '#D4AF37';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(data.symbol, W / 2, 320);
+
+  ctx.font = '700 220px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.fillText(String(data.streak ?? 0), W / 2, 540);
+
+  ctx.font = '600 48px -apple-system, sans-serif';
+  ctx.fillStyle = '#B45309';
+  ctx.fillText('days', W / 2, 690);
+
+  drawOrnamentalDivider(ctx, W, 800);
+
+  drawMetricLine(ctx, W, H - 150, `${data.userName}'s Sacred Sadhana`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+async function renderSadhanaQuote(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1080;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
+
+  ctx.font = '120px Georgia, serif';
+  ctx.fillStyle = '#D4AF37';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('“', W / 2, 300);
+
+  ctx.fillStyle = '#0F172A';
+  const endY = wrapAndFitText(ctx, getDefaultQuote(data), W / 2, 380, 840, {
+    fontBase: 'Georgia, serif',
+    weight: '600',
+    maxSize: 52,
+    minSize: 32,
+    maxLines: 6,
+    lineHeightRatio: 1.45
+  });
+
+  if (data.quoteSource) {
+    ctx.font = 'italic 600 28px Georgia, serif';
+    ctx.fillStyle = '#B45309';
+    ctx.fillText(data.quoteSource, W / 2, endY + 40);
+  }
+
+  drawOrnamentalDivider(ctx, W, endY + 120);
+
+  const streak = getStreakLabel(data.streak);
+  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred reading streak` : `Completed today`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+async function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1350;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  const month = data.month ?? new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  drawTraditionBadge(ctx, W, 170, `${month} · ${data.milestoneLabel}`);
+
+  ctx.font = '700 80px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`${data.userName}'s Journey`, W / 2, 280);
+
+  drawOrnamentalDivider(ctx, W, 380);
+
+  const boxes = [
+    { value: `${data.consistencyScore ?? 0}%`, label: 'Consistency' },
+    { value: String(data.activeDays ?? 0), label: 'Active days' },
+    { value: String(data.fullMorningDays ?? 0), label: 'Complete' },
+  ];
+  const boxY = 460;
+  const boxW = 286;
+  const boxH = 190;
+  const boxGap = 26;
+  const boxStart = (W - boxW * 3 - boxGap * 2) / 2;
+  boxes.forEach((box, index) => {
+    const x = boxStart + index * (boxW + boxGap);
+    fillRoundRect(ctx, x, boxY, boxW, boxH, 30, '#0F172A08');
+    strokeRoundRect(ctx, x, boxY, boxW, boxH, 30, '#D4AF37', 2);
+    ctx.font = '700 72px Georgia, serif';
+    ctx.fillStyle = '#0F172A';
+    ctx.fillText(box.value, x + boxW / 2, boxY + 80);
+    ctx.font = '600 22px -apple-system, sans-serif';
+    ctx.fillStyle = '#B45309';
+    ctx.fillText(box.label, x + boxW / 2, boxY + 140);
+  });
+
+  const dow = data.dowData?.slice(0, 7) ?? Array(7).fill(0);
+  const max = Math.max(...dow, 1);
+  const miniStart = 252;
+  const miniY = 740;
+  dow.forEach((value, index) => {
+    const x = miniStart + index * 96;
+    const h = Math.max(4, (value / max) * 40);
+    fillRoundRect(ctx, x, miniY + 44 - h, 52, h, 12, '#D4AF37');
+    ctx.font = '600 18px -apple-system, sans-serif';
+    ctx.fillStyle = '#475569';
+    ctx.fillText(['M', 'T', 'W', 'T', 'F', 'S', 'S'][index], x + 26, miniY + 82);
+  });
+
+  const score = data.consistencyScore ?? 0;
+  const insight = score >= 80
+    ? 'Extraordinary. The practice is you.'
+    : score >= 60
+      ? 'Solid month. The gaps teach as much as the days.'
+      : score >= 40
+        ? 'Growing. Sadhana is not a sprint.'
+        : 'The seed is planted. Keep returning.';
+  ctx.font = '600 34px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  wrapText(ctx, insight, W / 2, 920, 780, 50, 3);
+
+  drawMetricLine(ctx, W, H - 150, `Practice peaks at ${data.peakHourLabel ?? 'your chosen hour'}`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+async function renderWeekSummary(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
+  const W = 1080;
+  const H = 1920;
+
+  await drawPremiumParchmentBackground(ctx, W, H, data.tradition);
+  drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
+  await drawShoonayaBrandHeader(ctx, W);
+
+  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
+
+  ctx.font = '100px serif';
+  ctx.fillStyle = '#D4AF37';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(data.symbol, W / 2, 340);
+
+  ctx.font = '700 72px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.fillText('This Week\'s Practice', W / 2, 480);
+
+  const dow = data.dowData?.slice(0, 7) ?? Array(7).fill(0);
+  const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const chartTop = 680;
+  const chartHeight = 640;
+  const barWidth = 78;
+  const gap = 52;
+  const startX = (W - (barWidth * 7 + gap * 6)) / 2;
+  const todayIndex = (new Date().getDay() + 6) % 7;
+
+  for (let i = 0; i < 7; i++) {
+    const x = startX + i * (barWidth + gap);
+    ctx.font = '600 32px -apple-system, sans-serif';
+    ctx.fillStyle = '#475569';
+    ctx.fillText(labels[i], x + barWidth / 2, chartTop - 64);
+    const value = Math.max(0, Math.min(7, dow[i] ?? 0));
+    const h = (value / 7) * chartHeight;
+    fillRoundRect(ctx, x, chartTop + chartHeight - h, barWidth, Math.max(10, h), 38, value > 0 ? '#0F172A' : '#0F172A10');
+    if (i === todayIndex) {
+      ctx.beginPath();
+      ctx.arc(x + barWidth / 2, chartTop + chartHeight - h - 34, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#D4AF37';
+      ctx.fill();
+    }
+  }
+
+  const delta = (data.thisWeekActive ?? 0) - (data.lastWeekActive ?? 0);
+  ctx.font = '700 86px Georgia, serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.fillText(`${data.thisWeekActive ?? 0}/7 days active`, W / 2, 1480);
+
+  ctx.font = '600 38px -apple-system, sans-serif';
+  ctx.fillStyle = delta > 0 ? '#16A34A' : delta < 0 ? '#DC2626' : '#B45309';
+  const deltaLabel = delta > 0
+    ? `↑ ${delta} more than last week`
+    : delta < 0
+      ? `↓ ${Math.abs(delta)} fewer than last week`
+      : 'Same rhythm as last week';
+  ctx.fillText(deltaLabel, W / 2, 1580);
+
+  drawMetricLine(ctx, W, H - 150, `${data.userName}'s Sacred Journey`);
+  drawShoonayaFooter(ctx, W, H);
+}
+
+export async function generateNityaShareCard(
+  type: NityaCardType,
+  data: NityaShareCardData
+): Promise<Blob | null> {
+  if (typeof document === 'undefined') return null;
+
+  try {
+    const [width, height] = CARD_DIMENSIONS[type];
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    switch (type) {
+      case 'streak_milestone':
+        await renderStreakMilestone(ctx, data);
+        break;
+      case 'week_summary':
+        await renderWeekSummary(ctx, data);
+        break;
+      case 'morning_complete':
+        await renderMorningComplete(ctx, data);
+        break;
+      case 'sadhana_quote':
+        await renderSadhanaQuote(ctx, data);
+        break;
+      case 'monthly_report':
+        await renderMonthlyReport(ctx, data);
+        break;
+      case 'shloka_verse':
+        await renderShlokaVerse(ctx, data);
+        break;
+    }
+
+    return toBlob(canvas);
+  } catch (error) {
+    console.error('Error generating Nitya share card:', error);
+    return null;
+  }
+}
+
+// Retaining this specific footer used by generateSadhanaShareImage
 async function drawShoonayaDailyFooter(
   ctx: CanvasRenderingContext2D,
   y: number,
@@ -183,545 +732,6 @@ async function drawShoonayaDailyFooter(
   ctx.textBaseline = 'middle';
   ctx.fillText(separator, startX + logoWidth + 7, y);
   ctx.fillText(label, startX + logoWidth + separatorWidth, y);
-}
-
-function fillRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, color: string) {
-  roundRect(ctx, x, y, width, height, radius);
-  ctx.fillStyle = color;
-  ctx.fill();
-}
-
-function strokeRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number, color: string, lineWidth = 2) {
-  roundRect(ctx, x, y, width, height, radius);
-  ctx.strokeStyle = color;
-  ctx.lineWidth = lineWidth;
-  ctx.stroke();
-}
-
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines = 10
-) {
-  const words = text.split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let line = '';
-
-  for (const word of words) {
-    const testLine = line ? `${line} ${word}` : word;
-    if (ctx.measureText(testLine).width > maxWidth && line) {
-      lines.push(line);
-      line = word;
-      if (lines.length >= maxLines - 1) break;
-    } else {
-      line = testLine;
-    }
-  }
-  if (line && lines.length < maxLines) lines.push(line);
-
-  lines.forEach((lineText, index) => ctx.fillText(lineText, x, y + index * lineHeight));
-  return y + lines.length * lineHeight;
-}
-
-function drawBranding(ctx: CanvasRenderingContext2D, width: number, y: number, accentColor: string, label = 'Shoonaya') {
-  ctx.strokeStyle = `${accentColor}33`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(width * 0.22, y - 34);
-  ctx.lineTo(width * 0.78, y - 34);
-  ctx.stroke();
-
-  ctx.font = '300 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = `${accentColor}80`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(label, width / 2, y);
-}
-
-function drawSymbolRings(ctx: CanvasRenderingContext2D, x: number, y: number, symbol: string, accentColor: string, size = 180) {
-  const glow = ctx.createRadialGradient(x, y, 0, x, y, 150);
-  glow.addColorStop(0, `${accentColor}40`);
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(x - 180, y - 180, 360, 360);
-
-  ctx.strokeStyle = `${accentColor}66`;
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.arc(x, y, 124, 0, Math.PI * 2);
-  ctx.stroke();
-
-  ctx.save();
-  ctx.setLineDash([16, 18]);
-  ctx.strokeStyle = `${accentColor}40`;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(x, y, 154, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.font = `${size}px serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(symbol, x, y + 4);
-}
-
-function getDefaultQuote(data: NityaShareCardData) {
-  if (data.quote) return data.quote;
-  const quotes = TRADITION_SHARE_QUOTES[data.tradition] ?? TRADITION_SHARE_QUOTES.hindu;
-  return quotes[(data.streak ?? 0) % quotes.length];
-}
-
-function renderStreakMilestone(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  const [inner] = getTraditionColors(data.tradition);
-  drawRadialBurst(ctx, 1080, 1080, inner, data.accentColor);
-
-  drawSymbolRings(ctx, 540, 225, data.symbol, data.accentColor, 180);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '700 200px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = data.accentColor;
-  ctx.fillText(String(data.streak ?? 0), 540, 505);
-
-  ctx.font = '300 40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.60)';
-  ctx.fillText('days', 540, 640);
-
-  ctx.strokeStyle = `${data.accentColor}4d`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(108, 700);
-  ctx.lineTo(972, 700);
-  ctx.stroke();
-
-  ctx.font = '500 48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.fillText(data.milestoneLabel, 540, 760);
-
-  ctx.font = '400 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.55)';
-  ctx.fillText(`${data.userName}'s Sadhana`, 540, 905);
-
-  ctx.font = '300 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = `${data.accentColor}80`;
-  ctx.fillText(`Shoonaya · ${data.tradition}`, 540, 948);
-  drawBranding(ctx, 1080, 1010, data.accentColor, 'Shoonaya · Nitya Karma');
-}
-
-function renderWeekSummary(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  drawLinearBackground(ctx, 1080, 1920, getTraditionColors(data.tradition));
-  const deep = ctx.createLinearGradient(0, 0, 0, 1920);
-  deep.addColorStop(0, 'transparent');
-  deep.addColorStop(1, '#0a0806');
-  ctx.fillStyle = deep;
-  ctx.fillRect(0, 0, 1080, 1920);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '80px serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.fillText(data.symbol, 540, 165);
-  ctx.font = '600 54px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.94)';
-  ctx.fillText('This Week\'s Practice', 540, 250);
-
-  const dow = data.dowData?.slice(0, 7) ?? Array(7).fill(0);
-  const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  const chartTop = 520;
-  const chartHeight = 760;
-  const barWidth = 78;
-  const gap = 52;
-  const startX = (1080 - (barWidth * 7 + gap * 6)) / 2;
-  const todayIndex = (new Date().getDay() + 6) % 7;
-
-  for (let i = 0; i < 7; i++) {
-    const x = startX + i * (barWidth + gap);
-    ctx.font = '600 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.fillText(labels[i], x + barWidth / 2, chartTop - 64);
-    const value = Math.max(0, Math.min(7, dow[i] ?? 0));
-    const h = (value / 7) * chartHeight;
-    fillRoundRect(ctx, x, chartTop + chartHeight - h, barWidth, Math.max(10, h), 38, value > 0 ? `${data.accentColor}e6` : 'rgba(255,255,255,0.10)');
-    if (i === todayIndex) {
-      ctx.beginPath();
-      ctx.arc(x + barWidth / 2, chartTop + chartHeight - h - 34, 10, 0, Math.PI * 2);
-      ctx.fillStyle = data.accentColor;
-      ctx.fill();
-    }
-  }
-
-  const delta = (data.thisWeekActive ?? 0) - (data.lastWeekActive ?? 0);
-  ctx.font = '700 76px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.96)';
-  ctx.fillText(`${data.thisWeekActive ?? 0}/7 days active`, 540, 1410);
-
-  ctx.font = '500 34px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = delta > 0 ? '#6BAE75' : delta < 0 ? '#b86d6d' : `${data.accentColor}cc`;
-  const deltaLabel = delta > 0
-    ? `↑ ${delta} more than last week`
-    : delta < 0
-      ? `↓ ${Math.abs(delta)} fewer than last week`
-      : 'Same rhythm as last week';
-  ctx.fillText(deltaLabel, 540, 1480);
-
-  ctx.font = '400 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.70)';
-  ctx.fillText(`${data.userName} · ${data.milestoneLabel}`, 540, 1710);
-  drawBranding(ctx, 1080, 1815, data.accentColor, 'Shoonaya · Nitya Karma');
-}
-
-function renderMorningComplete(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  drawLinearBackground(ctx, 1080, 1080, getTraditionColors(data.tradition));
-
-  ctx.fillStyle = 'rgba(255,255,255,0.03)';
-  for (let x = 0; x < 1080; x += 42) {
-    for (let y = 0; y < 1080; y += 42) {
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  if (data.todayTithi) {
-    ctx.font = '400 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = `${data.accentColor}b3`;
-    ctx.fillText(`${data.todayTithi} — Auspicious completion`, 540, 240);
-  }
-
-  ctx.beginPath();
-  ctx.arc(540, 435, 120, 0, Math.PI * 2);
-  ctx.fillStyle = `${data.accentColor}40`;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(540, 435, 100, 0, Math.PI * 2);
-  ctx.fillStyle = data.accentColor;
-  ctx.fill();
-  ctx.font = '700 112px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText('✓', 540, 428);
-
-  ctx.font = '700 72px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.95)';
-  ctx.fillText('Morning complete', 540, 640);
-
-  ctx.font = '400 32px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.50)';
-  ctx.fillText(`${data.stepsCompletedToday ?? 0} of ${data.totalSteps ?? 7} sacred steps`, 540, 702);
-
-  const dateLabel = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
-  ctx.font = '400 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = `${data.accentColor}66`;
-  ctx.fillText(dateLabel, 540, 752);
-
-  ctx.font = '400 30px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.70)';
-  ctx.fillText('A day lived in dharma is a day lived fully.', 540, 900);
-  drawBranding(ctx, 1080, 995, data.accentColor, 'Shoonaya · Nitya Karma');
-}
-
-function renderSadhanaQuote(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  drawLinearBackground(ctx, 1080, 1080, getTraditionColors(data.tradition));
-  const glow = ctx.createRadialGradient(540, 480, 0, 540, 480, 620);
-  glow.addColorStop(0, `${data.accentColor}26`);
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, 1080, 1080);
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '60px serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.90)';
-  ctx.fillText(data.symbol, 540, 110);
-
-  ctx.font = '120px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = data.accentColor;
-  ctx.fillText('“', 540, 260);
-
-  ctx.font = '500 52px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  const endY = wrapText(ctx, getDefaultQuote(data), 540, 365, 840, 82, 6);
-
-  if (data.quoteSource) {
-    ctx.font = 'italic 28px Georgia, "Times New Roman", serif';
-    ctx.fillStyle = `${data.accentColor}8c`;
-    ctx.fillText(data.quoteSource, 540, endY + 28);
-  }
-
-  const pillY = Math.min(760, endY + 92);
-  fillRoundRect(ctx, 398, pillY, 284, 62, 31, `${data.accentColor}26`);
-  strokeRoundRect(ctx, 398, pillY, 284, 62, 31, `${data.accentColor}40`, 2);
-  ctx.font = '600 26px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = data.accentColor;
-  ctx.fillText(`🔥 ${data.streak ?? 0} days`, 540, pillY + 32);
-
-  ctx.strokeStyle = `${data.accentColor}35`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(250, 875);
-  ctx.lineTo(830, 875);
-  ctx.stroke();
-
-  ctx.font = '400 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.66)';
-  ctx.fillText(`${data.userName} · ${data.milestoneLabel}`, 540, 930);
-  ctx.font = '300 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.34)';
-  ctx.fillText('Shoonaya', 540, 980);
-}
-
-function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  drawLinearBackground(ctx, 1080, 1350, getTraditionColors(data.tradition));
-  const month = data.month ?? new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '700 80px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(month, 540, 150);
-
-  ctx.font = '42px serif';
-  ctx.fillText(data.symbol, 458, 235);
-  ctx.font = '400 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.68)';
-  ctx.fillText(data.milestoneLabel, 555, 237);
-
-  ctx.strokeStyle = `${data.accentColor}80`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(210, 305);
-  ctx.lineTo(870, 305);
-  ctx.stroke();
-
-  const boxes = [
-    { value: `${data.consistencyScore ?? 0}%`, label: 'Consistency', bg: `${data.accentColor}1f` },
-    { value: String(data.activeDays ?? 0), label: 'Active days', bg: data.tradition === 'hindu' || data.tradition === 'jain' ? '#3a7a4a1f' : `${data.accentColor}1f` },
-    { value: String(data.fullMorningDays ?? 0), label: 'Complete', bg: `${data.accentColor}14` },
-  ];
-  const boxY = 430;
-  const boxW = 286;
-  const boxH = 190;
-  const boxGap = 26;
-  const boxStart = (1080 - boxW * 3 - boxGap * 2) / 2;
-  boxes.forEach((box, index) => {
-    const x = boxStart + index * (boxW + boxGap);
-    fillRoundRect(ctx, x, boxY, boxW, boxH, 30, box.bg);
-    strokeRoundRect(ctx, x, boxY, boxW, boxH, 30, `${data.accentColor}26`, 2);
-    ctx.font = '700 72px Georgia, "Times New Roman", serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(box.value, x + boxW / 2, boxY + 78);
-    ctx.font = '500 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.58)';
-    ctx.fillText(box.label, x + boxW / 2, boxY + 137);
-  });
-
-  const dow = data.dowData?.slice(0, 7) ?? Array(7).fill(0);
-  const max = Math.max(...dow, 1);
-  const miniStart = 252;
-  const miniY = 710;
-  dow.forEach((value, index) => {
-    const x = miniStart + index * 96;
-    const h = Math.max(4, (value / max) * 40);
-    fillRoundRect(ctx, x, miniY + 44 - h, 52, h, 12, data.accentColor);
-    ctx.font = '500 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.fillText(['M', 'T', 'W', 'T', 'F', 'S', 'S'][index], x + 26, miniY + 82);
-  });
-
-  const score = data.consistencyScore ?? 0;
-  const insight = score >= 80
-    ? 'Extraordinary. The practice is you.'
-    : score >= 60
-      ? 'Solid month. The gaps teach as much as the days.'
-      : score >= 40
-        ? 'Growing. Sadhana is not a sprint.'
-        : 'The seed is planted. Keep returning.';
-  ctx.font = '400 34px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.82)';
-  wrapText(ctx, insight, 540, 855, 780, 50, 3);
-
-  ctx.font = '400 30px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = `${data.accentColor}b3`;
-  ctx.fillText(`Practice peaks at ${data.peakHourLabel ?? 'your chosen hour'}`, 540, 1115);
-
-  ctx.font = '400 28px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.62)';
-  ctx.fillText(`${data.userName} · Shoonaya Nitya Karma`, 540, 1190);
-  ctx.font = '300 22px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.34)';
-  ctx.fillText(month, 540, 1240);
-}
-
-// Tradition-specific ornament patterns for the shloka card background
-const TRADITION_ORNAMENTS: Record<string, { dots: boolean; mandala: boolean; grid: boolean }> = {
-  hindu:    { dots: false, mandala: true,  grid: false },
-  sikh:     { dots: false, mandala: false, grid: true  },
-  buddhist: { dots: true,  mandala: false, grid: false },
-  jain:     { dots: true,  mandala: false, grid: false },
-};
-
-function renderShlokaVerse(ctx: CanvasRenderingContext2D, data: NityaShareCardData) {
-  const W = 1080;
-  const H = 1080;
-
-  // ── Background ──
-  const [bg1, bg2] = getTraditionColors(data.tradition);
-  const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-  bgGrad.addColorStop(0, bg1);
-  bgGrad.addColorStop(1, bg2);
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, W, H);
-
-  // Radial glow
-  const glow = ctx.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, 480);
-  glow.addColorStop(0, `${data.accentColor}2e`);
-  glow.addColorStop(1, 'transparent');
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
-
-  // ── Tradition ornament ──
-  const orn = TRADITION_ORNAMENTS[data.tradition] ?? TRADITION_ORNAMENTS.hindu;
-  if (orn.dots) {
-    ctx.fillStyle = `${data.accentColor}18`;
-    for (let x = 0; x < W; x += 54) {
-      for (let y = 0; y < H; y += 54) {
-        ctx.beginPath();
-        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  }
-  if (orn.grid) {
-    ctx.strokeStyle = `${data.accentColor}12`;
-    ctx.lineWidth = 1;
-    for (let x = 0; x < W; x += 72) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y < H; y += 72) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-  }
-  if (orn.mandala) {
-    // Concentric decorative rings centred on the symbol
-    for (let r = 80; r <= 380; r += 60) {
-      ctx.strokeStyle = `${data.accentColor}${r < 200 ? '1a' : '0d'}`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(W / 2, 230, r, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-  }
-
-  // ── Tradition symbol ──
-  const symY = 200;
-  ctx.font = '110px serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = 'rgba(255,255,255,0.88)';
-  ctx.fillText(data.symbol, W / 2, symY);
-
-  // Accent line below symbol
-  ctx.strokeStyle = `${data.accentColor}60`;
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(W * 0.32, symY + 74);
-  ctx.lineTo(W * 0.68, symY + 74);
-  ctx.stroke();
-
-  // ── Sanskrit verse ──
-  const sanskrit = data.sanskrit ?? data.quote ?? '';
-  ctx.font = '500 48px "Noto Sans Devanagari", "Siddhanta", serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.96)';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const verseEndY = wrapText(ctx, sanskrit, W / 2, 360, 860, 72, 4);
-
-  // ── Decorative divider ──
-  const divY = Math.min(verseEndY + 28, 610);
-  ctx.strokeStyle = `${data.accentColor}40`;
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6, 10]);
-  ctx.beginPath();
-  ctx.moveTo(W * 0.22, divY);
-  ctx.lineTo(W * 0.78, divY);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  // Diamond centre
-  ctx.save();
-  ctx.translate(W / 2, divY);
-  ctx.rotate(Math.PI / 4);
-  ctx.fillStyle = data.accentColor;
-  ctx.fillRect(-6, -6, 12, 12);
-  ctx.restore();
-
-  // ── Translation ──
-  const translation = data.translation ?? '';
-  ctx.font = '400 36px Georgia, "Times New Roman", serif';
-  ctx.fillStyle = `${data.accentColor}e0`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const transEndY = wrapText(ctx, translation, W / 2, divY + 52, 820, 56, 4);
-
-  // ── Source attribution ──
-  if (data.source) {
-    ctx.font = 'italic 300 26px Georgia, "Times New Roman", serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`— ${data.source}`, W / 2, Math.min(transEndY + 32, 880));
-  }
-
-  // ── Branding ──
-  drawBranding(ctx, W, 1020, data.accentColor, 'Shoonaya · Pathshala');
-}
-
-export async function generateNityaShareCard(
-  type: NityaCardType,
-  data: NityaShareCardData
-): Promise<Blob | null> {
-  if (typeof document === 'undefined') return null;
-
-  try {
-    const [width, height] = CARD_DIMENSIONS[type];
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    switch (type) {
-      case 'streak_milestone':
-        renderStreakMilestone(ctx, data);
-        break;
-      case 'week_summary':
-        renderWeekSummary(ctx, data);
-        break;
-      case 'morning_complete':
-        renderMorningComplete(ctx, data);
-        break;
-      case 'sadhana_quote':
-        renderSadhanaQuote(ctx, data);
-        break;
-      case 'monthly_report':
-        renderMonthlyReport(ctx, data);
-        break;
-      case 'shloka_verse':
-        renderShlokaVerse(ctx, data);
-        break;
-    }
-
-    return toBlob(canvas);
-  } catch (error) {
-    console.error('Error generating Nitya share card:', error);
-    return null;
-  }
 }
 
 export async function generateSadhanaShareImage({

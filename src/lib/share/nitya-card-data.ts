@@ -251,12 +251,14 @@ export async function shareShlokaCard({
   sanskrit,
   translation,
   source,
+  streak,
 }: {
   tradition: string;
   userName: string;
   sanskrit: string;
   translation: string;
   source: string;
+  streak?: number;
 }): Promise<void> {
   const meta = getTraditionMeta(tradition);
   const data: NityaShareCardData = {
@@ -268,6 +270,7 @@ export async function shareShlokaCard({
     sanskrit,
     translation,
     source,
+    streak,
   };
   await shareNityaCardImage({
     type: 'shloka_verse',
