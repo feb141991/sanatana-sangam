@@ -60,9 +60,8 @@ nav {
   transition:background 0.4s;
 }
 .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.nav-logo-icon { width:32px; height:32px; }
-.nav-logo-text { font-family:var(--fd); font-size:22px; font-weight:600; color:var(--ink); letter-spacing:0.01em; }
-.nav-logo-text span { color:var(--saffron); }
+.nav-logo-img { height:36px; width:auto; display:block; object-fit:contain; }
+@media(max-width:600px){ .nav-logo-img { height:28px; } }
 .nav-links { display:flex; gap:28px; list-style:none; }
 .nav-links a { font-size:13px; color:rgba(62,42,31,0.62); text-decoration:none; letter-spacing:0.02em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--ink); }
@@ -152,11 +151,14 @@ body.landing-entered #explore-btn {
 
 /* ── Splash Join Form ──────────────────────────────────────────────────── */
 #splash-join { margin:16px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(197,160,89,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
-#sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%; }
-#sj-email { flex:1;min-width:200px;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:12px 20px;color:#FAF6EF;font-size:14px;font-family:var(--fb);outline:none;transition:border-color 0.25s; }
-#sj-email::placeholder { color:rgba(255,254,248,0.32); }
-#sj-email:focus { border-color:rgba(197,160,89,0.65); }
-#sj-submit { background:linear-gradient(135deg, #C5A059, #D4784A);color:#0C0A07;border:none;border-radius:100px;padding:12px 24px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;letter-spacing:0.02em; }
+#sj-form { display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%; }
+#sj-name,#sj-email,#sj-country { width:100%;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:11px 18px;color:#FAF6EF;font-size:13px;font-family:var(--fb);outline:none;transition:border-color 0.25s;min-height:44px; }
+#sj-name::placeholder,#sj-email::placeholder { color:rgba(255,254,248,0.32); }
+#sj-name:focus,#sj-email:focus,#sj-country:focus { border-color:rgba(197,160,89,0.65); }
+#sj-country { appearance:none;-webkit-appearance:none;cursor:pointer;color:#FAF6EF; }
+#sj-country option { background:#1c140a;color:#FAF6EF; }
+#sj-country.unset { color:rgba(255,254,248,0.32); }
+#sj-submit { width:100%;background:linear-gradient(135deg, #C5A059, #D4784A);color:#0C0A07;border:none;border-radius:100px;padding:12px 24px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;letter-spacing:0.02em;min-height:44px; }
 #sj-submit:hover { opacity:0.88; }
 #sj-note { font-size:11px;color:rgba(255,254,248,0.30);margin-top:10px;letter-spacing:0.03em; }
 /* Stage 2 — tradition pills */
@@ -182,6 +184,11 @@ body.landing-entered #explore-btn {
 .registration-feedback { margin:10px auto 14px;color:rgba(255,254,248,0.66);font-size:12px;line-height:1.5; }
 .cta-share-copy { background:rgba(255,253,249,0.94);color:rgba(62,42,31,0.72);border-color:rgba(216,138,28,0.24); }
 .cta-registration-feedback { color:rgba(62,42,31,0.62); }
+/* Already-registered warm info box */
+.already-registered-info { display:none; margin:12px auto 16px; max-width:480px; padding:12px 16px; border-radius:14px; background:rgba(216,138,28,0.10); border:1px solid rgba(216,138,28,0.28); color:var(--saffron-dk); font-size:13px; line-height:1.6; text-align:center; }
+.already-registered-info.visible { display:block; }
+/* Splash version (dark bg) */
+#sj-already-info { background:rgba(197,160,89,0.12); border-color:rgba(197,160,89,0.32); color:rgba(255,240,180,0.88); }
 .cta-reveal-card { background:rgba(255,253,249,0.94);border:1px solid rgba(216,138,28,0.32);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block;box-shadow:0 18px 45px rgba(62,42,31,0.08); }
 .cta-reveal-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(62,42,31,0.45);margin-bottom:8px; }
 .cta-reveal-sub { font-size:12px;color:rgba(62,42,31,0.54);margin-top:8px; }
@@ -296,8 +303,6 @@ body.landing-entered #explore-btn {
   55%  { opacity:0.40; }
   100% { opacity:0; transform:scale(1.6) translateY(-2px); }
 }
-/* Nav logo micro-infinity */
-.nav-logo-icon #nl-inf { filter:drop-shadow(0 0 3px rgba(200,146,74,0.6)); }
 
 /* ── HERO ─────────────────────────────────────────────────────────────── */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:120px 40px 80px; text-align:center; }
@@ -582,22 +587,22 @@ body.landing-entered #explore-btn {
 .shlok-panel.active { display:block; animation:tradIn 0.45s ease forwards; }
 
 /* ── FESTIVALS ───────────────────────────────────────────────────────── */
-.festivals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-.festival-card { border-radius:20px; padding:32px; background:rgba(255,253,249,0.94); border:1px solid rgba(200,160,110,0.18); position:relative; overflow:hidden; transition:transform 0.25s ease, border-color 0.25s; }
+.festivals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.festival-card { border-radius:20px; padding:14px 16px; background:rgba(255,253,249,0.94); border:1px solid rgba(200,160,110,0.18); position:relative; overflow:hidden; transition:transform 0.25s ease, border-color 0.25s; }
 .festival-card:hover { transform:translateY(-4px); border-color:rgba(216,138,28,0.35); }
 .festival-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
 .fc-1::before { background:linear-gradient(90deg, var(--saffron), var(--gold)); }
 .fc-2::before { background:linear-gradient(90deg, var(--c-buddhist), #7B2D3E); }
 .fc-3::before { background:linear-gradient(90deg, var(--c-jain), #2A5C45); }
-.festival-date-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(200,160,110,0.14); border-radius:100px; padding:5px 12px; font-size:11px; color:rgba(62,42,31,0.65); margin-bottom:20px; }
+.festival-date-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(200,160,110,0.14); border-radius:100px; padding:3px 10px; font-size:11px; color:rgba(62,42,31,0.65); margin-bottom:10px; }
 .festival-date-badge .dot { width:5px; height:5px; border-radius:50%; }
-.festival-name { font-family:var(--fd); font-size:30px; font-weight:600; color:var(--ink); margin-bottom:6px; line-height:1.1; }
-.festival-deva { font-family:var(--fh); font-size:15px; color:rgba(62,42,31,0.50); margin-bottom:16px; }
-.festival-desc { font-size:13px; color:rgba(62,42,31,0.55); line-height:1.6; }
-.festival-countdown { margin-top:20px; padding-top:20px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; justify-content:space-between; }
-.festival-countdown .days { font-family:var(--fd); font-size:36px; font-weight:600; line-height:1; }
+.festival-name { font-family:var(--fd); font-size:14px; font-weight:600; color:var(--ink); margin-bottom:3px; line-height:1.1; }
+.festival-deva { font-family:var(--fh); font-size:12px; color:rgba(62,42,31,0.50); margin-bottom:8px; }
+.festival-desc { font-size:12px; color:rgba(62,42,31,0.55); line-height:1.5; }
+.festival-countdown { margin-top:10px; padding-top:10px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; justify-content:space-between; }
+.festival-countdown .days { font-family:var(--fd); font-size:22px; font-weight:600; line-height:1; }
 .festival-countdown .days-label { font-size:11px; color:rgba(62,42,31,0.50); text-transform:uppercase; letter-spacing:0.12em; }
-.festival-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; letter-spacing:0.04em; }
+.festival-pill { font-size:11px; font-weight:500; padding:4px 10px; border-radius:100px; letter-spacing:0.04em; }
 .fp-s  { background:rgba(200,146,74,0.2);   color:var(--saffron); }
 .fp-b  { background:rgba(212,130,122,0.2);  color:var(--c-buddhist); }
 .fp-j  { background:rgba(106,185,154,0.2);  color:var(--c-jain); }
@@ -633,17 +638,17 @@ body.landing-entered #explore-btn {
 
 /* ── FEATURES ────────────────────────────────────────────────────────── */
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:rgba(200,160,110,0.15); border:1px solid rgba(200,160,110,0.25); border-radius:24px; overflow:hidden; }
-.feature-card { padding:22px 22px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; display:block; text-decoration:none; color:inherit; }
+.feature-card { padding:14px 16px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; display:block; text-decoration:none; color:inherit; }
 .feature-card:hover { background:#FAF6EF; transform:translateY(-2px); }
 .feature-card-link { text-decoration:none; color:inherit; display:block; }
-.feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+.feature-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
 .fi-ja { background:rgba(155,111,181,0.10); }
 .fi-ai { background:rgba(91,143,185,0.10); }
 .fi-kl { background:rgba(122,81,38,0.10); }
 .fi-vs { background:rgba(107,142,90,0.10); }
 .fi-s{background:rgba(200,160,110,0.24)} .fi-k{background:rgba(212,120,74,0.15)} .fi-p{background:rgba(157,122,80,0.15)} .fi-l{background:rgba(212,130,122,0.15)} .fi-g{background:rgba(200,160,110,0.18)} .fi-w{background:rgba(62,42,31,0.06)}
-.feature-name { font-family:var(--fd); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:10px; line-height:1.2; }
-.feature-desc { font-size:13px; color:rgba(62,42,31,0.58); line-height:1.65; }
+.feature-name { font-family:var(--fd); font-size:18px; font-weight:600; color:var(--ink); margin-bottom:6px; line-height:1.2; }
+.feature-desc { font-size:12px; color:rgba(62,42,31,0.58); line-height:1.55; }
 .feature-coming { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(200,160,110,0.24); color:var(--saffron); border:1px solid rgba(200,146,74,0.2); }
 .feature-live   { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(42,107,74,0.12); color:var(--c-jain); border:1px solid rgba(42,107,74,0.25); }
 
@@ -1016,9 +1021,24 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       <!-- Stage 1: email -->
       <div id="sj-email-wrap">
         <form id="sj-form" onsubmit="splashJoin(event)">
+          <input id="sj-name" type="text" placeholder="Your name" required autocomplete="given-name">
           <input id="sj-email" type="email" placeholder="your@email.com" required autocomplete="email">
+          <select id="sj-country" class="unset" required onchange="this.classList.remove('unset')">
+            <option value="" disabled selected>Country</option>
+            <option value="India">India</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="Australia">Australia</option>
+            <option value="Singapore">Singapore</option>
+            <option value="UAE">UAE</option>
+            <option value="Germany">Germany</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Other">Other</option>
+          </select>
           <button type="submit" id="sj-submit">Join as Sthapaka</button>
         </form>
+        <p id="sj-note"></p>
         <!-- Divider -->
         <div style="display:flex;align-items:center;gap:10px;margin:12px 4px 10px;">
           <div style="flex:1;height:1px;background:rgba(197,160,89,0.18)"></div>
@@ -1049,6 +1069,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       </div>
       <!-- Stage 3: founding number reveal -->
       <div id="sj-reveal" style="display:none">
+        <div id="sj-already-info" class="already-registered-info"></div>
         <div id="sj-badge">
           <div id="sj-badge-label">Sthapaka · स्थापक</div>
           <div id="sj-badge-num">#<span id="sj-num">—</span></div>
@@ -1134,12 +1155,10 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   </button>
   <a class="nav-logo" href="#">
     <img
-      src="/icons/logo.png"
+      src="/assets/images/logos/river-light/river-light-horizontal.png"
       alt="Shoonaya"
-      class="nav-logo-icon"
-      style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover;"
+      class="nav-logo-img"
     />
-    <span class="nav-logo-text">Shoo<span>naya</span></span>
   </a>
   <ul class="nav-links">
     <li><a href="#gyan-chaupar" style="color:var(--saffron);font-weight:600">♟ Play</a></li>
@@ -2414,6 +2433,7 @@ function gcRestart(){
         <div class="cta-reveal-sub">Sthapaka · स्थापक</div>
       </div>
       <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px;font-family:var(--fd);font-size:22px;font-weight:600;color:var(--ink)">You are now part of Shoonaya&apos;s founding circle.</div>
+      <div id="cta-already-info" class="already-registered-info"></div>
       <p id="cta-registration-feedback" class="registration-feedback cta-registration-feedback"></p>
       <p id="cta-share-copy" class="share-copy-text cta-share-copy"></p>
       <div id="cta-share-row" class="sj-share-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
@@ -3035,7 +3055,7 @@ async function copyShareText(text, buttonSelector, resetText) {
 
 async function handleCtaSignup(e) {
   e.preventDefault();
-  ctaEmail   = document.getElementById('cta-email').value.trim();
+  ctaEmail   = document.getElementById('cta-email').value.trim().toLowerCase();
   ctaName    = document.getElementById('cta-name').value.trim();
   ctaCountry = document.getElementById('cta-country').value;
   const btn  = document.getElementById('cta-submit-btn');
@@ -3071,6 +3091,15 @@ async function submitCtaWithFounding() {
   document.getElementById('cta-step3').style.display  = 'none';
   document.getElementById('cta-reveal').style.display = 'block';
   document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
+  const ctaAlreadyBox = document.getElementById('cta-already-info');
+  if (ctaAlreadyBox) {
+    if (ctaAlreadyRegistered) {
+      ctaAlreadyBox.textContent = "You’re already part of Shoonaya’s founding circle. Try another email if you meant to join with a different one.";
+      ctaAlreadyBox.classList.add('visible');
+    } else {
+      ctaAlreadyBox.classList.remove('visible');
+    }
+  }
   setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
   setShareCopy('cta', ctaFoundingNum, ctaTrad);
   triggerSthapakaCelebration('cta-reveal');
@@ -3900,16 +3929,18 @@ function showSthapakaReveal(num, name) {
 }
 
 /* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
-let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
+let _sjEmail = '', _sjName = '', _sjCountry = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
 
 async function splashJoin(e) {
   e.preventDefault();
-  _sjEmail = document.getElementById('sj-email').value.trim();
+  _sjEmail   = document.getElementById('sj-email').value.trim().toLowerCase();
+  _sjName    = document.getElementById('sj-name').value.trim();
+  _sjCountry = document.getElementById('sj-country').value;
   const btn = document.getElementById('sj-submit');
   btn.textContent = '…'; btn.disabled = true;
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, source: 'splash', timezone: tz });
+    const data = await postWaitlist({ email: _sjEmail, name: _sjName, country: _sjCountry, source: 'splash', timezone: tz });
     _sjFoundingNum = data.foundingNumber ?? 0;
     _sjAlreadyRegistered = !!data.alreadyRegistered;
     // Move to tradition select
@@ -3926,7 +3957,7 @@ async function splashTradSelect(trad) {
   document.querySelectorAll('.sj-trad-btn').forEach(b => b.disabled = true);
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, tradition: trad, source: 'splash', timezone: tz });
+    const data = await postWaitlist({ email: _sjEmail, name: _sjName, country: _sjCountry, tradition: trad, source: 'splash', timezone: tz });
     if (data.foundingNumber) _sjFoundingNum = data.foundingNumber;
     _sjAlreadyRegistered = !!data.alreadyRegistered;
   } catch { /* non-blocking */ }
@@ -3934,6 +3965,15 @@ async function splashTradSelect(trad) {
   document.getElementById('sj-trad-wrap').style.display = 'none';
   document.getElementById('sj-reveal').style.display    = 'block';
   document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
+  const sjAlreadyBox = document.getElementById('sj-already-info');
+  if (sjAlreadyBox) {
+    if (_sjAlreadyRegistered) {
+      sjAlreadyBox.textContent = "You're already part of Shoonaya's founding circle. Try another email if you meant to join with a different one.";
+      sjAlreadyBox.classList.add('visible');
+    } else {
+      sjAlreadyBox.classList.remove('visible');
+    }
+  }
   setRegistrationFeedback('sj', _sjAlreadyRegistered, _sjFoundingNum);
   setShareCopy('sj', _sjFoundingNum, _sjTrad);
   triggerSthapakaCelebration('sj-badge');
