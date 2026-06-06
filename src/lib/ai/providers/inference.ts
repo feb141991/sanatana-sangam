@@ -30,7 +30,7 @@ function readEnvConfig() {
 type InferenceProviderOverride =
   | 'sarvam-hosted'
   | 'self-hosted'
-  | 'claude-anthropic';
+  | 'google-gemini';
 
 /**
  * Returns the active inference providers, resolved from environment config.

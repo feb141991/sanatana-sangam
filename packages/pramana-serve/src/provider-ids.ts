@@ -1,6 +1,5 @@
 export const PRAMANA_PROVIDER_IDS = [
   "openai",
-  "anthropic",
   "google",
   "azure-openai",
   "groq",
