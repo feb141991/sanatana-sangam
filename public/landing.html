@@ -633,7 +633,7 @@ body.landing-entered #explore-btn {
 
 /* ── FEATURES ────────────────────────────────────────────────────────── */
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:rgba(200,160,110,0.15); border:1px solid rgba(200,160,110,0.25); border-radius:24px; overflow:hidden; }
-.feature-card { padding:22px 22px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; }
+.feature-card { padding:22px 22px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; display:block; text-decoration:none; color:inherit; }
 .feature-card:hover { background:#FAF6EF; transform:translateY(-2px); }
 .feature-card-link { text-decoration:none; color:inherit; display:block; }
 .feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
@@ -759,6 +759,30 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 .cta-trad-pill[data-t="buddhist"].chosen { border-color:var(--c-buddhist); background:var(--c-buddhist-bg); color:var(--c-buddhist); }
 .cta-trad-pill[data-t="jain"].chosen     { border-color:var(--c-jain);     background:var(--c-jain-bg);     color:var(--c-jain); }
 .cta-note { font-size:12px; color:rgba(62,42,31,0.40); margin-top:12px; }
+
+/* CTA Step 1 extended */
+.cta-fields { display:flex; flex-direction:column; gap:10px; max-width:440px; margin:0 auto 12px; }
+.cta-field-row { display:flex; gap:10px; }
+.cta-field { flex:1; padding:14px 18px; border-radius:100px; border:1.5px solid rgba(216,138,28,0.22); background:rgba(255,253,249,0.92); color:var(--ink); font-family:var(--fb); font-size:14px; outline:none; backdrop-filter:blur(10px); transition:border-color 0.2s; min-height:48px; width:100%; appearance:none; -webkit-appearance:none; }
+.cta-field::placeholder { color:rgba(62,42,31,0.40); }
+.cta-field:focus { border-color:rgba(216,138,28,0.50); }
+.cta-field-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238E7868' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; cursor:pointer; }
+.cta-fields-submit { width:100%; padding:15px 30px; border-radius:100px; background:var(--saffron); color:#fff; font-family:var(--fb); font-size:14px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.2s; min-height:48px; }
+.cta-fields-submit:hover { opacity:0.9; }
+
+/* CTA Step 3 — founding toggle */
+.cta-founding-wrap { max-width:440px; margin:0 auto 20px; }
+.cta-founding-toggle { display:flex; align-items:center; justify-content:space-between; gap:16px; background:rgba(255,253,249,0.92); border:1.5px solid rgba(216,138,28,0.22); border-radius:16px; padding:16px 20px; cursor:pointer; transition:border-color 0.2s; }
+.cta-founding-toggle:hover { border-color:rgba(216,138,28,0.45); }
+.cta-founding-text { text-align:left; }
+.cta-founding-label { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:2px; }
+.cta-founding-sub { font-size:12px; color:rgba(62,42,31,0.50); }
+.cta-toggle-track { width:44px; height:26px; border-radius:100px; background:rgba(200,160,110,0.25); border:1.5px solid rgba(216,138,28,0.20); transition:background 0.22s, border-color 0.22s; flex-shrink:0; position:relative; }
+.cta-toggle-track.on { background:var(--saffron); border-color:var(--saffron); }
+.cta-toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.18); transition:transform 0.22s; }
+.cta-toggle-track.on .cta-toggle-knob { transform:translateX(18px); }
+.cta-founding-submit { width:100%; padding:15px 30px; border-radius:100px; background:var(--saffron); color:#fff; font-family:var(--fb); font-size:14px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.2s; margin-top:14px; min-height:48px; }
+.cta-founding-submit:hover { opacity:0.9; }
 
 /* ── FOOTER ──────────────────────────────────────────────────────────── */
 footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
@@ -1004,7 +1028,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
         <!-- Google sign-up -->
         <button id="sj-google-btn" onclick="sthapakaGoogleSignup()" type="button"
           style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,0.94);border:1px solid rgba(0,0,0,0.12);border-radius:100px;padding:11px 20px;font-size:13px;font-weight:600;color:#1a1a1a;cursor:pointer;transition:background 0.2s;letter-spacing:0.01em;">
-          <svg width="18" height="18" viewBox="0 0 533.5 544.3">
+          <svg width="14" height="14" viewBox="0 0 533.5 544.3">
             <path fill="#EA4335" d="M533.5 278.4c0-17.9-1.6-35.1-4.6-51.7H272v97.8h146.9c-6.3 34-25.1 62.9-53.4 82.1v68.5h86.3c50.5-46.5 79.7-115 79.7-197.7"/>
             <path fill="#34A853" d="M272 544.3c71.6 0 131.7-23.6 175.6-64.1l-86.3-68.5c-23.9 16-54.5 25.5-89.3 25.5-68.7 0-127-46.4-147.8-108.9H37.7v68.8c44.4 86.9 134.9 147.2 234.3 147.2"/>
             <path fill="#4A90E2" d="M124.2 327.3c-10.4-30.9-10.4-64.1 0-95l-86.5-68.8c-37.5 72.9-37.5 159.5 0 232.4l86.5-68.6"/>
@@ -2063,78 +2087,78 @@ function gcRestart(){
   <div class="s-sub reveal">Every feature you need — daily sadhana, community, scripture, sacred calendar. Live now.</div>
 
   <div class="features-grid reveal">
-    <div class="feature-card">
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-s">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8924A" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L13.8 8.2L20 8.2L14.9 11.8L16.7 18L12 14.4L7.3 18L9.1 11.8L4 8.2L10.2 8.2Z"/></svg>
       </div>
       <div class="feature-name">Daily Wisdom Feed</div>
       <div class="feature-desc">Morning verses from Vedas, Guru Granth Sahib Ji, Dhammapada, and Agamas — curated by tradition, personalised to your mood.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-ja">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B6FB5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="5" r="1.5" fill="#9B6FB5"/><circle cx="17.2" cy="8" r="1.5" fill="#9B6FB5"/><circle cx="19" cy="13.5" r="1.5" fill="#9B6FB5"/><circle cx="16" cy="18.5" r="1.5" fill="#9B6FB5"/><circle cx="12" cy="20" r="1.5" fill="#9B6FB5"/></svg>
       </div>
       <div class="feature-name">Japa &amp; Mala Counter</div>
       <div class="feature-desc">Mantra counter with 27/54/108-bead malas, ambient sounds, streak tracking, and session insights for your daily practice.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-k">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4784A" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       </div>
       <div class="feature-name">Sacred Calendar</div>
       <div class="feature-desc">Live Panchang with tithi, nakshatra, rahu kalam — plus Gurpurab, Paryushana, and Buddhist festival reminders by tradition.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-l">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0607A" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       </div>
       <div class="feature-name">Pathshala — Scripture</div>
       <div class="feature-desc">700+ texts — Vedas, Guru Granth Sahib Ji, Pali Canon, Jain Agamas — with guided learning paths, audio, and reflection prompts.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-p">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d7a50" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="21" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="5.6" cy="5.6" r="1.5"/><circle cx="18.4" cy="18.4" r="1.5"/><circle cx="18.4" cy="5.6" r="1.5"/><circle cx="5.6" cy="18.4" r="1.5"/></svg>
       </div>
       <div class="feature-name">Mandali &amp; Community</div>
       <div class="feature-desc">Find practitioners in your city, join local sangats, post and discuss. London to Lagos, Mumbai to Melbourne — all in one sangam.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-g">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       </div>
       <div class="feature-name">Daily Sadhana</div>
       <div class="feature-desc">Your personalised morning routine — Nitya Karma, Ashrama duties, guided sadhana plans, and dincharya tracker with streaks.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-kl">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5126" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
       <div class="feature-name">Kul — Family Dharma</div>
       <div class="feature-desc">Create your family Kul, track Vansh lineage, share Gotra, and celebrate Sanskars together across generations and continents.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-ai">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B8FB9" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
       <div class="feature-name">Dharma AI Guide</div>
       <div class="feature-desc">Ask anything — from scripture interpretation to daily practice guidance. Tradition-aware AI trained on Vedic, Sikh, Buddhist, and Jain thought.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
-    <div class="feature-card">
+    </a>
+    <a class="feature-card" href="/signup">
       <div class="feature-icon fi-vs">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B8E5A" stroke-width="1.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </div>
       <div class="feature-name">Vichaar Sabha</div>
       <div class="feature-desc">Dharmic discourse forums — ask questions, share reflections, explore inter-tradition wisdom. Moderated, thoughtful, tradition-aware.</div>
       <span class="feature-live">✦ Live Now</span>
-    </div>
+    </a>
   </div>
 </section>
 
@@ -2329,11 +2353,29 @@ function gcRestart(){
     <h2 class="cta-h">Claim your Founding Number</h2>
     <p class="cta-sub">First 108 Sthapakas shape Shoonaya forever.</p>
 
-    <!-- CTA Step 1: Email -->
+    <!-- CTA Step 1: Name + Email + Country -->
     <div id="cta-email-wrap">
-      <form class="cta-form" id="cta-form" onsubmit="handleCtaSignup(event)">
-        <input class="cta-input" id="cta-email" type="email" placeholder="your@email.com" required>
-        <button class="cta-btn" id="cta-submit-btn" type="submit">Claim Sthapaka Spot</button>
+      <form id="cta-form" onsubmit="handleCtaSignup(event)">
+        <div class="cta-fields">
+          <div class="cta-field-row">
+            <input class="cta-field" id="cta-name" type="text" placeholder="Your name" required autocomplete="given-name">
+            <select class="cta-field cta-field-select" id="cta-country" required>
+              <option value="" disabled selected>Country</option>
+              <option value="India">India</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="United States">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="Australia">Australia</option>
+              <option value="Singapore">Singapore</option>
+              <option value="UAE">UAE</option>
+              <option value="Germany">Germany</option>
+              <option value="Netherlands">Netherlands</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <input class="cta-field" id="cta-email" type="email" placeholder="your@email.com" required autocomplete="email">
+          <button class="cta-fields-submit" id="cta-submit-btn" type="submit">Claim Sthapaka Spot</button>
+        </div>
       </form>
     </div>
 
@@ -2348,14 +2390,30 @@ function gcRestart(){
       </div>
     </div>
 
-    <!-- CTA Step 3: Founding number reveal -->
+    <!-- CTA Step 3: Founding member toggle -->
+    <div id="cta-step3" style="display:none;text-align:center">
+      <div class="cta-founding-wrap">
+        <button type="button" class="cta-founding-toggle" id="cta-founding-toggle" onclick="toggleCtaFounding()">
+          <div class="cta-founding-text">
+            <div class="cta-founding-label">Become a founding member?</div>
+            <div class="cta-founding-sub">Founding members shape Shoonaya forever — first 108 spots only.</div>
+          </div>
+          <div class="cta-toggle-track on" id="cta-toggle-track">
+            <div class="cta-toggle-knob"></div>
+          </div>
+        </button>
+        <button class="cta-founding-submit" id="cta-founding-submit-btn" onclick="submitCtaWithFounding()">Complete Registration</button>
+      </div>
+    </div>
+
+    <!-- CTA Step 4: Founding number reveal -->
     <div id="cta-reveal" style="display:none;text-align:center">
       <div class="cta-reveal-card">
         <div class="cta-reveal-label">Your Founding Number</div>
         <div id="cta-found-num" style="font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1">#—</div>
         <div class="cta-reveal-sub">Sthapaka · स्थापक</div>
       </div>
-      <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px"></div>
+      <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px;font-family:var(--fd);font-size:22px;font-weight:600;color:var(--ink)">You are now part of Shoonaya&apos;s founding circle.</div>
       <p id="cta-registration-feedback" class="registration-feedback cta-registration-feedback"></p>
       <p id="cta-share-copy" class="share-copy-text cta-share-copy"></p>
       <div id="cta-share-row" class="sj-share-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
@@ -2905,8 +2963,8 @@ if (tradBar) {
 }
 
 
-/* ─── CTA SIGNUP — 3-stage flow mirroring splash ─────────────────────────── */
-let ctaEmail = '', ctaTrad = '', ctaFoundingNum = 0, ctaAlreadyRegistered = false;
+/* ─── CTA SIGNUP — 4-stage flow ──────────────────────────────────────────── */
+let ctaEmail = '', ctaName = '', ctaCountry = '', ctaTrad = '', ctaFoundingNum = 0, ctaAlreadyRegistered = false, ctaWantsFoundingMember = true;
 
 function landingShareUrl() {
   if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
@@ -2977,12 +3035,14 @@ async function copyShareText(text, buttonSelector, resetText) {
 
 async function handleCtaSignup(e) {
   e.preventDefault();
-  ctaEmail = document.getElementById('cta-email').value.trim();
-  const btn = document.getElementById('cta-submit-btn');
+  ctaEmail   = document.getElementById('cta-email').value.trim();
+  ctaName    = document.getElementById('cta-name').value.trim();
+  ctaCountry = document.getElementById('cta-country').value;
+  const btn  = document.getElementById('cta-submit-btn');
   btn.textContent = '…'; btn.disabled = true;
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, source: 'cta', timezone: tz });
+    const data = await postWaitlist({ email: ctaEmail, name: ctaName, country: ctaCountry, source: 'cta', timezone: tz });
     ctaFoundingNum = data.foundingNumber ?? 0;
     ctaAlreadyRegistered = !!data.alreadyRegistered;
     document.getElementById('cta-email-wrap').style.display = 'none';
@@ -2993,28 +3053,40 @@ async function handleCtaSignup(e) {
   }
 }
 
+function toggleCtaFounding() {
+  ctaWantsFoundingMember = !ctaWantsFoundingMember;
+  const track = document.getElementById('cta-toggle-track');
+  if (ctaWantsFoundingMember) { track.classList.add('on'); } else { track.classList.remove('on'); }
+}
+
+async function submitCtaWithFounding() {
+  const btn = document.getElementById('cta-founding-submit-btn');
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const data = await postWaitlist({ email: ctaEmail, name: ctaName, country: ctaCountry, tradition: ctaTrad, source: 'cta', timezone: tz, wants_founding_member: ctaWantsFoundingMember });
+    if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
+    ctaAlreadyRegistered = !!data.alreadyRegistered;
+  } catch { /* non-blocking */ }
+  document.getElementById('cta-step3').style.display  = 'none';
+  document.getElementById('cta-reveal').style.display = 'block';
+  document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
+  setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
+  setShareCopy('cta', ctaFoundingNum, ctaTrad);
+  triggerSthapakaCelebration('cta-reveal');
+  document.getElementById('cta-note').style.display = 'none';
+  _updateFoundingCount(ctaFoundingNum);
+}
+
 async function selectCtaTrad(pill) {
   const trad = pill.dataset.t;
   ctaTrad = trad;
   document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.classList.remove('chosen'));
   pill.classList.add('chosen');
   document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.style.pointerEvents = 'none');
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, tradition: trad, source: 'cta', timezone: tz });
-    if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
-    ctaAlreadyRegistered = !!data.alreadyRegistered;
-  } catch { /* non-blocking */ }
-  const labels = { hindu:'Hindu Sadhaka', sikh:'Sikh Sevak', buddhist:'Buddhist Practitioner', jain:'Jain Sadhak' };
-  document.getElementById('cta-step2').style.display  = 'none';
-  document.getElementById('cta-reveal').style.display = 'block';
-  document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
-  document.getElementById('cta-success').textContent  = `Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
-  setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
-  setShareCopy('cta', ctaFoundingNum, trad);
-  triggerSthapakaCelebration('cta-reveal');
-  document.getElementById('cta-note').style.display   = 'none';
-  _updateFoundingCount(ctaFoundingNum);
+  document.getElementById('cta-step2').style.display = 'none';
+  document.getElementById('cta-step3').style.display = 'block';
+  document.getElementById('cta-note').style.display  = 'none';
 }
 
 function ctaShareWhatsApp() {
@@ -3035,8 +3107,8 @@ function ctaCopyLink() {
 function scrollToCta() {
   document.getElementById('cta-section').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => {
-    const el = document.getElementById('cta-email');
-    if (el && !document.getElementById('cta-reveal').style.display) el.focus();
+    const el = document.getElementById('cta-name');
+    if (el && document.getElementById('cta-email-wrap').style.display !== 'none') el.focus();
   }, 600);
 }
 
@@ -3145,11 +3217,13 @@ startShlokProgress();
 
 /* expose onclick handlers to global scope */
 window.scrollToCta     = scrollToCta;
-window.handleCtaSignup = handleCtaSignup;
-window.selectCtaTrad   = selectCtaTrad;
-window.ctaShareWhatsApp = ctaShareWhatsApp;
-window.ctaShareTwitter  = ctaShareTwitter;
-window.ctaCopyLink      = ctaCopyLink;
+window.handleCtaSignup       = handleCtaSignup;
+window.selectCtaTrad         = selectCtaTrad;
+window.toggleCtaFounding     = toggleCtaFounding;
+window.submitCtaWithFounding = submitCtaWithFounding;
+window.ctaShareWhatsApp      = ctaShareWhatsApp;
+window.ctaShareTwitter       = ctaShareTwitter;
+window.ctaCopyLink           = ctaCopyLink;
 window.switchTrad      = switchTrad;
 window.switchShloka    = switchShloka;
 
