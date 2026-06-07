@@ -2627,11 +2627,11 @@ Nodes (1): Dispatches a suite run to the appropriate provider.      Currently, '
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 17`, `Community 20`, `Community 23`, `Community 24`, `Community 25`, `Community 26`, `Community 27`, `Community 33`, `Community 34`?**
-  _High betweenness centrality (0.202) - this node is a cross-community bridge._
+  _High betweenness centrality (0.178) - this node is a cross-community bridge._
 - **Why does `select()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`, `Community 12`, `Community 13`, `Community 14`, `Community 15`, `Community 16`, `Community 20`, `Community 28`, `Community 34`, `Community 45`, `Community 47`?**
-  _High betweenness centrality (0.160) - this node is a cross-community bridge._
+  _High betweenness centrality (0.130) - this node is a cross-community bridge._
 - **Why does `POST()` connect `Community 6` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 34`, `Community 13`, `Community 14`, `Community 15`, `Community 17`?**
-  _High betweenness centrality (0.102) - this node is a cross-community bridge._
+  _High betweenness centrality (0.082) - this node is a cross-community bridge._
 - **Are the 144 inferred relationships involving `GET()` (e.g. with `POST()` and `group_lines()`) actually correct?**
   _`GET()` has 144 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 209 inferred relationships involving `select()` (e.g. with `sendOneSignalPush()` and `processKul()`) actually correct?**
