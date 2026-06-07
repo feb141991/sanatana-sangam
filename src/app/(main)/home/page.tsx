@@ -1,6 +1,6 @@
 import { getAuthUser, getSupabaseClient } from '@/lib/auth-cache';
 import { redirect } from 'next/navigation';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import HomeDashboard from './HomeDashboard';
 import { getTodayShloka } from '@/lib/shlokas';
 import {
@@ -21,6 +21,61 @@ import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { createAdminClient } from '@/lib/supabase-admin';
+
+// ── Cached public/shared data — non-user-specific, served from the Next.js
+//    data cache so repeated home-page loads don't hammer the DB for these rows. ─
+
+const getCachedHeroAssets = unstable_cache(
+  async () => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from('hero_assets')
+      .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active')
+      .eq('is_active', true)
+      .order('priority', { ascending: false });
+    return data ?? [];
+  },
+  ['hero_assets_v1'],
+  { revalidate: 900 }, // 15 min
+);
+
+const getCachedLiveDarshans = unstable_cache(
+  async () => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from('live_darshans')
+      .select('id, title, location, schedule, category, tradition, current_video_id, is_active')
+      .eq('is_active', true);
+    return data ?? [];
+  },
+  ['live_darshans_v1'],
+  { revalidate: 60 }, // 1 min — live status changes frequently
+);
+
+const getCachedObservances = unstable_cache(
+  async (fromDate: string) => {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from('observance_occurrences')
+      .select('id, date, year, manual_date_override, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)')
+      .gte('date', fromDate)
+      .order('date', { ascending: true })
+      .limit(90);
+    return data ?? [];
+  },
+  ['observances_v1'],
+  { revalidate: 3600 }, // 60 min
+);
+
+const getCachedDharmVeer = unstable_cache(
+  async (tradition: string | null) => {
+    const admin = createAdminClient();
+    return getDharmVeerOfTheDay(admin, tradition);
+  },
+  ['dharm_veer_v1'],
+  { revalidate: 3600 }, // 60 min — changes once per day
+);
 
 // Fix 5: Revalidate home page every 5 minutes (ISR) — avoids full SSR on each visit
 // No revalidate — home page is user-specific (auth cookies), ISR would cache
@@ -92,95 +147,96 @@ export default async function HomePage() {
     profile?.longitude ?? undefined,
   );
 
-  // ── Single parallel fetch — all DB queries run simultaneously ─────────────
-  // Previously these ran in 5 sequential waves. Now one round-trip.
+  // ── Cached public data + user-specific queries run concurrently ─────────────
+  // Cached calls resolve from the Next.js data cache (no DB hit after warm-up).
+  // 4 daily_sadhana queries consolidated → 1 range query; derived in memory below.
   const DB_TIMEOUT = 4_000;
+
   const [
-    guidedResult, calendarResult, heroResult,
-    todayResult, yesterdayResult, latestStreakResult,
-    sadhanaResult, nityaResult, nityaStreakResult, liveResult, malaResult,
-    sankalpaResult, dharmVeerResult,
-  ] = await Promise.allSettled([
-    // guided path progress
-    withTimeout(
-      supabase.from('guided_path_progress').select('path_id, status, completed_at, updated_at, current_lesson, completed_lessons').eq('user_id', user.id),
-      DB_TIMEOUT,
-    ),
-    // observances calendar
-    withTimeout(
-      supabase.from('observance_occurrences').select('id, date, year, manual_date_override, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)').gte('date', calendarFromDate).order('date', { ascending: true }).limit(90),
-      DB_TIMEOUT,
-    ),
-    // hero assets
-    withTimeout(
-      supabase.from('hero_assets').select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active').eq('is_active', true).order('priority', { ascending: false }),
-      DB_TIMEOUT,
-    ),
-    // today's sadhana
-    withTimeout(
-      supabase.from('daily_sadhana').select('streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done').eq('user_id', user.id).eq('date', today).maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    // yesterday's sadhana
-    withTimeout(
-      supabase.from('daily_sadhana').select('japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done').eq('user_id', user.id).eq('date', yesterday).maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    // latest streak row
-    withTimeout(
-      supabase.from('daily_sadhana').select('date, streak_count').eq('user_id', user.id).not('streak_count', 'is', null).order('date', { ascending: false }).limit(1).maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    // 28-day sadhana history
-    withTimeout(
-      supabase.from('daily_sadhana').select('date, japa_done').eq('user_id', user.id).gte('date', historyFrom).lte('date', today),
-      DB_TIMEOUT,
-    ),
-    // nitya karma log
-    withTimeout(
-      supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
-      DB_TIMEOUT,
-    ),
-    // nitya karma morning streak
-    withTimeout(
-      supabase.from('nitya_karma_streaks').select('current_streak').eq('user_id', user.id).maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    // live darshans
-    withTimeout(
-      supabase.from('live_darshans').select('id, title, location, schedule, category, tradition, current_video_id, is_active').eq('is_active', true),
-      DB_TIMEOUT,
-    ),
-    // mala sessions today
-    withTimeout(
-      supabase.from('mala_sessions').select('id').eq('user_id', user.id).gte('completed_at', `${today}T00:00:00Z`).lte('completed_at', `${today}T23:59:59Z`).limit(1),
-      DB_TIMEOUT,
-    ),
-    // active sankalpa
-    withTimeout(
-      supabase.from('sankalpas').select('id, text, start_date, target_days, tradition').eq('user_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    // dharm veer
-    getDharmVeerOfTheDay(supabase, tradition).then((d) => ({ data: d })).catch(() => ({ data: null })),
+    [heroAssetRowsRaw, liveDarshanDataRaw, calendarRowsRaw, dharmVeerCached],
+    [
+      guidedResult, consolidatedSadhanaResult,
+      nityaResult, nityaStreakResult, malaResult, sankalpaResult,
+    ],
+  ] = await Promise.all([
+    // ── Public/shared data from cache ──────────────────────────────────────
+    Promise.all([
+      getCachedHeroAssets(),
+      getCachedLiveDarshans(),
+      getCachedObservances(calendarFromDate),
+      getCachedDharmVeer(tradition),
+    ]),
+    // ── User-specific queries (always fresh) ───────────────────────────────
+    Promise.allSettled([
+      // guided path progress
+      withTimeout(
+        supabase.from('guided_path_progress').select('path_id, status, completed_at, updated_at, current_lesson, completed_lessons').eq('user_id', user.id),
+        DB_TIMEOUT,
+      ),
+      // consolidated daily_sadhana — replaces 4 separate queries (today, yesterday, latestStreak, 28-day history)
+      withTimeout(
+        supabase.from('daily_sadhana').select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done').eq('user_id', user.id).gte('date', historyFrom).lte('date', today),
+        DB_TIMEOUT,
+      ),
+      // nitya karma log
+      withTimeout(
+        supabase.from('nitya_karma_log').select('log_date').eq('user_id', user.id).gte('log_date', historyFrom).lte('log_date', today),
+        DB_TIMEOUT,
+      ),
+      // nitya karma morning streak
+      withTimeout(
+        supabase.from('nitya_karma_streaks').select('current_streak').eq('user_id', user.id).maybeSingle(),
+        DB_TIMEOUT,
+      ),
+      // mala sessions today
+      withTimeout(
+        supabase.from('mala_sessions').select('id').eq('user_id', user.id).gte('completed_at', `${today}T00:00:00Z`).lte('completed_at', `${today}T23:59:59Z`).limit(1),
+        DB_TIMEOUT,
+      ),
+      // active sankalpa
+      withTimeout(
+        supabase.from('sankalpas').select('id, text, start_date, target_days, tradition').eq('user_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        DB_TIMEOUT,
+      ),
+    ]),
   ]);
 
-  // Extract results — use `as any` only at the extraction boundary;
-  // downstream variables are typed explicitly below.
-  const guidedPathProgress = (guidedResult.status  === 'fulfilled' ? guidedResult.value.data  : null) as any[] | null;
-  const calendarRows       = (calendarResult.status === 'fulfilled' ? calendarResult.value.data : null) as any[] | null;
-  const heroAssetRows      = (heroResult.status     === 'fulfilled' ? heroResult.value.data     : null) as any[] | null;
-  const todaySadhana       = (todayResult.status    === 'fulfilled' ? todayResult.value.data    : null) as { streak_count: number | null; japa_done: boolean | null; quiz_done: boolean | null; nitya_done: boolean | null; pathshala_done: boolean | null; dharmveer_done: boolean | null } | null;
-  const yesterdaySadhana   = (yesterdayResult.status === 'fulfilled' ? yesterdayResult.value.data : null) as { japa_done: boolean | null; quiz_done: boolean | null; nitya_done: boolean | null; pathshala_done: boolean | null; dharmveer_done: boolean | null } | null;
-  const latestStreakRow     = (latestStreakResult.status === 'fulfilled' ? latestStreakResult.value.data : null) as { date: string; streak_count: number | null } | null;
-  const sadhanaHistory     = (sadhanaResult.status  === 'fulfilled' ? sadhanaResult.value.data  : null) as { date: string; japa_done: boolean }[] | null;
-  const nityaHistory       = (nityaResult.status    === 'fulfilled' ? nityaResult.value.data    : null) as { log_date: string }[] | null;
-  const nityaStreakRow     = (nityaStreakResult.status === 'fulfilled' ? nityaStreakResult.value.data : null) as { current_streak: number | null } | null;
-  const liveDarshanData    = (liveResult.status     === 'fulfilled' ? liveResult.value.data     : null) as any[] | null;
-  const malaSessionsToday  = (malaResult.status     === 'fulfilled' ? malaResult.value.data     : null) as { id: string }[] | null;
-  const sankalpaRow        = (sankalpaResult.status === 'fulfilled' ? sankalpaResult.value.data : null) as { id: string; text: string; start_date: string; target_days: number | null; tradition: string | null } | null;
-  const dharmVeer: DharmVeer = (dharmVeerResult.status === 'fulfilled' ? dharmVeerResult.value.data : null) as unknown as DharmVeer
-    ?? (await getDharmVeerOfTheDay(supabase, tradition));
+  // ── Extract results ────────────────────────────────────────────────────────
+  const heroAssetRows   = heroAssetRowsRaw as any[] | null;
+  const liveDarshanData = liveDarshanDataRaw as any[] | null;
+  const calendarRows    = calendarRowsRaw as any[] | null;
+  const dharmVeer: DharmVeer = (dharmVeerCached ?? null) as unknown as DharmVeer;
+
+  const guidedPathProgress = (guidedResult.status === 'fulfilled' ? guidedResult.value.data : null) as any[] | null;
+
+  // Consolidated sadhana rows — derive today/yesterday/streak/history in memory
+  type SadhanaRow = {
+    date: string;
+    streak_count: number | null;
+    japa_done: boolean | null;
+    quiz_done: boolean | null;
+    nitya_done: boolean | null;
+    pathshala_done: boolean | null;
+    dharmveer_done: boolean | null;
+  };
+  const allSadhanaRows = (consolidatedSadhanaResult.status === 'fulfilled'
+    ? consolidatedSadhanaResult.value.data
+    : null) as SadhanaRow[] | null;
+
+  const todaySadhana = allSadhanaRows?.find(r => r.date === today) ?? null;
+  const yesterdaySadhana = allSadhanaRows?.find(r => r.date === yesterday) ?? null;
+  const latestStreakRow = (allSadhanaRows ?? [])
+    .filter(r => r.streak_count != null)
+    .sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
+  const sadhanaHistory = (allSadhanaRows ?? []).map(r => ({
+    date: r.date,
+    japa_done: Boolean(r.japa_done),
+  }));
+
+  const nityaHistory    = (nityaResult.status === 'fulfilled' ? nityaResult.value.data : null) as { log_date: string }[] | null;
+  const nityaStreakRow  = (nityaStreakResult.status === 'fulfilled' ? nityaStreakResult.value.data : null) as { current_streak: number | null } | null;
+  const malaSessionsToday = (malaResult.status === 'fulfilled' ? malaResult.value.data : null) as { id: string }[] | null;
+  const sankalpaRow     = (sankalpaResult.status === 'fulfilled' ? sankalpaResult.value.data : null) as { id: string; text: string; start_date: string; target_days: number | null; tradition: string | null } | null;
 
   // Build calendar / festival data from results
   const calendarFromDb = (calendarRows ?? []).map((row) => mapOccurrenceToFestival(row));

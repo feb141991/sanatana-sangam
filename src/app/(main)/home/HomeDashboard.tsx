@@ -26,7 +26,6 @@ import { createClient } from '@/lib/supabase';
 import { usePremium } from '@/hooks/usePremium';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
-import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
 import SankalpaBanner from '@/components/home/SankalpaBanner';
@@ -47,7 +46,6 @@ import { getRelicAccent } from '@/lib/relic-accents';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { withOneSignal } from '@/lib/onesignal';
 import MoodPulse from '@/components/mood/MoodPulse';
-import MoodJourneySheet from '@/components/mood/MoodJourneySheet';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
@@ -59,7 +57,10 @@ import FirstWeekGuide from '@/components/home/FirstWeekGuide';
 import { HeroSection } from './sections/HeroSection';
 import { CalendarSection } from './sections/CalendarSection';
 
+// Heavy modals — defer JS until user interaction, not needed on first paint
 const BelowFoldSections = dynamic(() => import('./BelowFoldSections'), { ssr: false });
+const MoodJourneySheet = dynamic(() => import('@/components/mood/MoodJourneySheet'), { ssr: false });
+const ConfettiOverlay = dynamic(() => import('@/components/ui/ConfettiOverlay'), { ssr: false });
 
 // ── Refactored Modals & Sheets ──
 import { DatePickerModal } from './sections/DatePickerModal';
