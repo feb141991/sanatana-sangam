@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ChevronLeft, Heart, Bell, Play, MapPin, Clock,
-  Search, Share2, Sunrise, Sunset, Radio, ChevronRight,
+  Search, Share2, Sunrise, Sunset, Radio, ChevronRight, Flag,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
@@ -201,11 +201,13 @@ function SuggestionCard({
             <Play className="text-white fill-white ml-0.5" size={16} />
           </div>
         </div>
-        {/* Live badge */}
-        <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(220,38,38,0.80)' }}>
-          <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
-          <span className="text-[8px] font-bold text-white uppercase tracking-widest">Live</span>
-        </div>
+        {/* Live badge — only shown for healthy streams */}
+        {stream.isHealthy !== false && (
+          <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(220,38,38,0.80)' }}>
+            <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
+            <span className="text-[8px] font-bold text-white uppercase tracking-widest">Live</span>
+          </div>
+        )}
         {isFavourite && (
           <Heart size={10} className="absolute top-2 right-2 fill-red-400 text-red-400" />
         )}
@@ -225,6 +227,7 @@ function PlayerOverlay({
   notifPref,
   suggestions,
   favouriteIds,
+  userId,
   onClose,
   onToggleFav,
   onOpenNotif,
@@ -235,6 +238,7 @@ function PlayerOverlay({
   isFavourite: boolean;
   notifPref: Partial<DarshanPref>;
   suggestions: LiveStream[];
+  userId: string;
   favouriteIds: string[];
   onClose: () => void;
   onToggleFav: () => void;
@@ -244,6 +248,22 @@ function PlayerOverlay({
 }) {
   const hasNotif = notifPref.notify_morning || notifPref.notify_evening;
   const aartis   = stream.aartis;
+  const [reportSent, setReportSent] = useState(false);
+
+  const handleReport = async () => {
+    if (reportSent) return;
+    try {
+      await fetch('/api/live-darshan/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ streamId: stream.id, reason: 'stream_broken' }),
+      });
+      setReportSent(true);
+      toast.success('Issue reported. Our team will review it. 🙏');
+    } catch {
+      toast.error('Could not submit report. Please try again.');
+    }
+  };
 
   const handleShare = async () => {
     const url  = `${window.location.origin}/live-darshan`;
@@ -291,11 +311,17 @@ function PlayerOverlay({
             <ChevronLeft size={20} className="text-white" />
           </button>
 
-          {/* Live badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md" style={{ background: 'rgba(220,38,38,0.85)' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live</span>
-          </div>
+          {/* Live badge — only shown for healthy streams */}
+          {stream.isHealthy !== false ? (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md" style={{ background: 'rgba(220,38,38,0.85)' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md" style={{ background: 'rgba(100,100,100,0.60)' }}>
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest">Darshan</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 pointer-events-auto">
             <button
@@ -402,6 +428,22 @@ function PlayerOverlay({
             </button>
           </div>
 
+          {/* Report stream issue */}
+          <button
+            onClick={handleReport}
+            disabled={reportSent}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl transition-opacity active:scale-[0.98]"
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: reportSent ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.45)',
+              opacity: reportSent ? 0.6 : 1,
+            }}
+          >
+            <Flag size={12} />
+            <span className="text-[12px]">{reportSent ? 'Issue reported — thank you 🙏' : 'Report stream issue'}</span>
+          </button>
+
           {/* Notification CTA */}
           {!hasNotif && (aartis?.morning || aartis?.evening) && (
             <button
@@ -486,11 +528,13 @@ function StreamCard({
           </div>
         </div>
 
-        {/* Live badge */}
-        <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(220,38,38,0.85)' }}>
-          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-          <span className="text-[9px] font-bold text-white uppercase tracking-widest">Live</span>
-        </div>
+        {/* Live badge — only shown for healthy streams */}
+        {stream.isHealthy !== false && (
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-0.5 rounded-md" style={{ background: 'rgba(220,38,38,0.85)' }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            <span className="text-[9px] font-bold text-white uppercase tracking-widest">Live</span>
+          </div>
+        )}
 
         {/* Tradition badge */}
         <div
@@ -561,6 +605,7 @@ function StreamCard({
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function LiveDarshanClient({
   tradition,
+  userId,
   streams,
   initialPreferences,
 }: Props) {
@@ -754,10 +799,12 @@ export default function LiveDarshanClient({
                 <span className="text-[10px] font-bold text-red-400">{favouriteIds.length}</span>
               </div>
             )}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(220,38,38,0.10)', border: '1px solid rgba(220,38,38,0.22)' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
-            </div>
+            {streams.some(s => s.isHealthy !== false) && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={{ background: 'rgba(220,38,38,0.10)', border: '1px solid rgba(220,38,38,0.22)' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -961,14 +1008,26 @@ export default function LiveDarshanClient({
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
             <Radio size={36} className="theme-dim opacity-40" />
-            <p className="text-[13px] theme-dim">No streams match your filters.</p>
-            <button
-              onClick={() => { setActiveTradition('all'); setActiveCategory('all'); setSearch(''); setActiveCollection(null); }}
-              className="text-[12px] font-semibold underline"
-              style={{ color: 'var(--brand-primary)' }}
-            >
-              Clear all filters
-            </button>
+            {streams.length === 0 ? (
+              <>
+                <p className="text-[14px] font-medium theme-ink">No streams available right now</p>
+                <p className="text-[12px] theme-dim max-w-xs">
+                  Our team is verifying live darshan streams. Check back soon — temples stream
+                  at aarti times throughout the day. 🙏
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-[13px] theme-dim">No streams match your filters.</p>
+                <button
+                  onClick={() => { setActiveTradition('all'); setActiveCategory('all'); setSearch(''); setActiveCollection(null); }}
+                  className="text-[12px] font-semibold underline"
+                  style={{ color: 'var(--brand-primary)' }}
+                >
+                  Clear all filters
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <AnimatePresence mode="popLayout">
@@ -1004,6 +1063,7 @@ export default function LiveDarshanClient({
             notifPref={prefs.get(activePlayer) ?? {}}
             suggestions={suggestions}
             favouriteIds={favouriteIds}
+            userId={userId}
             onClose={() => setActivePlayer(null)}
             onToggleFav={() => toggleFav(activePlayer)}
             onOpenNotif={() => setNotifTarget(activePlayer)}

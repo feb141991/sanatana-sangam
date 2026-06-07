@@ -7,6 +7,8 @@ export interface AartiSchedule {
   evening?: string;
 }
 
+export type LiveDarshanHealthStatus = 'healthy' | 'suspect' | 'offline' | 'needs_review';
+
 export interface LiveStream {
   id: string;
   title: string;
@@ -21,6 +23,12 @@ export interface LiveStream {
   thumbnailUrl?: string;
   /** Parsed aarti times for notification scheduling */
   aartis?: AartiSchedule;
+  /**
+   * true  — stream passed the last health check; show "Live" badge.
+   * false — stream is suspect/degraded; shown but badge hidden.
+   * absent (undefined) — static fallback; treated as healthy.
+   */
+  isHealthy?: boolean;
 }
 
 /**
@@ -1357,6 +1365,7 @@ export type LiveDarshanDbRow = {
   tradition?: string | null;
   current_video_id?: string | null;
   is_active?: boolean | null;
+  health_status?: LiveDarshanHealthStatus | null;
 };
 
 const STATIC_STREAM_BY_ID = new Map(LIVE_STREAMS.map((stream) => [stream.id, stream]));
@@ -1393,8 +1402,17 @@ export function getLiveStreamsWithAartis(): LiveStream[] {
  * (VERIFY-LIVE) video IDs. They remain invisible until the team adds them to
  * live_darshans with a confirmed current_video_id.
  */
+/** Health statuses that are safe to surface to users. */
+const HEALTHY_STATUSES = new Set<LiveDarshanHealthStatus>(['healthy', 'suspect']);
+
 export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): LiveStream[] {
-  const activeDbRows = (dbRows ?? []).filter((r) => r.is_active !== false);
+  // Exclude rows that are explicitly inactive OR have a non-recoverable health state.
+  // 'suspect' rows are still shown (one failure is not definitive) but without the Live badge.
+  const activeDbRows = (dbRows ?? []).filter(
+    (r) =>
+      r.is_active !== false &&
+      (r.health_status == null || HEALTHY_STATUSES.has(r.health_status)),
+  );
   const dbById = new Map<string, LiveDarshanDbRow>(activeDbRows.map((r) => [r.id, r]));
 
   const seen = new Set<string>();
@@ -1406,6 +1424,8 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
     if (!videoId) continue; // no video ID → don't surface a broken iframe
 
     const fallback = STATIC_STREAM_BY_ID.get(row.id);
+    // isHealthy: absent health_status defaults to 'healthy'; 'suspect' hides Live badge.
+    const isHealthy = !row.health_status || row.health_status === 'healthy';
     result.push(enrichLiveStream({
       id:            row.id,
       title:         row.title         || fallback?.title         || row.id,
@@ -1418,6 +1438,7 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
       state:         fallback?.state,
       collections:   fallback?.collections,
       thumbnailUrl:  fallback?.thumbnailUrl,
+      isHealthy,
     }));
     seen.add(row.id);
   }
@@ -1427,10 +1448,12 @@ export function resolveActiveLiveStreams(dbRows?: LiveDarshanDbRow[] | null): Li
     if (!VERIFIED_STATIC_STREAM_IDS.has(s.id)) continue; // not audited → skip
     if (seen.has(s.id)) continue;                         // already in Tier 1
 
-    // DB may mark even a confirmed-static stream as retired
-    if (dbById.get(s.id)?.is_active === false) continue;
+    // DB may mark even a confirmed-static stream as retired or offline
+    const dbRow = dbById.get(s.id);
+    if (dbRow?.is_active === false) continue;
+    if (dbRow?.health_status && !HEALTHY_STATUSES.has(dbRow.health_status)) continue;
 
-    result.push(enrichLiveStream(s));
+    result.push(enrichLiveStream({ ...s, isHealthy: true }));
     seen.add(s.id);
   }
 

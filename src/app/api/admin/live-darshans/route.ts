@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
     youtube_channel_id: body.youtube_channel_id.trim(),
     current_video_id: body.current_video_id?.trim() || null,
     is_active: body.is_active ?? true,
+    // Admin upsert always resets health — a human has verified the stream.
+    health_status: 'healthy' as const,
+    failure_count: 0,
+    last_health_error: null,
   };
 
   const { data, error } = await admin.supabase

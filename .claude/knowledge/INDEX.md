@@ -29,7 +29,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Onboarding Name Auto-fill](product/onboarding-name-autofill.md) — Pre-fill name from waitlist table to avoid double-ask
 - [AI Report UX Pattern](product/ai-report-ux-pattern.md) — Inline dropdown (not modal), permanent local hide after success, prevUserText threading via array walk
 - [FirstWeekGuide — Tradition-Aware](product/first-week-guide-tradition-aware.md) — 5-act onboarding guide with tradition-aware vocabulary, localStorage progress, visibility conditions
-- [Greeting System Conventions](product/greeting-system-conventions.md) — Empty-string userName fallback, comma-guard, 3-tier greeting pool fallback chain
+- [Greeting System Conventions](product/greeting-system-conventions.md) — Empty-string userName fallback, comma-guard, 3-tier greeting pool fallback chain; tradition × time-of-day greeting matrix (Hindu sampradayas, Sikh, Buddhist, Jain); `sai` sampradaya added; greeting edit discoverability hint; new user welcome card
 
 ### Rituals
 - [Nitya Karma Sequence](rituals/nitya-karma-sequence.md) — Correct Hindu morning order and tradition-aware sequence constraints
