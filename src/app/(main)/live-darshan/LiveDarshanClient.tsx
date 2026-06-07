@@ -564,7 +564,7 @@ export default function LiveDarshanClient({
   streams,
   initialPreferences,
 }: Props) {
-  useRouter();
+  const router = useRouter();
 
   // Preferences state
   const [prefs, setPrefs] = useState<Map<string, DarshanPref>>(() => {
@@ -724,13 +724,28 @@ export default function LiveDarshanClient({
       >
         {/* Title row */}
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.24em] uppercase mb-0.5 theme-dim">
-              Shoonaya
-            </p>
-            <h1 className="text-[1.7rem] leading-none premium-serif font-light theme-ink">
-              Live Darshan
-            </h1>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => router.back()}
+              aria-label="Go back"
+              className="h-10 w-10 rounded-full border flex items-center justify-center transition-all active:scale-95"
+              style={{
+                background: 'rgba(128,128,128,0.06)',
+                borderColor: 'rgba(197,160,89,0.22)',
+                color: 'var(--brand-primary)',
+              }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.24em] uppercase mb-0.5 theme-dim">
+                Shoonaya
+              </p>
+              <h1 className="text-[1.7rem] leading-none premium-serif font-light theme-ink">
+                Live Darshan
+              </h1>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {favouriteIds.length > 0 && (
