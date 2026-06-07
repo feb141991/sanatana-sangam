@@ -792,7 +792,8 @@ export default function HomeDashboard({
     : null;
 
   const handleMoodPulseDismiss = () => {
-    localStorage.setItem('shoonaya_mood_dismissed', new Date().toISOString().split('T')[0]);
+    const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+    localStorage.setItem('shoonaya_mood_dismissed', today);
     fetch('/api/mood/checkin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

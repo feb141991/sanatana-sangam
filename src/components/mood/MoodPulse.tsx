@@ -7,6 +7,7 @@ import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
+import { localSpiritualDate } from '@/lib/sacred-time';
 
 export interface MoodPulseProps {
   userName: string;
@@ -22,6 +23,11 @@ export interface MoodPulseProps {
 }
 
 const MOOD_KEY_STORAGE = 'home_mood_key';
+
+function getMoodSpiritualDate() {
+  const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+  return localSpiritualDate(tz, 4);
+}
 
 export default function MoodPulse({
   userName,
@@ -40,10 +46,10 @@ export default function MoodPulse({
 
   useEffect(() => {
     setMounted(true);
-    const today = new Date().toISOString().split('T')[0];
+    const today = getMoodSpiritualDate();
     const dismissedOn = localStorage.getItem('shoonaya_mood_dismissed');
 
-    if (backendState?.hasDismissedToday || dismissedOn === today) {
+    if (dismissedOn === today) {
       setHidden(true);
       return;
     }
@@ -61,7 +67,7 @@ export default function MoodPulse({
 
   const handleDone = () => {
     if (!selectedMood) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getMoodSpiritualDate();
     localStorage.setItem(MOOD_KEY_STORAGE, selectedMood.key);
     localStorage.setItem('home_mood_date', today);
     localStorage.setItem('shoonaya_mood_dismissed', today);
@@ -76,13 +82,15 @@ export default function MoodPulse({
 
   const handleExplore = () => {
     if (!selectedMood) return;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getMoodSpiritualDate();
     localStorage.setItem(MOOD_KEY_STORAGE, selectedMood.key);
     localStorage.setItem('home_mood_date', today);
     onOpen(selectedMood.key);
   };
 
-  const hasCompleted = backendState.hasCompletedToday;
+  const spiritualToday = getMoodSpiritualDate();
+  const localMoodDate = typeof window !== 'undefined' ? localStorage.getItem('home_mood_date') : null;
+  const hasCompleted = backendState.hasCompletedToday && localMoodDate === spiritualToday;
   const lastMoodConf = backendState.lastCompletedMood
     ? MOODS.find(m => m.key === backendState.lastCompletedMood)
     : null;
@@ -90,16 +98,32 @@ export default function MoodPulse({
   const firstName = userName.split(' ')[0] || '';
 
   return (
-    <div className="px-4 mb-4 relative">
+    <motion.div
+      className="fixed inset-0 z-[180] flex items-center justify-center px-4 py-8"
+      initial={prefersReducedMotion ? undefined : { opacity: 0 }}
+      animate={prefersReducedMotion ? undefined : { opacity: 1 }}
+      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Mood check-in"
+    >
+      <div className="absolute inset-0 bg-black/45 backdrop-blur-sm" />
+      <motion.div
+        className="relative w-full max-w-md rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] px-5 py-5 shadow-2xl"
+        initial={prefersReducedMotion ? undefined : { opacity: 0, y: 18, scale: 0.97 }}
+        animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      >
       {!hasCompleted && (
         <button
           onClick={() => {
             setHidden(true);
             onDismiss();
           }}
-          className="absolute top-4 right-8 z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors bg-[var(--card-bg-soft)]"
+          className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-soft)] transition-colors"
+          aria-label="Dismiss mood check-in"
         >
-          <X size={12} className="text-[var(--text-dim)]" />
+          <X size={14} className="text-[var(--text-dim)]" />
         </button>
       )}
 
@@ -197,6 +221,7 @@ export default function MoodPulse({
           )}
         </div>
       )}
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
