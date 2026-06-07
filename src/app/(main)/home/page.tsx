@@ -26,12 +26,6 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 // No revalidate — home page is user-specific (auth cookies), ISR would cache
 // one user's data and serve it to others causing 403s at the edge.
 
-// Fix 4: Cache live darshan DB fetch for the duration of this server render
-const fetchLiveDarshans = cache(async () => {
-  const supabase = await getSupabaseClient();
-  const { data } = await supabase.from('live_darshans').select('id, title, location, schedule, category, tradition, current_video_id, is_active').eq('is_active', true);
-  return data ?? null;
-});
 
 /** Wraps a promise with a timeout — resolves with null after timeoutMs instead of blocking.
  *  Accepts PromiseLike so Supabase PostgrestFilterBuilder (which is a thenable, not a
@@ -264,7 +258,7 @@ export default async function HomePage() {
   return (
     <HomeDashboard
       userId={user.id}
-      userName={profile?.full_name ?? profile?.username ?? 'Seeker'}
+      userName={profile?.full_name ?? profile?.username ?? ''}
       avatarUrl={profile?.avatar_url ?? null}
       city={profile?.city ?? ''}
       savedLat={profile?.latitude  ?? null}

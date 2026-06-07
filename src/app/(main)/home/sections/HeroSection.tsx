@@ -721,8 +721,7 @@ export function HeroSection({
               style={{ textShadow: isDark ? '0 2px 12px rgba(0,0,0,0.55)' : 'none' }}
               onClick={onGreetingClick}
             >
-              {stripGreetingIcon(greeting)},&nbsp;
-              <span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span>
+              {stripGreetingIcon(greeting)}{userName ? <>,&nbsp;<span style={{ color: 'rgba(255,240,200,0.92)' }}>{userName.split(' ')[0]}</span></> : null}
             </motion.h1>
 
             {panchang?.tithi && (

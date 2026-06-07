@@ -7,8 +7,11 @@
  * no guided path started). Gives a clear 5-act "your first week" roadmap
  * so the app never feels empty on day one.
  *
+ * Acts are tradition-aware: vocabulary, emoji, and descriptions adapt to
+ * the user's tradition (Hindu / Sikh / Buddhist / Jain / other).
+ *
  * Progress is stored in localStorage so items stay checked after completion.
- * The card disappears once all 5 acts are done or after 7 days.
+ * The card disappears once all 5 acts are done or after dismissal.
  */
 
 import { useEffect, useState } from 'react';
@@ -18,7 +21,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 
 interface FirstWeekGuideProps {
   tradition?: string | null;
-  userName?: string;
+  userName?:  string;
   onDismiss?: () => void;
 }
 
@@ -33,43 +36,82 @@ interface GuideAct {
   href:  string;
 }
 
-const ACTS: GuideAct[] = [
-  {
-    id:    'shloka',
-    emoji: '📜',
-    title: 'Read today\'s sacred text',
-    desc:  'Start a reading streak — tap the shloka card on your home screen',
+// Returns the 5 first-week acts, vocabulary-adapted to the user&apos;s tradition.
+function getTraditionActs(tradition?: string | null): GuideAct[] {
+  const t = tradition ?? 'hindu';
+
+  const sacredText: GuideAct = {
+    id:    'sacred_text',
+    emoji: t === 'sikh' ? '☬' : t === 'buddhist' ? '☸️' : t === 'jain' ? '🤲' : '🕉️',
+    title: t === 'sikh'     ? 'Read today&apos;s Shabad'
+         : t === 'buddhist' ? 'Read today&apos;s Dhamma Verse'
+         : t === 'jain'     ? 'Read today&apos;s Sutra'
+         :                   'Read today&apos;s Shloka',
+    desc:  t === 'sikh'     ? 'Start your Shabad streak — tap the Gurbani card on your home screen'
+         : t === 'buddhist' ? 'Start a Dhamma reading streak on your home screen'
+         : t === 'jain'     ? 'Start a Sutra reading streak on your home screen'
+         :                   'Start a reading streak — tap the Shloka card on your home screen',
     href:  '/',
-  },
-  {
+  };
+
+  const japa: GuideAct = {
     id:    'japa',
     emoji: '📿',
-    title: 'Complete one round of Japa',
-    desc:  '108 beads, one mantra, complete presence',
+    title: t === 'sikh'     ? 'Begin Waheguru Simran'
+         : t === 'buddhist' ? 'Recite Om Mani Padme Hum'
+         : t === 'jain'     ? 'Recite the Namokar Mantra'
+         :                   'Complete one round of Japa',
+    desc:  t === 'sikh'     ? '108 repetitions of Waheguru — one complete round'
+         : t === 'buddhist' ? '108 beads, one mantra, complete presence'
+         : t === 'jain'     ? '108 recitations of the Namokar Mantra with full awareness'
+         :                   '108 beads, one mantra, complete presence',
     href:  '/bhakti/mala',
-  },
-  {
+  };
+
+  const nitya: GuideAct = {
     id:    'nitya',
     emoji: '🌅',
-    title: 'Do your Nitya Karma once',
-    desc:  'The morning routine that anchors your whole day',
+    title: t === 'sikh'     ? 'Complete your Nitnem once'
+         : t === 'buddhist' ? 'Complete your Morning Sadhana'
+         : t === 'jain'     ? 'Complete Pratikramana once'
+         :                   'Do your Nitya Karma once',
+    desc:  t === 'sikh'     ? 'The Nitnem banis that anchor every Sikh morning'
+         : t === 'buddhist' ? 'The morning sequence that grounds your whole day'
+         : t === 'jain'     ? 'The daily reflection and practice that centres your day'
+         :                   'The morning routine that anchors your whole day',
     href:  '/nitya-karma',
-  },
-  {
+  };
+
+  const pathshala: GuideAct = {
     id:    'pathshala',
     emoji: '📖',
-    title: 'Start a Pathshala lesson',
-    desc:  'Deepen your understanding of scripture',
+    title: t === 'sikh'     ? 'Explore Gurbani in Pathshala'
+         : t === 'buddhist' ? 'Study the Dhamma texts'
+         : t === 'jain'     ? 'Study the Agamas'
+         :                   'Start a Pathshala lesson',
+    desc:  t === 'sikh'     ? 'Deepen your understanding of the Guru&apos;s wisdom'
+         : t === 'buddhist' ? 'Deepen your understanding of the Buddha&apos;s teachings'
+         : t === 'jain'     ? 'Deepen your understanding of Jain scripture'
+         :                   'Deepen your understanding of scripture and dharma',
     href:  '/pathshala',
-  },
-  {
+  };
+
+  const mandali: GuideAct = {
     id:    'mandali',
     emoji: '🤝',
-    title: 'Find your Mandali',
-    desc:  'Connect with seekers near you',
+    title: t === 'sikh'     ? 'Find your Sangat'
+         : t === 'buddhist' ? 'Find your Sangha'
+         : t === 'jain'     ? 'Connect with your Samaj'
+         :                   'Find your Mandali',
+    desc:  t === 'sikh'     ? 'Connect with Sikh seekers in your area'
+         : t === 'buddhist' ? 'Connect with Buddhist practitioners near you'
+         : t === 'jain'     ? 'Connect with Jain community members near you'
+         :                   'Connect with seekers near you',
     href:  '/mandali',
-  },
-];
+  };
+
+  return [sacredText, japa, nitya, pathshala, mandali];
+}
 
 function getCompletedActs(): Set<string> {
   if (typeof window === 'undefined') return new Set();
@@ -95,6 +137,7 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
 
   const meta   = getTraditionMeta(tradition ?? 'hindu');
   const accent = meta.accentColour ?? '#C5A059';
+  const acts   = getTraditionActs(tradition);
 
   useEffect(() => {
     setMounted(true);
@@ -123,13 +166,15 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
 
   if (!mounted || dismissed) return null;
 
-  const doneCount = ACTS.filter(a => completed.has(a.id)).length;
-  const allDone   = doneCount === ACTS.length;
+  const doneCount = acts.filter(a => completed.has(a.id)).length;
+  const allDone   = doneCount === acts.length;
 
   if (allDone) return null; // guide complete — vanish
 
+  const firstName = userName?.split(' ')[0];
+
   return (
-    <div className="px-5 mb-5">
+    <div className="px-1 mb-5">
       <div
         className="rounded-2xl overflow-hidden"
         style={{
@@ -150,9 +195,10 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
               className="font-serif font-bold text-base leading-tight"
               style={{ color: 'var(--brand-ink)' }}
             >
-              {userName ? `Welcome, ${userName.split(' ')[0]} 🙏` : 'Begin your journey 🙏'}
+              {firstName ? `Welcome, ${firstName} 🙏` : `Begin your journey ${meta.symbol}`}
             </h3>
           </div>
+
           {/* Progress ring */}
           <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
             <svg viewBox="0 0 40 40" className="absolute inset-0 w-full h-full -rotate-90">
@@ -160,20 +206,20 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
               <circle
                 cx="20" cy="20" r="16" fill="none"
                 stroke={accent} strokeWidth="3.5"
-                strokeDasharray={`${(doneCount / ACTS.length) * 100.53} 100.53`}
+                strokeDasharray={`${(doneCount / acts.length) * 100.53} 100.53`}
                 strokeLinecap="round"
                 style={{ transition: 'stroke-dasharray 0.5s ease' }}
               />
             </svg>
             <span className="relative text-[11px] font-bold tabular-nums" style={{ color: accent }}>
-              {doneCount}/{ACTS.length}
+              {doneCount}/{acts.length}
             </span>
           </div>
         </div>
 
         {/* Acts list */}
         <div className="divide-y" style={{ borderColor: `${accent}12` }}>
-          {ACTS.map((act) => {
+          {acts.map((act) => {
             const done = completed.has(act.id);
             return (
               <Link
@@ -197,9 +243,9 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
                   <p
                     className="text-sm font-semibold leading-tight"
                     style={{
-                      color: done ? 'var(--brand-muted)' : 'var(--brand-ink)',
+                      color:          done ? 'var(--brand-muted)' : 'var(--brand-ink)',
                       textDecoration: done ? 'line-through' : 'none',
-                      opacity: done ? 0.6 : 1,
+                      opacity:        done ? 0.6 : 1,
                     }}
                   >
                     {act.title}

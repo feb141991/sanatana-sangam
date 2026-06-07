@@ -54,6 +54,7 @@ import { FESTIVALS_2026 } from '@/lib/festivals';
 import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
+import FirstWeekGuide from '@/components/home/FirstWeekGuide';
 import { HeroSection } from './sections/HeroSection';
 import { CalendarSection } from './sections/CalendarSection';
 
@@ -1132,6 +1133,14 @@ export default function HomeDashboard({
               </div>
             </motion.div>
           </div>
+        )}
+
+        {/* ── First-week guide — shown only to new users with no practice history ── */}
+        {showFirstTimeGuidance && (
+          <FirstWeekGuide
+            tradition={tradition}
+            userName={userName}
+          />
         )}
 
         {/* ── Section 2: Calendar Section ── */}

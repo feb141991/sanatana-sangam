@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
   const { data, error: metadataError } = await admin.supabase
     .from('hero_assets')
     .insert(metadata)
-    .select('*')
+    .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, tags, priority, is_active, uploaded_by')
     .single();
 
   return NextResponse.json({

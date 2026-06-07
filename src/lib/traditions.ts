@@ -142,8 +142,16 @@ export function getGreetingPool(
   tradition?: string | null,
   sampradaya?: string | null,
 ): string[] {
-  const key = tradition && sampradaya ? `${tradition}:${sampradaya}` : 'default';
-  return GREETING_POOLS[key] ?? GREETING_POOLS[`${tradition}:other`] ?? GREETING_POOLS.default;
+  // Prefer the most specific key, fall back to tradition-level, then global default.
+  if (tradition && sampradaya) {
+    const specific = GREETING_POOLS[`${tradition}:${sampradaya}`];
+    if (specific) return specific;
+  }
+  if (tradition) {
+    const traditionFallback = GREETING_POOLS[`${tradition}:other`];
+    if (traditionFallback) return traditionFallback;
+  }
+  return GREETING_POOLS.default;
 }
 
 export function isGreetingCompatibleWithTradition(

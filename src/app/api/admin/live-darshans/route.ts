@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await admin.supabase
     .from('live_darshans')
     .upsert(payload, { onConflict: 'id' })
-    .select('*')
+    .select('id, title, location, schedule, category, tradition, youtube_channel_id, current_video_id, is_active')
     .single();
 
   if (error) {
