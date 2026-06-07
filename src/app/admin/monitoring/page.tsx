@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { resolveContentReport } from './actions';
 
 interface Props {
-  searchParams?: { aiReportStatus?: string };
+  searchParams?: Promise<{ aiReportStatus?: string }>;
 }
 
 /** Columns rendered in the AI Content Reports section. */
@@ -23,6 +23,7 @@ interface ContentReport {
 export default async function MonitoringPage({ searchParams }: Props) {
   // Middleware (src/middleware.ts) enforces HMAC-cookie auth on all /admin/* routes
   // and redirects unauthenticated visitors to /admin/login — no redundant check needed here.
+  const resolvedSearchParams = await searchParams;
 
   let recentEvents: MonitoringEvent[] = [];
   try {
@@ -37,7 +38,7 @@ export default async function MonitoringPage({ searchParams }: Props) {
     recentEvents = [];
   }
 
-  const aiReportStatus = searchParams?.aiReportStatus ?? 'pending';
+  const aiReportStatus = resolvedSearchParams?.aiReportStatus ?? 'pending';
 
   let aiReportsQuery = createAdminClient()
     .from('content_reports')

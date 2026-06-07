@@ -257,7 +257,12 @@ export interface Database {
           // content_author_id is passed as '' for AI reports — no real author UUID exists.
           metadata: Record<string, unknown> | null;
         };
-        Insert: Omit<Database['public']['Tables']['content_reports']['Row'], 'id' | 'created_at' | 'status' | 'admin_note'> & {
+        Insert: {
+          reported_by: string;
+          content_author_id: string;
+          content_type: string;
+          content_id: string;
+          reason: string;
           status?: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
           admin_note?: string | null;
           metadata?: Record<string, unknown> | null;
@@ -272,6 +277,7 @@ export interface Database {
           admin_note?: string | null;
           metadata?: Record<string, unknown> | null;
         };
+        Relationships: [];
       };
       user_blocked_profiles: {
         Row: {
