@@ -20,6 +20,8 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Ashrama Duty Persistence](architecture/ashrama-duty-persistence.md) — localStorage for grihastha, sessionStorage for other stages
 - [AI Report — content_reports Reuse](architecture/ai-report-content-reports-reuse.md) — AI chat reports reuse content_reports table; empty-string sentinel for AI author; metadata jsonb column; separate AI reason constants
 - [Dharma Mitra — Language-Aware](architecture/dharma-mitra-language-aware.md) — Language prop chain from layout to FAB; API fallback order; MUST directive in system prompt; supported codes en/hi/pa
+- [Home Performance Patterns](architecture/home-performance-patterns.md) — Single range query for sadhana history; unstable_cache for 4 public tables; concurrent Promise.all grouping; dynamic imports for interaction-gated components
+- [Admin Auth Patterns](architecture/admin-auth-patterns.md) — Server actions re-verify HMAC independently; content_reports status union; postgrest-js v2 .update() never bug workaround; Next.js 15 searchParams must be awaited
 
 ### Product
 - [Dinacharya System](product/dinacharya-system.md) — Full-day rhythm architecture and progressive disclosure

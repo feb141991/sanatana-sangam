@@ -579,7 +579,7 @@ export function HeroSection({
         </motion.div>
 
         {/* Transparent Header Overlay */}
-        <div className="pointer-events-none sticky top-0 z-40 pt-safe-top">
+        <div className="absolute top-0 left-0 right-0 z-40 pointer-events-none pt-safe-top">
           <div className="px-5 flex items-center justify-between">
             <motion.div
               className="pointer-events-auto relative"
