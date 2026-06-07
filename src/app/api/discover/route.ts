@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabase
       .from('discover_content')
-      .select('*')
+      .select('id, slug, title, subtitle, tradition, category, hook_question, body_short, body_full, scripture_line, scripture_source, app_deep_link, og_image_url, published, created_at')
       .eq('published', true)
       .order('created_at', { ascending: false });
 

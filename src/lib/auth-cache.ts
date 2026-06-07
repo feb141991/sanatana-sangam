@@ -39,18 +39,3 @@ export const getAuthUser = cache(async () => {
     return null;
   }
 });
-
-/**
- * Cached auth + profile lookup for pages that need both.
- */
-export const getAuthUserAndProfile = cache(async () => {
-  const supabase = await getSupabaseClient();
-  const user = await getAuthUser();
-  if (!user) return { user: null, profile: null, supabase };
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-  return { user, profile, supabase };
-});
