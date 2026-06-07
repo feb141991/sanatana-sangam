@@ -1608,7 +1608,7 @@ export default function HomeDashboard({
 
               {/* Header */}
               <h2 className="text-2xl font-bold font-serif theme-ink mb-3">
-                Welcome to the Zeroists, {userName.split(' ')[0]}!
+                Welcome to the Zeroists{userName ? `, ${userName.split(' ')[0]}` : ''}!
               </h2>
               
               <p className="text-sm text-[var(--text-muted-warm)] leading-relaxed mb-8">

@@ -144,7 +144,7 @@ export default function MoodPulse({
       ) : (
         <div className="flex flex-col">
           <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--brand-primary)] mb-3">
-            भावना · How are you, {firstName}?
+            भावना · How are you{firstName ? `, ${firstName}` : ''}?
           </p>
           <div className="grid grid-cols-2 gap-2">
             {MOODS.map(mood => {

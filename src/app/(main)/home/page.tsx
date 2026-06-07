@@ -314,7 +314,7 @@ export default async function HomePage() {
   return (
     <HomeDashboard
       userId={user.id}
-      userName={profile?.full_name ?? profile?.username ?? ''}
+      userName={(profile?.full_name ?? profile?.username ?? '').trim()}
       avatarUrl={profile?.avatar_url ?? null}
       city={profile?.city ?? ''}
       savedLat={profile?.latitude  ?? null}
