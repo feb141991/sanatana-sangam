@@ -6,6 +6,7 @@ import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
 import { type MoodInsightMetrics } from '@/lib/mood/insights';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 
 export interface MoodMirrorProps {
   activeMood: MoodConfig;
@@ -137,7 +138,11 @@ export default function MoodMirror({
                     borderColor: moodConf ? moodConf.colour : 'var(--card-border)',
                   }}
                 >
-                  {moodConf && <MoodGlyph mood={moodConf.key} size={14} color={moodConf.colour} />}
+                  {moodConf && (
+                    <SacredGlowIcon color={moodConf.colour} size={24} variant="soft">
+                      <MoodGlyph mood={moodConf.key} size={14} color={moodConf.colour} />
+                    </SacredGlowIcon>
+                  )}
                 </motion.div>
                 <span className="text-[8px] text-[var(--text-dim)] uppercase font-medium">{label}</span>
               </div>
@@ -146,7 +151,11 @@ export default function MoodMirror({
         </div>
         {topMoodConf && (
           <p className="text-[11px] text-[var(--brand-primary)] mt-3">
-            <span className="inline mr-1"><MoodGlyph mood={topMoodConf.key} size={11} color="var(--brand-primary)" /></span>
+            <span className="inline-flex mr-1 align-middle">
+              <SacredGlowIcon color="var(--brand-primary)" size={20} variant="active" animated>
+                <MoodGlyph mood={topMoodConf.key} size={11} color="var(--brand-primary)" />
+              </SacredGlowIcon>
+            </span>
             {topMoodConf.label} most often
           </p>
         )}
@@ -220,7 +229,11 @@ export default function MoodMirror({
                 <div key={item.mood} className="space-y-1.5">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
-                      {mood ? <MoodGlyph mood={mood.key} size={14} color={mood.colour} /> : null}
+                      {mood ? (
+                        <SacredGlowIcon color={mood.colour} size={24} variant="soft">
+                          <MoodGlyph mood={mood.key} size={14} color={mood.colour} />
+                        </SacredGlowIcon>
+                      ) : null}
                       <span className="text-[12px] font-medium text-[var(--text-cream)] truncate">
                         {mood?.label ?? item.mood}
                       </span>

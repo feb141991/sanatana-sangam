@@ -8,6 +8,7 @@ import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getFullRecommendationsForMood } from '@/lib/mood/engine';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 
 export interface MoodReturnProps {
   checkinId: string;
@@ -75,7 +76,9 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
                     onClick={() => handlePillTap(mood)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-[var(--card-border)] bg-[var(--surface-soft)] active:scale-95 transition-transform"
                   >
-                    <MoodGlyph mood={mood.key} size={12} color={mood.colour} />
+                    <SacredGlowIcon color={mood.colour} size={22} variant="soft">
+                      <MoodGlyph mood={mood.key} size={12} color={mood.colour} />
+                    </SacredGlowIcon>
                     <span className="text-[11px] font-medium" style={{ color: 'var(--text-cream)' }}>
                       {mood.label}
                     </span>
@@ -98,7 +101,9 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
             {/* Confirmed mood + close */}
             <div className="flex items-center justify-between px-2 mb-3">
               <div className="flex items-center gap-1.5">
-                <MoodGlyph mood={afterMood.key} color={afterMood.colour} size={12} />
+                <SacredGlowIcon color={afterMood.colour} size={22} variant="active" animated>
+                  <MoodGlyph mood={afterMood.key} color={afterMood.colour} size={12} />
+                </SacredGlowIcon>
                 <span className="text-[11px] font-semibold" style={{ color: afterMood.colour }}>
                   {afterMood.label} — explore for this
                 </span>
@@ -133,7 +138,9 @@ export default function MoodReturn({ checkinId, onComplete, onSkip }: MoodReturn
                       border: `1px solid ${afterMood.colour}22`,
                     }}
                   >
-                    <SacredIcon name={rec.icon} size={14} style={{ color: afterMood.colour }} />
+                    <SacredGlowIcon color={afterMood.colour} size={28} variant="soft">
+                      <SacredIcon name={rec.icon} size={14} style={{ color: afterMood.colour }} />
+                    </SacredGlowIcon>
                     <span
                       className="text-[12px] font-semibold leading-tight line-clamp-2 mt-2 mb-1"
                       style={{ color: 'var(--text-cream)' }}

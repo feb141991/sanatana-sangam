@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { getFullRecommendationsForMood } from '@/lib/mood/engine';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
@@ -180,23 +181,33 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                   className="flex gap-2 overflow-x-auto pb-0.5"
                   style={{ scrollbarWidth: 'none' } as React.CSSProperties}
                 >
-                  {MOODS.map(mood => (
+                  {MOODS.map(mood => {
+                    const isSelected = activeMoodKey === mood.key;
+                    return (
                     <button
                       key={mood.key}
                       onClick={() => handlePickMood(mood.key)}
                       className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-full transition-all active:scale-95"
                       style={{
                         background: mood.bg,
-                        outline: activeMoodKey === mood.key ? `2px solid ${mood.colour}66` : 'none',
+                        outline: isSelected ? `2px solid ${mood.colour}66` : 'none',
                         outlineOffset: '1px',
                       }}
                     >
-                      <MoodGlyph mood={mood.key} color={mood.colour} size={15} />
+                      <SacredGlowIcon
+                        color={mood.colour}
+                        size={24}
+                        variant={isSelected ? 'active' : 'soft'}
+                        animated={isSelected}
+                      >
+                        <MoodGlyph mood={mood.key} color={mood.colour} size={15} />
+                      </SacredGlowIcon>
                       <span className="text-[12px] font-semibold" style={{ color: mood.colour }}>
                         {mood.label}
                       </span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* ── Two-step confirm bar — appears after mood is selected ── */}
@@ -214,7 +225,9 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                         style={{ borderTop: `1px solid ${sel.colour}18` }}
                       >
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <MoodGlyph mood={sel.key} color={sel.colour} size={12} />
+                          <SacredGlowIcon color={sel.colour} size={22} variant="active" animated>
+                            <MoodGlyph mood={sel.key} color={sel.colour} size={12} />
+                          </SacredGlowIcon>
                           <span className="text-[11px] font-semibold truncate" style={{ color: sel.colour }}>
                             {sel.label} saved
                           </span>
@@ -255,7 +268,9 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                     className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
                     style={{ background: activeMood.bg }}
                   >
-                    <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={13} />
+                    <SacredGlowIcon color={activeMood.colour} size={22} variant="active" animated>
+                      <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={13} />
+                    </SacredGlowIcon>
                     <span className="text-[11px] font-semibold" style={{ color: activeMood.colour }}>
                       {activeMood.label}
                     </span>
@@ -286,7 +301,9 @@ export default function DailyMoodCard({ onSelectMood, userName, backendState }: 
                       }}
                     >
                       {/* Icon */}
-                      <SacredIcon name={rec.icon} size={15} style={{ color: activeMood.colour }} />
+                      <SacredGlowIcon color={activeMood.colour} size={28} variant="soft">
+                        <SacredIcon name={rec.icon} size={15} style={{ color: activeMood.colour }} />
+                      </SacredGlowIcon>
 
                       {/* Title */}
                       <span

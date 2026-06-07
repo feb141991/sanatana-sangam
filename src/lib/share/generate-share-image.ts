@@ -44,6 +44,21 @@ const CARD_DIMENSIONS: Record<NityaCardType, [number, number]> = {
   shloka_verse:     [1080, 1080],
 };
 
+const PREMIUM = {
+  navy: '#0B2344',
+  navyDeep: '#061629',
+  gold: '#C7952E',
+  goldLight: '#E7C872',
+  goldSoft: '#F3E1B3',
+  parchment: '#FBF6EA',
+  parchmentDeep: '#EFE1C7',
+  ink: '#0B2344',
+  muted: '#6F5B3E',
+  panel: '#FFF9EE',
+  white: '#FFFFFF',
+  shadow: '#6B4A1418',
+};
+
 export const TRADITION_SHARE_QUOTES: Record<string, string[]> = {
   hindu: [
     'योगः कर्मसु कौशलम् — Excellence in action is Yoga.',
@@ -153,13 +168,27 @@ function wrapAndFitText(
   let size = options.maxSize;
   let lines: string[] = [];
   const weight = options.weight ?? '400';
+  const normalisedText = text.replace(/\s+/g, ' ').trim();
   
   while (size >= options.minSize) {
     ctx.font = `${weight} ${size}px ${options.fontBase}`;
-    const words = text.split(/\s+/).filter(Boolean);
+    const words = normalisedText.split(/\s+/).filter(Boolean);
     lines = [];
     let line = '';
     for (const word of words) {
+      if (ctx.measureText(word).width > maxWidth) {
+        const chars = [...word];
+        for (const char of chars) {
+          const testLine = line ? `${line}${char}` : char;
+          if (ctx.measureText(testLine).width > maxWidth && line) {
+            lines.push(line);
+            line = char;
+          } else {
+            line = testLine;
+          }
+        }
+        continue;
+      }
       const testLine = line ? `${line} ${word}` : word;
       if (ctx.measureText(testLine).width > maxWidth && line) {
         lines.push(line);
@@ -177,10 +206,11 @@ function wrapAndFitText(
   }
   
   const lineHeight = size * options.lineHeightRatio;
-  lines.slice(0, options.maxLines).forEach((lineText, index) => {
+  const visibleLines = lines.slice(0, options.maxLines);
+  visibleLines.forEach((lineText, index) => {
     ctx.fillText(lineText, x, y + index * lineHeight);
   });
-  return y + Math.min(lines.length, options.maxLines) * lineHeight;
+  return y + visibleLines.length * lineHeight;
 }
 
 function getDefaultQuote(data: NityaShareCardData) {
@@ -193,15 +223,23 @@ function getDefaultQuote(data: NityaShareCardData) {
 
 async function drawPremiumParchmentBackground(ctx: CanvasRenderingContext2D, width: number, height: number, tradition: string) {
   const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-  bgGrad.addColorStop(0, '#FDFBF7');
-  bgGrad.addColorStop(1, '#F4ECE1');
+  bgGrad.addColorStop(0, PREMIUM.parchment);
+  bgGrad.addColorStop(0.55, '#FFFDF7');
+  bgGrad.addColorStop(1, PREMIUM.parchmentDeep);
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, width, height);
 
-  const glow = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height) * 0.6);
-  glow.addColorStop(0, '#ffffffb3');
+  const glow = ctx.createRadialGradient(width / 2, height * 0.34, 0, width / 2, height * 0.34, Math.max(width, height) * 0.62);
+  glow.addColorStop(0, '#FFFFFFD8');
+  glow.addColorStop(0.42, '#F8EAC980');
   glow.addColorStop(1, 'transparent');
   ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, width, height);
+
+  const edgeGlow = ctx.createRadialGradient(width, 0, 0, width, 0, width * 0.9);
+  edgeGlow.addColorStop(0, '#D6AA4A30');
+  edgeGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = edgeGlow;
   ctx.fillRect(0, 0, width, height);
 
   const bgMap: Record<string, string> = {
@@ -225,62 +263,118 @@ async function drawPremiumParchmentBackground(ctx: CanvasRenderingContext2D, wid
       // ignore
     }
   }
+
+  drawCornerOrnaments(ctx, width, height);
 }
 
 function drawPremiumPanel(ctx: CanvasRenderingContext2D, bounds: { x: number, y: number, w: number, h: number }) {
-  strokeRoundRect(ctx, bounds.x, bounds.y, bounds.w, bounds.h, 24, '#D4AF37', 2);
-  strokeRoundRect(ctx, bounds.x + 12, bounds.y + 12, bounds.w - 24, bounds.h - 24, 16, '#D4AF3766', 1);
+  ctx.save();
+  ctx.shadowColor = PREMIUM.shadow;
+  ctx.shadowBlur = 26;
+  ctx.shadowOffsetY = 10;
+  fillRoundRect(ctx, bounds.x, bounds.y, bounds.w, bounds.h, 30, '#FFF9EEB8');
+  ctx.restore();
+  strokeRoundRect(ctx, bounds.x, bounds.y, bounds.w, bounds.h, 30, PREMIUM.gold, 3);
+  strokeRoundRect(ctx, bounds.x + 14, bounds.y + 14, bounds.w - 28, bounds.h - 28, 22, '#C7952E66', 1.5);
 }
 
 async function drawShoonayaBrandHeader(ctx: CanvasRenderingContext2D, width: number) {
-  const logoW = 178;
-  const logoH = 28;
-  try {
-    const logo = await loadCanvasImage('/assets/images/logos/river-light/river-light-horizontal.png');
-    ctx.save();
-    fillRoundRect(ctx, width / 2 - logoW / 2 - 24, 70 - 12, logoW + 48, logoH + 24, (logoH + 24) / 2, '#0F172A');
-    ctx.drawImage(logo, 805, 318, 1020, 145, width / 2 - logoW / 2, 70, logoW, logoH);
-    ctx.restore();
-  } catch {
-    ctx.font = '600 24px -apple-system, sans-serif';
-    ctx.fillStyle = '#1A1A1A';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Shoonaya', width / 2, 84);
-  }
+  const x = width / 2;
+  ctx.save();
+  ctx.shadowColor = '#0B234455';
+  ctx.shadowBlur = 24;
+  fillRoundRect(ctx, x - 162, 50, 324, 94, 47, PREMIUM.navy);
+  ctx.shadowBlur = 0;
+
+  drawInfinityMark(ctx, x, 78, 96);
+
+  ctx.font = '700 30px Georgia, serif';
+  ctx.fillStyle = PREMIUM.white;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Shoonaya', x, 119);
+  ctx.restore();
+}
+
+function drawInfinityMark(ctx: CanvasRenderingContext2D, x: number, y: number, width: number) {
+  const height = width * 0.34;
+  const teal = '#63B7C6';
+  const tealDeep = '#2C7F92';
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = '#63B7C688';
+  ctx.shadowBlur = 14;
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = teal;
+  ctx.beginPath();
+  ctx.moveTo(x - width / 2, y);
+  ctx.bezierCurveTo(x - width * 0.38, y - height, x - width * 0.18, y - height, x, y);
+  ctx.bezierCurveTo(x + width * 0.18, y + height, x + width * 0.38, y + height, x + width / 2, y);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = tealDeep;
+  ctx.beginPath();
+  ctx.moveTo(x - width / 2, y);
+  ctx.bezierCurveTo(x - width * 0.38, y + height, x - width * 0.18, y + height, x, y);
+  ctx.bezierCurveTo(x + width * 0.18, y - height, x + width * 0.38, y - height, x + width / 2, y);
+  ctx.stroke();
+
+  ctx.fillStyle = teal;
+  ctx.beginPath();
+  ctx.arc(x - width / 2 - 13, y, 7, 0, Math.PI * 2);
+  ctx.fill();
+
+  const shine = ctx.createLinearGradient(x - width / 2, y - height, x + width / 2, y + height);
+  shine.addColorStop(0, 'transparent');
+  shine.addColorStop(0.5, '#FFFFFFAA');
+  shine.addColorStop(1, 'transparent');
+  ctx.strokeStyle = shine;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x - width * 0.18, y - height * 0.58);
+  ctx.lineTo(x + width * 0.28, y - height * 0.2);
+  ctx.stroke();
+  ctx.restore();
 }
 
 function drawTraditionBadge(ctx: CanvasRenderingContext2D, width: number, y: number, label: string) {
-  ctx.font = '600 20px -apple-system, sans-serif';
+  ctx.font = '700 22px -apple-system, sans-serif';
   const badgeWidth = ctx.measureText(label).width + 40;
-  fillRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 40, 20, '#0F172A');
-  strokeRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 40, 20, '#D4AF37', 2);
-  ctx.fillStyle = '#D4AF37';
+  fillRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 46, 23, PREMIUM.navy);
+  strokeRoundRect(ctx, width / 2 - badgeWidth / 2, y, badgeWidth, 46, 23, PREMIUM.goldLight, 2);
+  ctx.fillStyle = PREMIUM.goldLight;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(label, width / 2, y + 20);
+  ctx.fillText(label, width / 2, y + 23);
 }
 
 function drawOrnamentalDivider(ctx: CanvasRenderingContext2D, width: number, y: number) {
-  ctx.strokeStyle = '#D4AF3740';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6, 10]);
+  ctx.strokeStyle = '#C7952E70';
+  ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(width * 0.22, y);
-  ctx.lineTo(width * 0.78, y);
+  ctx.moveTo(width * 0.24, y);
+  ctx.lineTo(width * 0.42, y);
+  ctx.moveTo(width * 0.58, y);
+  ctx.lineTo(width * 0.76, y);
   ctx.stroke();
-  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.arc(width / 2, y, 12, 0, Math.PI * 2);
+  ctx.strokeStyle = PREMIUM.gold;
+  ctx.stroke();
   ctx.save();
   ctx.translate(width / 2, y);
   ctx.rotate(Math.PI / 4);
-  ctx.fillStyle = '#D4AF37';
-  ctx.fillRect(-6, -6, 12, 12);
+  ctx.fillStyle = PREMIUM.gold;
+  ctx.fillRect(-5, -5, 10, 10);
   ctx.restore();
 }
 
 function drawMetricLine(ctx: CanvasRenderingContext2D, width: number, y: number, text: string) {
   ctx.font = '600 22px -apple-system, sans-serif';
-  ctx.fillStyle = '#475569';
+  ctx.fillStyle = PREMIUM.muted;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, width / 2, y);
@@ -288,17 +382,86 @@ function drawMetricLine(ctx: CanvasRenderingContext2D, width: number, y: number,
 
 function drawShoonayaFooter(ctx: CanvasRenderingContext2D, width: number, height: number) {
   const footerY = height - 90;
-  ctx.font = '400 16px -apple-system, sans-serif';
-  ctx.fillStyle = '#94A3B8';
+  ctx.font = '500 18px -apple-system, sans-serif';
+  ctx.fillStyle = PREMIUM.muted;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('Read · Reflect · Share', width / 2, footerY - 26);
+  ctx.fillText('Shoonaya · Daily Sādhana', width / 2, footerY - 28);
 
-  const pillWidth = 180;
-  fillRoundRect(ctx, width / 2 - pillWidth / 2, footerY, pillWidth, 40, 20, '#0F172A');
-  ctx.font = '600 18px -apple-system, sans-serif';
-  ctx.fillStyle = '#D4AF37';
-  ctx.fillText('shoonaya.com', width / 2, footerY + 20);
+  const pillWidth = 250;
+  fillRoundRect(ctx, width / 2 - pillWidth / 2, footerY, pillWidth, 46, 23, PREMIUM.navy);
+  strokeRoundRect(ctx, width / 2 - pillWidth / 2, footerY, pillWidth, 46, 23, PREMIUM.gold, 2);
+  ctx.font = '700 22px Georgia, serif';
+  ctx.fillStyle = PREMIUM.goldLight;
+  ctx.fillText('shoonaya.com', width / 2, footerY + 23);
+}
+
+function drawCornerOrnaments(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  const corners = [
+    { x: 74, y: 74, rot: 0 },
+    { x: width - 74, y: 74, rot: Math.PI / 2 },
+    { x: width - 74, y: height - 74, rot: Math.PI },
+    { x: 74, y: height - 74, rot: -Math.PI / 2 },
+  ];
+  ctx.save();
+  ctx.strokeStyle = '#C7952E30';
+  ctx.lineWidth = 2;
+  for (const corner of corners) {
+    ctx.save();
+    ctx.translate(corner.x, corner.y);
+    ctx.rotate(corner.rot);
+    for (let radius = 22; radius <= 118; radius += 24) {
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI / 2);
+      ctx.stroke();
+    }
+    for (let angle = 0; angle <= Math.PI / 2; angle += Math.PI / 10) {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(angle) * 126, Math.sin(angle) * 126);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawLuminousGlyph(ctx: CanvasRenderingContext2D, x: number, y: number, glyph: string, size: number) {
+  const glow = ctx.createRadialGradient(x, y, 0, x, y, size * 1.2);
+  glow.addColorStop(0, '#E7C87288');
+  glow.addColorStop(0.38, '#C7952E38');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(x, y, size * 1.24, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.save();
+  ctx.shadowColor = '#C7952E88';
+  ctx.shadowBlur = 26;
+  ctx.font = `${size}px serif`;
+  ctx.fillStyle = PREMIUM.gold;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(glyph, x, y);
+  ctx.restore();
+
+  ctx.strokeStyle = '#C7952E55';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y, size * 0.92, -0.4, Math.PI * 1.35);
+  ctx.stroke();
+
+  const shine = ctx.createLinearGradient(x - size, y - size, x + size, y + size);
+  shine.addColorStop(0, 'transparent');
+  shine.addColorStop(0.5, '#FFFFFF80');
+  shine.addColorStop(1, 'transparent');
+  ctx.strokeStyle = shine;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(x - size * 0.72, y - size * 0.48);
+  ctx.lineTo(x + size * 0.48, y - size * 0.88);
+  ctx.stroke();
 }
 
 function getTraditionLabel(tradition: string) {
@@ -327,13 +490,13 @@ async function renderShlokaVerse(ctx: CanvasRenderingContext2D, data: NityaShare
   };
   const title = titleMap[data.tradition] ?? 'Aaj Ka Verse';
 
-  ctx.font = '700 42px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.font = '700 70px Georgia, serif';
+  ctx.fillStyle = PREMIUM.ink;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(title, W / 2, 170);
+  ctx.fillText(title, W / 2, 198);
 
-  drawTraditionBadge(ctx, W, 210, `${getTraditionLabel(data.tradition)} · Day ${getStreakLabel(data.streak)}`);
+  drawTraditionBadge(ctx, W, 266, `${getTraditionLabel(data.tradition)} · Day ${getStreakLabel(data.streak)}`);
 
   const sanskrit = data.sanskrit ?? data.quote ?? '';
   let scriptFont = '"Noto Sans Devanagari", "Siddhanta", serif';
@@ -347,44 +510,44 @@ async function renderShlokaVerse(ctx: CanvasRenderingContext2D, data: NityaShare
     scriptFont = '"Noto Sans Devanagari", "Siddhanta", serif';
   }
 
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  const verseEndY = wrapAndFitText(ctx, sanskrit, W / 2, 340, 860, {
+  drawPremiumPanel(ctx, { x: 128, y: 354, w: 824, h: 300 });
+  const verseEndY = wrapAndFitText(ctx, sanskrit, W / 2, 438, 760, {
     fontBase: scriptFont,
     weight: '500',
-    maxSize: 48,
-    minSize: 32,
-    maxLines: 6,
+    maxSize: 54,
+    minSize: 28,
+    maxLines: 4,
     lineHeightRatio: verseLineHeightRatio
   });
 
   const sourceLineY = verseEndY + 40;
   if (data.source) {
     ctx.font = '600 24px -apple-system, sans-serif';
-    ctx.fillStyle = '#B45309';
+    ctx.fillStyle = PREMIUM.gold;
     ctx.fillText(`— ${data.source}`, W / 2, sourceLineY);
   }
 
   const meaningY = sourceLineY + 60;
-  ctx.font = '700 22px -apple-system, sans-serif';
-  ctx.fillStyle = '#475569';
-  ctx.fillText('MEANING', W / 2, meaningY);
+  drawOrnamentalDivider(ctx, W, meaningY - 24);
+  ctx.font = '700 46px Georgia, serif';
+  ctx.fillStyle = PREMIUM.ink;
+  ctx.fillText('Meaning', W / 2, meaningY);
 
   const translation = data.translation ?? '';
-  ctx.fillStyle = '#1E293B';
+  ctx.fillStyle = PREMIUM.ink;
   wrapAndFitText(ctx, translation, W / 2, meaningY + 46, 860, {
     fontBase: 'Georgia, serif',
     weight: '400',
-    maxSize: 36,
-    minSize: 24,
-    maxLines: 4,
+    maxSize: 34,
+    minSize: 22,
+    maxLines: 3,
     lineHeightRatio: 1.45
   });
 
-  const streak = getStreakLabel(data.streak);
-  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred reading streak` : `Completed today`);
   drawShoonayaFooter(ctx, W, H);
 }
 
@@ -396,48 +559,40 @@ async function renderMorningComplete(ctx: CanvasRenderingContext2D, data: NityaS
   drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
   await drawShoonayaBrandHeader(ctx, W);
 
-  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · Morning Complete`);
+  drawTraditionBadge(ctx, W, 180, `${getTraditionLabel(data.tradition)} · Morning Complete`);
 
   if (data.todayTithi) {
     ctx.font = '600 24px -apple-system, sans-serif';
-    ctx.fillStyle = '#B45309';
+    ctx.fillStyle = PREMIUM.gold;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${data.todayTithi} — Auspicious completion`, W / 2, 250);
+    ctx.fillText(`${data.todayTithi} — Auspicious completion`, W / 2, 270);
   }
 
-  // Large Checkmark
-  ctx.beginPath();
-  ctx.arc(W / 2, 450, 120, 0, Math.PI * 2);
-  ctx.fillStyle = '#D4AF3720';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(W / 2, 450, 100, 0, Math.PI * 2);
-  ctx.fillStyle = '#D4AF37';
-  ctx.fill();
-  ctx.font = '700 112px -apple-system, sans-serif';
-  ctx.fillStyle = '#0F172A';
+  drawLuminousGlyph(ctx, W / 2, 438, data.symbol || '✓', 132);
+  ctx.font = '800 104px -apple-system, sans-serif';
+  ctx.fillStyle = PREMIUM.navy;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('✓', W / 2, 443);
+  ctx.fillText('✓', W / 2, 438);
 
   ctx.font = '700 72px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
   ctx.fillText('Morning complete', W / 2, 650);
 
   ctx.font = '600 32px -apple-system, sans-serif';
-  ctx.fillStyle = '#475569';
+  ctx.fillStyle = PREMIUM.muted;
   ctx.fillText(`${data.stepsCompletedToday ?? 0} of ${data.totalSteps ?? 7} sacred steps`, W / 2, 720);
 
   const dateLabel = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' });
   ctx.font = '600 28px -apple-system, sans-serif';
-  ctx.fillStyle = '#94A3B8';
+  ctx.fillStyle = PREMIUM.muted;
   ctx.fillText(dateLabel, W / 2, 770);
 
   drawOrnamentalDivider(ctx, W, 860);
 
   const streak = getStreakLabel(data.streak);
-  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred morning streak` : `Completed today`);
+  drawMetricLine(ctx, W, H - 150, streak > 1 ? `${streak}-day sacred morning streak` : `Completed today`);
   drawShoonayaFooter(ctx, W, H);
 }
 
@@ -449,20 +604,18 @@ async function renderStreakMilestone(ctx: CanvasRenderingContext2D, data: NityaS
   drawPremiumPanel(ctx, { x: 40, y: 40, w: W - 80, h: H - 80 });
   await drawShoonayaBrandHeader(ctx, W);
 
-  drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
+  drawTraditionBadge(ctx, W, 180, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
 
-  ctx.font = '120px serif';
-  ctx.fillStyle = '#D4AF37';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(data.symbol, W / 2, 320);
+  drawLuminousGlyph(ctx, W / 2, 338, data.symbol, 128);
 
   ctx.font = '700 220px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.fillText(String(data.streak ?? 0), W / 2, 540);
 
   ctx.font = '600 48px -apple-system, sans-serif';
-  ctx.fillStyle = '#B45309';
+  ctx.fillStyle = PREMIUM.gold;
   ctx.fillText('days', W / 2, 690);
 
   drawOrnamentalDivider(ctx, W, 800);
@@ -482,12 +635,12 @@ async function renderSadhanaQuote(ctx: CanvasRenderingContext2D, data: NityaShar
   drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
 
   ctx.font = '120px Georgia, serif';
-  ctx.fillStyle = '#D4AF37';
+  ctx.fillStyle = PREMIUM.gold;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('“', W / 2, 300);
 
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
   const endY = wrapAndFitText(ctx, getDefaultQuote(data), W / 2, 380, 840, {
     fontBase: 'Georgia, serif',
     weight: '600',
@@ -499,14 +652,14 @@ async function renderSadhanaQuote(ctx: CanvasRenderingContext2D, data: NityaShar
 
   if (data.quoteSource) {
     ctx.font = 'italic 600 28px Georgia, serif';
-    ctx.fillStyle = '#B45309';
+    ctx.fillStyle = PREMIUM.gold;
     ctx.fillText(data.quoteSource, W / 2, endY + 40);
   }
 
   drawOrnamentalDivider(ctx, W, endY + 120);
 
   const streak = getStreakLabel(data.streak);
-  drawMetricLine(ctx, W, H - 150, streak > 1 ? `🔥 ${streak}-day sacred reading streak` : `Completed today`);
+  drawMetricLine(ctx, W, H - 150, streak > 1 ? `${streak}-day sacred reading streak` : `Completed today`);
   drawShoonayaFooter(ctx, W, H);
 }
 
@@ -521,11 +674,17 @@ async function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaSha
   const month = data.month ?? new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   drawTraditionBadge(ctx, W, 170, `${month} · ${data.milestoneLabel}`);
 
-  ctx.font = '700 80px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(`${data.userName}'s Journey`, W / 2, 280);
+  ctx.fillStyle = PREMIUM.ink;
+  wrapAndFitText(ctx, `${data.userName}'s Journey`, W / 2, 280, 860, {
+    fontBase: 'Georgia, serif',
+    weight: '700',
+    maxSize: 76,
+    minSize: 46,
+    maxLines: 2,
+    lineHeightRatio: 1.12
+  });
 
   drawOrnamentalDivider(ctx, W, 380);
 
@@ -541,13 +700,13 @@ async function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaSha
   const boxStart = (W - boxW * 3 - boxGap * 2) / 2;
   boxes.forEach((box, index) => {
     const x = boxStart + index * (boxW + boxGap);
-    fillRoundRect(ctx, x, boxY, boxW, boxH, 30, '#0F172A08');
-    strokeRoundRect(ctx, x, boxY, boxW, boxH, 30, '#D4AF37', 2);
+    fillRoundRect(ctx, x, boxY, boxW, boxH, 30, '#0B234408');
+    strokeRoundRect(ctx, x, boxY, boxW, boxH, 30, PREMIUM.gold, 2);
     ctx.font = '700 72px Georgia, serif';
-    ctx.fillStyle = '#0F172A';
+    ctx.fillStyle = PREMIUM.ink;
     ctx.fillText(box.value, x + boxW / 2, boxY + 80);
     ctx.font = '600 22px -apple-system, sans-serif';
-    ctx.fillStyle = '#B45309';
+    ctx.fillStyle = PREMIUM.gold;
     ctx.fillText(box.label, x + boxW / 2, boxY + 140);
   });
 
@@ -558,9 +717,9 @@ async function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaSha
   dow.forEach((value, index) => {
     const x = miniStart + index * 96;
     const h = Math.max(4, (value / max) * 40);
-    fillRoundRect(ctx, x, miniY + 44 - h, 52, h, 12, '#D4AF37');
+    fillRoundRect(ctx, x, miniY + 44 - h, 52, h, 12, PREMIUM.gold);
     ctx.font = '600 18px -apple-system, sans-serif';
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = PREMIUM.muted;
     ctx.fillText(['M', 'T', 'W', 'T', 'F', 'S', 'S'][index], x + 26, miniY + 82);
   });
 
@@ -573,7 +732,7 @@ async function renderMonthlyReport(ctx: CanvasRenderingContext2D, data: NityaSha
         ? 'Growing. Sadhana is not a sprint.'
         : 'The seed is planted. Keep returning.';
   ctx.font = '600 34px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
   wrapText(ctx, insight, W / 2, 920, 780, 50, 3);
 
   drawMetricLine(ctx, W, H - 150, `Practice peaks at ${data.peakHourLabel ?? 'your chosen hour'}`);
@@ -590,14 +749,12 @@ async function renderWeekSummary(ctx: CanvasRenderingContext2D, data: NityaShare
 
   drawTraditionBadge(ctx, W, 170, `${getTraditionLabel(data.tradition)} · ${data.milestoneLabel}`);
 
-  ctx.font = '100px serif';
-  ctx.fillStyle = '#D4AF37';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(data.symbol, W / 2, 340);
+  drawLuminousGlyph(ctx, W / 2, 340, data.symbol, 112);
 
   ctx.font = '700 72px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.fillText('This Week\'s Practice', W / 2, 480);
 
   const dow = data.dowData?.slice(0, 7) ?? Array(7).fill(0);
@@ -612,26 +769,26 @@ async function renderWeekSummary(ctx: CanvasRenderingContext2D, data: NityaShare
   for (let i = 0; i < 7; i++) {
     const x = startX + i * (barWidth + gap);
     ctx.font = '600 32px -apple-system, sans-serif';
-    ctx.fillStyle = '#475569';
+    ctx.fillStyle = PREMIUM.muted;
     ctx.fillText(labels[i], x + barWidth / 2, chartTop - 64);
     const value = Math.max(0, Math.min(7, dow[i] ?? 0));
     const h = (value / 7) * chartHeight;
-    fillRoundRect(ctx, x, chartTop + chartHeight - h, barWidth, Math.max(10, h), 38, value > 0 ? '#0F172A' : '#0F172A10');
+    fillRoundRect(ctx, x, chartTop + chartHeight - h, barWidth, Math.max(10, h), 38, value > 0 ? PREMIUM.navy : '#0B234410');
     if (i === todayIndex) {
       ctx.beginPath();
       ctx.arc(x + barWidth / 2, chartTop + chartHeight - h - 34, 10, 0, Math.PI * 2);
-      ctx.fillStyle = '#D4AF37';
+      ctx.fillStyle = PREMIUM.gold;
       ctx.fill();
     }
   }
 
   const delta = (data.thisWeekActive ?? 0) - (data.lastWeekActive ?? 0);
   ctx.font = '700 86px Georgia, serif';
-  ctx.fillStyle = '#0F172A';
+  ctx.fillStyle = PREMIUM.ink;
   ctx.fillText(`${data.thisWeekActive ?? 0}/7 days active`, W / 2, 1480);
 
   ctx.font = '600 38px -apple-system, sans-serif';
-  ctx.fillStyle = delta > 0 ? '#16A34A' : delta < 0 ? '#DC2626' : '#B45309';
+  ctx.fillStyle = delta > 0 ? '#15803D' : delta < 0 ? '#B91C1C' : PREMIUM.gold;
   const deltaLabel = delta > 0
     ? `↑ ${delta} more than last week`
     : delta < 0

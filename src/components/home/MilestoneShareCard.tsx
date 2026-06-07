@@ -24,6 +24,7 @@ import {
   resolveNityaMilestoneLabel,
   shareNityaCardImage,
 } from '@/lib/share/nitya-card-data';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 
 const MILESTONES = [7, 21, 40, 108] as const;
 type Milestone = (typeof MILESTONES)[number];
@@ -171,7 +172,9 @@ export default function MilestoneShareCard({
             className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
             style={{ background: `${accent}18`, border: `1px solid ${accent}28` }}
           >
-            <Flame size={18} style={{ color: accent }} />
+            <SacredGlowIcon color={accent} size={30} variant="milestone" animated>
+              <Flame size={18} style={{ color: accent }} />
+            </SacredGlowIcon>
           </div>
           <div>
             <p className="text-sm font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
@@ -205,11 +208,30 @@ export default function MilestoneShareCard({
           style={{ background: accent, color: '#0E0E0F', boxShadow: `0 0 14px ${accent}33` }}
         >
           {copied ? (
-            <><Check size={13} /> Copied!</>
+            <>
+              <SacredGlowIcon color="var(--brand-ink)" size={22} variant="active">
+                <Check size={13} />
+              </SacredGlowIcon>
+              Copied!
+            </>
           ) : (
             <>{typeof navigator !== 'undefined' && 'share' in navigator
-              ? <><Share2 size={13} /> Share your milestone</>
-              : <><Copy size={13} /> Copy to share</>
+              ? (
+                <>
+                  <SacredGlowIcon color="var(--brand-ink)" size={22} variant="active" animated>
+                    <Share2 size={13} />
+                  </SacredGlowIcon>
+                  Share your milestone
+                </>
+              )
+              : (
+                <>
+                  <SacredGlowIcon color="var(--brand-ink)" size={22} variant="active">
+                    <Copy size={13} />
+                  </SacredGlowIcon>
+                  Copy to share
+                </>
+              )
             }</>
           )}
         </button>

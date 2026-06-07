@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 
 export interface MoodPulseProps {
   userName: string;
@@ -54,7 +55,7 @@ export default function MoodPulse({
 
   if (!mounted || hidden || !backendState?.isLoaded) return null;
 
-  const handlePillTap = (mood: MoodConfig) => {
+  const handleMoodSelect = (mood: MoodConfig) => {
     setSelectedMood(mood);
   };
 
@@ -105,14 +106,16 @@ export default function MoodPulse({
       {hasCompleted && lastMoodConf ? (
         <div className="flex flex-col">
           <button
-            onClick={() => handlePillTap(lastMoodConf)}
+            onClick={() => handleMoodSelect(lastMoodConf)}
             className="flex items-center gap-2 px-4 py-2 rounded-xl"
             style={{
               background: lastMoodConf.bg,
               border: `1px solid ${lastMoodConf.colour}`,
             }}
           >
-            <MoodGlyph mood={lastMoodConf.key} size={14} color={lastMoodConf.colour} />
+            <SacredGlowIcon color={lastMoodConf.colour} size={24} variant="active" animated>
+              <MoodGlyph mood={lastMoodConf.key} size={14} color={lastMoodConf.colour} />
+            </SacredGlowIcon>
             <span className="text-sm font-medium" style={{ color: lastMoodConf.colour }}>
               {lastMoodConf.label} · Explore &rarr;
             </span>
@@ -123,28 +126,40 @@ export default function MoodPulse({
           <p className="text-[9px] font-bold uppercase tracking-widest text-[var(--brand-primary)] mb-3">
             भावना · How are you, {firstName}?
           </p>
-          <div
-            className="-mx-4 px-4 overflow-x-auto"
-            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}
-          >
-            <div className="flex gap-2 pb-1 w-max">
-              {MOODS.map(mood => (
+          <div className="grid grid-cols-2 gap-2">
+            {MOODS.map(mood => {
+              const isSelected = selectedMood?.key === mood.key;
+              return (
                 <motion.button
                   key={mood.key}
-                  whileTap={prefersReducedMotion ? undefined : { scale: 1.08 }}
+                  whileTap={prefersReducedMotion ? undefined : { scale: 1.04 }}
                   transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', duration: 0.2 }}
-                  onClick={() => handlePillTap(mood)}
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full border transition-colors"
+                  onClick={() => handleMoodSelect(mood)}
+                  className="flex items-center gap-2 px-3 rounded-xl border transition-colors"
                   style={{
-                    background: selectedMood?.key === mood.key ? mood.bg : 'var(--surface-soft)',
-                    borderColor: selectedMood?.key === mood.key ? `${mood.colour}66` : 'var(--card-border)',
+                    minHeight: 44,
+                    background: isSelected ? mood.bg : 'var(--surface-soft)',
+                    borderColor: isSelected ? mood.colour : 'var(--card-border)',
+                    borderWidth: isSelected ? 1.5 : 1,
                   }}
                 >
-                  <MoodGlyph mood={mood.key} size={14} color={mood.colour} />
-                  <span className="text-xs font-medium" style={{ color: selectedMood?.key === mood.key ? mood.colour : 'var(--text-cream)' }}>{mood.label}</span>
+                  <SacredGlowIcon
+                    color={mood.colour}
+                    size={24}
+                    variant={isSelected ? 'active' : 'soft'}
+                    animated={isSelected}
+                  >
+                    <MoodGlyph mood={mood.key} size={14} color={mood.colour} />
+                  </SacredGlowIcon>
+                  <span
+                    className="text-xs font-medium leading-tight"
+                    style={{ color: isSelected ? mood.colour : 'var(--text-cream)' }}
+                  >
+                    {mood.label}
+                  </span>
                 </motion.button>
-              ))}
-            </div>
+              );
+            })}
           </div>
 
           {/* Confirm bar — appears after mood selected */}
@@ -157,7 +172,9 @@ export default function MoodPulse({
               style={{ borderTop: `1px solid ${selectedMood.colour}22` }}
             >
               <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                <MoodGlyph mood={selectedMood.key} color={selectedMood.colour} size={12} />
+                <SacredGlowIcon color={selectedMood.colour} size={22} variant="active" animated>
+                  <MoodGlyph mood={selectedMood.key} color={selectedMood.colour} size={12} />
+                </SacredGlowIcon>
                 <span className="text-[11px] font-semibold truncate" style={{ color: selectedMood.colour }}>
                   {selectedMood.label} saved
                 </span>

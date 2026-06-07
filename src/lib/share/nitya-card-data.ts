@@ -223,9 +223,9 @@ export async function shareNityaCardImage({
         url: shareUrl,
         files: [file],
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       // AbortError = user dismissed the native share sheet — treat as neutral, not failure
-      if (err?.name === 'AbortError') return;
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       throw err;
     }
     return;

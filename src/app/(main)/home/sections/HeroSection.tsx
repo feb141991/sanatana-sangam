@@ -27,6 +27,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import MoodGlyph from '@/components/ui/MoodGlyph';
+import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
@@ -622,7 +623,9 @@ export function HeroSection({
               >
                 {moodToday ? (
                   <>
-                    <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
+                    <SacredGlowIcon color={moodToday.colour} size={24} variant="active" animated>
+                      <MoodGlyph mood={moodToday.key} color={moodToday.colour} size={14} />
+                    </SacredGlowIcon>
                     <span
                       className="text-[10px] font-bold uppercase tracking-wider"
                       style={{ color: isDark ? 'rgba(255,255,255,0.92)' : 'rgba(30,20,5,0.80)' }}
@@ -632,7 +635,9 @@ export function HeroSection({
                   </>
                 ) : (
                   <>
-                    <Sparkles size={12} style={{ color: isDark ? 'rgba(245,220,160,0.75)' : 'rgba(100,60,10,0.60)' }} />
+                    <SacredGlowIcon color="var(--brand-primary)" size={24} variant="soft">
+                      <Sparkles size={12} style={{ color: 'var(--brand-primary)' }} />
+                    </SacredGlowIcon>
                     <span
                       className="text-[10px] font-bold uppercase tracking-wider"
                       style={{ color: isDark ? 'rgba(245,220,160,0.80)' : 'rgba(100,60,10,0.70)' }}
@@ -1016,10 +1021,16 @@ export function HeroSection({
                 WebkitBackdropFilter: 'blur(14px) saturate(120%)',
               }}>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
-                  style={{ background: sacredTextTheme.iconWell }}>
-                  {dailyText.icon}
-                </div>
+                <SacredGlowIcon
+                  color="var(--brand-primary)"
+                  size={34}
+                  variant="active"
+                  animated
+                  className="rounded-xl"
+                  style={{ background: sacredTextTheme.iconWell }}
+                >
+                  <span className="text-base">{dailyText.icon}</span>
+                </SacredGlowIcon>
                 <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 500, color: 'var(--text-cream)' }}>
                   {dailyText.label}
                 </p>
@@ -1036,7 +1047,9 @@ export function HeroSection({
                 <button onClick={shareShloka}
                   className="w-11 h-11 rounded-full flex items-center justify-center bg-transparent border-0 outline-none"
                   style={{ background: sacredTextTheme.iconWell }} aria-label="Share">
-                  <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
+                  <SacredGlowIcon color="var(--brand-primary)" size={28} variant="active" animated>
+                    <Share2 size={15} style={{ color: 'var(--text-cream)' }} />
+                  </SacredGlowIcon>
                 </button>
                 <button onClick={() => setShlokaModalOpen(false)}
                   className="w-[44px] h-[44px] rounded-full flex items-center justify-center bg-transparent border-0 outline-none"

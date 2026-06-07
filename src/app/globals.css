@@ -2250,6 +2250,81 @@ body::after {
 .mood-sparkle-one { top: 22%; right: 20%; animation: moodSparkle 2.8s ease-in-out infinite; }
 .mood-sparkle-two { bottom: 24%; right: 34%; animation: moodSparkle 3.4s ease-in-out 0.7s infinite; }
 
+/* ── Shared sacred glyph glow ──────────────────────────────────────────────── */
+.sacred-glow-icon {
+  --sacred-glow-size: 28px;
+  --sacred-glow-color: var(--brand-primary);
+  --sacred-glow-alpha: 22%;
+  --sacred-glow-scale: 1;
+  --sacred-glow-blur: 14px;
+  position: relative;
+  display: inline-flex;
+  width: var(--sacred-glow-size);
+  height: var(--sacred-glow-size);
+  flex: 0 0 var(--sacred-glow-size);
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  color: var(--sacred-glow-color);
+}
+
+.sacred-glow-icon::before,
+.sacred-glow-icon::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.sacred-glow-icon::before {
+  inset: -32%;
+  z-index: -1;
+  border-radius: 9999px;
+  opacity: 0.72;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--sacred-glow-color) var(--sacred-glow-alpha), transparent) 0%, transparent 66%);
+  filter: blur(var(--sacred-glow-blur));
+  transform: scale(var(--sacred-glow-scale));
+}
+
+.sacred-glow-icon::after {
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(116deg, transparent 0%, transparent 34%, color-mix(in srgb, var(--text-cream) 34%, transparent) 48%, transparent 64%, transparent 100%);
+  transform: translateX(-110%);
+}
+
+.sacred-glow-icon__content {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--sacred-glow-color) 30%, transparent));
+}
+
+.sacred-glow-icon--active {
+  --sacred-glow-alpha: 34%;
+  --sacred-glow-scale: 1.08;
+  --sacred-glow-blur: 12px;
+}
+
+.sacred-glow-icon--milestone {
+  --sacred-glow-alpha: 42%;
+  --sacred-glow-scale: 1.14;
+  --sacred-glow-blur: 16px;
+}
+
+.sacred-glow-icon--animated::before {
+  animation: sacredGlowPulse 2.8s ease-in-out infinite;
+}
+
+.sacred-glow-icon--animated::after {
+  opacity: 1;
+  animation: sacredGlowGlint 2.4s var(--ease-out) infinite;
+}
+
 .home-luminous-card {
   position: relative;
   overflow: hidden;
@@ -2351,10 +2426,23 @@ body::after {
   45%      { opacity: 0.95; transform: scale(1.2); }
 }
 
+@keyframes sacredGlowPulse {
+  0%, 100% { opacity: 0.48; transform: scale(calc(var(--sacred-glow-scale) * 0.92)); }
+  48%      { opacity: 0.92; transform: scale(var(--sacred-glow-scale)); }
+}
+
+@keyframes sacredGlowGlint {
+  0%, 38% { transform: translateX(-110%); }
+  66%     { transform: translateX(112%); }
+  100%    { transform: translateX(112%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mood-discovery-card::after,
   .home-luminous-card::after,
-  .mood-sparkle {
+  .mood-sparkle,
+  .sacred-glow-icon--animated::before,
+  .sacred-glow-icon--animated::after {
     animation: none !important;
   }
 }
