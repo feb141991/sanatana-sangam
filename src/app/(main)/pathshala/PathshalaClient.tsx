@@ -1457,13 +1457,20 @@ export default function PathshalaClient({
       <div className="relative z-10 pb-28">
 
         {/* ── Sticky Header ───────────────────────────────────────────────────── */}
-        <div className="sticky top-0 z-40 flex items-center gap-3 px-4 pt-5 pb-3 backdrop-blur-xl"
+        <div className="sticky top-0 z-40 flex items-center gap-3 px-4 pt-safe-top pb-3 backdrop-blur-xl"
           style={{ background: 'var(--surface-base)', borderBottom: `1px solid var(--card-border)`, opacity: 0.97 }}>
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => router.back()}
-            className="w-9 h-9 rounded-full flex items-center justify-center border focus:outline-none"
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 2) {
+                router.back();
+              } else {
+                router.push('/home');
+              }
+            }}
+            className="w-11 h-11 flex-shrink-0 rounded-full flex items-center justify-center border focus:outline-none transition-all hover:bg-[var(--surface-base)]/40"
             style={{ background: 'var(--card-bg-soft)', borderColor: 'var(--card-border)' }}
+            aria-label="Go back"
           >
             <ChevronLeft size={18} style={{ color: 'var(--brand-ink)' }} />
           </motion.button>

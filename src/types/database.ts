@@ -258,11 +258,20 @@ export interface Database {
           metadata: Record<string, unknown> | null;
         };
         Insert: Omit<Database['public']['Tables']['content_reports']['Row'], 'id' | 'created_at' | 'status' | 'admin_note'> & {
-          status?: Database['public']['Tables']['content_reports']['Row']['status'];
+          status?: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
           admin_note?: string | null;
           metadata?: Record<string, unknown> | null;
         };
-        Update: Partial<Database['public']['Tables']['content_reports']['Insert']>;
+        Update: {
+          reported_by?: string;
+          content_author_id?: string;
+          content_type?: string;
+          content_id?: string;
+          reason?: string;
+          status?: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
+          admin_note?: string | null;
+          metadata?: Record<string, unknown> | null;
+        };
       };
       user_blocked_profiles: {
         Row: {

@@ -69,10 +69,9 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
 
       {/* ── Sticky header ───────────────────────────────────────────────────── */}
       <div
-        className="sticky top-0 z-20 border-b border-white/5 backdrop-blur-xl"
+        className="sticky top-0 z-20 pt-safe-top pb-4 border-b border-white/5 backdrop-blur-xl"
         style={{
-          paddingTop: 'calc(max(env(safe-area-inset-top), 8px) + 1rem)',
-          background: 'rgba(14,10,5,0.88)',
+          backgroundColor: 'color-mix(in srgb, var(--surface-base) 85%, transparent)',
         }}
       >
         <div className="px-5 pb-3 max-w-2xl mx-auto flex items-center gap-3">

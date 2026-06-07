@@ -93,11 +93,8 @@ export default function LedgerClient({ initialLedger }: Props) {
       className="min-h-screen pb-20 px-4 md:px-6 relative"
       style={{ background: bgStyle, color: textColor }}
     >
-      {/* Safe Area Top Spacer */}
-      <div style={{ height: 'max(env(safe-area-inset-top, 0px), 16px)' }} />
-
       {/* Header */}
-      <header className="relative flex items-center justify-between py-6 max-w-2xl mx-auto">
+      <header className="relative flex items-center justify-between pt-safe-top pb-6 max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
           className="w-10 h-10 rounded-full flex items-center justify-center transition-opacity active:opacity-60"

@@ -29,11 +29,12 @@ interface Props {
 }
 
 // Path metadata derived from central SEED_PATHS
-const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number }>(
+const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number; tradition: string }>(
   SEED_PATHS.map(p => [p.id, { 
     name: p.title, 
     icon: 'book', 
-    total_lessons: (p as any).total_lessons || 0 
+    total_lessons: (p as any).total_lessons || 0,
+    tradition: p.tradition || 'all'
   }])
 );
 
@@ -41,7 +42,8 @@ function getPathInfo(id: string) {
   return PATH_INFO_MAP.get(id) ?? { 
     name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), 
     icon: 'book', 
-    total_lessons: 0 
+    total_lessons: 0,
+    tradition: 'all'
   };
 }
 
@@ -164,9 +166,23 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
   const pageBg = isDark ? '#0d1209'                  : '#f4f8f4';
 
   const stats = useMemo(() => {
-    const completed  = progress.filter(p => p.status === 'completed');
-    const active     = progress.filter(p => p.status === 'active');
-    const dismissed  = progress.filter(p => p.status === 'dismissed');
+    // Sort paths by tradition:
+    // 1. user's tradition
+    // 2. all/generic traditions
+    // 3. other traditions
+    const sortedProgress = [...progress].sort((a, b) => {
+      const tradA = getPathInfo(a.path_id).tradition;
+      const tradB = getPathInfo(b.path_id).tradition;
+
+      const rankA = tradA === tradition ? 0 : (tradA === 'all' || tradA === 'generic') ? 1 : 2;
+      const rankB = tradB === tradition ? 0 : (tradB === 'all' || tradB === 'generic') ? 1 : 2;
+
+      return rankA - rankB;
+    });
+
+    const completed  = sortedProgress.filter(p => p.status === 'completed');
+    const active     = sortedProgress.filter(p => p.status === 'active');
+    const dismissed  = sortedProgress.filter(p => p.status === 'dismissed');
 
     // "Enrolled" = any path the user has touched that isn't just left behind.
     // Dismissed paths are excluded from the enrolled count (user actively left them).
@@ -188,7 +204,7 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
     const daysOnJourney = first ? Math.max(1, Math.round((Date.now() - first.getTime()) / 86400000)) : 0;
 
     return { completed, active, dismissed, totalLessons, totalPaths, completedPaths, daysOnJourney };
-  }, [progress]);
+  }, [progress, tradition]);
 
   function handleShare() {
     const t = `📚 Pathshala — ${stats.completedPaths} paths completed, ${stats.totalLessons} lessons, ${stats.daysOnJourney} days of learning 🙏`;

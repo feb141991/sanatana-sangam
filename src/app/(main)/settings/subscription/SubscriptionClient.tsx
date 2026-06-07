@@ -143,7 +143,7 @@ export default function SubscriptionClient({
   return (
     <div className="pb-24 font-sans selection:bg-[#C5A059]/30" style={{ minHeight: '100vh', background: 'var(--divine-bg)', color: 'var(--brand-ink)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-40 px-6 pt-12 pb-4 backdrop-blur-xl flex items-center gap-4" style={{ background: 'var(--divine-bg)', borderBottom: '1px solid var(--card-border)' }}>
+      <div className="sticky top-0 z-40 px-6 pt-safe-top pb-4 backdrop-blur-xl flex items-center gap-4" style={{ background: 'var(--divine-bg)', borderBottom: '1px solid var(--card-border)' }}>
         <button
           onClick={() => router.back()}
           className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:opacity-80"

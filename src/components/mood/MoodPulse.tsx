@@ -7,7 +7,7 @@ import { MOODS_CONFIG, type MoodConfig } from '@/lib/mood/registry';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
-import { localSpiritualDate } from '@/lib/sacred-time';
+import { getMoodSpiritualDate } from '@/lib/mood/registry';
 
 export interface MoodPulseProps {
   userName: string;
@@ -24,10 +24,6 @@ export interface MoodPulseProps {
 
 const MOOD_KEY_STORAGE = 'home_mood_key';
 
-function getMoodSpiritualDate() {
-  const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
-  return localSpiritualDate(tz, 4);
-}
 
 export default function MoodPulse({
   userName,

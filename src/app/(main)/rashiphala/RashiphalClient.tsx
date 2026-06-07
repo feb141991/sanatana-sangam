@@ -64,7 +64,7 @@ export default function RashiphalClient({ userRashi, timezone = 'Asia/Kolkata' }
   return (
     <div className="min-h-screen pb-28" style={{ backgroundColor: 'var(--premium-ivory)' }}>
       {/* Header */}
-      <div className="sticky top-0 z-40 px-4 pt-6 pb-4 flex items-center gap-3 border-b"
+      <div className="sticky top-0 z-40 px-4 pt-safe-top pb-4 flex items-center gap-3 border-b"
         style={{ backgroundColor: 'var(--premium-ivory)', borderColor: 'var(--premium-border)' }}>
         <Link href="/panchang"
           className="w-9 h-9 rounded-xl flex items-center justify-center transition border"

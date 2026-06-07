@@ -574,7 +574,7 @@ export default function SettingsClient({
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--divine-bg)', color: 'var(--text-cream)' }}>
       <div
-        className="sticky top-0 z-40 flex items-center gap-4 border-b px-5 pb-4 pt-12 backdrop-blur-xl"
+        className="sticky top-0 z-40 flex items-center gap-4 border-b px-5 pb-4 pt-safe-top backdrop-blur-xl"
         style={{ background: 'var(--divine-bg)', borderColor: 'var(--card-border)' }}
       >
         <button

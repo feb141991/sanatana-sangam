@@ -58,10 +58,8 @@ export default function ShieldsClient({ streak, totalJapaSessions, userName }: P
 
   return (
     <div className="min-h-screen pb-28" style={{ background: pageBg }}>
-      <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
-
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-3 px-4 pb-4">
+      <div className="flex items-center gap-3 px-4 pt-safe-top pb-4">
         <button onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
           style={{ background: 'rgba(197, 160, 89,0.10)', border: '1px solid rgba(197, 160, 89,0.18)' }}>

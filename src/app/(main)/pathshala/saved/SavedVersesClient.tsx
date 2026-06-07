@@ -40,15 +40,22 @@ export default function SavedVersesClient({ saved, tradition }: Props) {
     <div className="min-h-screen" style={{ background: 'var(--page-bg, #F5EFE6)' }}>
       {/* ── Header ─────────────────────────────────────────────────────────────── */}
       <div
-        className="sticky top-0 z-20 px-4 pt-safe-top pb-3 pt-3"
+        className="sticky top-0 z-20 px-4 pt-safe-top pb-3"
         style={{ background: 'var(--page-bg, #F5EFE6)', borderBottom: `1px solid ${meta.accentColour}18` }}
       >
         <div className="flex items-center gap-3">
           <motion.button
             whileTap={{ scale: 0.9 }}
-            onClick={() => router.back()}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history.length > 2) {
+                router.back();
+              } else {
+                router.push('/pathshala');
+              }
+            }}
             className="w-9 h-9 rounded-full flex items-center justify-center border"
             style={{ background: 'var(--card-bg, #fff)', borderColor: 'var(--card-border, #e5ddd0)' }}
+            aria-label="Go back"
           >
             <ChevronLeft size={18} style={{ color: meta.accentColour }} />
           </motion.button>

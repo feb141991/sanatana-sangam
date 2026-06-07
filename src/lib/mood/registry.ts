@@ -1,3 +1,5 @@
+import { localSpiritualDate } from '@/lib/sacred-time';
+
 export interface MoodConfig {
   key: string;
   label: string;
@@ -31,3 +33,8 @@ export const MOODS_CONFIG: Record<'dark' | 'light', MoodConfig[]> = {
     { key: 'grateful',    label: 'Grateful',      colour: '#827717', bg: 'rgba(130,119,23,0.08)'  },
   ]
 };
+
+export function getMoodSpiritualDate() {
+  const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+  return localSpiritualDate(tz, 4);
+}

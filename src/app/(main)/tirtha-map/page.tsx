@@ -171,7 +171,7 @@ export default function TirthaMapPage() {
     const supabaseClient = createClient();
     supabaseClient
       .from('observance_occurrences')
-      .select('*, observance_definitions(*)')
+      .select('id, date, year, manual_date_override, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)')
       .order('date', { ascending: true })
       .limit(160)
       .then(({ data }) => {

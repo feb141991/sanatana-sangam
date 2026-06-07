@@ -59,7 +59,7 @@ export default function MantrasClient({ tradition, isPro }: MantrasClientProps) 
   return (
     <div className="min-h-screen pb-24" style={{ backgroundColor: 'var(--bg-base)', color: 'var(--text-base)' }}>
       {/* Sticky Header */}
-      <div className="sticky top-0 z-40 px-6 pt-12 pb-4 backdrop-blur-xl border-b" style={{ backgroundColor: isDark ? 'rgba(14,14,15,0.8)' : 'rgba(250,246,239,0.8)', borderColor: cardBorder }}>
+      <div className="sticky top-0 z-40 px-6 pt-safe-top pb-4 backdrop-blur-xl border-b" style={{ backgroundColor: isDark ? 'rgba(14,14,15,0.8)' : 'rgba(250,246,239,0.8)', borderColor: cardBorder }}>
         <div className="flex items-center gap-4 mb-4">
           <button
             onClick={() => router.back()}

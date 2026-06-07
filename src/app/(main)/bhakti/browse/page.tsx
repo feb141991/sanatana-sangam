@@ -82,10 +82,8 @@ function BrowseInner() {
   return (
     <div className="min-h-screen pb-28" style={{ background: pageBg }}>
       {/* Header */}
-      <div className="sticky top-0 z-40 backdrop-blur-xl border-b border-[var(--divine-border)]/10"
+      <div className="sticky top-0 z-40 flex items-center gap-3 px-4 pt-safe-top pb-3 backdrop-blur-xl border-b border-[var(--divine-border)]/10"
         style={{ background: isDark ? 'rgba(17,10,6,0.88)' : 'rgba(253,246,238,0.88)' }}>
-        <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
-        <div className="flex items-center gap-3 px-4 pb-3 pt-1">
         <button onClick={() => router.back()} className="w-9 h-9 rounded-full flex items-center justify-center"
           style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.18)' }}>
           <ChevronLeft size={18} style={{ color: amber }} />
@@ -99,7 +97,6 @@ function BrowseInner() {
             'Mantras, stotrams & bhajans'
           }</p>
         </div>
-      </div>
       </div>
 
       {/* Filters */}

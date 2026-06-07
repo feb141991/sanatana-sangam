@@ -16,6 +16,7 @@ import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { getFestivalStory } from '@/lib/festival-stories';
 import { TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
+import { getMoodSpiritualDate } from '@/lib/mood/registry';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import { getGreeting, isGreetingCompatibleWithTradition } from '@/lib/traditions';
 import { getUnlockedRelics } from '@/lib/relics';
@@ -792,7 +793,7 @@ export default function HomeDashboard({
     : null;
 
   const handleMoodPulseDismiss = () => {
-    const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+    const today = getMoodSpiritualDate();
     localStorage.setItem('shoonaya_mood_dismissed', today);
     fetch('/api/mood/checkin', {
       method: 'POST',

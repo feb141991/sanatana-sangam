@@ -874,10 +874,7 @@ export default function SattvicModePage() {
             <EnvParticles env={focusEnv} />
 
             {/* ── Top bar ── */}
-            <div
-              className="relative flex items-center gap-3 px-4 pb-3 flex-shrink-0"
-              style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
-            >
+            <div className="flex items-center gap-3 px-4 pb-3 flex-shrink-0 pt-safe-top">
               {/* Back button — TOP LEFT */}
               <button
                 onClick={() => { setFocusMode(false); setRunning(false); }}

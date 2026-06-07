@@ -1744,11 +1744,8 @@ export default function MyProgressClient({
         ]}
       />
       <div className="min-h-screen pb-28" style={{ background: pageBg }}>
-        {/* Safe area */}
-        <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
-
         {/* ── Hero header ── */}
-        <div className="relative px-5 pt-6 pb-5">
+        <div className="relative px-5 pt-safe-top pb-5 flex items-start justify-center">
           {/* Subtle ambient radial */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-28 pointer-events-none"
             style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.08) 0%, transparent 70%)' }}
@@ -1757,14 +1754,14 @@ export default function MyProgressClient({
           {/* Back button */}
           <button
             onClick={() => router.back()}
-            className="absolute top-6 left-5 w-9 h-9 rounded-full flex items-center justify-center transition-opacity active:opacity-60"
-            style={{ background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.08)' }}
+            className="absolute left-5 w-9 h-9 rounded-full flex items-center justify-center transition-opacity active:opacity-60"
+            style={{ top: 'calc(max(env(safe-area-inset-top, 0px), 12px) + 4px)', background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.08)' }}
           >
             <ChevronLeft size={18} style={{ color: h1 }} />
           </button>
 
           {/* Center: streak + name */}
-          <div className="flex flex-col items-center text-center">
+          <div className="flex flex-col items-center text-center mt-1">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(197,160,89,0.55)' }}>
               Sādhana Progress
             </p>

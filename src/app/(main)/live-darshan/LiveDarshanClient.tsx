@@ -719,7 +719,7 @@ export default function LiveDarshanClient({
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div
-        className="sticky top-0 z-40 px-4 pt-5 pb-3 space-y-4"
+        className="sticky top-0 z-40 px-4 pt-safe-top pb-3 space-y-4"
         style={{ background: 'color-mix(in srgb, var(--surface-base) 94%, transparent)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(128,128,128,0.08)' }}
       >
         {/* Title row */}

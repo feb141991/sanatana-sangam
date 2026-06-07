@@ -579,10 +579,7 @@ export function HeroSection({
         </motion.div>
 
         {/* Transparent Header Overlay */}
-        <div
-          className="absolute top-0 left-0 right-0 z-40 pointer-events-none"
-          style={{ paddingTop: 'max(env(safe-area-inset-top), 8px)' }}
-        >
+        <div className="pointer-events-none sticky top-0 z-40 pt-safe-top">
           <div className="px-5 flex items-center justify-between">
             <motion.div
               className="pointer-events-auto relative"
@@ -1014,7 +1011,7 @@ export function HeroSection({
             )}
 
             {/* Header bar */}
-            <div className="relative flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top,0px),12px)] pb-2"
+            <div className="relative flex items-center justify-between px-5 pt-safe-top pb-2"
               style={{
                 background: isDark ? 'rgba(20,20,18,0.38)' : 'rgba(255,253,248,0.52)',
                 backdropFilter: 'blur(14px) saturate(120%)',

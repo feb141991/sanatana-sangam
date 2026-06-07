@@ -125,7 +125,7 @@ export default function DeleteAccountClient({
       style={{ background: 'var(--divine-bg)', color: 'var(--brand-ink)' }}
     >
       <div
-        className="sticky top-0 z-20 px-5 pt-10 pb-4 backdrop-blur-xl"
+        className="sticky top-0 z-20 px-5 pt-safe-top pb-4 backdrop-blur-xl"
         style={{ background: 'color-mix(in srgb, var(--divine-bg) 88%, transparent)' }}
       >
         <div className="flex items-center gap-3">

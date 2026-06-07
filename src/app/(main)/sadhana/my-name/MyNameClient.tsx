@@ -131,7 +131,7 @@ export default function MyNameClient({
     >
       {/* Premium Sticky Header */}
       <div 
-        className="sticky top-0 z-20 px-5 pt-8 pb-4 backdrop-blur-xl border-b"
+        className="sticky top-0 z-20 px-5 pt-safe-top pb-4 backdrop-blur-xl border-b"
         style={{ 
           background: 'color-mix(in srgb, var(--divine-bg) 88%, transparent)',
           borderColor: 'var(--card-border)'
