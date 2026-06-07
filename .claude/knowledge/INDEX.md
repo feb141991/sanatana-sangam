@@ -26,6 +26,8 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Waitlist Funnel](product/waitlist-funnel.md) — 3-step form, duplicate-email handling, unified hero + CTA forms
 - [Onboarding Name Auto-fill](product/onboarding-name-autofill.md) — Pre-fill name from waitlist table to avoid double-ask
 - [AI Report UX Pattern](product/ai-report-ux-pattern.md) — Inline dropdown (not modal), permanent local hide after success, prevUserText threading via array walk
+- [FirstWeekGuide — Tradition-Aware](product/first-week-guide-tradition-aware.md) — 5-act onboarding guide with tradition-aware vocabulary, localStorage progress, visibility conditions
+- [Greeting System Conventions](product/greeting-system-conventions.md) — Empty-string userName fallback, comma-guard, 3-tier greeting pool fallback chain
 
 ### Rituals
 - [Nitya Karma Sequence](rituals/nitya-karma-sequence.md) — Correct Hindu morning order and tradition-aware sequence constraints
