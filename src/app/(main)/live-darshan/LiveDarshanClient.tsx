@@ -253,11 +253,14 @@ function PlayerOverlay({
   const handleReport = async () => {
     if (reportSent) return;
     try {
-      await fetch('/api/live-darshan/report', {
+      const res = await fetch('/api/live-darshan/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ streamId: stream.id, reason: 'stream_broken' }),
       });
+      if (!res.ok) {
+        throw new Error(`Report failed (${res.status})`);
+      }
       setReportSent(true);
       toast.success('Issue reported. Our team will review it. 🙏');
     } catch {

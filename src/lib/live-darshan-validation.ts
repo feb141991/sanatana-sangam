@@ -18,6 +18,10 @@ export type VideoValidationMeta = {
   author?: string;
   channelId?: string;
   liveBroadcastContent?: string;
+  embeddable?: boolean;
+  privacyStatus?: string;
+  actualStartTime?: string;
+  actualEndTime?: string;
 };
 
 export type LiveDarshanValidationResult = {
@@ -38,46 +42,92 @@ export function isValidYouTubeVideoId(value: string) {
   return YOUTUBE_VIDEO_ID.test(value.trim());
 }
 
-async function fetchYouTubeJson(url: string) {
+async function fetchYouTubeJson(url: string): Promise<unknown> {
   const res = await fetch(url, { redirect: 'follow' });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
     throw new Error(`${res.status} ${body.slice(0, 160) || res.statusText}`.trim());
   }
-  return res.json() as Promise<any>;
+  return res.json() as Promise<unknown>;
+}
+
+type YouTubeVideoItem = {
+  snippet?: { channelId?: string; liveBroadcastContent?: string };
+  status?: { privacyStatus?: string; embeddable?: boolean };
+  liveStreamingDetails?: { actualStartTime?: string; actualEndTime?: string };
+};
+
+type YouTubeVideoListResponse = {
+  items?: YouTubeVideoItem[];
+};
+
+type YouTubeOEmbedResponse = {
+  title?: string;
+  author_name?: string;
+};
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null;
 }
 
 export async function fetchYouTubeVideoMeta(videoId: string, apiKey?: string): Promise<VideoValidationMeta> {
-  const oembed = await fetchYouTubeJson(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+  // oEmbed gives us title + author without an API key.
+  // When no API key is available we cannot verify privacy/embeddability — caller must
+  // treat the result as partial and note it cannot claim full precision.
+  const oembedRaw = await fetchYouTubeJson(
+    `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
+  );
+  const oembed = isRecord(oembedRaw) ? (oembedRaw as YouTubeOEmbedResponse) : {};
   const meta: VideoValidationMeta = {
-    title: oembed.title,
-    author: oembed.author_name,
+    title: typeof oembed.title === 'string' ? oembed.title : undefined,
+    author: typeof oembed.author_name === 'string' ? oembed.author_name : undefined,
   };
 
   if (apiKey) {
-    const json = await fetchYouTubeJson(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`,
+    const raw = await fetchYouTubeJson(
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet,status,liveStreamingDetails&id=${videoId}&key=${apiKey}`,
     );
-    const item = json?.items?.[0];
-    if (!item?.snippet) {
+    const response = isRecord(raw) ? (raw as YouTubeVideoListResponse) : {};
+    const item = response.items?.[0];
+    if (!item) {
+      throw new Error('Video not found in YouTube Data API — it may be deleted or private');
+    }
+    if (!item.snippet) {
       throw new Error('Video metadata missing from YouTube Data API');
     }
+
+    // Privacy check — only public videos should be in live darshan playlists.
+    const privacy = item.status?.privacyStatus;
+    if (privacy && privacy !== 'public') {
+      throw new Error(`Video is not public (privacyStatus: ${privacy})`);
+    }
+
+    // Embeddable check — non-embeddable videos cannot be rendered in the player.
+    if (item.status?.embeddable === false) {
+      throw new Error('Video is not embeddable — it cannot be shown in the app player');
+    }
+
     meta.channelId = item.snippet.channelId;
     meta.liveBroadcastContent = item.snippet.liveBroadcastContent;
+    meta.privacyStatus = privacy;
+    meta.embeddable = item.status?.embeddable;
+    meta.actualStartTime = item.liveStreamingDetails?.actualStartTime;
+    meta.actualEndTime = item.liveStreamingDetails?.actualEndTime;
   }
 
   return meta;
 }
 
 export async function fetchYouTubeChannelTitle(channelId: string, apiKey: string): Promise<string> {
-  const json = await fetchYouTubeJson(
+  const raw = await fetchYouTubeJson(
     `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`,
   );
-  const item = json?.items?.[0];
-  if (!item?.snippet?.title) {
+  const response = isRecord(raw) ? (raw as { items?: Array<{ snippet?: { title?: string } }> }) : {};
+  const title = response.items?.[0]?.snippet?.title;
+  if (!title) {
     throw new Error('YouTube channel not found');
   }
-  return item.snippet.title as string;
+  return title;
 }
 
 export async function validateLiveDarshanInput(

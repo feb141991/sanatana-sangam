@@ -102,20 +102,23 @@ export async function GET(req: NextRequest) {
     }
 
     if (!row.current_video_id) {
-      // Missing video is P2 — stream may just not be live right now; don't fail hard.
+      // No current_video_id means the player has nothing to show.
+      // Mark offline so resolveActiveLiveStreams suppresses the stream from playlists.
+      // Do NOT increment failure_count — this is not a YouTube API failure; the sync
+      // cron will set a new video_id and reset health_status to healthy when the
+      // channel goes live again.
       issues.push({ id: row.id, severity: 'P2', issue: 'missing current_video_id' });
       emitEvent({
         severity: 'P2',
         domain: 'cron',
         route: '/api/cron/check-live-darshans',
         provider: 'youtube',
-        error_message: 'Live Darshan stream is active but missing current_video_id',
+        error_message: 'Live Darshan stream is active but missing current_video_id — marked offline',
         context: { stream_id: row.id, title: row.title, issue: 'missing_current_video' },
       });
-      // Don't increment failure_count for missing video — sync cron handles this.
       await applyHealthUpdate(supabase, row.id, {
-        health_status: row.health_status ?? 'healthy',
-        failure_count: prevFailures,
+        health_status: 'offline',
+        failure_count: prevFailures, // preserved — not a YouTube failure
         last_health_checked_at: now,
         last_health_error: 'missing current_video_id',
       });

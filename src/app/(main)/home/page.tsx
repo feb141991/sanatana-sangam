@@ -45,7 +45,7 @@ const getCachedLiveDarshans = unstable_cache(
     const admin = createAdminClient();
     const { data } = await admin
       .from('live_darshans')
-      .select('id, title, location, schedule, category, tradition, current_video_id, is_active')
+      .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status')
       .eq('is_active', true);
     return data ?? [];
   },
