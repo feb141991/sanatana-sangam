@@ -1,7 +1,7 @@
 // ============================================================
-// ai-nitya-sequence — Personalised morning ritual sequence
+// ai-nitya-sequence — Personalised daily ritual sequence
 //
-// Returns a sequenced morning sadhana routine personalised
+// Returns a sequenced daily sadhana routine personalised
 // to the user's tradition, available time, and today's panchang.
 //
 // POST { user_id, date?, available_minutes? }
@@ -50,11 +50,11 @@ function computeAstroPanchang(date: Date) {
 const ALL_STEPS = [
   { id: 'woke_brahma_muhurta', label: 'Wake at Brahma Muhurta',  minutes: 5,  icon: '🌅', description: 'Rise before sunrise — the most sattvic hour. Avoid checking phone. Drink copper-vessel water.' },
   { id: 'snana_done',          label: 'Snana — ritual bath',     minutes: 10, icon: '🪣', description: 'Cold or cool bath. Mentally offer the bath to Ganga Mata. Chant: Om Apavitrah Pavitro Va...' },
-  { id: 'tilak_done',          label: 'Tilak & Tilak',           minutes: 3,  icon: '🔴', description: 'Apply tilak to the forehead — gopi-chandana, vibhuti, or kumkum as per your tradition. This marks you as a devotee.' },
-  { id: 'sandhya_done',        label: 'Sandhya Vandana',         minutes: 15, icon: '🙏', description: 'Sandhya vandana prayer sequence. Includes Achamana, Pranayama, Arghya, and Gayatri japa.' },
+  { id: 'tilak_done',          label: 'Apply tilak',             minutes: 3,  icon: '🔴', description: 'Apply tilak to the forehead — gopi-chandana, vibhuti, or kumkum as per your tradition. This marks you as a devotee.' },
   { id: 'japa_done',           label: 'Morning Japa',            minutes: 20, icon: '📿', description: 'Japa of your ishta mantra. Minimum 1 mala (108 beads). Face east or north.' },
+  { id: 'sandhya_done',        label: 'Vandana',                 minutes: 15, icon: '🙏', description: "Morning salutation. Offer arghya to Surya, recite Gayatri, and greet the dawn with your tradition's prayers." },
+  { id: 'aarti_done',          label: 'Puja / Aarti',            minutes: 20, icon: '🪔', description: 'Bring your purified, nama-saturated mind to the deity. Offer puja and conclude with the circling of the lamp.' },
   { id: 'shloka_done',         label: 'Shloka Svadhyaya',        minutes: 10, icon: '📖', description: 'Read one chapter or a few verses from your chosen shastra. Contemplate the meaning.' },
-  { id: 'aarti_done',          label: 'Aarti & Diya',            minutes: 5,  icon: '🪔', description: 'Light a diya at the home shrine. Offer flowers and incense. Sing or listen to morning aarti.' },
 ];
 
 Deno.serve(async (req) => {
@@ -76,13 +76,12 @@ Deno.serve(async (req) => {
       .eq('user_id', user_id)
       .single();
 
-    // Fetch today's nitya karma log
-    const { data: log } = await supabase
+    // Fetch today's nitya karma log rows.
+    const { data: logRows } = await supabase
       .from('nitya_karma_log')
-      .select('*')
+      .select('step_id')
       .eq('user_id', user_id)
-      .eq('date', dateKey)
-      .single();
+      .eq('log_date', dateKey);
 
     // Build personalised sequence based on available time
     const totalMinutes = Number(available_minutes);
@@ -95,10 +94,12 @@ Deno.serve(async (req) => {
       if (japa) japa.minutes = 5;
     }
 
+    const doneIds = new Set((logRows ?? []).map((row: { step_id: string }) => row.step_id));
+
     // Mark completed steps
     const stepsWithStatus = steps.map(step => ({
       ...step,
-      completed: log ? (log as Record<string, unknown>)[step.id] === true : false,
+      completed: doneIds.has(step.id),
     }));
 
     // Tradition-specific guidance
@@ -106,7 +107,7 @@ Deno.serve(async (req) => {
       vaishnav: 'Chant your ishta mantra — Hare Krishna Mahamantra or Om Namo Narayanaya. Apply Vaishnava tilak (gopi-chandana U-shape).',
       shaiv:    'Chant Om Namah Shivaya or Mahamrityunjaya. Apply vibhuti (sacred ash) tilak.',
       shakta:   'Chant your Devi mantra — Om Aim Hreem Kleem or your specific Devi mantra. Apply kumkum tilak.',
-      smarta:   'Chant Gayatri mantra 108 times after Sandhya vandana. Apply chandana tilak.',
+      smarta:   'Chant Gayatri mantra 108 times during sandhya practice. Apply chandana tilak.',
       general:  'Chant Om or Gayatri. Light a diya and offer silent prayer.',
     };
 
@@ -156,7 +157,7 @@ Reply with the greeting only, no extra formatting.`;
         ...panchang,
         tradition_guidance: tradGuide,
       },
-      log,
+      log: logRows ?? [],
       generated_at: new Date().toISOString(),
     }), {
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
