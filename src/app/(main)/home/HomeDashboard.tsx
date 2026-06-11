@@ -244,13 +244,6 @@ function daysFromNow(dateStr: string) {
   return Math.ceil((fest.getTime() - d.getTime()) / 86400000);
 }
 
-function getTimeGreeting(hour: number): string | null {
-  if (hour >= 5  && hour < 12) return 'Suprabhat';
-  if (hour >= 17 && hour < 20) return 'Shubh Sandhya';
-  if (hour >= 20 || hour < 5)  return 'Shubh Ratri';
-  return null;
-}
-
 export default function HomeDashboard({
   userId,
   userName,
