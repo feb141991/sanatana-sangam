@@ -1,7 +1,14 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
+import type { ThreadWithAuthor } from '@/types/database';
 import MandaliClient from './MandaliClient';
+
+/** Thread row as selected below — reactions come embedded and are
+    aggregated into counts before reaching the client. */
+type ThreadRowWithReactions = ThreadWithAuthor & {
+  thread_reactions?: { reaction_type: string }[] | null;
+};
 
 // If the local Mandali has fewer than this many members, blend in Sangam-wide posts
 const BLEND_THRESHOLD = 5;
@@ -89,16 +96,16 @@ export default async function MandaliPage() {
   const blendedPosts = filterAuthoredItems(blendedResult.data ?? [], 'mandali_post', safetyState);
 
   // Shape threads — aggregate reactions
-  const threads = filterAuthoredItems(threadsRaw, 'thread', safetyState).map((t: any) => {
+  const threads = filterAuthoredItems(threadsRaw, 'thread', safetyState).map((t: ThreadRowWithReactions) => {
     const reactions: Record<string, number> = { pranam: 0, bhakti: 0, prakas: 0 };
-    t.thread_reactions?.forEach((r: any) => {
+    t.thread_reactions?.forEach((r) => {
       if (reactions[r.reaction_type] !== undefined) reactions[r.reaction_type]++;
     });
     const { thread_reactions, ...rest } = t;
     return { ...rest, reactions };
   });
 
-  const userTradition: string | null = (profile as any)?.tradition ?? null;
+  const userTradition: string | null = profile?.tradition ?? null;
 
   return (
     <MandaliClient

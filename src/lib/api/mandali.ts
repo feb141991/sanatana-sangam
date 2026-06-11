@@ -102,11 +102,13 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
   };
 }
 
-export async function joinMandaliForLocation(userId: string, city: string, country: string) {
+export async function joinMandaliForLocation(userId: string, city: string, country: string, lat?: number, lon?: number) {
   const supabase = createClient();
   const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
     p_city: city.trim(),
     p_country: country.trim(),
+    p_lat: lat,
+    p_lon: lon,
   });
 
   if (rpcError) throw rpcError;

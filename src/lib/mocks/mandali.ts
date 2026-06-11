@@ -203,20 +203,32 @@ export async function fetchMockMandaliData(userId: string): Promise<MandaliData>
   return clone(state);
 }
 
-export async function joinMockMandaliForLocation(userId: string, city: string, country: string) {
+export async function joinMockMandaliForLocation(userId: string, city: string, country: string, lat?: number, lon?: number) {
   const state = ensureState(userId);
+  const cityName = city.trim();
+  const countryName = country.trim();
+  const mandaliId = `mock-mandali-${cityName.toLowerCase().replace(/\s+/g, '-')}`;
   if (state.profile) {
-    state.profile.city = city.trim();
-    state.profile.country = country.trim();
-    state.profile.mandali_id = 'mock-mandali-1';
+    state.profile.city = cityName;
+    state.profile.country = countryName;
+    state.profile.mandali_id = mandaliId;
     state.profile.mandalis = {
-      name: `${city.trim()} Mandali`,
-      city: city.trim(),
-      country: country.trim(),
-      member_count: state.members.length,
+      name: `${cityName} Mandali`,
+      city: cityName,
+      country: countryName,
+      member_count: 1,
     };
+    // A freshly joined city starts as a first-member Mandali so dev mode
+    // exercises the living empty state (welcome card + compose presets).
+    // Blended posts stay so the page never looks dead. The seeded default
+    // state (mock-mandali-1) keeps the rich demo for already-joined users.
+    state.posts = [];
+    state.comments = [];
+    state.rsvps = [];
+    const self = state.members.find((m) => m.id === userId);
+    state.members = self ? [{ ...self, city: cityName, country: countryName }] : [];
   }
-  return 'mock-mandali-1';
+  return mandaliId;
 }
 
 export async function leaveMockMandali(userId: string) {

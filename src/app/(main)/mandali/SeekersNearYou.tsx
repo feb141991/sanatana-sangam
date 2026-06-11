@@ -30,7 +30,9 @@ type NearbyProfile = Profile & { distanceKm?: number };
 
 type Props = {
   userId: string;
-  profile: Profile | null;
+  /** Only location fields are read — structural type stays compatible with
+      both the database Profile row and MandaliProfile. */
+  profile: { city?: string | null; latitude?: number | null; longitude?: number | null } | null;
 };
 
 // ── Geo helpers ────────────────────────────────────────────────────────────
