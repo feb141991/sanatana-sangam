@@ -109,6 +109,36 @@ function hasAnyCoreCompletion(row: {
   return Boolean(row.japa_done || row.nitya_done || row.pathshala_done || row.quiz_done || row.dharmveer_done);
 }
 
+function getMetadataName(metadata: Record<string, unknown> | null | undefined) {
+  const fullName = metadata?.full_name;
+  if (typeof fullName === 'string' && fullName.trim()) return fullName.trim();
+
+  const name = metadata?.name;
+  if (typeof name === 'string' && name.trim()) return name.trim();
+
+  return '';
+}
+
+function getDisplayName({
+  profileName,
+  username,
+  metadata,
+  email,
+}: {
+  profileName?: string | null;
+  username?: string | null;
+  metadata?: Record<string, unknown> | null;
+  email?: string | null;
+}) {
+  const savedName = profileName?.trim() || username?.trim();
+  if (savedName) return savedName;
+
+  const metadataName = getMetadataName(metadata);
+  if (metadataName) return metadataName;
+
+  return email?.split('@')[0]?.trim() || '';
+}
+
 export default async function HomePage() {
   const user = await getAuthUser();
 
@@ -291,6 +321,12 @@ export default async function HomePage() {
     && !profile?.last_shloka_date
     && ((guidedPathProgress?.length ?? 0) === 0)
   );
+  const userName = getDisplayName({
+    profileName: profile?.full_name,
+    username: profile?.username,
+    metadata: user.user_metadata,
+    email: user.email,
+  });
 
   const pathshalaDoneToday = (guidedPathProgress ?? []).some(
     (p: GuidedPathProgressRow) => p.updated_at && p.updated_at.startsWith(today)
@@ -314,7 +350,7 @@ export default async function HomePage() {
   return (
     <HomeDashboard
       userId={user.id}
-      userName={(profile?.full_name ?? profile?.username ?? '').trim()}
+      userName={userName}
       avatarUrl={profile?.avatar_url ?? null}
       city={profile?.city ?? ''}
       savedLat={profile?.latitude  ?? null}
