@@ -98,17 +98,6 @@ function shiftIsoDate(isoDate: string, days: number) {
   return date.toISOString().slice(0, 10);
 }
 
-function hasAnyCoreCompletion(row: {
-  japa_done?: boolean | null;
-  nitya_done?: boolean | null;
-  pathshala_done?: boolean | null;
-  quiz_done?: boolean | null;
-  dharmveer_done?: boolean | null;
-} | null | undefined) {
-  if (!row) return false;
-  return Boolean(row.japa_done || row.nitya_done || row.pathshala_done || row.quiz_done || row.dharmveer_done);
-}
-
 function getMetadataName(metadata: Record<string, unknown> | null | undefined) {
   const fullName = metadata?.full_name;
   if (typeof fullName === 'string' && fullName.trim()) return fullName.trim();
@@ -148,7 +137,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, streak_freeze_count, last_freeze_used, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
     .eq('id', user.id)
     .single();
 
@@ -163,7 +152,6 @@ export default async function HomePage() {
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
   const today     = localSpiritualDate(profile?.timezone, 4);
-  const yesterday = shiftIsoDate(today, -1);
   const calendarFromDate = shiftIsoDate(new Date().toISOString().slice(0, 10), -1);
   const twentyEightDaysAgo = new Date();
   twentyEightDaysAgo.setDate(twentyEightDaysAgo.getDate() - 27);
@@ -254,7 +242,6 @@ export default async function HomePage() {
     : null) as SadhanaRow[] | null;
 
   const todaySadhana = allSadhanaRows?.find(r => r.date === today) ?? null;
-  const yesterdaySadhana = allSadhanaRows?.find(r => r.date === yesterday) ?? null;
   const latestStreakRow = (allSadhanaRows ?? [])
     .filter(r => r.streak_count != null)
     .sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
@@ -332,7 +319,6 @@ export default async function HomePage() {
     (p: GuidedPathProgressRow) => p.updated_at && p.updated_at.startsWith(today)
   );
   const effectiveJapaStreak = todaySadhana?.streak_count ?? latestStreakRow?.streak_count ?? 0;
-  const missedYesterday = !hasAnyCoreCompletion(yesterdaySadhana);
 
   const activePath = (guidedPathProgress ?? []).find((p: GuidedPathProgressRow) => p.status === 'active');
   let pathshalaLabel = 'Pathshala';
@@ -400,9 +386,6 @@ export default async function HomePage() {
       quizDoneToday={Boolean(todaySadhana?.quiz_done)}
       dharmVeerDoneToday={Boolean(todaySadhana?.dharmveer_done)}
       dharmVeer={dharmVeer}
-      streakFreezeCount={(profile as { streak_freeze_count?: number | null })?.streak_freeze_count ?? 0}
-      lastFreezeUsed={(profile as { last_freeze_used?: string | null })?.last_freeze_used ?? null}
-      missedYesterday={missedYesterday}
       activeSymbolId={(profile as any)?.active_symbol_id ?? null}
       activeSankalpa={activeSankalpa}
       karmaPoints={(profile as any)?.karma_points ?? 0}

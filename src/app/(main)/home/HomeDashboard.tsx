@@ -162,9 +162,6 @@ interface Props {
   quizDoneToday?:      boolean;
   dharmVeerDoneToday?: boolean;
   dharmVeer:           DharmVeer;
-  streakFreezeCount?:  number;
-  lastFreezeUsed?:     string | null;
-  missedYesterday?:    boolean;
   activeSymbolId?:     string | null;
   activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string | null } | null;
   karmaPoints?:        number;
@@ -285,9 +282,6 @@ export default function HomeDashboard({
   quizDoneToday = false,
   dharmVeerDoneToday = false,
   dharmVeer,
-  streakFreezeCount = 0,
-  lastFreezeUsed = null,
-  missedYesterday = false,
   activeSymbolId = null,
   activeSankalpa: initialActiveSankalpa = null,
   karmaPoints = 0,
@@ -323,10 +317,7 @@ export default function HomeDashboard({
     isGreetingCompatibleWithTradition(customGreeting, tradition, sampradaya) ? customGreeting : null
   ));
   const [streak,           setStreak]           = useState(initialStreak);
-  const [freezeCount,      setFreezeCount]      = useState(streakFreezeCount);
-  const [freezeBannerDismissed, setFreezeBannerDismissed] = useState(false);
   const [eveningNudgeDismissed, setEveningNudgeDismissed] = useState(false);
-  const [freezeApplying,   setFreezeApplying]   = useState(false);
   const [dailyDharmaStackState, setDailyDharmaStackState] = useState<DailyDharmaStackState>(EMPTY_DAILY_DHARMA_STACK_STATE);
   const [selectedDate,     setSelectedDate]     = useState<Date>(new Date());
   const [readToday,        setReadToday]        = useState(() => {
@@ -383,19 +374,6 @@ export default function HomeDashboard({
       });
     }
   }, [dharmVeerDoneToday, quizDoneToday]);
-
-  useEffect(() => {
-    setFreezeCount(streakFreezeCount);
-  }, [streakFreezeCount]);
-
-  useEffect(() => {
-    try {
-      const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
-      setFreezeBannerDismissed(sessionStorage.getItem(`shoonaya-streak-freeze-banner-dismissed-${today}`) === 'true');
-    } catch {
-      setFreezeBannerDismissed(false);
-    }
-  }, []);
 
   const [activeStoryFestival, setActiveStoryFestival] = useState<Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
@@ -865,11 +843,6 @@ export default function HomeDashboard({
             const TRADITION_DAY_WORD: Record<string, string> = { hindu: 'Shuddha Din', sikh: 'Sacha Din', buddhist: 'Kusala Dina', jain: 'Shubha Din' };
             const dayWord = TRADITION_DAY_WORD[tradition ?? 'hindu'] ?? 'Shuddha Din';
             toast.success(`+30 karma · +15 seva — ${dayWord}`);
-            if (data.freezeAwarded && typeof data.freezesRemaining === 'number') {
-              setFreezeCount(data.freezesRemaining);
-              toast.success(`🧊 Streak Freeze earned! (${data.freezesRemaining}/3)`);
-            }
-            
             const insightRes = await fetch('/api/sadhana/perfect-day-insight', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -894,46 +867,6 @@ export default function HomeDashboard({
     }
     prevCompletedCountRef.current = completedCount;
   }, [completedCount, tradition, dailyDharmaStackState, streak]);
-
-  const showFreezeBanner = missedYesterday
-    && !freezeBannerDismissed
-    && freezeCount > 0
-    && japaStreak > 3
-    && lastFreezeUsed !== localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
-
-  const dismissFreezeBanner = useCallback(() => {
-    try {
-      const today = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
-      sessionStorage.setItem(`shoonaya-streak-freeze-banner-dismissed-${today}`, 'true');
-    } catch { /* ignore */ }
-    setFreezeBannerDismissed(true);
-  }, []);
-
-  const handleUseFreeze = useCallback(async () => {
-    if (freezeApplying) return;
-    setFreezeApplying(true);
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const res = await fetch('/api/sadhana/use-freeze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ timeZone }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data?.success) {
-        toast.error('Could not protect the streak right now.');
-        return;
-      }
-      setFreezeCount(typeof data.freezesRemaining === 'number' ? data.freezesRemaining : Math.max(0, freezeCount - 1));
-      dismissFreezeBanner();
-      toast.success(`🧊 Streak protected. ${data.freezesRemaining}/3 freezes left.`);
-    } catch (error) {
-      console.error('Failed to use streak freeze', error);
-      toast.error('Could not protect the streak right now.');
-    } finally {
-      setFreezeApplying(false);
-    }
-  }, [dismissFreezeBanner, freezeApplying, freezeCount]);
 
   const relicAccent = getRelicAccent(activeSymbolId);
 
@@ -1020,74 +953,6 @@ export default function HomeDashboard({
       />
 
       <div className="space-y-4">
-        {/* ── Streak Freeze — only show when user has tokens or is Pro ── */}
-        {(freezeCount > 0 || isPro) && (
-          <div className="px-4 mt-3 mb-2">
-            <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{
-              background: isDark ? 'rgba(14,22,40,0.60)' : 'rgba(235,245,255,0.80)',
-              borderColor: isDark ? 'rgba(125,211,252,0.18)' : 'rgba(96,165,250,0.22)',
-            }}>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: isDark ? '#7DD3FC' : '#2563EB' }}>
-                  Streak Freeze
-                </p>
-                <p className="text-xs mt-1" style={{ color: isDark ? 'rgba(185,220,255,0.65)' : 'rgba(37,99,235,0.65)' }}>
-                  Miss one day without losing your streak
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {Array.from({ length: 3 }, (_, index) => {
-                  const filled = index < freezeCount;
-                  return (
-                    <div
-                      key={`freeze-slot-${index}`}
-                      className="flex h-6 w-6 items-center justify-center rounded-full"
-                      style={{
-                        border: `1.5px solid ${filled ? '#7DD3FC' : (isDark ? 'rgba(125,211,252,0.30)' : 'rgba(96,165,250,0.35)')}`,
-                        background: filled ? 'rgba(125,211,252,0.20)' : 'transparent',
-                      }}
-                    >
-                      {filled
-                        ? <span style={{ fontSize: 13, lineHeight: 1 }}>🧊</span>
-                        : <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'block', background: isDark ? 'rgba(125,211,252,0.20)' : 'rgba(96,165,250,0.18)' }} />
-                      }
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {showFreezeBanner && (
-          <div className="px-4 mb-2">
-            <div className="rounded-2xl p-4" style={{ background: 'rgba(23,37,84,0.40)', border: '1px solid rgba(96,165,250,0.20)' }}>
-              <p className="text-sm font-semibold text-white/90">
-                Yesterday&apos;s sadhana was incomplete. Use a Streak Freeze? 🧊 ({freezeCount} remaining)
-              </p>
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleUseFreeze}
-                  disabled={freezeApplying}
-                  className="rounded-full px-4 py-2 text-xs font-semibold transition-opacity disabled:opacity-60 cursor-pointer border-0"
-                  style={{ background: '#7DD3FC', color: '#082f49' }}
-                >
-                  {freezeApplying ? 'Protecting…' : 'Use Freeze'}
-                </button>
-                <button
-                  type="button"
-                  onClick={dismissFreezeBanner}
-                  className="rounded-full border px-4 py-2 text-xs font-semibold text-white/80 cursor-pointer bg-transparent"
-                  style={{ borderColor: 'rgba(125,211,252,0.20)' }}
-                >
-                  Let it reset
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {showEveningNudge && (
           <div className="px-4 mb-2">
             <motion.div
