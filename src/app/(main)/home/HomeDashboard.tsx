@@ -952,7 +952,7 @@ export default function HomeDashboard({
         timezone={timezone}
       />
 
-      <div className="space-y-4">
+      <div className="-mt-2 space-y-3">
         {showEveningNudge && (
           <div className="px-4 mb-2">
             <motion.div
