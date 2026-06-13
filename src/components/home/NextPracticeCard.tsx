@@ -35,12 +35,13 @@ type LocalState = {
   quizDone: boolean;
   dharmVeerDone: boolean;
   pathshalaDone: boolean;
+  pathshalaProgress: number;
 };
 
 const EMPTY_LOCAL_STATE: LocalState = {
   japaDone: false, japaBeads: 0, japaRounds: 0,
   nityaDone: false, quizDone: false, dharmVeerDone: false,
-  pathshalaDone: false,
+  pathshalaDone: false, pathshalaProgress: 0,
 };
 
 // Per-practice accent palette — carried over from the previous strip; these
@@ -58,6 +59,19 @@ function formatToday() {
   return localSpiritualDate(tz, 4);
 }
 function clampPercent(v: number) { return Math.max(0, Math.min(100, Math.round(v))); }
+
+function derivePathshalaProgress(raw: unknown): number {
+  if (!raw || typeof raw !== 'object') return 0;
+  if (Array.isArray(raw)) return raw.reduce((m, i) => Math.max(m, derivePathshalaProgress(i)), 0);
+  const rec = raw as Record<string, unknown>;
+  let max = 0;
+  for (const k of ['progress', 'percentage', 'percent', 'completion', 'completionRate']) {
+    const v = rec[k];
+    if (typeof v === 'number') max = Math.max(max, clampPercent(v <= 1 ? v * 100 : v));
+  }
+  for (const v of Object.values(rec)) max = Math.max(max, derivePathshalaProgress(v));
+  return max;
+}
 
 function readLocalState(): LocalState {
   if (typeof window === 'undefined') return EMPTY_LOCAL_STATE;
@@ -77,6 +91,8 @@ function readLocalState(): LocalState {
       }
     }
     next.dharmVeerDone = localStorage.getItem(`shoonaya-dharmveer-done-${today}`) === 'true';
+    const pr = localStorage.getItem('shoonaya-pathshala-progress');
+    if (pr) next.pathshalaProgress = derivePathshalaProgress(JSON.parse(pr));
     next.pathshalaDone = localStorage.getItem(`shoonaya-pathshala-done-${today}`) === 'true';
     return next;
   } catch { return EMPTY_LOCAL_STATE; }
@@ -154,7 +170,7 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
   const japaRounds        = props.japaRounds ?? localState.japaRounds;
   const quizDone          = Boolean(props.quizDone) || localState.quizDone;
   const dharmVeerDone     = Boolean(props.dharmVeerDone) || localState.dharmVeerDone;
-  const pathshalaProgress = clampPercent(props.pathshalaProgress ?? 0);
+  const pathshalaProgress = clampPercent(props.pathshalaProgress ?? localState.pathshalaProgress);
 
   // Priority order: japa → nitya → pathshala → quiz → dharm veer
   const rows = useMemo(() => [
