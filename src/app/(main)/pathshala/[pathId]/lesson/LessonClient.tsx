@@ -91,8 +91,14 @@ export default function LessonClient({
         typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
         4
       );
-      // Write immediately so DailySadhanaStrip updates in real-time via storage event
+      // Write immediately so NextPracticeCard updates in real-time via storage event
       try { localStorage.setItem(`shoonaya-pathshala-done-${today}`, 'true'); } catch { /* non-fatal */ }
+      // Progress as a 0–1 fraction: the Home readers treat values ≤ 1 as fractions,
+      // so an integer percent of 1 would be misread as 100%.
+      try {
+        const progress = totalLessons > 0 ? newCompleted.length / totalLessons : 0;
+        localStorage.setItem('shoonaya-pathshala-progress', JSON.stringify({ pathId, progress }));
+      } catch { /* non-fatal */ }
 
       void (async () => {
         try {

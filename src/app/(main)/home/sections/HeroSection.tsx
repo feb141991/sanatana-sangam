@@ -28,7 +28,7 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
-import DailySadhanaStrip from '@/components/home/DailySadhanaStrip';
+import NextPracticeCard from '@/components/home/NextPracticeCard';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
@@ -870,8 +870,8 @@ export function HeroSection({
         )}
       </AnimatePresence>
 
-      {/* ── Daily Sadhana Progress Strip ── */}
-      <DailySadhanaStrip
+      {/* ── Next Practice (static — replaces the auto-rotating strip) ── */}
+      <NextPracticeCard
         japaDone={japaAlreadyDoneToday}
         nityaDone={nityaDoneToday}
         pathshalaDone={pathshalaDoneToday}
@@ -881,9 +881,6 @@ export function HeroSection({
         dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
         dharmVeerId={dharmVeer.id}
         pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
-        tithi={panchang?.tithi}
-        tradition={tradition ?? 'hindu'}
-        isDark={isDark}
       />
 
       {/* ── Brahma Muhurta card ── */}

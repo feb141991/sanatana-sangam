@@ -14,7 +14,7 @@
  * - Dismissed state in localStorage (per calendar date, so it resets daily)
  * - "Remind me" uses browser Notification API if granted
  *
- * Wired into HomeDashboard above the DailySadhanaStrip when !japaAlreadyDoneToday.
+ * Wired into HomeDashboard above the NextPracticeCard when !japaAlreadyDoneToday.
  */
 
 import { useState, useEffect, useCallback } from 'react';

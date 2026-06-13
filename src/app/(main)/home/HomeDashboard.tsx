@@ -191,34 +191,6 @@ const EMPTY_DAILY_DHARMA_STACK_STATE: DailyDharmaStackState = {
 
 const EVENING_NUDGE_KEY = 'shoonaya-dinacharya-evening-nudge-v1';
 
-function clampDailyProgress(value: number) {
-  return Math.max(0, Math.min(100, Math.round(value)));
-}
-
-function deriveHomePathshalaProgress(raw: unknown): number {
-  if (!raw || typeof raw !== 'object') return 0;
-  if (Array.isArray(raw)) {
-    return raw.reduce((max, item) => Math.max(max, deriveHomePathshalaProgress(item)), 0);
-  }
-
-  const record = raw as Record<string, unknown>;
-  const keys = ['progress', 'percentage', 'percent', 'completion', 'completionRate'];
-  let max = 0;
-
-  for (const key of keys) {
-    const value = record[key];
-    if (typeof value === 'number') {
-      max = Math.max(max, clampDailyProgress(value <= 1 ? value * 100 : value));
-    }
-  }
-
-  for (const value of Object.values(record)) {
-    max = Math.max(max, deriveHomePathshalaProgress(value));
-  }
-
-  return max;
-}
-
 function getVratHref(festival: Festival): string | null {
   if (festival.route_kind === 'vrat') {
     return festival.route_slug || resolveVratSlug(festival.name);
@@ -359,11 +331,6 @@ export default function HomeDashboard({
       nextState.dharmVeerDone = dharmVeerDoneToday || localStorage.getItem(`shoonaya-dharmveer-done-${todayStr}`) === 'true';
       nextState.stotramDone = localStorage.getItem(`shoonaya-stotram-done-${todayStr}`) === 'true';
       nextState.kathaDone = localStorage.getItem(`shoonaya-katha-done-${todayStr}`) === 'true';
-
-      const pathshalaRaw = localStorage.getItem('shoonaya-pathshala-progress');
-      if (pathshalaRaw) {
-        nextState.pathshalaProgress = deriveHomePathshalaProgress(JSON.parse(pathshalaRaw));
-      }
 
       setDailyDharmaStackState(nextState);
     } catch {
