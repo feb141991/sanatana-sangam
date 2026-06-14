@@ -141,11 +141,10 @@ export default async function HomePage() {
     .eq('id', user.id)
     .single();
 
-  // Only redirect new users — existing users with real data skip onboarding
-  const needsOnboarding = profile?.onboarding_completed === false
-    && !profile?.tradition      // no tradition set
-    && !profile?.karma_points   // never earned karma
-    && (profile?.shloka_streak ?? 0) === 0; // never done japa
+  // Require the explicit onboarding completion flag. OAuth users can reach
+  // /home from different entry points, and profile defaults are not proof that
+  // they answered the onboarding questions.
+  const needsOnboarding = !profile || profile.onboarding_completed !== true;
     
   if (needsOnboarding) redirect('/onboarding');
 
