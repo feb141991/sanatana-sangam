@@ -32,10 +32,14 @@ export default async function MainLayout({
       .from('profiles')
       .select('latitude, longitude, city, country, country_code, tradition, full_name, username, app_language, is_banned')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
+
+    if (!profile) {
+      redirect('/auth/sign-out?reason=missing_profile');
+    }
 
     // Enforce suspension
-    if (profile?.is_banned) {
+    if (profile.is_banned) {
       redirect('/banned');
     }
 
@@ -44,14 +48,14 @@ export default async function MainLayout({
     // infinite loop (layout → redirect /onboarding → layout → repeat).
     // Onboarding gate lives in home/page.tsx only.
 
-    savedLat         = profile?.latitude     ?? null;
-    savedLon         = profile?.longitude    ?? null;
-    savedCity        = profile?.city         ?? '';
-    savedCountry     = profile?.country      ?? '';
-    savedCountryCode = profile?.country_code ?? '';
-    userName         = profile?.full_name ?? profile?.username ?? 'Sadhak';
-    tradition        = profile?.tradition ?? 'hindu';
-    const rawLang = profile?.app_language ?? 'en';
+    savedLat         = profile.latitude     ?? null;
+    savedLon         = profile.longitude    ?? null;
+    savedCity        = profile.city         ?? '';
+    savedCountry     = profile.country      ?? '';
+    savedCountryCode = profile.country_code ?? '';
+    userName         = profile.full_name ?? profile.username ?? 'Sadhak';
+    tradition        = profile.tradition ?? 'hindu';
+    const rawLang = profile.app_language ?? 'en';
     appLanguage = (['en', 'hi', 'pa'] as AppLang[]).includes(rawLang as AppLang)
       ? (rawLang as AppLang)
       : 'en';

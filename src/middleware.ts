@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 
 // ─── Preview / Coming-Soon Gate ───────────────────────────────────────────────
@@ -14,6 +15,7 @@ import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PREVIEW_COOKIE = 'shoonaya_preview';
+const AUTH_COOKIE_PATTERNS = ['auth-token', 'sb-'] as const;
 
 const PUBLIC_ADMIN_PATHS = [
   '/admin/login',
@@ -64,35 +66,87 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-/** Decode JWT payload without verification — just to read exp claim.
- *  Only used to avoid redirecting users with visibly expired tokens. */
-function jwtExp(token: string): number | null {
-  try {
-    const payload = token.split('.')[1];
-    if (!payload) return null;
-    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
-    return typeof decoded.exp === 'number' ? decoded.exp : null;
-  } catch {
-    return null;
-  }
+function isAuthCookieName(name: string): boolean {
+  return AUTH_COOKIE_PATTERNS.some((pattern) => name.includes(pattern));
 }
 
-/** Returns true if there's a non-expired Supabase auth token in cookies. */
-function hasValidSbCookie(req: NextRequest): boolean {
-  const nowSec = Math.floor(Date.now() / 1000);
-  return [...req.cookies.getAll()].some(c => {
-    if (!c.name.includes('-auth-token') || c.value.length < 10) return false;
-    const exp = jwtExp(c.value);
-    // If we can't decode exp, assume valid (refresh will happen server-side)
-    if (exp === null) return true;
-    // Allow 30s clock skew
-    return exp > nowSec - 30;
+function isInvalidAuthSessionError(error: { message?: string; code?: string; status?: number } | null | undefined): boolean {
+  if (!error) return false;
+  return (
+    error.message?.includes('Refresh Token') ||
+    error.message?.includes('refresh_token') ||
+    error.code === 'refresh_token_not_found' ||
+    error.code === 'user_not_found' ||
+    error.status === 400 ||
+    error.status === 401 ||
+    error.status === 403
+  ) ?? false;
+}
+
+function clearAuthCookies(req: NextRequest, res: NextResponse): NextResponse {
+  req.cookies.getAll()
+    .filter((cookie) => isAuthCookieName(cookie.name))
+    .forEach((cookie) => {
+      res.cookies.set(cookie.name, '', {
+        path: '/',
+        maxAge: 0,
+      });
+    });
+  return res;
+}
+
+async function getMiddlewareUser(req: NextRequest, res: NextResponse) {
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return req.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            req.cookies.set(name, value);
+            res.cookies.set(name, value, options);
+          });
+        },
+      },
+    }
+  );
+
+  return supabase.auth.getUser();
+}
+
+function redirectHome(req: NextRequest, res: NextResponse): NextResponse {
+  const homeUrl = req.nextUrl.clone();
+  homeUrl.pathname = '/home';
+  homeUrl.search = '';
+  const redirectResponse = NextResponse.redirect(homeUrl);
+  res.cookies.getAll().forEach((cookie) => {
+    const { name, value, ...options } = cookie;
+    redirectResponse.cookies.set(name, value, options);
   });
+  return redirectResponse;
 }
 
 async function middlewareHandler(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
+  const res = NextResponse.next();
+  const hasAuthCookie = req.cookies.getAll().some((cookie) => isAuthCookieName(cookie.name));
+  const {
+    data: { user },
+    error: authError,
+  } = hasAuthCookie
+    ? await getMiddlewareUser(req, res)
+    : { data: { user: null }, error: null };
+
+  if (isInvalidAuthSessionError(authError)) {
+    const landingUrl = req.nextUrl.clone();
+    landingUrl.pathname = '/';
+    landingUrl.search = '';
+    return clearAuthCookies(req, NextResponse.redirect(landingUrl));
+  }
 
   // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────
   const previewParam = req.nextUrl.searchParams.get('preview');
@@ -119,10 +173,9 @@ async function middlewareHandler(req: NextRequest) {
       ALWAYS_PUBLIC_PREFIX.some(p => pathname.startsWith(p));
 
     if (!isPublic) {
-      // Logged-in users (Supabase auth cookie present) always get through.
-      // The gate is for anonymous visitors only — we don't want to lock out
-      // existing users who already have accounts.
-      if (!hasValidSbCookie(req)) {
+      // Logged-in users always get through. The gate is for anonymous visitors
+      // only, but auth must be confirmed by Supabase instead of cookie presence.
+      if (!user) {
         const previewCookie = req.cookies.get(PREVIEW_COOKIE)?.value ?? '';
         const hasPreviewAccess = envPreviewKey
           ? previewCookie === envPreviewKey
@@ -141,11 +194,8 @@ async function middlewareHandler(req: NextRequest) {
   // ── Step 3: Logged-in users at / → go to /home ────────────────────────────
   // Placed AFTER the gate so it only fires when access is already granted.
   if (pathname === '/') {
-    if (hasValidSbCookie(req)) {
-      const homeUrl = req.nextUrl.clone();
-      homeUrl.pathname = '/home';
-      homeUrl.search = '';
-      return NextResponse.redirect(homeUrl);
+    if (user) {
+      return redirectHome(req, res);
     }
   }
 
@@ -153,10 +203,10 @@ async function middlewareHandler(req: NextRequest) {
   const isAdminPage = pathname.startsWith('/admin');
   const isAdminApi  = pathname.startsWith('/api/admin');
 
-  if (!isAdminPage && !isAdminApi) return NextResponse.next();
+  if (!isAdminPage && !isAdminApi) return res;
 
   if (PUBLIC_ADMIN_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))) {
-    return NextResponse.next();
+    return res;
   }
 
   const token = req.cookies.get(ADMIN_COOKIE)?.value ?? '';
@@ -177,7 +227,7 @@ async function middlewareHandler(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  return res;
 }
 
 export const config = {
