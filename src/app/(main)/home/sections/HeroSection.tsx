@@ -497,6 +497,13 @@ export function HeroSection({
     );
   }
 
+  // Begin Today's Sadhana → Japa Mala start flow.
+  // The /japa route already hosts the Japa Mala screen; if that flow ever moves,
+  // TODO: update this navigation target accordingly.
+  function handleBeginSadhana() {
+    router.push('/japa');
+  }
+
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
   const { t } = useLanguage();
@@ -823,6 +830,60 @@ export function HeroSection({
           </p>
         </motion.button>
       </div>
+
+      {/* ── Begin Today's Sadhana — premium daily CTA (parchment card) ── */}
+      <motion.div
+        className="px-4 mt-4 mb-3 relative z-20"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: prefersReducedMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div
+          className="flex items-center justify-between gap-3.5 rounded-[26px] px-[18px] py-4"
+          style={{
+            background: 'linear-gradient(135deg, rgba(255,248,234,0.96), rgba(250,236,211,0.88))',
+            border: '1px solid rgba(205, 166, 92, 0.28)',
+            boxShadow: '0 12px 28px rgba(105, 75, 35, 0.10), inset 0 1px 0 rgba(255,255,255,0.75)',
+          }}
+        >
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div
+              className="flex h-[54px] w-[54px] shrink-0 items-center justify-center rounded-[18px]"
+              style={{
+                background: 'rgba(217, 178, 105, 0.18)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
+              }}
+            >
+              <span className="text-[26px] leading-none" aria-hidden="true">📿</span>
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-[18px] font-bold leading-tight" style={{ color: '#3f2b1f', letterSpacing: '-0.2px' }}>
+                Begin Today&apos;s Sadhana
+              </h3>
+              <p className="text-[13.5px] mt-1 truncate" style={{ color: 'rgba(63, 43, 31, 0.66)' }}>
+                Japa Mala · 108 names · +5 seva
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleBeginSadhana}
+            aria-label="Begin Japa Mala sadhana"
+            className="flex items-center gap-1 shrink-0 rounded-full pl-4 pr-3 py-[11px] text-[15px] font-bold transition-transform active:scale-[0.98]"
+            style={{
+              color: '#fff8e8',
+              background: 'linear-gradient(135deg, #c89b43, #a97725)',
+              boxShadow: '0 8px 18px rgba(160, 112, 39, 0.28), inset 0 1px 0 rgba(255,255,255,0.35)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Sparkles size={15} strokeWidth={2.5} aria-hidden="true" />
+            Begin
+            <ChevronRight size={15} strokeWidth={2.5} aria-hidden="true" style={{ opacity: 0.65, marginLeft: '-2px' }} />
+          </button>
+        </div>
+      </motion.div>
 
       {/* ── Dharma Mitra mantra nudge — small pop-card, dismiss-to-kill ── */}
       <AnimatePresence>
