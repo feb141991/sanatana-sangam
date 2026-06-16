@@ -20,13 +20,12 @@ import { createClient } from '@/lib/supabase';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import { triggerSadhanaShare } from '@/lib/share/trigger-share';
+import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import PageIntro from '@/components/ui/PageIntro';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
 
-const TRADITION_SYMBOLS: Record<string, string> = { hindu: '🕉️', sikh: 'ੴ', buddhist: '☸️', jain: '🤲' };
 import {
   getJapaMantrasForTradition,
   getJapaPracticeType,
@@ -2255,7 +2254,7 @@ interface Props {
 }
 
 export default function JapaClient({
-  userId, tradition, currentStreak, japaAlreadyDoneToday, activeSymbolId = null, initialMantraId,
+  userId, userName, tradition, currentStreak, japaAlreadyDoneToday, activeSymbolId = null, initialMantraId,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
@@ -2818,17 +2817,20 @@ export default function JapaClient({
   };
 
   const handleShareFromComplete = () => {
-    triggerSadhanaShare({
-      tradition,
-      type: 'japa',
-      symbol: TRADITION_SYMBOLS[tradition] ?? '🙏',
-      lines: [
-        { text: `${roundsDone} round${roundsDone > 1 ? 's' : ''} complete`, size: 64, weight: '700', color: '#F5E8D0' },
-        { text: currentMantra.name ?? 'Japa Mala', size: 44, weight: '400', color: 'rgba(255,255,255,0.6)' },
-        { text: `${(roundsDone * TOTAL_BEADS).toLocaleString('en-IN')} beads`, size: 36, weight: '300', color: 'rgba(255,255,255,0.4)' },
-      ],
-      activeSymbolId,
-    });
+    const beads = roundsDone * TOTAL_BEADS;
+    const sessionLine = `${roundsDone} round${roundsDone > 1 ? 's' : ''} · ${beads.toLocaleString('en-IN')} beads of Japa today`;
+    const hasStreak = streak > 0;
+    void shareShoonayaShareCard(
+      {
+        tradition,
+        streakCount: hasStreak ? streak : undefined,
+        score: hasStreak ? undefined : roundsDone,
+        title: hasStreak ? undefined : 'Rounds of Japa',
+        caption: sessionLine,
+        userName,
+      },
+      { fileName: 'shoonaya-japa-card.png', shareText: 'Practicing with Shoonaya 🙏' },
+    );
   };
 
   const handleChangeAfterComplete = async () => {

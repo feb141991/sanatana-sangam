@@ -990,3 +990,516 @@ export async function generateSadhanaShareImage({
     return null;
   }
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// SHOONAYA PREMIUM SHARE CARDS — reusable 9:16 streak / score generator
+//
+// One renderer shared by every surface (Japa, Nitya, Profile, Scoreboard,
+// preview). 1080 × 1920, no remote images and no temple photos — only canvas
+// gradients + vector ornaments + soft grain. The brand wordmark renders as
+// Sh + gold ∞ + naya, with the infinity baseline-aligned in place of the
+// double "o". Keep visual logic here; surfaces only supply data.
+// ════════════════════════════════════════════════════════════════════════════
+
+export type ShoonayaShareCardVariant =
+  | 'sanatan'
+  | 'sikh'
+  | 'jain'
+  | 'buddhist'
+  | 'universal';
+
+export interface ShoonayaShareCardData {
+  /** Raw tradition slug (e.g. 'hindu', 'sikh'); resolved to a variant internally. */
+  tradition: string;
+  streakCount?: number;
+  score?: number;
+  title?: string;
+  subtitle?: string;
+  caption?: string;
+  userName?: string;
+  date?: string;
+  footer?: string;
+}
+
+interface ShoonayaVariantTheme {
+  label: string;        // tradition label shown on the card
+  defaultTitle: string; // e.g. 'Days of Sadhana'
+  bgTop: string;
+  bgBottom: string;
+  ink: string;          // primary text
+  inkSoft: string;      // secondary text
+  gold: string;
+  goldLight: string;
+  numberColor: string;
+  onDark: boolean;      // dark (navy night) variant → light text + dark vignette
+}
+
+const SHOONAYA_VARIANT_THEME: Record<ShoonayaShareCardVariant, ShoonayaVariantTheme> = {
+  sanatan: {
+    label: 'Sanatan',
+    defaultTitle: 'Days of Sadhana',
+    bgTop: '#FFF6E6',
+    bgBottom: '#F1DEBB',
+    ink: '#3A2A16',
+    inkSoft: '#7A6038',
+    gold: PREMIUM.gold,
+    goldLight: PREMIUM.goldLight,
+    numberColor: '#B5832A',
+    onDark: false,
+  },
+  sikh: {
+    label: 'Sikh',
+    defaultTitle: 'Days of Simran',
+    bgTop: '#FBF7EE',
+    bgBottom: '#E5DECB',
+    ink: PREMIUM.navy,
+    inkSoft: '#3D5170',
+    gold: PREMIUM.gold,
+    goldLight: PREMIUM.goldLight,
+    numberColor: PREMIUM.navy,
+    onDark: false,
+  },
+  jain: {
+    label: 'Jain',
+    defaultTitle: 'Days of Ahimsa',
+    bgTop: '#F7F8F0',
+    bgBottom: '#DFE6D2',
+    ink: '#2E3A24',
+    inkSoft: '#5E6B4E',
+    gold: PREMIUM.gold,
+    goldLight: PREMIUM.goldLight,
+    numberColor: '#4A5D38',
+    onDark: false,
+  },
+  buddhist: {
+    label: 'Buddhist',
+    defaultTitle: 'Days of Practice',
+    bgTop: '#0E1F3C',
+    bgBottom: '#05101F',
+    ink: '#F3E8CC',
+    inkSoft: '#AEBBD0',
+    gold: PREMIUM.goldLight,
+    goldLight: '#F3E1B3',
+    numberColor: '#F0DCA0',
+    onDark: true,
+  },
+  universal: {
+    label: 'Universal',
+    defaultTitle: 'Days of Practice',
+    bgTop: '#FBF6EA',
+    bgBottom: '#E7DABE',
+    ink: '#26262F',
+    inkSoft: '#585866',
+    gold: PREMIUM.gold,
+    goldLight: PREMIUM.goldLight,
+    numberColor: '#1E2A44',
+    onDark: false,
+  },
+};
+
+/** Map a raw tradition slug to a Shoonaya card variant. */
+export function resolveShoonayaVariant(tradition: string | null | undefined): ShoonayaShareCardVariant {
+  switch ((tradition ?? '').toLowerCase()) {
+    case 'hindu':
+    case 'sanatan':
+    case 'sanatana':
+      return 'sanatan';
+    case 'sikh':
+      return 'sikh';
+    case 'jain':
+      return 'jain';
+    case 'buddhist':
+    case 'buddha':
+      return 'buddhist';
+    default:
+      return 'universal';
+  }
+}
+
+/** Default story title for a variant (e.g. used by the preview grid). */
+export function shoonayaVariantDefaultTitle(variant: ShoonayaShareCardVariant): string {
+  return SHOONAYA_VARIANT_THEME[variant].defaultTitle;
+}
+
+export const SHOONAYA_SHARE_VARIANTS: ShoonayaShareCardVariant[] =
+  ['sanatan', 'sikh', 'jain', 'buddhist', 'universal'];
+
+// ── Gold infinity glyph (lemniscate) — used inside the wordmark ──────────────
+function drawGoldInfinity(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  width: number,
+  color: string,
+  glow: boolean,
+) {
+  const h = width * 0.46;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (glow) {
+    ctx.shadowColor = `${color}AA`;
+    ctx.shadowBlur = width * 0.2;
+  }
+  ctx.lineWidth = Math.max(4, width * 0.14);
+  ctx.strokeStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  // left loop
+  ctx.bezierCurveTo(cx - width * 0.5, cy - h, cx - width * 0.5, cy + h, cx, cy);
+  // right loop
+  ctx.bezierCurveTo(cx + width * 0.5, cy - h, cx + width * 0.5, cy + h, cx, cy);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// ── Shoonaya wordmark: Sh + gold ∞ + naya, infinity baseline-aligned ─────────
+function drawShoonayaWordmark(
+  ctx: CanvasRenderingContext2D,
+  centerX: number,
+  baselineY: number,
+  fontSize: number,
+  theme: ShoonayaVariantTheme,
+) {
+  ctx.save();
+  ctx.font = `700 ${fontSize}px Georgia, "Times New Roman", serif`;
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+
+  const left = 'Sh';
+  const right = 'naya';
+  const infWidth = fontSize * 0.94;
+  const gap = fontSize * 0.05;
+  const wLeft = ctx.measureText(left).width;
+  const wRight = ctx.measureText(right).width;
+  const total = wLeft + gap + infWidth + gap + wRight;
+
+  let x = centerX - total / 2;
+  ctx.fillStyle = theme.ink;
+  ctx.fillText(left, x, baselineY);
+  x += wLeft + gap;
+
+  // Infinity sits on the lowercase x-height midline so it reads as the "oo".
+  const infCy = baselineY - fontSize * 0.27;
+  drawGoldInfinity(ctx, x + infWidth / 2, infCy, infWidth, theme.gold, true);
+  x += infWidth + gap;
+
+  ctx.fillStyle = theme.ink;
+  ctx.fillText(right, x, baselineY);
+  ctx.restore();
+}
+
+// ── Variant ornaments (vector only, low alpha) ───────────────────────────────
+function drawSanatanMandala(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, gold: string) {
+  ctx.save();
+  ctx.strokeStyle = `${gold}33`;
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * (0.5 + i * 0.18), 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  const petals = 16;
+  for (let i = 0; i < petals; i++) {
+    const a = (i / petals) * Math.PI * 2;
+    ctx.save();
+    ctx.translate(cx + Math.cos(a) * r * 0.78, cy + Math.sin(a) * r * 0.78);
+    ctx.rotate(a);
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r * 0.16, r * 0.06, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawFlowingLines(ctx: CanvasRenderingContext2D, W: number, H: number, color: string) {
+  ctx.save();
+  ctx.strokeStyle = `${color}26`;
+  ctx.lineWidth = 3;
+  for (let row = 0; row < 5; row++) {
+    const baseY = H * 0.62 + row * 46;
+    ctx.beginPath();
+    for (let x = -40; x <= W + 40; x += 12) {
+      const y = baseY + Math.sin((x / W) * Math.PI * 3 + row) * 22;
+      if (x === -40) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawLotusRipple(ctx: CanvasRenderingContext2D, W: number, H: number, gold: string, sage: string) {
+  ctx.save();
+  const cx = W / 2;
+  const cy = H * 0.82;
+  ctx.strokeStyle = `${sage}40`;
+  ctx.lineWidth = 2.5;
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 180 + i * 110, 40 + i * 22, 0, Math.PI, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = `${gold}3A`;
+  ctx.lineWidth = 3;
+  const petals = 5;
+  for (let i = 0; i < petals; i++) {
+    const a = Math.PI + (i / (petals - 1)) * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.quadraticCurveTo(cx + Math.cos(a) * 70, cy + Math.sin(a) * 130, cx + Math.cos(a) * 16, cy - 150);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawMountainNightSky(ctx: CanvasRenderingContext2D, W: number, H: number, gold: string) {
+  ctx.save();
+  // stars
+  ctx.fillStyle = `${gold}66`;
+  for (let i = 0; i < 70; i++) {
+    const x = (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1 * W;
+    const y = (Math.sin(i * 78.233) * 12543.123 % 1 + 1) % 1 * H * 0.55;
+    const s = ((Math.sin(i * 3.13) + 1) / 2) * 2.4 + 0.6;
+    ctx.beginPath();
+    ctx.arc(x, y, s, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // vertical gold light path
+  const path = ctx.createLinearGradient(W / 2, H * 0.2, W / 2, H);
+  path.addColorStop(0, `${gold}00`);
+  path.addColorStop(0.5, `${gold}3A`);
+  path.addColorStop(1, `${gold}00`);
+  ctx.fillStyle = path;
+  ctx.fillRect(W / 2 - 28, H * 0.2, 56, H * 0.8);
+  // mountain silhouette
+  ctx.fillStyle = '#03080F';
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  ctx.lineTo(0, H * 0.78);
+  ctx.lineTo(W * 0.22, H * 0.66);
+  ctx.lineTo(W * 0.4, H * 0.74);
+  ctx.lineTo(W * 0.58, H * 0.6);
+  ctx.lineTo(W * 0.78, H * 0.72);
+  ctx.lineTo(W, H * 0.64);
+  ctx.lineTo(W, H);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawInfinityLightPath(ctx: CanvasRenderingContext2D, W: number, H: number, gold: string, navy: string) {
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  drawGoldInfinity(ctx, W / 2, H * 0.78, W * 0.74, `${gold}33`, false);
+  ctx.globalAlpha = 1;
+  const path = ctx.createLinearGradient(0, H * 0.5, W, H * 0.5);
+  path.addColorStop(0, `${navy}00`);
+  path.addColorStop(0.5, `${navy}1E`);
+  path.addColorStop(1, `${navy}00`);
+  ctx.strokeStyle = path;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  for (let x = 0; x <= W; x += 12) {
+    const y = H * 0.46 + Math.sin((x / W) * Math.PI * 2) * 26;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawSoftGrain(ctx: CanvasRenderingContext2D, W: number, H: number, onDark: boolean) {
+  ctx.save();
+  ctx.globalAlpha = onDark ? 0.05 : 0.04;
+  ctx.fillStyle = onDark ? '#FFFFFF' : '#5A3F18';
+  for (let i = 0; i < 900; i++) {
+    const x = (Math.sin(i * 91.7) * 6271.27 % 1 + 1) % 1 * W;
+    const y = (Math.cos(i * 47.3) * 8923.91 % 1 + 1) % 1 * H;
+    ctx.fillRect(x, y, 1.4, 1.4);
+  }
+  ctx.restore();
+}
+
+function drawShoonayaCardBackground(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  variant: ShoonayaShareCardVariant,
+  theme: ShoonayaVariantTheme,
+) {
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, theme.bgTop);
+  bg.addColorStop(1, theme.bgBottom);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const glow = ctx.createRadialGradient(W / 2, H * 0.32, 0, W / 2, H * 0.32, H * 0.6);
+  glow.addColorStop(0, theme.onDark ? 'rgba(231,200,114,0.16)' : 'rgba(255,255,255,0.55)');
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  // variant motif
+  switch (variant) {
+    case 'sanatan':
+      drawSanatanMandala(ctx, W / 2, H * 0.46, 360, theme.gold);
+      break;
+    case 'sikh':
+      drawFlowingLines(ctx, W, H, theme.gold);
+      break;
+    case 'jain':
+      drawLotusRipple(ctx, W, H, theme.gold, '#9CAE86');
+      break;
+    case 'buddhist':
+      drawMountainNightSky(ctx, W, H, theme.gold);
+      break;
+    case 'universal':
+      drawInfinityLightPath(ctx, W, H, theme.gold, PREMIUM.navy);
+      break;
+  }
+
+  // vignette for depth
+  const vig = ctx.createRadialGradient(W / 2, H / 2, H * 0.32, W / 2, H / 2, H * 0.78);
+  vig.addColorStop(0, 'transparent');
+  vig.addColorStop(1, theme.onDark ? 'rgba(0,0,0,0.38)' : 'rgba(120,90,40,0.10)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+
+  drawSoftGrain(ctx, W, H, theme.onDark);
+
+  // subtle ornamental border
+  strokeRoundRect(ctx, 46, 46, W - 92, H - 92, 44, `${theme.gold}55`, 2.5);
+  strokeRoundRect(ctx, 62, 62, W - 124, H - 124, 34, `${theme.gold}22`, 1.5);
+}
+
+function drawShoonayaTraditionBadge(
+  ctx: CanvasRenderingContext2D,
+  centerX: number,
+  y: number,
+  label: string,
+  theme: ShoonayaVariantTheme,
+) {
+  ctx.font = '700 26px -apple-system, sans-serif';
+  const text = label.toUpperCase();
+  const badgeW = ctx.measureText(text).width + 56;
+  const badgeBg = theme.onDark ? 'rgba(231,200,114,0.12)' : 'rgba(11,35,68,0.06)';
+  fillRoundRect(ctx, centerX - badgeW / 2, y, badgeW, 54, 27, badgeBg);
+  strokeRoundRect(ctx, centerX - badgeW / 2, y, badgeW, 54, 27, `${theme.gold}99`, 2);
+  ctx.fillStyle = theme.gold;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, centerX, y + 28);
+}
+
+function renderShoonayaCard(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  data: ShoonayaShareCardData,
+) {
+  const variant = resolveShoonayaVariant(data.tradition);
+  const theme = SHOONAYA_VARIANT_THEME[variant];
+  const centerX = W / 2;
+
+  drawShoonayaCardBackground(ctx, W, H, variant, theme);
+
+  // Wordmark
+  drawShoonayaWordmark(ctx, centerX, 250, 78, theme);
+
+  // Tradition label
+  drawShoonayaTraditionBadge(ctx, centerX, 320, theme.label, theme);
+
+  // Optional subtitle under the badge
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (data.subtitle) {
+    ctx.font = '500 30px -apple-system, sans-serif';
+    ctx.fillStyle = theme.inkSoft;
+    wrapAndFitText(ctx, data.subtitle, centerX, 430, W - 260, {
+      fontBase: '-apple-system, sans-serif',
+      weight: '500',
+      maxSize: 30,
+      minSize: 22,
+      maxLines: 2,
+      lineHeightRatio: 1.3,
+    });
+  }
+
+  // Headline number (streak preferred, else score)
+  const headlineNumber = data.streakCount ?? data.score ?? 0;
+  ctx.save();
+  ctx.shadowColor = `${theme.gold}44`;
+  ctx.shadowBlur = 40;
+  ctx.font = '700 360px Georgia, serif';
+  ctx.fillStyle = theme.numberColor;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(String(headlineNumber), centerX, 860);
+  ctx.restore();
+
+  // Title (default per variant)
+  ctx.font = '600 56px Georgia, serif';
+  ctx.fillStyle = theme.ink;
+  ctx.fillText(data.title ?? theme.defaultTitle, centerX, 1130);
+
+  // Caption (short, wrapped)
+  if (data.caption) {
+    ctx.fillStyle = theme.inkSoft;
+    wrapAndFitText(ctx, data.caption, centerX, 1250, W - 260, {
+      fontBase: 'Georgia, serif',
+      weight: '400',
+      maxSize: 36,
+      minSize: 24,
+      maxLines: 3,
+      lineHeightRatio: 1.4,
+    });
+  }
+
+  // User name + date
+  const identityBits = [data.userName?.trim(), data.date?.trim()].filter(Boolean);
+  if (identityBits.length) {
+    ctx.font = '600 30px -apple-system, sans-serif';
+    ctx.fillStyle = theme.gold;
+    ctx.fillText(identityBits.join('  ·  '), centerX, 1560);
+  }
+
+  // Divider
+  ctx.strokeStyle = `${theme.gold}66`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(centerX - 90, 1660);
+  ctx.lineTo(centerX + 90, 1660);
+  ctx.stroke();
+
+  // Footer
+  ctx.font = '600 30px -apple-system, sans-serif';
+  ctx.fillStyle = theme.inkSoft;
+  ctx.fillText(data.footer ?? 'Shared from Shoonaya', centerX, 1740);
+  ctx.font = 'italic 600 32px Georgia, serif';
+  ctx.fillStyle = theme.gold;
+  ctx.fillText('Find your infinity.', centerX, 1800);
+}
+
+/**
+ * Generate a premium Shoonaya share card (1080 × 1920 PNG blob).
+ * Pure canvas — no remote images. Returns null on the server or on failure.
+ */
+export async function generateShoonayaShareCard(
+  data: ShoonayaShareCardData,
+): Promise<Blob | null> {
+  if (typeof document === 'undefined') return null;
+  try {
+    const W = 1080;
+    const H = 1920;
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    renderShoonayaCard(ctx, W, H, data);
+    return toBlob(canvas);
+  } catch (error) {
+    console.error('Error generating Shoonaya share card:', error);
+    return null;
+  }
+}

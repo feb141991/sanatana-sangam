@@ -19,6 +19,7 @@ import {
   Share2, X, Copy, Check, ExternalLink,
   Twitter, MessageCircle, Link2, Globe,
 } from 'lucide-react';
+import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 
 interface SocialShareDrawerProps {
   userId: string;
@@ -62,6 +63,31 @@ export default function SocialShareDrawer({
       onClose();
     } catch {/* cancelled */}
   }, [firstName, shareText, inviteUrl, onClose]);
+
+  const [journeyState, setJourneyState] = useState<'idle' | 'working'>('idle');
+
+  // Primary share: render the premium Shoonaya card image. Text/link channels
+  // below remain as a fallback if image generation or sharing fails.
+  const shareJourney = useCallback(async () => {
+    setJourneyState('working');
+    try {
+      const result = await shareShoonayaShareCard(
+        {
+          tradition: tradition ?? 'universal',
+          streakCount: streak > 0 ? streak : undefined,
+          caption: `${firstName} is on a spiritual journey with Shoonaya.`,
+          userName: firstName,
+        },
+        { fileName: 'shoonaya-journey-card.png', shareText, shareUrl: inviteUrl },
+      );
+      if (result === 'shared' || result === 'downloaded') { onClose(); return; }
+      if (result === 'cancelled') return;
+      // Image path failed — fall back to native text share.
+      await nativeShare();
+    } finally {
+      setJourneyState('idle');
+    }
+  }, [tradition, streak, firstName, shareText, inviteUrl, onClose, nativeShare]);
 
   const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n\n${inviteUrl}`)}`;
   const twitterHref  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(inviteUrl)}`;
@@ -132,6 +158,27 @@ export default function SocialShareDrawer({
           >
             {shareText}
           </div>
+
+          {/* Primary: premium image card */}
+          <button
+            type="button"
+            onClick={shareJourney}
+            disabled={journeyState === 'working'}
+            className="w-full rounded-2xl px-4 py-3 mb-3 flex items-center gap-3.5 transition-all active:scale-[0.98] disabled:opacity-60"
+            style={{ background: 'rgba(197,160,89,0.16)', border: '1px solid rgba(197,160,89,0.40)' }}
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(197,160,89,0.22)' }}>
+              <Share2 size={18} style={{ color: '#C5A059' }} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.92)' }}>
+                {journeyState === 'working' ? 'Creating your card…' : 'Share my journey'}
+              </p>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                A premium card for Stories &amp; WhatsApp
+              </p>
+            </div>
+          </button>
 
           {/* Channel buttons */}
           <div className="space-y-2.5">

@@ -53,12 +53,12 @@ import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import PageIntro from '@/components/ui/PageIntro';
 import { withOneSignal } from '@/lib/onesignal';
 import {
-  buildNityaMorningCardData,
   buildNityaMonthlyCardData,
   resolveNityaMilestoneLabel,
   shareNityaCardImage,
   type NityaShareStats,
 } from '@/lib/share/nitya-card-data';
+import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 
 // ── Tradition greetings ─────────────────────────────────────────────────────────
 // TRADITION_MORNING moved to TRADITION_CONFIG
@@ -1661,24 +1661,28 @@ export default function NityaKarmaClient({
     if (sharingMorningCard) return;
     setSharingMorningCard(true);
     try {
-      const data = buildNityaMorningCardData({
-        stats: nityaShareStats,
-        tradition,
-        userName,
-        todayTithi: panchang?.tithi ?? panchang?.tithiName ?? undefined,
-      });
-      await shareNityaCardImage({ type: 'morning_complete', data, fileName: 'morning.png' });
-      try { localStorage.setItem(morningShareKey, 'true'); } catch {}
-      setShowMorningSharePrompt(false);
-    } catch (err: any) {
-      // AbortError = user cancelled native share sheet — already handled inside shareNityaCardImage,
-      // but guard here too in case of direct throws from other paths.
-      if (err?.name !== 'AbortError' && err?.message !== 'card_generation_failed') {
-        toast.error('Could not generate card');
-      } else if (err?.message === 'card_generation_failed') {
+      const stepsDone = nityaShareStats.stepsCompletedToday ?? 0;
+      const tithi = panchang?.tithi ?? panchang?.tithiName ?? undefined;
+      const result = await shareShoonayaShareCard(
+        {
+          tradition,
+          streakCount: displayStreak > 0 ? displayStreak : undefined,
+          score: displayStreak > 0 ? undefined : stepsDone,
+          title: displayStreak > 0 ? undefined : 'Morning Complete',
+          subtitle: tithi ? `${tithi} · auspicious completion` : 'Morning sadhana complete',
+          caption: `Morning complete · ${stepsDone} of 7 sacred steps`,
+          userName,
+        },
+        { fileName: 'shoonaya-morning-card.png', shareText: 'My morning sadhana 🙏' },
+      );
+      if (result === 'shared' || result === 'downloaded') {
+        // Persist dismissal only on a real share/download — a cancelled sheet
+        // leaves today's prompt available, matching the prior behaviour.
+        try { localStorage.setItem(morningShareKey, 'true'); } catch {}
+        setShowMorningSharePrompt(false);
+      } else if (result === 'failed') {
         toast.error('Could not generate card');
       }
-      // AbortError: silent — user just closed the sheet, not an error
     } finally {
       setSharingMorningCard(false);
     }

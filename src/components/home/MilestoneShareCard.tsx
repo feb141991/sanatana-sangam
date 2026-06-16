@@ -19,11 +19,7 @@
 import { useState, useCallback } from 'react';
 import { Share2, X, Flame, Copy, Check } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
-import {
-  buildNityaMilestoneCardData,
-  resolveNityaMilestoneLabel,
-  shareNityaCardImage,
-} from '@/lib/share/nitya-card-data';
+import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 
 const MILESTONES = [7, 21, 40, 108] as const;
@@ -94,36 +90,27 @@ export default function MilestoneShareCard({
     const url  = `${base}/invite/${userId}`;
     const text = `${copy.body}\n\n${url}`;
 
-    try {
-      const currentTradition = tradition ?? 'hindu';
-      const data = buildNityaMilestoneCardData({
-        stats: {
-          streak: japaStreak,
-          bestStreak: japaStreak,
-          milestoneLabel: resolveNityaMilestoneLabel(currentTradition, japaStreak),
-        },
-        tradition: currentTradition,
-        userName: userName ?? 'Shoonaya seeker',
-      });
-      // Pass the invite URL so it appears alongside the image in the native share sheet.
-      // On WhatsApp this means the recipient gets the visual card + a tappable invite link.
-      await shareNityaCardImage({
-        type: 'streak_milestone',
-        data,
-        fileName: 'streak.png',
+    // Primary: the reusable premium card. The invite URL rides along in the
+    // native sheet so WhatsApp recipients get the visual card + a tappable link.
+    const result = await shareShoonayaShareCard(
+      {
+        tradition: tradition ?? 'hindu',
+        streakCount: japaStreak,
+        caption: copy.body,
+        userName: userName || undefined,
+      },
+      {
+        fileName: 'shoonaya-streak-card.png',
+        shareTitle: `Shoonaya — ${copy.title}`,
         shareText: copy.body,
         shareUrl: url,
-      });
-      dismiss();
-      return;
-    } catch (err: any) {
-      if (err?.name === 'AbortError') {
-        // User dismissed share sheet — neutral, not a failure
-        return;
-      }
-      /* canvas or actual share error — fall back to text */
-    }
+      },
+    );
 
+    if (result === 'shared' || result === 'downloaded') { dismiss(); return; }
+    if (result === 'cancelled') return; // user dismissed — neutral, not a failure
+
+    // Image path failed — fall back to native text share, then clipboard.
     if (navigator.share) {
       try {
         await navigator.share({ title: `Shoonaya — ${copy.title}`, text: copy.body, url });
