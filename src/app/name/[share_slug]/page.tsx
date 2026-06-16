@@ -15,15 +15,16 @@ export async function generateMetadata({
   const supabase = await createServerSupabaseClient();
   const { data: story } = await supabase
     .from('name_stories')
-    .select('name_input, meaning_summary, tradition')
+    .select('name_input, normalized_first_name, meaning_summary, sacred_meaning, tradition')
     .eq('share_slug', share_slug)
+    .eq('is_public', true)
     .maybeSingle();
 
   if (!story) return { title: 'Dharmic Name Story — Shoonaya' };
 
-  const name = story.name_input;
+  const name = story.normalized_first_name || story.name_input;
   const title = `Spiritual Name Story of ${name} — Shoonaya`;
-  const desc = story.meaning_summary || `Discover the etymology, deity connection, and scripture significance of the name ${name} on Shoonaya.`;
+  const desc = story.sacred_meaning || story.meaning_summary || `Discover the first-name story, scripture connection, and blessing for ${name} on Shoonaya.`;
 
   return {
     title,
@@ -112,8 +113,9 @@ export default async function NameStorySharePage({
   const supabase = await createServerSupabaseClient();
   const { data: story, error } = await supabase
     .from('name_stories')
-    .select('id, name_input, tradition, origin_tradition, meaning_summary, etymology_text, deity_connection, historical_bearers, scripture_line, scripture_source, share_slug')
+    .select('id, name_input, display_name, normalized_first_name, name_native_script, name_transliteration, tradition, origin_tradition, meaning_summary, sacred_meaning, etymology_text, name_story, inner_quality, life_blessing, practice_suggestion, name_mantra, name_mantra_translation, deity_connection, historical_bearers, scripture_line, scripture_original, scripture_transliteration, scripture_translation, scripture_source, source_confidence, source_note, share_slug')
     .eq('share_slug', share_slug)
+    .eq('is_public', true)
     .maybeSingle();
 
   if (error || !story) {
@@ -122,11 +124,19 @@ export default async function NameStorySharePage({
 
   const tradition = story.tradition || 'all';
   const theme = TRADITION_THEMES[tradition] ?? TRADITION_THEMES.all;
+  const displayName = story.normalized_first_name || story.name_input;
+  const meaning = story.sacred_meaning || story.meaning_summary;
+  const storyText = story.name_story || story.etymology_text;
+  const scriptureText = [
+    story.scripture_original,
+    story.scripture_transliteration,
+    story.scripture_translation,
+  ].filter(Boolean).join('\n\n') || story.scripture_line || '';
 
   // Share URLs
   const pageUrl = `https://shoonaya.com/name/${share_slug}`;
-  const shareTitle = `Discover the Spiritual Name Story of ${story.name_input}`;
-  const shareBody = `Meaning: ${story.meaning_summary}\n\nExplore etymology and scripture connection on Shoonaya:`;
+  const shareTitle = `Discover the Spiritual Name Story of ${displayName}`;
+  const shareBody = `Meaning: ${meaning}\n\nExplore the first-name story and scripture connection on Shoonaya:`;
   const waText = encodeURIComponent(`${shareTitle}\n${shareBody}\n${pageUrl}`);
   const twText = encodeURIComponent(`${shareTitle}\n${shareBody}`);
   const twUrl = encodeURIComponent(pageUrl);
@@ -326,40 +336,54 @@ export default async function NameStorySharePage({
           {story.origin_tradition && (
             <div className="origin-badge">{story.origin_tradition}</div>
           )}
-          <h1 className="name-title">{story.name_input}</h1>
-          <p className="meaning-box">“{story.meaning_summary}”</p>
+          <h1 className="name-title">{displayName}</h1>
+          {(story.name_native_script || story.name_transliteration) && (
+            <p className="section-content" style={{ textAlign: 'center', marginBottom: 12 }}>
+              {[story.name_native_script, story.name_transliteration].filter(Boolean).join(' · ')}
+            </p>
+          )}
+          <p className="meaning-box">“{meaning}”</p>
         </div>
 
         <div className="divider" />
 
-        <h3 className="section-title">Etymology &amp; Spiritual Roots</h3>
-        <p className="section-content">{story.etymology_text}</p>
+        <h3 className="section-title">Name Story</h3>
+        <p className="section-content">{storyText}</p>
 
-        {story.deity_connection && (
+        {(story.inner_quality || story.deity_connection) && (
           <>
-            <h3 className="section-title">Divine Connection</h3>
-            <p className="section-content">{story.deity_connection}</p>
+            <h3 className="section-title">Inner Quality</h3>
+            <p className="section-content">{story.inner_quality || story.deity_connection}</p>
           </>
         )}
 
-        {story.historical_bearers && story.historical_bearers.length > 0 && (
+        {story.life_blessing && (
           <>
-            <h3 className="section-title">Notable Historical Bearers</h3>
-            <div className="bearers-list">
-              {story.historical_bearers.map((bearer: string, idx: number) => (
-                <span key={idx} className="bearer-tag">{bearer}</span>
-              ))}
-            </div>
+            <h3 className="section-title">Life Blessing</h3>
+            <p className="section-content">{story.life_blessing}</p>
           </>
         )}
 
-        {story.scripture_line && (
+        {(story.practice_suggestion || story.name_mantra) && (
+          <>
+            <h3 className="section-title">Practice</h3>
+            {story.practice_suggestion && <p className="section-content">{story.practice_suggestion}</p>}
+            {story.name_mantra && <p className="meaning-box">“{story.name_mantra}”</p>}
+            {story.name_mantra_translation && <p className="section-content">{story.name_mantra_translation}</p>}
+          </>
+        )}
+
+        {scriptureText && (
           <div className="scripture-card">
-            <div className="scripture-line">{story.scripture_line}</div>
+            <div className="scripture-line">{scriptureText}</div>
             {story.scripture_source && (
               <div className="scripture-source">— {story.scripture_source}</div>
             )}
           </div>
+        )}
+
+        {story.source_note && (
+          <p className="section-content">{story.source_note}</p>
         )}
 
         {/* Share */}

@@ -8,6 +8,12 @@ import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import {
+  defaultNameStoryTranslationLanguage,
+  isNameStoryTradition,
+  normalizeFirstName,
+  type NameStoryTradition,
+} from '@/lib/name-story';
 
 const TOTAL_STEPS = 10;
 const COUNTRY_CODES = [
@@ -138,6 +144,29 @@ const GREETINGS = [
   { text: 'Jai Jinendra', script: 'जय जिनेन्द्र', tradition: 'jain' },
 ] as const;
 
+type OnboardingNameStory = {
+  name_input: string;
+  normalized_first_name: string | null;
+  origin_tradition: string | null;
+  meaning_summary: string;
+  sacred_meaning: string | null;
+  etymology_text: string;
+  name_story: string | null;
+  scripture_line: string | null;
+  scripture_original: string | null;
+  scripture_transliteration: string | null;
+  scripture_translation: string | null;
+  scripture_source: string | null;
+};
+
+function resolveNameStoryTradition(value: string): NameStoryTradition {
+  return isNameStoryTradition(value) ? value : 'all';
+}
+
+function onboardingErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Could not generate name story.';
+}
+
 export default function OnboardingClient({
   userId,
   initialName,
@@ -188,7 +217,7 @@ export default function OnboardingClient({
   const [nakshatra, setNakshatra] = useState('');
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
 
-  const [nameStory, setNameStory] = useState<any>(null);
+  const [nameStory, setNameStory] = useState<OnboardingNameStory | null>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
   const [otpSent, setOtpSent] = useState(false);
@@ -198,7 +227,7 @@ export default function OnboardingClient({
   const [otpCooldown, setOtpCooldown] = useState(0);
 
   useEffect(() => {
-    let timer: any;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (otpCooldown > 0) {
       timer = setInterval(() => {
         setOtpCooldown((prev) => prev - 1);
@@ -274,9 +303,10 @@ export default function OnboardingClient({
       setOtpSent(true);
       setOtpCooldown(30);
       toast.success('Verification code sent to WhatsApp!', { id: toastId });
-    } catch (err: any) {
-      toast.error(err.message || 'Could not send verification code.', { id: toastId });
-      setOtpError(err.message || 'Could not send verification code.');
+    } catch (err: unknown) {
+      const message = onboardingErrorMessage(err);
+      toast.error(message, { id: toastId });
+      setOtpError(message);
     }
   };
 
@@ -303,9 +333,10 @@ export default function OnboardingClient({
       setOtpVerified(true);
       setOtpSent(false);
       toast.success('WhatsApp number verified successfully!', { id: toastId });
-    } catch (err: any) {
-      toast.error(err.message || 'Verification failed.', { id: toastId });
-      setOtpError(err.message || 'Verification failed. Please check the code.');
+    } catch (err: unknown) {
+      const message = onboardingErrorMessage(err);
+      toast.error(message, { id: toastId });
+      setOtpError(message);
     }
   };
 
@@ -1136,13 +1167,20 @@ export default function OnboardingClient({
                             const res = await fetch('/api/name-story/generate', {
                               method: 'POST',
                               headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ name, tradition }),
+                              body: JSON.stringify({
+                                name,
+                                displayName: name,
+                                confirmedFirstName: normalizeFirstName(name),
+                                tradition: resolveNameStoryTradition(tradition),
+                                translationLanguage: defaultNameStoryTranslationLanguage(resolveNameStoryTradition(tradition)),
+                                intent: ['sacred_meaning', 'scripture_connection', 'inner_quality', 'name_mantra'],
+                              }),
                             });
                             const body = await res.json();
                             if (!res.ok) throw new Error(body.error || 'Failed to generate');
                             setNameStory(body.data);
-                          } catch (err: any) {
-                            toast.error(err.message || 'Could not generate name story.');
+                          } catch (err: unknown) {
+                            toast.error(onboardingErrorMessage(err));
                           } finally {
                             setNameStoryLoading(false);
                           }
@@ -1171,7 +1209,7 @@ export default function OnboardingClient({
                       Decoding sacred scripts and scripture databases to discover the meaning of {name}...
                     </p>
                   </div>
-                ) : (
+                ) : nameStory ? (
                   <div className="space-y-6">
                     <h1 className="text-2xl font-medium text-center text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
                       Your Name Story
@@ -1184,20 +1222,20 @@ export default function OnboardingClient({
                         <span className="text-[10px] uppercase tracking-widest text-[var(--premium-gold)] block mb-1">
                           {nameStory.origin_tradition || tradition}
                         </span>
-                        <h2 className="text-2xl font-serif text-[var(--brand-primary-strong)]">{nameStory.name_input}</h2>
-                        <p className="text-xs font-serif italic text-[var(--brand-primary-strong)] mt-1">“{nameStory.meaning_summary}”</p>
+                        <h2 className="text-2xl font-serif text-[var(--brand-primary-strong)]">{nameStory.normalized_first_name || nameStory.name_input}</h2>
+                        <p className="text-xs font-serif italic text-[var(--brand-primary-strong)] mt-1">“{nameStory.sacred_meaning || nameStory.meaning_summary}”</p>
                       </div>
                       
                       <div className="h-px bg-[var(--premium-border)] my-4" />
                       
                       <p className="text-xs text-[var(--brand-primary-strong)] leading-relaxed mb-4">
-                        {nameStory.etymology_text}
+                        {nameStory.name_story || nameStory.etymology_text}
                       </p>
                       
-                      {nameStory.scripture_line && (
+                      {([nameStory.scripture_original, nameStory.scripture_transliteration, nameStory.scripture_translation].filter(Boolean).join('\n\n') || nameStory.scripture_line) && (
                         <div className="p-3.5 rounded-xl bg-[rgba(200,146,74,0.06)] border border-[rgba(200,146,74,0.15)] text-center">
                           <p className="text-xs font-serif text-[var(--brand-primary-strong)] italic leading-relaxed mb-1.5 whitespace-pre-line">
-                            {nameStory.scripture_line}
+                            {[nameStory.scripture_original, nameStory.scripture_transliteration, nameStory.scripture_translation].filter(Boolean).join('\n\n') || nameStory.scripture_line}
                           </p>
                           <p className="text-[9px] uppercase tracking-wider text-[var(--premium-gold)] font-semibold">
                             — {nameStory.scripture_source}
@@ -1214,7 +1252,7 @@ export default function OnboardingClient({
                       Continue →
                     </button>
                   </div>
-                )}
+                ) : null}
               </div>
             )}
 

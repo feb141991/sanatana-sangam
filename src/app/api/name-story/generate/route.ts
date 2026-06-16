@@ -1,6 +1,247 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import {
+  NAME_STORY_INTENTS,
+  isNameStoryIntent,
+  isNameStorySourceConfidence,
+  isNameStoryTradition,
+  isNameStoryTranslationLanguage,
+  normalizeFirstName,
+  type NameStoryIntent,
+  type NameStorySourceConfidence,
+  type NameStoryTradition,
+  type NameStoryTranslationLanguage,
+} from '@/lib/name-story';
+
+type NameStoryRequest = {
+  displayName?: string;
+  name: string;
+  confirmedFirstName?: string;
+  nativeScript?: string;
+  transliteration?: string;
+  tradition: NameStoryTradition;
+  translationLanguage: NameStoryTranslationLanguage;
+  intent: NameStoryIntent[];
+};
+
+type NameStoryAiResponse = {
+  origin_tradition: string;
+  normalized_first_name: string;
+  name_native_script: string;
+  name_transliteration: string;
+  sacred_meaning: string;
+  name_story: string;
+  inner_quality: string;
+  life_blessing: string;
+  practice_suggestion: string;
+  name_mantra: string;
+  name_mantra_translation: string;
+  scripture_original: string;
+  scripture_transliteration: string;
+  scripture_translation: string;
+  scripture_translation_language: string;
+  scripture_source: string;
+  source_confidence: NameStorySourceConfidence;
+  source_note: string;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function parseRequestBody(value: unknown): { data?: NameStoryRequest; error?: string } {
+  if (!isRecord(value)) return { error: 'Invalid request body' };
+
+  const rawName = stringValue(value.name);
+  const rawConfirmedFirstName = stringValue(value.confirmedFirstName);
+  const firstName = normalizeFirstName(rawConfirmedFirstName || rawName);
+  if (!firstName) return { error: 'First name is required' };
+
+  if (value.tradition !== undefined && !isNameStoryTradition(value.tradition)) {
+    return { error: 'Invalid tradition' };
+  }
+
+  if (value.translationLanguage !== undefined && !isNameStoryTranslationLanguage(value.translationLanguage)) {
+    return { error: 'Invalid translation language' };
+  }
+
+  const tradition = isNameStoryTradition(value.tradition) ? value.tradition : 'all';
+  const translationLanguage = isNameStoryTranslationLanguage(value.translationLanguage)
+    ? value.translationLanguage
+    : tradition === 'sikh'
+      ? 'pa'
+      : tradition === 'hindu'
+        ? 'hi'
+        : 'en';
+
+  const intent = Array.isArray(value.intent)
+    ? value.intent.filter(isNameStoryIntent)
+    : [];
+  const normalizedIntent = intent.length > 0
+    ? Array.from(new Set(intent))
+    : NAME_STORY_INTENTS.filter((item) => (
+      item === 'sacred_meaning' ||
+      item === 'scripture_connection' ||
+      item === 'inner_quality' ||
+      item === 'name_mantra'
+    ));
+
+  return {
+    data: {
+      displayName: stringValue(value.displayName) || rawName || firstName,
+      name: firstName,
+      confirmedFirstName: firstName,
+      nativeScript: stringValue(value.nativeScript),
+      transliteration: stringValue(value.transliteration),
+      tradition,
+      translationLanguage,
+      intent: normalizedIntent,
+    },
+  };
+}
+
+function parseAiResponse(value: unknown): NameStoryAiResponse | null {
+  if (!isRecord(value)) return null;
+
+  const sourceConfidence = isNameStorySourceConfidence(value.source_confidence)
+    ? value.source_confidence
+    : 'interpretive';
+
+  return {
+    origin_tradition: stringValue(value.origin_tradition),
+    normalized_first_name: normalizeFirstName(stringValue(value.normalized_first_name)),
+    name_native_script: stringValue(value.name_native_script),
+    name_transliteration: stringValue(value.name_transliteration),
+    sacred_meaning: stringValue(value.sacred_meaning),
+    name_story: stringValue(value.name_story),
+    inner_quality: stringValue(value.inner_quality),
+    life_blessing: stringValue(value.life_blessing),
+    practice_suggestion: stringValue(value.practice_suggestion),
+    name_mantra: stringValue(value.name_mantra),
+    name_mantra_translation: stringValue(value.name_mantra_translation),
+    scripture_original: stringValue(value.scripture_original),
+    scripture_transliteration: stringValue(value.scripture_transliteration),
+    scripture_translation: stringValue(value.scripture_translation),
+    scripture_translation_language: stringValue(value.scripture_translation_language),
+    scripture_source: stringValue(value.scripture_source),
+    source_confidence: sourceConfidence,
+    source_note: stringValue(value.source_note),
+  };
+}
+
+function recoverJsonResponse(responseText: string): string {
+  let cleaned = responseText.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```json\s*/, '').replace(/```$/, '').trim();
+  }
+
+  if (cleaned && !cleaned.endsWith('}')) {
+    const openBraces = (cleaned.match(/\{/g) || []).length;
+    const closeBraces = (cleaned.match(/\}/g) || []).length;
+    if (openBraces > closeBraces) {
+      const lastComplete = cleaned.lastIndexOf('",');
+      if (lastComplete > 0) {
+        cleaned = `${cleaned.slice(0, lastComplete + 1)}}`;
+      }
+    }
+  }
+
+  return cleaned;
+}
+
+function buildLegacyScriptureLine(ai: NameStoryAiResponse): string {
+  return [
+    ai.scripture_original,
+    ai.scripture_transliteration,
+    ai.scripture_translation,
+  ].filter(Boolean).join('\n\n');
+}
+
+function buildSystemPrompt() {
+  return `You are Shoonaya's Dharmic Name Story guide.
+
+You are trained in Sanskrit, Hindi, Punjabi/Gurmukhi, Pali, Prakrit, and dharmic naming traditions. Your task is to create a spiritually meaningful, culturally careful Name Story for a person's FIRST NAME ONLY.
+
+Critical rules:
+1. Generate only for the confirmed first name.
+2. Do not interpret surname, caste name, family name, gotra, or title as part of the sacred name meaning.
+3. Do not invent historical bearers, gurus, saints, rishis, or scriptural figures.
+4. If the name has a clear classical derivation, say so with confidence.
+5. If the derivation is interpretive or uncertain, be transparent and set source_confidence accordingly.
+6. Separate linguistic meaning from spiritual reflection.
+7. Do not overclaim. Do not say "this name means" unless it is linguistically supportable.
+8. The story should feel personal, warm, and shareable, not like a dictionary entry.
+9. Scripture must be short, relevant, and tradition-aligned.
+10. Scripture translation must be in the requested translation language.
+11. If translation language is unsupported for the tradition, use the closest appropriate language: Hindu uses Hindi fallback, Sikh uses Punjabi fallback, Buddhist/Jain/all use English fallback.
+12. Keep the tone devotional, grounded, and non-preachy.
+13. Avoid sectarian superiority.
+14. Return only valid JSON.`;
+}
+
+function buildUserPrompt(request: NameStoryRequest) {
+  return `Create a Name Story using the following confirmed details:
+
+Display name: ${request.displayName || request.name}
+Confirmed first name: ${request.confirmedFirstName || request.name}
+Native script spelling, if provided: ${request.nativeScript || 'not provided'}
+Transliteration, if provided: ${request.transliteration || 'not provided'}
+Tradition focus: ${request.tradition}
+Translation language: ${request.translationLanguage}
+User wants to explore: ${request.intent.join(', ')}
+
+Output must be a single JSON object with exactly these keys:
+
+{
+  "origin_tradition": string,
+  "normalized_first_name": string,
+  "name_native_script": string,
+  "name_transliteration": string,
+  "sacred_meaning": string,
+  "name_story": string,
+  "inner_quality": string,
+  "life_blessing": string,
+  "practice_suggestion": string,
+  "name_mantra": string,
+  "name_mantra_translation": string,
+  "scripture_original": string,
+  "scripture_transliteration": string,
+  "scripture_translation": string,
+  "scripture_translation_language": string,
+  "scripture_source": string,
+  "source_confidence": "classical" | "interpretive" | "uncertain",
+  "source_note": string
+}
+
+Field guidance:
+- sacred_meaning: one concise sentence.
+- name_story: 120-180 words, emotionally resonant, first-name focused.
+- inner_quality: one paragraph about the quality the name invites.
+- life_blessing: one short blessing.
+- practice_suggestion: one simple daily practice connected to the name.
+- name_mantra: one short affirmation or mantra-like line.
+- name_mantra_translation: translation in requested language.
+- scripture_original: original script.
+- scripture_transliteration: roman transliteration.
+- scripture_translation: requested language translation.
+- scripture_source: exact citation.
+- source_note: explain what is classical vs interpretive.
+
+For the name "Sakshi" in Hindu/Hindi:
+- Do not analyze "Sharma".
+- Appropriate concept: sākṣī / witness consciousness.
+- Appropriate scripture: Bhagavad Gita 2.20 or a witness-consciousness Upanishadic line.
+- Hindi scripture translation should be natural and readable.`;
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Server error';
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,23 +252,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json().catch(() => null) as {
-      name?: string;
-      tradition?: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-    } | null;
-
-    const name = body?.name?.trim();
-    const tradition = body?.tradition || 'all';
-
-    if (!name) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    const parsedBody = parseRequestBody(await req.json().catch(() => null));
+    if (!parsedBody.data) {
+      return NextResponse.json({ error: parsedBody.error ?? 'Invalid request body' }, { status: 400 });
     }
 
-    if (!['hindu', 'sikh', 'buddhist', 'jain', 'all'].includes(tradition)) {
-      return NextResponse.json({ error: 'Invalid tradition' }, { status: 400 });
-    }
+    const requestBody = parsedBody.data;
+    const firstName = requestBody.confirmedFirstName || requestBody.name;
 
-    // Check if the user already has a name story
     const { data: existingStory, error: fetchError } = await supabase
       .from('name_stories')
       .select('generated_at, share_slug')
@@ -38,7 +270,6 @@ export async function POST(req: NextRequest) {
       console.error('[POST /api/name-story/generate] Error checking existing story:', fetchError);
     }
 
-    // Apply 30-day regeneration limit for existing stories
     if (existingStory) {
       const generatedAt = new Date(existingStory.generated_at);
       const now = new Date();
@@ -49,89 +280,86 @@ export async function POST(req: NextRequest) {
         const remainingDays = 30 - diffDays;
         return NextResponse.json({
           error: `You can only regenerate your name story once every 30 days. Please wait ${remainingDays} more day(s).`,
-          existingSlug: existingStory.share_slug
+          existingSlug: existingStory.share_slug,
         }, { status: 400 });
       }
     }
 
-    const systemPrompt = `You are a master of Sanskrit, Gurmukhi, Pali, Prakrit, and dharmic etymology.
-Your task is to analyze the name "${name}" through the lens of the "${tradition}" tradition and return a structured JSON response about its spiritual significance.
-
-Please follow these guidelines for the fields:
-1. "origin_tradition": Specify the linguistic and traditional origin (e.g., Sanskrit (Hindu), Gurmukhi (Sikh), Pali (Buddhist), Prakrit (Jain)).
-2. "etymology_text": Provide a deep, insightful analysis of the name's linguistic roots. Include the original script (Devanagari for Sanskrit/Hindi/Prakrit, Gurmukhi for Punjabi, or native script for Pali/Sanskrit) and break down its root words (e.g., "Deva" + "Indra" = king of gods). Explain the literal and spiritual meaning of these roots.
-3. "deity_connection": Describe any connection to deities, Gurus, avatars, Bodhisattvas, Tirthankaras, or divine qualities associated with this name.
-4. "historical_bearers": An array of 2-4 notable historical, mythological, or scriptural figures who bore this name.
-5. "meaning_summary": A beautiful, concise one-sentence summary of the name's spiritual essence.
-6. "scripture_line": Provide an uplifting, relevant verse or line from the sacred texts of the tradition (e.g. Bhagavad Gita, Upanishads, Guru Granth Sahib, Dhammapada, Tattvartha Sutra, etc.) that directly aligns with the meaning or spirit of the name. Write it in its original script (Devanagari, Gurmukhi, etc.) followed by its English transliteration and English translation.
-7. "scripture_source": The exact scripture citation (e.g., "Bhagavad Gita 2.47", "SGGS Ang 1", "Dhammapada Verse 1").
-
-Your output must be a single, valid JSON object with EXACTLY the keys:
-"etymology_text", "deity_connection", "origin_tradition", "historical_bearers", "meaning_summary", "scripture_line", "scripture_source".
-Do not include any extra text, markdown wrappers, or explanations outside the JSON. Respond ONLY with valid JSON.`;
-
-    const userMessage = `Generate the spiritual name story for the name "${name}" in the "${tradition}" tradition.`;
-
     const aiResult = await generateWithProvider(
-      { system: systemPrompt, user: userMessage, maxOutputTokens: 2048 },
+      {
+        system: buildSystemPrompt(),
+        user: buildUserPrompt(requestBody),
+        maxOutputTokens: 3072,
+      },
       { responseFormat: 'json' }
     );
-    let responseText = (aiResult.text ?? '').trim();
+    const responseText = recoverJsonResponse(aiResult.text ?? '');
 
-    // Strip markdown code blocks if present
-    if (responseText.startsWith('```')) {
-      responseText = responseText.replace(/^```json\s*/, '').replace(/```$/, '').trim();
-    }
-
-    // Attempt to recover truncated JSON by closing any open braces/brackets
-    if (responseText && !responseText.endsWith('}')) {
-      const openBraces = (responseText.match(/\{/g) || []).length;
-      const closeBraces = (responseText.match(/\}/g) || []).length;
-      const missing = openBraces - closeBraces;
-      if (missing > 0) {
-        // Truncate to the last complete string value and close the object
-        const lastComplete = responseText.lastIndexOf('",');
-        if (lastComplete > 0) {
-          responseText = responseText.slice(0, lastComplete + 1) + '}';
-        }
-      }
-    }
-
-    let parsedData;
+    let parsedJson: unknown;
     try {
-      parsedData = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('[POST /api/name-story/generate] Failed to parse AI response:', responseText?.slice(0, 300));
+      parsedJson = JSON.parse(responseText);
+    } catch {
+      console.error('[POST /api/name-story/generate] Failed to parse AI response:', responseText.slice(0, 300));
       return NextResponse.json({ error: 'AI returned invalid structured content. Please try again.' }, { status: 502 });
     }
 
-    // Generate unique share slug (only if not existing yet)
+    const aiData = parseAiResponse(parsedJson);
+    if (!aiData) {
+      return NextResponse.json({ error: 'AI returned an unexpected content shape. Please try again.' }, { status: 502 });
+    }
+
+    const normalizedAiFirstName = aiData.normalized_first_name || firstName;
+    const nameSlug = normalizedAiFirstName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '') || 'name';
+
     let shareSlug = existingStory?.share_slug;
     if (!shareSlug) {
-      const nameSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
       const randomChars = Math.random().toString(36).substring(2, 7);
       shareSlug = `${nameSlug}-${randomChars}`;
     }
 
-    // Upsert the name story record
+    const legacyScriptureLine = buildLegacyScriptureLine(aiData);
+
     const { data: nameStory, error: upsertError } = await supabase
       .from('name_stories')
       .upsert({
         user_id: user.id,
-        name_input: name,
-        tradition,
-        etymology_text: parsedData.etymology_text || '',
-        deity_connection: parsedData.deity_connection || '',
-        origin_tradition: parsedData.origin_tradition || '',
-        historical_bearers: parsedData.historical_bearers || [],
-        meaning_summary: parsedData.meaning_summary || '',
-        scripture_line: parsedData.scripture_line || '',
-        scripture_source: parsedData.scripture_source || '',
+        name_input: firstName,
+        display_name: requestBody.displayName || firstName,
+        normalized_first_name: normalizedAiFirstName,
+        name_native_script: aiData.name_native_script || requestBody.nativeScript || null,
+        name_transliteration: aiData.name_transliteration || requestBody.transliteration || null,
+        user_intent: requestBody.intent,
+        translation_language: requestBody.translationLanguage,
+        tradition: requestBody.tradition,
+        etymology_text: aiData.source_note || aiData.sacred_meaning || '',
+        deity_connection: aiData.inner_quality || null,
+        origin_tradition: aiData.origin_tradition || '',
+        historical_bearers: [],
+        meaning_summary: aiData.sacred_meaning || '',
+        sacred_meaning: aiData.sacred_meaning || null,
+        name_story: aiData.name_story || null,
+        inner_quality: aiData.inner_quality || null,
+        life_blessing: aiData.life_blessing || null,
+        practice_suggestion: aiData.practice_suggestion || null,
+        name_mantra: aiData.name_mantra || null,
+        name_mantra_translation: aiData.name_mantra_translation || null,
+        scripture_line: legacyScriptureLine,
+        scripture_original: aiData.scripture_original || null,
+        scripture_transliteration: aiData.scripture_transliteration || null,
+        scripture_translation: aiData.scripture_translation || null,
+        scripture_translation_language: aiData.scripture_translation_language || requestBody.translationLanguage,
+        scripture_source: aiData.scripture_source || '',
+        source_confidence: aiData.source_confidence,
+        source_note: aiData.source_note || null,
         generated_at: new Date().toISOString(),
         is_public: true,
-        share_slug: shareSlug
+        share_slug: shareSlug,
       }, {
-        onConflict: 'user_id'
+        onConflict: 'user_id',
       })
       .select()
       .single();
@@ -142,8 +370,8 @@ Do not include any extra text, markdown wrappers, or explanations outside the JS
     }
 
     return NextResponse.json({ success: true, data: nameStory });
-  } catch (err: any) {
-    console.error('[POST /api/name-story/generate] Server error:', err);
-    return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 });
+  } catch (error: unknown) {
+    console.error('[POST /api/name-story/generate] Server error:', error);
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
   }
 }

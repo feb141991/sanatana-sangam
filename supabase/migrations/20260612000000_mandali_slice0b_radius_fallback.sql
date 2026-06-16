@@ -38,10 +38,6 @@ BEGIN
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.find_or_create_mandali(TEXT, TEXT, DOUBLE PRECISION, DOUBLE PRECISION) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.find_or_create_mandali(TEXT, TEXT, DOUBLE PRECISION, DOUBLE PRECISION) TO authenticated, service_role;
-
-
 -- ─── 2. Updated find_or_create_mandali ────────────────────────────
 -- Changes from Slice 0:
 -- - Adds p_lat and p_lon defaults
@@ -137,3 +133,6 @@ BEGIN
   RETURN v_mandali_id;
 END;
 $$;
+
+REVOKE EXECUTE ON FUNCTION public.find_or_create_mandali(TEXT, TEXT, DOUBLE PRECISION, DOUBLE PRECISION) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.find_or_create_mandali(TEXT, TEXT, DOUBLE PRECISION, DOUBLE PRECISION) TO authenticated, service_role;
