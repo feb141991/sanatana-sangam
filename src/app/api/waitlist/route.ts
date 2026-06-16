@@ -165,12 +165,12 @@ const TRAD_SHARE_COPY: Record<string, string> = {
 const FOUNDING_PERKS = [
   'Permanent Sthapaka badge on your profile — visible to the whole sangam',
   'Your founding number (#1–1000) displayed in your profile and posts',
-  'First month of Shoonaya Pro free on launch day',
+  'First month of Shoonaya Pro free',
   '20% lifetime discount on all Pro subscriptions',
-  'Early access to every new feature before public release',
+  'Access to every new feature',
   'Access to the Sthapaka-only Mandali channel (OG founders only)',
   'Tradition-coloured avatar ring — marks you as a founding member',
-  'Name in the Founding Members scroll on launch day',
+  'Name in the Founding Members scroll',
 ];
 
 type WaitlistRow = {
@@ -314,7 +314,7 @@ function buildEmailHtml(opts: {
     `I'm Sthapaka #${foundingNumber} of Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding 1,000:`
   );
   const waText = encodeURIComponent(
-    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Launching June 17, 2026. Join the founding members: ${BASE_URL}`
+    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Join the founding members: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `
@@ -408,7 +408,7 @@ function buildEmailHtml(opts: {
   <!-- Footer -->
   <tr><td align="center" style="border-top:1px solid ${accentBdr};opacity:0.5;padding-top:24px;">
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
-      Shoonaya · Launching June 17, 2026<br>
+      Shoonaya · Live Now<br>
       Questions? Reply to this email or write to <a href="mailto:cyber.prince@outlook.com" style="color:${accent};text-decoration:none;opacity:0.7;">cyber.prince@outlook.com</a><br>
       <a href="#" style="color:rgba(250,246,239,0.28);text-decoration:underline;">Unsubscribe from founding member communications</a>
     </div>

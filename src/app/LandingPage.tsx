@@ -1,18 +1,28 @@
 'use client';
 
-// ─── Shoonaya — Landing Page ─────────────────────────────────────────────────
-// Full animation style landing — dharma first, no politics, no "free forever"
-// Framer-motion scroll reveals, ambient background, PWA install CTA.
+// ─── Shoonaya — Landing Page (Live Version) ──────────────────────────────────
+// Full animation style landing — dharma first, live product emphasis.
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useInView, AnimatePresence, useScroll, useTransform, type Variants } from 'framer-motion';
 import {
-  Users, MapPin, BookOpen, Heart, Star, ArrowRight,
-  Flame, Mic, Sparkles, Download, Smartphone, ChevronDown,
+  Users, BookOpen, Heart, ArrowRight,
+  Flame, Sparkles, Download, Smartphone,
+  CalendarDays, Activity, PlayCircle, Shield, MoveRight, HelpCircle, Star,
+  CircleDot, Flower2, SunMedium, Landmark
 } from 'lucide-react';
-import BrandMark from '@/components/BrandMark';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed';
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 
 // ─── Rotating hero verses ─────────────────────────────────────────────────────
 const HERO_VERSES = [
@@ -23,74 +33,168 @@ const HERO_VERSES = [
   { original: 'एकं सत् विप्रा बहुधा वदन्ति', translit: 'Ekaṃ sat viprā bahudhā vadanti', meaning: 'Truth is one; the wise call it by many names.' },
 ];
 
-// ─── Features ─────────────────────────────────────────────────────────────────
-const FEATURES = [
+// ─── Traditions ───────────────────────────────────────────────────────────────
+const TRADITIONS = [
   {
-    emoji: '🕉️',
-    title: 'Nitya Karma',
-    desc:  'Your personalised morning sadhana sequence — Brahma Muhurta to aarti — guided by the panchang.',
-    accent: '#d4a645',
+    name: 'Hindu (Sanatan)',
+    icon: SunMedium,
+    desc: 'Nitya Karma, Panchang, and daily Japa tracking tailored to your specific tradition and rashi.',
   },
   {
-    emoji: '📿',
-    title: 'Japa & Dhyana',
-    desc:  'Digital mala with mantra audio, bead counting, and streak tracking for your daily practice.',
-    accent: '#c87941',
+    name: 'Sikh',
+    icon: Landmark,
+    desc: 'Daily Nitnem support, Gurmukhi scriptures, and Sikh festival calendar tracking.',
   },
   {
-    emoji: '🎓',
+    name: 'Buddhist',
+    icon: CircleDot,
+    desc: 'Dhamma paths, Pali scripture integration, and dedicated meditation tools.',
+  },
+  {
+    name: 'Jain',
+    icon: Flower2,
+    desc: 'Tithi tracking, Vrat support, and resources aligned with Jain principles of Ahimsa.',
+  },
+];
+
+const FEATURE_ACCENTS = {
+  amber: {
+    icon: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+    link: 'text-amber-500',
+  },
+  orange: {
+    icon: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
+    link: 'text-orange-500',
+  },
+  green: {
+    icon: 'text-green-600 bg-green-600/10 border-green-600/20',
+    link: 'text-green-600',
+  },
+  purple: {
+    icon: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
+    link: 'text-purple-500',
+  },
+  sky: {
+    icon: 'text-sky-500 bg-sky-500/10 border-sky-500/20',
+    link: 'text-sky-500',
+  },
+  neutral: {
+    icon: 'text-neutral-400 bg-neutral-400/10 border-neutral-400/20',
+    link: 'text-neutral-400',
+  },
+} as const;
+
+type FeatureAccent = keyof typeof FEATURE_ACCENTS;
+
+// ─── Live Features ────────────────────────────────────────────────────────────
+const LIVE_FEATURES = [
+  {
+    title: 'Daily Wisdom',
+    status: 'Live Now',
+    href: '/home',
+    desc: 'Your personalised morning sadhana sequence.',
+    icon: Flame,
+    accent: 'amber',
+  },
+  {
+    title: 'Japa Counter',
+    status: 'Live Now',
+    href: '/japa',
+    desc: 'Digital mala with bead counting and streak tracking.',
+    icon: Activity,
+    accent: 'orange',
+  },
+  {
+    title: 'Panchang',
+    status: 'Live Now',
+    href: '/panchang/today',
+    desc: 'Daily panchang context, tithi, nakshatra, and sacred-time guidance.',
+    icon: CalendarDays,
+    accent: 'amber',
+  },
+  {
     title: 'Pathshala',
-    desc:  'Guided scripture paths — Bhagavad Gita, Upanishads, Yoga Sutras — with AI voice scoring.',
-    accent: '#8b6914',
+    status: 'Live Now',
+    href: '/pathshala',
+    desc: 'Guided scripture paths with guided recitation and learning tools.',
+    icon: BookOpen,
+    accent: 'green',
   },
   {
-    emoji: '👨‍👩‍👧‍👦',
-    title: 'Kul & Mandali',
-    desc:  'Your family spiritual tree and local satsang community — connected across generations.',
-    accent: '#5c7a3e',
+    title: 'Gyan Chaupar',
+    status: 'Live Now',
+    href: '/quiz/practice',
+    desc: 'Test your dharmic knowledge and earn your ranks.',
+    icon: Star,
+    accent: 'purple',
   },
   {
-    emoji: '🗺️',
-    title: 'Tirtha Map',
-    desc:  'Discover mandirs, pandits, and events near you — anywhere in the world.',
-    accent: '#7a5c9e',
+    title: 'Mandali',
+    status: 'Live Now',
+    href: '/mandali',
+    desc: 'Connect with your local dharmic community.',
+    icon: Users,
+    accent: 'purple',
   },
   {
-    emoji: '✨',
-    title: 'Dharma Mitra',
-    desc:  'AI companion rooted in shastra — ask anything about dharma, life, and practice.',
-    accent: '#4a8fa8',
+    title: 'Kul',
+    status: 'Live Now',
+    href: '/kul',
+    desc: 'Your family spiritual tree and heritage.',
+    icon: Shield,
+    accent: 'sky',
   },
-];
+  {
+    title: 'Dharma AI',
+    status: 'Beta',
+    href: '/ai-chat',
+    desc: 'AI companion rooted in shastra for dharma questions.',
+    icon: Sparkles,
+    accent: 'amber',
+  },
+] satisfies Array<{
+  title: string;
+  status: 'Live Now' | 'Beta' | 'Coming Next';
+  href: string;
+  desc: string;
+  icon: typeof Flame;
+  accent: FeatureAccent;
+}>;
 
-// ─── Stats ────────────────────────────────────────────────────────────────────
-const STATS = [
-  { label: 'Sanatani Worldwide',   value: '1.2B+' },
-  { label: 'Diaspora Communities', value: '100+'  },
-  { label: 'Traditions Welcomed',  value: 'All'   },
-  { label: 'Supported Languages',  value: '12+'   },
-];
-
-// ─── Testimonials ─────────────────────────────────────────────────────────────
-const TESTIMONIALS = [
+// ─── FAQ ──────────────────────────────────────────────────────────────────────
+const FAQS = [
   {
-    quote:  'Finally — a place where I can find a local satsang group AND debate Advaita Vedanta.',
-    name:   'Priya M.',
-    city:   'Leicester, UK',
-    emoji:  '🪷',
+    q: 'What is Shoonaya?',
+    a: 'Shoonaya is a unified digital platform built to support the daily practices, scriptures, and community connections for followers of Hindu, Sikh, Buddhist, and Jain dharma.'
   },
   {
-    quote:  "As a second-generation Hindu in Toronto, I'd lost my connection. Shoonaya brought it back.",
-    name:   'Arjun S.',
-    city:   'Toronto, Canada',
-    emoji:  '🦚',
+    q: 'Is the platform currently live?',
+    a: 'Yes, many core web features are live. You can sign up and start your sadhana today.'
   },
   {
-    quote:  'The Tirtha Map found a mandir five minutes from my house I never knew existed.',
-    name:   'Meera K.',
-    city:   'Sydney, Australia',
-    emoji:  '⚔️',
+    q: 'Is it a website or an app?',
+    a: 'Currently, Shoonaya is available as a Progressive Web App (PWA).'
   },
+  {
+    q: 'Which traditions are supported?',
+    a: 'Hindu (Sanatan), Sikh, Buddhist, and Jain dharma.'
+  },
+  {
+    q: 'Are native apps available?',
+    a: 'Not yet. Please use the Web App while native apps continue toward release.'
+  },
+  {
+    q: 'Is Kids Zone live?',
+    a: 'No, it is currently in development.'
+  },
+  {
+    q: 'How do I install it on my phone?',
+    a: 'You can install it directly to your home screen from your mobile browser (Safari on iOS, Chrome on Android).'
+  },
+  {
+    q: 'Is my data private?',
+    a: 'Shoonaya is built with clear privacy and safety practices. We do not sell your data or design the app around distracting engagement loops.'
+  }
 ];
 
 // ─── Animation variants ───────────────────────────────────────────────────────
@@ -164,22 +268,22 @@ function RotatingVerse() {
       >
         <p className="text-2xl md:text-3xl font-bold"
           style={{
-            color: '#f5f0e8',
+            color: 'var(--text-cream)',
             fontFamily: 'var(--font-devanagari), var(--font-serif), serif',
-            textShadow: '0 2px 16px rgba(0, 0, 0, 0.65)'
+            textShadow: '0 2px 16px color-mix(in srgb, black 65%, transparent)'
           }}>
           {v.original}
         </p>
-        <p className="text-sm mt-1 italic"
+        <p className="text-sm mt-1 italic opacity-80"
           style={{
-            color: 'rgba(245, 240, 232, 0.78)',
+            color: 'var(--text-cream)',
             fontFamily: 'var(--font-serif), serif'
           }}>
           {v.translit}
         </p>
-        <p className="text-xs mt-1"
+        <p className="text-xs mt-1 opacity-70"
           style={{
-            color: 'rgba(245, 240, 232, 0.65)',
+            color: 'var(--text-cream)',
             fontFamily: 'var(--font-inter), sans-serif'
           }}>
           {v.meaning}
@@ -191,25 +295,28 @@ function RotatingVerse() {
 
 // ─── PWA install hook ─────────────────────────────────────────────────────────
 function usePwaInstall() {
-  const [prompt, setPrompt] = useState<any>(null);
+  const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    const handler = (e: Event) => { e.preventDefault(); setPrompt(e); };
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setPromptEvent(e as BeforeInstallPromptEvent);
+    };
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', () => setInstalled(true));
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const install = async () => {
-    if (!prompt) return;
-    prompt.prompt();
-    const { outcome } = await prompt.userChoice;
+    if (!promptEvent) return;
+    promptEvent.prompt();
+    const { outcome } = await promptEvent.userChoice;
     if (outcome === 'accepted') setInstalled(true);
-    setPrompt(null);
+    setPromptEvent(null);
   };
 
-  return { canInstall: !!prompt && !installed, installed, install };
+  return { canInstall: !!promptEvent && !installed, installed, install };
 }
 
 // ─── Section wrapper with scroll reveal ──────────────────────────────────────
@@ -237,61 +344,32 @@ export default function LandingPage() {
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0]);
   const heroScale   = useTransform(scrollY, [0, 500], [1, 1.04]);
 
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const target = new Date('2026-06-17T00:00:00Z').getTime();
-
-    const updateCountdown = () => {
-      const now = new Date().getTime();
-      const difference = target - now;
-
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
-        return;
-      }
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((difference % (1000 * 60)) / 1000);
-
-      setTimeLeft({ days, hours, mins, secs });
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#0C0A07]">
+    <div className="relative min-h-screen overflow-x-hidden bg-neutral-950">
 
       {/* ── NAV ── */}
       <nav className="sticky top-0 z-50 px-4 pt-3">
-        <div className="max-w-6xl mx-auto px-4 h-14 rounded-2xl flex items-center justify-between"
-          style={{ background: 'rgba(12,10,7,0.85)', backdropFilter: 'blur(20px)', border: '1px solid rgba(197,160,89,0.18)' }}>
+        <div className="max-w-6xl mx-auto px-4 h-14 rounded-2xl flex items-center justify-between backdrop-blur-md border border-white/5 bg-black/40">
           <div className="flex items-center gap-2">
-            <img
+            <Image
               src="/icons/logo.png"
+              width={32}
+              height={32}
               alt="Shoonaya"
-              className="w-8 h-8 rounded-xl object-cover"
+              className="rounded-xl object-cover"
             />
-            <span className="font-bold text-base text-[#ede8de]">
-              Shoo<span style={{ color: '#C5A059' }}>naya</span>
+            <span className="font-bold text-base text-[var(--text-cream)]">
+              Shoo<span className="text-[color:var(--brand-primary)]">naya</span>
             </span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login"
-              className="text-sm font-medium text-[#ede8de]/70 hover:text-[#ede8de] transition-colors hidden sm:block">
+              className="text-sm font-medium text-[var(--text-cream)] opacity-70 hover:opacity-100 transition-colors hidden sm:block">
               Sign in
             </Link>
             <Link href="/signup"
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-              style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', color: '#0C0A07', fontFamily: 'var(--font-inter), sans-serif' }}>
-              Join Free <ArrowRight size={14} />
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-black font-sans">
+              Enter Shoonaya <ArrowRight size={14} />
             </Link>
           </div>
         </div>
@@ -307,7 +385,6 @@ export default function LandingPage() {
           style={{ scale: heroScale }}
           className="absolute inset-0 z-0 pointer-events-none"
         >
-          {/* Cover image sanctuary backdrop */}
           <Image
             src="/assets/images/heroes/all/default.webp"
             alt="Shoonaya Devotional Sanctuary Backdrop"
@@ -320,45 +397,10 @@ export default function LandingPage() {
               filter: 'saturate(0.72) contrast(0.84) brightness(0.70)'
             }}
           />
-          {/* Blending gradients */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 80%, #0C0A07 100%)',
-              zIndex: 1,
-            }}
-          />
-          <div
-            className="absolute inset-x-0 bottom-0 h-[45%]"
-            style={{
-              background: 'radial-gradient(ellipse at 50% 90%, rgba(12, 10, 7, 0.8) 0%, transparent 70%), linear-gradient(180deg, transparent 0%, rgba(12, 10, 7, 0.4) 40%, #0C0A07 100%)',
-              zIndex: 2,
-            }}
-          />
-          {/* Ambient gold radial mist */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(197,160,89,0.1) 0%, transparent 70%)',
-              zIndex: 3,
-            }}
-          />
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/75 via-black/20 to-neutral-950" />
+          <div className="absolute inset-x-0 bottom-0 h-[45%] z-[2] bg-gradient-to-t from-neutral-950 via-neutral-950/80 to-transparent" />
           <StarField />
         </motion.div>
-
-        {/* Floating Om symbol */}
-        <div
-          className="absolute text-[14rem] font-bold select-none pointer-events-none"
-          style={{
-            color: 'rgba(197,160,89,0.03)',
-            top: '10%', right: '5%',
-            animation: 'floatY 8s ease-in-out infinite, spin 60s linear infinite',
-            fontFamily: 'var(--font-serif), serif',
-          }}
-          aria-hidden
-        >
-          ॐ
-        </div>
 
         {/* Content */}
         <motion.div
@@ -367,279 +409,378 @@ export default function LandingPage() {
           animate="visible"
           className="relative z-10 max-w-3xl mx-auto text-center"
         >
-          {/* Chip */}
           <motion.div variants={fadeUp} custom={0}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6 border"
-              style={{ background: 'rgba(197,160,89,0.08)',
-                       borderColor: 'rgba(197,160,89,0.3)',
-                       color: '#C5A059',
-                       fontFamily: 'var(--font-inter), sans-serif' }}>
-              🚀 Launching June 17, 2026 — {mounted ? `${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.mins}m ${timeLeft.secs}s` : 'Calculating...'}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6 border border-[var(--brand-primary)]/30 text-[color:var(--brand-primary)] bg-[var(--brand-primary)]/10 font-sans">
+              <Sparkles size={15} aria-hidden /> Shoonaya is Live Now
             </div>
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             variants={fadeUp} custom={1}
-            className="text-5xl md:text-7xl font-light leading-tight mb-6 text-white tracking-tight"
-            style={{ fontFamily: 'var(--font-serif), serif' }}
+            className="text-5xl md:text-7xl font-light leading-tight mb-6 text-white tracking-tight premium-serif"
           >
             Find your
             <br />
-            <span style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <span className="bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-transparent bg-clip-text">
               infinite.
             </span>
           </motion.h1>
 
-          {/* Subheading */}
           <motion.p
             variants={fadeUp} custom={2}
-            className="text-lg md:text-xl text-[#b0aa9e] max-w-2xl mx-auto mb-8 leading-relaxed"
-            style={{ fontFamily: 'var(--font-inter), sans-serif' }}
+            className="text-lg md:text-xl text-[color:var(--text-muted-warm)] max-w-2xl mx-auto mb-6 leading-relaxed font-sans"
           >
             Shoonaya is the void that holds all traditions. Hindu, Sikh, Buddhist, and Jain
             dharma — sadhana, scripture, community, and seva — in one sacred home.
           </motion.p>
 
-          {/* CTAs */}
+          <motion.p variants={fadeUp} custom={2.5} className="text-sm font-semibold text-amber-200/60 mb-8 font-sans">
+            Available now as a web app.
+          </motion.p>
+
           <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
             <Link href="/signup"
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', color: '#0C0A07', fontFamily: 'var(--font-inter), sans-serif' }}>
-              <Heart size={18} /> Begin Your Journey
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-black font-sans">
+              <Heart size={18} /> Enter Shoonaya
             </Link>
             <Link href="/login"
-              className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base border transition-all hover:bg-white/5"
-              style={{ borderColor: 'rgba(197, 160, 89, 0.3)', color: '#C5A059', fontFamily: 'var(--font-inter), sans-serif' }}>
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base border transition-all hover:bg-white/5 border-[var(--brand-primary)]/30 text-[color:var(--brand-primary)] font-sans">
               Sign In
             </Link>
+            {canInstall && (
+              <button
+                onClick={install}
+                className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-base border transition-all hover:bg-white/5 border-[var(--brand-primary)]/30 text-[color:var(--brand-primary)] font-sans"
+              >
+                <Smartphone size={17} /> Add to Home Screen
+              </button>
+            )}
           </motion.div>
 
-          {/* Rotating verse */}
           <motion.div
             variants={fadeUp} custom={4}
-            className="rounded-2xl border px-6 py-5 mx-auto max-w-md"
-            style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', backdropFilter: 'blur(16px)' }}
+            className="rounded-2xl border px-6 py-5 mx-auto max-w-md backdrop-blur-md"
+            style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
           >
-            <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold mb-3" style={{ fontFamily: 'var(--font-inter), sans-serif' }}>From the Shastra</p>
+            <p className="text-[10px] uppercase tracking-widest text-[color:var(--brand-primary)] font-bold mb-3 font-sans">From the Shastra</p>
             <RotatingVerse />
           </motion.div>
         </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            boxShadow: [
-              '0 4px 20px rgba(197, 160, 89, 0.1)',
-              '0 4px 30px rgba(197, 160, 89, 0.25)',
-              '0 4px 20px rgba(197, 160, 89, 0.1)',
-            ],
-          }}
-          transition={{
-            opacity: { delay: 1.5, duration: 0.5 },
-            y: { delay: 1.5, duration: 0.5 },
-            boxShadow: { repeat: Infinity, duration: 3, ease: 'easeInOut' },
-          }}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full border bg-black/60 border-[#C5A059]/50 backdrop-blur-md px-6 py-2.5 z-30"
-        >
-          <button
-            onClick={() => {
-              document.getElementById('shoonaya-content')?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#ede8de] hover:text-[#C5A059] transition-colors"
-            style={{ fontFamily: 'var(--font-inter), sans-serif' }}
-          >
-            <span>Enter the Shoonaya</span>
-            <motion.div
-              animate={{ y: [0, 4, 0] }}
-              transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-            >
-              <ChevronDown size={16} className="text-[#C5A059]" />
-            </motion.div>
-          </button>
-        </motion.div>
       </motion.section>
 
-      {/* ── STATS ── */}
-      <Section id="shoonaya-content" className="max-w-5xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map((s, i) => (
-            <motion.div
-              key={s.label}
-              variants={fadeUp} custom={i}
-              className="rounded-2xl p-5 text-center border"
-              style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', fontFamily: 'var(--font-inter), sans-serif' }}
-            >
-              <div className="text-3xl font-bold mb-1"
-                style={{ background: 'linear-gradient(135deg, #C5A059, #D4784A)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                {s.value}
-              </div>
-              <div className="text-xs text-[#ede8de] opacity-50">{s.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── FEATURES ── */}
-      <Section className="max-w-6xl mx-auto px-4 py-16">
+      {/* ── CHOOSE YOUR TRADITION ── */}
+      <Section id="shoonaya-content" className="max-w-6xl mx-auto px-4 py-16">
         <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Six pillars of your{' '}
-            <span style={{ background: 'linear-gradient(135deg, #f0c040, #d4a645)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              digital tirtha
-            </span>
+            Choose Your Path
           </h2>
           <p className="text-amber-100/50 max-w-xl mx-auto">
-            Everything a Sanatani needs — sadhana, scripture, community, and connection.
+            Shoonaya adapts to your unique dharma. We never blend traditions, we honor them individually.
           </p>
         </motion.div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {FEATURES.map((f, i) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {TRADITIONS.map((t, i) => (
             <motion.div
-              key={f.title}
+              key={t.name}
               variants={fadeUp} custom={i}
               whileHover={{ scale: 1.02, y: -4 }}
-              className="rounded-2xl border p-5 cursor-default transition-shadow hover:shadow-xl"
+              className="rounded-2xl border p-6 text-center transition-shadow hover:shadow-xl"
               style={{
                 background: 'var(--card-bg)',
                 borderColor: 'var(--card-border)',
               }}
             >
-              <div className="text-3xl mb-3">{f.emoji}</div>
-              <h3 className="font-bold text-white mb-1.5">{f.title}</h3>
-              <p className="text-sm text-amber-100/50 leading-relaxed">{f.desc}</p>
-              <div className="mt-3 h-0.5 w-8 rounded-full" style={{ background: f.accent, opacity: 0.5 }} />
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--brand-primary)]/15 bg-[var(--brand-primary)]/10 text-[color:var(--brand-primary)]">
+                <t.icon size={28} strokeWidth={1.7} aria-hidden />
+              </div>
+              <h3 className="font-bold text-lg text-white mb-2">{t.name}</h3>
+              <p className="text-sm text-amber-100/60 leading-relaxed">{t.desc}</p>
             </motion.div>
           ))}
         </div>
       </Section>
 
-      {/* ── APP DOWNLOAD ── */}
-      <Section className="px-4 py-16">
+      {/* ── LIVE FEATURES ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-16">
+        <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            Everything for your{' '}
+            <span className="bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-transparent bg-clip-text">
+              digital tirtha
+            </span>
+          </h2>
+          <p className="text-amber-100/50 max-w-xl mx-auto">
+            A comprehensive suite of tools built specifically for seekers, not consumers.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {LIVE_FEATURES.map((f, i) => {
+            const Icon = f.icon;
+            const accent = FEATURE_ACCENTS[f.accent];
+            return (
+              <motion.div
+                key={f.title}
+                variants={fadeUp} custom={i}
+                className="rounded-2xl border p-5 flex flex-col relative overflow-hidden"
+                style={{
+                  background: 'var(--card-bg)',
+                  borderColor: 'var(--card-border)',
+                }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${accent.icon}`}>
+                    <Icon size={20} />
+                  </div>
+                  <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-full ${f.status === 'Live Now' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-neutral-400'}`}>
+                    {f.status}
+                  </span>
+                </div>
+                <h3 className="font-bold text-white mb-2 text-lg">{f.title}</h3>
+                <p className="text-sm text-amber-100/50 leading-relaxed flex-grow mb-4">{f.desc}</p>
+                {f.href ? (
+                  <Link href={f.href} className={`text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all mt-auto ${accent.link}`}>
+                    Explore <MoveRight size={12} />
+                  </Link>
+                ) : (
+                  <span className="text-xs font-semibold text-amber-100/20 mt-auto">In development</span>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      </Section>
+
+      {/* ── PRODUCT PROOF (Route Previews) ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-16">
         <motion.div
           variants={fadeUp} custom={0}
-          className="max-w-4xl mx-auto rounded-3xl border overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, rgba(197,160,89,0.08) 0%, rgba(20,18,14,0.92) 100%)',
-            borderColor: 'var(--card-border)',
-            backdropFilter: 'blur(12px)',
-          }}
+          className="rounded-3xl border overflow-hidden p-8 md:p-12"
+          style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
         >
-          <div className="grid md:grid-cols-2 gap-0">
-            {/* Left */}
-            <div className="p-8 md:p-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-6 border"
-                style={{ background: 'rgba(212,166,70,0.12)', borderColor: 'rgba(212,166,70,0.25)', color: '#d4a645' }}>
-                <Smartphone size={12} /> Install the App
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Take Shoonaya with you, everywhere.
-              </h2>
-              <p className="text-amber-100/55 text-sm leading-relaxed mb-8">
-                Your daily sadhana, sacred texts, japa mala, and Mandali — all in one place.
-                Available on Android now. iOS coming soon.
-              </p>
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Designed for daily sadhana</h2>
+            <p className="text-amber-100/50 max-w-2xl mx-auto text-sm">
+              Calmer product surfaces with functional interfaces designed to support daily practice.
+            </p>
+          </div>
 
-              <div className="space-y-3">
-                {/* Google Play */}
-                <a
-                  href="https://play.google.com/store/apps/details?id=com.shoonaya.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.02]"
-                  style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}
-                >
-                  <Download size={17} />
-                  Download on Google Play
-                </a>
-                {canInstall && (
-                  <button
-                    onClick={install}
-                    className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm border transition-all hover:bg-white/5"
-                    style={{ borderColor: 'rgba(212,166,70,0.3)', color: '#d4a645' }}
-                  >
-                    <Smartphone size={17} />
-                    Add to Home Screen
-                  </button>
-                )}
-                <Link href="/signup"
-                  className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm border transition-all hover:bg-white/5"
-                  style={{ borderColor: 'rgba(212,166,70,0.15)', color: '#d4a645' }}
-                >
-                  <ArrowRight size={17} />
-                  Open Web App
-                </Link>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Route Preview 1: Japa Tracker */}
+            <div className="rounded-2xl border p-5 backdrop-blur-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-orange-500 bg-orange-500/10">
+                  <Activity size={16} />
+                </div>
+                <div>
+                  <div className="text-xs text-amber-100/50 uppercase tracking-widest font-semibold">Route</div>
+                  <div className="text-sm text-white font-medium">/japa</div>
+                </div>
               </div>
-
-              <p className="mt-5 text-[11px] text-amber-100/30 leading-relaxed">
-                iOS App Store listing coming June 2026.
-              </p>
+              <div className="text-center py-6">
+                <div className="text-lg font-medium text-white mb-2">Digital Japa Mala</div>
+                <div className="text-xs text-amber-100/60 leading-relaxed">
+                  Interactive bead tracking, mantra audio guides, and history logging. Complete a full round directly in the browser.
+                </div>
+              </div>
+              <Link href="/japa" className="mt-4 flex w-full justify-center items-center py-2 rounded-xl border border-orange-500/30 text-orange-500 text-xs font-bold hover:bg-orange-500/10 transition-colors">
+                View Feature
+              </Link>
             </div>
 
-            {/* Right — decorative */}
-            <div className="hidden md:flex flex-col items-center justify-center p-8 relative overflow-hidden">
-              <div className="absolute inset-0"
-                style={{ background: 'radial-gradient(ellipse at center, rgba(212,166,70,0.15) 0%, transparent 70%)' }} />
-              <motion.div
-                animate={{ y: [0, -14, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-                className="relative z-10 text-center"
-              >
-                <div className="text-8xl mb-4" style={{ filter: 'drop-shadow(0 0 30px rgba(212,166,70,0.4))' }}>
-                  🕉️
+            {/* Route Preview 2: Panchang */}
+            <div className="rounded-2xl border p-5 backdrop-blur-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-amber-600 bg-amber-600/10">
+                  <CalendarDays size={16} />
                 </div>
-                <p className="text-amber-400/60 text-sm font-semibold">Dharma, always with you</p>
-                <div className="mt-3 flex items-center gap-2 justify-center">
-                  {['🌅', '📿', '📖', '🙏', '✨'].map((e, i) => (
-                    <motion.span
-                      key={i}
-                      className="text-xl"
-                      animate={{ opacity: [0.4, 1, 0.4] }}
-                      transition={{ repeat: Infinity, duration: 2, delay: i * 0.4 }}
-                    >
-                      {e}
-                    </motion.span>
-                  ))}
+                <div>
+                  <div className="text-xs text-amber-100/50 uppercase tracking-widest font-semibold">Route</div>
+                  <div className="text-sm text-white font-medium">/panchang/today</div>
                 </div>
-              </motion.div>
+              </div>
+              <div className="text-center py-6">
+                <div className="text-lg font-medium text-white mb-2">Live Panchang</div>
+                <div className="text-xs text-amber-100/60 leading-relaxed">
+                  Daily panchang context, tithi, nakshatra, and sacred-time guidance for your practice.
+                </div>
+              </div>
+              <Link href="/panchang/today" className="mt-4 flex w-full justify-center items-center py-2 rounded-xl border border-amber-600/30 text-amber-600 text-xs font-bold hover:bg-amber-600/10 transition-colors">
+                View Feature
+              </Link>
+            </div>
+
+            {/* Route Preview 3: Pathshala */}
+            <div className="rounded-2xl border p-5 backdrop-blur-sm" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-green-600 bg-green-600/10">
+                  <BookOpen size={16} />
+                </div>
+                <div>
+                  <div className="text-xs text-amber-100/50 uppercase tracking-widest font-semibold">Route</div>
+                  <div className="text-sm text-white font-medium">/pathshala</div>
+                </div>
+              </div>
+              <div className="text-center py-6">
+                <div className="text-lg font-medium text-white mb-2">Guided Learning</div>
+                <div className="text-xs text-amber-100/60 leading-relaxed">
+                  Interactive scripture study paths. Read, listen, and practice pronunciation with guided feedback.
+                </div>
+              </div>
+              <Link href="/pathshala" className="mt-4 flex w-full justify-center items-center py-2 rounded-xl border border-green-600/30 text-green-600 text-xs font-bold hover:bg-green-600/10 transition-colors">
+                View Feature
+              </Link>
             </div>
           </div>
         </motion.div>
       </Section>
 
-      {/* ── TESTIMONIALS ── */}
-      <Section className="max-w-6xl mx-auto px-4 py-16">
-        <motion.div variants={fadeUp} custom={0} className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-white mb-2">From the community</h2>
-          <p className="text-amber-100/50 text-sm">Real voices from Sanatani worldwide</p>
+      {/* ── GYAN CHAUPAR ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-8">
+        <motion.div variants={fadeUp} custom={0} className="border-y py-12 md:py-16 text-center" style={{ borderColor: 'var(--card-border)' }}>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 text-purple-500 bg-purple-500/10">
+            <Star size={24} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-2">Gyan Chaupar</h2>
+          <p className="text-xs uppercase tracking-widest font-bold text-green-500 mb-4">Live Now</p>
+          <p className="text-amber-100/60 max-w-2xl mx-auto text-sm leading-relaxed mb-8">
+            Play sacred wisdom now. Test your dharmic knowledge, earn your ranks, and deepen your understanding of the shastras.
+          </p>
+          <Link href="/quiz/practice" className="inline-flex text-sm font-semibold hover:opacity-80 transition-opacity text-purple-400">
+            Play Gyan Chaupar →
+          </Link>
         </motion.div>
-        <div className="grid md:grid-cols-3 gap-5">
-          {TESTIMONIALS.map((t, i) => (
+      </Section>
+
+      {/* ── SACRED CALENDAR ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-8">
+        <motion.div variants={fadeUp} custom={0} className="border-y py-12 md:py-16 text-center" style={{ borderColor: 'var(--card-border)' }}>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 text-amber-500 bg-amber-500/10">
+            <CalendarDays size={24} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-4">The Unified Dharmic Calendar</h2>
+          <p className="text-amber-100/60 max-w-2xl mx-auto text-sm leading-relaxed mb-8">
+            Shoonaya helps you keep Purnima, Amavasya, Ekadashi, and major festivals across traditions close to your daily rhythm.
+          </p>
+          <Link href="/panchang/today" className="inline-flex text-sm font-semibold hover:opacity-80 transition-opacity text-amber-500">
+            Explore the Panchang →
+          </Link>
+        </motion.div>
+      </Section>
+
+      {/* ── COMMUNITY & ZEROISTS ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <motion.div variants={fadeUp} custom={0}>
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 text-purple-500 bg-purple-500/10">
+            <Users size={24} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-4">Join the Sangam</h2>
+          <p className="text-amber-100/60 max-w-2xl mx-auto text-sm leading-relaxed mb-8">
+            Connect with seekers across the dharmic diaspora. Zeroists are seekers returning to the source: one home, many paths. Shoonaya&apos;s Mandali and Kul spaces are built for calmer community and family continuity.
+          </p>
+          <Link href="/mandali" className="inline-flex text-sm font-semibold hover:opacity-80 transition-opacity text-purple-500">
+            Discover Mandalis →
+          </Link>
+        </motion.div>
+      </Section>
+
+      {/* ── KIDS ZONE (COMING NEXT) ── */}
+      <Section className="max-w-6xl mx-auto px-4 py-8">
+        <motion.div
+          variants={fadeUp} custom={0}
+          className="rounded-3xl border p-8 md:p-12 text-center"
+          style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
+        >
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 text-neutral-400 bg-neutral-400/10 border border-neutral-400/30">
+            <PlayCircle size={24} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-2">Kids Zone</h2>
+          <p className="text-xs uppercase tracking-widest font-bold text-neutral-400 mb-6">Coming Next</p>
+          <p className="text-amber-100/60 max-w-2xl mx-auto text-sm leading-relaxed">
+            We are actively building the Shoonaya Kids Zone. It will feature interactive stories, value-based games, and accessible teachings designed to introduce the next generation to our rich dharmic heritage in a calmer family space.
+          </p>
+        </motion.div>
+      </Section>
+
+      {/* ── APP INSTALL GUIDE ── */}
+      <Section className="px-4 py-16">
+        <motion.div
+          variants={fadeUp} custom={0}
+          className="max-w-4xl mx-auto rounded-3xl border overflow-hidden backdrop-blur-md"
+          style={{
+            background: 'var(--card-bg)',
+            borderColor: 'var(--card-border)',
+          }}
+        >
+          <div className="p-8 md:p-12 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-6 border border-amber-500/30 text-amber-500 bg-amber-500/10">
+              <Smartphone size={12} /> Install the Web App
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Shoonaya on your Home Screen
+            </h2>
+            <p className="text-amber-100/55 text-sm leading-relaxed mb-10 max-w-2xl mx-auto">
+              Shoonaya is available right now as a Progressive Web App. Install it directly from your browser to get the full screen, app-like experience without waiting for app store reviews.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-8 text-left max-w-2xl mx-auto">
+              <div className="border border-white/5 rounded-2xl p-6 bg-black/40">
+                <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                  <Smartphone size={17} className="text-[color:var(--brand-primary)]" aria-hidden />
+                  For iOS (Safari)
+                </h3>
+                <ol className="list-decimal list-inside text-sm text-amber-100/70 space-y-3">
+                  <li>Open Shoonaya in Safari.</li>
+                  <li>Tap the <strong>Share</strong> icon at the bottom.</li>
+                  <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+                  <li>Tap <strong>Add</strong> in the top right.</li>
+                </ol>
+              </div>
+              <div className="border border-white/5 rounded-2xl p-6 bg-black/40">
+                <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                  <Smartphone size={17} className="text-[color:var(--brand-primary)]" aria-hidden />
+                  For Android (Chrome)
+                </h3>
+                <ol className="list-decimal list-inside text-sm text-amber-100/70 space-y-3">
+                  <li>Open Shoonaya in Chrome.</li>
+                  <li>Tap the <strong>3 dots</strong> menu in the top right.</li>
+                  <li>Tap <strong>Install App</strong> or <strong>Add to Home Screen</strong>.</li>
+                  <li>Follow the on-screen prompt.</li>
+                </ol>
+                {canInstall && (
+                  <button
+                    onClick={install}
+                    className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border transition-all hover:bg-white/5 border-amber-500/30 text-amber-500"
+                  >
+                    <Download size={14} /> Auto-Install Now
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </Section>
+
+      {/* ── FAQ ── */}
+      <Section className="max-w-4xl mx-auto px-4 py-16">
+        <motion.div variants={fadeUp} custom={0} className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-6 text-white/50 bg-white/5">
+            <HelpCircle size={24} />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Frequently Asked Questions</h2>
+        </motion.div>
+
+        <div className="grid gap-4 max-w-2xl mx-auto">
+          {FAQS.map((faq, i) => (
             <motion.div
-              key={t.name}
-              variants={fadeUp} custom={i}
-              className="rounded-2xl border p-6"
+              key={i}
+              variants={fadeUp}
+              custom={i}
+              className="border p-6 rounded-2xl"
               style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
             >
-              <div className="flex gap-0.5 mb-4">
-                {[...Array(5)].map((_, j) => (
-                  <Star key={j} size={13} style={{ fill: '#d4a645', color: '#d4a645' }} />
-                ))}
-              </div>
-              <p className="text-amber-100/70 italic text-sm mb-5 leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-lg border"
-                  style={{ background: 'rgba(212,166,70,0.10)', borderColor: 'rgba(212,166,70,0.15)' }}>
-                  {t.emoji}
-                </div>
-                <div>
-                  <div className="font-semibold text-sm text-amber-100">{t.name}</div>
-                  <div className="text-[11px] text-amber-100/40">{t.city}</div>
-                </div>
-              </div>
+              <h3 className="font-bold text-white mb-2">{faq.q}</h3>
+              <p className="text-sm text-amber-100/60 leading-relaxed">{faq.a}</p>
             </motion.div>
           ))}
         </div>
@@ -651,7 +792,7 @@ export default function LandingPage() {
           <span
             style={{
               fontFamily: 'var(--font-cormorant), Georgia, serif',
-              color: '#d4a645',
+              color: 'var(--brand-primary)',
             }}
             className="text-4xl font-bold tracking-wide"
           >
@@ -668,27 +809,28 @@ export default function LandingPage() {
           variants={fadeUp} custom={2}
           className="text-amber-100/50 mb-10 text-lg"
         >
-          A growing sangha spanning Leicester to Los Angeles, Mauritius to Melbourne — one dharma, many paths.
+          A growing global sangha — one dharma, many paths.
         </motion.p>
         <motion.div variants={fadeUp} custom={3}>
           <Link href="/signup"
-            className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all"
-            style={{ background: 'linear-gradient(135deg, #d4a645, #a07830)', color: '#1c1008' }}
+            className="inline-flex items-center gap-2 px-10 py-4 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all bg-gradient-to-br from-[var(--brand-primary)] to-[var(--brand-primary-strong)] text-black"
           >
-            <Heart size={20} /> Begin Your Journey
+            <Heart size={20} /> Enter Shoonaya
           </Link>
           <p className="mt-4 text-xs text-amber-100/30">Just dharma. No noise.</p>
         </motion.div>
       </Section>
 
       {/* ── FOOTER ── */}
-      <footer className="py-8 px-4 border-t" style={{ borderColor: 'rgba(212,166,70,0.08)' }}>
+      <footer className="py-8 px-4 border-t border-white/5">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-amber-100/30">
           <div className="flex items-center gap-2">
-            <img
+            <Image
               src="/icons/logo.png"
+              width={24}
+              height={24}
               alt="Shoonaya"
-              className="w-6 h-6 rounded-lg object-cover"
+              className="rounded-lg object-cover"
             />
             <span>Shoonaya — शून्य</span>
           </div>
@@ -706,7 +848,7 @@ export default function LandingPage() {
               </Link>
             ))}
           </div>
-          <div>Built with 🙏 for the global Sanatani community</div>
+          <div>Built for the global Sanatani community</div>
         </div>
       </footer>
 

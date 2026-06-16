@@ -293,10 +293,10 @@ export default async function BlessingPage({
         <div className="cta-divider" />
         <div className="cta-text">
           Shoonaya is the first digital home for Hindu, Sikh, Buddhist &amp; Jain wisdom.<br/>
-          One home. Four traditions. Launching June 17, 2026.
+          One home. Four traditions. Live now.
         </div>
         <Link className="cta-btn" href={ref ? `/?ref=${encodeURIComponent(ref)}&from=blessing` : "/?from=blessing"}>
-          Join as Sthapaka →
+          Enter Shoonaya →
         </Link>
       </div>
 

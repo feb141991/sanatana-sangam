@@ -24,8 +24,8 @@ export default function PublicPageShell({
   title,
   intro,
   children,
-  asideTitle = 'Launch Trust Layer',
-  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support as the product moves toward public launch.',
+  asideTitle = 'Platform Trust Layer',
+  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support to ensure a pure dharmic environment.',
 }: PublicPageShellProps) {
   return (
     <main className="min-h-screen px-4 py-6 md:py-10">

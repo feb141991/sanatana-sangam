@@ -72,7 +72,7 @@ export default function SthapakaKitClient({
       desc: 'Introduce the digital mala with audio bead counting.',
       text: `📿 *Let's build a Japa habit* 📿\n\n` +
         `Shoonaya features a digital Japa mala with mantra audio, bead counts, and streak tracking that helps you stay committed to your daily chanting.\n\n` +
-        `Get early access to the japa tracker here:\n` +
+        `Access the japa tracker here:\n` +
         `👉 ${referralLink}&utm_source=whatsapp\n\n` +
         `May you find peace and focus. ✨`,
     },

@@ -35,7 +35,7 @@ export default function AboutPage() {
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Who It Is For</h2>
         <p>
-          The current launch direction is especially focused on diaspora users who want to reconnect
+          Shoonaya is especially focused on diaspora users who want to reconnect
           with dharmic life through nearby people, family continuity, and small daily habits that can
           realistically fit modern schedules.
         </p>

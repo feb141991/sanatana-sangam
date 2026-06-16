@@ -64,9 +64,9 @@ export default function WhatIsShoonayaPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">When is it launching?</h2>
+        <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Is it live?</h2>
         <p>
-          Shoonaya is launching on <strong>17 June 2026</strong>. The founding community — called <strong>Sthapakas</strong> — are joining now. The first 100 Sthapakas will have their founding number permanently on their profile and the opportunity to name a feature in the app.
+          Shoonaya is live now. The founding community — called <strong>Sthapakas</strong> — have laid the foundation, and the doors are open for everyone.
         </p>
       </section>
     </PublicPageShell>

@@ -416,10 +416,10 @@ export default async function NameStorySharePage({
         <div className="cta-divider" />
         <p className="cta-text">
           Shoonaya is the first digital home for Hindu, Sikh, Buddhist &amp; Jain wisdom.<br />
-          One home. Four traditions. Launching June 17, 2026.
+          One home. Four traditions. Live now.
         </p>
         <Link className="cta-btn" href={ref ? `/?ref=${encodeURIComponent(ref)}&from=name_story` : "/?from=name_story"}>
-          Discover Your Name Story →
+          Enter Shoonaya →
         </Link>
       </div>
 

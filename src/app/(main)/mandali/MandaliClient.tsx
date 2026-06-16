@@ -207,7 +207,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
                 </p>
               </div>
               <button
-                onClick={() => { toast('Wider Sangam connections open after launch polish.', { icon: '🙏' }); }}
+                onClick={() => { toast('Wider Sangam connections will open in a future update.', { icon: '🙏' }); }}
                 className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition"
                 style={{ border: '1px solid rgba(212, 166, 70, 0.18)', color: 'var(--text-cream)', background: 'var(--card-bg)' }}>
                 Connect
