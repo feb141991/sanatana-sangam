@@ -1,4 +1,5 @@
 import { getAuthUser, getSupabaseClient } from '@/lib/auth-cache';
+import { shortUserId } from '@/lib/onboarding-gate';
 import { redirect } from 'next/navigation';
 import { unstable_cache } from 'next/cache';
 import HomeDashboard from './HomeDashboard';
@@ -128,6 +129,8 @@ function getDisplayName({
   return email?.split('@')[0]?.trim() || '';
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const user = await getAuthUser();
 
@@ -135,18 +138,36 @@ export default async function HomePage() {
 
   const supabase = await getSupabaseClient();
 
-  const { data: profile } = await supabase
+  // Single fail-safe profile read serving BOTH the onboarding gate and the
+  // dashboard below, so the two can never disagree on the same request.
+  // `.maybeSingle()` makes a missing/unreadable row a clean `null` rather than
+  // an error state.
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, shloka_streak, last_shloka_date, sampradaya, ishta_devata, tradition, spiritual_level, seeking, custom_greeting, life_stage, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, subscription_status, subscription_expires_at, entitlement_source, entitlement_updated_at, karma_points, seva_score, is_admin, active_symbol_id, onboarding_completed, onboarding_goal, nitya_rhythm_mode')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
-  // Require the explicit onboarding completion flag. OAuth users can reach
-  // /home from different entry points, and profile defaults are not proof that
-  // they answered the onboarding questions.
-  const needsOnboarding = !profile || profile.onboarding_completed !== true;
-    
-  if (needsOnboarding) redirect('/onboarding');
+  // Onboarding gate — see ONBOARDING_REDIRECT_LOOP_FOLLOWUP.md. `onboarding_completed`
+  // is `NOT NULL DEFAULT false`, so only a definitively read `false` means the user
+  // still has to onboard → /onboarding. A `null`/unreadable profile is NOT treated
+  // as "needs onboarding": that is the loop-safe behaviour — a transient read failure
+  // renders the dashboard with `profile?.` fallbacks instead of bouncing. (A genuinely
+  // missing profile is caught earlier by (main)/layout.tsx → /auth/sign-out, which runs
+  // before this page; this page does not re-guarantee that.)
+  const willRedirectToOnboarding = profile?.onboarding_completed === false;
+
+  // Temporary gate logging — see ONBOARDING_REDIRECT_LOOP_FOLLOWUP.md (§3-H4).
+  console.log('[onboarding-gate]', {
+    route: '/home',
+    userId: shortUserId(user.id),
+    profileFound: Boolean(profile),
+    onboarding_completed: profile?.onboarding_completed ?? null,
+    readError: Boolean(profileError),
+    willRedirect: willRedirectToOnboarding,
+  });
+
+  if (willRedirectToOnboarding) redirect('/onboarding');
 
   const tradition = profile?.tradition ?? null;
   const dayIndex  = getDayOfYear();
