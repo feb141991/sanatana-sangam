@@ -84,11 +84,11 @@ const TRAD_SYMBOL: Record<string, string> = {
 
 // ─── Native-script badge label ─────────────────────────────────────────────────
 const TRAD_NATIVE_LABEL: Record<string, string> = {
-  hindu:    'Sthapaka · स्थापक',
-  sikh:     'Sthapaka · ਸਥਾਪਕ',
-  buddhist: 'Sthapaka · स्थापक',
-  jain:     'Sthapaka · स्थापक',
-  default:  'Sthapaka · स्थापक',
+  hindu:    'Shoonaya · शून्य',
+  sikh:     'Shoonaya · ਸ਼ੂਨ੍ਯ',
+  buddhist: 'Shoonaya · शून्य',
+  jain:     'Shoonaya · शून्य',
+  default:  'Shoonaya · शून्य',
 };
 
 // ─── Tradition-specific sacred verse ──────────────────────────────────────────
@@ -131,7 +131,7 @@ const TRAD_WELCOME: Record<string, string> = {
   sikh: `In Gurbani, <em>Sunn</em> is not absence — it is the fullness that holds all of creation.
     The silence before the Shabad. The stillness from which Kirtan rises. You have joined a space
     built to honour that stillness — a living sangam where the Sikh seeker finds community,
-    scripture, and practice gathered in one place. You helped lay the first stone.`,
+    scripture, and practice gathered in one place. Your Shoonaya account is ready.`,
 
   hindu: `The Rigveda knew it before the traditions divided — <em>Ekaṃ sat</em>, one truth,
     many rivers flowing toward it. This sangam is where those rivers meet. Built for the
@@ -150,7 +150,7 @@ const TRAD_WELCOME: Record<string, string> = {
 
   default: `You are among the very first to arrive — a space where the ancient streams of
     Hindu, Sikh, Buddhist, and Jain wisdom flow together into one living community.
-    You helped lay the first stone.`,
+    Your Shoonaya account is ready.`,
 };
 
 // ─── Tradition-specific share copy ────────────────────────────────────────────
@@ -163,14 +163,14 @@ const TRAD_SHARE_COPY: Record<string, string> = {
 };
 
 const FOUNDING_PERKS = [
-  'Permanent Sthapaka badge on your profile — visible to the whole sangam',
-  'Your founding number (#1–1000) displayed in your profile and posts',
+  'A warm Shoonaya welcome for your profile',
+  'Your practice, community, and learning tools in one place',
   'First month of Shoonaya Pro free',
   '20% lifetime discount on all Pro subscriptions',
   'Access to every new feature',
-  'Access to the Sthapaka-only Mandali channel (OG founders only)',
-  'Tradition-coloured avatar ring — marks you as a founding member',
-  'Name in the Founding Members scroll',
+  'Access to Mandali community spaces as they expand',
+  'Tradition-aware profile and daily practice experience',
+  'A calmer home for daily dharma',
 ];
 
 type WaitlistRow = {
@@ -193,9 +193,8 @@ function normaliseTradition(value: unknown): string | null {
   return tradition && VALID_TRADITIONS.has(tradition) ? tradition : null;
 }
 
-function buildShareText(foundingNumber: number): string {
-  const numberLabel = foundingNumber > 0 ? `#${foundingNumber}` : 'founding member';
-  return `I just became Sthapaka ${numberLabel} of Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Join the founding members: ${BASE_URL}`;
+function buildShareText(): string {
+  return `I joined Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Enter Shoonaya: ${BASE_URL}`;
 }
 
 async function findRegistration(email: string): Promise<WaitlistRow | null> {
@@ -311,10 +310,10 @@ function buildEmailHtml(opts: {
 
   const shareUrl = encodeURIComponent(BASE_URL);
   const twitterText = encodeURIComponent(
-    `I'm Sthapaka #${foundingNumber} of Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding 1,000:`
+    `I joined Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma:`
   );
   const waText = encodeURIComponent(
-    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Join the founding members: ${BASE_URL}`
+    `I joined Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Enter Shoonaya: ${BASE_URL}`
   );
 
   const verseBlock = verse ? `
@@ -333,7 +332,7 @@ function buildEmailHtml(opts: {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Welcome, Sthapaka #${foundingNumber}</title>
+<title>Welcome to Shoonaya</title>
 </head>
 <body style="margin:0;padding:0;background:#0d0805;font-family:Georgia,serif;color:#FAF6EF;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0805;">
@@ -347,11 +346,11 @@ function buildEmailHtml(opts: {
     ${tradLabel ? `<div style="font-size:11px;letter-spacing:0.12em;color:rgba(250,246,239,0.35);margin-top:4px;">${tradLabel}</div>` : ''}
   </td></tr>
 
-  <!-- Founding Number Badge -->
+  <!-- Welcome Badge -->
   <tr><td align="center" style="padding-bottom:32px;">
     <div style="background:${accentBg};border:1px solid ${accentBdr};border-radius:20px;padding:36px 24px;display:inline-block;min-width:260px;">
-      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Your Founding Number</div>
-      <div style="font-size:68px;font-weight:700;color:${accent};line-height:1;font-family:'Georgia',serif;">#${foundingNumber}</div>
+      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Your Shoonaya Welcome</div>
+      <div style="font-size:42px;font-weight:700;color:${accent};line-height:1;font-family:'Georgia',serif;">शून्य</div>
       <div style="font-size:13px;color:rgba(250,246,239,0.45);margin-top:10px;letter-spacing:0.12em;">${badgeLabel}</div>
     </div>
   </td></tr>
@@ -374,7 +373,7 @@ function buildEmailHtml(opts: {
 
   <!-- Perks -->
   <tr><td style="padding-bottom:32px;">
-    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">Your Founding Member Boons</div>
+    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">Your Shoonaya Welcome</div>
     ${FOUNDING_PERKS.map(p => `
     <div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
       <span style="color:${accent};font-size:14px;margin-right:10px;">${symbol}</span>
@@ -401,7 +400,7 @@ function buildEmailHtml(opts: {
   <tr><td align="center" style="padding:32px 0;">
     <a href="${BASE_URL}/join"
        style="display:inline-block;background:${accent};color:#fff;font-weight:700;padding:16px 48px;border-radius:100px;text-decoration:none;font-size:15px;letter-spacing:0.02em;">
-      Enter Shoonaya on June 17 →
+      Enter Shoonaya →
     </a>
   </td></tr>
 
@@ -441,7 +440,7 @@ async function sendWelcomeEmail(opts: {
       body: JSON.stringify({
         from:    `Shoonaya <noreply@${DOMAIN}>`,
         to:      [opts.email],
-        subject: `${tradGreeting} — आपका स्वागत है, Sthapaka #${opts.foundingNumber} 🪔`,
+        subject: `${tradGreeting} — आपका स्वागत है 🪔`,
         html:    buildEmailHtml(opts),
       }),
     });
@@ -498,8 +497,8 @@ export async function POST(req: NextRequest) {
           success: true,
           foundingNumber,
           alreadyRegistered: true,
-          message: `This email is already registered as Sthapaka #${foundingNumber}.`,
-          shareText: buildShareText(foundingNumber),
+          message: 'This email is already registered with Shoonaya.',
+          shareText: buildShareText(),
         },
         { status: 200, headers: CORS_HEADERS }
       );
@@ -532,8 +531,8 @@ export async function POST(req: NextRequest) {
               success: true,
               foundingNumber,
               alreadyRegistered: true,
-              message: `This email is already registered as Sthapaka #${foundingNumber}.`,
-              shareText: buildShareText(foundingNumber),
+              message: 'This email is already registered with Shoonaya.',
+              shareText: buildShareText(),
             },
             { status: 200, headers: CORS_HEADERS }
           );
@@ -558,8 +557,8 @@ export async function POST(req: NextRequest) {
         success: true,
         foundingNumber,
         alreadyRegistered: false,
-        message: `You are registered as Sthapaka #${foundingNumber}.`,
-        shareText: buildShareText(foundingNumber),
+        message: 'You are registered with Shoonaya.',
+        shareText: buildShareText(),
       },
       { status: 200, headers: CORS_HEADERS }
     );

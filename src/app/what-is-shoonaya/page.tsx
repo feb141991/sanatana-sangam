@@ -66,7 +66,7 @@ export default function WhatIsShoonayaPage() {
       <section>
         <h2 className="font-display text-2xl font-semibold text-[color:var(--text-cream)] mb-2">Is it live?</h2>
         <p>
-          Shoonaya is live now. The founding community — called <strong>Sthapakas</strong> — have laid the foundation, and the doors are open for everyone.
+          Shoonaya is live now. The doors are open for everyone to begin daily practice, scripture learning, and community connection.
         </p>
       </section>
     </PublicPageShell>
