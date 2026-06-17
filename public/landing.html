@@ -51,7 +51,7 @@ body { background:var(--cream); color:var(--ink); font-family:var(--fb); font-si
 
 /* ── NAV ──────────────────────────────────────────────────────────────── */
 nav {
-  position:fixed; top:0; left:0; right:0; z-index:100;
+  position:relative; z-index:100;
   padding:0 56px; height:64px;
   display:flex; align-items:center; justify-content:space-between;
   background:rgba(250,246,239,0.90); backdrop-filter:blur(20px);
@@ -65,7 +65,7 @@ nav {
 .nav-links { display:flex; gap:28px; list-style:none; }
 .nav-links a { font-size:13px; color:rgba(62,42,31,0.62); text-decoration:none; letter-spacing:0.02em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--ink); }
-.nav-cta { background:var(--saffron); color:#fff; font-size:13px; font-weight:600; padding:9px 22px; border-radius:100px; border:none; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s, transform 0.15s; }
+.nav-cta { background:var(--saffron); color:#fff; font-size:13px; font-weight:600; padding:9px 22px; border-radius:100px; border:none; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s, transform 0.15s; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
 .nav-cta:hover { opacity:0.9; transform:translateY(-1px); }
 
 /* ── SPLASH ENTRY ─────────────────────────────────────────────────────── */
@@ -148,33 +148,31 @@ body.landing-entered #explore-btn {
   animation:none;
   opacity:0.78;
 }
+.splash-actions { margin:26px auto 0; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+.splash-primary-link,
+.splash-secondary-link {
+  min-height:46px;
+  border-radius:100px;
+  padding:12px 22px;
+  font-family:var(--fb);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.03em;
+  cursor:pointer;
+  text-decoration:none;
+}
+.splash-primary-link {
+  border:1px solid rgba(197,160,89,0.38);
+  background:linear-gradient(135deg, #C5A059, #D4784A);
+  color:#0C0A07;
+  box-shadow:0 16px 42px rgba(197,160,89,0.20);
+}
+.splash-secondary-link {
+  border:1px solid rgba(255,254,248,0.16);
+  background:rgba(255,254,248,0.06);
+  color:rgba(255,254,248,0.74);
+}
 
-/* ── Splash Join Form ──────────────────────────────────────────────────── */
-#splash-join { margin:16px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(197,160,89,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
-#sj-form { display:flex;flex-direction:column;gap:8px;align-items:stretch;width:100%; }
-#sj-name,#sj-email,#sj-country { width:100%;background:rgba(255,254,248,0.07);border:1px solid rgba(197,160,89,0.35);border-radius:100px;padding:11px 18px;color:#FAF6EF;font-size:13px;font-family:var(--fb);outline:none;transition:border-color 0.25s;min-height:44px; }
-#sj-name::placeholder,#sj-email::placeholder { color:rgba(255,254,248,0.32); }
-#sj-name:focus,#sj-email:focus,#sj-country:focus { border-color:rgba(197,160,89,0.65); }
-#sj-country { appearance:none;-webkit-appearance:none;cursor:pointer;color:#FAF6EF; }
-#sj-country option { background:#1c140a;color:#FAF6EF; }
-#sj-country.unset { color:rgba(255,254,248,0.32); }
-#sj-submit { width:100%;background:linear-gradient(135deg, #C5A059, #D4784A);color:#0C0A07;border:none;border-radius:100px;padding:12px 24px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;letter-spacing:0.02em;min-height:44px; }
-#sj-submit:hover { opacity:0.88; }
-#sj-note { font-size:11px;color:rgba(255,254,248,0.30);margin-top:10px;letter-spacing:0.03em; }
-/* Stage 2 — tradition pills */
-#sj-trad-wrap { animation:tradIn 0.4s ease; }
-#sj-trad-prompt { font-size:13px;color:rgba(255,254,248,0.60);margin-bottom:12px;letter-spacing:0.04em; }
-#sj-trad-grid { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
-.sj-trad-btn { background:rgba(255,254,248,0.06);border:1px solid rgba(255,254,248,0.14);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 20px;font-size:13px;font-family:var(--fb);cursor:pointer;transition:all 0.22s;letter-spacing:0.03em; }
-.sj-trad-btn span { font-size:15px;margin-right:5px; }
-.sj-trad-btn:hover { background:rgba(197,160,89,0.14);border-color:rgba(197,160,89,0.45);color:#FAF6EF; }
-/* Stage 3 — founding number badge */
-#sj-reveal { animation:tradIn 0.5s ease; }
-#sj-badge { background:rgba(197,160,89,0.10);border:1px solid rgba(197,160,89,0.30);border-radius:16px;padding:24px 32px;margin-bottom:16px;text-align:center; }
-#sj-badge-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,254,248,0.42);margin-bottom:8px; }
-#sj-badge-num { font-family:var(--fd);font-size:52px;font-weight:700;color:#C5A059;line-height:1; }
-#sj-badge-sub { font-size:12px;color:rgba(255,254,248,0.52);margin-top:8px;font-style:italic; }
-#sj-share-row { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
 .sj-share-btn { border:1px solid rgba(255,254,248,0.16);background:rgba(255,254,248,0.06);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 18px;font-size:12px;font-family:var(--fb);cursor:pointer;transition:all 0.2s;letter-spacing:0.02em; }
 .sj-share-btn:hover { background:rgba(255,254,248,0.12);color:#FAF6EF; }
 .sj-share-wa:hover  { border-color:rgba(37,211,102,0.45);color:#25d366; }
@@ -764,6 +762,9 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 .cta-trad-pill[data-t="buddhist"].chosen { border-color:var(--c-buddhist); background:var(--c-buddhist-bg); color:var(--c-buddhist); }
 .cta-trad-pill[data-t="jain"].chosen     { border-color:var(--c-jain);     background:var(--c-jain-bg);     color:var(--c-jain); }
 .cta-note { font-size:12px; color:rgba(62,42,31,0.40); margin-top:12px; }
+.cta-direct-actions { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.cta-direct-link { display:inline-flex; align-items:center; justify-content:center; min-width:min(100%, 280px); text-decoration:none; }
+.cta-signin-link { display:inline-flex; text-decoration:none; }
 
 /* CTA Step 1 extended */
 .cta-fields { display:flex; flex-direction:column; gap:10px; max-width:440px; margin:0 auto 12px; }
@@ -856,16 +857,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 </style>
 
 <style>
-   #sj-google-btn {
-     width: 100% !important;
-     padding: 10px 18px !important;
-     border-radius: 100px !important;
-     font-size: 13px !important;
-     white-space: nowrap !important;
-   }
-   @media (max-width: 480px) {
-     #sj-google-btn { font-size: 12px !important; }
-   }
 </style>
 
 <style id="general-mobile-css">
@@ -911,20 +902,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   }
   .sc-unit { min-width: 64px !important; }
 
-  /* SPLASH JOIN FIX */
-  #sj-email-wrap form {
-    flex-direction: column !important;
-    gap: 8px !important;
-    border-radius: 20px !important;
-  }
-  #sj-email {
-    width: 100% !important;
-    border-radius: 100px !important;
-  }
-  #sj-submit {
-    width: 100% !important;
-    border-radius: 100px !important;
-  }
 }
 
 @media (max-width: 400px) {
@@ -936,17 +913,17 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 }
 
 /* FIX 3B: Email + avatar circle misalignment */
-#sj-email-wrap form, .cta-form {
+.cta-form {
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
 }
-#sj-email, .cta-input {
+.cta-input {
   flex: 1 !important;
   min-width: 0 !important;
 }
 /* In case there is an avatar circle element */
-.avatar-circle, #sj-submit, .cta-btn {
+.avatar-circle, .cta-btn {
   flex-shrink: 0 !important;
 }
 </style>
@@ -1016,73 +993,8 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       </div>
     </div>
 
-    <!-- ── Founding Member Join ─────────────────────────────────────── -->
-    <div id="splash-join">
-      <!-- Stage 1: email -->
-      <div id="sj-email-wrap">
-        <form id="sj-form" onsubmit="splashJoin(event)">
-          <input id="sj-name" type="text" placeholder="Your name" required autocomplete="given-name">
-          <input id="sj-email" type="email" placeholder="your@email.com" required autocomplete="email">
-          <select id="sj-country" class="unset" required onchange="this.classList.remove('unset')">
-            <option value="" disabled selected>Country</option>
-            <option value="India">India</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="United States">United States</option>
-            <option value="Canada">Canada</option>
-            <option value="Australia">Australia</option>
-            <option value="Singapore">Singapore</option>
-            <option value="UAE">UAE</option>
-            <option value="Germany">Germany</option>
-            <option value="Netherlands">Netherlands</option>
-            <option value="Other">Other</option>
-          </select>
-          <button type="submit" id="sj-submit">Enter Shoonaya</button>
-        </form>
-        <p id="sj-note"></p>
-        <!-- Divider -->
-        <div style="display:flex;align-items:center;gap:10px;margin:12px 4px 10px;">
-          <div style="flex:1;height:1px;background:rgba(197,160,89,0.18)"></div>
-          <span style="font-size:10px;color:rgba(250,246,239,0.28);letter-spacing:0.14em;text-transform:uppercase">or</span>
-          <div style="flex:1;height:1px;background:rgba(197,160,89,0.18)"></div>
-        </div>
-        <!-- Google sign-up -->
-        <button id="sj-google-btn" onclick="shoonayaGoogleSignup()" type="button"
-          style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,0.94);border:1px solid rgba(0,0,0,0.12);border-radius:100px;padding:11px 20px;font-size:13px;font-weight:600;color:#1a1a1a;cursor:pointer;transition:background 0.2s;letter-spacing:0.01em;">
-          <svg width="14" height="14" viewBox="0 0 533.5 544.3">
-            <path fill="#EA4335" d="M533.5 278.4c0-17.9-1.6-35.1-4.6-51.7H272v97.8h146.9c-6.3 34-25.1 62.9-53.4 82.1v68.5h86.3c50.5-46.5 79.7-115 79.7-197.7"/>
-            <path fill="#34A853" d="M272 544.3c71.6 0 131.7-23.6 175.6-64.1l-86.3-68.5c-23.9 16-54.5 25.5-89.3 25.5-68.7 0-127-46.4-147.8-108.9H37.7v68.8c44.4 86.9 134.9 147.2 234.3 147.2"/>
-            <path fill="#4A90E2" d="M124.2 327.3c-10.4-30.9-10.4-64.1 0-95l-86.5-68.8c-37.5 72.9-37.5 159.5 0 232.4l86.5-68.6"/>
-            <path fill="#FBBC05" d="M272 107.7c39.2-.6 76.9 14.6 105.5 42.1l78.9-78.9C424.5 24.6 349 0 272 0 172.6 0 82.1 60.3 37.7 147.2l86.5 68.8C145 154.1 203.3 107.7 272 107.7"/>
-          </svg>
-          Continue with Google
-        </button>
-      </div>
-      <!-- Stage 2: tradition selection -->
-      <div id="sj-trad-wrap" style="display:none">
-        <p id="sj-trad-prompt">🙏 Which tradition do you follow?</p>
-        <div id="sj-trad-grid">
-          <button class="sj-trad-btn" onclick="splashTradSelect('hindu')"><span>ॐ</span> Hindu</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('sikh')"><span>ੴ</span> Sikh</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('buddhist')"><span>☸</span> Buddhist</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('jain')"><span>☮</span> Jain</button>
-        </div>
-      </div>
-      <!-- Stage 3: founding number reveal -->
-      <div id="sj-reveal" style="display:none">
-        <div id="sj-already-info" class="already-registered-info"></div>
-        <div id="sj-badge">
-          <div id="sj-badge-label">Shoonaya · शून्य</div>
-          <div id="sj-badge-num">#<span id="sj-num">—</span></div>
-          <div id="sj-badge-sub">Your Shoonaya account is ready.</div>
-        </div>
-        <p id="sj-registration-feedback" class="registration-feedback"></p>
-        <p id="sj-share-copy" class="share-copy-text"></p>
-        <div id="sj-share-row">
-          <button class="sj-share-btn sj-share-wa"  onclick="splashShareWhatsApp()">📲 WhatsApp</button>
-          <button class="sj-share-btn sj-share-tw"  onclick="splashShareTwitter()">🐦 X / Twitter</button>
-          <button class="sj-share-btn sj-share-copy" onclick="splashCopyLink()">🔗 Copy Link</button>
-        </div>
-      </div>
+    <div class="splash-actions" aria-label="Shoonaya entry actions">
+      <button class="splash-primary-link" type="button" onclick="document.getElementById('explore-btn')?.click()">Explore Shoonaya</button>
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
@@ -1168,10 +1080,10 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     <li><a href="#features">Features</a></li>
     <li><a href="#download">Web App</a></li>
   </ul>
-  <button class="nav-cta" onclick="scrollToCta()">Enter Shoonaya</button>
+  <a class="nav-cta" href="/signup">Enter Shoonaya</a>
 </nav>
 
-<!-- Hero section removed — signup is now in the splash entry screen -->
+<!-- Hero section removed — signup now lives on /signup -->
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
 <div class="stats-band reveal" id="shoonaya-content">
@@ -2369,80 +2281,10 @@ function gcRestart(){
   <div class="reveal" style="position:relative">
     <h2 class="cta-h">Start Your Journey</h2>
     <p class="cta-sub">Begin your daily sadhana inside Shoonaya.</p>
-
-    <!-- CTA Step 1: Name + Email + Country -->
-    <div id="cta-email-wrap">
-      <form id="cta-form" onsubmit="handleCtaSignup(event)">
-        <div class="cta-fields">
-          <div class="cta-field-row">
-            <input class="cta-field" id="cta-name" type="text" placeholder="Your name" required autocomplete="given-name">
-            <select class="cta-field cta-field-select" id="cta-country" required>
-              <option value="" disabled selected>Country</option>
-              <option value="India">India</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="United States">United States</option>
-              <option value="Canada">Canada</option>
-              <option value="Australia">Australia</option>
-              <option value="Singapore">Singapore</option>
-              <option value="UAE">UAE</option>
-              <option value="Germany">Germany</option>
-              <option value="Netherlands">Netherlands</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-          <input class="cta-field" id="cta-email" type="email" placeholder="your@email.com" required autocomplete="email">
-          <button class="cta-fields-submit" id="cta-submit-btn" type="submit">Start Your Journey</button>
-        </div>
-      </form>
+    <div class="cta-direct-actions">
+      <a class="cta-fields-submit cta-direct-link" href="/signup">Create your account</a>
+      <a class="cta-note cta-signin-link" href="/login">Already have an account? Sign in</a>
     </div>
-
-    <!-- CTA Step 2: Tradition -->
-    <div class="cta-step2" id="cta-step2" style="display:none">
-      <p class="step2-prompt">🙏 Which tradition do you follow?</p>
-      <div class="cta-trad-grid">
-        <div class="cta-trad-pill" data-t="hindu"    onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ॐ</span>Hindu</div>
-        <div class="cta-trad-pill" data-t="sikh"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ੴ</span>Sikh</div>
-        <div class="cta-trad-pill" data-t="buddhist" onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☸</span>Buddhist</div>
-        <div class="cta-trad-pill" data-t="jain"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☮</span>Jain</div>
-      </div>
-    </div>
-
-    <!-- CTA Step 3: Founding member toggle -->
-    <div id="cta-step3" style="display:none;text-align:center">
-      <div class="cta-founding-wrap">
-        <button type="button" class="cta-founding-toggle" id="cta-founding-toggle" onclick="toggleCtaFounding()">
-          <div class="cta-founding-text">
-            <div class="cta-founding-label">Join Shoonaya today?</div>
-            <div class="cta-founding-sub">Create your account and begin your practice today.</div>
-          </div>
-          <div class="cta-toggle-track on" id="cta-toggle-track">
-            <div class="cta-toggle-knob"></div>
-          </div>
-        </button>
-        <button class="cta-founding-submit" id="cta-founding-submit-btn" onclick="submitCtaWithFounding()">Complete Registration</button>
-      </div>
-    </div>
-
-    <!-- CTA Step 4: Founding number reveal -->
-    <div id="cta-reveal" style="display:none;text-align:center">
-      <div class="cta-reveal-card">
-        <div class="cta-reveal-label">Your Shoonaya Welcome</div>
-        <div id="cta-found-num" style="font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1">#—</div>
-        <div class="cta-reveal-sub">Shoonaya · शून्य</div>
-      </div>
-      <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px;font-family:var(--fd);font-size:22px;font-weight:600;color:var(--ink)">You are now part of Shoonaya.</div>
-      <div id="cta-already-info" class="already-registered-info"></div>
-      <p id="cta-registration-feedback" class="registration-feedback cta-registration-feedback"></p>
-      <p id="cta-share-copy" class="share-copy-text cta-share-copy"></p>
-      <div id="cta-share-row" class="sj-share-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button class="sj-share-btn cta-share-copy" onclick="ctaShareWhatsApp()">📲 WhatsApp</button>
-        <button class="sj-share-btn cta-share-copy" onclick="ctaShareTwitter()">🐦 X / Twitter</button>
-        <button class="sj-share-btn cta-share-copy" onclick="ctaCopyLink()">🔗 Copy Link</button>
-      </div>
-      <p style="font-size:12px;color:rgba(62,42,31,0.48);margin-top:12px">A welcome email with your perks is on its way 🪔</p>
-    </div>
-
-    <p class="cta-note" id="cta-note">No spam, ever</p>
   </div>
 </section>
 
@@ -3129,13 +2971,15 @@ function ctaCopyLink() {
   copyShareText(buildShoonayaShareText(ctaFoundingNum, ctaTrad), '#cta-share-row .sj-share-btn:last-child', '🔗 Copy Link');
 }
 
+function _updateFoundingCount(n) {
+  const el = document.getElementById('stat-founding-wrap');
+  if (!el || !n) return;
+  el.textContent = n < 500 ? '500+' : n.toLocaleString('en-IN') + '+';
+}
+
 /* ─── SCROLL TO CTA ──────────────────────────────────────────────────────── */
 function scrollToCta() {
-  document.getElementById('cta-section').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => {
-    const el = document.getElementById('cta-name');
-    if (el && document.getElementById('cta-email-wrap').style.display !== 'none') el.focus();
-  }, 600);
+  window.location.href = '/signup';
 }
 
 /* ─── VERSE / SHLOKA TABS — independent cycle from tradition tabs ─────── */
@@ -3851,136 +3695,6 @@ function triggerShoonayaCelebration(targetId = 'sj-badge') {
   }
 
   window.setTimeout(() => pieces.forEach(el => el.remove()), 1900);
-}
-
-/* ─── GOOGLE OAUTH SIGNUP ───────────────────────────────────────────────── */
-function shoonayaGoogleSignup() {
-  var btn = document.getElementById('sj-google-btn');
-  if (btn) { btn.textContent = 'Redirecting…'; btn.disabled = true; }
-
-  var redirectTo = encodeURIComponent('https://shoonaya.com/auth/sthapaka-callback');
-  var oauthUrl = 'https://mnbwodcswxoojndytngu.supabase.co/auth/v1/authorize'
-    + '?provider=google'
-    + '&redirect_to=' + redirectTo
-    + '&access_type=offline'
-    + '&prompt=consent';
-
-  window.location.href = oauthUrl;
-}
-
-/* ─── Handle OAuth return ───────────────────────────────────────────────── */
-(function() {
-  var params = new URLSearchParams(window.location.search);
-  if (params.get('sthapaka_registered') === '1') {
-    var num  = parseInt(params.get('num') || '0', 10);
-    var name = params.get('name') || '';
-    // Clean URL
-    window.history.replaceState({}, '', window.location.pathname);
-    // Wait for DOM then show reveal
-    window.addEventListener('DOMContentLoaded', function() { showShoonayaReveal(num, name); });
-    if (document.readyState !== 'loading') showShoonayaReveal(num, name);
-  }
-  if (params.get('sthapaka_error')) {
-    window.history.replaceState({}, '', window.location.pathname);
-    window.addEventListener('DOMContentLoaded', function() {
-      var note = document.getElementById('sj-note') || document.getElementById('sj-submit');
-      if (note) note.textContent = 'Google sign-in failed. Please try with email.';
-    });
-  }
-})();
-
-function showShoonayaReveal(num, name) {
-  // Hide email form
-  var wrap = document.getElementById('sj-email-wrap');
-  if (wrap) wrap.style.display = 'none';
-  // Show Stage 3 reveal
-  var reveal = document.getElementById('sj-reveal');
-  if (reveal) reveal.style.display = 'block';
-  // Set number
-  var numEl = document.getElementById('sj-num');
-  if (numEl) numEl.textContent = num || '—';
-  // Set sub text
-  var sub = document.getElementById('sj-badge-sub');
-  if (sub && name) sub.innerHTML = 'Welcome, <em>' + name.split(' ')[0] + '</em>. Your Shoonaya account is ready.';
-  _sjFoundingNum = num;
-  // Trigger celebration
-  if (typeof triggerShoonayaCelebration === 'function') triggerShoonayaCelebration('sj-badge');
-  // Show share copy
-  if (typeof buildShoonayaShareText === 'function') {
-    var shareEl = document.getElementById('sj-share-copy');
-    if (shareEl) shareEl.textContent = buildShoonayaShareText(num, '');
-  }
-}
-
-/* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
-let _sjEmail = '', _sjName = '', _sjCountry = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
-
-async function splashJoin(e) {
-  e.preventDefault();
-  _sjEmail   = document.getElementById('sj-email').value.trim().toLowerCase();
-  _sjName    = document.getElementById('sj-name').value.trim();
-  _sjCountry = document.getElementById('sj-country').value;
-  const btn = document.getElementById('sj-submit');
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, name: _sjName, country: _sjCountry, source: 'splash', timezone: tz });
-    _sjFoundingNum = data.foundingNumber ?? 0;
-    _sjAlreadyRegistered = !!data.alreadyRegistered;
-    // Move to tradition select
-    document.getElementById('sj-email-wrap').style.display = 'none';
-    document.getElementById('sj-trad-wrap').style.display  = 'block';
-  } catch (err) {
-    document.getElementById('sj-note').textContent = err.message || 'Could not save registration. Please try again.';
-    btn.textContent = 'Enter Shoonaya'; btn.disabled = false;
-  }
-}
-
-async function splashTradSelect(trad) {
-  _sjTrad = trad;
-  document.querySelectorAll('.sj-trad-btn').forEach(b => b.disabled = true);
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, name: _sjName, country: _sjCountry, tradition: trad, source: 'splash', timezone: tz });
-    if (data.foundingNumber) _sjFoundingNum = data.foundingNumber;
-    _sjAlreadyRegistered = !!data.alreadyRegistered;
-  } catch { /* non-blocking */ }
-  // Show reveal
-  document.getElementById('sj-trad-wrap').style.display = 'none';
-  document.getElementById('sj-reveal').style.display    = 'block';
-  document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
-  const sjAlreadyBox = document.getElementById('sj-already-info');
-  if (sjAlreadyBox) {
-    if (_sjAlreadyRegistered) {
-      sjAlreadyBox.textContent = "You're already registered with Shoonaya. Try another email if you meant to join with a different one.";
-      sjAlreadyBox.classList.add('visible');
-    } else {
-      sjAlreadyBox.classList.remove('visible');
-    }
-  }
-  setRegistrationFeedback('sj', _sjAlreadyRegistered, _sjFoundingNum);
-  setShareCopy('sj', _sjFoundingNum, _sjTrad);
-  triggerShoonayaCelebration('sj-badge');
-  // Update live count in stats band
-  _updateFoundingCount(_sjFoundingNum);
-}
-
-function _updateFoundingCount(n) {
-  const el = document.getElementById('stat-founding-wrap');
-  if (!el || !n) return;
-  el.textContent = n < 500 ? '500+' : n.toLocaleString('en-IN') + '+';
-}
-
-function splashShareWhatsApp() {
-  const text = encodeURIComponent(buildShoonayaShareText(_sjFoundingNum, _sjTrad));
-  window.open(`https://wa.me/?text=${text}`, '_blank');
-}
-function splashShareTwitter() {
-  const text = encodeURIComponent(buildShoonayaShareText(_sjFoundingNum, _sjTrad));
-  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-}
-function splashCopyLink() {
-  copyShareText(buildShoonayaShareText(_sjFoundingNum, _sjTrad), '.sj-share-copy', '🔗 Copy Link');
 }
 
 /* ─── Live waitlist count ─────────────────────────────────────────────────── */

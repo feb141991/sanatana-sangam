@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 // ─── /api/waitlist ─────────────────────────────────────────────────────────────
 // GET  — returns { count: number } (waitlist size for the landing page counter)
 // POST — saves a pre-registration; returns { success, foundingNumber, alreadyRegistered }
-//        Sends a Sthapaka welcome email via Resend (if RESEND_API_KEY is set).
+//        Sends a Shoonaya welcome email via Resend (if RESEND_API_KEY is set).
 // Body: { email, tradition?, name?, source?, timezone? }
 // ──────────────────────────────────────────────────────────────────────────────
 
