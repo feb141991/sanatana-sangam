@@ -1,15 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Copy, Check, Share2, HelpCircle, Users, Award, ShieldAlert, Sparkles } from 'lucide-react';
+import { Copy, Check, Share2, Users, Award } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { FESTIVAL_BLESSINGS, type FestivalBlessing } from '@/lib/festival-blessings';
+import { FESTIVAL_BLESSINGS } from '@/lib/festival-blessings';
 
-interface SthapakaKitClientProps {
-  profile: any;
-  isSthapaka: boolean;
+interface FoundingProfile {
+  full_name?: string | null;
+  username?: string | null;
+  tradition?: string | null;
+  founding_number?: number | null;
+}
+
+interface FoundingKitClientProps {
+  profile: FoundingProfile | null;
+  isFoundingMember: boolean;
   referralCount: number;
 }
 
@@ -32,11 +38,11 @@ const COMMUNITY_GUIDELINES = [
   }
 ];
 
-export default function SthapakaKitClient({
+export default function FoundingKitClient({
   profile,
-  isSthapaka,
+  isFoundingMember,
   referralCount,
-}: SthapakaKitClientProps) {
+}: FoundingKitClientProps) {
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedScheduleIndex, setCopiedScheduleIndex] = useState<number | null>(null);
 
@@ -52,7 +58,7 @@ export default function SthapakaKitClient({
       text: `🌅 *A beautiful morning reminder* 🌅\n\n` +
         `"Dharmo rakṣati rakṣitaḥ" — Dharma protected, protects.\n\n` +
         `I've been using Shoonaya to structure my morning Sadhana. It aligns daily practice with the Panchang, from Japa to scripture study, across Hindu, Sikh, Buddhist, and Jain traditions.\n\n` +
-        `Join me as a founding member (Sthapaka) to build a daily rhythm:\n` +
+        `Join me as a founding member to build a daily rhythm:\n` +
         `👉 ${referralLink}&utm_source=whatsapp\n\n` +
         `Let's walk this path together! 🙏`,
     },
@@ -132,7 +138,7 @@ export default function SthapakaKitClient({
     setTimeout(() => setCopiedScheduleIndex(null), 2000);
   };
 
-  if (!isSthapaka) {
+  if (!isFoundingMember) {
     return (
       <div className="py-10 px-4 min-h-[85vh] flex flex-col justify-center items-center">
         <div className="w-full max-w-md bg-white/[0.03] border border-white/[0.08] backdrop-blur-md rounded-[2.5rem] p-8 text-center shadow-2xl relative overflow-hidden">
@@ -140,21 +146,21 @@ export default function SthapakaKitClient({
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-500 text-3xl mb-6">
             🪔
           </div>
-          <h1 className="text-2xl font-bold font-serif text-white mb-3">Sthapaka Kit Exclusive</h1>
+          <h1 className="text-2xl font-bold font-serif text-white mb-3">Founding Member Kit Exclusive</h1>
           <p className="text-sm text-white/50 leading-relaxed mb-6">
-            This dashboard and distribution kit is reserved for **Shoonaya Sthapakas** — the founding builders of our global dharmic sangam.
+            This dashboard and distribution kit is reserved for <strong>Shoonaya Founding Members</strong> — the founding builders of our global dharmic sangam.
           </p>
 
           <div className="text-left space-y-4 mb-8">
             <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-              <Award className="text-[#C5A059] shrink-0 mt-0.5" size={18} />
+              <Award className="text-[var(--brand-primary)] shrink-0 mt-0.5" size={18} />
               <div>
-                <h3 className="text-sm font-semibold text-white/90">Permanent Sthapaka Badge</h3>
+                <h3 className="text-sm font-semibold text-white/90">Permanent Founding Member Badge</h3>
                 <p className="text-xs text-white/40 mt-0.5">Showcase your founding spot #1-1000 on your public profile.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.04]">
-              <Users className="text-[#C5A059] shrink-0 mt-0.5" size={18} />
+              <Users className="text-[var(--brand-primary)] shrink-0 mt-0.5" size={18} />
               <div>
                 <h3 className="text-sm font-semibold text-white/90">Exclusive Mandali Access</h3>
                 <p className="text-xs text-white/40 mt-0.5">Direct link to OG founders-only discussion channels.</p>
@@ -163,8 +169,8 @@ export default function SthapakaKitClient({
           </div>
 
           <div className="space-y-3">
-            <Link href="/pricing" className="block w-full py-4 rounded-full bg-[#C5A059] text-black font-bold text-sm shadow-lg active:scale-95 transition-all">
-              Become a Sthapaka Now
+            <Link href="/pricing" className="block w-full py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold text-sm shadow-lg active:scale-95 transition-all">
+              Become a Founding Member Now
             </Link>
             <Link href="/home" className="block w-full py-3.5 rounded-full border border-white/10 text-white/60 font-semibold text-sm active:scale-95 transition-all">
               Back to Home
@@ -180,8 +186,8 @@ export default function SthapakaKitClient({
       {/* Header */}
       <div className="text-center relative">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 w-48 h-48 bg-amber-500/10 rounded-full blur-[80px]" />
-        <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#C5A059] block mb-2">Founding Node Dashboard</span>
-        <h1 className="text-3xl md:text-4xl font-light font-serif tracking-tight text-white">Sthapaka Starter Kit</h1>
+        <span className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--brand-primary)] block mb-2">Founding Node Dashboard</span>
+        <h1 className="text-3xl md:text-4xl font-light font-serif tracking-tight text-white">Founding Member Starter Kit</h1>
         <p className="text-sm text-white/40 max-w-md mx-auto mt-2">
           Your tools for building, inspiring, and guiding your local and digital dharmic community.
         </p>
@@ -193,7 +199,7 @@ export default function SthapakaKitClient({
         <div className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-md rounded-3xl p-6 flex items-center justify-between shadow-xl">
           <div>
             <span className="text-xs text-white/40 uppercase tracking-wider font-semibold block">Dharma Node Attributions</span>
-            <span className="text-4xl font-serif font-bold text-[#C5A059] block mt-2">{referralCount}</span>
+            <span className="text-4xl font-serif font-bold text-[var(--brand-primary)] block mt-2">{referralCount}</span>
             <p className="text-xs text-white/40 mt-2">Seekers brought into the fold under your node</p>
           </div>
           <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 text-2xl shadow-inner">
@@ -204,7 +210,7 @@ export default function SthapakaKitClient({
         {/* Deep Link Card */}
         <div className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-md rounded-3xl p-6 shadow-xl flex flex-col justify-between">
           <div>
-            <span className="text-xs text-white/40 uppercase tracking-wider font-semibold block">Your Sthapaka Deep Link</span>
+            <span className="text-xs text-white/40 uppercase tracking-wider font-semibold block">Your Founding Member Deep Link</span>
             <p className="text-xs text-white/40 mt-1">Saves attribution cookie to track converted users</p>
           </div>
           <div className="flex gap-2 items-center bg-white/[0.03] border border-white/[0.06] rounded-2xl p-3 mt-4">
@@ -213,7 +219,7 @@ export default function SthapakaKitClient({
               onClick={handleCopyLink}
               className="p-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] text-white/70 active:scale-95 transition-all shrink-0"
             >
-              {copiedLink ? <Check size={16} className="text-[#C5A059]" /> : <Copy size={16} />}
+              {copiedLink ? <Check size={16} className="text-[var(--brand-primary)]" /> : <Copy size={16} />}
             </button>
           </div>
         </div>
@@ -236,7 +242,7 @@ export default function SthapakaKitClient({
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-[#C5A059] border border-amber-500/20 font-mono">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-[var(--brand-primary)] border border-amber-500/20 font-mono">
                       DAY {item.day}
                     </span>
                     <h3 className="text-sm font-semibold text-white/90">{item.title}</h3>
@@ -247,8 +253,8 @@ export default function SthapakaKitClient({
                   >
                     {isCopied ? (
                       <>
-                        <Check size={12} className="text-[#C5A059]" />
-                        <span className="text-[#C5A059]">Copied</span>
+                        <Check size={12} className="text-[var(--brand-primary)]" />
+                        <span className="text-[var(--brand-primary)]">Copied</span>
                       </>
                     ) : (
                       <>
@@ -259,7 +265,7 @@ export default function SthapakaKitClient({
                   </button>
                 </div>
                 <p className="text-xs text-white/40 mb-3">{item.desc}</p>
-                <pre className="text-xs text-white/60 bg-[#070708] border border-white/[0.03] rounded-2xl p-4 overflow-x-auto font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
+                <pre className="text-xs text-white/60 bg-black/40 border border-white/[0.03] rounded-2xl p-4 overflow-x-auto font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
                   {item.text}
                 </pre>
               </div>
@@ -307,7 +313,7 @@ export default function SthapakaKitClient({
                     href={waHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#25d366] text-black font-bold text-xs shadow-lg hover:opacity-90 active:scale-95 transition-all"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-green-500 text-black font-bold text-xs shadow-lg hover:opacity-90 active:scale-95 transition-all"
                   >
                     <Share2 size={13} />
                     WhatsApp

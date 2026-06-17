@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
     }
     if (sthapaka_number < 1 || sthapaka_number > 100) {
       return NextResponse.json(
-        { error: 'Feature naming rights are for Sthapakas #1–#100 only.' },
+        { error: 'Feature naming rights are for founding members #1–#100 only.' },
         { status: 400, headers: CORS }
       );
     }

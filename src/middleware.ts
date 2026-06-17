@@ -50,6 +50,7 @@ const ALWAYS_PUBLIC_PREFIX = [
   '/discover/',
   '/invite/',
   '/auth/',
+  '/founding/',
   '/sthapaka/',
   '/sitemap',
   '/robots',

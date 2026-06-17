@@ -6,6 +6,14 @@ import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+interface RazorpayOrderSnapshot {
+  amount?: number;
+  notes?: {
+    user_id?: string;
+    plan?: string;
+  };
+}
+
 /**
  * POST /api/payment/lifetime/activate
  * Called by client after Razorpay checkout succeeds.
@@ -40,8 +48,8 @@ export async function POST(req: NextRequest) {
 
   // ── Fetch order to confirm amount and notes ────────────────────────────────
   try {
-    const order = await getRazorpay().orders.fetch(razorpay_order_id);
-    const notes = (order as any).notes ?? {};
+    const order = await getRazorpay().orders.fetch(razorpay_order_id) as RazorpayOrderSnapshot;
+    const notes = order.notes ?? {};
 
     if (notes.user_id !== user.id) {
       return NextResponse.json({ error: 'Order does not belong to this user.' }, { status: 403 });
@@ -70,7 +78,7 @@ export async function POST(req: NextRequest) {
       razorpay_payment_id,
       plan:               'lifetime',
       billing:            'one_time',
-      amount_paise:       (order as any).amount ?? 499900,
+      amount_paise:       order.amount ?? 499900,
       currency:           'INR',
       status:             'paid',
     }).then(({ error }) => {
@@ -79,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Sthapaka Lifetime Pass activated. Welcome to lifetime Zenith.',
+      message: 'Founding Member Lifetime Pass activated. Welcome to lifetime Zenith.',
     });
   } catch (err) {
     console.error('[payment/lifetime/activate] Error:', err);

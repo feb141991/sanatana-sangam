@@ -1060,7 +1060,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav id="nav">
   
-  <button id="nav-hamburger" aria-label="Menu" style="display:none; color:var(--ink); padding:8px; cursor:pointer; background:none; border:none; width:36px; height:36px; border-radius:8px; transition:background 0.2s;">
+  <button id="nav-hamburger" aria-label="Menu" aria-controls="mobile-drawer" aria-expanded="false" style="display:none; color:var(--ink); padding:8px; cursor:pointer; background:none; border:none; width:36px; height:36px; border-radius:8px; transition:background 0.2s;">
     <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
     <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
     <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
@@ -3775,8 +3775,12 @@ function openDrawer() {
   var panel = document.getElementById('mobile-drawer-panel');
   var backdrop = document.getElementById('mobile-drawer-backdrop');
   var drawer = document.getElementById('mobile-drawer');
+  var hamburger = document.getElementById('nav-hamburger');
   if (!drawer || !panel || !backdrop) return;
   drawer.style.pointerEvents = 'auto';
+  drawer.setAttribute('aria-hidden', 'false');
+  if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
   panel.style.transform = 'translateX(0)';
   backdrop.style.background = 'rgba(0,0,0,0.55)';
   backdrop.style.pointerEvents = 'auto';
@@ -3785,11 +3789,17 @@ function closeDrawer() {
   var panel = document.getElementById('mobile-drawer-panel');
   var backdrop = document.getElementById('mobile-drawer-backdrop');
   var drawer = document.getElementById('mobile-drawer');
+  var hamburger = document.getElementById('nav-hamburger');
   if (!drawer || !panel || !backdrop) return;
   panel.style.transform = 'translateX(-100%)';
   backdrop.style.background = 'rgba(0,0,0,0)';
   backdrop.style.pointerEvents = 'none';
-  setTimeout(function(){ drawer.style.pointerEvents = 'none'; }, 280);
+  if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+  setTimeout(function(){
+    drawer.style.pointerEvents = 'none';
+    drawer.setAttribute('aria-hidden', 'true');
+  }, 280);
 }
 </script>
 
@@ -3805,9 +3815,6 @@ function closeDrawer() {
   var isDismissed = sessionStorage.getItem('pwa-dismissed');
 
   
-   document.getElementById('nav-hamburger').addEventListener('click', openDrawer);
-   document.getElementById('mobile-drawer-backdrop').addEventListener('click', closeDrawer);
-
   /* Register service worker */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
@@ -3901,12 +3908,12 @@ document.querySelectorAll('.faq-q').forEach(function(btn) {
 });
 </script>
 
-   <div id="mobile-drawer" style="
+   <div id="mobile-drawer" aria-hidden="true" style="
      position:fixed; inset:0; z-index:9998;
      display:flex; pointer-events:none;
    ">
      <div id="mobile-drawer-panel" style="
-       position:absolute; left:0; top:0; bottom:0; width:240px;
+       position:absolute; left:0; top:0; bottom:0; width:240px; z-index:2;
        background:#1a1208; padding:24px 16px 40px;
        transform:translateX(-100%); transition:transform 0.28s ease;
        display:flex; flex-direction:column; gap:4px; overflow-y:auto;
@@ -3937,17 +3944,34 @@ document.querySelectorAll('.faq-q').forEach(function(btn) {
        <a href="#features" onclick="closeDrawer()">Features</a>
        <a href="#download" onclick="closeDrawer()">Web App</a>
        <div style="margin-top:auto;padding-top:24px;">
-         <button onclick="closeDrawer(); document.querySelector('.nav-cta')?.click();"
+         <button onclick="window.location.href='/signup';"
            style="width:100%;background:linear-gradient(135deg,#C5A059,#D4784A);color:#0C0A07;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;">
            Enter Shoonaya
          </button>
        </div>
      </div>
      <div id="mobile-drawer-backdrop" style="
-       position:absolute; inset:0; background:rgba(0,0,0,0);
+       position:absolute; inset:0; z-index:1; background:rgba(0,0,0,0);
        transition:background 0.28s;
      "></div>
    </div>
+
+<script>
+(function bindMobileDrawer() {
+  var hamburger = document.getElementById('nav-hamburger');
+  var backdrop = document.getElementById('mobile-drawer-backdrop');
+  if (hamburger) {
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.addEventListener('click', openDrawer);
+  }
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDrawer);
+  }
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeDrawer();
+  });
+})();
+</script>
 
 
 <div id="pwa-nudge" style="

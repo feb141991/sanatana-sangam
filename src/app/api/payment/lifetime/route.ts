@@ -7,8 +7,8 @@ export const runtime = 'nodejs';
 
 /**
  * POST /api/payment/lifetime
- * Creates a Razorpay one-time ORDER (not subscription) for the Sthapaka Lifetime Pass.
- * Eligibility: user must have a founding_number (be a Sthapaka #1–#1000).
+ * Creates a Razorpay one-time ORDER (not subscription) for the Founding Member Lifetime Pass.
+ * Eligibility: user must have a founding_number.
  *
  * Returns: { orderId, amount, currency, key }
  * Client opens Razorpay checkout, on success calls /api/payment/lifetime/activate.
@@ -20,7 +20,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // ── Check eligibility: must be a registered Sthapaka ──────────────────────
+  // ── Check eligibility: must be a registered founding member ───────────────
   const { data: waitlistRow } = await supabase
     .from('waitlist')
     .select('founding_number')
@@ -32,7 +32,7 @@ export async function POST() {
   if (!waitlistRow?.founding_number) {
     return NextResponse.json({
       error: 'not_eligible',
-      message: 'The Sthapaka Lifetime Pass is exclusively for the founding 1,000 members. Register as a Sthapaka first.',
+      message: 'The Founding Member Lifetime Pass is exclusively for the founding 1,000 members.',
     }, { status: 403 });
   }
 
@@ -46,7 +46,7 @@ export async function POST() {
   if (profile?.entitlement_source === 'lifetime') {
     return NextResponse.json({
       error: 'already_purchased',
-      message: 'You already hold the Sthapaka Lifetime Pass. Welcome back, Sthapaka.',
+      message: 'You already hold the Founding Member Lifetime Pass. Welcome back.',
     }, { status: 409 });
   }
 
