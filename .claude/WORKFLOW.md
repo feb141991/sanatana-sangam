@@ -26,6 +26,7 @@ Use the smallest set of agents needed for the task.
 - Supabase schema, API routes, cron jobs, RLS, auth, or queries: `shoonaya-supabase-backend-engineer.md`
 - Ritual sequence, Nitya Karma, Dinacharya, Panchang, scripture placement: `shoonaya-ritual-practice-reviewer.md`
 - Scriptural/source correctness: `shoonaya-pramana-content-reviewer.md`
+- Brand strategy, positioning, naming, public copy, campaign language, social proof, feature-status messaging, or community identity: `shoonaya-brand-manager.md`
 - Product behavior, scope, rollout, mode decisions: `shoonaya-product-manager.md`
 - Durable decisions or knowledge capture: `shoonaya-knowledge-curator.md`
 
@@ -87,6 +88,7 @@ Before reporting completion:
 
 - Use `shoonaya-qa-test-engineer.md` for regression risk and test coverage.
 - Use `shoonaya-ui-ux-design-reviewer.md` for visible UI changes.
+- Use `shoonaya-brand-manager.md` for public-facing copy, brand positioning, naming, feature status, community identity, or launch/live-state messaging.
 - Use `shoonaya-ritual-practice-reviewer.md` or `shoonaya-pramana-content-reviewer.md` for sacred practice/content changes.
 
 If a reviewer finds an issue, fix it or report it clearly as unresolved.
@@ -112,6 +114,7 @@ Run `shoonaya-knowledge-curator.md` when the session creates durable decisions a
 - Database schema
 - Agent workflow
 - Naming conventions
+- Brand positioning or public messaging standards
 - Rollout strategy
 
 Update `.claude/knowledge/INDEX.md` after adding knowledge files. Do not curate routine mechanical fixes.
