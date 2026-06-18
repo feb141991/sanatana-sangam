@@ -228,8 +228,6 @@ body.landing-entered #explore-btn {
   font-size: 10px;
   letter-spacing: 0.08em;
 }
-.dl-btn-disabled { opacity:0.55; cursor:not-allowed; pointer-events:none; }
-.dl-coming-tag { font-size:9px!important; letter-spacing:0.12em!important; text-transform:uppercase; }
 
 /* Reveal: items animate in as they scroll into view */
 .reveal { opacity:0; transform:translateY(20px); transition:opacity 0.65s ease, transform 0.65s ease; }
@@ -717,22 +715,7 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 @keyframes statusPulse { 0%,100%{ transform:scale(1); opacity:0.55; } 50%{ transform:scale(1.6); opacity:1; } }
 @keyframes screenGlow { 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
 
-.download-buttons { display:flex; justify-content:center; gap:14px; margin-bottom:24px; position:relative; z-index:1; flex-wrap:wrap; }
-.dl-btn {
-  display:flex; align-items:center; gap:12px;
-  padding:13px 24px; border-radius:14px;
-  border:1.5px solid rgba(200,160,110,0.22); background:rgba(255,253,249,0.94);
-  color:rgba(62,42,31,0.45); cursor:not-allowed;
-  position:relative; overflow:hidden; text-decoration:none;
-  filter:saturate(0.4) brightness(0.8);
-}
-.dl-btn-icon { width:30px; height:30px; flex-shrink:0; }
-.dl-btn-text { text-align:left; }
-.dl-btn-sub  { font-size:10px; display:block; opacity:0.7; }
-.dl-btn-name { font-size:17px; font-weight:600; font-family:var(--fd); display:block; }
-.dl-coming-tag { position:absolute; top:7px; right:-8px; background:rgba(200,146,74,0.85); color:var(--ink); font-size:7px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:3px 20px; transform:rotate(20deg); }
 .download-note { font-size:13px; color:rgba(62,42,31,0.45); position:relative; z-index:1; }
-.download-notify-link { color:var(--saffron); text-decoration:underline; cursor:pointer; }
 
 /* ── CTA SECTION ─────────────────────────────────────────────────────── */
 .cta-section { padding:120px 80px; text-align:center; position:relative; overflow:hidden; }
@@ -2242,34 +2225,6 @@ function gcRestart(){
       </div>
     </div>
 
-  </div>
-
-  <div class="download-buttons reveal">
-    <!-- App Store — coming soon -->
-    <a class="dl-btn dl-btn-disabled" href="#" onclick="return false;" title="Coming later">
-      <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.08)"/>
-        <path d="M17.5 8.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM10 22l2.5-4.5L15 21l2.5-4.5L20 22" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M11 13.5l4-6 4 6" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="dl-btn-text">
-        <span class="dl-btn-sub">Download on the</span>
-        <span class="dl-btn-name">App Store</span>
-      </div>
-      <div class="dl-coming-tag anim-shimmer">Coming Soon</div>
-    </a>
-    <!-- Google Play — coming soon -->
-    <a class="dl-btn dl-btn-disabled" href="#" onclick="return false;" title="Coming later">
-      <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.08)"/>
-        <path d="M9 8l12 7-12 7V8z" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
-      <div class="dl-btn-text">
-        <span class="dl-btn-sub">Get it on</span>
-        <span class="dl-btn-name">Google Play</span>
-      </div>
-      <div class="dl-coming-tag anim-shimmer">Coming Soon</div>
-    </a>
   </div>
 
   <p class="download-note">Web app live now · Native iOS and Android apps planned later</p>
