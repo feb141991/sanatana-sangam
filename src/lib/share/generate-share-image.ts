@@ -848,8 +848,8 @@ async function drawShoonayaDailyFooter(
   y: number,
   accentColor: string,
 ) {
-  const logoWidth = 178;
-  const logoHeight = 28;
+  const logoWidth = 152;
+  const logoHeight = 30;
   const separator = '·';
   const label = 'Daily Sādhana';
   const separatorWidth = 18;
@@ -860,21 +860,16 @@ async function drawShoonayaDailyFooter(
   const startX = 540 - totalWidth / 2;
 
   try {
-    const logo = await loadCanvasImage('/assets/images/logos/river-light/river-light-horizontal.png');
+    const logo = await loadCanvasImage('/icons/icon-192x192.png');
     ctx.save();
     ctx.globalAlpha = 0.92;
-    ctx.drawImage(
-      logo,
-      805,
-      318,
-      1020,
-      145,
-      startX,
-      y - logoHeight / 2 - 1,
-      logoWidth,
-      logoHeight,
-    );
+    ctx.drawImage(logo, startX, y - 16, 32, 32);
     ctx.restore();
+    ctx.font = '600 28px -apple-system, sans-serif';
+    ctx.fillStyle = `${accentColor}dd`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Shoonaya', startX + 40, y);
   } catch {
     ctx.font = '300 30px -apple-system, sans-serif';
     ctx.fillStyle = `${accentColor}aa`;

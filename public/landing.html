@@ -59,9 +59,13 @@ nav {
   box-shadow:0 1px 16px rgba(62,42,31,0.06);
   transition:background 0.4s;
 }
-.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.nav-logo-img { height:36px; width:auto; display:block; object-fit:contain; }
-@media(max-width:600px){ .nav-logo-img { height:28px; } }
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); }
+.nav-logo-mark { width:36px; height:36px; border-radius:12px; display:block; object-fit:cover; box-shadow:0 8px 22px rgba(15,111,128,0.12); }
+.nav-logo-text { font-family:var(--fd); font-size:24px; font-weight:700; letter-spacing:0.03em; color:var(--ink); line-height:1; }
+@media(max-width:600px){
+  .nav-logo-mark { width:30px; height:30px; border-radius:10px; }
+  .nav-logo-text { font-size:20px; }
+}
 .nav-links { display:flex; gap:28px; list-style:none; }
 .nav-links a { font-size:13px; color:rgba(62,42,31,0.62); text-decoration:none; letter-spacing:0.02em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--ink); }
@@ -1050,10 +1054,11 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   </button>
   <a class="nav-logo" href="#">
     <img
-      src="/assets/images/logos/river-light/river-light-horizontal.png"
+      src="/icons/icon-192x192.png"
       alt="Shoonaya"
-      class="nav-logo-img"
+      class="nav-logo-mark"
     />
+    <span class="nav-logo-text">Shoonaya</span>
   </a>
   <ul class="nav-links">
     <li><a href="#gyan-chaupar" style="color:var(--saffron);font-weight:600">♟ Play</a></li>
@@ -2354,7 +2359,10 @@ function gcRestart(){
 <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-top">
-    <img src="/assets/images/logos/river-light/river-light-horizontal.png" alt="Shoonaya" style="height:32px;width:auto;display:block;object-fit:contain;opacity:0.85;" />
+    <div style="display:flex;align-items:center;gap:10px;opacity:0.9;">
+      <img src="/icons/icon-192x192.png" alt="Shoonaya" style="width:32px;height:32px;border-radius:10px;display:block;object-fit:cover;" />
+      <span style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--ink);letter-spacing:0.03em;line-height:1;">Shoonaya</span>
+    </div>
     <div class="footer-links">
       <a href="/about">About</a>
       <a href="/privacy">Privacy</a>

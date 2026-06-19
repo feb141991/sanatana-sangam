@@ -2114,18 +2114,13 @@ export default function ProfileClient({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-[var(--brand-primary)]">App identity</p>
-              {!isPro && (
-                 <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Pro Exclusive</span>
-              )}
             </div>
             <div className="flex gap-4">
               {[
-                { key: 'normal', img: '/assets/images/logos/logo-normal.png', label: 'Classic' },
-                { key: 'pro', img: '/assets/images/logos/logo-pro.png', label: 'Divine Gold' },
+                { key: 'normal', img: '/icons/icon-192x192.png', label: 'Shoonaya' },
               ].map((icon) => (
                 <button
                   key={icon.key}
-                  disabled={icon.key === 'pro' && !isPro}
                   onClick={() => {
                     setLocalAppIcon(icon.key as any);
                     localStorage.setItem('shoonaya_app_icon', icon.key);
@@ -2135,7 +2130,7 @@ export default function ProfileClient({
                     localAppIcon === icon.key
                       ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
                       : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
-                  } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30 cursor-not-allowed' : ''}`}
+                  }`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                     <Image src={icon.img} alt={icon.label} fill className="object-cover" />
