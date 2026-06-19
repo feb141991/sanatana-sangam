@@ -36,6 +36,13 @@ const ALWAYS_PUBLIC_EXACT = new Set([
   '/data-deletion',
   '/pricing',
   '/payment',
+  '/login',
+  '/signup',
+  '/whatsapp-login',
+  '/forgot-password',
+  '/reset-password',
+  '/confirm-email',
+  '/offline',
 ]);
 
 const ALWAYS_PUBLIC_PREFIX = [
