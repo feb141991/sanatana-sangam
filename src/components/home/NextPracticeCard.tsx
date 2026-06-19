@@ -238,16 +238,16 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
         <Link
           href={nextPractice.href}
           aria-label={nextPractice.context ? `${nextPractice.actionHeadline} — ${nextPractice.context}` : nextPractice.actionHeadline}
-          className="flex flex-col gap-3 rounded-2xl px-4 py-4 min-h-[64px] transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80"
+          className="flex flex-col gap-2.5 rounded-2xl px-3.5 py-3 transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80"
           style={{ border: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-xl" style={{ background: nextPractice.bg }}>
-                <span className="text-[22px]" aria-hidden="true">{nextPractice.icon}</span>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: nextPractice.bg }}>
+                <span className="text-[19px]" aria-hidden="true">{nextPractice.icon}</span>
               </div>
               <div className="min-w-0 flex flex-col justify-center">
-                <p className="text-[15px] font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
+                <p className="text-[14px] font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
                   {nextPractice.actionHeadline}
                 </p>
                 {nextPractice.context && (
@@ -265,9 +265,9 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
             )}
           </div>
           
-          <div className="mt-2 flex items-center">
+          <div className="mt-1.5 flex items-center">
             <div
-              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[14px] min-h-[44px]"
+              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[13.5px] min-h-[40px]"
               style={{ background: 'var(--brand-primary)', color: 'white' }}
             >
               {nextPractice.actionCta}
@@ -280,12 +280,12 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
           onClick={() => setExpanded(v => !v)}
           aria-expanded={expanded}
           aria-controls="next-practice-all"
-          className="flex flex-col gap-3 rounded-2xl px-4 py-4 min-h-[64px] transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80 w-full text-left"
+          className="flex flex-col gap-2.5 rounded-2xl px-3.5 py-3 transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80 w-full text-left"
           style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-[44px] w-[44px] items-center justify-center rounded-xl shrink-0" style={{ background: 'var(--brand-primary-soft)' }}>
-              <Check size={20} strokeWidth={3} aria-hidden="true" style={{ color: 'var(--brand-primary)' }} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0" style={{ background: 'var(--brand-primary-soft)' }}>
+              <Check size={18} strokeWidth={3} aria-hidden="true" style={{ color: 'var(--brand-primary)' }} />
             </div>
             <div>
               <p className="text-[15px] font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
@@ -296,9 +296,9 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
               </p>
             </div>
           </div>
-          <div className="mt-2 flex items-center">
+          <div className="mt-1.5 flex items-center">
             <div
-              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[14px] min-h-[44px]"
+              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[13.5px] min-h-[40px]"
               style={{ background: 'var(--brand-primary)', color: 'white' }}
             >
               View all practices

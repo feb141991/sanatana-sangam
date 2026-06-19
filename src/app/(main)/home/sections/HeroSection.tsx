@@ -137,6 +137,30 @@ interface HeroSectionProps {
   timezone: string;
 }
 
+type DailySadhanaCta = {
+  id: 'japa' | 'nitya' | 'pathshala' | 'quiz' | 'dharmveer' | 'complete';
+  title: string;
+  subtitle: string;
+  buttonLabel: string;
+  href: string;
+  ariaLabel: string;
+  icon: string;
+};
+
+function getTraditionSadhanaOpening(tradition: string | null): string {
+  switch (tradition) {
+    case 'sikh':
+      return 'Naam Simran · 108 jaaps · +5 seva';
+    case 'buddhist':
+      return 'Mantra Mala · 108 recitations · +5 seva';
+    case 'jain':
+      return 'Navkar Mala · 108 jaaps · +5 seva';
+    case 'hindu':
+    default:
+      return 'Japa Mala · 108 names · +5 seva';
+  }
+}
+
 // ── Time-aware greeting helper ─────────────────────────────────────────────
 function getTimeGreeting(hour: number): string | null {
   if (hour >= 5  && hour < 12) return 'Suprabhat';
@@ -497,12 +521,89 @@ export function HeroSection({
     );
   }
 
-  // Begin Today's Sadhana → Japa Mala start flow.
-  // The /japa route already hosts the Japa Mala screen; if that flow ever moves,
-  // TODO: update this navigation target accordingly.
-  function handleBeginSadhana() {
-    router.push('/japa');
+  const dailySadhanaCta: DailySadhanaCta = (() => {
+    if (!japaAlreadyDoneToday) {
+      return {
+        id: 'japa',
+        title: "Begin Today's Sadhana",
+        subtitle: getTraditionSadhanaOpening(tradition),
+        buttonLabel: 'Begin',
+        href: '/japa',
+        ariaLabel: "Begin today's mala practice",
+        icon: '📿',
+      };
+    }
+
+    if (!nityaDoneToday) {
+      return {
+        id: 'nitya',
+        title: "Continue Today's Sadhana",
+        subtitle: `Next: ${meta.nityaKarmaTitle} · morning rhythm · +5 seva`,
+        buttonLabel: 'Continue',
+        href: '/nitya-karma',
+        ariaLabel: `Continue with ${meta.nityaKarmaTitle}`,
+        icon: '🌅',
+      };
+    }
+
+    if (!pathshalaDoneToday) {
+      return {
+        id: 'pathshala',
+        title: "Continue Today's Sadhana",
+        subtitle: `Next: ${meta.pathshalaVocabulary} · ${sacredTextMeta.label}`,
+        buttonLabel: 'Study',
+        href: '/pathshala',
+        ariaLabel: `Continue with ${meta.pathshalaVocabulary}`,
+        icon: sacredTextMeta.icon || '📖',
+      };
+    }
+
+    if (!dailyDharmaStackState.quizDone) {
+      return {
+        id: 'quiz',
+        title: "Continue Today's Sadhana",
+        subtitle: 'Next: Daily Quiz · test your dharmic memory',
+        buttonLabel: 'Answer',
+        href: '/quiz',
+        ariaLabel: "Continue with today's quiz",
+        icon: '🧠',
+      };
+    }
+
+    if (!dailyDharmaStackState.dharmVeerDone) {
+      return {
+        id: 'dharmveer',
+        title: "Complete Today's Sadhana",
+        subtitle: `Next: ${dharmVeer.name || 'Dharm Veer'} · remember a life of courage`,
+        buttonLabel: 'Complete',
+        href: dharmVeer.id ? `/dharm-veer/${dharmVeer.id}` : '/dharm-veer',
+        ariaLabel: `Complete today's sadhana with ${dharmVeer.name || 'Dharm Veer'}`,
+        icon: '⚔️',
+      };
+    }
+
+    return {
+      id: 'complete',
+      title: "Today's Sadhana Complete",
+      subtitle: `Your ${meta.shortLabel} rhythm is steady today · +seva earned`,
+      buttonLabel: 'Progress',
+      href: '/my-progress',
+      ariaLabel: "View today's sadhana progress",
+      icon: '✨',
+    };
+  })();
+
+  function handleDailySadhanaCta() {
+    router.push(dailySadhanaCta.href);
   }
+
+  const nextPracticeOverrides = {
+    japaDone: japaAlreadyDoneToday || dailySadhanaCta.id === 'japa',
+    nityaDone: nityaDoneToday || dailySadhanaCta.id === 'nitya',
+    pathshalaDone: pathshalaDoneToday || dailySadhanaCta.id === 'pathshala',
+    quizDone: dailyDharmaStackState.quizDone || dailySadhanaCta.id === 'quiz',
+    dharmVeerDone: dailyDharmaStackState.dharmVeerDone || dailySadhanaCta.id === 'dharmveer',
+  };
 
   const heroPrimaryText = isDark ? 'var(--text-cream)' : '#211B14';
   const heroSecondaryText = isDark ? 'var(--text-muted-warm)' : '#4D4035';
@@ -831,7 +932,7 @@ export function HeroSection({
         </motion.button>
       </div>
 
-      {/* ── Begin Today's Sadhana — premium daily CTA (parchment card) ── */}
+      {/* ── Smart daily Sadhana CTA — progresses through today's next practice ── */}
       <motion.div
         className="px-4 mt-4 mb-3 relative z-20"
         initial={{ opacity: 0, y: 8 }}
@@ -854,22 +955,22 @@ export function HeroSection({
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
               }}
             >
-              <span className="text-[26px] leading-none" aria-hidden="true">📿</span>
+              <span className="text-[26px] leading-none" aria-hidden="true">{dailySadhanaCta.icon}</span>
             </div>
             <div className="min-w-0">
               <h3 className="text-[18px] font-bold leading-tight" style={{ color: '#3f2b1f', letterSpacing: '-0.2px' }}>
-                Begin Today&apos;s Sadhana
+                {dailySadhanaCta.title}
               </h3>
               <p className="text-[13.5px] mt-1 truncate" style={{ color: 'rgba(63, 43, 31, 0.66)' }}>
-                Japa Mala · 108 names · +5 seva
+                {dailySadhanaCta.subtitle}
               </p>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={handleBeginSadhana}
-            aria-label="Begin Japa Mala sadhana"
+            onClick={handleDailySadhanaCta}
+            aria-label={dailySadhanaCta.ariaLabel}
             className="flex items-center gap-1 shrink-0 rounded-full pl-4 pr-3 py-[11px] text-[15px] font-bold transition-transform active:scale-[0.98]"
             style={{
               color: '#fff8e8',
@@ -879,7 +980,7 @@ export function HeroSection({
             }}
           >
             <Sparkles size={15} strokeWidth={2.5} aria-hidden="true" />
-            Begin
+            {dailySadhanaCta.buttonLabel}
             <ChevronRight size={15} strokeWidth={2.5} aria-hidden="true" style={{ opacity: 0.65, marginLeft: '-2px' }} />
           </button>
         </div>
@@ -933,13 +1034,13 @@ export function HeroSection({
 
       {/* ── Next Practice (static — replaces the auto-rotating strip) ── */}
       <NextPracticeCard
-        japaDone={japaAlreadyDoneToday}
-        nityaDone={nityaDoneToday}
-        pathshalaDone={pathshalaDoneToday}
+        japaDone={nextPracticeOverrides.japaDone}
+        nityaDone={nextPracticeOverrides.nityaDone}
+        pathshalaDone={nextPracticeOverrides.pathshalaDone}
         japaBeads={dailyDharmaStackState.japaBeads}
         japaRounds={dailyDharmaStackState.japaRounds}
-        quizDone={dailyDharmaStackState.quizDone}
-        dharmVeerDone={dailyDharmaStackState.dharmVeerDone}
+        quizDone={nextPracticeOverrides.quizDone}
+        dharmVeerDone={nextPracticeOverrides.dharmVeerDone}
         dharmVeerId={dharmVeer.id}
         pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
       />

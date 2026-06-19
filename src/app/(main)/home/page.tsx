@@ -16,7 +16,8 @@ import { mapHeroAssetToTheme, type HeroAssetRow, type HomeHeroTheme } from '@/co
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { getTraditionMeta, getSacredTextLabel } from '@/lib/tradition-config';
 import { resolveActiveLiveStreams } from '@/lib/live-streams';
-import { getPlanById, type GuidedPathProgressRow } from '@/lib/guided-paths';
+import { type GuidedPathProgressRow } from '@/lib/guided-paths';
+import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
 import type { DharmVeer } from '@/lib/dharm-veer';
@@ -340,17 +341,20 @@ export default async function HomePage() {
   );
   const effectiveJapaStreak = todaySadhana?.streak_count ?? latestStreakRow?.streak_count ?? 0;
 
-  const activePath = (guidedPathProgress ?? []).find((p: GuidedPathProgressRow) => p.status === 'active');
-  let pathshalaLabel = 'Pathshala';
+  // The Explore "Pathshala" tile must deep-link only to a genuine pathshala
+  // study path (SEED_PATHS). The lesson route resolves pathshala paths only, so
+  // an active guided-plan id (e.g. japa-foundation-7) dead-ends there — validate
+  // against the pathshala catalog, not the guided-plan one.
+  const activePathshala = (guidedPathProgress ?? []).find(
+    (p: GuidedPathProgressRow) => p.status === 'active' && PATHSHALA_PATH_IDS.includes(p.path_id),
+  );
+  const pathshalaLabel = 'Pathshala';
   let pathshalaHref = '/pathshala';
 
-  if (activePath) {
-    const plan = getPlanById(activePath.path_id);
-    if (plan) {
-      pathshalaHref = pathshalaDoneToday
-        ? `/pathshala/${activePath.path_id}`
-        : `/pathshala/${activePath.path_id}/lesson`;
-    }
+  if (activePathshala) {
+    pathshalaHref = pathshalaDoneToday
+      ? `/pathshala/${activePathshala.path_id}`
+      : `/pathshala/${activePathshala.path_id}/lesson`;
   }
 
   return (
