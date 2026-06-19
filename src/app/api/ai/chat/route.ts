@@ -7,11 +7,19 @@ import { getTierFromScore } from '@/lib/seva-tiers';
 import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
+import { FESTIVALS_2026 } from '@/lib/festivals';
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const GEMINI_MODEL       = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
+type UpcomingVrat = {
+  date: string;
+  displayName: string;
+  emoji: string;
+  kind: 'major' | 'vrat' | 'regional';
+  tradition: string;
+};
 
 // ─── Rate-limit helpers ────────────────────────────────────────────────────
 async function checkAndIncrementAiUsage(
@@ -117,6 +125,154 @@ function textAsStream(text: string): ReadableStream<Uint8Array> {
   });
 }
 
+function isUpcomingVratQuery(message: string): boolean {
+  const text = message.toLowerCase();
+  return (
+    /\b(upcoming|next|coming|aane wale|आने वाले|अगले|agle)\b/.test(text) &&
+    /\b(vrat|vrats|vrata|vratas|fast|fasts|उपवास|व्रत)\b/.test(text)
+  );
+}
+
+function formatDateForLanguage(date: string, language: string | null): string {
+  const locale = language === 'hi' ? 'hi-IN' : language === 'pa' ? 'pa-IN' : 'en-IN';
+  const parsed = new Date(`${date}T00:00:00+05:30`);
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(parsed);
+}
+
+function daysBetweenLocalDates(from: string, to: string): number {
+  const [fy, fm, fd] = from.split('-').map(Number);
+  const [ty, tm, td] = to.split('-').map(Number);
+  const start = Date.UTC(fy, fm - 1, fd);
+  const end = Date.UTC(ty, tm - 1, td);
+  return Math.round((end - start) / 86_400_000);
+}
+
+function formatUpcomingVratsResponse(input: {
+  vrats: UpcomingVrat[];
+  from: string;
+  to: string;
+  language: string | null;
+  source: 'calendar' | 'fallback';
+}): string {
+  const language = input.language ?? 'en';
+  const isHindi = language === 'hi';
+  const dateRange = `${formatDateForLanguage(input.from, language)} – ${formatDateForLanguage(input.to, language)}`;
+  const sourceNote = input.source === 'fallback'
+    ? (isHindi
+        ? 'Note: shared calendar unavailable tha, isliye curated 2026 fallback calendar se bataya hai.'
+        : 'Note: the shared calendar was unavailable, so this uses the curated 2026 fallback calendar.')
+    : '';
+
+  if (input.vrats.length === 0) {
+    return isHindi
+      ? `Namaste. ${dateRange} ke beech Shoonaya calendar mein koi upcoming vrat listed nahi mila.\n\n${sourceNote}`.trim()
+      : `Namaste. I did not find any upcoming vrats in the Shoonaya calendar for ${dateRange}.\n\n${sourceNote}`.trim();
+  }
+
+  const lines = input.vrats.map((vrat, index) => {
+    const daysAway = daysBetweenLocalDates(input.from, vrat.date);
+    const distance = daysAway === 0
+      ? (isHindi ? 'aaj' : 'today')
+      : daysAway === 1
+        ? (isHindi ? 'kal' : 'tomorrow')
+        : (isHindi ? `${daysAway} din mein` : `in ${daysAway} days`);
+    return `${index + 1}. ${vrat.emoji} ${vrat.displayName} — ${formatDateForLanguage(vrat.date, language)} (${distance})`;
+  });
+
+  if (isHindi) {
+    return [
+      `Namaste. ${dateRange} ke beech upcoming vrats:`,
+      '',
+      ...lines,
+      '',
+      'Exact parana/fasting timings ke liye apne local panchang, sampradaya, ya family parampara ko priority dein.',
+      sourceNote,
+    ].filter(Boolean).join('\n');
+  }
+
+  return [
+    `Namaste. Upcoming vrats for ${dateRange}:`,
+    '',
+    ...lines,
+    '',
+    'For exact parana/fasting timings, follow your local panchang, sampradaya, or family tradition.',
+    sourceNote,
+  ].filter(Boolean).join('\n');
+}
+
+async function getUpcomingVrats(input: {
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>;
+  from: string;
+  tradition: string | null;
+}): Promise<{ vrats: UpcomingVrat[]; to: string; source: 'calendar' | 'fallback' }> {
+  const [fy, fm, fd] = input.from.split('-').map(Number);
+  const to = new Date(Date.UTC(fy, fm - 1, fd + 120)).toISOString().slice(0, 10);
+  const tradition = input.tradition && !['other', 'exploring'].includes(input.tradition)
+    ? input.tradition
+    : null;
+
+  try {
+    let query = input.supabase
+      .from('observance_occurrences')
+      .select(`
+        date,
+        observance_definitions!inner(
+          display_name,
+          emoji,
+          kind,
+          tradition,
+          route_kind,
+          active
+        )
+      `)
+      .gte('date', input.from)
+      .lte('date', to)
+      .eq('observance_definitions.active', true)
+      .or('kind.eq.vrat,route_kind.eq.vrat', { foreignTable: 'observance_definitions' });
+
+    if (tradition) {
+      query = query.in('observance_definitions.tradition', [tradition, 'all']);
+    }
+
+    const { data, error } = await query.order('date', { ascending: true }).limit(5);
+    if (error) throw error;
+
+    const vrats = (data ?? []).map((row: any) => ({
+      date: row.date,
+      displayName: row.observance_definitions.display_name,
+      emoji: row.observance_definitions.emoji ?? '🪔',
+      kind: row.observance_definitions.kind,
+      tradition: row.observance_definitions.tradition,
+    }));
+    return { vrats, to, source: 'calendar' };
+  } catch (error) {
+    console.warn('[ai/chat] calendar-backed vrat lookup failed, using fallback:', error);
+    const fallback = FESTIVALS_2026
+      .filter((festival) =>
+        festival.date >= input.from &&
+        festival.date <= to &&
+        (festival.type === 'vrat' || festival.route_kind === 'vrat') &&
+        (!tradition || festival.tradition === tradition || festival.tradition === 'all')
+      )
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 5)
+      .map((festival) => ({
+        date: festival.date,
+        displayName: festival.name,
+        emoji: festival.emoji,
+        kind: festival.type,
+        tradition: festival.tradition,
+      }));
+
+    return { vrats: fallback, to, source: 'fallback' };
+  }
+}
+
 // ─── Main handler ───────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   // Determine which providers are available
@@ -197,6 +353,39 @@ export async function POST(req: NextRequest) {
   });
 
   const startTime = Date.now();
+
+  if (isUpcomingVratQuery(body.message)) {
+    const { vrats, to, source } = await getUpcomingVrats({
+      supabase,
+      from: spiritualDate,
+      tradition,
+    });
+    const text = formatUpcomingVratsResponse({
+      vrats,
+      from: spiritualDate,
+      to,
+      language: responseLanguage,
+      source,
+    });
+
+    await recordAiChatEvent(supabase, user.id);
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      route: '/api/ai/chat',
+      latency_ms: Date.now() - startTime,
+      provider: 'calendar',
+      model: 'deterministic-upcoming-vrats',
+      context: { status: 'generated', output_length: text.length, count: vrats.length, source },
+    });
+
+    return new Response(textAsStream(text), {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+      },
+    });
+  }
 
   // ── Path A: Sarvam / Pramana (default) ─────────────────────────────────────
   // Sarvam is the primary provider. When configured it handles the request and
