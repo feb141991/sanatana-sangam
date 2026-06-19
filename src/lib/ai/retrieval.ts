@@ -22,6 +22,7 @@ export interface PramanaManifestRetrieverOptions {
   sourceClass?: string;
   tradition?: string;
   maxChapters?: number;
+  fileNames?: string[];
 }
 
 export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
@@ -31,6 +32,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
   private sourceClass: string;
   private tradition: string;
   private maxChapters: number;
+  private fileNames?: string[];
 
   constructor(options: PramanaManifestRetrieverOptions) {
     this.manifestsDir = options.manifestsDir || path.join(process.cwd(), 'python/ai_pipeline/corpus/manifests');
@@ -39,12 +41,18 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
     this.sourceClass = options.sourceClass || 'scripture';
     this.tradition = options.tradition || 'Sanatana Dharma';
     this.maxChapters = options.maxChapters || 18;
+    this.fileNames = options.fileNames;
   }
 
-  private loadManifest(chapterNum: number): any | null {
-    let filePath = path.join(this.manifestsDir, `${this.prefix}_${chapterNum}.json`);
-    if (!fs.existsSync(filePath)) {
-      filePath = path.join(this.manifestsDir, `${this.prefix}.json`);
+  private loadManifest(chapterNumOrName: number | string): any | null {
+    let filePath: string;
+    if (typeof chapterNumOrName === 'string') {
+      filePath = path.join(this.manifestsDir, chapterNumOrName);
+    } else {
+      filePath = path.join(this.manifestsDir, `${this.prefix}_${chapterNumOrName}.json`);
+      if (!fs.existsSync(filePath)) {
+        filePath = path.join(this.manifestsDir, `${this.prefix}.json`);
+      }
     }
     if (!fs.existsSync(filePath)) return null;
     try {
@@ -55,14 +63,10 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
     }
   }
 
-  private parseChapterVerse(queryText: string): { chapter: number; verse: number } | null {
-    const match = queryText.match(/(?:chapter\s+)?(\d+)[.:,\s]+(\d+)/i);
+  private parseReferenceSegments(queryText: string): string[] | null {
+    const match = queryText.match(/(?:chapter\s+|verse\s+|v)?(\d+(?:[.:]\d+)+)/i);
     if (match) {
-      const chapter = parseInt(match[1], 10);
-      const verse = parseInt(match[2], 10);
-      if (chapter >= 1 && chapter <= this.maxChapters && verse >= 1) {
-        return { chapter, verse };
-      }
+      return match[1].replace(/:/g, '.').split('.');
     }
     return null;
   }
@@ -78,21 +82,30 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
     const reqTitle = (filters.title as string || '').trim();
     const reqTradition = (filters.tradition as string || '').trim();
 
-    const cv = this.parseChapterVerse(queryText) || this.parseChapterVerse(reqSource) || this.parseChapterVerse(reqTitle);
+    const refSegments = this.parseReferenceSegments(queryText) || this.parseReferenceSegments(reqSource) || this.parseReferenceSegments(reqTitle);
     
     // Check if we have files matching this prefix. If not, generate high-quality mock data dynamically
     let filesExist = false;
-    for (let ch = 1; ch <= this.maxChapters; ch++) {
-      if (fs.existsSync(path.join(this.manifestsDir, `${this.prefix}_${ch}.json`)) || fs.existsSync(path.join(this.manifestsDir, `${this.prefix}.json`))) {
-        filesExist = true;
-        break;
+    if (this.fileNames && this.fileNames.length > 0) {
+      for (const fn of this.fileNames) {
+        if (fs.existsSync(path.join(this.manifestsDir, fn))) {
+          filesExist = true;
+          break;
+        }
+      }
+    } else {
+      for (let ch = 1; ch <= this.maxChapters; ch++) {
+        if (fs.existsSync(path.join(this.manifestsDir, `${this.prefix}_${ch}.json`)) || fs.existsSync(path.join(this.manifestsDir, `${this.prefix}.json`))) {
+          filesExist = true;
+          break;
+        }
       }
     }
 
     if (!filesExist) {
-      const parsedCh = cv ? cv.chapter : 1;
-      const parsedVer = cv ? cv.verse : 1;
-      const chunkRef = `${parsedCh}.${parsedVer}`;
+      const chunkRef = refSegments ? refSegments.join('.') : '1.1';
+      const parsedCh = refSegments ? refSegments[0] : '1';
+      const parsedVer = refSegments && refSegments.length > 1 ? refSegments[1] : '1';
       
       const mockDocs: RetrievalChunk[] = [
         {
@@ -101,7 +114,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
           score: 1.0,
           metadata: {
             chunkId: chunkRef,
-            docId: `${this.prefix}_chapter_${parsedCh}`,
+            docId: `${this.prefix}_chapter_1`,
             tradition: this.tradition,
             sourceName: this.sourceName,
             sourceClass: this.sourceClass,
@@ -114,22 +127,37 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
 
     const candidates: Array<{ chunk: RetrievalChunk; baseScore: number }> = [];
 
-    for (let ch = 1; ch <= this.maxChapters; ch++) {
-      const manifest = this.loadManifest(ch);
+    const itemsToLoad = this.fileNames ? this.fileNames : Array.from({ length: this.maxChapters }, (_, i) => i + 1);
+    
+    for (const item of itemsToLoad) {
+      const manifest = this.loadManifest(item);
       if (!manifest || !manifest.content) continue;
 
       for (let idx = 0; idx < manifest.content.length; idx++) {
         const v = manifest.content[idx];
         
         let exactVerseScore = 0.0;
-        if (cv) {
-          const targetRef = `${cv.chapter}.${cv.verse}`;
+        if (refSegments) {
+          const targetRef = refSegments.join('.');
           if (v.ref === targetRef) {
             exactVerseScore = 1.0;
-          } else if (v.ref.startsWith(`${cv.chapter}.`)) {
-            const vNum = parseInt(v.ref.split('.')[1], 10);
-            if (Math.abs(vNum - cv.verse) === 1) {
-              exactVerseScore = 0.6;
+          } else {
+            const vSegments = v.ref.split('.');
+            if (vSegments.length === refSegments.length) {
+              let matchExceptLast = true;
+              for (let i = 0; i < vSegments.length - 1; i++) {
+                if (vSegments[i] !== refSegments[i]) {
+                  matchExceptLast = false;
+                  break;
+                }
+              }
+              if (matchExceptLast) {
+                const vNum = parseInt(vSegments[vSegments.length - 1], 10);
+                const reqNum = parseInt(refSegments[refSegments.length - 1], 10);
+                if (Math.abs(vNum - reqNum) === 1) {
+                  exactVerseScore = 0.6;
+                }
+              }
             }
           }
         }
@@ -137,10 +165,22 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         let titleSourceScore = 0.0;
         const lowercaseSource = (manifest.source_name || this.sourceName).toLowerCase();
         const lowercaseDocId = (manifest.doc_id || '').toLowerCase();
-        if (reqSource && (lowercaseSource.includes(reqSource.toLowerCase()) || reqSource.toLowerCase().includes(lowercaseSource))) {
-          titleSourceScore += 0.15;
+        
+        if (reqTitle && reqTitle.toLowerCase() === lowercaseDocId) {
+          titleSourceScore += 1.0;
+        } else if (reqTitle && (lowercaseDocId.includes(reqTitle.toLowerCase()) || reqTitle.toLowerCase().includes(lowercaseDocId))) {
+          titleSourceScore += 0.3;
         }
-        if (reqTitle && (lowercaseDocId.includes(reqTitle.toLowerCase()) || reqTitle.toLowerCase().includes(lowercaseDocId))) {
+        
+        const lowerQuery = queryText.toLowerCase();
+        if (lowercaseDocId.replace('pathshala_upanishads_', '').length > 3) {
+          const specName = lowercaseDocId.replace('pathshala_upanishads_', '');
+          if (lowerQuery.includes(specName)) {
+            titleSourceScore += 0.8;
+          }
+        }
+
+        if (reqSource && (lowercaseSource.includes(reqSource.toLowerCase()) || reqSource.toLowerCase().includes(lowercaseSource))) {
           titleSourceScore += 0.15;
         }
 
@@ -208,33 +248,40 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
       if (Math.abs(b.baseScore - a.baseScore) > 1e-9) {
         return b.baseScore - a.baseScore;
       }
-      const refA = a.chunk.metadata!.chunkId;
-      const refB = b.chunk.metadata!.chunkId;
-      const [chA, vA] = refA.split('.').map(Number);
-      const [chB, vB] = refB.split('.').map(Number);
-      if (chA !== chB) return chA - chB;
-      return vA - vB;
+      const refA = a.chunk.metadata!.chunkId.split('.').map(Number);
+      const refB = b.chunk.metadata!.chunkId.split('.').map(Number);
+      const len = Math.min(refA.length, refB.length);
+      for (let i = 0; i < len; i++) {
+        if (refA[i] !== refB[i]) return refA[i] - refB[i];
+      }
+      return refA.length - refB.length;
     });
 
     const exactMatchIdx = candidates.findIndex(c => c.chunk.score! >= 1.0);
     const documents: RetrievalChunk[] = [];
     
     if (exactMatchIdx !== -1) {
-      const targetRef = candidates[exactMatchIdx].chunk.metadata!.chunkId;
-      const chNum = parseInt(targetRef.split('.')[0], 10);
-      const vNum = parseInt(targetRef.split('.')[1], 10);
+      const targetChunk = candidates[exactMatchIdx].chunk;
+      const targetRef = targetChunk.metadata!.chunkId;
+      const targetDocId = targetChunk.metadata!.docId;
+      const tSegments = targetRef.split('.');
       
       const neighbors = candidates.filter(c => {
-        const cRef = c.chunk.metadata!.chunkId;
-        const cCh = parseInt(cRef.split('.')[0], 10);
-        const cV = parseInt(cRef.split('.')[1], 10);
-        return cCh === chNum && Math.abs(cV - vNum) <= 1;
+        if (c.chunk.metadata!.docId !== targetDocId) return false;
+        const cSegments = c.chunk.metadata!.chunkId.split('.');
+        if (cSegments.length !== tSegments.length) return false;
+        for (let i = 0; i < cSegments.length - 1; i++) {
+          if (cSegments[i] !== tSegments[i]) return false;
+        }
+        const cV = parseInt(cSegments[cSegments.length - 1], 10);
+        const tV = parseInt(tSegments[tSegments.length - 1], 10);
+        return Math.abs(cV - tV) <= 1;
       });
       
       neighbors.sort((a, b) => {
-        const vA = parseInt(a.chunk.metadata!.chunkId.split('.')[1], 10);
-        const vB = parseInt(b.chunk.metadata!.chunkId.split('.')[1], 10);
-        return vA - vB;
+        const aV = parseInt(a.chunk.metadata!.chunkId.split('.').pop() || '0', 10);
+        const bV = parseInt(b.chunk.metadata!.chunkId.split('.').pop() || '0', 10);
+        return aV - bV;
       });
       documents.push(...neighbors.map(n => n.chunk));
     } else {
@@ -424,11 +471,23 @@ export class PramanaGitaEmbeddingRetriever implements PramanaRetriever<Retrieval
 }
 
 const upanishadsManifestRetriever = new PramanaManifestRetriever({
-  prefix: 'upanishad_chapter',
+  prefix: 'upanishad',
   sourceName: 'Upanishads',
   sourceClass: 'scripture',
   tradition: 'Sanatana Dharma',
-  maxChapters: 10
+  fileNames: [
+    'upanishad_isha.json',
+    'upanishad_kena.json',
+    'upanishad_katha.json',
+    'upanishad_mundaka.json',
+    'upanishad_mandukya.json',
+    'upanishad_prashna.json',
+    'upanishad_taittiriya.json',
+    'upanishad_aitareya.json',
+    'upanishad_chandogya.json',
+    'upanishad_brihadaranyaka.json',
+    'upanishad_shvetashvatara.json'
+  ]
 });
 
 export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
@@ -499,12 +558,31 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
       queryUnitVector[t] = queryVector[t] / queryNorm;
     }
 
+    const reqTitle = (query.filters?.title as string || '').toLowerCase();
+    const lowerQuery = queryText.toLowerCase();
+    const queryTokenSet = new Set(this.tokenize(lowerQuery));
+
     const docsWithScores: Array<{ doc: any; score: number }> = [];
     for (const doc of index.documents) {
       let score = 0;
       for (const t in queryUnitVector) {
         if (doc.vector[t]) {
           score += queryUnitVector[t] * doc.vector[t];
+        }
+      }
+
+      // Explicit title / doc boosting
+      const docId = (doc.id.split('_').slice(0, -1).join('_') || '').toLowerCase();
+      if (reqTitle && reqTitle === docId) {
+        score += 1.0;
+      } else if (reqTitle && docId.includes(reqTitle)) {
+        score += 0.3;
+      }
+      
+      const specName = docId.replace('pathshala_upanishads_', '');
+      if (specName.length > 3) {
+        if (queryTokenSet.has(specName)) {
+          score += 0.8;
         }
       }
 
@@ -536,8 +614,9 @@ export class PramanaUpanishadsEmbeddingRetriever implements PramanaRetriever<Ret
           const prevRef = `${ch}.${v - 1}`;
           const nextRef = `${ch}.${v + 1}`;
 
-          const prevDoc = index.documents.find((d: any) => d.ref === prevRef);
-          const nextDoc = index.documents.find((d: any) => d.ref === nextRef);
+          const topDocId = topDoc.doc_id || topDoc.id.split('_').slice(0, -1).join('_');
+          const prevDoc = index.documents.find((d: any) => d.ref === prevRef && (d.doc_id || d.id.split('_').slice(0, -1).join('_')) === topDocId);
+          const nextDoc = index.documents.find((d: any) => d.ref === nextRef && (d.doc_id || d.id.split('_').slice(0, -1).join('_')) === topDocId);
 
           if (prevDoc) {
             augmentedDocs.push({ doc: prevDoc, score: topDocItem.score - 0.1 });
@@ -944,23 +1023,28 @@ PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetr
   'Jainism',
   'Jain Dharma Agamas'
 ));
-const buddhistManifestRetriever2 = new PramanaManifestRetriever({
-  prefix: 'buddhist_dhamma',
-  sourceName: 'Buddhist Dhamma Texts',
-  sourceClass: 'scripture',
-  tradition: 'Buddhism',
-  maxChapters: 1
+const ramayanaManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'ramayana',
+  sourceName: 'Valmiki Ramayana',
+  sourceClass: 'itihasa',
+  tradition: 'Sanatana Dharma',
+  fileNames: [
+    'ramayana_bal.json',
+    'ramayana_ayodhya.json',
+    'ramayana_aranya.json',
+    'ramayana_kishkindha.json',
+    'ramayana_sundara.json',
+    'ramayana_yuddha.json',
+    'ramayana_uttara.json'
+  ]
 });
-// Removed duplicate registration
 
-const jainManifestRetriever2 = new PramanaManifestRetriever({
-  prefix: 'jain_dharma',
-  sourceName: 'Jain Dharma Agamas',
-  sourceClass: 'scripture',
-  tradition: 'Jainism',
-  maxChapters: 1
-});
-// Removed duplicate registration
+PramanaRetrieverSelector.register('ramayana', new PramanaGenericEmbeddingRetriever(
+  ramayanaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/ramayana_index.json'),
+  'Sanatana Dharma',
+  'Valmiki Ramayana'
+));
 
 export async function retrievePathshalaContext(input: {
   source?: string;
@@ -969,7 +1053,7 @@ export async function retrievePathshalaContext(input: {
   corpus?: string | null;
 }): Promise<RetrievalChunk[]> {
   const selector = new SimpleCorpusSelector();
-  const corpusId = (input.corpus as any) || selector.selectCorpus(
+  let corpusId = (input.corpus as any) || selector.selectCorpus(
     `${input.title ?? ''} ${input.source ?? ''}`.trim(),
     {
       source: input.source || null,
@@ -977,6 +1061,16 @@ export async function retrievePathshalaContext(input: {
       tradition: input.tradition || null,
     }
   );
+
+  // Prevent accidental fallback to Ramayana if just "hindu" or "sanatana dharma" is specified, unless explicitly requested.
+  // We keep the defaults to BG or Upanishads for generic queries.
+  if (corpusId === 'ramayana') {
+    const rawQuery = `${input.title ?? ''} ${input.source ?? ''}`.toLowerCase();
+    if (!rawQuery.includes('ramayana') && !rawQuery.includes('valmiki') && !rawQuery.includes('kanda') && !rawQuery.includes('rama') && !rawQuery.includes('sita') && !rawQuery.includes('hanuman')) {
+      // If it accidentally resolved to Ramayana without explicit keyword, route back to Gita or Upanishads
+      corpusId = 'bhagavad_gita';
+    }
+  }
 
   const retriever = PramanaRetrieverSelector.select(corpusId);
   const res = await retriever.retrieve({

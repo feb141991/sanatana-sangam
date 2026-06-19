@@ -6,6 +6,8 @@ Last updated: 2026-04-09
 
 This document defines what Shoonaya can honestly store, show, and claim inside `Parampara Pathshala`.
 
+> **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`. This policy remains authoritative for source/rights rules.
+
 This is a launch-trust document, not only an editorial note.
 
 The goal is:

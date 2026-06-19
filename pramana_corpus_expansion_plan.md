@@ -2,6 +2,8 @@
 
 This backlog outlines the structured roadmap for advancing "present and pending" corpora from scaffolded/sample states into full runtime activation.
 
+> **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`. This document is retained for historical and planning detail; where it disagrees with the roadmap on current maturity, the roadmap wins.
+
 ## Status Definitions
 
 - **Sample-only**: Scaffolded manifest exists (1-2 verses/chapters). Not actively used in live routing.
@@ -22,7 +24,7 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Response Mode**: `scripture_passage_explain`
 - **Eval Requirement**: `pathshala_upanishads` suite expanded to 15+ cases covering all 11 Principal Upanishads.
 - **Auto-routing target**: No (Explicit only).
-- **Current State**: Sample-only (1 chapter).
+- **Current State**: Sample-scale — 45 indexed curated passages (`upanishads_index.json`) across the 11 Principal Upanishad names; coverage is still uneven and not an exhaustive Principal Upanishads corpus. See `PRAMANA_CORPUS_ROADMAP.md`.
 
 ### 1.2 Ramayana Study Corpus
 - **Corpus ID**: `pathshala_ramayana`
@@ -70,7 +72,7 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Response Mode**: `gurbani_shabad_explain`
 - **Eval Requirement**: Suite expanded to cover Rehras Sahib, Kirtan Sohila.
 - **Auto-routing target**: No.
-- **Current State**: Sample-only (Japji Sahib partial).
+- **Current State**: Sample-scale — 34 indexed docs (`gurbani_index.json`; Japji and partial Nitnem). See `PRAMANA_CORPUS_ROADMAP.md`.
 
 ---
 
@@ -85,7 +87,7 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Response Mode**: `buddhist_sutra_explain` (Planned)
 - **Eval Requirement**: New `buddhist_study` suite.
 - **Auto-routing target**: No.
-- **Current State**: Sample-only.
+- **Current State**: Production-scale indexed — 109 passages (`buddhist_dhamma_index.json`, Dhammapada Ch. 1–8). Not "sample-only". Runtime activation (tradition-aware routing, dedicated prompt builder, deeper eval) still pending. See `PRAMANA_CORPUS_ROADMAP.md`.
 
 ---
 
@@ -100,7 +102,7 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Response Mode**: `jain_sutra_explain` (Planned)
 - **Eval Requirement**: New `jain_study` suite covering non-absolutism.
 - **Auto-routing target**: No.
-- **Current State**: Sample-only.
+- **Current State**: Production-scale indexed — 107 passages (`jain_dharma_index.json`, Tattvartha Sutra + Saman Suttam). Not "sample-only". Runtime activation (tradition-aware routing, dedicated prompt builder, deeper eval) still pending. See `PRAMANA_CORPUS_ROADMAP.md`.
 
 ---
 

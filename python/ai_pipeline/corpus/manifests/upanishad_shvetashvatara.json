@@ -1,0 +1,21 @@
+{
+  "doc_id": "pathshala_upanishads_shvetashvatara",
+  "title": "Shvetashvatara Upanishad",
+  "tradition": "Sanatana Dharma",
+  "corpus": "upanishads",
+  "section_id": "shvetashvatara",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "translation_basis": "Robert Ernest Hume (1921)",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "ब्रह्मवादिनो वदन्ति । किं कारणं ब्रह्म कुतः स्म जाता जीवाम केन क्व च सम्प्रतिष्ठाः ।",
+      "transliteration": "brahmavādino vadanti | kiṁ kāraṇaṁ brahma kutaḥ sma jātā jīvāma kena kva ca sampratiṣṭhāḥ |",
+      "text": "Those who discourse on Brahman say: What is the cause? Is it Brahman? Whence are we born? By what do we live? And on what are we established?"
+    }
+  ]
+}

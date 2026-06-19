@@ -1,0 +1,21 @@
+{
+  "doc_id": "pathshala_upanishads_isha",
+  "title": "Isha Upanishad",
+  "tradition": "Sanatana Dharma",
+  "corpus": "upanishads",
+  "section_id": "isha",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "translation_basis": "Robert Ernest Hume (1921)",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1",
+      "sanskrit": "ईशा वास्यमिदं सर्वं यत्किञ्च जगत्यां जगत् । तेन त्यक्तेन भुञ्जीथा मा गृधः कस्यस्विद्धनम् ॥",
+      "transliteration": "īśā vāsyamidaṁ sarvaṁ yatkiñca jagatyāṁ jagat | tena tyaktena bhuñjīthā mā gṛdhaḥ kasyasviddhanam ||",
+      "text": "All this, whatever moves in this moving world, is enveloped by the Lord. Therefore, find your enjoyment in renunciation; do not covet what belongs to others."
+    }
+  ]
+}
