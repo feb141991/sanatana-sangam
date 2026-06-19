@@ -1351,12 +1351,12 @@ export default function ProfileClient({
               <button
                 type="button"
                 onClick={() => setAshramaInfoOpen(true)}
-                className="w-full clay-card rounded-2xl p-4 flex items-center gap-4 text-left transition-all active:scale-[0.98] hover:border-[#C5A059]/30"
-                style={{ borderLeft: `2px solid ${ashramaMeta.accent}50` }}
+                className="w-full rounded-[1.5rem] border p-4 flex items-center gap-3.5 text-left transition-all active:scale-[0.98] bg-[var(--surface-soft)]"
+                style={{ borderColor: `${ashramaMeta.accent}26`, boxShadow: `0 6px 18px ${ashramaMeta.accent}12` }}
               >
                 <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${ashramaMeta.accent}18` }}
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${ashramaMeta.accent}16` }}
                 >
                   <SacredIcon name={ashramaMeta.icon} size={20} style={{ color: ashramaMeta.accent }} />
                 </div>
@@ -1365,8 +1365,9 @@ export default function ProfileClient({
                   <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">{ashramaMeta.label}</p>
                   <p className="text-[12px] theme-muted mt-0.5 leading-snug truncate">{ashramaMeta.subtitle}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   <p className="text-[10px] theme-dim">{ashramaMeta.ageRange}</p>
+                  <ChevronRight size={16} className="theme-dim" aria-hidden="true" />
                 </div>
               </button>
             </motion.div>
