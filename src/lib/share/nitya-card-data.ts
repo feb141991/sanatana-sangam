@@ -64,6 +64,33 @@ export function resolveNityaMilestoneLabel(tradition: string, streak: number) {
   return milestones.reduce((best, item) => item.at <= streak ? item : best, milestones[0]).label;
 }
 
+export interface NityaRankProgress {
+  label: string;
+  next: string | null;
+  daysToNext: number;
+  /** Progress 0..1 from the current rank toward the next (1 at the top). */
+  progress: number;
+}
+
+/** Current app-wide streak rank plus progress toward the next rank. */
+export function getNityaRankProgress(tradition: string, streak: number): NityaRankProgress {
+  const milestones = NITYA_MILESTONES[tradition] ?? NITYA_MILESTONES.hindu;
+  let current = milestones[0];
+  let next: { at: number; label: string } | null = null;
+  for (const item of milestones) {
+    if (item.at <= streak) current = item;
+    else { next = item; break; }
+  }
+  const span = next ? next.at - current.at : 1;
+  const progress = next ? Math.min(1, Math.max(0, (streak - current.at) / span)) : 1;
+  return {
+    label: current.label,
+    next: next ? next.label : null,
+    daysToNext: next ? Math.max(0, next.at - streak) : 0,
+    progress,
+  };
+}
+
 function baseData(tradition: string, userName: string, milestoneLabel?: string): NityaShareCardData {
   const meta = getTraditionMeta(tradition);
   return {

@@ -21,6 +21,9 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { buildMalaSessionInsert } from '@/lib/mala-sessions';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
+import { getNityaRankProgress } from '@/lib/share/nitya-card-data';
+import { getMalaVolumeMilestone } from '@/lib/bhakti/mala-milestones';
+import { pickDharmaFact } from '@/lib/bhakti/dharma-facts';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import PageIntro from '@/components/ui/PageIntro';
@@ -1076,9 +1079,10 @@ function TapBloom({
 
 // ── Screen 0: Ritual launcher ─────────────────────────────────────────────────
 function PracticeLauncherScreen({
-  isDark, traditionLabel, currentMala, currentMantra, targetRounds, streak, lifetimeData, accentColor, onTargetChange, onStart, onCustomize, onBack, japaAlreadyDoneToday,
+  isDark, tradition, traditionLabel, currentMala, currentMantra, targetRounds, streak, lifetimeData, accentColor, onTargetChange, onStart, onCustomize, onBack, japaAlreadyDoneToday,
 }: {
   isDark: boolean;
+  tradition: string;
   traditionLabel: string;
   currentMala: typeof MALAS[number];
   currentMantra: MantraOption;
@@ -1098,6 +1102,10 @@ function PracticeLauncherScreen({
   const sub = isDark ? 'rgba(205,178,130,0.68)' : 'rgba(96,66,34,0.66)';
   const amber = accentColor;
   const borderColor = isDark ? 'rgba(197, 160, 89,0.18)' : 'rgba(0,0,0,0.08)';
+
+  const rank = getNityaRankProgress(tradition, streak);
+  const volume = getMalaVolumeMilestone(lifetimeData.totalBeads);
+  const fact = pickDharmaFact(tradition);
 
   return (
     <motion.div
@@ -1198,23 +1206,35 @@ function PracticeLauncherScreen({
               ))}
             </div>
           </div>
+
+          {/* ── Dharma reflection ── */}
+          <div className="rounded-2xl border p-4" style={{ background: card, borderColor: `${amber}1c` }}>
+            <p className="text-[9.5px] font-bold tracking-[0.22em] uppercase mb-2" style={{ color: `${amber}70` }}>Dharma reflection</p>
+            <p className="text-[13.5px] leading-6" style={{ color: text, fontFamily: 'var(--font-serif)' }}>{fact.text}</p>
+            {fact.source && <p className="mt-1.5 text-[11px]" style={{ color: sub }}>&mdash; {fact.source}</p>}
+          </div>
         </div>
 
         <div className="relative space-y-2.5 pb-3">
-          {/* Lifetime stats */}
-          {lifetimeData.totalBeads > 0 && (
-            <div className="flex items-center justify-center gap-6 pb-1">
-              <div className="text-center">
-                <div className="text-[17px] font-bold" style={{ color: amber, fontFamily: 'var(--font-serif)' }}>{lifetimeData.totalBeads.toLocaleString()}</div>
-                <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: sub }}>Beads</div>
+          {/* ── Journey: path rank + lifetime volume ── */}
+          <div className="grid grid-cols-2 gap-2.5 pb-1">
+            <div className="rounded-2xl border p-3.5" style={{ background: card, borderColor: `${amber}1c` }}>
+              <p className="text-[9.5px] uppercase tracking-[0.16em] mb-1" style={{ color: sub }}>Your path</p>
+              <p className="text-[15px] font-bold leading-tight" style={{ color: text, fontFamily: 'var(--font-serif)' }}>{rank.label}</p>
+              <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}1e` }}>
+                <div className="h-full rounded-full" style={{ width: `${Math.round(rank.progress * 100)}%`, background: amber }} />
               </div>
-              <div className="h-6 w-px" style={{ background: `${amber}22` }} />
-              <div className="text-center">
-                <div className="text-[17px] font-bold" style={{ color: amber, fontFamily: 'var(--font-serif)' }}>{lifetimeData.totalRounds}</div>
-                <div className="text-[10px] uppercase tracking-[0.14em]" style={{ color: sub }}>Rounds</div>
-              </div>
+              <p className="mt-1.5 text-[10.5px] leading-tight" style={{ color: sub }}>{rank.next ? `${rank.daysToNext} day${rank.daysToNext === 1 ? '' : 's'} to ${rank.next}` : 'Highest path held'}</p>
             </div>
-          )}
+            <div className="rounded-2xl border p-3.5" style={{ background: card, borderColor: `${amber}1c` }}>
+              <p className="text-[9.5px] uppercase tracking-[0.16em] mb-1" style={{ color: sub }}>Lifetime japa</p>
+              <p className="text-[15px] font-bold leading-tight" style={{ color: amber, fontFamily: 'var(--font-serif)' }}>{lifetimeData.totalBeads.toLocaleString('en-IN')}</p>
+              <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}1e` }}>
+                <div className="h-full rounded-full" style={{ width: `${Math.round(volume.progress * 100)}%`, background: amber }} />
+              </div>
+              <p className="mt-1.5 text-[10.5px] leading-tight" style={{ color: sub }}>{volume.nextLabel ? `${Math.round(volume.progress * 100)}% to ${volume.nextLabel}` : volume.label}</p>
+            </div>
+          </div>
           <button
             onClick={onStart}
             className="w-full rounded-full py-4 text-[15px] font-semibold transition-transform active:scale-[0.98]"
@@ -2913,6 +2933,7 @@ export default function JapaClient({
         <PracticeLauncherScreen
           key="launcher"
           isDark={isDark}
+          tradition={tradition}
           traditionLabel={meta.shortLabel}
           currentMala={currentMala}
           currentMantra={currentMantra}
