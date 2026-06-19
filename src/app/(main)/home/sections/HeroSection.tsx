@@ -1032,18 +1032,22 @@ export function HeroSection({
         )}
       </AnimatePresence>
 
-      {/* ── Next Practice (static — replaces the auto-rotating strip) ── */}
-      <NextPracticeCard
-        japaDone={nextPracticeOverrides.japaDone}
-        nityaDone={nextPracticeOverrides.nityaDone}
-        pathshalaDone={nextPracticeOverrides.pathshalaDone}
-        japaBeads={dailyDharmaStackState.japaBeads}
-        japaRounds={dailyDharmaStackState.japaRounds}
-        quizDone={nextPracticeOverrides.quizDone}
-        dharmVeerDone={nextPracticeOverrides.dharmVeerDone}
-        dharmVeerId={dharmVeer.id}
-        pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
-      />
+      {/* ── Next Practice — hidden once the day is complete; the smart Sadhana
+           card above owns the all-complete state, so there is no duplicate
+           completion UI ("Daily practice complete" / "View all practices"). ── */}
+      {dailySadhanaCta.id !== 'complete' && (
+        <NextPracticeCard
+          japaDone={nextPracticeOverrides.japaDone}
+          nityaDone={nextPracticeOverrides.nityaDone}
+          pathshalaDone={nextPracticeOverrides.pathshalaDone}
+          japaBeads={dailyDharmaStackState.japaBeads}
+          japaRounds={dailyDharmaStackState.japaRounds}
+          quizDone={nextPracticeOverrides.quizDone}
+          dharmVeerDone={nextPracticeOverrides.dharmVeerDone}
+          dharmVeerId={dharmVeer.id}
+          pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
+        />
+      )}
 
       {/* ── Brahma Muhurta card ── */}
       {panchang?.brahmaMuhurta && panchang?.sunrise && (
