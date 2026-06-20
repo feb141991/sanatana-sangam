@@ -68,6 +68,24 @@ function isInStandaloneMode(): boolean {
     || (window.navigator as NavigatorStandalone).standalone === true;
 }
 
+// Capture `beforeinstallprompt` as soon as this module loads — Chrome fires it
+// once, early (often before this component mounts). Attaching the listener only
+// inside the gated effect missed the event entirely, so the Android install
+// button never appeared. We stash it module-side and notify any mounted banner.
+let capturedInstallPrompt: BeforeInstallPromptEvent | null = null;
+let installCaptureWired = false;
+function wireInstallCapture(): void {
+  if (installCaptureWired || typeof window === 'undefined') return;
+  installCaptureWired = true;
+  window.addEventListener('beforeinstallprompt', (e: Event) => {
+    e.preventDefault();
+    capturedInstallPrompt = e as BeforeInstallPromptEvent;
+    window.dispatchEvent(new Event('shoonaya:install-available'));
+  });
+  window.addEventListener('appinstalled', () => { capturedInstallPrompt = null; });
+}
+wireInstallCapture();
+
 export default function PWAInstallBanner({ tradition, japaCompletedToday }: PWAInstallBannerProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [mode,    setMode]    = useState<InstallMode | null>(null);
@@ -78,6 +96,7 @@ export default function PWAInstallBanner({ tradition, japaCompletedToday }: PWAI
   const accent = meta.accentColour ?? '#C5A059';
 
   useEffect(() => {
+    wireInstallCapture();
     // Already installed or already dismissed — bail immediately.
     if (isInStandaloneMode()) return;
     if (localStorage.getItem(STORAGE_KEY_DISMISSED)) return;
@@ -94,15 +113,17 @@ export default function PWAInstallBanner({ tradition, japaCompletedToday }: PWAI
       return;
     }
 
-    // Android / Chromium — wait for the deferred prompt, then offer one-tap install.
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    // Android / Chromium — the prompt may already have been captured module-side
+    // before this effect ran, so check now AND subscribe for a later capture.
+    const showIfAvailable = () => {
+      if (!capturedInstallPrompt) return;
+      setDeferredPrompt(capturedInstallPrompt);
       setMode('android');
       setVisible(true);
     };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    showIfAvailable();
+    window.addEventListener('shoonaya:install-available', showIfAvailable);
+    return () => window.removeEventListener('shoonaya:install-available', showIfAvailable);
   }, [japaCompletedToday]);
 
   const dismiss = useCallback(() => {
@@ -115,6 +136,7 @@ export default function PWAInstallBanner({ tradition, japaCompletedToday }: PWAI
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') localStorage.setItem(STORAGE_KEY_DISMISSED, '1');
+    capturedInstallPrompt = null;
     setDeferredPrompt(null);
     setVisible(false);
   }, [deferredPrompt]);
