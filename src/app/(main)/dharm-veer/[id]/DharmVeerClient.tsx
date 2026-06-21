@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ChevronLeft, Settings, Type, Sun, Moon, 
-  Book, Quote, Shield, Lightbulb, Share2, Copy, Check 
+import {
+  ChevronLeft, Settings, Type, Sun, Moon,
+  Book, Quote, Shield, Lightbulb, Share2, Copy, Check
 } from 'lucide-react';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import { TRADITION_META } from '@/lib/dharm-veer';
@@ -59,6 +59,38 @@ export default function DharmVeerClient({
     getInitialReaderDisplayMode(preferences, hasCompleteLocalContent)
   );
 
+  const [askMoreQuery, setAskMoreQuery] = useState('');
+  const [askMoreResponse, setAskMoreResponse] = useState('');
+  const [askMoreLoading, setAskMoreLoading] = useState(false);
+
+  const handleAskMore = async () => {
+    if (!askMoreQuery.trim()) return;
+    setAskMoreLoading(true);
+    setAskMoreResponse('');
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: askMoreQuery,
+          mode: 'dharam_veer_reflection',
+          figure_id: hero.id
+        }),
+      });
+      if (res.ok) {
+        const text = await res.text();
+        setAskMoreResponse(text);
+      } else {
+        setAskMoreResponse('Failed to fetch response.');
+      }
+    } catch(err) {
+      setAskMoreResponse('An error occurred.');
+    } finally {
+      setAskMoreLoading(false);
+    }
+  };
+
+
   const displayLang: AppLang = lang === 'local' ? localContentLanguage : 'en';
   const meta = TRADITION_META[hero.tradition];
   const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
@@ -104,14 +136,14 @@ export default function DharmVeerClient({
 
   const handleCopy = () => {
     const textToCopy = `${title}\n${tagline}\n\n[Journey]\n${journeyText}\n\n[Trial]\n${trialText}\n\n[Teaching]\n${teachingText}\n\n[Moral]\n${moralText}`;
-    
+
     void readerControls.handlers.copyText(textToCopy, 'Story');
   };
 
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
     const text = `🙏 Jai Shri Hari! Read this inspiring Dharm Veer story of '${title}' and check your daily rashiphal following the link to open those features: ${link} to grow your Sadhana.`;
-    
+
     void readerControls.handlers.share(text, hero.name, link);
   };
 
@@ -163,9 +195,9 @@ export default function DharmVeerClient({
   }, [supabase]);
 
   return (
-    <div 
+    <div
       className="min-h-screen transition-colors duration-500 pb-24"
-      style={{ 
+      style={{
         backgroundColor: activeTheme.bg,
         color: activeTheme.text,
         fontFamily: 'var(--font-inter)'
@@ -181,14 +213,14 @@ export default function DharmVeerClient({
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-4 pt-12 pb-4 flex flex-col gap-3 backdrop-blur-xl border-b" style={{ borderColor: activeTheme.border, backgroundColor: `${activeTheme.bg}d9` }}>
         <div className="flex items-center justify-between gap-3">
-          <button 
+          <button
             onClick={() => router.back()}
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition hover:bg-[var(--surface-base)]/20 active:scale-90"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
           >
             <ChevronLeft size={18} />
           </button>
-          
+
           <div className="flex-1 min-w-0 flex flex-col text-center">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
               {meta.dharmVeerLocal || 'Dharm Veer'}
@@ -197,7 +229,7 @@ export default function DharmVeerClient({
 
           <div className="flex items-center gap-2">
             {/* Theme Toggle */}
-            <button 
+            <button
               onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
               className="theme-toggle w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
@@ -277,18 +309,18 @@ export default function DharmVeerClient({
       <main className="pt-36 px-6 max-w-2xl mx-auto space-y-12">
         {/* Hero Section */}
         <section className="text-center space-y-4">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center text-5xl shadow-2xl"
-            style={{ 
+            style={{
               background: `linear-gradient(135deg, ${meta.color.replace('0.12', '0.2')}, ${meta.color.replace('0.12', '0.05')})`,
               border: `1px solid ${meta.color.replace('0.12', '0.4')}`
             }}
           >
             {hero.emoji}
           </motion.div>
-          
+
           <div className="space-y-1">
             <h1 className="text-3xl font-bold premium-serif tracking-tight">
               {title}
@@ -383,9 +415,36 @@ export default function DharmVeerClient({
           </div>
         )}
 
+
+        {/* Ask More Section */}
+        <section className="space-y-4 pt-12 border-t border-white/10">
+            <h2 className="text-xl font-bold">Ask more about this Dharam Veer</h2>
+            <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  value={askMoreQuery}
+                  onChange={e => setAskMoreQuery(e.target.value)}
+                  placeholder="Ask a question..."
+                  className="w-full p-3 rounded-xl bg-[var(--surface-base)] text-black border border-black/10 focus:outline-none"
+                />
+                <button
+                  onClick={handleAskMore}
+                  disabled={askMoreLoading || !askMoreQuery.trim()}
+                  className="px-6 py-3 rounded-xl bg-[var(--brand-primary)] text-black font-bold disabled:opacity-50 self-end transition hover:scale-105 active:scale-95"
+                >
+                  {askMoreLoading ? 'Asking...' : 'Ask AI'}
+                </button>
+            </div>
+            {askMoreResponse && (
+                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 text-sm whitespace-pre-wrap leading-relaxed shadow-inner">
+                    {askMoreResponse}
+                </div>
+            )}
+        </section>
+
         {/* Share Button */}
         <div className="flex justify-center pt-12">
-          <button 
+          <button
             onClick={handleShare}
             className="share-button flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
           >

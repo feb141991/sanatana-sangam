@@ -5,7 +5,7 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
   verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
@@ -32,6 +32,13 @@ export interface ObservanceRule {
    * prevalence. Use for Shukla tithis 1-14 that can be fast-moving.
    */
   allow_skipped_tithi?: boolean;
+  /**
+   * Recurring tithi-based vrats that fall in EVERY lunar masa (not a single
+   * named festival). The target tithi index/indices are matched across all
+   * masas, both pakshas — e.g. Ekadashi = [11, 26], Sankashti Chaturthi = [19].
+   * Used only with rule_family 'lunar_tithi_recurring'.
+   */
+  recurring_tithi_indices?: number[];
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
@@ -881,5 +888,53 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'historical_commemoration',
     relative_base_slug: 'diwali',
     relative_offset_days: 16,
+  },
+
+  // ── Recurring tithi-based vrats (every lunar masa) ───────────────────────────
+  // Emitted across all masas via rule_family 'lunar_tithi_recurring' + the
+  // engine's skipped-tithi handling (multiple occurrences per year). The
+  // materialize/query layer is responsible for suppressing these on any date
+  // already claimed by a named observance (e.g. Vaikunta Ekadashi).
+  {
+    slug: 'ekadashi',
+    display_name: 'Ekadashi',
+    emoji: '🌙',
+    description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [11, 26],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'ekadashi',
+  },
+  {
+    slug: 'pradosh-vrat',
+    display_name: 'Pradosh Vrat',
+    emoji: '🪔',
+    description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [13, 28],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'pradosh',
+  },
+  {
+    slug: 'sankashti-chaturthi',
+    display_name: 'Sankashti Chaturthi',
+    emoji: '🐘',
+    description: 'Monthly Sankashti Chaturthi vrat to Lord Ganesha — the 4th tithi of the waning moon.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [19],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'sankashti-chaturthi',
   },
 ];

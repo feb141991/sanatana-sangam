@@ -223,106 +223,31 @@ export default function NextPracticeCard(props: NextPracticeCardProps) {
 
   return (
     <section className="px-4 relative z-20 mb-2" aria-label="Daily sadhana">
-      {/* Header row */}
-      <div className="flex items-center justify-between mb-2 px-1">
-        <p className="text-[12px] font-semibold uppercase tracking-widest" style={{ color: 'var(--brand-muted)' }}>
-          Next Practice
-        </p>
-        <p className="text-[12px] font-bold tabular-nums" style={{ color: 'var(--brand-muted)' }}>
-          {completedCount} of 5 complete
-        </p>
-      </div>
-
-      {/* Next practice — one stable card, or calm completion state */}
-      {nextPractice ? (
-        <Link
-          href={nextPractice.href}
-          aria-label={nextPractice.context ? `${nextPractice.actionHeadline} — ${nextPractice.context}` : nextPractice.actionHeadline}
-          className="flex flex-col gap-2.5 rounded-2xl px-3.5 py-3 transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80"
-          style={{ border: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ background: nextPractice.bg }}>
-                <span className="text-[19px]" aria-hidden="true">{nextPractice.icon}</span>
-              </div>
-              <div className="min-w-0 flex flex-col justify-center">
-                <p className="text-[14px] font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
-                  {nextPractice.actionHeadline}
-                </p>
-                {nextPractice.context && (
-                  <p className="truncate text-[12px] font-medium mt-1" style={{ color: 'var(--brand-muted)' }}>
-                    {nextPractice.context}
-                  </p>
-                )}
-              </div>
-            </div>
-            {/* Deprioritized progress ring */}
-            {nextPractice.progress > 0 && (
-              <div className="shrink-0 mt-1">
-                <Ring done={false} progress={nextPractice.progress} colour={nextPractice.colour} />
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-1.5 flex items-center">
-            <div
-              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[13.5px] min-h-[40px]"
-              style={{ background: 'var(--brand-primary)', color: 'white' }}
-            >
-              {nextPractice.actionCta}
-            </div>
-          </div>
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setExpanded(v => !v)}
-          aria-expanded={expanded}
-          aria-controls="next-practice-all"
-          className="flex flex-col gap-2.5 rounded-2xl px-3.5 py-3 transition-opacity hover:bg-[var(--surface-soft)] active:opacity-80 w-full text-left"
-          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0" style={{ background: 'var(--brand-primary-soft)' }}>
-              <Check size={18} strokeWidth={3} aria-hidden="true" style={{ color: 'var(--brand-primary)' }} />
-            </div>
-            <div>
-              <p className="text-[15px] font-bold leading-tight" style={{ color: 'var(--brand-ink)' }}>
-                Daily practice complete
-              </p>
-              <p className="text-[12px] font-medium mt-1" style={{ color: 'var(--brand-muted)' }}>
-                A full day of sadhana. Rest well 🙏
-              </p>
-            </div>
-          </div>
-          <div className="mt-1.5 flex items-center">
-            <div
-              className="flex items-center justify-center w-full gap-1.5 px-4 rounded-xl font-bold text-[13.5px] min-h-[40px]"
-              style={{ background: 'var(--brand-primary)', color: 'white' }}
-            >
-              View all practices
-            </div>
-          </div>
-        </button>
-      )}
-
-      {/* Expander — real button, visible affordance */}
+      {/* Header row / Expander — real button, visible affordance */}
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
         aria-controls="next-practice-all"
-        className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl py-2 min-h-[44px] text-[13px] font-medium transition-colors hover:bg-[var(--surface-soft)]"
-        style={{ color: 'var(--brand-muted)', border: '1px solid var(--card-border-soft)' }}
+        className="flex w-full items-center justify-between px-4 rounded-xl py-2 min-h-[44px] text-[13px] font-medium transition-colors hover:bg-[var(--surface-soft)]"
+        style={{ color: 'var(--brand-muted)', border: '1px solid var(--card-border-soft)', background: 'var(--card-bg)' }}
       >
-        {expanded ? 'Hide practices' : 'View all practices'}
-        <ChevronDown
-          size={15}
-          aria-hidden="true"
-          style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: reduceMotion ? 'none' : 'transform 200ms ease' }}
-        />
+        <div className="flex items-center gap-2">
+           <span>{expanded ? 'Hide all practices' : 'View all practices'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+           <span className="text-[12px] font-bold tabular-nums opacity-70">
+             {completedCount} / 5
+           </span>
+           <ChevronDown
+             size={15}
+             aria-hidden="true"
+             style={{ transform: expanded ? 'rotate(180deg)' : 'none', transition: reduceMotion ? 'none' : 'transform 200ms ease' }}
+           />
+        </div>
       </button>
+
+
 
       {/* All five practices — each row is a real Link */}
       <AnimatePresence initial={false}>

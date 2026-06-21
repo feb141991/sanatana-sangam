@@ -147,18 +147,60 @@ type DailySadhanaCta = {
   icon: string;
 };
 
-function getTraditionSadhanaOpening(tradition: string | null): string {
+function getTraditionJapaDetails(tradition: string | null) {
   switch (tradition) {
-    case 'sikh':
-      return 'Naam Simran · 108 jaaps · +5 seva';
-    case 'buddhist':
-      return 'Mantra Mala · 108 recitations · +5 seva';
-    case 'jain':
-      return 'Navkar Mala · 108 jaaps · +5 seva';
+    case 'sikh': return { label: 'Naam Simran', detail: '108 jaaps · +5 seva' };
+    case 'buddhist': return { label: 'Mantra Mala', detail: '108 recitations · +5 seva' };
+    case 'jain': return { label: 'Navkar Mala', detail: '108 jaaps · +5 seva' };
     case 'hindu':
-    default:
-      return 'Japa Mala · 108 names · +5 seva';
+    default: return { label: 'Japa Mala', detail: '108 names · +5 seva' };
   }
+}
+
+function getDailySadhanaCta({
+  tradition,
+  completedPracticesCount,
+  nextPracticeObj,
+  meta,
+}: {
+  tradition: string | null;
+  completedPracticesCount: number;
+  nextPracticeObj: any;
+  meta: any;
+}): DailySadhanaCta {
+  if (!nextPracticeObj) {
+    return {
+      id: 'complete',
+      title: "Today's Sadhana Complete",
+      subtitle: `Your ${meta.shortLabel || tradition || 'Dharma'} rhythm is steady today · +seva earned`,
+      buttonLabel: "Today's Recap",
+      href: '/my-progress',
+      ariaLabel: "View today's sadhana progress",
+      icon: '✨',
+    };
+  }
+
+  if (completedPracticesCount === 0) {
+    return {
+      id: nextPracticeObj.id as any,
+      title: "Begin Today's Sadhana",
+      subtitle: `Start with ${nextPracticeObj.label} · ${5 - completedPracticesCount} practices today`,
+      buttonLabel: 'Begin',
+      href: nextPracticeObj.href,
+      ariaLabel: `Begin today's sadhana with ${nextPracticeObj.label}`,
+      icon: nextPracticeObj.icon,
+    };
+  }
+
+  return {
+    id: nextPracticeObj.id as any,
+    title: "Continue Today's Sadhana",
+    subtitle: `Next: ${nextPracticeObj.label} · ${nextPracticeObj.detail}`,
+    buttonLabel: 'Continue',
+    href: nextPracticeObj.href,
+    ariaLabel: `Continue with ${nextPracticeObj.label}`,
+    icon: nextPracticeObj.icon,
+  };
 }
 
 // ── Time-aware greeting helper ─────────────────────────────────────────────
@@ -521,79 +563,24 @@ export function HeroSection({
     );
   }
 
-  const dailySadhanaCta: DailySadhanaCta = (() => {
-    if (!japaAlreadyDoneToday) {
-      return {
-        id: 'japa',
-        title: "Begin Today's Sadhana",
-        subtitle: getTraditionSadhanaOpening(tradition),
-        buttonLabel: 'Begin',
-        href: '/japa',
-        ariaLabel: "Begin today's mala practice",
-        icon: '📿',
-      };
-    }
+  const japaDetails = getTraditionJapaDetails(tradition);
+  const practices = [
+    { id: 'japa', done: japaAlreadyDoneToday, label: japaDetails.label, detail: japaDetails.detail, icon: '📿', href: '/japa' },
+    { id: 'nitya', done: nityaDoneToday, label: meta.nityaKarmaTitle, detail: 'morning rhythm', icon: '🌅', href: '/nitya-karma' },
+    { id: 'pathshala', done: pathshalaDoneToday, label: meta.pathshalaVocabulary, detail: sacredTextMeta.label, icon: sacredTextMeta.icon || '📖', href: '/pathshala' },
+    { id: 'quiz', done: dailyDharmaStackState.quizDone, label: 'Daily Quiz', detail: 'test your dharmic memory', icon: '🧠', href: '/quiz' },
+    { id: 'dharmveer', done: dailyDharmaStackState.dharmVeerDone, label: dharmVeer.name || 'Dharm Veer', detail: 'remember a life of courage', icon: '⚔️', href: dharmVeer.id ? `/dharm-veer/${dharmVeer.id}` : '/dharm-veer' }
+  ];
 
-    if (!nityaDoneToday) {
-      return {
-        id: 'nitya',
-        title: "Continue Today's Sadhana",
-        subtitle: `Next: ${meta.nityaKarmaTitle} · morning rhythm · +5 seva`,
-        buttonLabel: 'Continue',
-        href: '/nitya-karma',
-        ariaLabel: `Continue with ${meta.nityaKarmaTitle}`,
-        icon: '🌅',
-      };
-    }
+  const completedPracticesCount = practices.filter(p => p.done).length;
+  const nextPracticeObj = practices.find(p => !p.done);
 
-    if (!pathshalaDoneToday) {
-      return {
-        id: 'pathshala',
-        title: "Continue Today's Sadhana",
-        subtitle: `Next: ${meta.pathshalaVocabulary} · ${sacredTextMeta.label}`,
-        buttonLabel: 'Study',
-        href: '/pathshala',
-        ariaLabel: `Continue with ${meta.pathshalaVocabulary}`,
-        icon: sacredTextMeta.icon || '📖',
-      };
-    }
-
-    if (!dailyDharmaStackState.quizDone) {
-      return {
-        id: 'quiz',
-        title: "Continue Today's Sadhana",
-        subtitle: 'Next: Daily Quiz · test your dharmic memory',
-        buttonLabel: 'Answer',
-        href: '/quiz',
-        ariaLabel: "Continue with today's quiz",
-        icon: '🧠',
-      };
-    }
-
-    if (!dailyDharmaStackState.dharmVeerDone) {
-      return {
-        id: 'dharmveer',
-        title: "Complete Today's Sadhana",
-        subtitle: `Next: ${dharmVeer.name || 'Dharm Veer'} · remember a life of courage`,
-        buttonLabel: 'Complete',
-        href: dharmVeer.id ? `/dharm-veer/${dharmVeer.id}` : '/dharm-veer',
-        ariaLabel: `Complete today's sadhana with ${dharmVeer.name || 'Dharm Veer'}`,
-        icon: '⚔️',
-      };
-    }
-
-    return {
-      id: 'complete',
-      title: "Today's Sadhana Complete",
-      subtitle: `Your ${meta.shortLabel} rhythm is steady today · +seva earned`,
-      buttonLabel: 'Progress',
-      href: '/my-progress',
-      ariaLabel: "View today's sadhana progress",
-      icon: '✨',
-    };
-  })();
-
-  function handleDailySadhanaCta() {
+  const dailySadhanaCta = getDailySadhanaCta({
+    tradition,
+    completedPracticesCount,
+    nextPracticeObj,
+    meta,
+  });  function handleDailySadhanaCta() {
     router.push(dailySadhanaCta.href);
   }
 

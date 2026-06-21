@@ -59,106 +59,14 @@ function rowToDharmVeer(row: DailyRow): DharmVeer {
   };
 }
 
-// ── On-demand daily generation — same pattern as daily_quiz ──────────────────
 export async function getDharmVeerOfTheDay(
   supabase: SupabaseClient,
   userTradition?: string | null,
 ): Promise<DharmVeer> {
-  const tradition = (userTradition ?? 'hindu') as DharmVeer['tradition'];
-  const today = new Date().toISOString().split('T')[0];
-
-  // 1. Serve from cache if already generated today for this tradition
-  const { data: cached } = await supabase
-    .from('dharm_veer_daily')
-    .select(DAILY_COLS)
-    .eq('tradition', tradition)
-    .eq('date', today)
-    .maybeSingle();
-
-  if (cached) return rowToDharmVeer(cached as DailyRow);
-
-  // 2. Pick a seed not seen in the last 90 days for this tradition
-  const ninetyAgo = new Date();
-  ninetyAgo.setDate(ninetyAgo.getDate() - 90);
-  const ninetyAgoStr = ninetyAgo.toISOString().split('T')[0];
-
-  const { data: recentRows } = await supabase
-    .from('dharm_veer_daily')
-    .select('slug')
-    .eq('tradition', tradition)
-    .gte('date', ninetyAgoStr)
-    .order('date', { ascending: false });
-
-  const recentSlugs = new Set((recentRows ?? []).map((r: any) => r.slug as string));
-
-  // Seeds for this tradition, excluding recent ones
-  const traditionSeeds = HERO_SEEDS.filter(s => s.tradition === tradition);
-  const freshSeeds = traditionSeeds.filter(s => !recentSlugs.has(s.slug));
-
-  // Pick deterministically by day-of-year so all users get the same hero
-  const dayOfYear = Math.floor(
-    (new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
-  );
-  const pool = freshSeeds.length > 0 ? freshSeeds : traditionSeeds;
-  const seed = pool[dayOfYear % pool.length];
-
-  if (!seed) return getFallbackDharmVeerOfTheDay(userTradition);
-
-  // 3. Generate with AI
-  try {
-    const content = await generateDharmVeerContent(seed);
-
-    // 4. Cache in DB (ignore conflict — another request may have just inserted)
-    await supabase.from('dharm_veer_daily').upsert({
-      tradition,
-      date: today,
-      slug: seed.slug,
-      name: seed.name,
-      name_local: seed.name_local ?? null,
-      era: seed.era,
-      tagline: content.tagline,
-      journey: content.journey,
-      journey_local: content.journey_local,
-      trial: content.trial,
-      trial_local: content.trial_local,
-      teaching: content.teaching,
-      teaching_local: content.teaching_local,
-      moral: content.moral,
-      moral_local: content.moral_local,
-      legacy: content.legacy ?? null,
-      legacy_local: content.legacy_local ?? null,
-      quote: content.quote || null,
-      quote_local: content.quote_local || null,
-      quote_source: content.quote_source || null,
-      tags: seed.tags,
-      generated_by: 'ai-on-demand',
-    }, { onConflict: 'tradition,date', ignoreDuplicates: true });
-
-    return rowToDharmVeer({
-      slug: seed.slug,
-      name: seed.name,
-      name_local: seed.name_local ?? null,
-      tradition,
-      era: seed.era,
-      tagline: content.tagline,
-      journey: content.journey,
-      journey_local: content.journey_local,
-      trial: content.trial,
-      trial_local: content.trial_local,
-      teaching: content.teaching,
-      teaching_local: content.teaching_local,
-      moral: content.moral,
-      moral_local: content.moral_local,
-      legacy: content.legacy ?? null,
-      legacy_local: content.legacy_local ?? null,
-      quote: content.quote || null,
-      quote_local: content.quote_local || null,
-      quote_source: content.quote_source || null,
-    });
-  } catch {
-    // AI failed — use weighted static fallback
-    return getFallbackDharmVeerOfTheDay(userTradition);
-  }
+  // We no longer generate Dharm Veers via AI on the fly.
+  // We return a deterministic static hero as the SSR fallback.
+  // The true per-user rotation memory runs on the client via selectDharmVeer.
+  return getFallbackDharmVeerOfTheDay(userTradition);
 }
 
 export async function getDharmVeerBySlug(

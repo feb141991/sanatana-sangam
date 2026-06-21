@@ -12,6 +12,9 @@ export interface CalculatedOccurrence {
   slug: string;
   date: string; // YYYY-MM-DD
   year: number;
+  /** True for recurring tithi vrats (many per definition per year). Lets the
+   *  materialize layer key these by (definition, date) instead of (definition, year). */
+  recurring?: boolean;
 }
 
 /**
@@ -124,6 +127,56 @@ export const LunarTithiHandler = {
 };
 
 /**
+ * Handler for recurring lunar-tithi vrats (every masa, both pakshas).
+ * Returns every date whose tithi matches one of `recurring_tithi_indices`,
+ * reusing the skipped-tithi detection and collapsing a tithi that spans two
+ * consecutive sunrises down to its first day. Unlike LunarTithiHandler this
+ * does NOT filter by masa, so it yields ~12-26 occurrences per year.
+ */
+export const RecurringLunarTithiHandler = {
+  evaluate(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): string[] {
+    const targets = rule.recurring_tithi_indices;
+    if (!targets || targets.length === 0) return [];
+    const targetSet = new Set(targets);
+    const matchedDates: string[] = [];
+    const matchedSet = new Set<string>();
+    let lastPushedTithi = -1;
+
+    for (let i = 0; i < days.length; i++) {
+      const curr = days[i].panchang;
+      const prev = i > 0 ? days[i - 1].panchang : null;
+
+      // Primary: target tithi present at the sunrise scan. Collapse a tithi that
+      // spans two consecutive sunrises to its first day.
+      if (targetSet.has(curr.tithiIndex)) {
+        if (curr.tithiIndex !== lastPushedTithi && !matchedSet.has(days[i].dateStr)) {
+          matchedDates.push(days[i].dateStr);
+          matchedSet.add(days[i].dateStr);
+        }
+        lastPushedTithi = curr.tithiIndex;
+        continue;
+      }
+      lastPushedTithi = -1;
+
+      // Skipped tithi: a fast target tithi fully contained between two scans
+      // (prev = T-1, curr = T+1). Observe on curr, matching LunarTithiHandler.
+      if (rule.allow_skipped_tithi && prev) {
+        for (const T of targets) {
+          if (T > 1 && T < 30 && prev.tithiIndex === T - 1 && curr.tithiIndex === T + 1) {
+            if (!matchedSet.has(days[i].dateStr)) {
+              matchedDates.push(days[i].dateStr);
+              matchedSet.add(days[i].dateStr);
+            }
+            break;
+          }
+        }
+      }
+    }
+    return matchedDates;
+  }
+};
+
+/**
  * Handler for Nakshatra Based rules
  */
 export const NakshatraBasedHandler = {
@@ -203,6 +256,8 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
       occurrencesMap[rule.slug] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
       occurrencesMap[rule.slug] = LunarTithiHandler.evaluate(rule, days);
+    } else if (rule.rule_family === 'lunar_tithi_recurring') {
+      occurrencesMap[rule.slug] = RecurringLunarTithiHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rule.slug] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
@@ -245,6 +300,13 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
     if (allDates.length === 0) continue;
+    // Recurring vrats emit EVERY occurrence in the year, not just one.
+    if (rule.rule_family === 'lunar_tithi_recurring') {
+      for (const date of allDates) {
+        results.push({ slug: rule.slug, date, year, recurring: true });
+      }
+      continue;
+    }
     const selectedDate = rule.prefer_last_match
       ? allDates[allDates.length - 1]
       : allDates[0];

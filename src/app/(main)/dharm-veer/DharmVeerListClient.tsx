@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, BookOpen, CheckCircle2, Flame, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { DharmVeer } from '@/lib/dharm-veer';
-import { DHARM_VEERS, TRADITION_META } from '@/lib/dharm-veer';
+import { DHARM_VEERS, TRADITION_META, selectDharmVeer } from '@/lib/dharm-veer';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 type TraditionFilter = 'all' | 'hindu' | 'sikh' | 'buddhist' | 'jain';
@@ -39,21 +39,54 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
   const [filter, setFilter]     = useState<TraditionFilter>('all');
   const [readIds, setReadIds]   = useState<Set<string>>(new Set());
   const [readCount, setReadCount] = useState(0);
+  const [liveTodayHero, setLiveTodayHero] = useState<DharmVeer>(todayHero);
 
   // Load read history from localStorage
   useEffect(() => {
     try {
       const ids = new Set<string>();
-      // Today's hero counts if the 30-second timer fired
       const tz    = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
       const today = localSpiritualDate(tz, 4);
+
+      // Collect ALL read ids from the new history
+      const historyRaw = localStorage.getItem('shoonaya-dharmveer-history');
+      if (historyRaw) {
+        const historyArr = JSON.parse(historyRaw) as string[];
+        historyArr.forEach(id => ids.add(id));
+      }
+
+      // Legacy fallback: today's hero read status
       if (localStorage.getItem(`shoonaya-dharmveer-done-${today}`)) {
         ids.add(todayHero.id);
       }
       setReadIds(ids);
       setReadCount(ids.size);
+
+      // Resolve the true user-specific daily hero
+      const lastSelectedDate = localStorage.getItem('shoonaya-dharmveer-last-selected-date');
+      const lastSelectedId = localStorage.getItem('shoonaya-dharmveer-last-selected-id');
+
+      if (lastSelectedDate === today && lastSelectedId) {
+        const found = DHARM_VEERS.find(h => h.id === lastSelectedId);
+        if (found) setLiveTodayHero(found);
+      } else {
+        // If not set yet (they came here directly), run the selection logic
+        const historyIds = Array.from(ids);
+        const selected = selectDharmVeer({
+          userTradition: tradition,
+          historyIds,
+        });
+        setLiveTodayHero(selected);
+
+        // Save to cache
+        const newHistory = [...historyIds, selected.id].slice(-14);
+        localStorage.setItem('shoonaya-dharmveer-history', JSON.stringify(newHistory));
+        localStorage.setItem('shoonaya-dharmveer-last-selected-date', today);
+        localStorage.setItem('shoonaya-dharmveer-last-selected-id', selected.id);
+      }
+
     } catch { /* ignore */ }
-  }, [todayHero.id]);
+  }, [todayHero.id, tradition]);
 
   const filtered = filter === 'all'
     ? DHARM_VEERS
@@ -117,7 +150,7 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
           <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2.5" style={{ color: `${gold}55` }}>
             Today&apos;s Dharm Veer
           </p>
-          <Link href={`/dharm-veer/${todayHero.id}`}>
+          <Link href={`/dharm-veer/${liveTodayHero.id}`}>
             <div
               className="relative rounded-[1.8rem] overflow-hidden p-5 transition-transform active:scale-[0.99]"
               style={{
@@ -137,11 +170,11 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 text-4xl shadow-lg"
                   style={{
-                    background: TRADITION_META[todayHero.tradition]?.color.replace('0.12', '0.28') ?? 'rgba(197,160,89,0.2)',
+                    background: TRADITION_META[liveTodayHero.tradition]?.color.replace('0.12', '0.28') ?? 'rgba(197,160,89,0.2)',
                     border: '1px solid rgba(197,160,89,0.30)',
                   }}
                 >
-                  {todayHero.emoji}
+                  {liveTodayHero.emoji}
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -150,19 +183,19 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
                       className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
                       style={{ background: 'rgba(197,160,89,0.15)', color: gold }}
                     >
-                      {TRADITION_META[todayHero.tradition]?.label ?? todayHero.tradition}
+                      {TRADITION_META[liveTodayHero.tradition]?.label ?? liveTodayHero.tradition}
                     </span>
-                    {readIds.has(todayHero.id) && (
+                    {readIds.has(liveTodayHero.id) && (
                       <span className="flex items-center gap-0.5 text-[9px] font-bold" style={{ color: '#4ade80' }}>
                         <CheckCircle2 size={11} /> Read
                       </span>
                     )}
                   </div>
                   <h2 className="font-serif text-xl leading-tight" style={{ color: 'var(--brand-ink)' }}>
-                    {todayHero.name}
+                    {liveTodayHero.name}
                   </h2>
                   <p className="text-[11px] mt-1 leading-snug line-clamp-2" style={{ color: 'rgba(255,240,200,0.52)' }}>
-                    {todayHero.tagline}
+                    {liveTodayHero.tagline}
                   </p>
                 </div>
               </div>

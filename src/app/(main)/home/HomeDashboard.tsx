@@ -14,7 +14,7 @@ import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { getFestivalStory } from '@/lib/festival-stories';
-import { TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
+import { TRADITION_META, selectDharmVeer, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getMoodSpiritualDate } from '@/lib/mood/registry';
 import { resolveVratSlug } from '@/lib/vrat-data';
@@ -298,6 +298,7 @@ export default function HomeDashboard({
 
   // ── Notification panel ──
   const [notifOpen, setNotifOpen] = useState(false);
+  const [liveDharmVeer, setLiveDharmVeer] = useState<DharmVeer>(dharmVeer);
   const [notifPortalTarget, setNotifPortalTarget] = useState<Element | null>(null);
   const notifQuery      = useNotificationsQuery(userId);
   const notifs          = notifQuery.data ?? [];
@@ -373,7 +374,64 @@ export default function HomeDashboard({
         dharmVeerDone: dharmVeerDoneToday,
       });
     }
-  }, [dharmVeerDoneToday, quizDoneToday]);
+
+    try {
+      // ── Client-side per-user Dharm Veer rotation memory ──
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const todayStr = localSpiritualDate(browserTz, 4);
+      const historyKey = 'shoonaya-dharmveer-history';
+      const historyRaw = localStorage.getItem(historyKey);
+
+      let historyIds: string[] = [];
+      if (historyRaw) {
+        try { historyIds = JSON.parse(historyRaw); } catch {}
+      }
+
+      // We only consider the history up to YESTERDAY for today's selection,
+      // or if it's already generated for today, we keep the one for today.
+      const lastSelectedKey = 'shoonaya-dharmveer-last-selected-date';
+      const lastSelectedIdKey = 'shoonaya-dharmveer-last-selected-id';
+
+      const lastSelectedDate = localStorage.getItem(lastSelectedKey);
+      const lastSelectedId = localStorage.getItem(lastSelectedIdKey);
+
+      let selected: DharmVeer;
+
+      if (lastSelectedDate === todayStr && lastSelectedId) {
+        // We already picked one for today on this device
+        // We should just re-select it by using the history.
+        // Actually, we can just use selectDharmVeer and if history is unmodified, it'll pick it.
+        // Wait, if it's already in history, we should temporarily remove it from history to run selection?
+        // Let's just run selectDharmVeer on history EXCLUDING today's id if we want it to be deterministic,
+        // or just let it pick. But since selectDharmVeer filters out recent history, if we already added today's to history, it might pick something else if we re-run!
+
+        // So we should NOT pass today's id as part of the blocking history.
+        const effectiveHistory = lastSelectedDate === todayStr
+          ? historyIds.filter(id => id !== lastSelectedId)
+          : historyIds;
+
+        selected = selectDharmVeer({
+          userTradition: tradition,
+          historyIds: effectiveHistory,
+        });
+      } else {
+        selected = selectDharmVeer({
+          userTradition: tradition,
+          historyIds,
+        });
+
+        // It's a new day, save today's selection
+        const newHistory = [...historyIds, selected.id].slice(-14);
+        localStorage.setItem(historyKey, JSON.stringify(newHistory));
+        localStorage.setItem(lastSelectedKey, todayStr);
+        localStorage.setItem(lastSelectedIdKey, selected.id);
+      }
+
+      setLiveDharmVeer(selected);
+    } catch {
+      // Keep SSR fallback on error
+    }
+  }, [dharmVeerDoneToday, quizDoneToday, tradition]);
 
   const [activeStoryFestival, setActiveStoryFestival] = useState<Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);
@@ -409,7 +467,7 @@ export default function HomeDashboard({
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null);
 
   const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
-  
+
   useEffect(() => {
     if (coverUrl) setCustomCover(coverUrl);
     else {
@@ -419,7 +477,7 @@ export default function HomeDashboard({
   }, [coverUrl]);
 
   const [showProfileNudge, setShowProfileNudge] = useState(false);
-  
+
   useEffect(() => {
     if (avatarUrl && savedCity) return;
     try {
@@ -523,7 +581,7 @@ export default function HomeDashboard({
         setQuizDailyId(parsed.daily_quiz_id ?? null);
         const answered = localStorage.getItem(QUIZ_ANSWERED_KEY);
         if (answered !== null) setQuizAnswered(Number(answered));
-        
+
         fetch('/api/quiz/stats')
           .then(r => r.ok ? r.json() : null)
           .then(data => { if (data?.streak) setQuizStreak(data.streak); })
@@ -545,7 +603,7 @@ export default function HomeDashboard({
         setQuiz(quizData);
         setQuizDailyId(data.daily_quiz_id ?? null);
         localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(quizData));
-        
+
         fetch('/api/quiz/stats')
           .then(r => r.ok ? r.json() : null)
           .then(data => { if (data?.streak) setQuizStreak(data.streak); })
@@ -733,8 +791,8 @@ export default function HomeDashboard({
 
   const { observances, loading: calendarLoading, error: calendarError } = useUpcomingObservances(tradition || 'all', 30);
 
-  const apiFestivals: Festival[] = calendarError 
-    ? FESTIVALS_2026.slice(0, 3) 
+  const apiFestivals: Festival[] = calendarError
+    ? FESTIVALS_2026.slice(0, 3)
     : observances.map(obs => ({
         name: obs.display_name,
         date: obs.date,
@@ -781,7 +839,7 @@ export default function HomeDashboard({
   })();
   const pitruPakshaCopy = pitruPakshaDay ? getPitruPakshaBannerCopy(pitruPakshaDay) : null;
 
-  const completedCount = 
+  const completedCount =
     (japaAlreadyDoneToday ? 1 : 0) +
     (nityaDoneToday ? 1 : 0) +
     (pathshalaDoneToday ? 1 : 0) +
@@ -871,7 +929,7 @@ export default function HomeDashboard({
   const relicAccent = getRelicAccent(activeSymbolId);
 
   return (
-    <div 
+    <div
       className="divine-home-shell bg-[var(--divine-bg)] -mx-3 sm:-mx-4 relative selection:bg-[#C5A059]/30"
       style={{
         '--relic-accent':      relicAccent.primary,
@@ -908,7 +966,7 @@ export default function HomeDashboard({
         nityaDoneToday={nityaDoneToday}
         pathshalaDoneToday={pathshalaDoneToday}
         dailyDharmaStackState={dailyDharmaStackState}
-        dharmVeer={dharmVeer}
+        dharmVeer={liveDharmVeer}
         isDark={isDark}
         unreadCount={unreadCount}
         onNotifBellClick={() => { setNotifOpen((v) => !v); if (!notifOpen) notifQuery.refetch(); }}
@@ -1040,7 +1098,7 @@ export default function HomeDashboard({
             isDark={isDark}
             readToday={readToday}
             dailyDharmaStackState={dailyDharmaStackState}
-            dharmVeer={dharmVeer}
+            dharmVeer={liveDharmVeer}
             appLanguage={appLanguage ?? 'en'}
             onOpenMoodJourney={(moodKey) => setJourneyMoodKey(moodKey)}
             onDismissMood={handleMoodPulseDismiss}
@@ -1458,7 +1516,7 @@ export default function HomeDashboard({
             >
               {/* Decorative ambient background */}
               <div className="absolute inset-0 bg-gradient-to-b from-[#C5A059]/10 via-transparent to-transparent opacity-60 pointer-events-none" />
-              
+
               {/* Symbol */}
               <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/25 flex items-center justify-center text-3xl mx-auto mb-6">
                 ✨
@@ -1468,7 +1526,7 @@ export default function HomeDashboard({
               <h2 className="text-2xl font-bold font-serif theme-ink mb-3">
                 Welcome to the Zeroists{userName ? `, ${userName.split(' ')[0]}` : ''}!
               </h2>
-              
+
               <p className="text-sm text-[var(--text-muted-warm)] leading-relaxed mb-8">
                 You are now part of the global Shoonaya mandali. Let us walk the path of sadhana, mindfulness, and sacred consistency together.
               </p>
