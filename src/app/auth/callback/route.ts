@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { User } from '@supabase/supabase-js';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
@@ -65,20 +67,54 @@ async function ensureProfile(user: User, sessionSupabase: Awaited<ReturnType<typ
   }
 }
 
+async function createCallbackSupabaseClient() {
+  const cookieStore = await cookies();
+  const cookiesToSet: { name: string; value: string; options: CookieOptions }[] = [];
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(nextCookies: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.push(...nextCookies);
+        },
+      },
+    }
+  );
+
+  return { supabase, cookiesToSet };
+}
+
+function attachAuthCookies(
+  response: NextResponse,
+  cookiesToSet: { name: string; value: string; options: CookieOptions }[]
+) {
+  cookiesToSet.forEach(({ name, value, options }) => {
+    response.cookies.set(name, value, options);
+  });
+  return response;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const next = getSafeNext(searchParams.get('next'), '/home');
 
   if (code) {
-    const supabase = await createServerSupabaseClient();
+    const { supabase, cookiesToSet } = await createCallbackSupabaseClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await ensureProfile(user, supabase);
+        await ensureProfile(user, supabase as Awaited<ReturnType<typeof createServerSupabaseClient>>);
       }
-      return NextResponse.redirect(`${origin}${next}`);
+      const bridge = new URL('/auth/continue', origin);
+      bridge.searchParams.set('next', next);
+      return attachAuthCookies(NextResponse.redirect(bridge), cookiesToSet);
     }
   }
 

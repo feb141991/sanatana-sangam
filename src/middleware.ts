@@ -4,8 +4,8 @@ import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 
 // ─── Preview / Coming-Soon Gate ───────────────────────────────────────────────
 //
-// APP_OPEN=false (default) → app is restricted. Only preview-cookie holders enter.
-// APP_OPEN=true            → set in Vercel on June 17 launch day. Gate removed.
+// APP_OPEN=false           → app is restricted. Only preview-cookie holders enter.
+// APP_OPEN unset/true      → launched/live app. Gate removed.
 //
 // Grant testing access by sharing:
 //   https://shoonaya.com/?preview=<PREVIEW_KEY>
@@ -173,7 +173,7 @@ async function middlewareHandler(req: NextRequest) {
   }
 
   // ── Step 2: Coming-soon gate ───────────────────────────────────────────────
-  const appOpen = process.env.APP_OPEN === 'true';
+  const appOpen = process.env.APP_OPEN !== 'false';
 
   if (!appOpen) {
     const isPublic =

@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
+import { getAuthCallbackUrl } from '@/lib/auth-redirect';
 
 function LoginForm() {
   const router       = useRouter();
@@ -22,7 +23,7 @@ function LoginForm() {
     if (!supabase) return;
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/home` },
+      options: { redirectTo: getAuthCallbackUrl('/home') },
     });
   };
   const [email,    setEmail]    = useState('');

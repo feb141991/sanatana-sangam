@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { Eye, EyeOff, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
 import BrandMark from '@/components/BrandMark';
 import { createClient } from '@/lib/supabase';
+import { getAuthCallbackUrl } from '@/lib/auth-redirect';
 
 function usernameFromEmail(email: string) {
   const base = email
@@ -67,7 +68,7 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(onboardingNext)}`,
+        redirectTo: getAuthCallbackUrl(onboardingNext),
       },
     });
 
