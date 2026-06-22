@@ -720,6 +720,11 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 @keyframes screenGlow { 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
 
 .download-note { font-size:13px; color:rgba(62,42,31,0.45); position:relative; z-index:1; }
+.install-guide { position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; max-width:860px; margin:28px auto 0; text-align:left; }
+.install-guide-card { background:var(--warm-white); border:1px solid var(--border); border-radius:20px; padding:20px; }
+.install-guide-title { font-family:var(--fd); font-size:18px; font-weight:600; color:var(--ink); margin-bottom:10px; }
+.install-guide-list { margin:0; padding-left:18px; color:var(--ink-soft); font-size:13px; line-height:1.7; }
+@media(max-width:720px){ .install-guide { grid-template-columns:1fr; } }
 
 /* ── CTA SECTION ─────────────────────────────────────────────────────── */
 .cta-section { padding:120px 80px; text-align:center; position:relative; overflow:hidden; }
@@ -762,20 +767,6 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 .cta-field-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238E7868' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; cursor:pointer; }
 .cta-fields-submit { width:100%; padding:15px 30px; border-radius:100px; background:var(--saffron); color:#fff; font-family:var(--fb); font-size:14px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.2s; min-height:48px; }
 .cta-fields-submit:hover { opacity:0.9; }
-
-/* CTA Step 3 — founding toggle */
-.cta-founding-wrap { max-width:440px; margin:0 auto 20px; }
-.cta-founding-toggle { display:flex; align-items:center; justify-content:space-between; gap:16px; background:rgba(255,253,249,0.92); border:1.5px solid rgba(216,138,28,0.22); border-radius:16px; padding:16px 20px; cursor:pointer; transition:border-color 0.2s; }
-.cta-founding-toggle:hover { border-color:rgba(216,138,28,0.45); }
-.cta-founding-text { text-align:left; }
-.cta-founding-label { font-size:14px; font-weight:600; color:var(--ink); margin-bottom:2px; }
-.cta-founding-sub { font-size:12px; color:rgba(62,42,31,0.50); }
-.cta-toggle-track { width:44px; height:26px; border-radius:100px; background:rgba(200,160,110,0.25); border:1.5px solid rgba(216,138,28,0.20); transition:background 0.22s, border-color 0.22s; flex-shrink:0; position:relative; }
-.cta-toggle-track.on { background:var(--saffron); border-color:var(--saffron); }
-.cta-toggle-knob { position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.18); transition:transform 0.22s; }
-.cta-toggle-track.on .cta-toggle-knob { transform:translateX(18px); }
-.cta-founding-submit { width:100%; padding:15px 30px; border-radius:100px; background:var(--saffron); color:#fff; font-family:var(--fb); font-size:14px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.2s; margin-top:14px; min-height:48px; }
-.cta-founding-submit:hover { opacity:0.9; }
 
 /* ── FOOTER ──────────────────────────────────────────────────────────── */
 footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
@@ -1075,9 +1066,9 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
 <div class="stats-band reveal" id="shoonaya-content">
-  <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Zeroists · Community</div></div>
+  <div class="stat-item"><div class="stat-num">Global</div><div class="stat-label">Zeroists · Community</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="700">0</span><span>+</span></div><div class="stat-label">Sacred Texts Indexed</div></div>
+  <div class="stat-item"><div class="stat-num">Pramana</div><div class="stat-label">Source-Grounded Wisdom</div></div>
 </div>
 
 
@@ -1217,7 +1208,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <!-- Top row -->
   <div class="gc-top-row">
     <div class="gc-top-left">
-      <div class="gc-eyebrow">While you wait for the app</div>
+      <div class="gc-eyebrow">Play sacred wisdom now</div>
       <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
       <p class="gc-sub">Ancient Indian game of dharmic progress — roll dice, land on virtues to ascend, conquer vices before they pull you down.</p>
     </div>
@@ -1501,8 +1492,8 @@ function gcRestart(){
 <!-- ── TRADITION TABS ─────────────────────────────────────────────── -->
 <section class="traditions-section" id="traditions">
   <div style="text-align:center; margin-bottom:20px" class="reveal">
-    <div class="s-label" style="margin-bottom:10px">Four Paths · One Sangam</div>
-    <div class="s-title">Built for every dharmic tradition</div>
+    <div class="s-label" style="margin-bottom:10px">Choose Your Tradition</div>
+    <div class="s-title">Four paths, one Sangam</div>
     <p class="s-sub" style="margin:0 auto 40px; text-align:center">Shoonaya honours the full breadth of dharmic wisdom — Hindu, Sikh, Buddhist, and Jain. Each tradition has its own dedicated experience within one shared community.</p>
   </div>
 
@@ -1731,8 +1722,8 @@ function gcRestart(){
           <div class="ft-stat-label">Dharmic souls worldwide</div>
         </div>
         <div class="ft-stat">
-          <div class="ft-stat-num">700+</div>
-          <div class="ft-stat-label">Sacred texts indexed</div>
+          <div class="ft-stat-num">Pramana</div>
+          <div class="ft-stat-label">Source-grounded wisdom</div>
         </div>
         <div class="ft-stat">
           <div class="ft-stat-num">5,000</div>
@@ -1944,8 +1935,8 @@ function gcRestart(){
         <div class="city-dot" style="left:65%;top:48%;--d:0.3s;background:var(--saffron)"></div>
       </div>
       <div style="position:relative;z-index:2">
-        <div class="map-label">48 Countries</div>
-        <div class="map-sub">and growing every day</div>
+        <div class="map-label">Global Diaspora</div>
+        <div class="map-sub">built for seekers wherever they live</div>
       </div>
     </div>
 
@@ -1954,44 +1945,44 @@ function gcRestart(){
         <div class="member-card reveal">
           <div class="avatar-circle av-1">A</div>
           <div class="member-info">
-            <div class="member-name">Arjun Sharma</div>
-            <div class="member-loc">London, UK · Computer Science Student</div>
+            <div class="member-name">Daily practice circles</div>
+            <div class="member-loc">Japa, scripture, and sacred-time rhythms</div>
           </div>
-          <span class="member-tag mt-h">Vaishnavism</span>
+          <span class="member-tag mt-h">Practice</span>
         </div>
         <div class="connection-line">
           <div class="cl-dot" style="background:var(--saffron)"></div>
-          Connected through Bhagavad Gita study group
+          One home for many dharmic paths
           <div class="cl-dot" style="background:var(--saffron)"></div>
         </div>
         <div class="member-card reveal" style="transition-delay:0.1s">
           <div class="avatar-circle av-2">G</div>
           <div class="member-info">
-            <div class="member-name">Gurpreet Kaur</div>
-            <div class="member-loc">Vancouver, Canada · NHS Nurse</div>
+            <div class="member-name">Local Mandali discovery</div>
+            <div class="member-loc">Find nearby seekers and community spaces</div>
           </div>
-          <span class="member-tag mt-s">Sikhism</span>
+          <span class="member-tag mt-s">Community</span>
         </div>
         <div class="connection-line">
           <div class="cl-dot" style="background:var(--c-buddhist)"></div>
-          Discovered via tradition-matching
+          Tradition-aware, not one-size-fits-all
           <div class="cl-dot" style="background:var(--c-buddhist)"></div>
         </div>
         <div class="member-card reveal" style="transition-delay:0.2s">
           <div class="avatar-circle av-3">T</div>
           <div class="member-info">
-            <div class="member-name">Thida Myo</div>
-            <div class="member-loc">Singapore · Meditation Teacher</div>
+            <div class="member-name">Shared learning paths</div>
+            <div class="member-loc">Gita, Gurbani, Dhamma, Jain wisdom, and more</div>
           </div>
-          <span class="member-tag mt-b">Theravada</span>
+          <span class="member-tag mt-b">Learning</span>
         </div>
         <div class="member-card reveal" style="transition-delay:0.3s">
           <div class="avatar-circle av-4">V</div>
           <div class="member-info">
-            <div class="member-name">Vivek Jain</div>
-            <div class="member-loc">Surat, India · Entrepreneur</div>
+            <div class="member-name">Family and lineage</div>
+            <div class="member-loc">Kul, sanskaras, gotra, and heritage continuity</div>
           </div>
-          <span class="member-tag mt-j">Jainism</span>
+          <span class="member-tag mt-j">Family</span>
         </div>
       </div>
     </div>
@@ -2002,18 +1993,18 @@ function gcRestart(){
 <section class="section" id="features">
   <div class="s-label reveal">The Platform</div>
   <div class="s-title reveal">The Sangam, wherever you are</div>
-  <div class="s-sub reveal">Every feature you need — daily sadhana, community, scripture, sacred calendar. Live now.</div>
+  <div class="s-sub reveal">Daily sadhana, community, scripture, and sacred-time tools are live now, with deeper native experiences planned later.</div>
 
   <div class="features-grid reveal">
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/home">
       <div class="feature-icon fi-s">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8924A" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L13.8 8.2L20 8.2L14.9 11.8L16.7 18L12 14.4L7.3 18L9.1 11.8L4 8.2L10.2 8.2Z"/></svg>
       </div>
       <div class="feature-name">Daily Wisdom Feed</div>
-      <div class="feature-desc">Morning verses from Vedas, Guru Granth Sahib Ji, Dhammapada, and Agamas — curated by tradition, personalised to your mood.</div>
+      <div class="feature-desc">Morning wisdom, practice prompts, and tradition-aware daily context inside your home dashboard.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/japa">
       <div class="feature-icon fi-ja">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B6FB5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="5" r="1.5" fill="#9B6FB5"/><circle cx="17.2" cy="8" r="1.5" fill="#9B6FB5"/><circle cx="19" cy="13.5" r="1.5" fill="#9B6FB5"/><circle cx="16" cy="18.5" r="1.5" fill="#9B6FB5"/><circle cx="12" cy="20" r="1.5" fill="#9B6FB5"/></svg>
       </div>
@@ -2021,23 +2012,23 @@ function gcRestart(){
       <div class="feature-desc">Mantra counter with 27/54/108-bead malas, ambient sounds, streak tracking, and session insights for your daily practice.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/panchang/today">
       <div class="feature-icon fi-k">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4784A" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       </div>
       <div class="feature-name">Sacred Calendar</div>
-      <div class="feature-desc">Live Panchang with tithi, nakshatra, rahu kalam — plus Gurpurab, Paryushana, and Buddhist festival reminders by tradition.</div>
+      <div class="feature-desc">Daily Panchang context with tithi, nakshatra, rahu kalam, and sacred observance reminders by tradition.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/pathshala">
       <div class="feature-icon fi-l">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0607A" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       </div>
       <div class="feature-name">Pathshala — Scripture</div>
-      <div class="feature-desc">700+ texts — Vedas, Guru Granth Sahib Ji, Pali Canon, Jain Agamas — with guided learning paths, audio, and reflection prompts.</div>
+      <div class="feature-desc">Guided scripture study paths with readings, audio practice where available, and reflection prompts.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/mandali">
       <div class="feature-icon fi-p">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d7a50" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="21" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="5.6" cy="5.6" r="1.5"/><circle cx="18.4" cy="18.4" r="1.5"/><circle cx="18.4" cy="5.6" r="1.5"/><circle cx="5.6" cy="18.4" r="1.5"/></svg>
       </div>
@@ -2045,7 +2036,7 @@ function gcRestart(){
       <div class="feature-desc">Find practitioners in your city, join local sangats, post and discuss. London to Lagos, Mumbai to Melbourne — all in one sangam.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/nitya-karma">
       <div class="feature-icon fi-g">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       </div>
@@ -2053,7 +2044,7 @@ function gcRestart(){
       <div class="feature-desc">Your personalised morning routine — Nitya Karma, Ashrama duties, guided sadhana plans, and dincharya tracker with streaks.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/kul">
       <div class="feature-icon fi-kl">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5126" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
@@ -2061,15 +2052,15 @@ function gcRestart(){
       <div class="feature-desc">Create your family Kul, track Vansh lineage, share Gotra, and celebrate Sanskars together across generations and continents.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/ai-chat">
       <div class="feature-icon fi-ai">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B8FB9" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
       <div class="feature-name">Dharma AI Guide</div>
-      <div class="feature-desc">Ask anything — from scripture interpretation to daily practice guidance. Tradition-aware AI trained on Vedic, Sikh, Buddhist, and Jain thought.</div>
+      <div class="feature-desc">Ask for practice guidance and scripture context with a tradition-aware AI guide grounded in Shoonaya sources where available.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card" href="/signup">
+    <a class="feature-card" href="/vichaar-sabha">
       <div class="feature-icon fi-vs">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B8E5A" stroke-width="1.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </div>
@@ -2200,7 +2191,7 @@ function gcRestart(){
       </div>
       <div class="phone-copy">
         <div class="phone-label">iPhone App</div>
-        <p class="phone-desc">Native iOS app with tradition-aware push notifications, offline scripture, and home-screen widgets.</p>
+        <p class="phone-desc">Native iOS experience is planned later. Use the live web app today, including Add to Home Screen on Safari.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -2221,7 +2212,7 @@ function gcRestart(){
       </div>
       <div class="phone-copy">
         <div class="phone-label">Android App</div>
-        <p class="phone-desc">Full Android experience with daily reminders, sacred calendar, and community — wherever you are.</p>
+        <p class="phone-desc">Native Android experience is planned later. Use the live web app today, including browser install where supported.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -2233,6 +2224,24 @@ function gcRestart(){
   </div>
 
   <p class="download-note">Web app live now · Native iOS and Android apps planned later</p>
+  <div class="install-guide reveal" aria-label="Install Shoonaya web app">
+    <div class="install-guide-card">
+      <div class="install-guide-title">Install on iPhone</div>
+      <ol class="install-guide-list">
+        <li>Open Shoonaya in Safari.</li>
+        <li>Tap the Share button.</li>
+        <li>Choose Add to Home Screen, then tap Add.</li>
+      </ol>
+    </div>
+    <div class="install-guide-card">
+      <div class="install-guide-title">Install on Android</div>
+      <ol class="install-guide-list">
+        <li>Open Shoonaya in Chrome.</li>
+        <li>Tap the browser menu.</li>
+        <li>Choose Install app or Add to Home screen.</li>
+      </ol>
+    </div>
+  </div>
 </section>
 
 <!-- ── CTA / PRE-REGISTER ─────────────────────────────────────────── -->
@@ -2348,6 +2357,42 @@ function gcRestart(){
         <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
           <div class="faq-a-inner" itemprop="text">
             Shoonaya is live now as a web app. You can enter from your browser today; native iOS and Android apps are planned later.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">How do I install Shoonaya as a web app?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            On iPhone, open Shoonaya in Safari, tap Share, then Add to Home Screen. On Android, open Shoonaya in Chrome, tap the browser menu, then choose Install app or Add to Home screen.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Are native iOS and Android apps available?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Not yet. Shoonaya is live as a web app today. Native iOS and Android apps are planned later, but the web app already works on phone, tablet, and desktop.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is Kids Zone live?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Kids Zone is not live yet. It is a Coming Next area for stories, songs, festivals, and parent-friendly learning paths.
           </div>
         </div>
       </div>
@@ -2786,160 +2831,6 @@ if (tradBar) {
 }
 
 
-/* ─── CTA SIGNUP — 4-stage flow ──────────────────────────────────────────── */
-let ctaEmail = '', ctaName = '', ctaCountry = '', ctaTrad = '', ctaFoundingNum = 0, ctaAlreadyRegistered = false, ctaWantsFoundingMember = true;
-
-function landingShareUrl() {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    return window.location.origin;
-  }
-  return 'https://shoonaya.app';
-}
-
-function buildShoonayaShareText(num, trad) {
-  const tradLabel = {
-    hindu: 'Hindu',
-    sikh: 'Sikh',
-    buddhist: 'Buddhist',
-    jain: 'Jain',
-  }[trad] || 'dharma';
-  return `I joined Shoonaya — a space for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Enter Shoonaya: ${landingShareUrl()}`;
-}
-
-async function postWaitlist(payload) {
-  const res = await fetch('/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.error) {
-    throw new Error(data.error || 'Could not save registration. Please try again.');
-  }
-  return data;
-}
-
-function writeText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-function setShareCopy(prefix, num, trad) {
-  writeText(`${prefix}-share-copy`, buildShoonayaShareText(num, trad));
-}
-
-function setRegistrationFeedback(prefix, alreadyRegistered, num) {
-  const copy = alreadyRegistered
-    ? 'This email is already registered. You can continue into Shoonaya.'
-    : 'Registration saved. Welcome to Shoonaya.';
-  writeText(`${prefix}-registration-feedback`, copy);
-}
-
-async function copyShareText(text, buttonSelector, resetText) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    document.body.removeChild(area);
-  }
-  const btn = document.querySelector(buttonSelector);
-  if (btn) {
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = resetText; }, 2000);
-  }
-}
-
-async function handleCtaSignup(e) {
-  e.preventDefault();
-  ctaEmail   = document.getElementById('cta-email').value.trim().toLowerCase();
-  ctaName    = document.getElementById('cta-name').value.trim();
-  ctaCountry = document.getElementById('cta-country').value;
-  const btn  = document.getElementById('cta-submit-btn');
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, name: ctaName, country: ctaCountry, source: 'cta', timezone: tz });
-    ctaFoundingNum = data.foundingNumber ?? 0;
-    ctaAlreadyRegistered = !!data.alreadyRegistered;
-    document.getElementById('cta-email-wrap').style.display = 'none';
-    document.getElementById('cta-step2').style.display      = 'block';
-  } catch (err) {
-    document.getElementById('cta-note').textContent = err.message || 'Could not save registration. Please try again.';
-    btn.textContent = 'Start Your Journey'; btn.disabled = false;
-  }
-}
-
-function toggleCtaFounding() {
-  ctaWantsFoundingMember = !ctaWantsFoundingMember;
-  const track = document.getElementById('cta-toggle-track');
-  if (ctaWantsFoundingMember) { track.classList.add('on'); } else { track.classList.remove('on'); }
-}
-
-async function submitCtaWithFounding() {
-  const btn = document.getElementById('cta-founding-submit-btn');
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, name: ctaName, country: ctaCountry, tradition: ctaTrad, source: 'cta', timezone: tz, wants_founding_member: ctaWantsFoundingMember });
-    if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
-    ctaAlreadyRegistered = !!data.alreadyRegistered;
-  } catch { /* non-blocking */ }
-  document.getElementById('cta-step3').style.display  = 'none';
-  document.getElementById('cta-reveal').style.display = 'block';
-  document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
-  const ctaAlreadyBox = document.getElementById('cta-already-info');
-  if (ctaAlreadyBox) {
-    if (ctaAlreadyRegistered) {
-      ctaAlreadyBox.textContent = "You’re already registered with Shoonaya. Try another email if you meant to join with a different one.";
-      ctaAlreadyBox.classList.add('visible');
-    } else {
-      ctaAlreadyBox.classList.remove('visible');
-    }
-  }
-  setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
-  setShareCopy('cta', ctaFoundingNum, ctaTrad);
-  triggerShoonayaCelebration('cta-reveal');
-  document.getElementById('cta-note').style.display = 'none';
-  _updateFoundingCount(ctaFoundingNum);
-}
-
-async function selectCtaTrad(pill) {
-  const trad = pill.dataset.t;
-  ctaTrad = trad;
-  document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.classList.remove('chosen'));
-  pill.classList.add('chosen');
-  document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.style.pointerEvents = 'none');
-  document.getElementById('cta-step2').style.display = 'none';
-  document.getElementById('cta-step3').style.display = 'block';
-  document.getElementById('cta-note').style.display  = 'none';
-}
-
-function ctaShareWhatsApp() {
-  const text = encodeURIComponent(buildShoonayaShareText(ctaFoundingNum, ctaTrad));
-  window.open(`https://wa.me/?text=${text}`, '_blank');
-}
-
-function ctaShareTwitter() {
-  const text = encodeURIComponent(buildShoonayaShareText(ctaFoundingNum, ctaTrad));
-  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-}
-
-function ctaCopyLink() {
-  copyShareText(buildShoonayaShareText(ctaFoundingNum, ctaTrad), '#cta-share-row .sj-share-btn:last-child', '🔗 Copy Link');
-}
-
-function _updateFoundingCount(n) {
-  const el = document.getElementById('stat-founding-wrap');
-  if (!el || !n) return;
-  el.textContent = n < 500 ? '500+' : n.toLocaleString('en-IN') + '+';
-}
-
 /* ─── SCROLL TO CTA ──────────────────────────────────────────────────────── */
 function scrollToCta() {
   window.location.href = '/signup';
@@ -3050,13 +2941,6 @@ startShlokProgress();
 
 /* expose onclick handlers to global scope */
 window.scrollToCta     = scrollToCta;
-window.handleCtaSignup       = handleCtaSignup;
-window.selectCtaTrad         = selectCtaTrad;
-window.toggleCtaFounding     = toggleCtaFounding;
-window.submitCtaWithFounding = submitCtaWithFounding;
-window.ctaShareWhatsApp      = ctaShareWhatsApp;
-window.ctaShareTwitter       = ctaShareTwitter;
-window.ctaCopyLink           = ctaCopyLink;
 window.switchTrad      = switchTrad;
 window.switchShloka    = switchShloka;
 
@@ -3537,135 +3421,6 @@ window.switchShloka    = switchShloka;
     running = !running;
   });
 })();
-
-/* ─── Shared waitlist helpers for splash flow ─────────────────────────────── */
-function landingShareUrl() {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    return window.location.origin;
-  }
-  return 'https://shoonaya.app';
-}
-
-function buildShoonayaShareText(num, trad) {
-  const tradLabel = {
-    hindu: 'Hindu',
-    sikh: 'Sikh',
-    buddhist: 'Buddhist',
-    jain: 'Jain',
-  }[trad] || 'dharma';
-  return `I joined Shoonaya — a space for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Enter Shoonaya: ${landingShareUrl()}`;
-}
-
-async function postWaitlist(payload) {
-  const res = await fetch('/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.error) {
-    throw new Error(data.error || 'Could not save registration. Please try again.');
-  }
-  return data;
-}
-
-function writeText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-function setShareCopy(prefix, num, trad) {
-  writeText(`${prefix}-share-copy`, buildShoonayaShareText(num, trad));
-}
-
-function setRegistrationFeedback(prefix, alreadyRegistered, num) {
-  const copy = alreadyRegistered
-    ? 'This email is already registered. You can continue into Shoonaya.'
-    : 'Registration saved. Welcome to Shoonaya.';
-  writeText(`${prefix}-registration-feedback`, copy);
-}
-
-async function copyShareText(text, buttonSelector, resetText) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    document.body.removeChild(area);
-  }
-  const btn = document.querySelector(buttonSelector);
-  if (btn) {
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = resetText; }, 2000);
-  }
-}
-
-function triggerShoonayaCelebration(targetId = 'sj-badge') {
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-
-  const layer = document.getElementById('celebration-layer');
-  const target = document.getElementById(targetId);
-  if (!layer || !target) return;
-
-  const rect = target.getBoundingClientRect();
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height * 0.42;
-  const colors = ['#FFF6D9', '#FAC775', '#EF9F27', '#D88A1C', '#FFFEF8'];
-  const pieces = [];
-
-  for (let i = 0; i < 3; i++) {
-    const ring = document.createElement('i');
-    ring.className = 'celebration-ring';
-    ring.style.setProperty('--x', `${x}px`);
-    ring.style.setProperty('--y', `${y}px`);
-    ring.style.animationDelay = `${i * 70}ms`;
-    layer.appendChild(ring);
-    pieces.push(ring);
-  }
-
-  for (let i = 0; i < 20; i++) {
-    const ray = document.createElement('i');
-    ray.className = 'celebration-ray';
-    ray.style.setProperty('--x', `${x}px`);
-    ray.style.setProperty('--y', `${y}px`);
-    ray.style.setProperty('--r', `${(360 / 20) * i + Math.random() * 8}deg`);
-    ray.style.setProperty('--h', `${32 + Math.random() * 48}px`);
-    layer.appendChild(ray);
-    pieces.push(ray);
-  }
-
-  for (let i = 0; i < 78; i++) {
-    const spark = document.createElement('i');
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 70 + Math.random() * 240;
-    const lift = 18 + Math.random() * 70;
-    spark.className = 'celebration-spark';
-    spark.style.setProperty('--x', `${x}px`);
-    spark.style.setProperty('--y', `${y}px`);
-    spark.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
-    spark.style.setProperty('--dy', `${Math.sin(angle) * distance - lift}px`);
-    spark.style.setProperty('--s', `${2 + Math.random() * 4}px`);
-    spark.style.setProperty('--d', `${820 + Math.random() * 780}ms`);
-    spark.style.setProperty('--c', colors[i % colors.length]);
-    spark.style.animationDelay = `${Math.random() * 120}ms`;
-    layer.appendChild(spark);
-    pieces.push(spark);
-  }
-
-  window.setTimeout(() => pieces.forEach(el => el.remove()), 1900);
-}
-
-/* ─── Live waitlist count ─────────────────────────────────────────────────── */
-fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
-  const el = document.getElementById('stat-founding-wrap');
-  if (!el || !count) return;
-  el.textContent = count < 500 ? '500+' : count.toLocaleString('en-IN') + '+';
-}).catch(() => {});
 
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
 let mainPageInitialised = false;
