@@ -565,7 +565,7 @@ export function HeroSection({
 
   const japaDetails = getTraditionJapaDetails(tradition);
   const practices = [
-    { id: 'japa', done: japaAlreadyDoneToday, label: japaDetails.label, detail: japaDetails.detail, icon: '📿', href: '/japa' },
+    { id: 'japa', done: japaAlreadyDoneToday || dailyDharmaStackState.japaRounds >= 1, label: japaDetails.label, detail: japaDetails.detail, icon: '📿', href: '/japa' },
     { id: 'nitya', done: nityaDoneToday, label: meta.nityaKarmaTitle, detail: 'morning rhythm', icon: '🌅', href: '/nitya-karma' },
     { id: 'pathshala', done: pathshalaDoneToday, label: meta.pathshalaVocabulary, detail: sacredTextMeta.label, icon: sacredTextMeta.icon || '📖', href: '/pathshala' },
     { id: 'quiz', done: dailyDharmaStackState.quizDone, label: 'Daily Quiz', detail: 'test your dharmic memory', icon: '🧠', href: '/quiz' },
