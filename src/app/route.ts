@@ -15,7 +15,18 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+
+  // OAuth should land on /auth/callback, but a stale Supabase Site URL or
+  // redirect allow-list can send users to /?code=... instead. Preserve the
+  // auth params and move them to the exchange route instead of showing landing.
+  if (code) {
+    url.pathname = '/auth/callback';
+    return NextResponse.redirect(url);
+  }
+
   try {
     // Logged-in users → app home
     const supabase = await createServerSupabaseClient();
