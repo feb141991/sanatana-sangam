@@ -27,15 +27,15 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Current State**: Sample-scale — 45 indexed curated passages (`upanishads_index.json`) across the 11 Principal Upanishad names; coverage is still uneven and not an exhaustive Principal Upanishads corpus. See `PRAMANA_CORPUS_ROADMAP.md`.
 
 ### 1.2 Ramayana Study Corpus
-- **Corpus ID**: `pathshala_ramayana`
+- **Corpus ID**: `valmiki_ramayana`
 - **Tradition**: Sanatana Dharma (Itihasa)
 - **Content Type**: Narrative/Ethical Epic
 - **Manifest Shape**: Kanda > Sarga > Shloka mapping.
 - **Retrieval Mode**: Embedding.
 - **Response Mode**: `scripture_passage_explain` or new `itihasa_story_explain`.
 - **Eval Requirement**: New `pathshala_ramayana` suite covering Dharma dilemmas (e.g., Ayodhya Kanda choices).
-- **Auto-routing target**: Yes (Fallback candidate).
-- **Current State**: Missing entirely.
+- **Auto-routing target**: No (Explicit only unless matching Ramayana queries).
+- **Current State**: Source-audit pending. Metadata-only manifests exist, the index is intentionally empty, and retrieval is disabled until a verified Griffith translation batch is rebuilt.
 
 ### 1.3 Yoga Sutras
 - **Corpus ID**: `pathshala_yogasutras`

@@ -4,12 +4,12 @@
   "tradition": "Sanatana Dharma",
   "corpus": "ramayana",
   "section_id": "ayodhya",
-  "source_name": "Valmiki Ramayana",
-  "source_class": "itihasa",
-  "rights_status": "public_domain",
+  "source_name": "Shoonaya Curated Ramayana Lessons",
+  "source_class": "curated_lesson",
+  "rights_status": "restricted_or_pending",
   "language": "en",
   "translation_basis": "Shoonaya Curated / Public Domain",
-  "is_live_in_app": true,
+  "is_live_in_app": false,
   "content": [
     {
       "ref": "1",
@@ -161,5 +161,11 @@
       "transliteration": "dharmātmā rāmo dadarśa bāṇam mudā lakṣmaṇapūrvajaḥ",
       "text": "The righteous Lord Rama gazed upon the swift and infallible arrow, with immense joy, acting as the beloved elder brother of Lakshmana. The deep fraternal love they shared was a beautiful testament to familial virtue and harmony. Their mutual trust remains a guiding light for household relationships."
     }
-  ]
+  ],
+  "is_pramana_grade": false,
+  "review_status": "needs_source_audit",
+  "original_text_status": "unavailable",
+  "translation_status": "unavailable",
+  "audio_status": "unavailable",
+  "revision_note": "Non-canonical Shoonaya curated/scratch Ramayana material. Not verified as Valmiki canonical text; must not be routed or claimed as public-domain scripture."
 }

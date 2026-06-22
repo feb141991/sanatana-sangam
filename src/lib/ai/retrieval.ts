@@ -1023,28 +1023,6 @@ PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetr
   'Jainism',
   'Jain Dharma Agamas'
 ));
-const ramayanaManifestRetriever = new PramanaManifestRetriever({
-  prefix: 'ramayana',
-  sourceName: 'Valmiki Ramayana',
-  sourceClass: 'itihasa',
-  tradition: 'Sanatana Dharma',
-  fileNames: [
-    'ramayana_bal.json',
-    'ramayana_ayodhya.json',
-    'ramayana_aranya.json',
-    'ramayana_kishkindha.json',
-    'ramayana_sundara.json',
-    'ramayana_yuddha.json',
-    'ramayana_uttara.json'
-  ]
-});
-
-PramanaRetrieverSelector.register('ramayana', new PramanaGenericEmbeddingRetriever(
-  ramayanaManifestRetriever,
-  path.join(process.cwd(), 'python/ai_pipeline/corpus/ramayana_index.json'),
-  'Sanatana Dharma',
-  'Valmiki Ramayana'
-));
 
 export async function retrievePathshalaContext(input: {
   source?: string;
@@ -1053,7 +1031,7 @@ export async function retrievePathshalaContext(input: {
   corpus?: string | null;
 }): Promise<RetrievalChunk[]> {
   const selector = new SimpleCorpusSelector();
-  let corpusId = (input.corpus as any) || selector.selectCorpus(
+  const corpusId = input.corpus || selector.selectCorpus(
     `${input.title ?? ''} ${input.source ?? ''}`.trim(),
     {
       source: input.source || null,
@@ -1062,14 +1040,8 @@ export async function retrievePathshalaContext(input: {
     }
   );
 
-  // Prevent accidental fallback to Ramayana if just "hindu" or "sanatana dharma" is specified, unless explicitly requested.
-  // We keep the defaults to BG or Upanishads for generic queries.
-  if (corpusId === 'ramayana') {
-    const rawQuery = `${input.title ?? ''} ${input.source ?? ''}`.toLowerCase();
-    if (!rawQuery.includes('ramayana') && !rawQuery.includes('valmiki') && !rawQuery.includes('kanda') && !rawQuery.includes('rama') && !rawQuery.includes('sita') && !rawQuery.includes('hanuman')) {
-      // If it accidentally resolved to Ramayana without explicit keyword, route back to Gita or Upanishads
-      corpusId = 'bhagavad_gita';
-    }
+  if (corpusId === 'valmiki_ramayana') {
+    throw new Error('valmiki_ramayana is source-audit pending and is not registered for retrieval.');
   }
 
   const retriever = PramanaRetrieverSelector.select(corpusId);

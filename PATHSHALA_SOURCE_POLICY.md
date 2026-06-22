@@ -206,13 +206,14 @@ Launch truth:
 
 State:
 
-- `partial_local` excerpts and Kanda-first study structure
-- `companion_only` for wider canonical expansion
+- `catalog_only` / source-audit pending for local Valmiki Ramayana text
+- `companion_only` for wider canonical study until source rights and exact references are verified
 
 Launch truth:
 
-- Pathshala provides Kanda structure and study entry
-- it is not yet a full local Ramayana corpus
+- Pathshala must not claim local verified Valmiki Ramayana passage coverage yet
+- a future live batch must use verified Kanda/Sarga/Shloka references and rights-safe translation text
+- Sanskrit original text remains companion-only until the specific digital source rights are verified
 
 ### Principal Upanishads
 

@@ -1,0 +1,1 @@
+{"case_id":"valmiki_ramayana_pending_guard","prompt":{"query":"valmiki ramayana bala kanda 1.1.1","corpus":"valmiki_ramayana"},"expected":{"status":"source_audit_pending","must_not_retrieve":true}}

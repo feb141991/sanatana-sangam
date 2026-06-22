@@ -4,12 +4,12 @@
   "tradition": "Sanatana Dharma",
   "corpus": "ramayana",
   "section_id": "kishkindha",
-  "source_name": "Valmiki Ramayana",
-  "source_class": "itihasa",
-  "rights_status": "public_domain",
+  "source_name": "Shoonaya Curated Ramayana Lessons",
+  "source_class": "curated_lesson",
+  "rights_status": "restricted_or_pending",
   "language": "en",
   "translation_basis": "Shoonaya Curated / Public Domain",
-  "is_live_in_app": true,
+  "is_live_in_app": false,
   "content": [
     {
       "ref": "1",
@@ -101,5 +101,11 @@
       "transliteration": "dharmātmā rāmo gatvā vanam krodhataḥ mahāsattvaḥ",
       "text": "The righteous Lord Rama having gone to the sprawling and sacred forest, with righteous indignation, showcasing his immense strength and unyielding spirit. He remained fully committed to upholding cosmic order at all costs. This noble act restored balance and courage throughout the realm."
     }
-  ]
+  ],
+  "is_pramana_grade": false,
+  "review_status": "needs_source_audit",
+  "original_text_status": "unavailable",
+  "translation_status": "unavailable",
+  "audio_status": "unavailable",
+  "revision_note": "Non-canonical Shoonaya curated/scratch Ramayana material. Not verified as Valmiki canonical text; must not be routed or claimed as public-domain scripture."
 }

@@ -25,6 +25,7 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
 | **`buddhist_dhamma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
 | **`jain_dharma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
+| **`valmiki_ramayana`** | 🟡 Metadata only | ❌ No | ❌ No | ✅ Guard only | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_*.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
@@ -68,3 +69,11 @@ This document records the current integration, routing, and evaluation status fo
    - Active chapters: 3 (`jain_dharma.json` containing Tattvartha Sutra chapters and Saman Suttam)
    - Scale: **Production-scale** (107 passages indexed).
    - Themes: Foundational Jain Dharma Agamas and ethical verses (Three Jewels, Ahimsa, Anekantavada, Mahavratas, Samata, Navkar Mantra).
+
+8. **Valmiki Ramayana (`valmiki_ramayana`)**
+   - Active texts: none.
+   - Metadata files: 6 (`valmiki_ramayana_*.json`), source-audit pending.
+   - Scale: **0 active passages**; retrieval is intentionally disabled.
+   - Translation Basis target: Ralph T. H. Griffith, public domain, after batch-level source review.
+   - Note: This is distinct from Shoonaya curated Ramayana lessons and must not be claimed as canonical coverage until rebuilt.
+   - Next steps: rebuild a small verified Griffith translation batch, keep Sanskrit companion-only until rights are verified, then regenerate the index and eval.
