@@ -190,6 +190,7 @@ const EMPTY_DAILY_DHARMA_STACK_STATE: DailyDharmaStackState = {
 };
 
 const EVENING_NUDGE_KEY = 'shoonaya-dinacharya-evening-nudge-v1';
+const HOME_OBSERVANCE_WINDOW_DAYS = 3;
 
 function clampDailyProgress(value: number) {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -806,11 +807,11 @@ export default function HomeDashboard({
 
   const activeFestivalStories = apiFestivals
     .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
-    .filter(x => x.story && x.daysLeft !== null && x.daysLeft <= 7);
+    .filter(x => x.story && x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS);
 
   const upcomingSacredObservance = apiFestivals
     .map(f => ({ festival: f, daysLeft: daysFromNow(f.date) }))
-    .filter(x => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= 7)
+    .filter(x => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS)
     .sort((a, b) => a.daysLeft - b.daysLeft)[0] ?? null;
 
   const { t } = useLanguage();

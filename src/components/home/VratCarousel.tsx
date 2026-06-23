@@ -20,6 +20,8 @@ import { Bell, CalendarDays } from 'lucide-react';
 import type { Festival } from '@/lib/festivals';
 import { resolveVratSlug } from '@/lib/vrat-data';
 
+const HOME_OBSERVANCE_WINDOW_DAYS = 3;
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 function daysFromNow(dateStr: string): number {
   const fest  = new Date(dateStr + 'T00:00:00');
@@ -164,7 +166,7 @@ interface Props {
 export default function VratCarousel({ festivals, isDark, effectiveAppLanguage = 'en' }: Props) {
   const upcoming = festivals
     .map(f => ({ festival: f, days: daysFromNow(f.date) }))
-    .filter(x => x.days >= 0 && x.days <= 21)
+    .filter(x => x.days >= 0 && x.days <= HOME_OBSERVANCE_WINDOW_DAYS)
     .sort((a, b) => a.days - b.days)
     .slice(0, 5);
 
