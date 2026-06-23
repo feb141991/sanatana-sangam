@@ -344,7 +344,7 @@ INSERT INTO festivals (name, date, emoji, description, type, year) VALUES
   ('Buddha Purnima',       '2026-05-11', '🪷', 'Full moon marking the birth and enlightenment of the Buddha',  'major',    2026),
   ('Vat Savitri Vrat',     '2026-05-22', '🌳', 'Vrat observed by married women for the well-being of husbands','vrat',     2026),
   ('Jagannath Rath Yatra', '2026-06-23', '🛕', 'Grand chariot procession of Lord Jagannath at Puri',            'major',    2026),
-  ('Guru Purnima',         '2026-07-10', '🙏', 'Day to honour spiritual teachers and gurus',                    'major',    2026),
+  ('Guru Purnima',         '2026-07-29', '🙏', 'Day to honour spiritual teachers and gurus',                    'major',    2026),
   ('Nag Panchami',         '2026-07-28', '🐍', 'Worship of serpent deities for protection',                     'regional', 2026),
   ('Raksha Bandhan',       '2026-08-11', '🧿', 'Festival celebrating the bond between brothers and sisters',    'major',    2026),
   ('Krishna Janmashtami',  '2026-08-19', '🦚', 'Celebration of the birth of Lord Krishna at midnight',          'major',    2026),
@@ -7191,5 +7191,4 @@ CREATE POLICY "Service insert" ON public.dharm_veer_daily FOR INSERT WITH CHECK 
 
 CREATE INDEX IF NOT EXISTS dharm_veer_daily_tradition_date
   ON public.dharm_veer_daily (tradition, date DESC);
-
 

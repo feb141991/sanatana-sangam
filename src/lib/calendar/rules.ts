@@ -241,7 +241,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'all',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha', // traditional Ashadha Purnima
+    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'purnima',
@@ -713,7 +713,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha', // traditional Ashadha Purnima
+    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
     lunar_tithi_index: 15,
   },
   {
@@ -725,7 +725,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha', // traditional Ashadha Krishna Pratipada (day after Purnima)
+    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Krishna Pratipada (day after Purnima)
     lunar_tithi_index: 16,
   },
   {
