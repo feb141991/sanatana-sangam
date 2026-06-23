@@ -141,6 +141,18 @@ async function middlewareHandler(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const envPreviewKey = process.env.PREVIEW_KEY ?? '';
   const res = NextResponse.next();
+
+  // OAuth callback requests must reach the route handler even when the browser
+  // carries stale Supabase cookies. Otherwise middleware clears the stale cookie
+  // and redirects to `/`, discarding the fresh `code` before it can be exchanged.
+  const isOAuthExchangeRequest =
+    pathname === '/auth/callback' ||
+    (pathname === '/' && req.nextUrl.searchParams.has('code'));
+
+  if (isOAuthExchangeRequest) {
+    return res;
+  }
+
   const hasAuthCookie = req.cookies.getAll().some((cookie) => isAuthCookieName(cookie.name));
   const {
     data: { user },
