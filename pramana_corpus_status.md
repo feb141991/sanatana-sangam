@@ -25,7 +25,7 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
 | **`buddhist_dhamma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
 | **`jain_dharma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
-| **`valmiki_ramayana`** | 🟡 Metadata only | ❌ No | ❌ No | ✅ Guard only | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_*.json` |
+| **`valmiki_ramayana`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_bala.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
@@ -71,9 +71,8 @@ This document records the current integration, routing, and evaluation status fo
    - Themes: Foundational Jain Dharma Agamas and ethical verses (Three Jewels, Ahimsa, Anekantavada, Mahavratas, Samata, Navkar Mantra).
 
 8. **Valmiki Ramayana (`valmiki_ramayana`)**
-   - Active texts: none.
-   - Metadata files: 6 (`valmiki_ramayana_*.json`), source-audit pending.
-   - Scale: **0 active passages**; retrieval is intentionally disabled.
-   - Translation Basis target: Ralph T. H. Griffith, public domain, after batch-level source review.
-   - Note: This is distinct from Shoonaya curated Ramayana lessons and must not be claimed as canonical coverage until rebuilt.
-   - Next steps: rebuild a small verified Griffith translation batch, keep Sanskrit companion-only until rights are verified, then regenerate the index and eval.
+   - Active texts: 1 (`valmiki_ramayana_bala.json`)
+   - Scale: **Source-audit pending curated starter slice** (15 passages with Kanda/Sarga/Shloka references; not full-canon coverage).
+   - Translation Basis: Shoonaya literal study renderings cross-checked against Ralph T. H. Griffith; not Griffith verbatim.
+   - Note: This is an explicit-only Pramana Ramayana starter lane, distinct from Shoonaya curated Ramayana lessons, and must not be called verified/canonical until source audit clears.
+   - Next steps: clear source/rights audit, expand verified passage count, strengthen Kanda coverage, improve eval suite, decide Uttara Kanda policy if unresolved.

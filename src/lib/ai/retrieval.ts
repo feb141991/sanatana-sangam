@@ -985,9 +985,9 @@ export class PramanaGenericEmbeddingRetriever implements PramanaRetriever<Retrie
           chunkId: doc.ref,
           docId: doc.id.split('_').slice(0, -1).join('_'),
           tradition: this.tradition,
-          sourceName: this.sourceName,
-          sourceClass: 'scripture',
-          rightsStatus: 'public_domain'
+          sourceName: doc.source_name || index.metadata?.source_name || this.sourceName,
+          sourceClass: doc.source_class || index.metadata?.source_class || 'scripture',
+          rightsStatus: doc.rights_status || index.metadata?.rights_status || 'public_domain'
         }
       };
     });
@@ -1024,6 +1024,20 @@ PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetr
   'Jain Dharma Agamas'
 ));
 
+const ramayanaManifestRetriever = new PramanaManifestRetriever({
+  prefix: 'valmiki_ramayana',
+  sourceName: 'Valmiki Ramayana',
+  sourceClass: 'curated_lesson',
+  tradition: 'Sanatana Dharma',
+  maxChapters: 7
+});
+PramanaRetrieverSelector.register('valmiki_ramayana', new PramanaGenericEmbeddingRetriever(
+  ramayanaManifestRetriever,
+  path.join(process.cwd(), 'python/ai_pipeline/corpus/valmiki_ramayana_index.json'),
+  'Sanatana Dharma',
+  'Valmiki Ramayana'
+));
+
 export async function retrievePathshalaContext(input: {
   source?: string;
   title?: string;
@@ -1041,7 +1055,7 @@ export async function retrievePathshalaContext(input: {
   );
 
   if (corpusId === 'valmiki_ramayana') {
-    throw new Error('valmiki_ramayana is source-audit pending and is not registered for retrieval.');
+    // Registered and explicit-only
   }
 
   const retriever = PramanaRetrieverSelector.select(corpusId);

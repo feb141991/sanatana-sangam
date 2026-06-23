@@ -206,12 +206,12 @@ Launch truth:
 
 State:
 
-- `catalog_only` / source-audit pending for local Valmiki Ramayana text
+- `explicit-only` local Valmiki Ramayana text (source-audit pending curated starter slice)
 - `companion_only` for wider canonical study until source rights and exact references are verified
 
 Launch truth:
 
-- Pathshala must not claim local verified Valmiki Ramayana passage coverage yet
+- Pathshala has a source-audit pending Valmiki Ramayana starter slice active for explicit queries only
 - a future live batch must use verified Kanda/Sarga/Shloka references and rights-safe translation text
 - Sanskrit original text remains companion-only until the specific digital source rights are verified
 

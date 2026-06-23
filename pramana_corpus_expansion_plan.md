@@ -35,7 +35,7 @@ This backlog outlines the structured roadmap for advancing "present and pending"
 - **Response Mode**: `scripture_passage_explain` or new `itihasa_story_explain`.
 - **Eval Requirement**: New `pathshala_ramayana` suite covering Dharma dilemmas (e.g., Ayodhya Kanda choices).
 - **Auto-routing target**: No (Explicit only unless matching Ramayana queries).
-- **Current State**: Source-audit pending. Metadata-only manifests exist, the index is intentionally empty, and retrieval is disabled until a verified Griffith translation batch is rebuilt.
+- **Current State**: Source-audit pending starter slice (15 passages from Bala Kanda) is built and explicit routing is active. Sanskrit rights remain companion-only until confirmed; do not claim verified/canonical status yet.
 
 ### 1.3 Yoga Sutras
 - **Corpus ID**: `pathshala_yogasutras`

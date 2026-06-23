@@ -45,7 +45,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 |---|---|---|
 | P1 | Trust + activation foundation | Clean source metadata, fix docs, activate Buddhist/Jain properly |
 | P2 | Core tradition depth | Expand Sikh/Gurbani and Upanishads |
-| P3 | High-value Hindu expansion | Add Yoga Sutras and build a verified Valmiki Ramayana starter slice |
+| P3 | High-value Hindu expansion | Add Yoga Sutras and clear the Valmiki Ramayana starter source audit |
 | P4 | Expansion backlog | Mahabharata, Tamil, Shaiva, Jain Agamas, Mahayana, Bhakti poetry, commentaries, audio |
 
 ## P1 - Trust Foundation + Core Runtime Activation
@@ -70,7 +70,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 | Corpus | Current | Target | Why |
 |---|---|---|---|
 | Yoga Sutras | Missing | New indexed corpus with eval suite | High demand, compact source shape, good RAG fit |
-| Ramayana | Source-audit pending; unsafe generated local material has been deactivated | Build verified passages with Kanda/Sarga/Shloka references | High devotional and family-learning value |
+| Ramayana | Source-audit pending starter slice built (15 passages), active only for explicit routing | Clear sources/rights, then expand verified Kanda/Sarga coverage | High devotional and family-learning value |
 | Mahabharata starter | Shanti Parva scaffold only | Optional curated study passages | Useful after Ramayana/Yoga Sutras |
 
 ## P4 - Expansion Backlog
@@ -95,7 +95,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 
 | Tradition | Current RAG Strength | Main Gap | Recommended Next Move |
 |---|---|---|---|
-| Hindu / Sanatan | Strongest because of Gita | Upanishads still curated/sample-scale; Yoga missing; Ramayana needs verified source rebuild | Finish Upanishads, build verified Ramayana starter, add Yoga Sutras |
+| Hindu / Sanatan | Strongest because of Gita | Upanishads still curated/sample-scale; Yoga missing; Ramayana starter still source-audit pending | Finish Upanishads, clear Ramayana source audit, add Yoga Sutras |
 | Sikh | Early sample | Broader Gurbani/Nitnem rights and ingestion | Expand Gurbani after rights confirmation |
 | Buddhist | Data strong, product activation weaker | Runtime routing and prompt/eval maturity | Activate Buddhist Dhamma as proper tradition lane |
 | Jain | Data strong, rights/product maturity weaker | Permission clarity and routing | Activate Jain Dharma cautiously with visible provenance |
@@ -110,7 +110,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 | `gurbani_index.json` | Sikh Gurbani | 34 | Sample-scale |
 | `buddhist_dhamma_index.json` | Buddhist Dhamma | 109 | Production-scale index, still needs stronger activation |
 | `jain_dharma_index.json` | Jain Dharma | 107 | Production-scale index, still needs stronger activation |
-| `valmiki_ramayana_index.json` | Valmiki Ramayana | 0 | Source-audit pending; intentionally not active |
+| `valmiki_ramayana_index.json` | Valmiki Ramayana | 15 | Source-audit pending curated starter; explicit routing only |
 
 ## Claiming Rules
 
@@ -147,7 +147,7 @@ Before any corpus moves beyond scaffold/sample status, confirm:
 | `sikh_gurbani` | Explicit-target only | Tradition-aware Sikh routing after rights/data expansion |
 | `buddhist_dhamma` | Explicit-target only | Tradition-aware Buddhist routing |
 | `jain_dharma` | Explicit-target only | Tradition-aware Jain routing |
-| Scaffold corpora | Not routed | Do not route until indexed/eval-covered |
+| `valmiki_ramayana` | Explicit-target only | Keep explicit until verified coverage expands across Kandas |
 
 ## Eval Coverage Matrix
 
@@ -175,7 +175,7 @@ Before any corpus moves beyond scaffold/sample status, confirm:
 |---|---|---|
 | 30 days | P1 trust cleanup | Canonical status, rights metadata schema, Buddhist/Jain activation plan |
 | 60 days | P1 activation + P2 depth | Buddhist/Jain tradition routing; expanded Gurbani/Upanishad manifests |
-| 90 days | P3 buildout | Yoga Sutras corpus and verified Valmiki Ramayana starter slice |
+| 90 days | P3 buildout | Yoga Sutras corpus and source-cleared Valmiki Ramayana starter slice |
 
 ## Open Decisions
 
