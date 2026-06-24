@@ -716,25 +716,10 @@ export default function HomeDashboard({
     return () => { cancelled = true; };
   }, []);
 
-  const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
+  const { coords, city: liveCity } = useLocation();
 
   const lat = coords?.lat ?? savedLat ?? undefined;
   const lon = coords?.lon ?? savedLon ?? undefined;
-
-  // Persist lat/lon to profile as soon as location resolves — so Mandali
-  // "Seekers Near You" and other geo features work for users who never visit /profile.
-  useEffect(() => {
-    if (!coords || !userId) return;
-    const alreadySaved =
-      savedLat && Math.abs(coords.lat - savedLat) < 0.05 &&
-      savedLon && Math.abs(coords.lon - savedLon) < 0.05;
-    if (alreadySaved) return;
-    const update: Record<string, unknown> = { latitude: coords.lat, longitude: coords.lon };
-    if (liveCity)        update.city         = liveCity;
-    if (liveCountry)     update.country      = liveCountry;
-    if (liveCountryCode) update.country_code = liveCountryCode;
-    supabase.from('profiles').update(update).eq('id', userId);
-  }, [coords, liveCity, liveCountry, liveCountryCode, savedLat, savedLon, userId, supabase]);
 
   useEffect(() => {
     const p = calculatePanchang(selectedDate, lat, lon);

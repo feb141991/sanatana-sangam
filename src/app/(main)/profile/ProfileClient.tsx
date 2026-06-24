@@ -16,7 +16,6 @@ import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safe
 import { getInitials, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, TRANSLITERATION_LANGUAGE_OPTIONS } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
-import { useLocation } from '@/lib/LocationContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 import { getPlayerId, getPermissionState, logoutFromOneSignal, requestNotificationPermission } from '@/lib/onesignal';
@@ -458,10 +457,7 @@ export default function ProfileClient({
   const sampradayaLabel = getSampradayaLabel(form.tradition);
   const ishtaDevataLabel = getIshtaDevataLabel(form.tradition);
 
-  const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
-
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
-  const profileCountryCode = (liveProfile as any)?.country_code ?? null;
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
   const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -504,25 +500,6 @@ export default function ProfileClient({
     
     syncMembership().then(() => setRepairing(false));
   }, [userId, supabase]);
-
-  // Silently save coords + city + country + country_code when location resolves
-  useEffect(() => {
-    if (!coords || !userId) return;
-    const isSame =
-      liveProfile?.latitude  && Math.abs(coords.lat - (liveProfile.latitude  ?? 0)) < 0.05 &&
-      liveProfile?.longitude && Math.abs(coords.lon - (liveProfile.longitude ?? 0)) < 0.05;
-    if (isSame) return;
-
-    const update: Record<string, any> = {
-      latitude:  coords.lat,
-      longitude: coords.lon,
-    };
-    if (liveCity        && !liveProfile?.city)         update.city         = liveCity;
-    if (liveCountry     && !liveProfile?.country)      update.country      = liveCountry;
-    if (liveCountryCode && !profileCountryCode)
-                                                   update.country_code = liveCountryCode;
-    supabase.from('profiles').update(update).eq('id', userId);
-  }, [coords, liveCity, liveCountry, liveCountryCode, liveProfile?.latitude, liveProfile?.longitude, liveProfile?.city, liveProfile?.country, profileCountryCode, supabase, userId]);
 
   // Save OneSignal player ID when permission is granted
   useEffect(() => {

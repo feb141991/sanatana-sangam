@@ -16,10 +16,11 @@
  *   refresh     : () => void
  */
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { API, LOCATION } from '@/lib/config';
 import PermissionSheet from '@/components/ui/PermissionSheet';
+import { createClient } from '@/lib/supabase';
 
 export interface Coords {
   lat: number;
@@ -91,6 +92,7 @@ async function reverseGeocode(lat: number, lon: number): Promise<GeoInfo> {
 
 interface Props {
   children:        React.ReactNode;
+  userId?:         string | null;
   savedLat?:       number | null;
   savedLon?:       number | null;
   savedCity?:      string;
@@ -100,6 +102,7 @@ interface Props {
 
 export function LocationProvider({
   children,
+  userId,
   savedLat,
   savedLon,
   savedCity        = '',
@@ -107,6 +110,7 @@ export function LocationProvider({
   savedCountryCode = '',
 }: Props) {
   const pathname = usePathname();
+  const supabase = useMemo(() => createClient(), []);
   const [coords,      setCoords]      = useState<Coords | null>(
     savedLat && savedLon ? { lat: savedLat, lon: savedLon } : null
   );
@@ -119,6 +123,7 @@ export function LocationProvider({
   // Tracks whether we've already attempted auto-location this session so we
   // don't re-ask every time the user navigates back to /home or /tirtha-map.
   const autoLocateAttempted = useRef(false);
+  const lastPersistedLocation = useRef<string | null>(null);
 
   const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile' || pathname === '/tirtha-map';
 
@@ -226,6 +231,48 @@ export function LocationProvider({
         });
     }
   }, [coords]);
+
+  // Persist exact browser location from the shared provider, not individual
+  // pages. This prevents repeated location prompts when a user grants access
+  // from /profile, /mandali, /tirtha-map, or any future location-aware screen.
+  useEffect(() => {
+    if (!userId || !coords) return;
+
+    const update: Record<string, unknown> = {};
+    const savedCoordsAreClose =
+      typeof savedLat === 'number' &&
+      typeof savedLon === 'number' &&
+      Math.abs(coords.lat - savedLat) < 0.05 &&
+      Math.abs(coords.lon - savedLon) < 0.05;
+
+    if (!savedCoordsAreClose) {
+      update.latitude = coords.lat;
+      update.longitude = coords.lon;
+    }
+    if (city && city !== savedCity) update.city = city;
+    if (country && country !== savedCountry) update.country = country;
+    if (countryCode && countryCode !== savedCountryCode) update.country_code = countryCode;
+
+    if (Object.keys(update).length === 0) return;
+
+    const signature = JSON.stringify(update);
+    if (lastPersistedLocation.current === signature) return;
+    lastPersistedLocation.current = signature;
+
+    supabase
+      .from('profiles')
+      .update(update)
+      .eq('id', userId)
+      .then(({ error }) => {
+        if (error) {
+          console.warn('[location] failed to persist profile location', {
+            code: error.code,
+            message: error.message,
+          });
+          lastPersistedLocation.current = null;
+        }
+      });
+  }, [city, coords, country, countryCode, savedCity, savedCountry, savedCountryCode, savedLat, savedLon, supabase, userId]);
 
   return (
     <LocationContext.Provider value={{

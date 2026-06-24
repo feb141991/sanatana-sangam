@@ -170,6 +170,7 @@ export default async function MainLayout({
         <main className="flex-1 min-w-0 max-w-2xl mx-auto w-full overflow-x-hidden px-3 pt-0 pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
             <LocationProvider
+              userId={userId || null}
               savedLat={savedLat}
               savedLon={savedLon}
               savedCity={savedCity}
