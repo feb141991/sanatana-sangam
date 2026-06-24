@@ -743,7 +743,7 @@ const NAMED_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
 ];
 
 const RECURRING_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
-  { canonical: 'ekadashi', aliases: ['ekadashi'] },
+  { canonical: 'ekadashi', aliases: ['ekadashi', 'nirjala ekadashi', 'nirjala-ekadashi', 'bhimseni ekadashi', 'bhimseni-ekadashi', 'pandava nirjala ekadashi'] },
   { canonical: 'purnima', aliases: ['purnima', 'poornima'] },
   { canonical: 'amavasya', aliases: ['amavasya', 'amavasai'] },
   { canonical: 'pradosh', aliases: ['pradosh', 'pradosham'] },
