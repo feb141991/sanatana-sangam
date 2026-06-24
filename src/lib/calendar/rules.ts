@@ -134,7 +134,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'chaitra-navratri',
   },
   {
     slug: 'ugadi',
@@ -264,7 +264,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'gupt-navratri',
   },
   {
     slug: 'guru-purnima',
@@ -386,7 +386,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'sharad-navratri',
   },
   {
     slug: 'chintpurni-mata-chaitra-navratri',
@@ -400,7 +400,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     relative_base_slug: 'chaitra-navratri-begins',
     relative_offset_days: 0,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'chintpurni-mata-navratri',
     region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
   },
   {
@@ -415,7 +415,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     relative_base_slug: 'navratri-begins',
     relative_offset_days: 0,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'chintpurni-mata-navratri',
     region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
   },
   {
@@ -572,7 +572,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
-    route_slug: 'navratri',
+    route_slug: 'gupt-navratri',
   },
 
   // ── Sikh ───────────────────────────────────────────────────────────────────
