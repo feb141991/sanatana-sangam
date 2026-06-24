@@ -6,7 +6,7 @@ export const UJJAIN_LAT = 23.1765;
 export const UJJAIN_LON = 75.7885;
 
 // Versioning the calculation engine
-export const RULE_ENGINE_VERSION = '1.1.0'; // scan time corrected: 5am UTC → 1am UTC (≈ IST sunrise)
+export const RULE_ENGINE_VERSION = '1.2.1'; // fixes Navratri-relative Dussehra offset after weekday-recurring rules
 
 export interface CalculatedOccurrence {
   slug: string;
@@ -105,15 +105,17 @@ export const LunarTithiHandler = {
     // When prev.tithiIndex === T-1 and curr.tithiIndex === T+1 (with curr in
     // the target masa), the target tithi was present at IST sunrise on curr's
     // date but had already advanced by the 5am UTC scan time. Observe on curr.
-    if (rule.allow_skipped_tithi && target > 1 && target < 15) {
+    if (rule.allow_skipped_tithi && target >= 1 && target < 15) {
       for (let i = 1; i < days.length; i++) {
         const prev = days[i - 1].panchang;
         const curr = days[i].panchang;
-        if (
-          curr.masaName === rule.lunar_masa_name &&
-          prev.tithiIndex === target - 1 &&
-          curr.tithiIndex === target + 1
-        ) {
+        const skippedWithinPaksha = target > 1
+          && prev.tithiIndex === target - 1
+          && curr.tithiIndex === target + 1;
+        const skippedPratipadaAfterAmavasya = target === 1
+          && prev.tithiIndex === 30
+          && curr.tithiIndex === 2;
+        if (curr.masaName === rule.lunar_masa_name && (skippedWithinPaksha || skippedPratipadaAfterAmavasya)) {
           if (!matchedSet.has(days[i].dateStr)) {
             matchedDates.push(days[i].dateStr);
             matchedSet.add(days[i].dateStr);
@@ -162,7 +164,9 @@ export const RecurringLunarTithiHandler = {
       // (prev = T-1, curr = T+1). Observe on curr, matching LunarTithiHandler.
       if (rule.allow_skipped_tithi && prev) {
         for (const T of targets) {
-          if (T > 1 && T < 30 && prev.tithiIndex === T - 1 && curr.tithiIndex === T + 1) {
+          const skippedWithinPaksha = T > 1 && T < 30 && prev.tithiIndex === T - 1 && curr.tithiIndex === T + 1;
+          const skippedAmavasya = T === 30 && prev.tithiIndex === 29 && curr.tithiIndex === 1;
+          if (skippedWithinPaksha || skippedAmavasya) {
             if (!matchedSet.has(days[i].dateStr)) {
               matchedDates.push(days[i].dateStr);
               matchedSet.add(days[i].dateStr);
@@ -172,6 +176,31 @@ export const RecurringLunarTithiHandler = {
         }
       }
     }
+    return matchedDates;
+  }
+};
+
+/**
+ * Handler for recurring weekday vrats inside a calibrated lunar masa, such as
+ * Shravan Somvar and Mangala Gauri. Weekday uses the generated Gregorian date
+ * at the same Ujjain sunrise scan as the rest of the engine.
+ */
+export const RecurringWeekdayHandler = {
+  evaluate(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): string[] {
+    if (rule.recurring_weekday === undefined) return [];
+    const matchedDates: string[] = [];
+
+    for (const d of days) {
+      if (rule.lunar_masa_name && d.panchang.masaName !== rule.lunar_masa_name) {
+        continue;
+      }
+
+      const weekday = new Date(`${d.dateStr}T00:00:00Z`).getUTCDay();
+      if (weekday === rule.recurring_weekday) {
+        matchedDates.push(d.dateStr);
+      }
+    }
+
     return matchedDates;
   }
 };
@@ -258,6 +287,8 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
       occurrencesMap[rule.slug] = LunarTithiHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'lunar_tithi_recurring') {
       occurrencesMap[rule.slug] = RecurringLunarTithiHandler.evaluate(rule, days);
+    } else if (rule.rule_family === 'weekday_recurring') {
+      occurrencesMap[rule.slug] = RecurringWeekdayHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'nakshatra_based') {
       occurrencesMap[rule.slug] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
@@ -301,7 +332,7 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
     );
     if (allDates.length === 0) continue;
     // Recurring vrats emit EVERY occurrence in the year, not just one.
-    if (rule.rule_family === 'lunar_tithi_recurring') {
+    if (rule.rule_family === 'lunar_tithi_recurring' || rule.rule_family === 'weekday_recurring') {
       for (const date of allDates) {
         results.push({ slug: rule.slug, date, year, recurring: true });
       }

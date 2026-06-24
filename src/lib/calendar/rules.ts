@@ -5,7 +5,7 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
   verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
@@ -39,6 +39,8 @@ export interface ObservanceRule {
    * Used only with rule_family 'lunar_tithi_recurring'.
    */
   recurring_tithi_indices?: number[];
+  /** Weekday recurring rules. Uses JS/UTC weekday: 0=Sunday, 1=Monday, ... 6=Saturday. */
+  recurring_weekday?: number;
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
@@ -117,6 +119,22 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
     lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
+  },
+  {
+    slug: 'chaitra-navratri-begins',
+    display_name: 'Chaitra Navratri begins',
+    emoji: '🪔',
+    description: 'Spring Navratri beginning on Chaitra Shukla Pratipada, nine days of Devi worship leading to Ram Navami.',
+    kind: 'major',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi',
+    verification_type: 'lunar_tithi',
+    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Pratipada
+    lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'navratri',
   },
   {
     slug: 'ugadi',
@@ -129,6 +147,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
     lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
   },
   {
     slug: 'ram-navami',
@@ -231,6 +250,21 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Dwitiya
     lunar_tithi_index: 2,
+  },
+  {
+    slug: 'gupt-navratri-ashadha-begins',
+    display_name: 'Ashadha Gupt Navratri begins',
+    emoji: '🪔',
+    description: 'Gupt Navratri in Ashadha, a quieter Devi sadhana period observed in Shakta and regional traditions.',
+    kind: 'regional',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi',
+    verification_type: 'lunar_tithi',
+    lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Pratipada
+    lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'navratri',
   },
   {
     slug: 'guru-purnima',
@@ -341,7 +375,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
   },
   {
     slug: 'navratri-begins',
-    display_name: 'Navratri begins',
+    display_name: 'Sharad Navratri begins',
     emoji: '🪔',
     description: 'Nine nights of worship of Goddess Durga, Lakshmi and Saraswati',
     kind: 'major',
@@ -350,8 +384,39 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Pratipada
     lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
     route_kind: 'vrat',
     route_slug: 'navratri',
+  },
+  {
+    slug: 'chintpurni-mata-chaitra-navratri',
+    display_name: 'Chintpurni Mata Chaitra Navratri',
+    emoji: '🌺',
+    description: 'Regional Shakti Peeth observance at Maa Chintpurni, associated with Chaitra Navratri Devi worship.',
+    kind: 'regional',
+    tradition: 'hindu',
+    rule_family: 'relative_to_other_observance',
+    verification_type: 'regional_calendar',
+    relative_base_slug: 'chaitra-navratri-begins',
+    relative_offset_days: 0,
+    route_kind: 'vrat',
+    route_slug: 'navratri',
+    region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
+  },
+  {
+    slug: 'chintpurni-mata-sharad-navratri',
+    display_name: 'Chintpurni Mata Sharad Navratri',
+    emoji: '🌺',
+    description: 'Regional Shakti Peeth observance at Maa Chintpurni, associated with Sharad Navratri Devi worship.',
+    kind: 'regional',
+    tradition: 'hindu',
+    rule_family: 'relative_to_other_observance',
+    verification_type: 'regional_calendar',
+    relative_base_slug: 'navratri-begins',
+    relative_offset_days: 0,
+    route_kind: 'vrat',
+    route_slug: 'navratri',
+    region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
   },
   {
     slug: 'dussehra',
@@ -363,7 +428,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'relative_to_other_observance',
     verification_type: 'lunar_tithi',
     relative_base_slug: 'navratri-begins',
-    relative_offset_days: 10, // Vijaya Dashami = 10th day after Navratri Pratipada
+    relative_offset_days: 9, // Vijaya Dashami = the 10th tithi, nine calendar days after Pratipada begins
   },
   {
     slug: 'karva-chauth',
@@ -493,6 +558,21 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     lunar_tithi_index: 11,
     route_kind: 'vrat',
     route_slug: 'vaikunta-ekadashi',
+  },
+  {
+    slug: 'gupt-navratri-magha-begins',
+    display_name: 'Magha Gupt Navratri begins',
+    emoji: '🪔',
+    description: 'Gupt Navratri in Magha, a quieter Devi sadhana period observed in Shakta and regional traditions.',
+    kind: 'regional',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi',
+    verification_type: 'lunar_tithi',
+    lunar_masa_name: 'Margashirsha', // traditional Magha Shukla Pratipada
+    lunar_tithi_index: 1,
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'navratri',
   },
 
   // ── Sikh ───────────────────────────────────────────────────────────────────
@@ -924,6 +1004,48 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     route_slug: 'pradosh',
   },
   {
+    slug: 'purnima-vrat',
+    display_name: 'Purnima Vrat',
+    emoji: '🌕',
+    description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [15],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'purnima',
+  },
+  {
+    slug: 'amavasya-vrat',
+    display_name: 'Amavasya',
+    emoji: '🌑',
+    description: 'Monthly new moon observance for stillness, ancestor remembrance, charity, and local family practice.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [30],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'amavasya',
+  },
+  {
+    slug: 'vinayaka-chaturthi',
+    display_name: 'Vinayaka Chaturthi',
+    emoji: '🐘',
+    description: 'Monthly Shukla Chaturthi observance for Lord Ganesha, distinct from the Krishna-paksha Sankashti Chaturthi vrat.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'lunar_tithi_recurring',
+    verification_type: 'lunar_tithi',
+    recurring_tithi_indices: [4],
+    allow_skipped_tithi: true,
+    route_kind: 'vrat',
+    route_slug: 'chaturthi',
+  },
+  {
     slug: 'sankashti-chaturthi',
     display_name: 'Sankashti Chaturthi',
     emoji: '🐘',
@@ -936,5 +1058,33 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     allow_skipped_tithi: true,
     route_kind: 'vrat',
     route_slug: 'sankashti-chaturthi',
+  },
+  {
+    slug: 'shravan-somvar',
+    display_name: 'Shravan Somvar',
+    emoji: '🕉️',
+    description: 'Mondays of the Shravan month, observed with Shiva worship and fasting according to family or sampradaya practice.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'weekday_recurring',
+    verification_type: 'lunar_tithi',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
+    recurring_weekday: 1,
+    route_kind: 'vrat',
+    route_slug: 'somvar',
+  },
+  {
+    slug: 'mangala-gauri-vrat',
+    display_name: 'Mangala Gauri Vrat',
+    emoji: '🌺',
+    description: 'Tuesdays of Shravan, especially observed by married women in several regional traditions for Gauri worship.',
+    kind: 'vrat',
+    tradition: 'hindu',
+    rule_family: 'weekday_recurring',
+    verification_type: 'lunar_tithi',
+    lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
+    recurring_weekday: 2,
+    route_kind: 'vrat',
+    route_slug: 'mangala-gauri',
   },
 ];

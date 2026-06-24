@@ -8,7 +8,6 @@ import {
   mapOccurrenceToFestival,
   buildFestivalCalendarMeta,
   daysUntil,
-  FESTIVALS_2026,
   getNextFestivals,
   getTodayPanchang,
 } from '@/lib/festivals';
@@ -56,17 +55,21 @@ const getCachedLiveDarshans = unstable_cache(
 );
 
 const getCachedObservances = unstable_cache(
-  async (fromDate: string) => {
+  async (fromDate: string, toDate: string) => {
     const admin = createAdminClient();
     const { data } = await admin
       .from('observance_occurrences')
       .select('id, date, year, manual_date_override, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, final_date_source, locked_for_regeneration, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(display_name, emoji, description, kind, tradition, verification_type, route_kind, route_slug, slug)')
       .gte('date', fromDate)
+      .lte('date', toDate)
+      .eq('review_status', 'reviewed')
+      .eq('verification_status', 'verified')
+      .eq('audit_status', 'completed')
       .order('date', { ascending: true })
-      .limit(90);
+      .limit(30);
     return data ?? [];
   },
-  ['observances_v1'],
+  ['observances_reviewed_home_v1'],
   { revalidate: 3600 }, // 60 min
 );
 
@@ -202,7 +205,7 @@ export default async function HomePage() {
     Promise.all([
       getCachedHeroAssets(),
       getCachedLiveDarshans(),
-      getCachedObservances(calendarFromDate),
+      getCachedObservances(calendarFromDate, shiftIsoDate(calendarFromDate, 3)),
       getCachedDharmVeer(tradition),
     ]),
     // ── User-specific queries (always fresh) ───────────────────────────────
@@ -278,9 +281,9 @@ export default async function HomePage() {
 
   // Build calendar / festival data from results
   const calendarFromDb = (calendarRows ?? []).map((row) => mapOccurrenceToFestival(row));
-  const festivalCalendar = calendarFromDb.length > 0 ? calendarFromDb : FESTIVALS_2026;
+  const festivalCalendar = calendarFromDb;
   const festivalCalendarMeta: FestivalCalendarMeta = buildFestivalCalendarMeta(
-    calendarFromDb.length > 0 ? 'database' : 'fallback',
+    'database',
     festivalCalendar,
   );
   const festivals = getNextFestivals(festivalCalendar, new Date(), tradition);

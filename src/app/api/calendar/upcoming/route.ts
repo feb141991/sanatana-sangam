@@ -16,7 +16,35 @@ export interface UpcomingResponse {
     tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all";
     route_kind: string | null;
     route_slug: string | null;
+    description: string;
   }>;
+}
+
+type ObservanceDefinitionJoin = {
+  slug: string;
+  display_name: string;
+  emoji: string | null;
+  description: string | null;
+  kind: "major" | "vrat" | "regional";
+  tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all";
+  route_kind: string | null;
+  route_slug: string | null;
+  active: boolean;
+};
+
+type UpcomingOccurrenceRow = {
+  date: string;
+  review_status: string | null;
+  verification_status: string | null;
+  audit_status: string | null;
+  observance_definitions: ObservanceDefinitionJoin | ObservanceDefinitionJoin[] | null;
+};
+
+function getDefinition(row: UpcomingOccurrenceRow): ObservanceDefinitionJoin | null {
+  if (Array.isArray(row.observance_definitions)) {
+    return row.observance_definitions[0] ?? null;
+  }
+  return row.observance_definitions;
 }
 
 export async function GET(request: NextRequest) {
@@ -28,6 +56,7 @@ export async function GET(request: NextRequest) {
     if (days > 60) days = 60;
     
     const tradition = searchParams.get('tradition') || 'all';
+    const reviewedOnly = searchParams.get('reviewed') === '1' || searchParams.get('reviewed') === 'true';
     // Accept the caller's timezone so the date window matches their local day,
     // not the server's UTC clock. Fall back to IST (where the Hindu calendar is
     // anchored) when no timezone is provided (e.g. pre-login requests).
@@ -48,10 +77,14 @@ export async function GET(request: NextRequest) {
       .from('observance_occurrences')
       .select(`
         date,
+        review_status,
+        verification_status,
+        audit_status,
         observance_definitions!inner(
           slug,
           display_name,
           emoji,
+          description,
           kind,
           tradition,
           route_kind,
@@ -62,6 +95,13 @@ export async function GET(request: NextRequest) {
       .gte('date', fromStr)
       .lte('date', toStr)
       .eq('observance_definitions.active', true);
+
+    if (reviewedOnly) {
+      query = query
+        .eq('review_status', 'reviewed')
+        .eq('verification_status', 'verified')
+        .eq('audit_status', 'completed');
+    }
 
     if (tradition && tradition !== 'all') {
       query = query.in('observance_definitions.tradition', [tradition, 'all']);
@@ -74,16 +114,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
 
-    const observances = (data || []).map((row: any) => ({
-      date: row.date,
-      slug: row.observance_definitions.slug,
-      display_name: row.observance_definitions.display_name,
-      emoji: row.observance_definitions.emoji,
-      kind: row.observance_definitions.kind,
-      tradition: row.observance_definitions.tradition,
-      route_kind: row.observance_definitions.route_kind,
-      route_slug: row.observance_definitions.route_slug,
-    }));
+    const observances = ((data ?? []) as UpcomingOccurrenceRow[])
+      .map((row) => {
+        const definition = getDefinition(row);
+        if (!definition) return null;
+        return {
+          date: row.date,
+          slug: definition.slug,
+          display_name: definition.display_name,
+          emoji: definition.emoji ?? '🪔',
+          description: definition.description ?? '',
+          kind: definition.kind,
+          tradition: definition.tradition,
+          route_kind: definition.route_kind,
+          route_slug: definition.route_slug,
+        };
+      })
+      .filter((observance): observance is UpcomingResponse['observances'][number] => observance !== null);
 
     // Re-sort in JS to be safe, since Supabase sorts by occurrence.date correctly, 
     // but in case of multiple on same day, we keep them together.

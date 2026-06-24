@@ -49,7 +49,6 @@ import MoodPulse from '@/components/mood/MoodPulse';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
-import { FESTIVALS_2026 } from '@/lib/festivals';
 import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
@@ -790,10 +789,14 @@ export default function HomeDashboard({
   const meta = getTraditionMeta(tradition);
   const effectiveAppLanguage = appLanguage === 'hi' || appLanguage === 'pa' ? appLanguage : 'en';
 
-  const { observances, loading: calendarLoading, error: calendarError } = useUpcomingObservances(tradition || 'all', 30);
+  const { observances, loading: calendarLoading, error: calendarError } = useUpcomingObservances(
+    tradition || 'all',
+    HOME_OBSERVANCE_WINDOW_DAYS,
+    { reviewedOnly: true },
+  );
 
   const apiFestivals: Festival[] = calendarError
-    ? FESTIVALS_2026.slice(0, 3)
+    ? []
     : observances.map(obs => ({
         name: obs.display_name,
         date: obs.date,

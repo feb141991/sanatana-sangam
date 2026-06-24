@@ -12,7 +12,11 @@ export interface UpcomingObservance {
   route_slug: string | null;
 }
 
-export function useUpcomingObservances(tradition: string, days = 30) {
+export function useUpcomingObservances(
+  tradition: string,
+  days = 30,
+  options: { reviewedOnly?: boolean } = {},
+) {
   const [observances, setObservances] = useState<UpcomingObservance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +31,8 @@ export function useUpcomingObservances(tradition: string, days = 30) {
     const tz = typeof Intl !== 'undefined'
       ? `&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`
       : '';
-    fetch(`/api/calendar/upcoming?days=${days}${trad}${tz}`)
+    const reviewed = options.reviewedOnly ? '&reviewed=1' : '';
+    fetch(`/api/calendar/upcoming?days=${days}${trad}${tz}${reviewed}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         if (active) {
@@ -46,7 +51,7 @@ export function useUpcomingObservances(tradition: string, days = 30) {
     return () => {
       active = false;
     };
-  }, [tradition, days]);
+  }, [tradition, days, options.reviewedOnly]);
 
   return { observances, loading, error };
 }
