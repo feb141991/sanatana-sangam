@@ -304,6 +304,67 @@ export const VRAT_DATABASE: Record<string, VratData> = {
 // ── Additional named festivals ────────────────────────────────────────────────
 const NAMED_VRAT_DATABASE: Record<string, VratData> = {
 
+  'nirjala-ekadashi': {
+    id: 'nirjala-ekadashi',
+    emoji: '🌿',
+    name: 'Nirjala Ekadashi',
+    nameLocal: 'निर्जला एकादशी',
+    tagline: 'The waterless Ekadashi of complete surrender to Vishnu.',
+    taglineLocal: 'विष्णु-भक्ति में पूर्ण समर्पण की निर्जला एकादशी।',
+    significance: `Nirjala Ekadashi is observed on Jyeshtha Shukla Ekadashi and is one of the most austere Ekadashi vrats. It is traditionally associated with Bhima, who found regular fasting difficult and was advised to observe this single strict Ekadashi with deep devotion.
+
+The word nirjala means "without water." Its ideal form is a complete fast from food and water, but the heart of the vrat is not harshness for its own sake. It is sankalpa, restraint, Vishnu-smriti, and humility. Those who are elderly, unwell, pregnant, nursing, travelling, or medically advised otherwise should follow a lighter form with family, guru, or doctor guidance.
+
+This vrat is also called Bhimseni Ekadashi or Pandava Nirjala Ekadashi in many traditions. Shoonaya treats the named date separately from generic Ekadashi so the guidance can preserve its distinct austerity while still respecting capacity and sampradaya practice.`,
+    significanceLocal: `निर्जला एकादशी ज्येष्ठ शुक्ल एकादशी को मनाई जाती है और एकादशी व्रतों में अत्यंत कठोर मानी जाती है। यह परंपरा भीमसेन से जुड़ी है, जिन्हें नियमित उपवास कठिन लगता था और जिन्हें एक विशेष कठोर एकादशी गहरी भक्ति से करने का मार्ग बताया गया।
+
+"निर्जला" का अर्थ है जल के बिना। इसका आदर्श रूप अन्न और जल दोनों का त्याग है, पर व्रत का केन्द्र केवल कठोरता नहीं है। इसका केन्द्र है संकल्प, संयम, विष्णु-स्मरण और विनम्रता। वृद्ध, अस्वस्थ, गर्भवती, स्तनपान कराने वाली, यात्रा में रहने वाली या चिकित्सा-परामर्श वाले साधक अपनी क्षमता, परिवार, गुरु या डॉक्टर के मार्गदर्शन से हल्का रूप अपनाएँ।
+
+कई परंपराओं में इसे भीमसेनी एकादशी या पांडव निर्जला एकादशी भी कहा जाता है। शून्य इस नामित तिथि को सामान्य एकादशी से अलग रखता है ताकि इसकी विशिष्ट तपस्या और संप्रदाय-भेद दोनों सुरक्षित रहें।`,
+    practice: `Begin with a clear sankalpa at sunrise after bathing. Worship Lord Vishnu or Narayana with Tulsi, yellow flowers, diya, incense, and simple offerings. Chant "Om Namo Bhagavate Vasudevaya" or "Om Namo Narayanaya" through the day, and read or listen to Vishnu Sahasranama, Bhagavad Gita, or Ekadashi katha.
+
+The traditional form is nirjala: no food and no water from sunrise on Ekadashi until the proper Dwadashi parana window. If full nirjala is not suitable, observe according to capacity: water-only, phalahar, or sattvic fasting is better than harming the body.
+
+Break the fast on Dwadashi within the parana window after prayer. Offer water, food, or charity where possible, because this vrat is closely tied to compassion and self-control, not ego.`,
+    practiceLocal: `स्नान के बाद सूर्योदय पर स्पष्ट संकल्प लें। भगवान विष्णु या नारायण की पूजा तुलसी, पीले फूल, दीपक, धूप और सरल नैवेद्य से करें। दिन भर "ॐ नमो भगवते वासुदेवाय" या "ॐ नमो नारायणाय" का जप करें, और विष्णु सहस्रनाम, भगवद्गीता या एकादशी कथा सुनें-पढ़ें।
+
+परंपरागत रूप निर्जला है: एकादशी सूर्योदय से द्वादशी पारण-काल तक अन्न और जल दोनों का त्याग। यदि पूर्ण निर्जला आपके लिए उचित नहीं है, तो क्षमता के अनुसार जल, फलाहार या सात्त्विक उपवास करें। शरीर को हानि पहुँचाना व्रत का उद्देश्य नहीं है।
+
+द्वादशी के पारण-काल में प्रार्थना के बाद व्रत खोलें। संभव हो तो जल, भोजन या दान दें, क्योंकि यह व्रत अहंकार नहीं, करुणा और आत्मसंयम से जुड़ा है।`,
+    mantra: 'ॐ नमो भगवते वासुदेवाय। ॐ नमो नारायणाय।',
+    mantraLocal: 'ॐ नमो भगवते वासुदेवाय। ॐ नमो नारायणाय।',
+    fastingType: 'nirjala',
+    breakFastTime: 'Next day on Dwadashi, within the local parana window',
+    dos: [
+      'Take a clear sankalpa after morning bath',
+      'Worship Lord Vishnu with Tulsi, yellow flowers, diya, and incense',
+      'Chant Vishnu nama through the day',
+      'Read or listen to Vishnu Sahasranama, Bhagavad Gita, or Ekadashi katha',
+      'Keep the fast according to health, capacity, and sampradaya guidance',
+      'Offer charity, water, or food after completing the vrat',
+      'Break the fast only during the Dwadashi parana window',
+    ],
+    donts: [
+      'Do not attempt strict nirjala if it is medically unsafe',
+      'Do not eat grains, beans, onion, garlic, or tamasic food',
+      'Do not treat austerity as ego or competition',
+      'Do not break the fast before the proper parana time if observing the full vrat',
+      'Avoid harsh speech, anger, and gossip',
+      'Avoid daytime sleep and unnecessary distraction where possible',
+    ],
+    pujaItems: [
+      'Tulsi leaves',
+      'Yellow flowers',
+      'Vishnu or Narayana image',
+      'Ghee lamp',
+      'Incense and camphor',
+      'Panchamrit for offering',
+      'Fruits for post-parana charity or naivedya',
+      'Water pot for charity or offering',
+    ],
+    kathaId: 'katha-ekadashi-margashirsha-shukla',
+  },
+
   'vat-savitri': {
     id: 'vat-savitri',
     emoji: '🌳',
@@ -730,6 +791,7 @@ At home: light a diya, recite Japji Sahib (especially at dawn), and sing or list
 };
 
 const NAMED_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
+  { canonical: 'nirjala-ekadashi', aliases: ['nirjala ekadashi', 'nirjala-ekadashi', 'bhimseni ekadashi', 'bhimseni-ekadashi', 'pandava nirjala ekadashi'] },
   { canonical: 'vat-savitri-purnima', aliases: ['vat savitri purnima', 'vat-savitri-purnima'] },
   { canonical: 'vat-savitri', aliases: ['vat savitri vrat', 'vat savitri', 'vat-savitri', 'savitri vrat', 'savitri'] },
   { canonical: 'hartalika-teej', aliases: ['hartalika teej', 'hartalika-teej', 'hartalika'] },
@@ -743,7 +805,7 @@ const NAMED_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
 ];
 
 const RECURRING_VRAT_ALIASES: Array<{ canonical: string; aliases: string[] }> = [
-  { canonical: 'ekadashi', aliases: ['ekadashi', 'nirjala ekadashi', 'nirjala-ekadashi', 'bhimseni ekadashi', 'bhimseni-ekadashi', 'pandava nirjala ekadashi'] },
+  { canonical: 'ekadashi', aliases: ['ekadashi'] },
   { canonical: 'purnima', aliases: ['purnima', 'poornima'] },
   { canonical: 'amavasya', aliases: ['amavasya', 'amavasai'] },
   { canonical: 'pradosh', aliases: ['pradosh', 'pradosham'] },
