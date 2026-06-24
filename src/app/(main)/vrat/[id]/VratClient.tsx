@@ -330,7 +330,7 @@ export default function VratClient({
       }}
     >
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 px-4 py-3 flex items-center gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
+      <header className="fixed top-0 inset-x-0 z-50 px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
         <button 
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition"
@@ -343,13 +343,13 @@ export default function VratClient({
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
             {translateFn(displayLang, 'vrat') || 'Vrat'}
           </span>
-          <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
+          <span className="text-[11px] sm:text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
             {originalSlug.toUpperCase()}
           </span>
         </div>
 
         {/* ── Reading Options ── */}
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           {/* Theme Toggle */}
           <button 
             onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
@@ -402,7 +402,7 @@ export default function VratClient({
       </header>
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <main className="pt-28 px-6 max-w-2xl mx-auto space-y-12">
+      <main className="pt-28 px-4 sm:px-6 max-w-2xl mx-auto space-y-12 overflow-x-hidden">
         {/* Hero Section */}
         <section className="text-center space-y-4">
           <motion.div 
@@ -418,12 +418,12 @@ export default function VratClient({
           </motion.div>
           
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold premium-serif tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold premium-serif tracking-tight break-words">
               {title}
             </h1>
           </div>
 
-          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
+          <p className={`italic font-medium opacity-80 px-2 sm:px-4 break-words ${fontStyles[fontSize]}`}>
             &ldquo;{tagline}&rdquo;
           </p>
         </section>
@@ -435,7 +435,7 @@ export default function VratClient({
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <Book size={14} /> {translateFn(displayLang, 'significance')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap break-words`}>
               {significanceText}
             </p>
           </div>
@@ -445,7 +445,7 @@ export default function VratClient({
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
               <Flame size={14} /> {translateFn(displayLang, 'howToObserve')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic`}>
+            <p className={`${fontStyles[fontSize]} font-medium italic break-words`}>
               {practiceText}
             </p>
           </div>
@@ -477,7 +477,7 @@ export default function VratClient({
                 </button>
               )}
             </div>
-            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4`}>
+            <p className={`${fontStyles[fontSize]} text-center premium-serif text-lg sm:text-xl font-bold mt-4 break-words [overflow-wrap:anywhere]`}>
               {mantraText}
             </p>
           </div>
@@ -495,14 +495,14 @@ export default function VratClient({
 
             {/* Fast type pill */}
             {vrat.fastingType && (
-              <div className="flex flex-wrap gap-2 items-center">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                <span className="inline-flex max-w-full items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold break-words"
                   style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.25)' }}>
                   {fastingLabel(vrat.fastingType)}
                 </span>
                 {vrat.breakFastTime && (
-                  <span className="flex items-center gap-1 text-xs opacity-60">
-                    <Clock size={11} /> Break fast: {vrat.breakFastTime}
+                  <span className="flex min-w-0 max-w-full items-start gap-1 text-xs opacity-60 break-words">
+                    <Clock size={11} className="mt-0.5 flex-shrink-0" /> Break fast: {vrat.breakFastTime}
                   </span>
                 )}
               </div>
@@ -519,7 +519,7 @@ export default function VratClient({
                     </p>
                     <ul className="space-y-2">
                       {vrat.dos.map((d, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs opacity-80 leading-snug">
+                        <li key={i} className="flex min-w-0 items-start gap-2 text-xs opacity-80 leading-snug break-words">
                           <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
                           {d}
                         </li>
@@ -535,7 +535,7 @@ export default function VratClient({
                     </p>
                     <ul className="space-y-2">
                       {vrat.donts.map((d, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs opacity-80 leading-snug">
+                        <li key={i} className="flex min-w-0 items-start gap-2 text-xs opacity-80 leading-snug break-words">
                           <span className="text-red-400 mt-0.5 flex-shrink-0">✕</span>
                           {d}
                         </li>
@@ -555,7 +555,7 @@ export default function VratClient({
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {vrat.pujaItems.map((item, i) => (
-                    <span key={i} className="text-xs px-2.5 py-1 rounded-full"
+                    <span key={i} className="max-w-full text-xs px-2.5 py-1 rounded-full break-words"
                       style={{ background: activeTheme.border }}>
                       {item}
                     </span>
@@ -572,7 +572,7 @@ export default function VratClient({
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <CalendarDays size={14} /> Around the World
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {globalStats.next_date && (
                 <div className="rounded-2xl p-4 text-center"
                   style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
@@ -630,17 +630,17 @@ export default function VratClient({
             <Radio size={14} /> Watch Live
           </div>
           <Link href="/live-darshan"
-            className="flex items-center gap-4 rounded-2xl p-4 transition active:scale-[0.98]"
+            className="flex items-start gap-3 sm:items-center sm:gap-4 rounded-2xl p-4 transition active:scale-[0.98]"
             style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
               style={{ background: 'rgba(220,38,38,0.10)' }}>
               🪔
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm leading-snug" style={{ color: activeTheme.text }}>
+              <p className="font-semibold text-sm leading-snug break-words" style={{ color: activeTheme.text }}>
                 Join the Live Aarti
               </p>
-              <p className="text-xs opacity-50 mt-0.5">
+              <p className="text-xs opacity-50 mt-0.5 break-words">
                 Watch temples streaming live darshan right now
               </p>
             </div>

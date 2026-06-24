@@ -254,6 +254,8 @@ html[data-practice-immersive='true'] body {
 
 html,
 body {
+  max-width: 100%;
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
 }
 
@@ -267,6 +269,42 @@ body {
   background: var(--surface-base);
   color: var(--brand-ink);
   -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+li,
+blockquote,
+figcaption {
+  overflow-wrap: break-word;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.mobile-wrap-safe {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.mobile-wrap-anywhere {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 :root[data-theme='light'] body {

@@ -166,8 +166,8 @@ export default async function MainLayout({
         wantsCommunityNotifications={wantsCommunityNotifications}
         wantsFamilyNotifications={wantsFamilyNotifications}
       />
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-1 max-w-2xl mx-auto w-full px-3 pt-0 pb-28 sm:px-4">
+      <div className="min-h-screen flex min-w-0 flex-col overflow-x-hidden">
+        <main className="flex-1 min-w-0 max-w-2xl mx-auto w-full overflow-x-hidden px-3 pt-0 pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>
             <LocationProvider
               savedLat={savedLat}
