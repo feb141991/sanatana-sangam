@@ -10,6 +10,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
 import BrandMark from '@/components/BrandMark';
 import { createClient } from '@/lib/supabase';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
+import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
 
 function usernameFromEmail(email: string) {
   const base = email
@@ -139,7 +140,8 @@ export default function SignupPage() {
         }
 
         toast.success('Welcome to Shoonaya.');
-        router.push(onboardingNext);
+        const destination = await getClientPostAuthDestination(onboardingNext);
+        router.push(destination);
         router.refresh();
       } else {
         toast.success('Please check your inbox to confirm your email.');

@@ -8,8 +8,9 @@ function isAuthCookieName(name: string): boolean {
 
 export function GET(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = '/';
-  url.search = '';
+  const reason = req.nextUrl.searchParams.get('reason') || 'signed_out';
+  url.pathname = '/login';
+  url.search = `?reason=${encodeURIComponent(reason)}`;
 
   const res = NextResponse.redirect(url);
   req.cookies.getAll()

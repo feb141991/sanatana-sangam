@@ -14,8 +14,18 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 
-// Hard navigation ensures browser sends the next request with no stale cookies,
-// breaking the middleware ↔ client redirect loop.
+function hasErrorCode(error: unknown, code: string): boolean {
+  return typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    (error as { code?: unknown }).code === code;
+}
+
+// Hard navigation ensures browser sends the next request with no stale cookies.
+function redirectToLogin(reason = 'session_expired') {
+  window.location.replace(`/login?reason=${encodeURIComponent(reason)}`);
+}
+
 function redirectToLanding() {
   window.location.replace('/');
 }
@@ -56,11 +66,11 @@ export default function AuthSessionGuard() {
       const isTokenError =
         msg.includes('Refresh Token') ||
         msg.includes('refresh_token') ||
-        (error as any)?.code === 'refresh_token_not_found';
+        hasErrorCode(error, 'refresh_token_not_found');
       if (!isTokenError) return;
       if (redirecting.current) return;
       redirecting.current = true;
-      supabase.auth.signOut({ scope: 'local' }).finally(redirectToLanding);
+      supabase.auth.signOut({ scope: 'local' }).finally(() => redirectToLogin('session_expired'));
     });
 
     return () => subscription.unsubscribe();

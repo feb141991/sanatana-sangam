@@ -10,6 +10,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
+import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
 
 function LoginForm() {
   const router       = useRouter();
@@ -33,6 +34,7 @@ function LoginForm() {
   const presetEmail = searchParams.get('email')?.trim().toLowerCase() ?? '';
   const message = searchParams.get('message');
   const errorCode = searchParams.get('error');
+  const reason = searchParams.get('reason');
   const emailHint = email.trim().toLowerCase() || presetEmail;
 
   const forgotPasswordHref = emailHint
@@ -64,7 +66,16 @@ function LoginForm() {
     if (errorCode === 'password_reset_failed') {
       toast.error('Password reset link was invalid or expired. Request a fresh one.');
     }
-  }, [errorCode, message, presetEmail]);
+    if (reason === 'session_expired') {
+      toast.error('Your session expired. Please sign in again.');
+    }
+    if (reason === 'session_missing') {
+      toast.error('We could not finish sign in. Please try again.');
+    }
+    if (reason === 'missing_profile') {
+      toast.error('We could not find your profile. Please sign in again.');
+    }
+  }, [errorCode, message, presetEmail, reason]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -80,7 +91,8 @@ function LoginForm() {
       toast.error(error.message);
     } else {
       toast.success('Welcome back, Seeker 🙏');
-      router.push('/home');
+      const destination = await getClientPostAuthDestination('/home');
+      router.push(destination);
       router.refresh();
     }
     setLoading(false);

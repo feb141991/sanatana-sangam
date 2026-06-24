@@ -162,10 +162,10 @@ async function middlewareHandler(req: NextRequest) {
     : { data: { user: null }, error: null };
 
   if (isInvalidAuthSessionError(authError)) {
-    const landingUrl = req.nextUrl.clone();
-    landingUrl.pathname = '/';
-    landingUrl.search = '';
-    return clearAuthCookies(req, NextResponse.redirect(landingUrl));
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.search = '?reason=session_expired';
+    return clearAuthCookies(req, NextResponse.redirect(loginUrl));
   }
 
   // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────
