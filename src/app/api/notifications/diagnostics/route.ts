@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { canSendOneSignalPush } from '@/lib/onesignal-server';
+import { getDisabledNotificationTypes, getNotificationSafetyState } from '@/lib/notification-safety';
 
 // ─── Notification Diagnostics Endpoint ───────────────────────────────────────
 // GET /api/notifications/diagnostics
 // Returns a checklist of every layer in the notification pipeline so we can
 // pinpoint exactly which step is broken without digging through Vercel logs.
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -44,6 +45,20 @@ export async function GET() {
   checks.cron_secret = {
     ok: Boolean(cronSecret),
     detail: cronSecret ? 'Set' : 'Missing — cron routes are unprotected (low risk) but likely misconfigured',
+  };
+
+  // ── 3.5. Safety Controls ──────────────────────────────────────────────────
+  const safetyState = getNotificationSafetyState('diagnostics', request);
+  checks.notification_safety_state = {
+    ok: !safetyState.skipDelivery || safetyState.isDryRun,
+    detail: [
+      `notificationsDisabled=${safetyState.isDisabled ? 'true' : 'false'}`,
+      `notificationsDryRun=${safetyState.isDryRun ? 'true' : 'false'}`,
+      `disabledTypes=${getDisabledNotificationTypes().join(',') || 'none'}`,
+      `oneSignalConfigured=${canSendOneSignalPush() ? 'true' : 'false'}`,
+      `legacyWebPushRuntimeActive=false`,
+      `reason=${safetyState.disabledReason || 'N/A'}`,
+    ].join('; '),
   };
 
   // ── 4. DB: Can we reach the notifications table? ──────────────────────────
@@ -83,6 +98,26 @@ export async function GET() {
     checks.db_notification_key_column = {
       ok: false,
       detail: `Could not check schema: ${e instanceof Error ? e.message : String(e)}`,
+    };
+  }
+
+  try {
+    const serviceSupabase = createServiceRoleSupabaseClient();
+    const { count, error } = await serviceSupabase
+      .from('notification_deliveries')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    checks.db_notification_deliveries = {
+      ok: !error,
+      detail: error
+        ? `notification_deliveries unavailable: ${error.message}`
+        : `notification_deliveries reachable — user has ${count ?? 0} delivery audit row(s)`,
+    };
+  } catch (e) {
+    checks.db_notification_deliveries = {
+      ok: false,
+      detail: `Could not check notification_deliveries: ${e instanceof Error ? e.message : String(e)}`,
     };
   }
 
@@ -145,7 +180,7 @@ export async function GET() {
   try {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('timezone, wants_shloka_reminders, wants_festival_reminders, wants_nitya_reminders, latitude, longitude')
+      .select('timezone, wants_shloka_reminders, wants_festival_reminders, wants_nitya_reminders, latitude, longitude, onesignal_player_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -168,6 +203,13 @@ export async function GET() {
       detail: profile?.latitude && profile?.longitude
         ? `Lat/Lng set — Panchang timing (Rahu Kalam etc.) will be localised`
         : 'No location set — Panchang Rahu Kalam filter will default to New Delhi coordinates',
+    };
+
+    checks.profile_onesignal_binding = {
+      ok: true,
+      detail: profile?.onesignal_player_id
+        ? `Legacy Player ID saved: ${profile.onesignal_player_id}. Expected push path is via external_id = user.id.`
+        : 'No legacy player ID saved. This is normal if using external_id binding via OneSignalIdentityProvider.',
     };
   } catch (e) {
     checks.profile_timezone = { ok: false, detail: String(e) };

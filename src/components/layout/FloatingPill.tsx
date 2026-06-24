@@ -20,7 +20,6 @@ import {
   getPermissionState,
   isOneSignalConfigured,
   loginToOneSignal,
-  syncOneSignalContext,
 } from '@/lib/onesignal';
 import SacredIcon from '@/components/ui/SacredIcon';
 
@@ -97,21 +96,7 @@ export default function FloatingPill({
     setIsIosSafariNonPwa(isIos && isSafari && !isPwa);
   }, []);
 
-  useEffect(() => {
-    if (!pushConfigured || !userId) return;
-    loginToOneSignal(userId);
-  }, [pushConfigured, userId]);
 
-  useEffect(() => {
-    if (!pushConfigured || !userId) return;
-    syncOneSignalContext({
-      tradition, city, countryCode,
-      wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders,
-      wantsCommunityNotifications, wantsFamilyNotifications,
-    });
-  }, [city, countryCode, pushConfigured, tradition, userId,
-    wantsCommunityNotifications, wantsFamilyNotifications,
-    wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders]);
 
   // ── Hydrate Pro from server on mount ─────────────────────────────────────────
   useEffect(() => {

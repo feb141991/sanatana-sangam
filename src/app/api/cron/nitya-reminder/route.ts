@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 import { getAshramaNudgeSuffix, type LifeStage } from '@/lib/ashrama';
@@ -39,6 +40,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('nitya', request);
 
   try {
     const baseUrl    = new URL(request.url).origin;
@@ -175,16 +177,26 @@ export async function GET(request: Request) {
       };
     });
 
+    if (isDryRun || skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('nitya', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+        eligibleCount: eligibleUsers.length,
+        skippedCount: eligibleUsers.length - unstartedUsers.length,
+        wouldSendCount: notifications.length,
+      }));
+    }
+
     // ── Step 5: Insert + deduplicate ─────────────────────────────────────────
     let totalInserted    = 0;
     const insertedUserIds: string[] = [];
+    const notificationIdsByUserId: Record<string, string> = {};
+    const notificationKeysByUserId: Record<string, string> = {};
 
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
       const { data: insertedRows, error: insertError } = await supabase
         .from('notifications')
         .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
+        .select('id, user_id, notification_key');
 
       if (insertError) {
         console.error('Nitya cron insert failed:', insertError);
@@ -192,27 +204,38 @@ export async function GET(request: Request) {
       }
 
       totalInserted += insertedRows?.length ?? 0;
-      insertedUserIds.push(...(insertedRows ?? []).map((r: { user_id: string }) => r.user_id));
+      for (const row of insertedRows ?? []) {
+        insertedUserIds.push(row.user_id);
+        notificationIdsByUserId[row.user_id] = row.id;
+        notificationKeysByUserId[row.user_id] = row.notification_key;
+      }
     }
 
     // ── Step 6: OneSignal push — grouped by tradition ────────────────────────
-    const byTradition = new Map<string, { userIds: string[]; nudge: { title: string; body: string } }>();
+    const byTradition = new Map<string, { userIds: string[]; nudge: { title: string; body: string }; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
     for (const u of unstartedUsers) {
       if (!insertedUserIds.includes(u.id)) continue;
       const t     = (u as any).tradition ?? 'hindu';
       const nudge = TRADITION_NUDGE[t] ?? TRADITION_NUDGE.hindu;
-      if (!byTradition.has(t)) byTradition.set(t, { userIds: [], nudge });
-      byTradition.get(t)!.userIds.push(u.id);
+      if (!byTradition.has(t)) byTradition.set(t, { userIds: [], nudge, notificationKeysByUserId: {}, notificationIdsByUserId: {} });
+      const group = byTradition.get(t)!;
+      group.userIds.push(u.id);
+      group.notificationIdsByUserId[u.id] = notificationIdsByUserId[u.id];
+      group.notificationKeysByUserId[u.id] = notificationKeysByUserId[u.id];
     }
 
     let totalPushTargets = 0;
-    for (const { userIds, nudge } of byTradition.values()) {
+    for (const { userIds, nudge, notificationKeysByUserId, notificationIdsByUserId } of byTradition.values()) {
       const pushResult = await sendOneSignalPush({
         userIds,
         title: nudge.title,
         body:  nudge.body,
         url:   actionUrl,
         data:  { type: 'nitya' },
+      }, { 
+        type: 'nitya',
+        notificationKeysByUserId,
+        notificationIdsByUserId,
       });
       totalPushTargets += pushResult.sent;
     }

@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { useMarkAllNotificationsReadMutation, useMarkNotificationReadMutation, useNotificationsQuery, useNotificationsRealtime } from '@/hooks/useNotifications';
-import { syncOneSignalContext, loginToOneSignal, isOneSignalConfigured, getPermissionState, getPlayerId, requestNotificationPermission } from '@/lib/onesignal';
+import { loginToOneSignal, isOneSignalConfigured, getPermissionState, getPlayerId, requestNotificationPermission } from '@/lib/onesignal';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang, TranslationKey } from '@/lib/i18n/translations';
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
@@ -122,22 +122,6 @@ export default function TopBar({
     const isPwa    = (window.navigator as any).standalone === true;
     setIsIosSafariNonPwa(isIos && isSafari && !isPwa);
   }, []);
-
-  useEffect(() => {
-    if (!pushConfigured || !userId) return;
-    loginToOneSignal(userId);
-  }, [pushConfigured, userId]);
-
-  useEffect(() => {
-    if (!pushConfigured || !userId) return;
-    syncOneSignalContext({
-      tradition, city, countryCode,
-      wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders,
-      wantsCommunityNotifications, wantsFamilyNotifications,
-    });
-  }, [city, countryCode, pushConfigured, tradition, userId,
-    wantsCommunityNotifications, wantsFamilyNotifications,
-    wantsFestivalReminders, wantsShlokaReminders, wantsNityaReminders]);
 
 
   const unreadCount = notifs.filter((n) => !n.read).length;

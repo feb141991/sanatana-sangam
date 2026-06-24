@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
-import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
+import { fetchReviewedObservancesForNotifications } from '@/lib/observance-notification-source';
 
 function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -55,6 +56,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('festival', request);
 
   try {
     const baseUrl = new URL(request.url).origin;
@@ -63,30 +65,29 @@ export async function GET(request: Request) {
     const now = new Date();
     const targetLocalHour = 9;
 
-    const occRows = await supabase
-      .from('observance_occurrences')
-      .select('*, observance_definitions(*)')
-      .order('date', { ascending: true });
+    const {
+      observances: festivals,
+      error: observanceError,
+    } = await fetchReviewedObservancesForNotifications(supabase, ['major', 'regional']);
 
-    if (occRows.error && !isMissingObservanceModel(occRows.error)) {
-      console.error('Festival cron occurrences query failed:', occRows.error);
+    if (observanceError && !isMissingObservanceModel(observanceError)) {
+      console.error('Festival cron reviewed observances query failed:', observanceError);
       return NextResponse.json(
-        { error: `Occurrences query failed: ${occRows.error.message}` },
+        { error: `Reviewed observances query failed: ${observanceError.message}` },
         { status: 500 }
       );
     }
 
-    const festivalsFromDb = !occRows.error
-      ? (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row))
-      : [];
-    const festivals = festivalsFromDb.length > 0 ? festivalsFromDb : FESTIVALS_2026;
-
-    if (occRows.error && isMissingObservanceModel(occRows.error)) {
-      console.warn('Festival cron observance model missing; falling back to static calendar');
+    if (observanceError && isMissingObservanceModel(observanceError)) {
+      console.error('Festival cron observance model missing; refusing static fallback for push notifications');
+      return NextResponse.json({
+        message: 'Reviewed observance model unavailable; festival push skipped',
+        sent: 0,
+      });
     }
 
-    if (!festivals || festivals.length === 0) {
-      return NextResponse.json({ message: 'No festivals due for reminder', sent: 0 });
+    if (festivals.length === 0) {
+      return NextResponse.json({ message: 'No reviewed festivals eligible for reminder', sent: 0 });
     }
 
     // Fetch all user IDs
@@ -172,6 +173,14 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No festivals due in local reminder windows', sent: 0 });
     }
 
+    if (isDryRun || skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('festival', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+        eligibleCount: eligibleUsers.length,
+        skippedCount: users.length - eligibleUsers.length,
+        wouldSendCount: notifications.length,
+      }));
+    }
+
     let totalInserted = 0;
     let totalPushTargets = 0;
 
@@ -183,7 +192,7 @@ export async function GET(request: Request) {
           onConflict: 'user_id,notification_key',
           ignoreDuplicates: true,
         })
-        .select('user_id, title, body, notification_key');
+        .select('id, user_id, title, body, notification_key');
 
       if (insertError) {
         console.error('Festival cron notification insert failed:', insertError);
@@ -195,7 +204,7 @@ export async function GET(request: Request) {
 
       totalInserted += insertedRows?.length ?? 0;
 
-      const pushBatches = new Map<string, { title: string; body: string; userIds: string[]; festivalId: string }>();
+      const pushBatches = new Map<string, { title: string; body: string; userIds: string[]; festivalId: string; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
       for (const row of insertedRows ?? []) {
         const source = batch.find((notification) => notification.notification_key === row.notification_key && notification.user_id === row.user_id);
         if (!source) continue;
@@ -206,9 +215,14 @@ export async function GET(request: Request) {
             body: source.body,
             userIds: [],
             festivalId: source.festival_id,
+            notificationKeysByUserId: {},
+            notificationIdsByUserId: {},
           });
         }
-        pushBatches.get(key)!.userIds.push(row.user_id);
+        const pushBatch = pushBatches.get(key)!;
+        pushBatch.userIds.push(row.user_id);
+        pushBatch.notificationIdsByUserId[row.user_id] = row.id;
+        pushBatch.notificationKeysByUserId[row.user_id] = source.notification_key;
       }
 
       for (const pushBatch of pushBatches.values()) {
@@ -221,6 +235,10 @@ export async function GET(request: Request) {
             type: 'festival',
             festival_id: pushBatch.festivalId,
           },
+        }, { 
+          type: 'festival',
+          notificationKeysByUserId: pushBatch.notificationKeysByUserId,
+          notificationIdsByUserId: pushBatch.notificationIdsByUserId,
         });
         totalPushTargets += pushResult.sent;
       }

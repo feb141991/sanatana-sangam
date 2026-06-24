@@ -19,7 +19,7 @@ import type { TraditionKey } from '@/lib/traditions';
 import { useLocation } from '@/lib/LocationContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
-import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
+import { getPlayerId, getPermissionState, logoutFromOneSignal, requestNotificationPermission } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { ageToAshrama, ageFromDob, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import TierBadge from '@/components/ui/TierBadge';
@@ -143,19 +143,6 @@ const ASHRAMA_BULLETS: Record<string, string[]> = {
     "Accumulate spiritual treasury by equipping sacred relics and guiding seekers in the community."
   ]
 };
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -336,52 +323,19 @@ export default function ProfileClient({
     (profile as any)?.japa_reminder_time ?? '07:00'
   );
 
-  useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
-      console.warn('NEXT_PUBLIC_VAPID_PUBLIC_KEY environment variable is not set. Japa Reminders will be hidden.');
-    }
-  }, []);
-
   async function handleToggleReminder() {
-    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-    if (!vapidKey) return;
-
     if (!reminderEnabled) {
       try {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
+        const granted = await requestNotificationPermission();
+        if (!granted) {
           toast.error('Enable notifications in browser settings');
           return;
         }
 
-        if (!('serviceWorker' in navigator)) {
-          toast.error('Push notifications are not supported in this browser.');
-          return;
+        const playerId = await getPlayerId();
+        if (playerId) {
+          await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
         }
-
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidKey),
-        });
-
-        const p256dh = subscription.getKey('p256dh');
-        const auth = subscription.getKey('auth');
-
-        const p256dhStr = p256dh ? btoa(String.fromCharCode(...new Uint8Array(p256dh))) : '';
-        const authStr = auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : '';
-
-        const subRes = await fetch('/api/push/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            endpoint: subscription.endpoint,
-            p256dh: p256dhStr,
-            auth: authStr,
-          }),
-        });
-
-        if (!subRes.ok) throw new Error('Failed to save push subscription');
 
         const prefRes = await fetch('/api/push/preferences', {
           method: 'PATCH',
@@ -393,9 +347,9 @@ export default function ProfileClient({
 
         setReminderEnabled(true);
         toast.success('Japa reminder enabled 🙏');
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to enable japa reminder:', err);
-        toast.error(err.message || 'Failed to enable japa reminder');
+        toast.error(err instanceof Error ? err.message : 'Failed to enable japa reminder');
       }
     } else {
       try {
@@ -407,25 +361,11 @@ export default function ProfileClient({
 
         if (!prefRes.ok) throw new Error('Failed to save push preferences');
 
-        if ('serviceWorker' in navigator) {
-          const registration = await navigator.serviceWorker.ready;
-          const subscription = await registration.pushManager.getSubscription();
-          if (subscription) {
-            await fetch('/api/push/subscribe', {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ endpoint: subscription.endpoint }),
-            }).catch(() => {});
-            
-            await subscription.unsubscribe().catch(() => {});
-          }
-        }
-
         setReminderEnabled(false);
         toast.success('Japa reminder disabled');
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to disable japa reminder:', err);
-        toast.error(err.message || 'Failed to disable japa reminder');
+        toast.error(err instanceof Error ? err.message : 'Failed to disable japa reminder');
       }
     }
   }
@@ -2207,8 +2147,19 @@ export default function ProfileClient({
                   return (
                     <button
                       key={item.key}
-                      onClick={() => {
+                      onClick={async () => {
                         const next = !checked;
+                        if (next && getPermissionState() !== 'granted') {
+                          const granted = await requestNotificationPermission();
+                          if (!granted) {
+                            toast.error('Enable notifications in browser settings');
+                            return;
+                          }
+                          const playerId = await getPlayerId();
+                          if (playerId) {
+                            await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+                          }
+                        }
                         setNotificationPrefs(prev => ({ ...prev, [item.key]: next }));
                         patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
                       }}
@@ -2226,8 +2177,7 @@ export default function ProfileClient({
              </div>
 
              {/* Japa Daily Reminder Section */}
-             {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && (
-               <div className="space-y-3 pt-2">
+             <div className="space-y-3 pt-2">
                  <div className="flex items-center justify-between px-5 py-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] shadow-sm">
                    <div>
                      <p className="text-sm font-medium theme-ink">Japa Reminder</p>
@@ -2260,8 +2210,7 @@ export default function ProfileClient({
                      />
                    </div>
                  )}
-               </div>
-             )}
+             </div>
 
              <button
                onClick={sendTestNotification}

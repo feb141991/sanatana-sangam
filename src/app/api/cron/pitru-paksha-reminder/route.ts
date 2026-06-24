@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('pitru_paksha', request);
 
   try {
     const now             = new Date();
@@ -88,20 +90,34 @@ export async function GET(request: Request) {
       };
     });
 
+    if (isDryRun || skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('pitru_paksha', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+        eligibleCount: eligibleUsers.length,
+        skippedCount: users.length - eligibleUsers.length,
+        wouldSendCount: notifications.length,
+      }));
+    }
+
     let totalInserted  = 0;
     const insertedIds: string[] = [];
+    const notificationIdsByUserId: Record<string, string> = {};
+    const notificationKeysByUserId: Record<string, string> = {};
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
       const { data: rows, error: insertErr } = await supabase
         .from('notifications')
         .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
+        .select('id, user_id, notification_key');
       if (insertErr) {
         console.error('[pitru-paksha-reminder] insert error:', insertErr);
         return NextResponse.json({ error: insertErr.message }, { status: 500 });
       }
       totalInserted += rows?.length ?? 0;
-      insertedIds.push(...((rows ?? []).map((r: { user_id: string }) => r.user_id)));
+      for (const row of rows ?? []) {
+        insertedIds.push(row.user_id);
+        notificationIdsByUserId[row.user_id] = row.id;
+        notificationKeysByUserId[row.user_id] = row.notification_key;
+      }
     }
 
     const baseUrl   = new URL(request.url).origin;
@@ -112,6 +128,10 @@ export async function GET(request: Request) {
       body:    copy.subtitle,
       url:     actionUrl,
       data:    { type: 'festival' },
+    }, { 
+      type: 'pitru_paksha',
+      notificationKeysByUserId,
+      notificationIdsByUserId,
     });
 
     return NextResponse.json({

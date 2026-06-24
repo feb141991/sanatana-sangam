@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import webpush from 'web-push';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTodayPanchang } from '@/lib/panchang';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
+import { sendOneSignalPush } from '@/lib/onesignal-server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -18,9 +19,14 @@ interface UserRow {
   spiritual_level: string | null;
   full_name: string | null;
   timezone: string | null;
-  endpoint: string | null;
-  p256dh: string | null;
-  auth: string | null;
+}
+
+interface RawProfileRow {
+  id: string;
+  tradition: string | null;
+  spiritual_level: string | null;
+  full_name: string | null;
+  timezone: string | null;
 }
 
 interface DigestPayload {
@@ -143,23 +149,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('digest', request);
+
   // ── Env ───────────────────────────────────────────────────────────────────
   const supabaseUrl     = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const serviceRoleKey  = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
-  const vapidPublicKey  = process.env.VAPID_PUBLIC_KEY ?? '';
-  const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY ?? '';
 
   if (!supabaseUrl || !serviceRoleKey) {
     return NextResponse.json({ error: 'Missing Supabase env vars' }, { status: 500 });
-  }
-
-  const canPush = vapidPublicKey && vapidPrivateKey;
-  if (canPush) {
-    webpush.setVapidDetails(
-      'mailto:support@sanatansangam.com',
-      vapidPublicKey,
-      vapidPrivateKey,
-    );
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -170,7 +167,6 @@ export async function GET(request: Request) {
   const today = localSpiritualDate('Asia/Kolkata', 4);
 
   // ── 2. Fetch users who have NO digest row for today (batch cap 500) ───────
-  // We join push_subscriptions so we can send the notification in the same pass.
   const { data: users, error: fetchErr } = await supabase.rpc(
     'get_users_without_digest',
     { target_date: today, batch_limit: 500 },
@@ -186,8 +182,7 @@ export async function GET(request: Request) {
         tradition,
         spiritual_level,
         full_name,
-        timezone,
-        push_subscriptions ( endpoint, p256dh, auth )
+        timezone
       `)
       .limit(500);
 
@@ -205,25 +200,28 @@ export async function GET(request: Request) {
 
     const doneSet = new Set((existingDigests ?? []).map((r: { user_id: string }) => r.user_id));
 
-    rows = ((rawRows ?? []) as any[])
-      .filter((u: any) => !doneSet.has(u.id))
-      .map((u: any) => {
-        const sub = u.push_subscriptions?.[0] ?? null;
-        return {
-          id:              u.id,
-          tradition:       u.tradition,
-          spiritual_level: u.spiritual_level,
-          full_name:       u.full_name,
-          timezone:        u.timezone,
-          endpoint:        sub?.endpoint ?? null,
-          p256dh:          sub?.p256dh   ?? null,
-          auth:            sub?.auth     ?? null,
-        };
-      });
+    const rawProfileRows = (rawRows ?? []) as RawProfileRow[];
+    rows = rawProfileRows
+      .filter((u) => !doneSet.has(u.id))
+      .map((u) => ({
+        id:              u.id,
+        tradition:       u.tradition,
+        spiritual_level: u.spiritual_level,
+        full_name:       u.full_name,
+        timezone:        u.timezone,
+      }));
   }
 
   if (!rows.length) {
     return NextResponse.json({ generated: 0, notified: 0, message: 'All users already have a digest for today.' });
+  }
+
+  if (isDryRun || skipDelivery) {
+    return NextResponse.json(buildNotificationSafetyResponse('digest', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
+      eligibleCount: rows.length,
+      skippedCount: 0,
+      wouldSendCount: rows.length, // Assumes all eligible users would be targeted
+    }));
   }
 
   // ── 4. Process in concurrent batches of 10 ────────────────────────────────
@@ -233,6 +231,9 @@ export async function GET(request: Request) {
 
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
+    
+    // We will collect users to push to after generating digests
+    const usersToPush: { id: string, digestBody: string, tithiName: string }[] = [];
 
     const results = await Promise.allSettled(
       batch.map(async (user) => {
@@ -279,41 +280,45 @@ export async function GET(request: Request) {
           },
           { onConflict: 'user_id,date,type' },
         );
+        
         if (upsertErr) {
           console.warn(`[digest/generate] upsert failed for ${user.id}:`, upsertErr.message);
         } else {
           generated++;
-        }
-
-        // c. Send web-push if subscription exists
-        if (canPush && user.endpoint && user.p256dh && user.auth) {
-          const pushPayload = JSON.stringify({
-            title: `Dharmic Digest · ${userPanchang.tithiName}`,
-            body:  digest.body.slice(0, 80),
-            icon:  '/icons/icon-192x192.png',
-            data:  { url: '/home' },
+          usersToPush.push({
+            id: user.id,
+            digestBody: digest.body,
+            tithiName: userPanchang.tithiName,
           });
-
-          try {
-            await webpush.sendNotification(
-              { endpoint: user.endpoint, keys: { p256dh: user.p256dh, auth: user.auth } },
-              pushPayload,
-            );
-            notified++;
-          } catch (pushErr: any) {
-            console.warn(`[digest/generate] push failed for ${user.id}:`, pushErr?.statusCode ?? pushErr);
-            // Clean up expired subscriptions
-            if (pushErr?.statusCode === 410) {
-              await supabase
-                .from('push_subscriptions')
-                .delete()
-                .eq('user_id', user.id)
-                .eq('endpoint', user.endpoint);
-            }
-          }
         }
       }),
     );
+
+    // Send OneSignal Pushes for this batch
+    if (usersToPush.length > 0) {
+      // Group users by same tithi/digest snippet if possible?
+      // For simplicity and since content could differ per tradition/level, send individually
+      // However, sendOneSignalPush takes an array of userIds and sends same payload.
+      // We will loop to send customized pushes, or abstract it.
+      
+      const pushPromises = usersToPush.map(async (u) => {
+        try {
+          const res = await sendOneSignalPush({
+            userIds: [u.id],
+            title: `Dharmic Digest · ${u.tithiName}`,
+            body: u.digestBody.slice(0, 80),
+            url: new URL('/home', new URL(request.url).origin).toString(),
+            data: { type: 'daily_digest' },
+          }, {
+            notificationKey: 'daily-digest',
+          });
+          if (res.sent > 0) notified++;
+        } catch (e) {
+          console.warn(`[digest/generate] push failed for ${u.id}:`, e);
+        }
+      });
+      await Promise.allSettled(pushPromises);
+    }
 
     // Log any unexpected rejections per batch (shouldn't happen — inner errors are caught above)
     results.forEach((r, idx) => {
