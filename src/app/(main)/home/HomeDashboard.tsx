@@ -53,6 +53,7 @@ import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
 import FirstWeekGuide from '@/components/home/FirstWeekGuide';
+import VratCarousel from '@/components/home/VratCarousel';
 import { HeroSection } from './sections/HeroSection';
 import { CalendarSection } from './sections/CalendarSection';
 
@@ -797,6 +798,13 @@ export default function HomeDashboard({
     .map(f => ({ festival: f, story: getFestivalStory(f.name), daysLeft: daysFromNow(f.date) }))
     .filter(x => x.story && x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS);
 
+  const activeVratFestivals = apiFestivals
+    .filter(festival => getVratHref(festival))
+    .filter((festival) => {
+      const daysLeft = daysFromNow(festival.date);
+      return daysLeft !== null && daysLeft >= 0 && daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS;
+    });
+
   const upcomingSacredObservance = apiFestivals
     .map(f => ({ festival: f, daysLeft: daysFromNow(f.date) }))
     .filter(x => x.daysLeft !== null && x.daysLeft >= 0 && x.daysLeft <= HOME_OBSERVANCE_WINDOW_DAYS)
@@ -1050,6 +1058,12 @@ export default function HomeDashboard({
             userName={userName}
           />
         )}
+
+        <VratCarousel
+          festivals={activeVratFestivals}
+          isDark={isDark}
+          effectiveAppLanguage={effectiveAppLanguage}
+        />
 
         {/* ── Section 2: Calendar Section ── */}
         <CalendarSection
