@@ -247,7 +247,7 @@ let _japaStopFns: (() => void)[] = [];
 
 function _getCtx(): AudioContext | null {
   try {
-    const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+    const Ctx = window.AudioContext || (window as Window & typeof globalThis & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctx) return null;
     if (!_japaCtx || _japaCtx.state === 'closed') _japaCtx = new Ctx() as AudioContext;
     const ctx = _japaCtx;
@@ -1838,7 +1838,7 @@ function JapaCompletionCeremony({
           <motion.div
             key={`golden-ripple-${i}`}
             className="absolute rounded-full border border-[color:var(--accent-color)]"
-            style={{ '--accent-color': accentColor } as any}
+            style={{ '--accent-color': accentColor } as React.CSSProperties}
             initial={{ scale: 0, opacity: 0.8 }}
             animate={{ scale: 4, opacity: 0 }}
             transition={{ delay: i * 0.15, duration: 1.2, ease: "easeOut" }}

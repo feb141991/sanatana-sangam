@@ -7,7 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Bell, CalendarDays, X, ChevronRight, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
-import { triggerSadhanaShare } from '@/lib/share/trigger-share';
+import { buildShoonayaShareCardData, shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import { format as fmtDate } from 'date-fns';
 import { type Shloka, getShlokaByLanguage } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
@@ -781,16 +781,16 @@ export default function HomeDashboard({
     { reviewedOnly: true },
   );
 
-  const apiFestivals: Festival[] = calendarError
+  const apiFestivals: (import('@/lib/festivals').Festival & { route_kind?: string, route_slug?: string | null })[] = calendarError
     ? []
     : observances.map(obs => ({
         name: obs.display_name,
         date: obs.date,
         emoji: obs.emoji,
         description: obs.description || '',
-        type: obs.kind as any,
-        tradition: obs.tradition as any,
-        route_kind: obs.route_kind as any,
+        type: obs.kind as import('@/lib/festivals').Festival['type'],
+        tradition: (obs.tradition || 'all') as import('@/lib/festivals').Festival['tradition'],
+        route_kind: obs.route_kind as string,
         route_slug: obs.route_slug
       }));
 
@@ -1442,20 +1442,22 @@ export default function HomeDashboard({
 
                      <div className="flex justify-center mt-6">
                        <button
-                         onClick={() => {
+                         onClick={async () => {
                            const correctCount = quizAnswered === quiz.answerIndex ? 1 : 0;
                            const totalCount = 1;
-                           triggerSadhanaShare({
-                             tradition: _quizTrad,
-                             type: 'quiz',
-                             symbol: '🧠',
-                             lines: [
-                               { text: 'Quiz Complete', size: 64, weight: '700', color: '#ffffff' },
-                               { text: `${correctCount}/${totalCount} correct`, size: 52, color: 'var(--brand-primary)' },
-                               { text: `${Math.round(correctCount/totalCount*100)}% accuracy`, size: 36, color: '#ffffff66' },
-                             ],
-                             activeSymbolId,
+                           const data = buildShoonayaShareCardData({
+                             tradition: _quizTrad || 'universal',
+                             title: 'Quiz Complete',
+                             score: Math.round(correctCount/totalCount*100),
+                             caption: `${correctCount}/${totalCount} correct`,
+                             userName: (userName || 'Seeker'),
+                             date: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
                            });
+                           const result = await shareShoonayaShareCard(data, {
+                             fileName: 'shoonaya-quiz-result.png',
+                             shareText: 'Practicing with Shoonaya 🙏',
+                           });
+                           if (result === 'failed') toast.error('Could not generate card');
                          }}
                          className="flex items-center gap-2 px-6 py-3 rounded-full border transition-transform active:scale-95 cursor-pointer"
                          style={{

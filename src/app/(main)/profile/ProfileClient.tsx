@@ -389,7 +389,7 @@ export default function ProfileClient({
     bio:              liveProfile?.bio              ?? '',
     city:             liveProfile?.city             ?? '',
     country:          liveProfile?.country          ?? '',
-    tradition:        (liveProfile as any)?.tradition        ?? '',
+    tradition:        liveProfile?.tradition        ?? '',
     sampradaya:       liveProfile?.sampradaya       ?? '',
     ishta_devata:     liveProfile?.ishta_devata     ?? '',
     spiritual_level:  liveProfile?.spiritual_level  ?? 'jigyasu',
@@ -410,7 +410,7 @@ export default function ProfileClient({
 
   const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
   const streak    = initialHighlightsStreak;
-  const profileTradition = (liveProfile as any)?.tradition ?? 'hindu';
+  const profileTradition = liveProfile?.tradition ?? 'hindu';
   const visibleRelics = SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === profileTradition);
   const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, profileTradition);
   const unlockedCount = unlockedRelics.length;
@@ -1213,7 +1213,7 @@ export default function ProfileClient({
         className="max-w-xl mx-auto px-5 -mt-6 space-y-5 relative z-30 pb-32"
       >
           <SadhanaHighlightsCard
-            tradition={(liveProfile as any)?.tradition ?? 'hindu'}
+            tradition={liveProfile?.tradition ?? 'hindu'}
             totalBeads={totalBeads}
             totalRounds={totalRounds}
             totalMinutes={totalMinutes}
@@ -2387,7 +2387,7 @@ export default function ProfileClient({
             userId={userId}
             userName={liveProfile?.full_name ?? liveProfile?.username ?? 'Seeker'}
             streak={initialHighlightsStreak}
-            tradition={(liveProfile as any)?.tradition ?? null}
+            tradition={liveProfile?.tradition ?? null}
             onClose={() => setSocialShareOpen(false)}
           />
         )}

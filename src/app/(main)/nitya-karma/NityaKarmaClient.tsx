@@ -1472,7 +1472,7 @@ export default function NityaKarmaClient({
       // Engine sync — pass the spiritual date explicitly so the engine doesn't
       // fall back to UTC midnight
       if (engine) {
-        try { await engine.nityaKarma.markStep(userId, stepId as any, true, today); } catch { /* silent */ }
+        try { await engine.nityaKarma.markStep(userId, stepId as import("@sangam/sadhana-engine").NityaSequenceStep["id"], true, today); } catch { /* silent */ }
       }
 
       // Check all done using ref (avoids stale closure)

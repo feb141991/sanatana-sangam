@@ -13,8 +13,9 @@ import {
   Star,
   Trophy,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { getInitials } from '@/lib/utils';
-import { shareScoreToWhatsApp } from '@/lib/whatsapp';
+import { buildShoonayaShareCardData, shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import TierBadge from '@/components/ui/TierBadge';
 import { getTierFromScore } from '@/lib/seva-tiers';
 import { SACRED_RELICS } from '@/lib/relics';
@@ -288,14 +289,21 @@ export default function ScoreboardClient({
   const currentUserShrutiData = currentShrutiUsers.find((u) => u.id === currentUserId);
   const currentUserShrutiRank = currentShrutiUsers.findIndex((u) => u.id === currentUserId) + 1;
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (!currentUserData) return;
-    const link = shareScoreToWhatsApp(
-      currentUserData.full_name || currentUserData.username,
-      getScoreForPeriod(currentUserData, period),
-      currentUserRank
-    );
-    window.open(link, '_blank');
+    const data = buildShoonayaShareCardData({
+      tradition: currentUserData.tradition || 'universal',
+      score: getScoreForPeriod(currentUserData, period),
+      title: 'Seva Score',
+      caption: `Rank #${currentUserRank} on the leaderboard`,
+      userName: currentUserData.full_name || currentUserData.username,
+      date: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    });
+    const result = await shareShoonayaShareCard(data, {
+      fileName: 'shoonaya-leaderboard.png',
+      shareText: 'Practicing with Shoonaya 🙏',
+    });
+    if (result === 'failed') toast.error('Could not generate card');
   };
 
   const topThree = filteredUsers.slice(0, 3);
@@ -367,10 +375,10 @@ export default function ScoreboardClient({
             </div>
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba59] transition-colors shadow-lg shadow-[#25D366]/20"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-[var(--brand-ink)] text-xs font-bold transition-colors shadow-lg shadow-[rgba(197,160,89,0.20)]"
             >
               <Share2 size={14} />
-              Share on WhatsApp
+              Share Card
             </button>
           </motion.div>
         )}
@@ -393,18 +401,25 @@ export default function ScoreboardClient({
               </div>
             </div>
             <button
-              onClick={() => {
-                const link = shareScoreToWhatsApp(
-                  currentUserQuizData.full_name || currentUserQuizData.username,
-                  currentUserQuizData.total_karma,
-                  currentUserQuizRank
-                );
-                window.open(link, '_blank');
+              onClick={async () => {
+                const data = buildShoonayaShareCardData({
+                  tradition: currentUserQuizData.tradition || 'universal',
+                  score: currentUserQuizData.total_karma,
+                  title: 'Seva Score',
+                  caption: `Rank #${currentUserQuizRank} on the leaderboard`,
+                  userName: currentUserQuizData.full_name || currentUserQuizData.username,
+                  date: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+                });
+                const result = await shareShoonayaShareCard(data, {
+                  fileName: 'shoonaya-leaderboard.png',
+                  shareText: 'Practicing with Shoonaya 🙏',
+                });
+                if (result === 'failed') toast.error('Could not generate card');
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20ba59] transition-colors shadow-lg shadow-[#25D366]/20"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--brand-primary)] text-[var(--brand-ink)] text-xs font-bold transition-colors shadow-lg shadow-[rgba(197,160,89,0.20)]"
             >
               <Share2 size={14} />
-              Share
+              Share Card
             </button>
           </motion.div>
         )}

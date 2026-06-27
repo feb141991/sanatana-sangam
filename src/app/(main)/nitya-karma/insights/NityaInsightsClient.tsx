@@ -1,5 +1,6 @@
 'use client';
 
+import { buildShoonayaShareCardData, shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
@@ -328,8 +329,10 @@ function ShareInsightsSheet({
       const data = buildNityaShareCardData({ type, stats, tradition, userName, todayTithi, month });
       await shareNityaCardImage({ type, data, fileName: `shoonaya-${type}.png` });
       onClose();
-    } catch (err: any) {
-      if (err?.name !== 'AbortError') toast.error('Could not generate card');
+    } catch (err: unknown) {
+      if (!(err instanceof DOMException && err.name === 'AbortError')) {
+        toast.error('Could not generate card');
+      }
     } finally {
       setGenerating(null);
     }
@@ -582,8 +585,20 @@ export default function NityaInsightsClient({ logs, tradition, userName }: Props
     if (quickGenerating) return;
     setQuickGenerating(type);
     try {
-      const data = buildNityaShareCardData({ type, stats, tradition, userName, month });
-      await shareNityaCardImage({ type, data, fileName: `shoonaya-${type}.png` });
+      if (type === 'streak_milestone') {
+        const data = buildShoonayaShareCardData({
+          tradition: tradition || 'universal',
+          streakCount: stats.streak,
+          title: 'Nitya Karma',
+          caption: 'Consecutive days completed',
+          userName: userName || 'Seeker',
+          date: new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+        });
+        await shareShoonayaShareCard(data, { fileName: 'shoonaya-streak.png', shareText: 'Practicing with Shoonaya 🙏' });
+      } else {
+        const data = buildNityaShareCardData({ type, stats, tradition, userName, month });
+        await shareNityaCardImage({ type, data, fileName: `shoonaya-${type}.png` });
+      }
     } catch (err: any) {
       if (err?.name !== 'AbortError') toast.error('Could not generate card');
     } finally {
