@@ -1590,8 +1590,10 @@ export default function PathshalaClient({
                     source: todayShloka.source,
                     streak: shrutiStats?.streak ?? 1,
                   });
-                } catch (err: any) {
-                  if (err?.name !== 'AbortError') toast.error('Could not share. Try again.');
+                } catch (err: unknown) {
+                  if (!(err instanceof DOMException && err.name === 'AbortError')) {
+                    toast.error('Could not share. Try again.');
+                  }
                 } finally {
                   setSharingVerse(false);
                 }
