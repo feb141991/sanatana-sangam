@@ -23,53 +23,9 @@ import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { daysUntilNextOccurrence } from '../utils';
 import { KulSectionTiles } from './KulSectionTiles';
 import { useMemo, useRef, useState } from 'react';
-import { getRelicFrame } from '@/lib/relic-frames';
-import { KulLeaderboard } from './KulLeaderboard';
-import SacredIcon from '@/components/ui/SacredIcon';
 
 function getDisplayName(member?: MemberRow) {
   return member?.profiles?.full_name || member?.profiles?.username || 'Family';
-}
-
-function MemberAvatar({ name, url, activeSymbolId }: { name: string; url: string | null | undefined; activeSymbolId?: string | null }) {
-  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  const frame = getRelicFrame(activeSymbolId);
-  return (
-    <div 
-      className="rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 border border-[#C5A059]/15 shadow-inner"
-      style={{
-        width: 32,
-        height: 32,
-        border: frame?.border ?? '1px solid rgba(197,160,89,0.15)',
-        transition: 'border 0.4s ease, box-shadow 0.4s ease',
-      }}
-    >
-      {url ? (
-        <Image width={32} height={32} src={url} alt={name} className="w-full h-full object-cover" />
-      ) : (
-        <span className="text-slate-500 font-bold tracking-tight text-[11px]">{initials}</span>
-      )}
-    </div>
-  );
-}
-
-function PracticePill({ label, done }: { label: string; done: boolean }) {
-  return (
-    <div className={`flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[9px] font-medium tracking-tight transition-all duration-300 ${
-      done 
-        ? 'border-amber-500/20 bg-amber-500/5 text-amber-500/90' 
-        : 'border-[var(--card-border)] bg-[var(--surface-soft)] text-[var(--text-dim)] opacity-60'
-    }`}>
-      {done ? (
-        <span className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white text-[7px] font-bold">
-          ✓
-        </span>
-      ) : (
-        <span className="h-3 w-3 shrink-0 rounded-full border border-current opacity-30" />
-      )}
-      <span>{label}</span>
-    </div>
-  );
 }
 
 function KulSabhaPreview({
@@ -172,7 +128,6 @@ export function KulHub({
   isUploading,
   userId,
   onSendMessage,
-  memberActivity = [],
 }: {
   kul: KulSummary;
   members: MemberRow[];
@@ -191,15 +146,6 @@ export function KulHub({
   isUploading: boolean;
   userId: string;
   onSendMessage: (content: string) => void;
-  memberActivity?: {
-    user_id: string;
-    japa_done: boolean;
-    nitya_done: boolean;
-    pathshala_done: boolean;
-    quiz_done: boolean;
-    dharmveer_done: boolean;
-    streak_count: number | null;
-  }[];
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
@@ -213,38 +159,6 @@ export function KulHub({
   const guardianName = getDisplayName(members.find(member => member.role === 'guardian'));
   const kulDevata = members.find(member => member.profiles?.kul_devata)?.profiles?.kul_devata;
   const gotra = members.find(member => member.profiles?.gotra)?.profiles?.gotra || 'Dharma';
-
-  const activityMap = useMemo(() => {
-    const map = new Map<string, typeof memberActivity[0]>();
-    memberActivity.forEach(act => {
-      if (act.user_id) map.set(act.user_id, act);
-    });
-    return map;
-  }, [memberActivity]);
-
-  const sortedMembers = useMemo(() => {
-    return [...members].sort((a, b) => {
-      const actA = activityMap.get(a.user_id);
-      const actB = activityMap.get(b.user_id);
-      const japaA = actA?.japa_done ? 1 : 0;
-      const japaB = actB?.japa_done ? 1 : 0;
-      return japaB - japaA;
-    });
-  }, [members, activityMap]);
-
-  const isActivityEmpty = useMemo(() => {
-    if (memberActivity.length === 0) return true;
-    return memberActivity.every(
-      act => !act.japa_done && !act.nitya_done && !act.pathshala_done && !act.quiz_done && !act.dharmveer_done
-    );
-  }, [memberActivity]);
-
-  const formattedDate = useMemo(() => {
-    const d = new Date();
-    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${weekdays[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
-  }, []);
 
   const actionButtons = [
     { label: 'Members', value: members.length, href: '/kul/members', icon: Users },
@@ -391,69 +305,6 @@ export function KulHub({
         familyMembers={familyMembers}
         kulEvents={kulEvents}
       />
-
-      {/* Today's Practice Section Card */}
-      <section className="rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]/80 p-4 shadow-sm backdrop-blur-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]">
-              <span aria-hidden="true" className="flex items-center justify-center"><SacredIcon name="flame" size={20} /></span>
-            </div>
-            <div>
-              <p className="text-[15px] font-medium theme-ink premium-serif">Today&apos;s Practice</p>
-              <p className="text-[11px] theme-muted">{formattedDate}</p>
-            </div>
-          </div>
-        </div>
-
-        {isActivityEmpty ? (
-          <div className="rounded-2xl border border-dashed border-[var(--card-border)] px-4 py-6 text-center flex items-center justify-center gap-1.5">
-            <p className="text-[13px] theme-ink">No practices logged yet today — be the first</p>
-            <SacredIcon name="flower" size={14} className="theme-ink" />
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {sortedMembers.slice(0, 6).map((member) => {
-              const profile = member.profiles;
-              const name = profile?.full_name || profile?.username || 'Family Member';
-              const act = activityMap.get(member.user_id);
-              const streak = act?.streak_count ?? null;
-
-              return (
-                <div key={member.id} className="flex flex-col gap-2 rounded-2xl border border-[var(--card-border)] bg-[var(--surface-soft)] p-3 xs:flex-row xs:items-center xs:justify-between">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <MemberAvatar name={name} url={profile?.avatar_url} activeSymbolId={profile?.active_symbol_id} />
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-[13px] font-medium theme-ink truncate">{name}</span>
-                      {streak !== null && streak > 2 && (
-                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1 py-0.5 text-[10px] font-bold text-amber-500" title={`Active streak: ${streak} days`}>
-                          <SacredIcon name="flame" size={10} /> {streak}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1 xs:justify-end">
-                    <PracticePill label="Japa" done={!!act?.japa_done} />
-                    <PracticePill label="Nitya" done={!!act?.nitya_done} />
-                    <PracticePill label="Pathshala" done={!!act?.pathshala_done} />
-                    <PracticePill label="Quiz" done={!!act?.quiz_done} />
-                    <PracticePill label="DharmVeer" done={!!act?.dharmveer_done} />
-                  </div>
-                </div>
-              );
-            })}
-
-            {members.length > 6 && (
-              <div className="pt-1 text-center">
-                <span className="text-[11px] theme-muted font-medium">+ {members.length - 6} more members</span>
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
-      <KulLeaderboard members={members} userId={userId} />
 
       <KulSabhaPreview
         messages={messages}

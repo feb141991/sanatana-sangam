@@ -161,7 +161,7 @@ export class SelfHostedProvider implements PramanaInferenceProvider {
       messages.push({ role: 'system', content: request.prompt.system });
     }
 
-    // 2. Prior conversation turns (multi-turn history parity with Sarvam)
+    // 2. Prior conversation turns (multi-turn history parity with Gemini + Sarvam)
     //    PromptMessage roles are 'user' | 'assistant' — OpenAI-compatible as-is.
     if (request.prompt.messages && request.prompt.messages.length > 0) {
       for (const msg of request.prompt.messages) {

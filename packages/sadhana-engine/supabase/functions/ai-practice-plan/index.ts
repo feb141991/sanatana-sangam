@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
       `- ${s.type}: "${s.description}" — day ${s.current_streak}/${s.target_days}`
     ).join('\n') || 'None active';
 
-    // Fallback plan (no Sarvam)
+    // Fallback plan (no Gemini)
     const fallbackPlan = weekPanchang.map((p, i) => ({
       date:       p.date,
       vaara:      p.vaara,
@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
       suggested_text: 'gita',
     }));
 
-    if (!sarvamKey) {
+    if (!geminiKey) {
       return new Response(JSON.stringify({
         plan:            fallbackPlan,
         week_intention:  `A week of steady ${tradition} sadhana. Current streak: ${currentStreak} days.`,

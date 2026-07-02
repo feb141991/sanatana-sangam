@@ -50,7 +50,7 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
       <motion.div 
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="w-full max-w-md bg-[var(--surface-soft)] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border border-[#C5A059]/15" 
+        className="w-full max-w-md bg-[var(--surface-soft)] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border border-white/10" 
         onClick={e => e.stopPropagation()}
       >
         <div className="px-6 py-5 border-b border-white/8 flex items-center justify-between">
@@ -71,7 +71,7 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
               type="text" placeholder="Search name or @username…"
               value={query} onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && search()}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-[#C5A059]/15 bg-[var(--surface-soft)] text-sm theme-ink outline-none focus:border-[var(--brand-primary)]/40"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm theme-ink outline-none focus:border-[var(--brand-primary)]/40"
             />
           </div>
           <button

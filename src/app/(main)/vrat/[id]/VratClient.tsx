@@ -2,19 +2,17 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import {
-  ChevronLeft, Sun, Moon,
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronLeft, Settings, Sun, Moon, 
   Book, Flame, Share2, Info, Copy, Check,
-  Volume2, VolumeX, Loader2, CheckCircle2,
-  Users, CalendarDays, Utensils, ShoppingBag, Radio,
-  CheckCheck, XCircle, Clock,
+  Volume2, VolumeX, Loader2
 } from 'lucide-react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
-import type { VratData, FastingType } from '@/lib/vrat-data';
+import type { VratData } from '@/lib/vrat-data';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
+import toast from 'react-hot-toast';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
@@ -23,23 +21,9 @@ import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/r
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
-const FASTING_LABELS: Record<FastingType, string> = {
-  nirjala:   '💧 Nirjala — No food or water',
-  phalahar:  '🍎 Phalahar — Fruits & milk only',
-  sattvic:   '🥬 Sattvic — Pure vegetarian food',
-  ekbhukta:  '🌙 Ekbhukta — One meal only',
-  partial:   '🌓 Partial fast — Light eating',
-  none:      '🙏 No fasting — Devotion only',
-};
-
-function fastingLabel(type: FastingType): string {
-  return FASTING_LABELS[type] ?? type;
-}
-
 interface VratClientProps {
   vrat: VratData;
   originalSlug: string;
-  isAuthenticated?: boolean;
   appLanguage?: string;
   meaningLanguage?: string;
   transliterationLanguage?: string;
@@ -50,7 +34,6 @@ interface VratClientProps {
 export default function VratClient({
   vrat,
   originalSlug,
-  isAuthenticated = false,
   appLanguage,
   meaningLanguage,
   transliterationLanguage,
@@ -63,12 +46,11 @@ export default function VratClient({
   const [showSettings, setShowSettings] = useState(false);
   
   const { t, lang: contextLang } = useLanguage();
-  const localContentLanguage: AppLang = vrat.mantraLocal?.match(/[੦-ੵ]/) ? 'pa' : 'hi';
   const canToggleLocalLanguage =
-    !!vrat.nameLocal &&
-    !!vrat.taglineLocal &&
-    !!vrat.significanceLocal &&
-    !!vrat.practiceLocal &&
+    !!vrat.nameLocal ||
+    !!vrat.taglineLocal ||
+    !!vrat.significanceLocal ||
+    !!vrat.practiceLocal ||
     !!vrat.mantraLocal;
   const preferences = resolveReadablePreferences({
     appLanguage: appLanguage ?? contextLang,
@@ -81,15 +63,40 @@ export default function VratClient({
     getInitialReaderDisplayMode(preferences, canToggleLocalLanguage)
   );
 
-  const displayLang: AppLang = lang === 'local' ? localContentLanguage : 'en';
-  const title = lang === 'local' && vrat.nameLocal ? vrat.nameLocal : vrat.name;
-  const tagline = lang === 'local' && vrat.taglineLocal ? vrat.taglineLocal : vrat.tagline;
-  const significanceText =
-    lang === 'local' && vrat.significanceLocal ? vrat.significanceLocal : vrat.significance;
-  const practiceText =
-    lang === 'local' && vrat.practiceLocal ? vrat.practiceLocal : vrat.practice;
-  const mantraText =
-    lang === 'local' && vrat.mantraLocal ? vrat.mantraLocal : vrat.mantra;
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
+
+  // ── Localization ──
+  const localizedSignificance = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:significance`,
+    sourceMeaning: vrat.significance,
+    providedMeaning: vrat.significanceLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedPractice = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:practice`,
+    sourceMeaning: vrat.practice,
+    providedMeaning: vrat.practiceLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedMantra = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:mantra`,
+    sourceMeaning: vrat.mantra,
+    providedMeaning: vrat.mantraLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTagline = useLocalizedMeaning({
+    entryId: `vrat:${vrat.id}:tagline`,
+    sourceMeaning: vrat.tagline,
+    providedMeaning: vrat.taglineLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
 
   const significanceContent: ReadableContent = {
     original: vrat.significance,
@@ -201,68 +208,6 @@ export default function VratClient({
 
   const readerControls = useReaderControls(mantraContent.capabilities);
 
-  // ── Vrat observation tracker ──────────────────────────────────────────────
-  const [observedToday,    setObservedToday]    = useState(false);
-  const [observeCount,     setObserveCount]     = useState(0);
-  const [observeLoading,   setObserveLoading]   = useState(false);
-  const [observeStatusLoaded, setObserveStatusLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    fetch(`/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) {
-          setObservedToday(data.observed_today);
-          setObserveCount(data.total_count);
-        }
-      })
-      .catch(() => { /* silently ignore — tracker is non-critical */ })
-      .finally(() => setObserveStatusLoaded(true));
-  }, [isAuthenticated, vrat.id]);
-
-  async function handleObserve() {
-    if (observedToday || observeLoading) return;
-    setObserveLoading(true);
-    try {
-      const res = await fetch('/api/vrat/observe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vrat_id: vrat.id, vrat_name: vrat.name }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setObservedToday(true);
-        setObserveCount(c => c + (data.already_observed ? 0 : 1));
-        if (!data.already_observed && data.karma_earned > 0) {
-          toast.success(`🙏 Vrat observed! +${data.karma_earned} karma`, { duration: 3000 });
-        } else {
-          toast.success('🙏 Vrat marked as observed', { duration: 2000 });
-        }
-      } else {
-        toast.error(data?.error ?? 'Could not record observation');
-      }
-    } catch {
-      toast.error('Could not record observation');
-    } finally {
-      setObserveLoading(false);
-    }
-  }
-
-  // ── Global stats (public — works for unauthenticated readers too) ────────────
-  const [globalStats, setGlobalStats] = useState<{
-    today_count: number;
-    total_count: number;
-    next_date: string | null;
-  } | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/vrat/stats?vrat_id=${encodeURIComponent(vrat.id)}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setGlobalStats(data); })
-      .catch(() => {});
-  }, [vrat.id]);
-
   // ── TTS playback ──
   const [speaking, setSpeaking] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -280,7 +225,9 @@ export default function VratClient({
   }, [stopTTS]);
 
   const speakMantra = async () => {
-    const textToSpeak = mantraText;
+    const textToSpeak = lang === 'local' && mantraContent.capabilities.canShowMeaning
+      ? localizedMantra.meaning
+      : vrat.mantra;
 
     if (speaking || readerControls.state.isGeneratingTTS) {
       stopTTS();
@@ -296,7 +243,6 @@ export default function VratClient({
       if (!audioUrl) return;
 
       const audio = new Audio(audioUrl);
-      audio.playbackRate = 0.78; // Slower, meditative pace for Sanskrit mantras
       audioRef.current = audio;
       audio.onended = () => setSpeaking(false);
       audio.onerror = () => setSpeaking(false);
@@ -310,13 +256,13 @@ export default function VratClient({
 
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${title}\n${tagline}\nRead more on Shoonaya.`;
-    readerControls.handlers.share(text, title, link);
+    const text = `Read & check this sacred Vrat observance following this link to open those features: ${link}\n\nToday's Sacred Observance: ${vrat.name}\n${vrat.tagline}\nRead more on Shoonaya.`;
+    readerControls.handlers.share(text, vrat.name, link);
   };
 
   const handleCopy = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
-    const textToCopy = `🙏 Today's Sacred Observance: ${title}\n"${tagline}"\n\nSignificance:\n${significanceText}\n\nHow to observe:\n${practiceText}\n\nMantra:\n${mantraText}\n\nRead more on Shoonaya: ${link}`;
+    const textToCopy = `🙏 Today's Sacred Observance: ${vrat.name}\n"${vrat.tagline}"\n\nSignificance:\n${vrat.significance}\n\nHow to observe:\n${vrat.practice}\n\nMantra:\n${vrat.mantra}\n\nRead more on Shoonaya: ${link}`;
     readerControls.handlers.copyText(textToCopy, 'Sacred Vrat details');
   };
 
@@ -330,7 +276,7 @@ export default function VratClient({
       }}
     >
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
-      <header className="fixed top-0 inset-x-0 z-50 px-3 sm:px-4 py-3 flex items-center gap-2 sm:gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
+      <header className="fixed top-0 inset-x-0 z-50 px-4 py-3 flex items-center gap-3 backdrop-blur-xl" style={{ borderBottom: `1px solid ${activeTheme.border}`, backgroundColor: `${activeTheme.bg}cc` }}>
         <button 
           onClick={() => router.back()}
           className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition"
@@ -341,15 +287,15 @@ export default function VratClient({
         
         <div className="flex-1 min-w-0 flex flex-col">
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-            {translateFn(displayLang, 'vrat') || 'Vrat'}
+            {translateFn(effectiveLang, 'vrat') || 'Vrat'}
           </span>
-          <span className="text-[11px] sm:text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
+          <span className="text-xs font-bold truncate" style={{ color: 'var(--brand-primary-strong)' }}>
             {originalSlug.toUpperCase()}
           </span>
         </div>
 
         {/* ── Reading Options ── */}
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-2">
           {/* Theme Toggle */}
           <button 
             onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
@@ -402,7 +348,7 @@ export default function VratClient({
       </header>
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <main className="pt-28 px-4 sm:px-6 max-w-2xl mx-auto space-y-12 overflow-x-hidden">
+      <main className="pt-28 px-6 max-w-2xl mx-auto space-y-12">
         {/* Hero Section */}
         <section className="text-center space-y-4">
           <motion.div 
@@ -418,13 +364,13 @@ export default function VratClient({
           </motion.div>
           
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold premium-serif tracking-tight break-words">
-              {title}
+            <h1 className="text-3xl font-bold premium-serif tracking-tight">
+              {lang === 'local' && vrat.nameLocal ? vrat.nameLocal : vrat.name}
             </h1>
           </div>
 
-          <p className={`italic font-medium opacity-80 px-2 sm:px-4 break-words ${fontStyles[fontSize]}`}>
-            &ldquo;{tagline}&rdquo;
+          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]} ${localizedTagline.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+            &ldquo;{lang === 'local' ? localizedTagline.meaning : vrat.tagline}&rdquo;
           </p>
         </section>
 
@@ -433,20 +379,24 @@ export default function VratClient({
           {/* Significance */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> {translateFn(displayLang, 'significance')}
+              <Book size={14} /> {translateFn(effectiveLang, 'significance')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap break-words`}>
-              {significanceText}
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedSignificance.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' && significanceContent.capabilities.canShowMeaning
+                ? localizedSignificance.meaning
+                : vrat.significance}
             </p>
           </div>
 
           {/* Practice */}
           <div className="rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary-strong)]">
-              <Flame size={14} /> {translateFn(displayLang, 'howToObserve')}
+              <Flame size={14} /> {translateFn(effectiveLang, 'howToObserve')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic break-words`}>
-              {practiceText}
+            <p className={`${fontStyles[fontSize]} font-medium italic ${localizedPractice.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' && practiceContent.capabilities.canShowMeaning
+                ? localizedPractice.meaning
+                : vrat.practice}
             </p>
           </div>
 
@@ -454,7 +404,7 @@ export default function VratClient({
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
               <span className="flex items-center gap-2">
-                <Info size={14} /> {translateFn(displayLang, 'sacredMantra')}
+                <Info size={14} /> {translateFn(effectiveLang, 'sacredMantra')}
               </span>
               {mantraContent.capabilities.canGenerateTTS && (
                 <button
@@ -477,260 +427,24 @@ export default function VratClient({
                 </button>
               )}
             </div>
-            <p className={`${fontStyles[fontSize]} text-center premium-serif text-lg sm:text-xl font-bold mt-4 break-words [overflow-wrap:anywhere]`}>
-              {mantraText}
+            <p className={`${fontStyles[fontSize]} text-center premium-serif text-xl font-bold mt-4 ${localizedMantra.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' && mantraContent.capabilities.canShowMeaning
+                ? localizedMantra.meaning
+                : vrat.mantra}
             </p>
           </div>
 
         </section>
 
-        {/* ── Global Reader Cards ─────────────────────────────────────── */}
-
-        {/* 1 — Fasting Guide */}
-        {(vrat.fastingType || vrat.dos?.length || vrat.donts?.length || vrat.pujaItems?.length) && (
-          <section className="space-y-4">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Utensils size={14} /> Fasting Guide
-            </div>
-
-            {/* Fast type pill */}
-            {vrat.fastingType && (
-              <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                <span className="inline-flex max-w-full items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold break-words"
-                  style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)', border: '1px solid rgba(197,160,89,0.25)' }}>
-                  {fastingLabel(vrat.fastingType)}
-                </span>
-                {vrat.breakFastTime && (
-                  <span className="flex min-w-0 max-w-full items-start gap-1 text-xs opacity-60 break-words">
-                    <Clock size={11} className="mt-0.5 flex-shrink-0" /> Break fast: {vrat.breakFastTime}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Dos & Don'ts side by side */}
-            {(vrat.dos?.length || vrat.donts?.length) && (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {vrat.dos?.length ? (
-                  <div className="rounded-2xl p-4 space-y-2.5"
-                    style={{ background: 'rgba(90,170,56,0.06)', border: '1px solid rgba(90,170,56,0.15)' }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                      <CheckCheck size={12} /> Do
-                    </p>
-                    <ul className="space-y-2">
-                      {vrat.dos.map((d, i) => (
-                        <li key={i} className="flex min-w-0 items-start gap-2 text-xs opacity-80 leading-snug break-words">
-                          <span className="text-green-500 mt-0.5 flex-shrink-0">✓</span>
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {vrat.donts?.length ? (
-                  <div className="rounded-2xl p-4 space-y-2.5"
-                    style={{ background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.12)' }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 text-red-500 dark:text-red-400">
-                      <XCircle size={12} /> Avoid
-                    </p>
-                    <ul className="space-y-2">
-                      {vrat.donts.map((d, i) => (
-                        <li key={i} className="flex min-w-0 items-start gap-2 text-xs opacity-80 leading-snug break-words">
-                          <span className="text-red-400 mt-0.5 flex-shrink-0">✕</span>
-                          {d}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-              </div>
-            )}
-
-            {/* Puja items */}
-            {vrat.pujaItems?.length ? (
-              <div className="rounded-2xl p-4 space-y-3"
-                style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-1.5">
-                  <ShoppingBag size={12} /> What you&apos;ll need
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {vrat.pujaItems.map((item, i) => (
-                    <span key={i} className="max-w-full text-xs px-2.5 py-1 rounded-full break-words"
-                      style={{ background: activeTheme.border }}>
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </section>
-        )}
-
-        {/* 2 — Next Occurrence + Global Count */}
-        {globalStats && (globalStats.next_date || globalStats.total_count > 0) && (
-          <section className="space-y-3">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <CalendarDays size={14} /> Around the World
-            </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {globalStats.next_date && (
-                <div className="rounded-2xl p-4 text-center"
-                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">Next date</p>
-                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
-                    {new Date(globalStats.next_date + 'T00:00:00').toLocaleDateString('en', { day: 'numeric', month: 'short' })}
-                  </p>
-                  <p className="text-[10px] opacity-40 mt-0.5">
-                    {new Date(globalStats.next_date + 'T00:00:00').toLocaleDateString('en', { weekday: 'long' })}
-                  </p>
-                </div>
-              )}
-              {globalStats.today_count > 0 && (
-                <div className="rounded-2xl p-4 text-center"
-                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">Observing today</p>
-                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
-                    {globalStats.today_count.toLocaleString()}
-                  </p>
-                  <p className="text-[10px] opacity-40 mt-0.5">seekers on Shoonaya</p>
-                </div>
-              )}
-              {globalStats.total_count > 0 && !globalStats.today_count && (
-                <div className="rounded-2xl p-4 text-center"
-                  style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider opacity-50 mb-1">All-time</p>
-                  <p className="text-base font-bold premium-serif" style={{ color: 'var(--brand-primary)' }}>
-                    {globalStats.total_count.toLocaleString()}
-                  </p>
-                  <p className="text-[10px] opacity-40 mt-0.5">observances recorded</p>
-                </div>
-              )}
-            </div>
-            {globalStats.today_count > 0 && (
-              <div className="flex items-center justify-center gap-2 py-2">
-                <div className="flex -space-x-1.5">
-                  {['🕉️','☸️','☬','🙏','✨'].slice(0, Math.min(5, globalStats.today_count)).map((e, i) => (
-                    <span key={i} className="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px]"
-                      style={{ borderColor: activeTheme.bg, background: activeTheme.card }}>
-                      {e}
-                    </span>
-                  ))}
-                </div>
-                <span className="text-xs opacity-50">
-                  {globalStats.today_count === 1 ? '1 seeker is' : `${globalStats.today_count} seekers are`} observing with you today
-                </span>
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* 3 — Live Darshan suggestion */}
-        <section>
-          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40 mb-3">
-            <Radio size={14} /> Watch Live
-          </div>
-          <Link href="/live-darshan"
-            className="flex items-start gap-3 sm:items-center sm:gap-4 rounded-2xl p-4 transition active:scale-[0.98]"
-            style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
-              style={{ background: 'rgba(220,38,38,0.10)' }}>
-              🪔
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm leading-snug break-words" style={{ color: activeTheme.text }}>
-                Join the Live Aarti
-              </p>
-              <p className="text-xs opacity-50 mt-0.5 break-words">
-                Watch temples streaming live darshan right now
-              </p>
-            </div>
-            <div className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-              style={{ background: 'rgba(220,38,38,0.12)', border: '1px solid rgba(220,38,38,0.20)' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
-            </div>
-          </Link>
-        </section>
-
-        {/* 4 — Global reader explainer (non-auth only — authenticated users already know this) */}
-        {!isAuthenticated && (
-          <section className="rounded-2xl p-5 space-y-3"
-            style={{ background: activeTheme.card, border: `1px solid ${activeTheme.border}` }}>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Info size={14} /> New to this practice?
-            </div>
-            <p className="text-sm opacity-70 leading-relaxed">
-              Vratas are intentional fasting days tied to the Hindu lunar calendar. They are not about deprivation — they&apos;re about clearing space: in your body, your mind, your week. Most vratas follow a rhythm (every 11 days, every full moon) so the practice becomes second nature over time.
-            </p>
-            <p className="text-sm opacity-70 leading-relaxed">
-              You don&apos;t need to be Hindu to observe. Millions of global seekers use these lunar rhythms to reset, meditate more deeply, and connect with a tradition older than most religions.
-            </p>
-            <Link href="/home"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold mt-1"
-              style={{ color: 'var(--brand-primary)' }}>
-              Start your practice on Shoonaya →
-            </Link>
-          </section>
-        )}
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col items-center gap-4 pt-12">
-
-          {/* ── Mark as Observed (authenticated users only) ── */}
-          {isAuthenticated && (
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="w-full max-w-sm"
-            >
-              {observedToday ? (
-                <div
-                  className="flex items-center justify-center gap-2.5 w-full rounded-full py-4 font-bold text-sm"
-                  style={{ background: 'rgba(134,187,110,0.15)', border: '1.5px solid rgba(134,187,110,0.45)', color: '#5aaa38' }}
-                >
-                  <CheckCircle2 size={18} />
-                  Observed today ✓
-                  {observeCount > 1 && (
-                    <span className="ml-1 text-xs font-normal opacity-70">({observeCount}× total)</span>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={handleObserve}
-                  disabled={observeLoading || !observeStatusLoaded}
-                  className="w-full flex items-center justify-center gap-2.5 rounded-full py-4 font-bold text-sm transition active:scale-95 disabled:opacity-60"
-                  style={{ background: 'rgba(197,160,89,0.92)', color: '#1c1208', boxShadow: '0 4px 20px rgba(197,160,89,0.25)' }}
-                >
-                  {observeLoading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <>
-                      🙏 Mark as Observed
-                      {observeCount > 0 && (
-                        <span className="ml-1 text-xs font-semibold opacity-70">({observeCount}× before)</span>
-                      )}
-                    </>
-                  )}
-                </button>
-              )}
-              <p className="text-center text-[11px] mt-2 opacity-40">
-                {observedToday ? 'Your practice is recorded' : `Earn ${25} karma for completing this vrat`}
-              </p>
-            </motion.div>
-          )}
-
-          {/* Share Button */}
-          <button
+        {/* Share Button */}
+        <div className="flex justify-center pt-12">
+          <button 
             onClick={handleShare}
-            className="share-button flex items-center gap-2 px-8 py-4 rounded-full font-bold shadow-xl hover:scale-105 transition active:scale-95"
-            style={{
-              backgroundColor: isAuthenticated ? activeTheme.border : 'var(--brand-primary)',
-              color: isAuthenticated ? activeTheme.text : '#1c1208',
-            }}
+            className="share-button flex items-center gap-2 px-8 py-4 rounded-full text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
+            style={{ backgroundColor: 'var(--brand-primary)' }}
           >
             <Share2 size={18} />
-            {translateFn(displayLang, 'shareObservance')}
+            {translateFn(effectiveLang, 'shareObservance')}
           </button>
         </div>
       </main>

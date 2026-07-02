@@ -61,7 +61,7 @@ export function KulOnboarding({ onComplete }: { onComplete: () => void }) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-md clay-card rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border border-[#C5A059]/15"
+        className="w-full max-w-md clay-card rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border border-white/10"
       >
         <div className="relative h-48 flex items-center justify-center overflow-hidden bg-gradient-to-br from-white/5 to-white/0">
            <div 

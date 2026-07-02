@@ -99,7 +99,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -147,7 +147,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -194,7 +194,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -217,7 +217,7 @@ Rules:
 { "meaning": "<translated meaning>" }`,
     temperature: 0.25,
     reasoningEffort: 'none',
-    maxOutputTokens: 2048,
+    maxOutputTokens: 500,
   };
 }
 
@@ -263,7 +263,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -316,7 +316,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -370,7 +370,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }
@@ -425,7 +425,7 @@ ${getUserSummaryContextNote(input.userSummaryContext)}
 ${langNote}`,
       temperature: 0.4,
       reasoningEffort: 'none',
-      maxOutputTokens: 4096,
+      maxOutputTokens: 1200,
     },
   };
 }

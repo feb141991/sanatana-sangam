@@ -174,7 +174,7 @@ export class SanskarGuide {
   }
 
   // ── AI-personalised vidhi guide ──
-  // Calls ai-sanskar-guide Edge Function with Sarvam.
+  // Calls ai-sanskar-guide Edge Function with Gemini.
 
   async getGuide(
     userId: string,

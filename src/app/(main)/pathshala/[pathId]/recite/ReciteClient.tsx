@@ -13,16 +13,15 @@ import {
   ChevronLeft, ChevronRight, Mic, MicOff, Play, Pause,
   Eye, EyeOff, Timer, Sparkles, BookOpen,
   CheckCircle2, Volume2, VolumeX, Loader2, Lock, Share2, Check, Copy,
-  RotateCcw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { GITA_FULL_DATA } from '@/lib/gita-full-data';
 import { ALL_LIBRARY_ENTRIES, type LibraryEntry } from '@/lib/library-content';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
 import { usePathshala, useSadhana } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
 import CircularProgress from '@/components/ui/CircularProgress';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
-import PermissionSheet from '@/components/ui/PermissionSheet';
 import { getTransliteration } from '@/lib/transliteration';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useReaderDisplayPreferences } from '@/lib/i18n/reader-display';
@@ -60,8 +59,7 @@ function ScorePanel({ result, accent, onDismiss }: {
   onDismiss: () => void;
 }) {
   const labels = useReaderLabels();
-  const raw   = result.scores?.overall ?? 0;
-  const score = raw > 5 ? raw : Math.round(raw * 20);  // normalise 1-5 → 0-100
+  const score  = result.scores?.overall ?? 0;
   const color  = scoreColor(score);
   const label  = score >= 80 ? labels.shrutiExcellent : score >= 60 ? labels.shrutiGood : labels.shrutiKeepPractising;
 
@@ -115,15 +113,10 @@ function ScorePanel({ result, accent, onDismiss }: {
           <div className="flex-1 h-1.5 rounded-full bg-white/8 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
-              style={(() => {
-                const normVal = val > 5 ? val : Math.round(val * 20);
-                return { width: `${normVal}%`, background: scoreColor(normVal) };
-              })()}
+              style={{ width: `${val}%`, background: scoreColor(val) }}
             />
           </div>
-          <span className="text-[10px] font-medium text-[color:var(--brand-muted)] w-6 text-right">
-            {val > 5 ? Math.round(val) : Math.round(val * 20)}
-          </span>
+          <span className="text-[10px] font-medium text-[color:var(--brand-muted)] w-6 text-right">{Math.round(val)}</span>
         </div>
       ))}
 
@@ -214,7 +207,6 @@ export default function ReciteClient({
   const [timerRunning, setTimerRunning] = useState(false);
   const [completed,    setCompleted]    = useState<number[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showMicSheet, setShowMicSheet] = useState(false);
 
   // TTS state
   const [isSpeaking,  setIsSpeaking]  = useState(false);
@@ -279,7 +271,6 @@ export default function ReciteClient({
   const [recordingBlob,    setRecordingBlob]     = useState<Blob | null>(null);
   const [recordingMime,    setRecordingMime]     = useState<string>('audio/webm');
   const [previewPlaying,   setPreviewPlaying]    = useState(false);
-  const [previewDuration, setPreviewDuration] = useState(0);
   // If engine hasn't loaded within ENGINE_TIMEOUT_MS we allow recording but skip AI scoring
   const [engineTimedOut, setEngineTimedOut] = useState(false);
   const ENGINE_TIMEOUT_MS = 5000;
@@ -451,9 +442,8 @@ export default function ReciteClient({
     if (previewAudioRef.current) { previewAudioRef.current.pause(); }
     const url   = URL.createObjectURL(recordingBlob);
     const audio = new Audio(url);
-    audio.onloadedmetadata = () => setPreviewDuration(audio.duration);
-    audio.onended = () => { setPreviewPlaying(false); URL.revokeObjectURL(url); setPreviewDuration(0); };
     previewAudioRef.current = audio;
+    audio.onended = () => { setPreviewPlaying(false); URL.revokeObjectURL(url); };
     audio.onerror = () => { setPreviewPlaying(false); URL.revokeObjectURL(url); };
     audio.play().then(() => setPreviewPlaying(true)).catch(() => setPreviewPlaying(false));
   }, [recordingBlob]);
@@ -477,52 +467,37 @@ export default function ReciteClient({
     setRecordState('uploading');
     try {
       if (!pathshala) {
-        toast('Shruti engine is loading — please try again in a moment.', {
-          icon: '⏳', duration: 4000,
+        toast(labels.practiceRecordedOffline, {
+          icon: '🎤', duration: 3500,
           style: { background: '#1c1c1a', color: 'var(--brand-ink)' },
         });
-        setRecordState('preview');   // keep the recording so user can retry
-        // do NOT clear recordingBlob — user should be able to submit once engine loads
+        setRecordState('idle');
+        setRecordingBlob(null);
         return;
       }
+      const chunkId      = `${pathId}--verse-${verseIndex}`;
       const expectedText = verse.original || verse.transliteration || verse.title;
       const result = await pathshala.shruti.uploadAndScore(userId, {
         audioBlob: recordingBlob,
-        chunkId: undefined,      // nullable after migration
-        verseRef: `${pathId}--verse-${verseIndex}`,   // stored in verse_ref column
+        chunkId,
         expectedText,
         language: 'sa',
       });
       setLastResult(result);
       setRecordState('done');
       setRecordingBlob(null);
-      const raw   = result.scores?.overall ?? 0;
-      const score = raw > 5 ? raw : Math.round(raw * 20);  // normalise 1-5 → 0-100
-      if (score >= 80) {
-        fetch('/api/karma/award', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: 15, reason: 'shruti_excellent' }),
-        }).catch((err) => console.warn('[Shruti] karma award failed:', err));
-      } else if (score >= 60) {
-        fetch('/api/karma/award', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: 8, reason: 'shruti_good' }),
-        }).catch((err) => console.warn('[Shruti] karma award failed:', err));
-      }
+      const score = result.scores?.overall ?? 0;
       const emoji = score >= 80 ? '🌟' : score >= 60 ? '👍' : '💪';
-      const karmaMsg = score >= 80 ? ' · +15 karma' : score >= 60 ? ' · +8 karma' : '';
-      toast.success(`${emoji} ${labels.shrutiScore}: ${Math.round(score)}/100${karmaMsg}`, { duration: 3500 });
+      toast.success(`${emoji} ${labels.shrutiScore}: ${Math.round(score)}/100`, { duration: 3500 });
       if (engine) {
-        engine.tracker.track('shloka_recited' as any, { path_id: pathId, lesson: currentLesson, verse_index: verseIndex, score }).catch(() => {});
+        engine.tracker.track('shloka_listen', { path_id: pathId, lesson: currentLesson, verse_index: verseIndex }).catch(() => {});
       }
     } catch (err: any) {
       console.error('[Shruti] submitRecording error:', err);
       toast.error(err?.message?.slice(0, 80) ?? labels.scoringFailed);
       setRecordState('error');
     }
-  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson, labels.scoringFailed, labels.shrutiScore]);
+  }, [recordingBlob, verse, stopPreview, pathshala, pathId, verseIndex, userId, engine, currentLesson, labels.practiceRecordedOffline, labels.scoringFailed, labels.shrutiScore]);
 
   // Timer
   useEffect(() => {
@@ -577,7 +552,10 @@ export default function ReciteClient({
   }
 
   // ── Shruti recording ─────────────────────────────────────────────────────────
-  const performMicRequestAndStart = useCallback(async () => {
+  const startRecording = useCallback(async () => {
+    if (!verse) return;
+    setLastResult(null);
+
     try {
       const permGranted = await nativeAudio.requestPermission();
       if (!permGranted) {
@@ -595,19 +573,7 @@ export default function ReciteClient({
       toast.error(`${labels.micAccessError}: ` + (err?.message ?? 'Unknown error'));
       setRecordState('idle');
     }
-  }, [nativeAudio, labels.micAccessDenied, labels.micAccessError]);
-
-  const startRecording = useCallback(async () => {
-    if (!verse) return;
-    setLastResult(null);
-
-    const existingPerm = await navigator.permissions.query({ name: 'microphone' as PermissionName }).catch(() => null);
-    if (existingPerm?.state === 'granted') {
-      await performMicRequestAndStart();
-    } else {
-      setShowMicSheet(true);
-    }
-  }, [verse, performMicRequestAndStart]);
+  }, [verse, nativeAudio, labels.micAccessDenied, labels.micAccessError]);
 
   const stopRecording = useCallback(async () => {
     const blob = await nativeAudio.stop();
@@ -648,12 +614,6 @@ export default function ReciteClient({
   return (
     <div className="min-h-screen pb-28 flex flex-col">
       <ConfettiOverlay show={showConfetti} onComplete={() => setShowConfetti(false)} />
-      <PermissionSheet
-        type="microphone"
-        open={showMicSheet}
-        onAllow={async () => { setShowMicSheet(false); await performMicRequestAndStart(); }}
-        onDeny={() => setShowMicSheet(false)}
-      />
 
       {/* Header */}
       <div className="sticky top-0 z-30 glass-panel border-b border-white/8 px-4 py-3 flex flex-col gap-2">
@@ -1158,87 +1118,41 @@ export default function ReciteClient({
           {recordState === 'preview' && (
             <motion.div
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-              className="space-y-3"
+              className="space-y-2"
             >
-              {/* Duration + waveform bar */}
-              <div className="rounded-2xl px-4 py-3 space-y-2"
-                style={{ background: `${accentColour}10`, border: `1px solid ${accentColour}25` }}>
-                
-                {/* Elapsed / total display */}
-                <div className="flex items-center justify-between text-[10px] font-mono font-bold"
-                  style={{ color: accentColour }}>
-                  <span>{previewPlaying ? 'Playing…' : 'Recording preview'}</span>
-                  <span>{previewDuration > 0 ? `${Math.floor(previewDuration)}s` : '--'}</span>
+              {/* Listen back row */}
+              <div className="flex items-center gap-3 py-1">
+                <button
+                  onClick={previewPlaying ? stopPreview : playPreview}
+                  className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${accentColour}20`, border: `1px solid ${accentColour}40` }}
+                >
+                  {previewPlaying
+                    ? <Pause size={16} style={{ color: accentColour }} />
+                    : <Play  size={16} style={{ color: accentColour }} />
+                  }
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-[color:var(--brand-ink)]">{labels.yourRecording}</p>
+                  <p className="text-[10px] text-[color:var(--brand-muted)]">
+                    {previewPlaying ? labels.playing : labels.tapListenBack}
+                  </p>
                 </div>
-                {/* Fake waveform — 20 animated bars, different heights */}
-                <div className="flex items-center justify-center gap-[2px] h-8">
-                  {Array.from({ length: 22 }).map((_, i) => {
-                    const h = [3,5,8,12,9,15,11,7,14,10,6,13,9,16,8,11,5,12,7,10,8,4][i] ?? 6;
-                    return (
-                      <motion.div
-                        key={i}
-                        className="rounded-full flex-shrink-0"
-                        style={{
-                          width: 3,
-                          background: accentColour,
-                          opacity: previewPlaying ? 0.85 : 0.35,
-                        }}
-                        animate={previewPlaying
-                          ? { scaleY: [1, (h / 16) * 1.4, 1], opacity: [0.85, 1, 0.85] }
-                          : { scaleY: h / 16 }
-                        }
-                        initial={{ scaleY: h / 16 }}
-                        transition={previewPlaying
-                          ? { duration: 0.5 + (i % 3) * 0.1, repeat: Infinity, delay: i * 0.04, ease: 'easeInOut' }
-                          : { duration: 0 }
-                        }
-                      />
-                    );
-                  })}
-                </div>
-                {/* Controls row: Restart | Play/Pause | Re-record */}
-                <div className="flex items-center justify-between gap-2 pt-1">
-                  {/* Restart from beginning */}
-                  <button
-                    onClick={() => { stopPreview(); setTimeout(playPreview, 80); }}
-                    className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)' }}
-                    title="Restart"
-                  >
-                    <RotateCcw size={14} style={{ color: 'var(--brand-muted)' }} />
-                  </button>
-                  {/* Play / Pause — primary */}
-                  <button
-                    onClick={previewPlaying ? stopPreview : playPreview}
-                    className="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all"
-                    style={{
-                      background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`,
-                      boxShadow: previewPlaying ? `0 0 0 4px ${accentColour}30` : 'none',
-                    }}
-                  >
-                    {previewPlaying
-                      ? <Pause size={20} className="text-[#1c1c1a]" />
-                      : <Play  size={20} className="text-[#1c1c1a]" style={{ marginLeft: 2 }} />
-                    }
-                  </button>
-                  {/* Re-record */}
-                  <button
-                    onClick={resetRecording}
-                    className="w-9 h-9 rounded-full flex items-center justify-center transition-all"
-                    style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)' }}
-                    title="Re-record"
-                  >
-                    <Mic size={14} style={{ color: '#ef4444' }} />
-                  </button>
-                </div>
+                <button
+                  onClick={resetRecording}
+                  className="text-[10px] font-semibold px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-muted)', border: '1px solid rgba(255,255,255,0.10)' }}
+                >
+                  {labels.reRecord}
+                </button>
               </div>
-              {/* Submit button — full width, prominent */}
+              {/* Submit button */}
               <button
                 onClick={submitRecording}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold tracking-wide transition-all"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold"
                 style={{ background: `linear-gradient(135deg, ${accentColour}, ${accentColour}cc)`, color: '#1c1c1a' }}
               >
-                <CheckCircle2 size={15} />
+                <CheckCircle2 size={13} />
                 {labels.submitForShrutiScoring}
               </button>
             </motion.div>

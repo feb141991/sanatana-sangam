@@ -31,7 +31,7 @@ export function useMandaliMutations(userId: string) {
 
   return {
     joinMandali: useMutation({
-      mutationFn: ({ city, country, lat, lon }: { city: string; country: string; lat?: number; lon?: number }) => joinMandaliForLocation(userId, city, country, lat, lon),
+      mutationFn: ({ city, country }: { city: string; country: string }) => joinMandaliForLocation(userId, city, country),
       onSuccess: refreshMandali,
     }),
     leaveMandali: useMutation({

@@ -1,7 +1,7 @@
 /**
  * Normalized tag schema for AI Pipeline routing.
  * This type is used to explicitly route requests to the appropriate AI provider
- * (e.g., Sarvam for recitation, Sarvam for Chat) rather than relying on regex heuristics.
+ * (e.g., Sarvam for recitation, Gemini for Chat) rather than relying on regex heuristics.
  */
 export type PramanaPipelineTags = {
   /** 

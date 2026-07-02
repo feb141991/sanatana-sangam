@@ -6,8 +6,6 @@ Last updated: 2026-04-09
 
 This document defines what Shoonaya can honestly store, show, and claim inside `Parampara Pathshala`.
 
-> **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`. This policy remains authoritative for source/rights rules.
-
 This is a launch-trust document, not only an editorial note.
 
 The goal is:
@@ -206,14 +204,13 @@ Launch truth:
 
 State:
 
-- `explicit-only` local Valmiki Ramayana text (source-audit pending curated starter slice)
-- `companion_only` for wider canonical study until source rights and exact references are verified
+- `partial_local` excerpts and Kanda-first study structure
+- `companion_only` for wider canonical expansion
 
 Launch truth:
 
-- Pathshala has a source-audit pending Valmiki Ramayana starter slice active for explicit queries only
-- a future live batch must use verified Kanda/Sarga/Shloka references and rights-safe translation text
-- Sanskrit original text remains companion-only until the specific digital source rights are verified
+- Pathshala provides Kanda structure and study entry
+- it is not yet a full local Ramayana corpus
 
 ### Principal Upanishads
 

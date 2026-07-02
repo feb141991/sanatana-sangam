@@ -5,7 +5,6 @@ export interface EpicVerse {
   original: string;
   transliteration: string;
   meaning: string;
-  provenance?: string;
 }
 
 export interface EpicChapter {

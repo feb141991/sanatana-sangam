@@ -58,7 +58,7 @@ export function KulSanskara() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ delay: idx * 0.05 }}
-            className="group glass-panel rounded-[2rem] p-5 flex items-center gap-5 border border-[#C5A059]/15 hover:border-[#C5A059]/15 transition-all shadow-sm"
+            className="group glass-panel rounded-[2rem] p-5 flex items-center gap-5 border border-white/5 hover:border-white/10 transition-all shadow-sm"
           >
              <div className="w-10 h-10 rounded-xl bg-orange-100/50 flex items-center justify-center text-orange-800 font-bold text-sm shadow-inner flex-shrink-0">
                {idx + 1}

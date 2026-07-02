@@ -7,8 +7,6 @@ Last updated: 2026-05-19
 `Pramana` is Shoonaya's private AI stack.
 This document defines the module split so app integrations stay portable and do not collapse back into route-local AI code.
 
-> **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`.
-
 ## Modules
 
 ### `@sangam/pramana-core`

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Calendar, Plus, Edit2, CheckCircle, AlertCircle,
+  Calendar, Plus, Edit2, Trash2, CheckCircle, AlertCircle,
   Sparkles, RefreshCw, XCircle, ChevronDown, ChevronUp, ArrowLeft
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -80,8 +80,6 @@ export default function FestivalManagement() {
   const [festivals, setFestivals]           = useState<FestivalRow[]>([]);
   const [loading, setLoading]               = useState(true);
   const [verifying, setVerifying]           = useState(false);
-  const [materializing, setMaterializing]   = useState(false);
-  const [reviewingId, setReviewingId]       = useState<string | null>(null);
   const [report, setReport]                 = useState<VerificationReport | null>(null);
   const [reportOpen, setReportOpen]         = useState(false);
   const [reportError, setReportError]       = useState<string | null>(null);
@@ -154,87 +152,12 @@ export default function FestivalManagement() {
       } else {
         toast.error(`${data.mismatches} mismatch(es), ${data.uncertain} uncertain, ${data.manualReview} manual review`);
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Verification failed';
-      setReportError(message);
+    } catch (err: any) {
+      setReportError(err.message || 'Verification failed');
       toast.error('AI verification failed — check error below');
     } finally {
       setVerifying(false);
     }
-  }
-
-  async function materializeOccurrences(commit: boolean) {
-    setMaterializing(true);
-    try {
-      const res = await fetch('/api/admin/materialize-occurrences', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ year: selectedYear, commit }),
-      });
-      if (res.status === 401) {
-        router.push('/admin/login');
-        return;
-      }
-      const data: { error?: string; totalInserted?: number; totalUpdated?: number; mode?: string } = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      if (commit) {
-        toast.success(`Materialized ${data.totalInserted ?? 0} new, ${data.totalUpdated ?? 0} updated`);
-        await fetchFestivals(selectedYear);
-      } else {
-        toast.success('Dry run complete. Review counts before committing.');
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Materialization failed';
-      toast.error(message);
-    } finally {
-      setMaterializing(false);
-    }
-  }
-
-  async function approveOccurrence(fest: FestivalRow, dateOverride?: string) {
-    if (!fest.id) {
-      toast.error('Missing occurrence id');
-      return;
-    }
-    setReviewingId(fest.id);
-    try {
-      const res = await fetch('/api/admin/festivals', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          occurrenceId: fest.id,
-          date: dateOverride,
-          reviewNotes: dateOverride
-            ? `Admin corrected ${fest.name} to ${dateOverride} and approved it for Home and notifications.`
-            : `Admin approved ${fest.name} for Home and notifications.`,
-          sourceName: 'Shoonaya admin review',
-        }),
-      });
-      if (res.status === 401) {
-        router.push('/admin/login');
-        return;
-      }
-      const data: { error?: string } = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-      toast.success(`${fest.name} approved`);
-      await fetchFestivals(selectedYear);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Review update failed';
-      toast.error(message);
-    } finally {
-      setReviewingId(null);
-    }
-  }
-
-  function correctAndApprove(fest: FestivalRow) {
-    const date = window.prompt(`Correct date for ${fest.name} (YYYY-MM-DD)`, fest.suggested_date || fest.date);
-    if (date === null) return;
-    const trimmed = date.trim();
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-      toast.error('Use YYYY-MM-DD');
-      return;
-    }
-    void approveOccurrence(fest, trimmed);
   }
 
   const statusIcon = (s: VerificationStatus) => {
@@ -292,22 +215,6 @@ export default function FestivalManagement() {
                 : <Sparkles size={14} />
               }
               {verifying ? 'Verifying…' : 'Verify Dates with AI'}
-            </button>
-            <button
-              onClick={() => materializeOccurrences(false)}
-              disabled={materializing}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 hover:bg-amber-500 hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed border border-amber-500/20"
-            >
-              {materializing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-              Dry Run Rules
-            </button>
-            <button
-              onClick={() => materializeOccurrences(true)}
-              disabled={materializing}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed border border-emerald-500/20"
-            >
-              {materializing ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
-              Commit Rules
             </button>
             <button
               disabled
@@ -491,22 +398,18 @@ export default function FestivalManagement() {
                   <div className="mt-6 pt-6 border-t border-black/5 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => correctAndApprove(fest)}
-                        disabled={!fest.id || reviewingId === fest.id}
-                        className="p-2 rounded-xl bg-amber-500/10 text-amber-700 hover:bg-amber-500 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Correct date and approve"
-                        aria-label="Correct date and approve"
-                      >
-                        {reviewingId === fest.id ? <RefreshCw size={16} className="animate-spin" /> : <Edit2 size={16} />}
+                        disabled
+                        className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
+                        title="Editing is staged; this admin surface is currently review-first."
+                       aria-label="Action">
+                        <Edit2 size={16} />
                       </button>
                       <button
-                        onClick={() => approveOccurrence(fest)}
-                        disabled={!fest.id || reviewingId === fest.id}
-                        className="p-2 rounded-xl bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Approve current date for Home and notifications"
-                        aria-label="Approve current date"
-                      >
-                        {reviewingId === fest.id ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                        disabled
+                        className="p-2 rounded-xl bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
+                        title="Deletion is staged; this admin surface is currently review-first."
+                       aria-label="Delete">
+                        <Trash2 size={16} />
                       </button>
                     </div>
                     <div className="text-right space-y-1">

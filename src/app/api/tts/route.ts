@@ -1,24 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-
+import { GoogleAuth } from 'google-auth-library';
 import { generateTTSCacheKey, getCachedAudio, setCachedAudio, fetchFromStorage, uploadToStorage } from '@/lib/tts/cache';
-import { synthesizeBhashini } from '@/lib/tts/bhashini';
-import { chunkText, mergeAudioChunks } from '@/lib/tts/chunk';
 import { preprocessTTS, stripSSMLForPlainTTS } from '@/lib/tts/preprocessing';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
-import { validatePipelineTags, getDefaultTags, mergeTags, canGenerateTTS, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
-import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
+import { validatePipelineTags, getDefaultTags, mergeTags, resolveScript, canGenerateTTS, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
 
+// Force Node.js runtime — google-auth-library requires it
 export const runtime = 'nodejs';
 
-const MAX_TTS_BODY_BYTES = 12 * 1024;
-const MAX_TTS_TEXT_CHARS = 3_000;
-const TTS_RATE_LIMIT = { keyPrefix: 'tts', limit: 20, windowMs: 60_000 };
-
+// ── Script detection ──────────────────────────────────────────────────────────
 function hasDevanagari(text: string): boolean { return /[ऀ-ॿ]/.test(text); }
-function hasGurmukhi(text: string): boolean { return /[਀-੿]/.test(text); }
+function hasGurmukhi(text: string): boolean   { return /[਀-੿]/.test(text); }
 
-function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): { languageCode: string; speaker: string } {
+// ── Voice Quality Profiles ───────────────────────────────────────────────────
+interface VoiceProfile {
+  languageCode: string;
+  name: string;
+  ssmlGender: 'MALE' | 'FEMALE';
+  pitch: number;
+  rate: number;
+}
+
+const PANDIT_PROFILES: Record<string, VoiceProfile> = {
+  SANSKRIT_MALE: {
+    languageCode: 'hi-IN',
+    name: 'hi-IN-Neural2-B', // Deep, resonant male voice
+    ssmlGender: 'MALE',
+    pitch: -4.0,
+    rate: 0.78,
+  },
+  SANSKRIT_FEMALE: {
+    languageCode: 'hi-IN',
+    name: 'hi-IN-Neural2-A',
+    ssmlGender: 'FEMALE',
+    pitch: -1.0,
+    rate: 0.82,
+  },
+  GURMUKHI: {
+    languageCode: 'pa-IN',
+    name: 'pa-IN-Wavenet-B',
+    ssmlGender: 'MALE',
+    pitch: -2.0,
+    rate: 0.80,
+  }
+};
+
+function getVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): VoiceProfile {
+  const isPandit = quality === 'pandit';
+  
+  if (hasDevanagari(text)) {
+    return isPandit ? PANDIT_PROFILES.SANSKRIT_MALE : {
+      languageCode: 'hi-IN',
+      name: 'hi-IN-Standard-D',
+      ssmlGender: 'FEMALE',
+      pitch: -1.5,
+      rate: 0.82
+    };
+  }
+  
+  if (hasGurmukhi(text)) {
+    return isPandit ? PANDIT_PROFILES.GURMUKHI : {
+      languageCode: 'pa-IN',
+      name: 'pa-IN-Standard-A',
+      ssmlGender: 'FEMALE',
+      pitch: 0,
+      rate: 0.85
+    };
+  }
+
+  return {
+    languageCode: 'en-IN',
+    name: 'en-IN-Wavenet-B',
+    ssmlGender: 'MALE',
+    pitch: 0,
+    rate: 0.90
+  };
+}
+
+function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'akash'): { languageCode: string, speaker: string } {
   if (hasDevanagari(text)) {
     return { languageCode: 'hi-IN', speaker: quality === 'pandit' || quality === 'akash' ? 'shubh' : 'priya' };
   }
@@ -28,68 +87,48 @@ function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'ak
   return { languageCode: 'en-IN', speaker: quality === 'pandit' || quality === 'akash' ? 'ratan' : 'ishita' };
 }
 
+// ── Cached GoogleAuth client ──────────────────────────────────────────────────
+let _auth: GoogleAuth | null = null;
+
+function getAuth(): GoogleAuth {
+  if (_auth) return _auth;
+  const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+  const private_key  = process.env.GOOGLE_SERVICE_ACCOUNT_KEY?.replace(/\\n/g, '\n');
+
+  if (!client_email || !private_key) {
+    throw new Error('Google Cloud TTS Credentials not configured.');
+  }
+
+  _auth = new GoogleAuth({
+    credentials: { client_email, private_key },
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  return _auth;
+}
+
+// ── POST /api/tts ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const sizeRejection = rejectLargeRequest(req, MAX_TTS_BODY_BYTES);
-  if (sizeRejection) return sizeRejection;
-
-  const rateRejection = rateLimitByIp(req, TTS_RATE_LIMIT);
-  if (rateRejection) return rateRejection;
-
   let text: string;
   let quality: 'standard' | 'pandit' | 'akash';
   let requestedRate: number | null = null;
   const startTime = Date.now();
 
-  let textLanguage: string | null = null; // 'sa' = Sanskrit, 'hi' = Hindi, null = auto-detect
-
-  // ── Pro gate: check before parsing body (fast-fail for free users on premium voices)
-  let isPro = false;
-  try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: ttsProfile } = await supabase
-        .from('profiles')
-        .select('is_pro, subscription_status')
-        .eq('id', user.id)
-        .single();
-      isPro = ttsProfile?.is_pro === true ||
-        ttsProfile?.subscription_status === 'pro' ||
-        ttsProfile?.subscription_status === 'kul_pro';
-    }
-  } catch {
-    // Non-blocking — if auth fails, fall back to free tier behaviour
-  }
-
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
-    if (text.length > MAX_TTS_TEXT_CHARS) {
-      return NextResponse.json({ error: 'text is too long' }, { status: 413 });
-    }
+    quality = body.quality === 'pandit' ? 'pandit' : (body.quality === 'akash' ? 'akash' : 'standard');
+    requestedRate = body.rate ? Number(body.rate) : null;
 
-    // pandit / akash voices = Zenith only. Downgrade silently for free users.
-    const requestedQuality = body.quality === 'pandit'
-      ? 'pandit'
-      : body.quality === 'akash'
-        ? 'akash'
-        : 'standard';
-    quality = (requestedQuality !== 'standard' && !isPro) ? 'standard' : requestedQuality;
-    requestedRate = body.rate
-      ? Number(body.rate)
-      : body.speed
-        ? Number(body.speed)
-        : null;
-    // Optional caller hint: 'sa' routes Devanagari to Bhashini Sanskrit voice,
-    // anything else (e.g. 'hi', 'awa') routes Devanagari to Sarvam hi-IN.
-    textLanguage = typeof body.language === 'string' ? body.language.trim() : null;
+    // Validate and normalize incoming pipeline tags
+    const tagValidation = validatePipelineTags(body.pipelineTags ?? body.tags, { context: 'tts_request' });
+    logValidationResult(tagValidation, 'TTS');
+    const providedTags = tagValidation.tags;
 
-    const tagValidation = validatePipelineTags(
-      body.pipelineTags ?? body.tags, { context: 'tts_request' }
-    );
-    if (tagValidation.errors.length > 0) logValidationResult(tagValidation, 'TTS');
+    // Merge with defaults
+    const defaultTags = getDefaultTags({ text });
+    const effectiveTags = mergeTags(providedTags, defaultTags);
 
-    const effectiveTags = mergeTags(tagValidation.tags, getDefaultTags({ text }));
+    // Check if TTS is allowed based on audio_mode
     if (!canGenerateTTS(effectiveTags.audio_mode)) {
       return NextResponse.json(
         { error: `TTS not allowed for audio_mode: ${effectiveTags.audio_mode}` },
@@ -103,119 +142,72 @@ export async function POST(req: NextRequest) {
   if (!text) return NextResponse.json({ error: 'text is required' }, { status: 400 });
 
   const sarvamKey = process.env.SARVAM_API_KEY?.trim();
-  const isDevanagari = hasDevanagari(text);
+  const providerLabel = sarvamKey ? 'sarvam' : 'google';
+  const effectiveProfileName = sarvamKey ? getSarvamVoiceConfig(text, quality).speaker : getVoiceConfig(text, quality).name;
+  const effectiveRate = requestedRate ?? (sarvamKey ? 1.0 : getVoiceConfig(text, quality).rate);
 
-  // Only route to Bhashini (Sanskrit sa-m1 voice) when caller explicitly marks
-  // language as 'sa' (Sanskrit). Hindi, Awadhi and other Devanagari scripts go
-  // to Sarvam hi-IN — sending non-Sanskrit to sa-m1 produces wrong output.
-  const isSanskrit = isDevanagari && textLanguage === 'sa';
-
-  const effectiveRate = isSanskrit
-    ? 1.0
-    : requestedRate ?? 0.75;
-
-  const sarvamProfile = getSarvamVoiceConfig(text, quality);
-  const providerLabel = isSanskrit ? 'bhashini'
-    : sarvamKey ? 'sarvam'
-      : 'sarvam';
-  const voiceLabel = isSanskrit ? 'sa-m1' : sarvamProfile.speaker;
-
-  const cacheKey = generateTTSCacheKey(text, providerLabel, voiceLabel, effectiveRate, quality);
-
+  const cacheKey = generateTTSCacheKey(text, providerLabel, effectiveProfileName, effectiveRate, quality);
+  
+  // ── Cache lookup: Memory → Storage → Generate ──────────────────────────────────
   let cachedAudio = getCachedAudio(cacheKey);
   if (cachedAudio) {
-    emitEvent({
-      severity: 'P3',
-      domain: 'tts',
-      route: '/api/tts',
+    emitEvent({ 
+      severity: 'P3', 
+      domain: 'tts', 
+      route: '/api/tts', 
       latency_ms: Date.now() - startTime,
-      context: {
+      context: { 
         status: 'memory_cache',
         quality,
         provider: providerLabel,
-        text_length: text.length
-      }
+        text_length: text.length,
+      } 
     });
     return NextResponse.json({
       audioContent: cachedAudio,
-      meta: { provider: providerLabel, voiceUsed: voiceLabel, qualityUsed: quality, status: 'cached_memory' }
+      meta: {
+        provider: providerLabel,
+        voiceUsed: effectiveProfileName,
+        qualityUsed: quality,
+        status: 'cached_memory'
+      }
     });
   }
-
+  
+  // Try durable storage
   cachedAudio = await fetchFromStorage(cacheKey);
   if (cachedAudio) {
+    // Populate memory cache for subsequent requests
     setCachedAudio(cacheKey, cachedAudio);
-    emitEvent({
-      severity: 'P3',
-      domain: 'tts',
-      route: '/api/tts',
+    emitEvent({ 
+      severity: 'P3', 
+      domain: 'tts', 
+      route: '/api/tts', 
       latency_ms: Date.now() - startTime,
-      context: {
+      context: { 
         status: 'storage_cache',
         quality,
         provider: providerLabel,
-        text_length: text.length
-      }
+        text_length: text.length,
+      } 
     });
     return NextResponse.json({
       audioContent: cachedAudio,
-      meta: { provider: providerLabel, voiceUsed: voiceLabel, qualityUsed: quality, status: 'cached_storage' }
+      meta: {
+        provider: providerLabel,
+        voiceUsed: effectiveProfileName,
+        qualityUsed: quality,
+        status: 'cached_storage'
+      }
     });
   }
 
   const { cleanedText, usesSSML } = preprocessTTS(text, quality);
 
-  if (isSanskrit) {
-    let bhashiniFailReason: string | null = null;
+  if (sarvamKey) {
+    const sarvamProfile = getSarvamVoiceConfig(text, quality);
+    const sarvamText = usesSSML ? stripSSMLForPlainTTS(cleanedText) : cleanedText;
     try {
-      const style = quality === 'pandit' ? 'Book' : 'Neutral';
-      const bhashiniText = usesSSML ? stripSSMLForPlainTTS(cleanedText) : cleanedText;
-      const BHASHINI_MAX = 800;
-      const bChunks = chunkText(bhashiniText, BHASHINI_MAX);
-      const bAudioChunks: string[] = [];
-      for (const chunk of bChunks) {
-        bAudioChunks.push(await synthesizeBhashini(chunk, style));
-      }
-      const audioBase64 = mergeAudioChunks(bAudioChunks);
-      setCachedAudio(cacheKey, audioBase64);
-      await uploadToStorage(cacheKey, audioBase64);
-      emitEvent({
-        severity: 'P3',
-        domain: 'tts',
-        route: '/api/tts',
-        latency_ms: Date.now() - startTime,
-        provider: 'bhashini',
-        model: 'sa-m1',
-        context: {
-          status: 'generated',
-          quality,
-          text_length: text.length,
-          cache_status: 'miss',
-          chunks: bChunks.length
-        }
-      });
-      return NextResponse.json({
-        audioContent: audioBase64,
-        meta: { provider: 'bhashini', voiceUsed: 'sa-m1', qualityUsed: quality, status: 'generated', chunks: bChunks.length }
-      });
-    } catch (err) {
-      bhashiniFailReason = err instanceof Error ? err.message : 'unknown';
-      emitError('tts', err, 'P2', { route: '/api/tts', provider: 'bhashini' });
-      console.warn('[TTS] Bhashini failed, falling back to Sarvam:', bhashiniFailReason);
-    }
-  }
-
-  if (!sarvamKey) {
-    return NextResponse.json({ error: 'TTS unavailable' }, { status: 503 });
-  }
-
-  const sarvamText = usesSSML ? stripSSMLForPlainTTS(cleanedText) : cleanedText;
-  try {
-    const SARVAM_MAX = 490;
-    const chunks = chunkText(sarvamText, SARVAM_MAX);
-    const audioChunks: string[] = [];
-
-    for (const chunk of chunks) {
       const sRes = await fetch('https://api.sarvam.ai/text-to-speech', {
         method: 'POST',
         headers: {
@@ -223,56 +215,142 @@ export async function POST(req: NextRequest) {
           'api-subscription-key': sarvamKey,
         },
         body: JSON.stringify({
-          inputs: [chunk],
+          inputs: [sarvamText],
           target_language_code: sarvamProfile.languageCode,
           speaker: sarvamProfile.speaker,
-          pace: requestedRate ?? 0.75,
+          pace: requestedRate ?? 1.0,
           enable_preprocessing: true,
-          model: 'bulbul:v3',
+          model: 'bulbul:v3'
         }),
       });
 
-      if (!sRes.ok) {
-        const errText = await sRes.text();
-        emitError('tts', new Error(`Sarvam ${sRes.status}: ${errText}`), 'P2',
-          { route: '/api/tts', provider: 'sarvam' });
-        console.error('[TTS] Sarvam chunk error:', sRes.status, errText);
-        throw new Error(`Sarvam chunk failed: ${sRes.status}`);
-      }
+      if (sRes.ok) {
+        const data = await sRes.json() as { audios: string[] };
+        if (data.audios && data.audios.length > 0) {
+          const audioBase64 = data.audios[0];
+          setCachedAudio(cacheKey, audioBase64);
+          await uploadToStorage(cacheKey, audioBase64);
+          
+          emitEvent({
+            severity: 'P3',
+            domain: 'tts',
+            route: '/api/tts',
+            latency_ms: Date.now() - startTime,
+            provider: 'sarvam',
+            model: 'bulbul:v3',
+            context: {
+              status: 'generated',
+              quality,
+              text_length: text.length,
+              cache_status: 'miss'
+            }
+          });
 
-      const data = await sRes.json() as { audios: string[] };
-      if (!data.audios?.length) {
-        throw new Error('Sarvam returned empty audios');
+          return NextResponse.json({
+            audioContent: audioBase64,
+            meta: {
+              provider: 'sarvam',
+              voiceUsed: sarvamProfile.speaker,
+              qualityUsed: quality,
+              status: 'generated'
+            }
+          });
+        }
+      } else {
+        const errText = await sRes.text();
+        emitError('tts', new Error(`Sarvam API error: ${errText}`), 'P2', { route: '/api/tts', provider: 'sarvam' });
+        console.error('[TTS] Sarvam API error:', sRes.status, errText);
       }
-      audioChunks.push(data.audios[0]);
+    } catch (err) {
+      emitError('tts', err, 'P2', { route: '/api/tts', provider: 'sarvam' });
+      console.error('[TTS] Sarvam fetch error:', err);
+    }
+  }
+
+  // Fallback to Google TTS
+  // Get OAuth2 access token
+  let token: string | null | undefined;
+  try {
+    const auth   = getAuth();
+    const client = await auth.getClient();
+    const res    = await client.getAccessToken();
+    token = res.token;
+    if (!token) throw new Error('Empty token returned');
+  } catch (err: any) {
+    emitError('tts', err, 'P1', { route: '/api/tts', provider: 'google', error_message: 'TTS auth failed' });
+    return NextResponse.json({ error: 'TTS auth failed' }, { status: 503 });
+  }
+
+  const profile = getVoiceConfig(text, quality);
+  
+  // Google TTS SSML handling is now partially driven by preprocessing.
+  const ttsPayloadText = usesSSML ? { ssml: cleanedText } : { text: cleanedText };
+
+  const ttsPayload = {
+    input: ttsPayloadText,
+    voice: {
+      languageCode: profile.languageCode,
+      name: profile.name,
+      ssmlGender: profile.ssmlGender,
+    },
+    audioConfig: {
+      audioEncoding: 'MP3',
+      speakingRate: requestedRate ?? profile.rate,
+      pitch: profile.pitch,
+      effectsProfileId: ['handset-class-device'], // Adds a bit of resonance
+    },
+  };
+
+  try {
+    const gRes = await fetch('https://texttospeech.googleapis.com/v1/text:synthesize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(ttsPayload),
+    });
+
+    if (!gRes.ok) {
+      const errText = await gRes.text();
+      emitError('tts', new Error(`Google API error: ${errText}`), 'P1', { route: '/api/tts', provider: 'google' });
+      console.error('[TTS] Google API error:', gRes.status, errText);
+      return NextResponse.json({ error: 'TTS upstream error' }, { status: 502 });
     }
 
-    const audioBase64 = mergeAudioChunks(audioChunks);
-    setCachedAudio(cacheKey, audioBase64);
-    await uploadToStorage(cacheKey, audioBase64);
+    const data = await gRes.json() as { audioContent: string };
+    setCachedAudio(cacheKey, data.audioContent);
+    await uploadToStorage(cacheKey, data.audioContent);
+    
     emitEvent({
       severity: 'P3',
       domain: 'tts',
       route: '/api/tts',
       latency_ms: Date.now() - startTime,
-      provider: 'sarvam',
-      model: 'bulbul:v3',
+      provider: 'google',
+      model: profile.name,
       context: {
         status: 'generated',
         quality,
         text_length: text.length,
         cache_status: 'miss',
-        chunks: chunks.length
+        fallback_used: !!sarvamKey
       }
     });
-    return NextResponse.json({
-      audioContent: audioBase64,
-      meta: { provider: 'sarvam', voiceUsed: sarvamProfile.speaker, qualityUsed: quality, status: 'generated', chunks: chunks.length }
-    });
-  } catch (err) {
-    emitError('tts', err, 'P2', { route: '/api/tts', provider: 'sarvam' });
-    console.error('[TTS] Sarvam fetch error:', err);
-  }
 
-  return NextResponse.json({ error: 'TTS unavailable' }, { status: 503 });
+    return NextResponse.json({ 
+      audioContent: data.audioContent,
+      meta: {
+        provider: 'google',
+        voiceUsed: profile.name,
+        qualityUsed: quality,
+        status: 'generated'
+      }
+    });
+
+  } catch (err) {
+    emitError('tts', err, 'P1', { route: '/api/tts', provider: 'google' });
+    console.error('[TTS] Fetch error:', err);
+    return NextResponse.json({ error: 'TTS unavailable' }, { status: 503 });
+  }
 }

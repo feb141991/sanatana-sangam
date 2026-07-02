@@ -2,26 +2,25 @@
   "doc_id": "pathshala_upanishads_kena",
   "title": "Kena Upanishad",
   "tradition": "Sanatana Dharma",
-  "corpus": "upanishads",
+  "scripture_family": "upanishads",
   "section_id": "kena",
   "source_name": "Principal Upanishads",
   "source_class": "scripture",
   "rights_status": "public_domain",
   "language": "en",
-  "translation_basis": "Robert Ernest Hume (1921)",
   "is_live_in_app": true,
   "content": [
-    {
-      "ref": "1.2",
-      "sanskrit": "श्रोत्रस्य श्रोत्रं मनसो मनो यद्वाचो ह वाचं स उ प्राणस्य प्राणः चक्षुषश्चक्षुरतिमुच्य धीराः प्रेत्यास्माल्लोकादमृता भवन्ति ॥",
-      "transliteration": "śrotrasya śrotraṁ manaso mano yadvāco ha vācaṁ sa u prāṇasya prāṇaḥ cakṣuṣaścakṣuratimucya dhīrāḥ pretyāsmāllokādamṛtā bhavanti ||",
-      "text": "It is the ear of the ear, the mind of the mind, the speech of speech, the life of life, and the eye of the eye. The wise, freed from sense-perceptions, on leaving this world become immortal."
-    },
     {
       "ref": "1.1",
       "sanskrit": "केनेषितं पतति प्रेषितं मनः केन प्राणः प्रथमः प्रैति युक्तः । केनेषितां वाचमिमां वदन्ति चक्षुः श्रोत्रं क उ देवो युनक्ति ॥",
       "transliteration": "keneṣitaṁ patati preṣitaṁ manaḥ kena prāṇaḥ prathamaḥ praiti yuktaḥ | keneṣitāṁ vācamimāṁ vadanti cakṣuḥ śrotraṁ ka u devo yunakti ||",
       "text": "By whose will directed does the mind fly forth? By whose command does the first breath move? By whose will do people utter speech? What god directs the eye and ear?"
+    },
+    {
+      "ref": "1.2",
+      "sanskrit": "श्रोत्रस्य श्रोत्रं मनसो मनो यद्वाचो ह वाचं स उ प्राणस्य प्राणः । चक्षुषश्चक्षुरतिमुच्य धीराः प्रेत्यास्माल्लोकादमृता भवन्ति ॥",
+      "transliteration": "śrotrasya śrotraṁ manaso mano yadvāco ha vācaṁ sa u prāṇasya prāṇaḥ | cakṣuṣaścakṣuratimucya dhīrāḥ pretyāsmāllokādamṛtā bhavanti ||",
+      "text": "It is the ear of the ear, the mind of the mind, the speech of speech, the life of life, and the eye of the eye. The wise, freed from sense-perceptions, on leaving this world become immortal."
     },
     {
       "ref": "1.3",

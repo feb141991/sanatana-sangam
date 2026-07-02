@@ -56,7 +56,7 @@ export function FamilyKeepsakeStage({ member }: { member: FamilyMember }) {
       </div>
       
       {/* Ritual Seal - Bottom Right overlay */}
-      <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full shadow-lg flex items-center justify-center text-[10px] border border-[#C5A059]/15"
+      <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full shadow-lg flex items-center justify-center text-[10px] border border-white/20"
         style={{ 
           background: member.is_alive ? 'var(--brand-primary)' : 'var(--brand-earth)',
           color: 'white',

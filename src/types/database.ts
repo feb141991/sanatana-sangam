@@ -30,13 +30,6 @@ export interface Database {
           languages: string[];
           seeking: string[];
           seva_score: number;
-          weekly_seva: number;
-          monthly_seva: number;
-          streak_freeze_count: number;
-          last_freeze_used: string | null;
-          active_symbol_id: string | null;
-          onboarding_completed: boolean;
-          onboarding_goal: string | null;
           mandali_id: string | null;
           onesignal_player_id: string | null;
           country_code: string | null;
@@ -67,14 +60,8 @@ export interface Database {
           date_of_birth: string | null;
           is_banned: boolean;
           ban_reason: string | null;
-          japa_reminder_enabled?: boolean;
-          japa_reminder_time?: string;
-          quiz_reminder_enabled?: boolean;
-          quiz_reminder_time?: string;
-          nitya_reminder_enabled?: boolean;
-          nitya_reminder_time?: string;
         };
-        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
+        Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
       };
       mandalis: {
@@ -253,31 +240,12 @@ export interface Database {
           status: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
           admin_note: string | null;
           created_at: string;
-          // metadata stores AI-report context (ai_response, user_prompt, model, etc.).
-          // content_author_id is passed as '' for AI reports — no real author UUID exists.
-          metadata: Record<string, unknown> | null;
         };
-        Insert: {
-          reported_by: string;
-          content_author_id: string;
-          content_type: string;
-          content_id: string;
-          reason: string;
-          status?: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
+        Insert: Omit<Database['public']['Tables']['content_reports']['Row'], 'id' | 'created_at' | 'status' | 'admin_note'> & {
+          status?: Database['public']['Tables']['content_reports']['Row']['status'];
           admin_note?: string | null;
-          metadata?: Record<string, unknown> | null;
         };
-        Update: {
-          reported_by?: string;
-          content_author_id?: string;
-          content_type?: string;
-          content_id?: string;
-          reason?: string;
-          status?: 'pending' | 'reviewed' | 'actioned' | 'dismissed';
-          admin_note?: string | null;
-          metadata?: Record<string, unknown> | null;
-        };
-        Relationships: [];
+        Update: Partial<Database['public']['Tables']['content_reports']['Insert']>;
       };
       user_blocked_profiles: {
         Row: {
@@ -557,10 +525,7 @@ export type EventRsvp = Database['public']['Tables']['event_rsvps']['Row'];
 export type MalaSession = Database['public']['Tables']['mala_sessions']['Row'];
 export type CronLog = Database['public']['Tables']['cron_logs']['Row'];
 export type PostWithAuthor = Post & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'> };
-export type ThreadWithAuthor = ForumThread & {
-  profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'active_symbol_id'>;
-  reactions?: Record<string, number>;
-};
+export type ThreadWithAuthor = ForumThread & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya'> };
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };
 
 export type ObservanceDefinition = Database['public']['Tables']['observance_definitions']['Row'];

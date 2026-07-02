@@ -19,38 +19,30 @@ export const API = {
 
   /** OpenStreetMap Overpass — temple / place-of-worship data (no API key needed) */
   OVERPASS: {
-    /** Mirrors tried in order. Server-side proxy at /api/tirtha/places uses these;
-     *  the browser never calls Overpass directly (avoids CORS + client timeouts). */
+    /** Primary + fallback mirrors, tried in order */
     MIRRORS: [
-      'https://overpass.openstreetmap.fr/api/interpreter',   // fastest — 0.4s
-      'https://overpass.kumi.systems/api/interpreter',
-      'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
       'https://overpass-api.de/api/interpreter',
-      // private.coffee excluded — consistently 504
+      'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.openstreetmap.ru/api/interpreter',
     ] as const,
     /** Overpass QL query-level timeout (seconds) — sent inside the query body */
-    QUERY_TIMEOUT_S:    28,
+    QUERY_TIMEOUT_S:    25,
     /** JS fetch() abort timeout per mirror attempt (ms) */
-    FETCH_TIMEOUT_MS:   18_000,
+    FETCH_TIMEOUT_MS:   30_000,
     /** Default search radius in metres */
     DEFAULT_RADIUS_M:   10_000,
     /** Maximum results to render in the UI */
     MAX_RESULTS:        25,
   },
 
-  /** Geoapify — primary geocoding (free tier: 3 000 calls/day, no credit card).
-   *  Falls back to Nominatim when GEOAPIFY_API_KEY is not set. */
-  GEOAPIFY: {
-    GEOCODE: 'https://api.geoapify.com/v1/geocode/search',
-    TIMEOUT_MS: 6_000,
-  },
-
-  /** Nominatim (OpenStreetMap) — geocoding fallback when Geoapify is unavailable */
+  /** Nominatim (OpenStreetMap) — geocoding & reverse-geocoding (no API key needed) */
   NOMINATIM: {
     BASE:     'https://nominatim.openstreetmap.org',
     SEARCH:   'https://nominatim.openstreetmap.org/search',
     REVERSE:  'https://nominatim.openstreetmap.org/reverse',
+    /** JS fetch() abort timeout (ms) */
     TIMEOUT_MS: 10_000,
+    /** User-Agent sent with every request (OSM policy requires one) */
     USER_AGENT: 'SanatanaSangam/1.0',
   },
 
@@ -115,10 +107,10 @@ export const APP = {
   /**
    * Public base URL for share links and invite deep-links.
    * Set NEXT_PUBLIC_APP_URL in .env.local to override (e.g. your Vercel domain).
-   * Falls back to shoonaya.com — but at runtime in client components
+   * Falls back to shoonaya.app — but at runtime in client components
    * prefer window.location.origin so any deployment domain works automatically.
    */
-  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com',
+  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.app',
 } as const;
 
 

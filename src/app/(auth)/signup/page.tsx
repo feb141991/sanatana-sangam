@@ -1,303 +1,307 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
-import BrandMark from '@/components/BrandMark';
+import { 
+  ArrowRight, ArrowLeft, Eye, EyeOff, MapPin, Loader2, Lock, 
+  Sparkles, Check, Heart, Globe, Users, BookOpen, Shield, 
+  BarChart3, Star
+} from 'lucide-react';
 import { createClient } from '@/lib/supabase';
-import { getAuthCallbackUrl } from '@/lib/auth-redirect';
-import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
+import { TRADITIONS } from '@/lib/utils';
+import type { TraditionKey } from '@/lib/traditions';
 
-function usernameFromEmail(email: string) {
-  const base = email
-    .split('@')[0]
-    ?.toLowerCase()
-    .replace(/[^a-z0-9_]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '')
-    .slice(0, 24);
+type Step = 1 | 2 | 3;
 
-  return `${base || 'seeker'}_${Date.now().toString(36).slice(-4)}`;
-}
+const QUOTES = [
+  { text: "Dharmo rakṣati rakṣitaḥ", author: "Mahabharata", meaning: "Dharma protects those who protect it.", tradition: 'hindu' },
+  { text: "Man jeetai jag jeet", author: "Guru Granth Sahib", meaning: "To conquer the mind is to conquer the world.", tradition: 'sikh' },
+  { text: "Attā hi attano nātho", author: "Dhammapada", meaning: "One is one's own master.", tradition: 'buddhist' },
+  { text: "Parasparopagraho Jīvānām", author: "Tattvartha Sutra", meaning: "Souls render service to one another.", tradition: 'jain' },
+  { text: "Sarve bhavantu sukhinaḥ", author: "Rig Veda", meaning: "May everyone be happy and free from suffering.", tradition: 'hindu' }
+];
 
-function nameFromEmail(email: string) {
-  const base = email.split('@')[0]?.replace(/[._-]+/g, ' ').trim();
-  return base || 'Shoonaya Seeker';
-}
+const APP_FEATURES = [
+  { 
+    id: 'mandali',
+    title: "Global Mandali", 
+    desc: "Connect with seekers in your city and across the world.", 
+    icon: Users,
+    color: "var(--glow-sikh)"
+  },
+  { 
+    id: 'pathshala',
+    title: "Sacred Pathshala", 
+    desc: "Interactive library of Gita, Gurbani, Dhammapada & Agamas.", 
+    icon: BookOpen,
+    color: "var(--glow-hindu)"
+  },
+  { 
+    id: 'pulse',
+    title: "Sadhana Pulse", 
+    desc: "Track your daily rhythms, mala counts and spiritual growth.", 
+    icon: BarChart3,
+    color: "var(--glow-jain)"
+  },
+  { 
+    id: 'kul',
+    title: "Kul & Lineage", 
+    desc: "Preserve your family traditions and ancestral wisdom.", 
+    icon: Shield,
+    color: "var(--glow-buddhist)"
+  }
+];
 
-function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+const FACTS = [
+  "Did you know? Shoonaya covers Hindu, Sikh, Buddhist, and Jain traditions.",
+  "Join over 10,000 seekers dedicated to a life of Dharma.",
+  "Access personalized Panchang and Vrat notifications for your location.",
+  "Discover sacred Tirthas and local Mandalis near you."
+];
+
+const TRADITION_SIGNS = [
+  { char: '🕉️', label: 'Sanatan', color: 'var(--glow-hindu)' },
+  { char: '☬', label: 'Sikh', color: 'var(--glow-sikh)' },
+  { char: '☸️', label: 'Buddhist', color: 'var(--glow-buddhist)' },
+  { char: '🤲', label: 'Jain', color: 'var(--glow-jain)' }
+];
+
+const TRADITION_COLORS: Record<TraditionKey | '', string> = {
+  'hindu': 'var(--glow-hindu)',
+  'sikh': 'var(--glow-sikh)',
+  'buddhist': 'var(--glow-buddhist)',
+  'jain': 'var(--glow-jain)',
+  'other': 'rgba(216, 138, 28, 0.2)',
+  '': 'rgba(216, 138, 28, 0.15)'
+};
+
+// ─── Tradition Signages Display ──────────────────────────────────────────────
+function TraditionSignages({ activeIdx }: { activeIdx: number }) {
+  return (
+    <div className="relative flex items-center justify-center gap-8 py-10">
+      {TRADITION_SIGNS.map((sign, i) => (
+        <motion.div
+          key={sign.label}
+          animate={{ 
+            scale: activeIdx === i ? 1.4 : 1,
+            opacity: activeIdx === i ? 1 : 0.4,
+            y: activeIdx === i ? -10 : 0
+          }}
+          className="flex flex-col items-center gap-3"
+        >
+          <div className="text-5xl drop-shadow-xl filter">{sign.char}</div>
+          <div className={`text-[10px] font-bold uppercase tracking-widest transition-opacity ${activeIdx === i ? 'opacity-100' : 'opacity-0'}`} style={{ color: sign.color }}>
+            {sign.label}
+          </div>
+          {activeIdx === i && (
+            <motion.div 
+              layoutId="sign-glow"
+              className="absolute inset-0 -z-10 blur-3xl opacity-30 rounded-full"
+              style={{ background: sign.color }}
+            />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
 }
 
 export default function SignupPage() {
-  const router = useRouter();
+  const router   = useRouter();
   const supabase = useMemo(() => {
     if (typeof window === 'undefined') return null;
     return createClient();
   }, []);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [step,       setStep]       = useState<1 | 2>(1);
+  const [loading,    setLoading]    = useState(false);
+  const [showPass,   setShowPass]   = useState(false);
+  const [inviteCode,  setInviteCode]  = useState('');
+  const [claimToken,  setClaimToken]  = useState('');
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
-  const [inviteCode, setInviteCode] = useState('');
-  const [claimToken, setClaimToken] = useState('');
-  const [utmSource, setUtmSource] = useState('');
+  const [quoteIdx, setQuoteIdx] = useState(0);
+  const [factIdx, setFactIdx] = useState(0);
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  const [form, setForm] = useState({
+    email:          '',
+    password:       '',
+    full_name:      '',
+    username:       '',
+    phone:          '',
+  });
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setInviteCode(params.get('ref')?.trim().toUpperCase() ?? '');
     setClaimToken(params.get('claim_token')?.trim() ?? '');
-    setUtmSource(params.get('utm_source')?.trim() ?? params.get('source')?.trim() ?? '');
+
+    const interval = setInterval(() => {
+      setQuoteIdx(prev => (prev + 1) % QUOTES.length);
+      setFactIdx(prev => (prev + 1) % FACTS.length);
+      setActiveFeature(prev => (prev + 1) % APP_FEATURES.length);
+    }, 6000);
+    return () => clearInterval(interval);
   }, []);
 
-  const onboardingNext = '/onboarding' + (claimToken ? `?claim_token=${encodeURIComponent(claimToken)}` : '');
-
-  async function handleGoogleSignup() {
-    if (!supabase) {
-      toast.error('Auth is still initializing. Please try again.');
-      return;
-    }
-
-    setGoogleLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: getAuthCallbackUrl(onboardingNext),
-      },
-    });
-
-    if (error) {
-      setGoogleLoading(false);
-      toast.error(error.message);
-    }
-  }
-
-  async function handleEmailSignup(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!supabase) {
-      toast.error('Auth is still initializing. Please try again.');
-      return;
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      toast.error('Enter your email address.');
-      return;
-    }
-
-    if (password.length < 8) {
-      toast.error('Password must be at least 8 characters.');
-      return;
-    }
-
-    if (!acceptedPolicies) {
-      toast.error('Please accept the Terms and Privacy Policy to continue.');
-      return;
-    }
-
+  async function handleSubmit() {
+    if (!supabase || !acceptedPolicies) return;
     setLoading(true);
-
     try {
+      const normalizedEmail = form.email.trim().toLowerCase();
+      const normalizedUsername = form.username.toLowerCase().trim().replace(/\s+/g, '_');
+      
       const profilePayload = {
-        full_name: nameFromEmail(normalizedEmail),
-        username: usernameFromEmail(normalizedEmail),
-        phone: null,
+        full_name: form.full_name.trim(),
+        username: normalizedUsername,
+        phone: form.phone.trim() || null,
         app_language: 'en',
         onboarding_completed: false,
       };
 
       const { data, error } = await supabase.auth.signUp({
         email: normalizedEmail,
-        password,
+        password: form.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(onboardingNext)}`,
-          data: {
-            ...profilePayload,
-            referred_by_code: inviteCode || null,
-            referral_source: utmSource || null,
-          },
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+          '/onboarding' + (claimToken ? `?claim_token=${encodeURIComponent(claimToken)}` : '')
+        )}`,
+          data: { ...profilePayload, referred_by_code: inviteCode || null },
         },
       });
 
       if (error) throw error;
 
       if (data.session) {
+        // Claim any guest-saved chart before navigating
         if (claimToken) {
           await fetch('/api/jyotish/birth-profiles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_token: claimToken }),
-          }).catch(() => {});
+          }).catch(() => {}); // silent — chart stays as guest if this fails, recoverable
         }
-
-        toast.success('Welcome to Shoonaya.');
-        const destination = await getClientPostAuthDestination(onboardingNext);
-        router.push(destination);
-        router.refresh();
+        toast.success('Pranam! Welcome to Shoonaya. 🙏');
+        router.push('/onboarding');
       } else {
-        toast.success('Please check your inbox to confirm your email.');
+        toast.success('Pranam! Please check your inbox to confirm.');
         router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }
-    } catch (error: unknown) {
-      toast.error(errorMessage(error));
+    } catch (err: any) {
+      toast.error(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   }
 
+  const activeAuraColor = TRADITION_SIGNS[quoteIdx % TRADITION_SIGNS.length].color;
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[var(--divine-bg)] px-4 py-8 text-[var(--text-cream)] sm:px-6">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,color-mix(in_srgb,var(--brand-primary)_26%,transparent),transparent_38%),linear-gradient(180deg,color-mix(in_srgb,var(--surface-soft)_76%,transparent),var(--divine-bg))]" />
-
-      <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col justify-center">
-        <div className="mb-7 text-center">
-          <Link href="/" className="inline-flex items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)] focus:ring-offset-2 focus:ring-offset-[var(--divine-bg)]">
-            <BrandMark />
-          </Link>
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.34em] text-[var(--brand-muted)]">
-            Welcome to
-          </p>
-          <h1 className="mt-2 font-display text-4xl font-bold tracking-normal text-[var(--text-cream)]">
-            Shoonaya
-          </h1>
+    <div className="min-h-screen flex bg-[var(--premium-ivory)] overflow-hidden font-outfit">
+      
+      {/* ── LEFT SIDE: Immersive & Interactive (Value Section) ─────────────────────── */}
+      <div className="hidden lg:flex w-1/2 relative flex-col items-center justify-between p-16 overflow-hidden border-r border-[var(--premium-border)] bg-[#faf6ef]">
+        <motion.div 
+          animate={{ backgroundColor: activeAuraColor }}
+          transition={{ duration: 0.8 }}
+          className="absolute inset-0 z-0 blur-[120px] opacity-20"
+          style={{ background: `radial-gradient(circle at center, ${activeAuraColor} 0%, transparent 70%)` }}
+        />
+        <div className="relative z-10 w-full flex flex-col items-center">
+          <div className="mb-2 text-4xl font-serif font-bold text-[var(--brand-primary-strong)] tracking-tighter">Shoonaya</div>
+          <div className="text-[10px] uppercase tracking-[0.4em] text-[var(--brand-muted)] font-bold mb-8">Sanatan Sangam</div>
+          <TraditionSignages activeIdx={quoteIdx % TRADITION_SIGNS.length} />
         </div>
-
-        <section className="rounded-[2rem] border border-[var(--premium-border)] bg-[color-mix(in_srgb,var(--surface-soft)_84%,transparent)] p-6 shadow-[0_24px_80px_color-mix(in_srgb,var(--brand-primary)_18%,transparent)] backdrop-blur-xl sm:p-7">
-          <div className="mb-7 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-gold-soft)] text-[var(--brand-primary)]">
-              <Sparkles size={22} aria-hidden="true" />
-            </div>
-            <h2 className="font-display text-3xl font-bold tracking-normal text-[var(--text-cream)]">
-              Welcome back
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--brand-muted)]">
-              Sign in or create your account to continue.
-            </p>
+        <div className="relative z-10 w-full max-w-lg space-y-12 text-center">
+          <AnimatePresence mode="wait">
+            <motion.div key={quoteIdx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <h2 className="text-3xl font-devanagari text-[var(--brand-primary-strong)] leading-relaxed">{QUOTES[quoteIdx].text}</h2>
+              <p className="text-lg italic text-[var(--brand-muted)] mt-2">&quot;{QUOTES[quoteIdx].meaning}&quot;</p>
+              <div className="mt-4 text-xs font-bold text-[var(--premium-gold)] uppercase tracking-widest">{QUOTES[quoteIdx].author}</div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        <div className="relative z-10">
+          <div className="px-6 py-3 rounded-full bg-[var(--premium-gold-soft)] border border-[var(--premium-gold)]/20 text-[11px] font-bold text-[var(--premium-gold)] flex items-center gap-3">
+            <Sparkles size={14} /> {FACTS[factIdx]}
           </div>
-
-          <button
-            type="button"
-            onClick={handleGoogleSignup}
-            disabled={googleLoading}
-            className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-bold text-[var(--text-cream)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-cream)_14%,transparent)] transition hover:border-[var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {googleLoading ? (
-              <Loader2 className="animate-spin" size={18} aria-hidden="true" />
-            ) : (
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--text-cream)] text-sm font-black text-[var(--divine-bg)]">
-                G
-              </span>
-            )}
-            Continue with Google
-          </button>
-
-          <div className="my-6 flex items-center gap-4">
-            <div className="h-px flex-1 bg-[var(--premium-border)]" />
-            <span className="text-xs text-[var(--brand-muted)]">or continue with email</span>
-            <div className="h-px flex-1 bg-[var(--premium-border)]" />
-          </div>
-
-          <form onSubmit={handleEmailSignup} className="space-y-4">
-            <label className="block">
-              <span className="sr-only">Email address</span>
-              <span className="relative block">
-                <Mail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" size={18} aria-hidden="true" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                  required
-                  className="min-h-14 w-full rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-12 text-base text-[var(--text-cream)] outline-none transition placeholder:text-[var(--text-dim)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--premium-gold-soft)]"
-                />
-              </span>
-            </label>
-
-            <label className="block">
-              <span className="sr-only">Password</span>
-              <span className="relative block">
-                <Lock className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" size={18} aria-hidden="true" />
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Password"
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  className="min-h-14 w-full rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-12 pr-14 text-base text-[var(--text-cream)] outline-none transition placeholder:text-[var(--text-dim)] focus:border-[var(--brand-primary)] focus:ring-2 focus:ring-[var(--premium-gold-soft)]"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass((current) => !current)}
-                  className="absolute right-4 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-[var(--brand-muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text-cream)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
-                >
-                  {showPass ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
-                </button>
-              </span>
-            </label>
-
-            <div className="flex items-center justify-between gap-3">
-              <label className="flex items-start gap-2 text-xs leading-5 text-[var(--brand-muted)]">
-                <input
-                  type="checkbox"
-                  checked={acceptedPolicies}
-                  onChange={(event) => setAcceptedPolicies(event.target.checked)}
-                  className="mt-1 h-4 w-4 shrink-0 accent-[var(--brand-primary)]"
-                />
-                <span>
-                  I agree to the{' '}
-                  <Link href="/terms" className="font-semibold text-[var(--brand-primary)] hover:underline">
-                    Terms
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="font-semibold text-[var(--brand-primary)] hover:underline">
-                    Privacy Policy
-                  </Link>
-                  .
-                </span>
-              </label>
-            </div>
-
-            <div className="flex justify-end">
-              <Link href="/forgot-password" className="text-sm font-medium text-[var(--brand-muted)] hover:text-[var(--brand-primary)] hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--brand-primary),var(--brand-primary-strong))] px-5 text-base font-bold text-[var(--divine-bg)] shadow-[0_16px_38px_color-mix(in_srgb,var(--brand-primary)_28%,transparent),inset_0_1px_0_color-mix(in_srgb,var(--text-cream)_28%,transparent)] transition active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {loading ? <Loader2 className="animate-spin" size={19} aria-hidden="true" /> : null}
-              Create account
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-[var(--brand-muted)]">
-            Already have an account?{' '}
-            <Link href="/login" className="font-bold text-[var(--brand-primary)] hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </section>
-
-        <Link href="/" className="mx-auto mt-6 inline-flex rounded-full px-4 py-2 text-sm font-medium text-[var(--brand-muted)] transition hover:text-[var(--brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]">
-          Back to Shoonaya
-        </Link>
+        </div>
       </div>
-    </main>
+
+      {/* ── RIGHT SIDE: Signup Flow ────────────────────────── */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-[var(--premium-ivory)]">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+          <div className="bg-white/70 backdrop-blur-[40px] rounded-[3rem] border border-[var(--premium-border)] shadow-xl p-10">
+            <div className="mb-10">
+              <h3 className="text-3xl font-bold text-[var(--brand-primary-strong)]">Create Account</h3>
+              <p className="text-sm text-[var(--brand-muted)] mt-2">Enter your basics to start your journey.</p>
+            </div>
+
+            <div className="space-y-6">
+              {step === 1 ? (
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Full Name</label>
+                    <input type="text" placeholder="Arjun Sharma" value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Username</label>
+                    <input type="text" placeholder="arjun_seeker" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <button onClick={() => { if(form.full_name && form.username) setStep(2); else toast.error('Fill in your name'); }} className="w-full bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">Next <ArrowRight size={18} /></button>
+                </motion.div>
+              ) : (
+                <motion.div initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Email</label>
+                    <input type="email" placeholder="arjun@wisdom.com" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold uppercase tracking-widest text-[var(--premium-gold)]">Password</label>
+                    <input type="password" placeholder="••••••••" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} className="w-full bg-white/50 border border-[var(--premium-border)] rounded-2xl px-6 py-4 text-sm outline-none focus:border-[var(--premium-gold)]" />
+                  </div>
+                  <div className="flex items-start gap-3 py-2">
+                    <input type="checkbox" checked={acceptedPolicies} onChange={e => setAcceptedPolicies(e.target.checked)} className="mt-1 w-5 h-5 rounded accent-[var(--premium-gold)]" />
+                    <p className="text-[11px] text-[var(--brand-muted)]">I agree to the <Link href="/terms" className="text-[var(--premium-gold)] font-bold">Terms</Link> and <Link href="/privacy" className="text-[var(--premium-gold)] font-bold">Privacy Policy</Link>.</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <button onClick={() => setStep(1)} className="p-5 rounded-2xl border-2 border-[var(--premium-border)]"><ArrowLeft size={20} /></button>
+                    <button onClick={handleSubmit} disabled={loading || !acceptedPolicies} className="flex-1 bg-[var(--premium-gold)] text-white py-5 rounded-2xl font-bold shadow-lg flex items-center justify-center gap-2">{loading ? <Loader2 className="animate-spin" /> : 'Create Account'}</button>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="mt-10 text-center">
+              <p className="text-sm text-[var(--brand-muted)]">Already have an account? <Link href="/login" className="text-[var(--premium-gold)] font-bold">Sign In</Link></p>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-center gap-6">
+            <div className="flex items-center gap-4 w-full">
+              <div className="h-px flex-1 bg-[var(--premium-border)]" />
+              <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-[0.3em]">Ancient Paths Modern Reach</span>
+              <div className="h-px flex-1 bg-[var(--premium-border)]" />
+            </div>
+            <Link href="/guest" className="flex items-center gap-3 px-8 py-3.5 rounded-full bg-white/40 border-2 border-[var(--premium-border)] text-[10px] font-bold text-[var(--brand-muted)] hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] transition-all uppercase tracking-widest">
+              👁️ Explore as Guest
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      <style jsx global>{`
+        body {
+          background-color: var(--premium-ivory);
+        }
+        ::placeholder {
+          color: rgba(133, 79, 11, 0.35);
+        }
+      `}</style>
+    </div>
   );
 }

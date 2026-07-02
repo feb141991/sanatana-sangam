@@ -3,7 +3,7 @@
 //
 // Learns what style of message brings each user back after
 // a streak break: gentle encouragement, challenge, or community.
-// Uses Sarvam via the ai-nudge Edge Function.
+// Uses Gemini Flash via the ai-nudge Edge Function.
 // Delivers push notifications via OneSignal.
 //
 // Usage:

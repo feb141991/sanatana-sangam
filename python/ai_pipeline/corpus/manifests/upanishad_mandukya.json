@@ -2,26 +2,19 @@
   "doc_id": "pathshala_upanishads_mandukya",
   "title": "Mandukya Upanishad",
   "tradition": "Sanatana Dharma",
-  "corpus": "upanishads",
+  "scripture_family": "upanishads",
   "section_id": "mandukya",
   "source_name": "Principal Upanishads",
   "source_class": "scripture",
   "rights_status": "public_domain",
   "language": "en",
-  "translation_basis": "Robert Ernest Hume (1921)",
   "is_live_in_app": true,
   "content": [
     {
       "ref": "1.1",
-      "sanskrit": "ओमित्येतदक्षरमिदं सर्वं तस्योपव्याख्यानं भूतं भवद्भविष्यदिति सर्वमोंकार एव । यच्चान्यत् त्रिकालातीतं तदप्योंकार एव ॥",
-      "transliteration": "omityetadakṣaramidaṁ sarvaṁ tasyopavyākhyānaṁ bhūtaṁ bhavadbhaviṣyaditi sarvamoṁkāra eva | yaccānyat trikālātītaṁ tadapyoṁkāra eva ||",
+      "sanskrit": "ओमित्येतदक्षरमिदं सर्वं तस्योपव्याख्यानं भूतं भवद्भविष्यदिति सर्वमोंकार एव ।",
+      "transliteration": "omityetadakṣaramidaṁ sarvaṁ tasyopavyākhyānaṁ bhūtaṁ bhavadbhaviṣyaditi sarvamoṁkāra eva |",
       "text": "OM — this syllable is all this. The past, the present, and the future — all that is, is but OM. And whatever transcends the three divisions of time — that also is but OM."
-    },
-    {
-      "ref": "1.7",
-      "sanskrit": "नान्तःप्रज्ञं न बहिष्प्रज्ञं नोभयतःप्रज्ञं न प्रज्ञानघनं न प्रज्ञं नाप्रज्ञम् ।",
-      "transliteration": "nāntaḥprajñaṁ na bahiṣprajñaṁ nobhayataḥprajñaṁ na prajñānaghanaṁ na prajñaṁ nāprajñam |",
-      "text": "The fourth state (Turiya) is not the knower of internal objects, nor the knower of external objects, nor the knower of both, nor a mass of pure consciousness, nor the simple knower, nor the unknown."
     },
     {
       "ref": "1.2",
@@ -46,6 +39,12 @@
       "sanskrit": "यत्र सुप्तो न कञ्चन कामं कामयते न कञ्चन स्वप्नं पश्यति तत्सुषुप्तम् ।",
       "transliteration": "yatra supto na kañcana kāmaṁ kāmayate na kañcana svapnaṁ paśyati tatssuṣuptam |",
       "text": "The state in which the sleeper desires no dreams and experiences no dreams — that is deep sleep (Sushupti)."
+    },
+    {
+      "ref": "1.7",
+      "sanskrit": "नान्तःप्रज्ञं न बहिःप्रज्ञं नोभयतःप्रज्ञं न प्रज्ञानघनं न प्रज्ञं नाप्रज्ञम् ।",
+      "transliteration": "nāntaḥprajñaṁ na bahiḥprajñaṁ nobhayataḥprajñaṁ na prajñānaghaṇaṁ na prajñaṁ nāprajñam |",
+      "text": "The fourth state (Turiya) is not the knower of internal objects, nor the knower of external objects, nor the knower of both, nor a mass of pure consciousness, nor the simple knower, nor the unknown."
     },
     {
       "ref": "2.1",

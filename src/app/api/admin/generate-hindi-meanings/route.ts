@@ -1,4 +1,4 @@
-import { verifyAdminCookieAuth } from '@/lib/admin-auth';
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
@@ -13,7 +13,7 @@ import { emitEvent, emitError } from '@/lib/monitoring/events';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const authError = await verifyAdminCookieAuth(req);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

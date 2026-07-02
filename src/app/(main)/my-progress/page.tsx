@@ -36,7 +36,6 @@ export default async function MyProgressPage() {
   const today        = new Date().toISOString().slice(0, 10);
   const thirtyAgo    = daysAgoISO(29);
   const twentyEight  = daysAgoISO(27);
-  const sixMonthsAgo = daysAgoISO(181); // 26 full weeks + 1 day buffer
 
   // Current month boundaries (for premium report)
   const curMonthStart = monthStartISO(0);
@@ -46,37 +45,22 @@ export default async function MyProgressPage() {
 
   const [
     { data: profile },
-    { data: shrutiStats },
     { data: malaCur },
     { data: malaPrev },
     { data: nityaLog },
     { data: sadhana28 },
-    { data: sadhana180 },
-    { data: nitya180 },
     { count: allTimeSessions },
-    { count: mandaliPosts },
-    { count: kulTasksCount },
-    { data: quizRows30d },
-    { count: vratTotal },
-    { data: karmaRows },
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('full_name, username, tradition, is_pro, seva_score, karma_points, weekly_seva, monthly_seva')
+      .select('full_name, username, tradition, is_pro')
       .eq('id', user.id)
       .single(),
-
-    // Shruti (Sanskrit recitation) stats
-    supabase
-      .from('pathshala_recitation_stats')
-      .select('avg_overall_score, avg_uccharan, avg_fluency, scored_count, unique_verses_attempted, certified_count')
-      .eq('user_id', user.id)
-      .maybeSingle(),
 
     // Japa sessions — current month (for report) + last 30d (for dashboard)
     supabase
       .from('mala_sessions')
-      .select('id, mantra, mantra_id, count, bead_count, target_count, rounds, duration_seconds, duration_secs, completed_at, spiritual_date, date, created_at')
+      .select('*')
       .eq('user_id', user.id)
       .gte('created_at', thirtyAgo)
       .lte('created_at', today + 'T23:59:59')
@@ -85,7 +69,7 @@ export default async function MyProgressPage() {
     // Japa sessions — previous calendar month (for month-over-month in report)
     supabase
       .from('mala_sessions')
-      .select('id, mantra, mantra_id, count, bead_count, target_count, rounds, duration_seconds, duration_secs, completed_at, spiritual_date, date, created_at')
+      .select('*')
       .eq('user_id', user.id)
       .gte('created_at', prevMonthStart)
       .lte('created_at', prevMonthEnd + 'T23:59:59'),
@@ -98,139 +82,32 @@ export default async function MyProgressPage() {
       .gte('log_date', thirtyAgo)
       .lte('log_date', today),
 
-    // Daily sadhana — 30 days: japa + quiz + pathshala + dharmveer + perfect_day
+    // Daily sadhana — 28 days for heatmap
     supabase
       .from('daily_sadhana')
-      .select('date, japa_done, quiz_done, pathshala_done, dharmveer_done, streak_count, perfect_day_bonus_given')
+      .select('date, japa_done, streak_count')
       .eq('user_id', user.id)
-      .gte('date', thirtyAgo)
+      .gte('date', twentyEight)
       .lte('date', today),
-
-    // Daily sadhana — 6 months for GitHub-style heatmap
-    supabase
-      .from('daily_sadhana')
-      .select('date, japa_done')
-      .eq('user_id', user.id)
-      .gte('date', sixMonthsAgo)
-      .lte('date', today),
-
-    // Nitya karma — 6 months
-    supabase
-      .from('nitya_karma_log')
-      .select('log_date')
-      .eq('user_id', user.id)
-      .gte('log_date', sixMonthsAgo)
-      .lte('log_date', today),
 
     // All-time session count (for achievement shields)
     supabase
       .from('mala_sessions')
-      .select('id', { count: 'exact', head: true })
+      .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id),
-
-    // Mandali contribution count
-    supabase
-      .from('mandali_posts')
-      .select('id', { count: 'exact', head: true })
-      .eq('author_id', user.id),
-
-    // Kul tasks completed
-    supabase
-      .from('kul_tasks')
-      .select('id', { count: 'exact', head: true })
-      .eq('assigned_to', user.id)
-      .eq('completed', true),
-
-    // Quiz responses — last 30 days (accuracy + streak)
-    supabase
-      .from('quiz_responses')
-      .select('date, is_correct')
-      .eq('user_id', user.id)
-      .gte('date', thirtyAgo)
-      .lte('date', today),
-
-    // Vrat observations — all time count
-    supabase
-      .from('recommendations')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .like('type', 'vrat_obs:%'),
-
-    // Karma ledger — last 30 days for top sources
-    supabase
-      .from('karma_ledger')
-      .select('reason, amount')
-      .eq('user_id', user.id)
-      .gte('created_at', thirtyAgo)
-      .lte('created_at', today + 'T23:59:59')
-      .order('created_at', { ascending: false })
-      .limit(100),
   ]);
 
-  // Build 30-day heatmap (japa + nitya)
+  // Build 28-day heatmap
   const sadhanaMap: Record<string, boolean> = {};
   (sadhana28 ?? []).forEach(r => { sadhanaMap[r.date] = r.japa_done; });
   const nityaDates = new Set((nityaLog ?? []).map(r => r.log_date));
 
-  // 5-Pillar 30-day completion counts
-  const sadhanaRows = sadhana28 ?? [];
-  const pillarData = {
-    japa:        sadhanaRows.filter(r => r.japa_done).length,
-    nitya:       nityaDates.size,
-    quiz:        sadhanaRows.filter(r => (r as any).quiz_done).length,
-    pathshala:   sadhanaRows.filter(r => (r as any).pathshala_done).length,
-    dharmveer:   sadhanaRows.filter(r => (r as any).dharmveer_done).length,
-    perfectDays: sadhanaRows.filter(r => (r as any).perfect_day_bonus_given).length,
-    window:      Math.min(sadhanaRows.length, 30),
-  };
-
-  // Quiz 30d stats
-  const quizAnswers = quizRows30d ?? [];
-  const quiz30dTotal   = quizAnswers.length;
-  const quiz30dCorrect = quizAnswers.filter(r => r.is_correct).length;
-
-  // Karma 30d breakdown (top 5 sources)
-  const karmaByReason: Record<string, number> = {};
-  for (const row of karmaRows ?? []) {
-    if (row.reason) karmaByReason[row.reason] = (karmaByReason[row.reason] ?? 0) + (row.amount ?? 0);
-  }
-  const karma30dTotal = Object.values(karmaByReason).reduce((s, v) => s + v, 0);
-  const karma30dBreakdown = Object.entries(karmaByReason)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 4)
-    .map(([reason, total]) => ({ reason, total }));
-
-  const heatmap = Array.from({ length: 30 }, (_, i) => {
+  const heatmap = Array.from({ length: 28 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - 29 + i);
+    d.setDate(d.getDate() - 27 + i);
     const dt = d.toISOString().slice(0, 10);
     return { date: dt, japa: sadhanaMap[dt] ?? false, nitya: nityaDates.has(dt) };
   });
-
-  // Build 6-month heatmap (26 weeks) for GitHub-style view
-  const sadhana180Map: Record<string, boolean> = {};
-  (sadhana180 ?? []).forEach(r => { sadhana180Map[r.date] = r.japa_done; });
-  const nitya180Dates = new Set((nitya180 ?? []).map(r => r.log_date));
-
-  const sixMonthHeatmap = Array.from({ length: 182 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - 181 + i);
-    const dt = d.toISOString().slice(0, 10);
-    return { date: dt, japa: sadhana180Map[dt] ?? false, nitya: nitya180Dates.has(dt) };
-  });
-
-  let sankalpas: any[] = [];
-  try {
-    const { data } = await supabase
-      .from('sankalpas')
-      .select('id, text, tradition, target_days, start_date, end_date, status')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(12);
-    if (data) sankalpas = data;
-  } catch (err) {
-    // Ignore missing table gracefully
-  }
 
   // Current streak from most recent sadhana row
   const streak = (sadhana28 ?? []).sort((a, b) => b.date.localeCompare(a.date))[0]?.streak_count ?? 0;
@@ -282,12 +159,6 @@ export default async function MyProgressPage() {
       isPro={(profile as any)?.is_pro ?? false}
       streak={streak}
       heatmap={heatmap}
-      sixMonthHeatmap={sixMonthHeatmap}
-      sevaScore={profile?.seva_score}
-      karmaPoints={(profile as any)?.karma_points ?? 0}
-      weeklySevaScore={profile?.weekly_seva}
-      mandaliPostCount={mandaliPosts ?? 0}
-      kulTasksDone={kulTasksCount ?? 0}
       // Japa — 30d dashboard
       japa30dSessions={totalSessions}
       japa30dRounds={totalRounds}
@@ -299,16 +170,6 @@ export default async function MyProgressPage() {
       totalJapaSessions={allTimeSessions ?? 0}
       // Nitya — 30d
       nitya30dDays={nityaDaysCount}
-      // 5-Pillar scorecard
-      pillarData={pillarData}
-      // Quiz 30d
-      quiz30dTotal={quiz30dTotal}
-      quiz30dCorrect={quiz30dCorrect}
-      // Vrat
-      vratTotal={vratTotal ?? 0}
-      // Karma 30d
-      karma30dTotal={karma30dTotal}
-      karma30dBreakdown={karma30dBreakdown}
       // Premium report data — current calendar month vs prev month
       report={{
         curMonthStart,
@@ -323,15 +184,6 @@ export default async function MyProgressPage() {
         prevBeads,
         topMantra,
       }}
-      sankalpas={sankalpas}
-      shrutiStats={shrutiStats ? {
-        avgScore:        Math.round(shrutiStats.avg_overall_score ?? 0),
-        avgPronunciation: Math.round(shrutiStats.avg_uccharan ?? 0),
-        avgFluency:      Math.round(shrutiStats.avg_fluency ?? 0),
-        scoredCount:     shrutiStats.scored_count ?? 0,
-        versesAttempted: shrutiStats.unique_verses_attempted ?? 0,
-        certified:       shrutiStats.certified_count ?? 0,
-      } : null}
     />
   );
 }

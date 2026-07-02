@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
-import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 
@@ -34,7 +33,6 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('tithi', request);
 
   try {
     const baseUrl    = new URL(request.url).origin;
@@ -122,24 +120,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No special tithis today for users in window', sent: 0 });
     }
 
-    if (isDryRun || skipDelivery) {
-      return NextResponse.json(buildNotificationSafetyResponse('tithi', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
-        eligibleCount: windowUsers.length,
-        skippedCount: users.length - windowUsers.length,
-        wouldSendCount: notifications.length,
-      }));
-    }
-
     // ── Insert + dedup ───────────────────────────────────────────────────────
     let totalInserted    = 0;
-    const insertedRows_all: { id: string; user_id: string; title: string; body: string; notification_key: string }[] = [];
+    const insertedRows_all: { user_id: string; title: string; body: string }[] = [];
 
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
       const { data: insertedRows, error: insertError } = await supabase
         .from('notifications')
         .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('id, user_id, notification_key, title, body');
+        .select('user_id, title, body');
 
       if (insertError) {
         console.error('Tithi cron insert failed:', insertError);
@@ -151,23 +141,16 @@ export async function GET(request: Request) {
     }
 
     // ── OneSignal push — group by title/body so we batch identical messages ──
-    const pushBuckets = new Map<string, { title: string; body: string; userIds: string[]; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
+    const pushBuckets = new Map<string, { title: string; body: string; userIds: string[] }>();
     for (const row of insertedRows_all) {
       const key = `${row.title}::${row.body}`;
-      if (!pushBuckets.has(key)) pushBuckets.set(key, { title: row.title, body: row.body, userIds: [], notificationKeysByUserId: {}, notificationIdsByUserId: {} });
-      const bucket = pushBuckets.get(key)!;
-      bucket.userIds.push(row.user_id);
-      bucket.notificationIdsByUserId[row.user_id] = row.id;
-      bucket.notificationKeysByUserId[row.user_id] = row.notification_key;
+      if (!pushBuckets.has(key)) pushBuckets.set(key, { title: row.title, body: row.body, userIds: [] });
+      pushBuckets.get(key)!.userIds.push(row.user_id);
     }
 
     let totalPushTargets = 0;
-    for (const { title, body, userIds, notificationKeysByUserId, notificationIdsByUserId } of pushBuckets.values()) {
-      const pushResult = await sendOneSignalPush({ userIds, title, body, url: actionUrl, data: { type: 'tithi' } }, { 
-        type: 'tithi',
-        notificationKeysByUserId,
-        notificationIdsByUserId,
-      });
+    for (const { title, body, userIds } of pushBuckets.values()) {
+      const pushResult = await sendOneSignalPush({ userIds, title, body, url: actionUrl, data: { type: 'tithi' } });
       totalPushTargets += pushResult.sent;
     }
 

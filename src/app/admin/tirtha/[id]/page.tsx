@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import { useState, useEffect, use } from 'react';
 import { 
   ArrowLeft, MapPin, Users, Globe, 
@@ -18,9 +16,10 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
   const [loading, setLoading] = useState(true);
   const [mandali, setMandali] = useState<any>(null);
   const [members, setMembers] = useState<any[]>([]);
+  const supabase = createClient();
+
   useEffect(() => {
     async function fetchChapterData() {
-      const supabase = createClient();
       try {
         // Fetch mandali details
         const { data: mData, error: mError } = await supabase
@@ -47,7 +46,7 @@ export default function ChapterManagement({ params }: { params: Promise<{ id: st
       }
     }
     fetchChapterData();
-  }, [id]);
+  }, [id, supabase]);
 
   if (loading) return (
     <div className="min-h-screen bg-[var(--divine-bg)] flex items-center justify-center">

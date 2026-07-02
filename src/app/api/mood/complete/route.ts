@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
 
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { user, error: authError } = await requireUserNotBanned(supabase);
-    if (authError) return authError;
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await request.json();
     const {

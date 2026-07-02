@@ -53,7 +53,7 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
       "name": "Shoonaya",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://shoonaya.com/icons/icon-512x512.png"
+        "url": "https://shoonaya.com/icons/icon-512.png" // Fallback standard icon
       }
     };
   } else {

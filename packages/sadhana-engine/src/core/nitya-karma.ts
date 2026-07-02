@@ -1,7 +1,7 @@
 // ============================================================
 // Nitya Karma — Daily Ritual Tracker (Phase 4)
 //
-// Tracks daily nitya karma sequence completion step by step.
+// Tracks morning sequence completion step by step.
 // Each of the 7 steps can be marked individually.
 // Streak tracked separately from japa streak.
 //
@@ -23,12 +23,7 @@ export type NityaStep =
   | 'sandhya_done'
   | 'japa_done'
   | 'shloka_done'
-  | 'aarti_done'
-  | 'madhyahn_done'
-  | 'sandhya_diya_done'
-  | 'evening_vandana_done'
-  | 'svadhyaya_ratri_done'
-  | 'shayana_done';
+  | 'aarti_done';
 
 export interface NityaSequenceStep {
   id: NityaStep;
@@ -50,16 +45,24 @@ export interface NityaMorningSequence {
     vaara_vrata: string | null;
     tradition_guidance: string;
   };
-  log: NityaKarmaLog[] | null;
+  log: NityaKarmaLog | null;
   generated_at: string;
 }
 
 export interface NityaKarmaLog {
   id: string;
   user_id: string;
-  log_date: string;
-  step_id: NityaStep;
-  completed_at: string;
+  date: string;
+  woke_brahma_muhurta: boolean;
+  snana_done: boolean;
+  tilak_done: boolean;
+  sandhya_done: boolean;
+  japa_done: boolean;
+  shloka_done: boolean;
+  aarti_done: boolean;
+  steps_completed: number;
+  full_sequence: boolean;
+  completed_at: string | null;
 }
 
 export interface NityaKarmaStreak {
@@ -79,10 +82,10 @@ const DEFAULT_SEQUENCE: Omit<NityaSequenceStep, 'completed'>[] = [
   { id: 'woke_brahma_muhurta', label: 'Wake at Brahma Muhurta',  minutes: 5,  icon: '🌅', description: 'Rise before sunrise — the most sattvic hour.' },
   { id: 'snana_done',          label: 'Snana — ritual bath',     minutes: 10, icon: '🪣', description: 'Cool bath with mantra: Om Apavitrah Pavitro Va...' },
   { id: 'tilak_done',          label: 'Apply tilak',             minutes: 3,  icon: '🔴', description: 'Gopi-chandana (Vaishnav), vibhuti (Shaiv), or kumkum (Shakta).' },
+  { id: 'sandhya_done',        label: 'Sandhya Vandana',         minutes: 15, icon: '🙏', description: 'Achamana, pranayama, arghya, and Gayatri japa.' },
   { id: 'japa_done',           label: 'Morning Japa',            minutes: 20, icon: '📿', description: 'Minimum 1 mala of your ishta mantra. Face east or north.' },
-  { id: 'sandhya_done',        label: 'Vandana',                 minutes: 15, icon: '🙏', description: 'Morning salutation: offer arghya to Surya, recite Gayatri, and greet the dawn.' },
-  { id: 'aarti_done',          label: 'Puja / Aarti',            minutes: 20, icon: '🪔', description: 'Offer puja and conclude with the circling of the lamp.' },
   { id: 'shloka_done',         label: 'Shloka Svadhyaya',        minutes: 10, icon: '📖', description: 'A chapter or few verses from your chosen shastra.' },
+  { id: 'aarti_done',          label: 'Aarti & Diya',            minutes: 5,  icon: '🪔', description: 'Light a diya at the home shrine. Offer flowers.' },
 ];
 
 export class NityaKarma {
@@ -94,7 +97,7 @@ export class NityaKarma {
     this.config   = config;
   }
 
-  // ── Get personalised daily sequence ──
+  // ── Get personalised morning sequence ──
   // Calls ai-nitya-sequence Edge Function.
   // Falls back to static sequence if unavailable.
 
@@ -116,11 +119,10 @@ export class NityaKarma {
       if (this.config.debug) console.error('[NityaKarma] getMorningSequence failed:', err);
       // Return static fallback with today's log
       const log = await this.getTodayLog(userId);
-      const doneIds = new Set(log.map(row => row.step_id));
       return {
         sequence: DEFAULT_SEQUENCE.map(s => ({
           ...s,
-          completed: doneIds.has(s.id),
+          completed: log ? (log as unknown as Record<string, unknown>)[s.id] === true : false,
         })),
         greeting:         'Hari Om. Begin your sadhana with devotion.',
         panchang_context: { tithi: '', paksha: '', vrata: null, vaara: '', vaara_vrata: null, tradition_guidance: '' },
@@ -131,43 +133,29 @@ export class NityaKarma {
   }
 
   // ── Mark a single step complete ──
-  // Uses the deployed row-per-step nitya_karma_log shape.
+  // Uses the mark_nitya_step SQL function for atomic update.
 
   async markStep(
     userId: string,
     step: NityaStep,
     done = true,
     date?: string
-  ): Promise<NityaKarmaLog[] | null> {
-    const dateKey = date ?? new Date().toISOString().split('T')[0];
-
-    if (!done) {
-      const { error } = await this.supabase
-        .from('nitya_karma_log')
-        .delete()
-        .eq('user_id', userId)
-        .eq('log_date', dateKey)
-        .eq('step_id', step);
-
-      if (error) {
-        if (this.config.debug) console.error('[NityaKarma] markStep failed:', error.message);
-        return null;
-      }
-      return this.getTodayLog(userId, dateKey);
-    }
-
-    const { error } = await this.supabase.from('nitya_karma_log').upsert(
-      { user_id: userId, log_date: dateKey, step_id: step },
-      { onConflict: 'user_id,log_date,step_id', ignoreDuplicates: true }
-    );
+  ): Promise<NityaKarmaLog | null> {
+    const { data, error } = await this.supabase.rpc('mark_nitya_step', {
+      p_user_id: userId,
+      p_date:    date ?? new Date().toISOString().split('T')[0],
+      p_step:    step,
+      p_done:    done,
+    });
 
     if (error) {
       if (this.config.debug) console.error('[NityaKarma] markStep failed:', error.message);
       return null;
     }
 
-    const log = await this.getTodayLog(userId, dateKey);
-    if (log.length >= DEFAULT_SEQUENCE.length) {
+    // After marking, check if full sequence just completed → update streak
+    const log = data as NityaKarmaLog;
+    if (log?.full_sequence && done) {
       await this.refreshStreak(userId);
     }
 
@@ -181,8 +169,8 @@ export class NityaKarma {
     userId: string,
     steps: Partial<Record<NityaStep, boolean>>,
     date?: string
-  ): Promise<NityaKarmaLog[] | null> {
-    let log: NityaKarmaLog[] | null = null;
+  ): Promise<NityaKarmaLog | null> {
+    let log: NityaKarmaLog | null = null;
     for (const [step, done] of Object.entries(steps)) {
       log = await this.markStep(userId, step as NityaStep, done ?? true, date);
     }
@@ -191,19 +179,20 @@ export class NityaKarma {
 
   // ── Get today's log ──
 
-  async getTodayLog(userId: string, date?: string): Promise<NityaKarmaLog[]> {
+  async getTodayLog(userId: string, date?: string): Promise<NityaKarmaLog | null> {
     const dateKey = date ?? new Date().toISOString().split('T')[0];
     const { data, error } = await this.supabase
       .from('nitya_karma_log')
       .select('*')
       .eq('user_id', userId)
-      .eq('log_date', dateKey);
+      .eq('date', dateKey)
+      .single();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') {
       if (this.config.debug) console.error('[NityaKarma] getTodayLog failed:', error.message);
     }
 
-    return (data ?? []) as NityaKarmaLog[];
+    return data as NityaKarmaLog | null;
   }
 
   // ── Get log for a date range ──
@@ -219,8 +208,8 @@ export class NityaKarma {
       .from('nitya_karma_log')
       .select('*')
       .eq('user_id', userId)
-      .gte('log_date', from.toISOString().split('T')[0])
-      .order('log_date', { ascending: false });
+      .gte('date', from.toISOString().split('T')[0])
+      .order('date', { ascending: false });
 
     return (data ?? []) as NityaKarmaLog[];
   }
@@ -241,25 +230,16 @@ export class NityaKarma {
   // Recalculates current streak from the log table.
 
   async refreshStreak(userId: string): Promise<void> {
+    // Count consecutive days with full_sequence = true going back from today
     const { data: logs } = await this.supabase
       .from('nitya_karma_log')
-      .select('log_date, step_id')
+      .select('date, full_sequence')
       .eq('user_id', userId)
-      .order('log_date', { ascending: false })
+      .eq('full_sequence', true)
+      .order('date', { ascending: false })
       .limit(365);
 
-    const stepsByDate = (logs ?? []).reduce<Record<string, Set<string>>>((acc, row: any) => {
-      if (!acc[row.log_date]) acc[row.log_date] = new Set();
-      acc[row.log_date].add(row.step_id);
-      return acc;
-    }, {});
-
-    const fullDates = Object.entries(stepsByDate)
-      .filter(([, steps]) => steps.size >= DEFAULT_SEQUENCE.length)
-      .map(([date]) => date)
-      .sort((a, b) => b.localeCompare(a));
-
-    if (fullDates.length === 0) {
+    if (!logs || logs.length === 0) {
       await this.supabase.from('nitya_karma_streaks').upsert({
         user_id: userId, current_streak: 0, longest_streak: 0, last_full_date: null,
       }, { onConflict: 'user_id' });
@@ -268,10 +248,10 @@ export class NityaKarma {
 
     let streak = 1;
     let longest = 1;
-    let prev = new Date(fullDates[0]);
+    let prev = new Date(logs[0].date);
 
-    for (let i = 1; i < fullDates.length; i++) {
-      const curr = new Date(fullDates[i]);
+    for (let i = 1; i < logs.length; i++) {
+      const curr = new Date(logs[i].date);
       const diff = (prev.getTime() - curr.getTime()) / 86400000;
       if (diff === 1) {
         streak++;
@@ -286,15 +266,15 @@ export class NityaKarma {
       user_id:        userId,
       current_streak: streak,
       longest_streak: longest,
-      last_full_date: fullDates[0],
+      last_full_date: logs[0].date,
       updated_at:     new Date().toISOString(),
     }, { onConflict: 'user_id' });
   }
 
   // ── Completion percentage for today ──
 
-  completionPercent(log: NityaKarmaLog[] | null): number {
+  completionPercent(log: NityaKarmaLog | null): number {
     if (!log) return 0;
-    return Math.round((log.length / DEFAULT_SEQUENCE.length) * 100);
+    return Math.round((log.steps_completed / 7) * 100);
   }
 }

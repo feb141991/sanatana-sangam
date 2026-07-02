@@ -90,7 +90,7 @@ serve(async (req: Request) => {
       .eq('assigned_to', member_id)
       .limit(3);
 
-    // ── 5. Generate task suggestion via Sarvam ──
+    // ── 5. Generate task suggestion via Gemini ──
     const suggestion = await generateTaskSuggestion({
       memberProfile,
       recentTasks:   recentTasks ?? [],

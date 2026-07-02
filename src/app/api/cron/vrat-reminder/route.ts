@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
-import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
-import { fetchReviewedObservancesForNotifications, filterWomenFocusedVrats } from '@/lib/observance-notification-source';
 
 // ─── Gender-Specific Vrat Reminder Cron ──────────────────────────────────────
 // Schedule: 0 7 * * * (same morning window as festival-reminder)
@@ -12,22 +10,49 @@ import { fetchReviewedObservancesForNotifications, filterWomenFocusedVrats } fro
 // traditionally observed by women. Uses warmer, more intimate copy than the
 // generic festival cron.
 //
+// Targeted vrats (2026):
+//   - Hartalika Teej  — 2026-09-02
+//   - Karva Chauth    — 2026-10-15
+//   - Vat Savitri     — 2026-05-22
+//
 // Targeting criteria:
 //   tradition = 'hindu' (or null)
 //   gender_context = 'female' (or null — we include null to avoid missing users
 //                                who haven't filled their profile yet)
 //
-// The notification_key "vrat-female:<observance_id>:<days>:<date>" keeps these
+// The notification_key "vrat-female:<festival_name>:<days>:<date>" keeps these
 // distinct from the generic festival-reminder messages on the same day.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function buildVratReminderBody(vratName: string, vratDescription: string, daysAway: number) {
-  if (daysAway === 1) {
-    return `${vratDescription} Prepare according to your family and sampradaya guidance.`;
-  }
-
-  return `${vratName} is one week away. Review the vrat guidance and prepare gently.`;
-}
+const FEMALE_VRATS: Array<{
+  name: string;
+  date: string; // YYYY-MM-DD
+  emoji: string;
+  copy7: string;  // 7 days away copy
+  copy1: string;  // 1 day away copy
+}> = [
+  {
+    name:  'Vat Savitri Vrat',
+    date:  '2026-05-22',
+    emoji: '🌳',
+    copy7: 'Vat Savitri is one week away 🌳 Begin soaking the threads, arrange your puja items, and plan the sunrise fast with your family.',
+    copy1: 'Vat Savitri is tomorrow 🌳 Prepare your sacred thread, fruits, and water. Rise before sunrise and observe your vrat for the long life of your family.',
+  },
+  {
+    name:  'Hartalika Teej',
+    date:  '2026-09-02',
+    emoji: '🌿',
+    copy7: 'Hartalika Teej is one week away 🌿 The festival of Parvati\'s devotion — prepare your green bangles, mehndi, and saatvik food for the fast.',
+    copy1: 'Hartalika Teej is tomorrow 🌿 Fast from sunrise, keep the night vigil, and worship Shiva-Parvati together. Your devotion is your strength.',
+  },
+  {
+    name:  'Karva Chauth',
+    date:  '2026-10-15',
+    emoji: '🌙',
+    copy7: 'Karva Chauth is one week away 🌙 The most beloved vrat for married women — plan your sargi, mehndi, and the moonrise puja in advance.',
+    copy1: 'Karva Chauth is tomorrow 🌙 Tomorrow you fast from sunrise to moonrise. May the moonlight bless you and your family with love and long life. 🙏',
+  },
+];
 
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
@@ -45,7 +70,6 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const { isDryRun, skipDelivery, disabledReason } = getNotificationSafetyState('vrat', request);
 
   try {
     const now             = new Date();
@@ -53,16 +77,6 @@ export async function GET(request: Request) {
     const actionPath      = '/home?focus=festivals';
     const baseUrl         = new URL(request.url).origin;
     const actionUrl       = new URL(actionPath, baseUrl).toString();
-    const { observances, error: observanceError } = await fetchReviewedObservancesForNotifications(supabase, ['vrat']);
-    if (observanceError) {
-      console.error('[vrat-reminder] reviewed observances query failed:', observanceError);
-      return NextResponse.json({ error: `Reviewed vrat source unavailable: ${observanceError.message}` }, { status: 500 });
-    }
-
-    const femaleVrats = filterWomenFocusedVrats(observances);
-    if (femaleVrats.length === 0) {
-      return NextResponse.json({ message: 'No reviewed women-focused vrat source rows eligible for reminder', sent: 0 });
-    }
 
     // Target Hindu female users (or those with unset gender)
     const { data: users, error: usersError } = await supabase
@@ -104,14 +118,14 @@ export async function GET(request: Request) {
         (user as any).notification_quiet_hours_end ?? null
       )) continue;
 
-      for (const vrat of femaleVrats) {
+      for (const vrat of FEMALE_VRATS) {
         const daysAway = isoDateDiff(vrat.date, localDate);
         if (daysAway !== 1 && daysAway !== 7) continue;
 
         const title = daysAway === 1
           ? `${vrat.emoji} ${vrat.name} — Tomorrow!`
           : `${vrat.emoji} ${vrat.name} — In 7 days`;
-        const body  = buildVratReminderBody(vrat.name, vrat.description, daysAway);
+        const body  = daysAway === 1 ? vrat.copy1 : vrat.copy7;
 
         notifications.push({
           user_id:          user.id,
@@ -120,7 +134,7 @@ export async function GET(request: Request) {
           emoji:            vrat.emoji,
           type:             'festival',
           action_url:       actionPath,
-          notification_key: `vrat-female:${vrat.id ?? vrat.slug ?? vrat.name}:${daysAway}:${localDate}`,
+          notification_key: `vrat-female:${vrat.name}:${daysAway}:${localDate}`,
           local_date:       localDate,
           sent_timezone:    tz,
           _push_title:      title,
@@ -133,54 +147,34 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No vrat reminders due today', sent: 0 });
     }
 
-    if (isDryRun || skipDelivery) {
-      return NextResponse.json(buildNotificationSafetyResponse('vrat', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
-        eligibleCount: users.length,
-        skippedCount: 0,
-        wouldSendCount: notifications.length,
-      }));
-    }
-
     let totalInserted  = 0;
-    const insertedKeys = new Set<string>();
-    const notificationIdsByUserAndKey = new Map<string, string>();
+    const insertedIds: string[] = [];
+
     for (let i = 0; i < notifications.length; i += 100) {
       const batch = notifications.slice(i, i + 100);
+      const dbBatch = batch.map(({ _push_title: _, _push_body: __, ...rest }) => rest);
       const { data: rows, error: insertErr } = await supabase
         .from('notifications')
-        .upsert(batch.map((n) => {
-          // Exclude internal _push_title and _push_body from DB insert
-          const { _push_title, _push_body, ...rest } = n;
-          return rest;
-        }), { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('id, user_id, notification_key');
-
+        .upsert(dbBatch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
+        .select('user_id, notification_key');
       if (insertErr) {
         console.error('[vrat-reminder] insert error:', insertErr);
         return NextResponse.json({ error: insertErr.message }, { status: 500 });
       }
       totalInserted += rows?.length ?? 0;
-      for (const row of rows ?? []) {
-        const insertedKey = `${row.user_id}:${row.notification_key}`;
-        insertedKeys.add(insertedKey);
-        notificationIdsByUserAndKey.set(insertedKey, row.id);
-      }
+      insertedIds.push(...((rows ?? []).map((r: { user_id: string }) => r.user_id)));
     }
 
     // Group pushes by unique title+body combination
-    const pushGroups = new Map<string, { title: string; body: string; userIds: string[]; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
+    const pushGroups = new Map<string, { title: string; body: string; userIds: string[] }>();
     for (const n of notifications) {
       const key = `${n._push_title}::${n._push_body}`;
       if (!pushGroups.has(key)) {
-        pushGroups.set(key, { title: n._push_title, body: n._push_body, userIds: [], notificationKeysByUserId: {}, notificationIdsByUserId: {} });
+        pushGroups.set(key, { title: n._push_title, body: n._push_body, userIds: [] });
       }
-      const insertedKey = `${n.user_id}:${n.notification_key}`;
-      // Only push to users who actually got an insert, preserving the exact DB row id.
-      if (insertedKeys.has(insertedKey)) {
-        const group = pushGroups.get(key)!;
-        group.userIds.push(n.user_id);
-        group.notificationIdsByUserId[n.user_id] = notificationIdsByUserAndKey.get(insertedKey)!;
-        group.notificationKeysByUserId[n.user_id] = n.notification_key;
+      // Only push to users who actually got an insert (insertedIds)
+      if (insertedIds.includes(n.user_id)) {
+        pushGroups.get(key)!.userIds.push(n.user_id);
       }
     }
 
@@ -193,10 +187,6 @@ export async function GET(request: Request) {
         body:    group.body,
         url:     actionUrl,
         data:    { type: 'festival' },
-      }, { 
-        type: 'vrat',
-        notificationKeysByUserId: group.notificationKeysByUserId,
-        notificationIdsByUserId: group.notificationIdsByUserId,
       });
       totalPushSent += result.sent;
     }

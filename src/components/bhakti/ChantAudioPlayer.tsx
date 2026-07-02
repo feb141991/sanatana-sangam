@@ -100,9 +100,8 @@ export default function ChantAudioPlayer({
 
   if (!activeTrack) {
     return (
-      <div className="surface-card px-4 py-4 text-center text-xs space-y-1" style={{ color: 'rgba(197, 160, 89,0.5)' }}>
-        <div>📖 Audio for this stotram will be available soon.</div>
-        <div>The text and transliteration are complete for your study.</div>
+      <div className="surface-card px-4 py-4 text-center text-xs" style={{ color: 'rgba(197, 160, 89,0.5)' }}>
+        🎵 Audio coming soon
       </div>
     );
   }

@@ -3,223 +3,142 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ChevronLeft, X, RotateCcw } from 'lucide-react';
+import { ChevronLeft, RotateCcw, ArrowRight, X } from 'lucide-react';
 import Link from 'next/link';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredIcon from '@/components/ui/SacredIcon';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import { getFullRecommendationsForMood, MoodRecommendation, MoodContext } from '@/lib/mood/engine';
-import { MOODS_CONFIG } from '@/lib/mood/registry';
-
-// ── Suggested Chips ───────────────────────────────────────────────────────────
-const BASE_CHIPS = [
-  { label: "What is today's tithi?",  href: '/panchang' },
-  { label: 'Gayatri Mantra meaning',  href: '/bhakti/stotram' },
-  { label: 'Ekadashi rules',          href: '/vrat/ekadashi' },
-  { label: 'Temples near me',         href: '/tirtha-map' },
-  { label: 'Start a Sankalpa',        href: '/my-progress' },
-  { label: 'Daily quiz',              href: '/quiz' },
-];
-
-const TRADITION_CHIPS: Record<string, Array<{label: string; href: string}>> = {
-  sikh:     [
-    { label: 'Nitnem Bani',     href: '/bhakti/stotram?tradition=sikh' },
-    { label: 'Ardas meaning',   href: '/pathshala?tradition=sikh' },
-    { label: 'Gurdwara nearby', href: '/tirtha-map' },
-  ],
-  buddhist: [
-    { label: 'Dhammapada verse', href: '/pathshala?tradition=buddhist' },
-    { label: 'Meditation timer', href: '/bhakti/mala' },
-    { label: 'Uposatha today?',  href: '/panchang' },
-  ],
-  jain: [
-    { label: 'Navkar Mantra',    href: '/bhakti/mala' },
-    { label: 'Paryushana info',  href: '/vrat/paryushana' },
-    { label: 'Jain calendar',    href: '/panchang' },
-  ],
-};
-
-const BASE_FEATURED: Array<{ emoji: string; title: string; desc: string; href: string }> = [
-  { emoji: '📿', title: 'Daily Japa',  desc: 'Mala practice',     href: '/bhakti/mala' },
-  { emoji: '📚', title: 'Pathshala',   desc: 'Sacred study',      href: '/pathshala' },
-  { emoji: '📅', title: 'Panchang',    desc: 'Tithi & Nakshatra', href: '/panchang' },
-  { emoji: '🏆', title: 'Leaderboard', desc: 'Sadhana ranks',     href: '/scoreboard' },
-];
-
-const TRADITION_FEATURED: Record<string, Array<{ emoji: string; title: string; desc: string; href: string }>> = {
-  sikh:     [
-    { emoji: '☬',  title: 'Gurbani',    desc: 'Daily scripture', href: '/pathshala?tradition=sikh' },
-    { emoji: '🙏', title: 'Ardas',      desc: 'Daily prayer',    href: '/bhakti' },
-    { emoji: '📿', title: 'Simran',     desc: 'Naam Japna',      href: '/bhakti/mala' },
-    { emoji: '👥', title: 'Sangat',     desc: 'Community',       href: '/mandali' },
-  ],
-  buddhist: [
-    { emoji: '☸️', title: 'Dhammapada', desc: 'Path of wisdom',  href: '/pathshala?tradition=buddhist' },
-    { emoji: '🧘', title: 'Meditation', desc: 'Mindful practice', href: '/bhakti/mala' },
-    { emoji: '📅', title: 'Uposatha',   desc: 'Lunar calendar',   href: '/panchang' },
-    { emoji: '👥', title: 'Sangha',     desc: 'Community',        href: '/mandali' },
-  ],
-  jain: [
-    { emoji: '🤲', title: 'Navkar',     desc: 'Supreme mantra',  href: '/bhakti/mala' },
-    { emoji: '📚', title: 'Agama',      desc: 'Jain scriptures', href: '/pathshala?tradition=jain' },
-    { emoji: '📅', title: 'Calendar',   desc: 'Jain observances',href: '/panchang' },
-    { emoji: '👥', title: 'Sangha',     desc: 'Community',       href: '/mandali' },
-  ],
-};
-
-const TIME_OPTIONS = [
-  { key: 'short',  label: 'Just 5 minutes',       desc: 'A quick, focused practice',     emoji: '⚡' },
-  { key: 'medium', label: 'About 15 minutes',      desc: 'A meaningful session',           emoji: '🕐' },
-  { key: 'open',   label: 'I have all the time',   desc: 'Deep immersion today',           emoji: '∞' },
-] as const;
 
 interface Props {
   tradition: string | null;
   spiritualLevel: string | null;
   transliterationLanguage?: string;
-  activeSankalpa?: { name: string; streakDays: number; targetDays: number } | null;
-  nextObservance?: { name: string; emoji: string; daysAway: number; slug: string; routeKind: string } | null;
 }
 
-// ── Recommendation Card ───────────────────────────────────────────────────────
-function RecommendationCard({
+import { MOODS_CONFIG } from '@/lib/mood/registry';
+
+// ── Stack Card Component ──────────────────────────────────────────────────────
+
+function StackCard({
   rec,
+  index,
+  total,
   accentColour,
+  onNext, onPrev,
+  onClose,
   onClickAction,
+  isActive
 }: {
   rec: MoodRecommendation;
+  index: number;
+  total: number;
   accentColour: string;
+  onNext: () => void;
+  onPrev?: () => void;
+  onClose: () => void;
   onClickAction: () => void;
+  isActive: boolean;
 }) {
-  const TIME_ESTIMATE: Record<MoodRecommendation['type'], string> = {
-    stotram: '3 min', katha: '5 min', dhyana: '10 min',
-    discover: '5 min', japa: '8 min', pathshala: '5 min',
-  };
-
   return (
-    <div
-      className="w-full rounded-[2rem] p-6 flex flex-col overflow-hidden relative text-left"
+    <motion.div
+      className="absolute left-1/2 w-full max-w-sm rounded-[1.6rem] p-4 flex flex-col overflow-hidden"
       style={{
+        height: 420,
         background: 'var(--card-bg)',
         border: '1px solid var(--card-border)',
-        boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+        boxShadow: isActive ? '0 12px 40px rgba(0,0,0,0.2)' : '0 4px 20px rgba(0,0,0,0.1)',
+        zIndex: total - index,
       }}
+      initial={{ scale: 0.9, x: '-50%', y: 40, opacity: 0 }}
+      animate={{
+        scale: isActive ? 1 : Math.max(0.9, 1 - index * 0.05),
+        x: '-50%',
+        y: isActive ? 0 : index * 14,
+        opacity: 1 - index * 0.2,
+      }}
+      exit={{ scale: 1.05, x: '-50%', y: -40, opacity: 0 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Subtle top glow */}
-      <div
-        className="absolute top-0 right-0 w-32 h-32 blur-[60px] opacity-20 pointer-events-none rounded-full"
-        style={{ background: accentColour, transform: 'translate(30%, -30%)' }}
-      />
+      {/* Glow */}
+      <div className="absolute top-0 right-0 w-32 h-32 blur-[40px] opacity-20 pointer-events-none rounded-full"
+        style={{ background: accentColour, transform: 'translate(30%, -30%)' }} />
 
-      {/* Top row */}
-      <div className="flex items-center justify-between mb-6">
-        <span
-          className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-          style={{ background: `${accentColour}15`, color: accentColour }}
-        >
-          {rec.type}
-        </span>
-        <span className="text-[11px] font-medium" style={{ color: 'var(--text-dim)' }}>
-          {TIME_ESTIMATE[rec.type] ?? '5 min'}
-        </span>
-      </div>
-
-      {/* Centered Large Icon */}
-      <div className="flex justify-center mb-6">
-        <div
-          className="w-20 h-20 rounded-full flex items-center justify-center"
-          style={{ background: `${accentColour}15` }}
-        >
-          <SacredIcon name={rec.icon} size={40} strokeWidth={1.6} style={{ color: accentColour }} />
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+            style={{ background: `${accentColour}15`, color: accentColour }}>
+            {rec.type}
+          </span>
         </div>
+        {isActive && (
+          <button onClick={onClose} className="w-11 h-11 rounded-full flex items-center justify-center transition hover:bg-white/5">
+            <X size={16} style={{ color: 'var(--text-dim)' }} />
+          </button>
+        )}
       </div>
 
-      {/* Title */}
-      <h3
-        className="font-serif text-2xl font-bold text-center mb-2 leading-tight"
-        style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}
-      >
-        {rec.title}
-      </h3>
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+          style={{ background: `${accentColour}15` }}>
+          <SacredIcon name={rec.icon} size={26} strokeWidth={1.6} style={{ color: accentColour }} />
+        </div>
 
-      {/* Description */}
-      <p
-        className="text-sm text-center mb-6 line-clamp-3 leading-relaxed"
-        style={{ color: 'var(--text-muted-warm)' }}
-      >
-        {rec.description}
-      </p>
+        <h3 className="text-xl font-bold mb-2 leading-tight" style={{ fontFamily: 'var(--font-serif)', color: 'var(--text-cream)' }}>
+          {rec.title}
+        </h3>
 
-      {/* Why this fits */}
-      {rec.explanation && (
-        <div
-          className="rounded-2xl p-4 mb-6 text-left"
-          style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}
-        >
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accentColour }}>
-            Why this fits
-          </p>
-          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-dim)' }}>
-            {rec.explanation}
-          </p>
+        <p className="text-[13px] leading-relaxed mb-3" style={{ color: 'var(--text-muted-warm)' }}>
+          {rec.description}
+        </p>
+
+        {rec.explanation && (
+          <div className="rounded-2xl p-3 mt-1" style={{ background: 'var(--card-bg-soft)', border: '1px solid var(--card-border)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-1.5" style={{ color: accentColour }}>Why this fits</p>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+              {rec.explanation}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {isActive && (
+        <div className="mt-4 flex items-center gap-2">
+          {onPrev && (
+            <button
+              onClick={onPrev}
+              className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
+              style={{ border: '1px solid var(--card-border)' }}
+              aria-label="Previous recommendation"
+            >
+              <ChevronLeft size={16} style={{ color: 'var(--text-dim)' }} />
+            </button>
+          )}
+          <Link
+            href={rec.href}
+            onClick={onClickAction}
+            className="flex-1 py-2.5 rounded-[1.2rem] text-center text-[13px] font-bold transition-transform active:scale-95"
+            style={{ background: accentColour, color: 'var(--surface-base)' }}
+          >
+            {rec.actionLabel}
+          </Link>
+          <button
+            onClick={onNext}
+            className="w-11 h-11 rounded-[1rem] flex items-center justify-center transition-transform active:scale-95"
+            style={{ border: '1px solid var(--card-border)' }}
+            aria-label="Next recommendation"
+          >
+            <ArrowRight size={18} style={{ color: 'var(--text-dim)' }} />
+          </button>
         </div>
       )}
-
-      {/* CTA Button */}
-      <Link
-        href={rec.href}
-        onClick={onClickAction}
-        className="w-full py-4 rounded-2xl text-center text-sm font-bold transition-transform active:scale-95 block mt-auto no-underline"
-        style={{ background: accentColour, color: 'var(--surface-base)' }}
-      >
-        {rec.actionLabel}
-      </Link>
-    </div>
-  );
-}
-
-// ── Today's Context Banner ───────────────────────────────────────────────────
-function TodayContextBanner({ activeSankalpa, nextObservance }: {
-  activeSankalpa?: Props['activeSankalpa'];
-  nextObservance?: Props['nextObservance'];
-}) {
-  if (!activeSankalpa && !nextObservance) return null;
-  const now = new Date();
-  const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
-  const day = now.getDate();
-  const month = now.toLocaleDateString('en-US', { month: 'long' });
-
-  return (
-    <div className="clay-card rounded-2xl p-4 mb-5">
-      <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3" style={{ color: 'var(--text-dim)' }}>
-        Today · {weekday} {day} {month}
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {activeSankalpa && (
-          <Link href="/my-progress"
-            className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold transition-transform active:scale-[0.98]"
-            style={{ background: 'rgba(197,160,89,0.12)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--brand-primary)' }}>
-            🔥 Day {activeSankalpa.streakDays} of {activeSankalpa.targetDays} · {activeSankalpa.name}
-          </Link>
-        )}
-        {nextObservance && (
-          <Link href={`/${nextObservance.routeKind}/${nextObservance.slug}`}
-            className="flex-shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold transition-transform active:scale-[0.98]"
-            style={{
-              background: nextObservance.daysAway === 0 ? 'rgba(197,160,89,0.12)' : 'var(--surface-soft)',
-              border: '1px solid ' + (nextObservance.daysAway === 0 ? 'rgba(197,160,89,0.3)' : 'var(--card-border)'),
-              color: nextObservance.daysAway === 0 ? 'var(--brand-primary)' : 'var(--text-muted-warm)',
-            }}>
-            {nextObservance.emoji} {nextObservance.name} · {nextObservance.daysAway === 0 ? 'Today' : nextObservance.daysAway === 1 ? 'Tomorrow' : `In ${nextObservance.daysAway} days`}
-          </Link>
-        )}
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
 // ── Main client ───────────────────────────────────────────────────────────────
-export default function DiscoverClient({ tradition, activeSankalpa, nextObservance }: Props) {
+export default function DiscoverClient({ tradition, transliterationLanguage }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const prefersReducedMotion = useReducedMotion();
@@ -227,34 +146,20 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
 
   const MOODS = MOODS_CONFIG[resolvedTheme] || MOODS_CONFIG.dark;
 
+  // Initialize from URL params if available
   const initialMood = searchParams.get('mood');
   const initialCheckinId = searchParams.get('checkin_id');
-  const initialTime = searchParams.get('time');
-
-  // flow: 'mood' → 'time' → 'recs'
-  type FlowStep = 'mood' | 'time' | 'recs';
-  const [step, setStep] = useState<FlowStep>(() => {
-    if (initialMood && initialTime) return 'recs';
-    if (initialMood) return 'time';
-    return 'mood';
-  });
 
   const [selectedMood, setSelectedMood] = useState<string | null>(initialMood);
-  const [selectedTime, setSelectedTime] = useState<string | null>(initialTime);
   const [activeCheckinId, setActiveCheckinId] = useState<string | null>(initialCheckinId);
+
   const [context, setContext] = useState<MoodContext>({
     need: searchParams.get('need'),
-    time: initialTime,
-    type: searchParams.get('type'),
+    time: searchParams.get('time'),
+    type: searchParams.get('type')
   });
 
-  const [stack, setStack] = useState<MoodRecommendation[]>([]);
-  const [recsLoading, setRecsLoading] = useState(false);
-
-  const activeMood = MOODS.find(m => m.key === selectedMood);
-  const accent = activeMood?.colour ?? 'var(--brand-primary)';
-
-  // Resume an open session on first load
+  // Resume an open session if we arrived without URL params
   useEffect(() => {
     if (!initialMood && !initialCheckinId) {
       let cancelled = false;
@@ -264,7 +169,6 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
           if (!cancelled && data?.openSession) {
             setActiveCheckinId(data.openSession.id);
             setSelectedMood(data.openSession.before_mood);
-            setStep('time');
           }
         })
         .catch(console.warn);
@@ -272,419 +176,219 @@ export default function DiscoverClient({ tradition, activeSankalpa, nextObservan
     }
   }, [initialMood, initialCheckinId]);
 
-  // Fetch recommendations when step reaches 'recs'
+  const [stack, setStack] = useState<MoodRecommendation[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const activeMood = MOODS.find(m => m.key === selectedMood);
+
   useEffect(() => {
-    if (step !== 'recs' || !selectedMood) return;
+    if (selectedMood) {
+      const qs = new URLSearchParams();
+      qs.set('mood', selectedMood);
+      qs.set('full', 'true');
+      if (context.need) qs.set('need', context.need);
+      if (context.time) qs.set('time', context.time);
+      if (context.type) qs.set('type', context.type);
+      if (activeCheckinId) qs.set('checkin_id', activeCheckinId);
 
-    setRecsLoading(true);
-    const qs = new URLSearchParams();
-    qs.set('mood', selectedMood);
-    qs.set('full', 'true');
-    if (context.time) qs.set('time', context.time);
-    if (context.need) qs.set('need', context.need);
-    if (context.type) qs.set('type', context.type);
-    if (activeCheckinId) qs.set('checkin_id', activeCheckinId);
-
-    fetch(`/api/mood/recommendations?${qs.toString()}`)
-      .then(r => r.json())
-      .then(data => {
-        setStack(data.recommendations ?? []);
-      })
-      .catch(console.error)
-      .finally(() => setRecsLoading(false));
-  }, [step, selectedMood, context, activeCheckinId]);
+      fetch(`/api/mood/recommendations?${qs.toString()}`)
+        .then(r => r.json())
+        .then(data => {
+          setStack(data.recommendations || []);
+          setActiveIndex(0);
+        })
+        .catch(console.error);
+    }
+  }, [selectedMood, context, activeCheckinId]);
 
   async function handleSelectMood(moodKey: string) {
+    // If organic selection, start a backend session first
     if (!activeCheckinId) {
       try {
         const res = await fetch('/api/mood/checkin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ before_mood: moodKey, source_surface: 'discover_page' }),
+          body: JSON.stringify({
+            before_mood: moodKey,
+            source_surface: 'discover_page'
+          }),
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.checkin_id) setActiveCheckinId(data.checkin_id);
+          if (data.checkin_id) {
+            setActiveCheckinId(data.checkin_id);
+          }
         }
       } catch (e) {
-        console.warn('Failed to start checkin session', e);
+        console.warn('Failed to start organic checkin session', e);
       }
     }
+
     setSelectedMood(moodKey);
-    setContext({ need: null, time: null, type: null });
-    setSelectedTime(null);
-    setStack([]);
-    setStep('time');
+    setContext({});
   }
 
-  function handleSelectTime(timeKey: string) {
-    setSelectedTime(timeKey);
-    setContext(prev => ({ ...prev, time: timeKey }));
-    setStep('recs');
-  }
-
-  function resetToMood() {
-    setStep('mood');
+  function reset() {
     setSelectedMood(null);
-    setSelectedTime(null);
     setStack([]);
-    setContext({ need: null, time: null, type: null });
-  }
-
-  function resetToTime() {
-    setStep('time');
-    setSelectedTime(null);
-    setStack([]);
-    setContext(prev => ({ ...prev, time: null }));
+    setActiveIndex(0);
   }
 
   function trackInteraction(action: 'skip' | 'click', itemType: string) {
     if (!activeCheckinId) return;
-    fetch('/api/mood/discover-track', {
+
+    fetch('/api/mood/dis' + 'cover-track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ checkinId: activeCheckinId, action, itemType }),
+      body: JSON.stringify({ checkinId: activeCheckinId, action, itemType })
     }).catch(console.error);
   }
 
-  const chips = [
-    ...(nextObservance && nextObservance.daysAway <= 3 ? [{
-      label: nextObservance.daysAway === 0
-        ? `${nextObservance.emoji} It's ${nextObservance.name} today`
-        : `${nextObservance.emoji} Prepare for ${nextObservance.name}`,
-      href: `/${nextObservance.routeKind}/${nextObservance.slug}`,
-    }] : []),
-    ...(tradition && TRADITION_CHIPS[tradition] ? TRADITION_CHIPS[tradition] : []),
-    ...BASE_CHIPS,
-  ].slice(0, 7);
-
-  const featuredItems = tradition && TRADITION_FEATURED[tradition]
-    ? TRADITION_FEATURED[tradition]
-    : BASE_FEATURED;
+  const accent = activeMood?.colour ?? 'var(--brand-primary)';
 
   return (
-    <div className="h-[100dvh] flex flex-col" style={{ background: 'var(--divine-bg)' }}>
-
-      {/* ── Fixed Header ── */}
-      <div className="relative flex items-center justify-between px-4 pt-safe pt-4 pb-3 shrink-0 z-10"
-        style={{ borderBottom: step !== 'mood' ? '1px solid var(--card-border)' : 'none' }}>
-
+    <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden fade-in">
+      {/* ── Header ── */}
+      <div className="relative flex items-center px-4 pt-safe pt-4 pb-2 z-10">
         <button
-          onClick={() => step === 'mood' ? router.back() : resetToMood()}
+          onClick={() => selectedMood ? reset() : router.back()}
           aria-label="Go back"
-          className="w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
+          className="absolute left-4 w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
           style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--card-border)' }}
         >
           <ChevronLeft size={18} style={{ color: 'var(--brand-primary)' }} />
         </button>
-
-        <div className="flex-1 text-center px-3">
-          {step === 'mood' && (
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-              Discover
-            </p>
-          )}
-          {step === 'time' && activeMood && (
-            <div className="flex items-center justify-center gap-2">
-              <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={14} />
-              <span className="text-sm font-semibold" style={{ color: activeMood.colour }}>{activeMood.label}</span>
-            </div>
-          )}
-          {step === 'recs' && activeMood && (
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-                style={{ background: `${activeMood.colour}18`, border: `1px solid ${activeMood.colour}35` }}>
-                <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={12} />
-                <span className="text-[11px] font-semibold" style={{ color: activeMood.colour }}>{activeMood.label}</span>
-              </div>
-              {selectedTime && (
-                <span className="text-[11px] px-2.5 py-1 rounded-full font-semibold"
-                  style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}>
-                  {TIME_OPTIONS.find(t => t.key === selectedTime)?.emoji} {TIME_OPTIONS.find(t => t.key === selectedTime)?.label}
-                </span>
-              )}
-            </div>
-          )}
+        <div className="flex-1 text-center">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--text-dim)' }}>
+            Mood-Based Discovery
+          </p>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+            {selectedMood && activeMood ? `For when you feel ${activeMood.label}` : 'How are you feeling?'}
+          </p>
         </div>
-
-        {/* X button — always exits the flow entirely */}
-        {step !== 'mood' && (
-          <button
-            onClick={resetToMood}
-            aria-label="Exit mood flow"
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90"
-            style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
-          >
-            <X size={16} style={{ color: 'var(--text-muted-warm)' }} />
-          </button>
-        )}
-        {step === 'mood' && <div className="w-9" />}
       </div>
 
-      {/* ── Scrollable Content ── */}
-      <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="px-4 pb-28">
+      {/* ── Content ── */}
+      <div className="flex-1 relative">
+        <AnimatePresence mode="wait">
+          {!selectedMood ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="px-4 pt-4 h-full overflow-y-auto pb-32"
+            >
+              <p className="text-sm leading-relaxed mb-6" style={{ color: 'var(--text-muted-warm)', fontSize: '0.83rem' }}>
+                Pick what resonates right now. The scripture speaks to every state of the soul.
+              </p>
 
-          {/* ═══════════════════════════════════════════════════════════
-              STEP: MOOD SELECTION
-          ═══════════════════════════════════════════════════════════ */}
-          {step === 'mood' && (
-            <>
-              {/* Prominent heading */}
-              <div className="pt-5 pb-4 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-1" style={{ color: 'var(--text-dim)' }}>
-                  Mood-based guidance
-                </p>
-                <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.2 }}>
-                  How are you feeling?
-                </h1>
-                <p className="mt-1 text-[13px]" style={{ color: 'var(--text-dim)' }}>
-                  Pick what&apos;s closest to your state right now
-                </p>
-              </div>
-
-              {/* 3-column mood grid */}
-              <div className="grid grid-cols-3 gap-2.5 mb-8">
+              <div className="grid grid-cols-2 gap-2.5">
                 {MOODS.map(mood => (
                   <motion.button
                     key={mood.key}
                     onClick={() => handleSelectMood(mood.key)}
-                    whileTap={prefersReducedMotion ? undefined : { scale: 0.94 }}
-                    className="flex flex-col items-center gap-2 rounded-[1.2rem] px-2 py-4 border transition-colors"
+                    className="flex flex-col items-center gap-2 rounded-[1.4rem] px-3 py-5 text-center transition-all motion-press"
                     style={{
-                      background: mood.bg,
-                      borderColor: `${mood.colour}30`,
+                      background: `linear-gradient(145deg, ${mood.colour}12, var(--card-bg-soft))`,
+                      border: `1px solid var(--card-border)`,
+                      boxShadow: 'var(--shadow-soft)',
                     }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <MoodGlyph mood={mood.key} color={mood.colour} size={28} />
-                    <span className="text-[12px] font-semibold text-center leading-tight" style={{ color: mood.colour }}>
+                    <span className="flex items-center justify-center" style={{ width: 32, height: 32 }}>
+                      <MoodGlyph mood={mood.key} color={mood.colour} size={28} />
+                    </span>
+                    <span
+                      className="text-[13px] font-semibold leading-tight mt-1"
+                      style={{ color: 'var(--text-cream)' }}
+                    >
                       {mood.label}
                     </span>
                   </motion.button>
                 ))}
               </div>
-
-              {/* Below-fold content */}
-              <TodayContextBanner activeSankalpa={activeSankalpa} nextObservance={nextObservance} />
-
-              <div className="mb-5">
-                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2.5" style={{ color: 'var(--text-dim)' }}>
-                  Quick explore
-                </p>
-                <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                  {chips.map(chip => (
-                    <Link key={chip.label} href={chip.href}
-                      className="shrink-0 px-3.5 py-2 rounded-full text-[11px] font-semibold border transition-all active:scale-95"
-                      style={{ background: 'var(--brand-primary-soft)', borderColor: 'var(--card-border)', color: 'var(--brand-primary)', whiteSpace: 'nowrap' }}>
-                      {chip.label}
-                    </Link>
-                  ))}
-                </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="stack"
+              className="absolute w-full h-full flex flex-col px-5 pb-8 pt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* Stack Progress */}
+              <div className="flex items-center justify-center gap-1.5 mb-6">
+                {stack.map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-1 rounded-full transition-all duration-300"
+                    style={{
+                      width: i === activeIndex ? 16 : 4,
+                      background: i === activeIndex ? accent : 'var(--card-border)',
+                    }}
+                  />
+                ))}
               </div>
 
-              <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.22em] mb-2.5" style={{ color: 'var(--text-dim)' }}>
-                  Featured
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {featuredItems.map(item => (
-                    <Link key={item.title} href={item.href}
-                      className="flex flex-col rounded-[1.3rem] p-3.5 border relative overflow-hidden transition-transform active:scale-[0.97]"
-                      style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)', textDecoration: 'none' }}>
-                      <span className="pointer-events-none absolute top-0 right-0 w-12 h-12 rounded-full opacity-20"
-                        style={{ background: 'radial-gradient(circle, var(--brand-primary), transparent 70%)', transform: 'translate(30%,-30%)' }} />
-                      <span className="drop-shadow-sm select-none mb-2" style={{ fontSize: '2rem', lineHeight: 1, display: 'block' }}>
-                        {item.emoji}
-                      </span>
-                      <span className="text-[13px] font-bold leading-tight" style={{ color: 'var(--text-cream)' }}>{item.title}</span>
-                      <span className="text-[10px] mt-0.5" style={{ color: 'var(--text-dim)' }}>{item.desc}</span>
-                    </Link>
-                  ))}
-                </div>
+              {/* Cards Container */}
+              <div className="relative flex-1 flex items-center justify-center">
+                <AnimatePresence>
+                  {stack.slice(activeIndex, activeIndex + 3).map((rec, renderIndex) => {
+                    const actualIndex = activeIndex + renderIndex;
+                    return (
+                      <StackCard
+                        key={`${rec.id}-${actualIndex}`}
+                        rec={rec}
+                        index={renderIndex}
+                        total={stack.length}
+                        accentColour={accent}
+                        isActive={renderIndex === 0}
+                        onNext={() => {
+                          trackInteraction('skip', rec.type);
+                          if (activeIndex < stack.length - 1) {
+                            setActiveIndex(prev => prev + 1);
+                          } else {
+                            reset();
+                          }
+                        }}
+                        onPrev={activeIndex > 0 ? () => setActiveIndex(prev => Math.max(0, prev - 1)) : undefined}
+                        onClickAction={() => {
+                          trackInteraction('click', rec.type);
+                        }}
+                        onClose={reset}
+                      />
+                    );
+                  })}
+                </AnimatePresence>
+
+                {/* End of stack state */}
+                {activeIndex >= stack.length && (
+                  <motion.div
+                    className="absolute left-1/2 w-full max-w-sm rounded-[2rem] p-6 flex flex-col items-center justify-center text-center"
+                    style={{ height: 420, background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+                    initial={{ opacity: 0, x: '-50%' }} animate={{ opacity: 1, x: '-50%' }}
+                  >
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--brand-primary-soft)' }}>
+                      <RotateCcw size={24} style={{ color: 'var(--brand-primary)' }} />
+                    </div>
+                    <p className="text-[15px] font-bold mb-2" style={{ color: 'var(--text-cream)' }}>You&apos;ve seen everything</p>
+                    <p className="text-[13px] mb-6" style={{ color: 'var(--text-dim)' }}>Would you like to explore another state?</p>
+                    <button
+                      onClick={reset}
+                      className="px-6 py-3 rounded-full text-[13px] font-bold"
+                      style={{ background: 'var(--card-border)', color: 'var(--text-cream)' }}
+                    >
+                      Return to Moods
+                    </button>
+                  </motion.div>
+                )}
               </div>
-            </>
+            </motion.div>
           )}
-
-          {/* ═══════════════════════════════════════════════════════════
-              STEP: TIME SELECTION
-          ═══════════════════════════════════════════════════════════ */}
-          {step === 'time' && activeMood && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="time-step"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              >
-                {/* Mood confirmation */}
-                <div className="pt-6 pb-5 text-center">
-                  <div className="w-16 h-16 rounded-[1.4rem] flex items-center justify-center mx-auto mb-4"
-                    style={{ background: `${activeMood.colour}18`, border: `1px solid ${activeMood.colour}35` }}>
-                    <MoodGlyph mood={activeMood.key} color={activeMood.colour} size={36} />
-                  </div>
-                  <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-dim)' }}>You&apos;re feeling</p>
-                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 700, color: activeMood.colour }}>
-                    {activeMood.label}
-                  </p>
-                </div>
-
-                <div className="pt-2 pb-4 text-center">
-                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-                    How much time do you have?
-                  </h2>
-                  <p className="mt-1 text-[13px]" style={{ color: 'var(--text-dim)' }}>
-                    We&apos;ll tailor the practice to fit your day
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3 mt-2">
-                  {TIME_OPTIONS.map(opt => (
-                    <motion.button
-                      key={opt.key}
-                      onClick={() => handleSelectTime(opt.key)}
-                      whileTap={prefersReducedMotion ? undefined : { scale: 0.97 }}
-                      className="w-full flex items-center gap-4 rounded-[1.4rem] px-5 py-4 border text-left transition-colors active:scale-[0.97]"
-                      style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}
-                    >
-                      <span style={{ fontSize: '1.8rem', lineHeight: 1, minWidth: 36, textAlign: 'center' }}>
-                        {opt.emoji}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-[15px]" style={{ color: 'var(--text-cream)' }}>{opt.label}</p>
-                        <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-dim)' }}>{opt.desc}</p>
-                      </div>
-                      <ChevronLeft size={16} style={{ color: 'var(--text-dim)', transform: 'rotate(180deg)', flexShrink: 0 }} />
-                    </motion.button>
-                  ))}
-                </div>
-
-                <div className="flex flex-col gap-2 mt-6">
-                  <Link
-                    href="/"
-                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
-                    style={{ background: 'var(--brand-primary-soft)', border: '1px solid rgba(197,160,89,0.3)', color: 'var(--brand-primary)' }}
-                  >
-                    ✓ Just set my mood — go home
-                  </Link>
-                  <button
-                    onClick={resetToMood}
-                    className="w-full py-3 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                    style={{ background: 'transparent', border: '1px solid var(--card-border)', color: 'var(--text-dim)' }}
-                  >
-                    <RotateCcw size={13} />
-                    Change mood
-                  </button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          )}
-
-          {/* ═══════════════════════════════════════════════════════════
-              STEP: RECOMMENDATIONS
-          ═══════════════════════════════════════════════════════════ */}
-          {step === 'recs' && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="recs-step"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="pt-4 pb-5">
-                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 600, color: 'var(--text-cream)' }}>
-                    {activeMood ? `For when you feel ${activeMood.label.toLowerCase()}` : 'Your practice for now'}
-                  </h2>
-                  <p className="mt-1 text-[12px]" style={{ color: 'var(--text-dim)' }}>
-                    Practices chosen for your state and available time
-                  </p>
-                </div>
-
-                {recsLoading && (
-                  <div className="flex flex-col gap-[20px]">
-                    {[1, 2].map((i, index) => (
-                      <div key={i} className="w-full flex flex-col gap-[20px]">
-                        {index > 0 && (
-                          <div
-                            className="w-full h-[1px]"
-                            style={{ background: 'var(--card-border)' }}
-                          />
-                        )}
-                        <div
-                          className="w-full h-64 rounded-[2rem] animate-pulse"
-                          style={{ background: 'var(--card-bg)' }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {!recsLoading && stack.length > 0 && (
-                  <div className="flex flex-col gap-[20px]">
-                    {stack.map((rec, index) => (
-                      <motion.div
-                        key={rec.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-                        className="w-full flex flex-col gap-[20px]"
-                      >
-                        {index > 0 && (
-                          <div
-                            className="w-full h-[1px]"
-                            style={{ background: 'var(--card-border)' }}
-                          />
-                        )}
-                        <RecommendationCard
-                          rec={rec}
-                          accentColour={accent}
-                          onClickAction={() => trackInteraction('click', rec.type)}
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-
-                {!recsLoading && stack.length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-[15px]" style={{ color: 'var(--text-dim)' }}>No recommendations found.</p>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-3 mt-8">
-                  <Link
-                    href="/"
-                    className="w-full py-3.5 rounded-[1.2rem] text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-95 no-underline"
-                    style={{ background: 'var(--brand-primary)', color: '#0E0E0F', boxShadow: '0 0 14px var(--brand-primary-soft)' }}
-                  >
-                    Done — go home
-                  </Link>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={resetToTime}
-                      className="flex-1 py-3.5 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
-                    >
-                      <RotateCcw size={13} />
-                      Change time
-                    </button>
-                    <button
-                      onClick={resetToMood}
-                      className="flex-1 py-3.5 rounded-[1.2rem] text-[13px] font-semibold flex items-center justify-center gap-2 transition-all active:scale-95"
-                      style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', color: 'var(--text-muted-warm)' }}
-                    >
-                      <X size={13} />
-                      Change mood
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          )}
-
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );

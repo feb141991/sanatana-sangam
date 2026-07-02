@@ -1,6 +1,6 @@
 // ============================================================
 // Edge Function: ai-personalise
-// Generates today's personalised content for a user via Sarvam.
+// Generates today's personalised content for a user via Gemini Flash.
 // Called by the nightly cron OR on-demand when cache is empty.
 //
 // Data sources:
@@ -17,7 +17,7 @@
 // Deploy:
 //   supabase functions deploy ai-personalise
 // Secrets needed:
-//   supabase secrets set SARVAM_API_KEY=AIza...
+//   supabase secrets set GEMINI_API_KEY=AIza...
 // ============================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -137,7 +137,7 @@ serve(async (req: Request) => {
     // Layer 2 (enrichment):   festivals table adds named festival names, emoji, descriptions
     const panchang = buildPanchang(todayFestivals ?? [], tomorrowFestivals ?? []);
 
-    // ── 9. Build Sarvam prompt context ──
+    // ── 9. Build Gemini prompt context ──
     const profileSummary = profile
       ? `Tradition: ${profile.tradition ?? 'general'}, Path: ${profile.primary_path ?? 'bhakti'}, Depth: ${profile.content_depth ?? 'intermediate'}, Streak: ${profile.current_streak ?? 0} days, Consistency: ${Math.round((profile.consistency_score ?? 0.5) * 100)}%`
       : 'New devotee, general tradition, beginner depth';
@@ -152,8 +152,8 @@ serve(async (req: Request) => {
 
     const shlokaRef = `Gita ${shloka.chapter}.${shloka.verse}`;
 
-    // ── 10. Call Sarvam ──
-    const content = await callSarvam({
+    // ── 10. Call Gemini ──
+    const content = await callGemini({
       profileSummary,
       shlokaRef,
       shlokaText: shloka.translation,
@@ -207,7 +207,7 @@ serve(async (req: Request) => {
 // The two layers COMBINE, never override each other:
 //   - recurring_vrata = "Ekadashi"          ← from Layer 1 (always)
 //   - named_festival  = "Vaikunta Ekadashi" ← from Layer 2 (when available)
-//   The model sees both and can say "Today is Vaikunta Ekadashi (Ekadashi)"
+//   Gemini sees both and can say "Today is Vaikunta Ekadashi (Ekadashi)"
 
 interface FestivalRow {
   name: string;
@@ -231,7 +231,7 @@ function buildPanchang(
   // Combine: recurring vrata from astronomy is always present.
   // Named festival from DB is added alongside it, not replacing it.
   // e.g. vrata = "Ekadashi", named_festival = "Vaikunta Ekadashi"
-  // If no named festival: named_festival = '' — the model uses vrata only.
+  // If no named festival: named_festival = '' — Gemini uses vrata only.
   // If no recurring vrata: vrata = '', named_festival has the full context.
   const allTodayLabels = [
     astro.recurring_vrata,
@@ -256,10 +256,10 @@ function buildPanchang(
     named_festival_desc:  namedFestival?.description ?? '',
     named_festival_type:  namedFestival?.type        ?? '',
 
-    // Combined label for Sarvam context (e.g. "Ekadashi · 🪔 Diwali")
+    // Combined label for Gemini context (e.g. "Ekadashi · 🪔 Diwali")
     all_today: allTodayLabels,
 
-    // Tomorrow — lets the model mention upcoming observances in practice suggestion
+    // Tomorrow — lets Gemini mention upcoming observances in practice suggestion
     tomorrow_festival: tomorrowFestival?.name  ?? '',
     tomorrow_emoji:    tomorrowFestival?.emoji ?? '',
   };
@@ -341,9 +341,9 @@ function computeAstroPanchang(date: Date = new Date()): {
   return { lunarDay, tithiNum, paksha, tithi, nakshatra, recurring_vrata, vaara_vrata };
 }
 
-// ── Sarvam call ──
+// ── Gemini call ──
 
-interface SarvamInput {
+interface GeminiInput {
   profileSummary: string;
   shlokaRef: string;
   shlokaText: string;
@@ -354,13 +354,13 @@ interface SarvamInput {
   nudgeStyle: string;
 }
 
-async function callSarvam(
-  input: SarvamInput
+async function callGemini(
+  input: GeminiInput
 ): Promise<{ greeting: string; shloka_context: string; practice_suggestion: string; nudge?: string }> {
 
   const { panchang, shlokaRef, shlokaText, currentStreak, nudgeStyle } = input;
 
-  if (!sarvamKey) {
+  if (!geminiKey) {
     return {
       greeting: `Jai Shri Krishna. ${panchang.vrata_emoji} Today is ${panchang.vrata || panchang.tithi}. May your practice be blessed.`,
       shloka_context: shlokaText,
@@ -370,7 +370,7 @@ async function callSarvam(
 
   // Layer 1 vrata (astronomical, always present when applicable)
   // + Layer 2 named festival (from festivals table, may be empty)
-  // Both are surfaced to Sarvam — they complement, never replace each other.
+  // Both are surfaced to Gemini — they complement, never replace each other.
   const vrataLines = [
     panchang.vrata         && `Recurring vrata: ${panchang.vrata}`,
     panchang.named_festival && `Named festival: ${panchang.named_festival_emoji} ${panchang.named_festival}${panchang.named_festival_desc ? ' — ' + panchang.named_festival_desc : ''}`,
@@ -405,6 +405,28 @@ Generate a JSON object (pure JSON, no markdown) with exactly these keys:
 }`;
 
       const text = await generateText(prompt, { temperature: 0.6, maxTokens: 500 });
+  if (!resp.ok) {
+    console.error('Gemini error:', await resp.text());
+    return {
+      greeting: `${panchang.vrata_emoji} Jai Shri Krishna. Today is ${panchang.vrata || panchang.tithi}.`,
+      shloka_context: shlokaText,
+      practice_suggestion: `Begin with 4 rounds of your mantra, then read ${shlokaRef} with quiet contemplation.`,
+    };
+  }
+
+  const json = await resp.json();
+  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {
+      greeting: `Jai Shri Krishna. Today is ${panchang.tithi}.`,
+      shloka_context: shlokaText,
+      practice_suggestion: 'Begin with your mantra practice at this auspicious hour.',
+    };
+  }
+}
 
 function errorResponse(message: string, status: number) {
   return new Response(JSON.stringify({ error: message }), {

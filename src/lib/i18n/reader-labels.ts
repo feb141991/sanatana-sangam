@@ -104,7 +104,6 @@ export function useReaderLabels(overrideLang?: AppContentLanguage) {
     sharedViaShoonaya: t(activeLang, 'sharedViaShoonaya'),
     kathaFruitOfKatha: t(activeLang, 'kathaFruitOfKatha'),
     kathaRevealBlessing: t(activeLang, 'kathaRevealBlessing'),
-    kathaHidePhal: t(activeLang, 'kathaHidePhal'),
     kathaPhalShruti: t(activeLang, 'kathaPhalShruti'),
     startJapa: t(activeLang, 'startJapa'),
     moreKathas: t(activeLang, 'moreKathas'),

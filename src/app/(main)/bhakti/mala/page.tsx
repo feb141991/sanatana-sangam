@@ -3,20 +3,14 @@ import { redirect } from 'next/navigation';
 import JapaClient from '../../japa/JapaClient';
 
 
-type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-};
-
-export default async function MalaPage({ searchParams }: Props) {
-  const resolvedSearchParams = await searchParams;
-  const initialMantraId = typeof resolvedSearchParams.mantraId === 'string' ? resolvedSearchParams.mantraId : undefined;
+export default async function MalaPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/');
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition, active_symbol_id')
+    .select('full_name, username, tradition')
     .eq('id', user.id)
     .single();
 
@@ -48,8 +42,6 @@ export default async function MalaPage({ searchParams }: Props) {
       currentStreak={sadhana?.streak_count ?? 0}
       japaAlreadyDoneToday={sadhana?.japa_done ?? false}
       history={(history ?? []).map(h => ({ date: h.date, done: h.japa_done }))}
-      activeSymbolId={profile?.active_symbol_id ?? null}
-      initialMantraId={initialMantraId}
     />
   );
 }

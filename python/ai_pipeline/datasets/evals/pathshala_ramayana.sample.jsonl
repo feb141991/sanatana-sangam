@@ -1,5 +1,0 @@
-{"case_id": "ramayana-bal-1", "prompt": {"query": "pathshala_ramayana_bal 1", "doc_id": "pathshala_ramayana_bal", "chunk_id": "1"}, "expected": {"must_cite_doc_ids": ["pathshala_ramayana_bal"]}}
-{"case_id": "ramayana-ma-nishada", "prompt": {"query": "O hunter, may you find no peace", "doc_id": "pathshala_ramayana_bal", "chunk_id": "1"}, "expected": {"must_cite_doc_ids": ["pathshala_ramayana_bal"]}}
-{"case_id": "ramayana-ayodhya-destiny", "prompt": {"query": "A wise person should not rely on destiny alone", "doc_id": "pathshala_ramayana_ayodhya", "chunk_id": "1"}, "expected": {"must_cite_doc_ids": ["pathshala_ramayana_ayodhya"]}}
-{"case_id": "ramayana-aranya-1", "prompt": {"query": "Rama is the very embodiment of righteousness", "doc_id": "pathshala_ramayana_aranya", "chunk_id": "1"}, "expected": {"must_cite_doc_ids": ["pathshala_ramayana_aranya"]}}
-{"case_id": "ramayana-yuddha-shloka", "prompt": {"query": "pathshala_ramayana_yuddha 1", "doc_id": "pathshala_ramayana_yuddha", "chunk_id": "1"}, "expected": {"must_cite_doc_ids": ["pathshala_ramayana_yuddha"]}}

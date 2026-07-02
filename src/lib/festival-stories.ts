@@ -5,7 +5,7 @@
  *
  * Handcrafted rich content for the top ~20 festivals across all four traditions.
  * Each story surfaces in a tappable card on HomeDashboard when the festival
- * is ≤ 3 days away on Home.
+ * is ≤ 7 days away.
  *
  * Content per festival:
  *  - origin      : 2-3 sentences on the mythic/historic root

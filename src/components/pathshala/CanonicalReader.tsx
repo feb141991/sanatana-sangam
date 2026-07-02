@@ -27,26 +27,9 @@ import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import type { LibraryEntry, LibraryTradition } from '@/lib/library-content';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
-import { useThemePreference } from '@/components/providers/ThemeProvider';
-import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
 
 // ─── Parchment palette — solid, no opacity tricks ────────────────────────────
-const getPalette = (isDark: boolean) => isDark ? {
-  bg:          '#0E0E0F',
-  bgCard:      'rgba(255,255,255,0.05)',
-  bgAccent:    'rgba(197,160,89,0.12)',
-  border:      'rgba(197,160,89,0.15)',
-  borderSoft:  'rgba(197,160,89,0.12)',
-  ink:         '#F0EDE6',
-  inkMuted:    'rgba(197,160,89,0.6)',
-  sanskrit:    '#F0EDE6',
-  translit:    'rgba(240,220,180,0.5)',
-  accent:      '#C5A059',
-  accentDeep:  '#C5A059',
-  accentBg:    'rgba(197,160,89,0.12)',
-  white:       '#0E0E0F',
-  btnText:     '#1C150A',
-} : {
+const P = {
   bg:          '#F7EDD8',   // warm parchment
   bgCard:      '#FFFDF6',   // near-white card
   bgAccent:    '#FFF4E0',   // soft amber card
@@ -55,13 +38,12 @@ const getPalette = (isDark: boolean) => isDark ? {
   ink:         '#2C1A0E',   // deep brown — body text
   inkMuted:    '#7A5C3A',   // mid-brown — secondary text
   sanskrit:    '#8B3A0F',   // deep terracotta — Sanskrit text
-  translit:    '#2C1A0E',
   accent:      '#C5A059',   // amber — buttons, chips
   accentDeep:  '#9B6B2A',   // darker amber for icons on light bg
   accentBg:    '#F2D9A8',   // amber chip background
   white:       '#FFFDF6',
   btnText:     '#FFFDF6',   // text on filled amber button
-};
+} as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getEntryText(entry: LibraryEntry, meaningLabel: string) {
@@ -82,7 +64,6 @@ type ExplainResult = {
   };
   tradition: string;
   teacher: string;
-  is_fallback?: boolean;
 };
 
 // ─── Props ─────────────────────────────────────────────────────────────────────
@@ -132,10 +113,6 @@ export default function CanonicalReader({
   ctaConfig,
   lessonsNavigation,
 }: CanonicalReaderProps) {
-  const { resolvedTheme } = useThemePreference();
-  const isDark = resolvedTheme === 'dark';
-  const P = getPalette(isDark);
-
   const supabase = useRef(createClient()).current;
   const totalVerses = entries.length;
 
@@ -148,15 +125,12 @@ export default function CanonicalReader({
 
   // ── TTS ────────────────────────────────────────────────────────────────────
   const [speakingId,   setSpeakingId]   = useState<string | null>(null);
-  const [ttsRate,      setTtsRate]      = useState<number>(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // ── AI Explain ─────────────────────────────────────────────────────────────
-  const [showExplain,          setShowExplain]          = useState(false);
-  const [explainLoading,       setExplainLoading]       = useState(false);
-  const [explainResult,        setExplainResult]        = useState<ExplainResult | null>(null);
-  const [explainUpgradeNeeded, setExplainUpgradeNeeded] = useState(false);
-  const [correctionModalOpen,  setCorrectionModalOpen]  = useState(false);
+  const [showExplain,    setShowExplain]    = useState(false);
+  const [explainLoading, setExplainLoading] = useState(false);
+  const [explainResult,  setExplainResult]  = useState<ExplainResult | null>(null);
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const entry       = entries[verseIndex];
@@ -254,29 +228,6 @@ export default function CanonicalReader({
 
   useEffect(() => () => stopTTS(), [stopTTS]);
 
-  // ── Reset verse + explain state when lesson (entries) changes ──────────────
-  // Without this, navigating to a new lesson keeps the stale explanation from
-  // the previous lesson because explainResult/showExplain are component state
-  // that survive prop changes.
-  useEffect(() => {
-    setVerseIndex(0);
-    setSlideDir(1);
-    setShowExplain(false);
-    setExplainResult(null);
-    setExplainUpgradeNeeded(false);
-    stopTTS();
-  }, [entries, stopTTS]);
-
-  // ── Reset explain state when the reader language changes ───────────────────
-  // The explain button only fetches when (!showExplain && !explainResult).
-  // Without this reset, a cached explanation in the old language is shown
-  // instead of re-fetching in the newly selected language.
-  useEffect(() => {
-    setShowExplain(false);
-    setExplainResult(null);
-    setExplainUpgradeNeeded(false);
-  }, [customLang]);
-
   async function speakEntry(e: LibraryEntry) {
     if (speakingId === e.id || readerControls.state.isGeneratingTTS) { stopTTS(); return; }
     const ttsText = e.original || e.transliteration || e.fullText || '';
@@ -288,7 +239,6 @@ export default function CanonicalReader({
     try {
       const audioUrl = await readerControls.handlers.requestTTS(ttsText, {
         quality: 'pandit',
-        rate: ttsRate,
         pipelineTags: {
           content_type: 'sacred_verse',
           audio_mode: 'pandit'
@@ -337,7 +287,6 @@ export default function CanonicalReader({
   async function explainVerse() {
     if (!entry || explainLoading) return;
     setExplainResult(null);
-    setExplainUpgradeNeeded(false);
     setExplainLoading(true);
     try {
       const explainText = entry.original || entry.transliteration || entry.fullText || '';
@@ -354,14 +303,9 @@ export default function CanonicalReader({
       else {
         toast.error(labels.couldNotGenerateExplanation);
       }
-    } catch (err: any) {
-      if (err?.upgrade_required) {
-        setExplainUpgradeNeeded(true);
-        setShowExplain(true); // Keep the panel open to show upgrade card
-      } else {
-        const msg = err instanceof Error ? err.message : labels.couldNotGenerateExplanation;
-        toast.error(msg);
-      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : labels.couldNotGenerateExplanation;
+      toast.error(msg);
     } finally {
       setExplainLoading(false);
     }
@@ -374,7 +318,6 @@ export default function CanonicalReader({
       setVerseIndex(v => v + 1);
       setShowExplain(false);
       setExplainResult(null);
-      setExplainUpgradeNeeded(false);
     }
   }
 
@@ -384,7 +327,6 @@ export default function CanonicalReader({
       setVerseIndex(v => v - 1);
       setShowExplain(false);
       setExplainResult(null);
-      setExplainUpgradeNeeded(false);
     }
   }
 
@@ -448,75 +390,11 @@ export default function CanonicalReader({
       showTransliterationToggle={false}
       showMeaningToggle={false}
       onTTS={() => entry && speakEntry(entry)}
-      ttsRate={ttsRate}
-      onTTSRateChange={setTtsRate}
       isSpeaking={!!speakingId}
       isTTSGenerating={readerControls.state.isGeneratingTTS}
       onCopy={handleCopy}
       isCopied={readerControls.state.isCopied}
       onShare={handleShare}
-      bottomBar={
-        <div className="px-5 py-4 max-w-xl mx-auto">
-          <div className="flex items-center justify-between gap-3">
-            {/* Primary CTA (Next/Complete) */}
-            <div className="flex-1">
-              {ctaConfig ? (
-                <button
-                  onClick={ctaConfig.action}
-                  disabled={ctaConfig.disabled}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md disabled:opacity-40"
-                  style={{ background: P.accent, color: P.btnText }}
-                >
-                  {ctaConfig.label}
-                </button>
-              ) : isLastVerse ? (
-                <button
-                  onClick={() => handleBack()}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md"
-                  style={{ background: P.accent, color: P.btnText }}
-                >
-                  <CheckCircle2 size={18} />
-                  <span>{t(customLang, 'donePranam') || 'Done'}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); setExplainUpgradeNeeded(false); }}
-                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
-                  style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
-                >
-                  <span>{t(customLang, 'nextVerse') || 'Next Verse'}</span>
-                  <ChevronRight size={18} />
-                </button>
-              )}
-            </div>
-
-            {/* Quick Actions container */}
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={() => entry && toggleBookmark(entry)}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
-                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
-                aria-label="Save for later"
-              >
-                <Bookmark
-                  size={20}
-                  className="transition-all"
-                  style={{ color: P.accentDeep }}
-                  fill={entry && bookmarkedIds.has(entry.id) ? P.accentDeep : 'none'}
-                />
-              </button>
-              <Link
-                href={askHref}
-                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
-                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
-                aria-label="Ask Guruji"
-              >
-                <Sparkles size={20} style={{ color: P.accentDeep }} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      }
       contentClassName="flex-1 overflow-auto overscroll-contain"
     >
       {/* ════════════ SCROLLABLE CONTENT ════════════════════════════════════ */}
@@ -532,7 +410,6 @@ export default function CanonicalReader({
                   setVerseIndex(i);
                   setShowExplain(false);
                   setExplainResult(null);
-                  setExplainUpgradeNeeded(false);
                 }}
                 aria-label={`Go to verse ${i + 1}`}
                 style={{
@@ -561,24 +438,14 @@ export default function CanonicalReader({
             >
               {/* Source chip + title */}
               <div className="text-center mb-8">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <div
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                    style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: P.accent }} />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: P.accentDeep }}>
-                      {entry.source}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setCorrectionModalOpen(true)}
-                    className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors animate-fade-in"
-                    title="Report translation issue"
-                  >
-                    <span className="text-xs">🚩</span>
-                  </button>
+                <div
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-4"
+                  style={{ background: P.accentBg, border: `1px solid ${P.border}` }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: P.accent }} />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: P.accentDeep }}>
+                    {entry.source}
+                  </span>
                 </div>
                 <h2
                   className="font-bold leading-snug"
@@ -633,7 +500,7 @@ export default function CanonicalReader({
                   </p>
                   <p
                     className="italic leading-relaxed"
-                    style={{ color: P.translit, fontSize: `${fontScale * 0.95}rem` }}
+                    style={{ color: P.ink, fontSize: `${fontScale * 0.95}rem` }}
                   >
                     {translitText}
                   </p>
@@ -685,38 +552,6 @@ export default function CanonicalReader({
                 </button>
 
                 <AnimatePresence>
-                  {showExplain && explainUpgradeNeeded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.26 }}
-                      className="overflow-hidden"
-                    >
-                      <div
-                        className="mt-3 rounded-2xl px-5 py-6 flex flex-col items-center gap-3 text-center"
-                        style={{ background: 'rgba(197,160,89,0.07)', border: `1px solid rgba(197,160,89,0.25)` }}
-                      >
-                        <span className="text-2xl">✨</span>
-                        <p className="text-sm font-semibold" style={{ color: P.ink }}>
-                          AI verse explanations are a Zenith feature
-                        </p>
-                        <p className="text-xs" style={{ color: P.inkMuted }}>
-                          Upgrade to unlock deep, tradition-aware explanations for every verse.
-                        </p>
-                        <a
-                          href="/settings/subscription"
-                          className="mt-1 text-xs font-bold px-5 py-2.5 rounded-full transition-opacity hover:opacity-80"
-                          style={{ background: 'rgba(197,160,89,0.90)', color: '#1c1208' }}
-                        >
-                          Upgrade to Zenith →
-                        </a>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence>
                   {showExplain && explainResult && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
@@ -725,25 +560,6 @@ export default function CanonicalReader({
                       transition={{ duration: 0.26 }}
                       className="overflow-hidden"
                     >
-                      {/* ── Fallback: AI unavailable — show retry card ── */}
-                      {explainResult.is_fallback ? (
-                        <div
-                          className="mt-3 rounded-2xl px-5 py-6 flex flex-col items-center gap-3 text-center"
-                          style={{ background: P.bgCard, border: `1px solid ${P.border}` }}
-                        >
-                          <span className="text-2xl">🪔</span>
-                          <p className="text-sm font-medium" style={{ color: P.ink }}>
-                            {labels.couldNotGenerateExplanation}
-                          </p>
-                          <button
-                            onClick={() => { setExplainResult(null); explainVerse(); }}
-                            className="mt-1 text-xs font-semibold px-4 py-2 rounded-full transition-opacity hover:opacity-80"
-                            style={{ background: P.accentBg, color: P.accentDeep, border: `1px solid ${P.border}` }}
-                          >
-                            ↻ {labels.askingTeacher ? 'Retry' : 'Try again'}
-                          </button>
-                        </div>
-                      ) : (
                       <div
                         className="mt-3 rounded-2xl p-5 space-y-4"
                         style={{ background: P.bgCard, border: `1px solid ${P.border}` }}
@@ -798,7 +614,6 @@ export default function CanonicalReader({
                           </p>
                         )}
                       </div>
-                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -820,7 +635,7 @@ export default function CanonicalReader({
                     <button
                       key={i}
                       onClick={() => lessonsNavigation.onGoToLesson(i)}
-                      className="w-[44px] h-[44px] rounded-full text-xs font-semibold flex items-center justify-center transition-all"
+                      className="w-9 h-9 rounded-full text-xs font-semibold flex items-center justify-center transition-all"
                       style={{
                         background: current ? P.accent : done ? P.accentBg : P.bgCard,
                         color:      current ? P.btnText : done ? P.accentDeep : P.inkMuted,
@@ -835,12 +650,79 @@ export default function CanonicalReader({
             </div>
           )}
         </div>
-      <ScriptureCorrectionModal
-        isOpen={correctionModalOpen}
-        onClose={() => setCorrectionModalOpen(false)}
-        scriptureSource={entry.source}
-        verseText={entry.original || entry.fullText || ''}
-      />
+
+
+
+      {/* ════════════ BOTTOM FIXED ACTIONS ══════════════════════════════════ */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 px-5 pb-[env(safe-area-inset-bottom)] pointer-events-none"
+      >
+        {/* Background gradient for the bottom area */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `linear-gradient(to top, ${P.bg} 85%, transparent)` }}
+        />
+        <div className="max-w-xl mx-auto pt-8 pb-5 relative pointer-events-auto">
+          <div className="flex items-center justify-between gap-3">
+            {/* Primary CTA (Next/Complete) */}
+            <div className="flex-1">
+              {ctaConfig ? (
+                <button
+                  onClick={ctaConfig.action}
+                  disabled={ctaConfig.disabled}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md disabled:opacity-40"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  {ctaConfig.label}
+                </button>
+              ) : isLastVerse ? (
+                <button
+                  onClick={() => handleBack()}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press shadow-md"
+                  style={{ background: P.accent, color: P.btnText }}
+                >
+                  <CheckCircle2 size={18} />
+                  <span>{t(customLang, 'donePranam') || 'Done'}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setSlideDir(1); setVerseIndex(i => i + 1); setShowExplain(false); setExplainResult(null); }}
+                  className="w-full h-14 rounded-2xl flex items-center justify-center gap-2 font-bold transition-all motion-press"
+                  style={{ background: P.bgCard, color: P.accentDeep, border: `2px solid ${P.borderSoft}` }}
+                >
+                  <span>{t(customLang, 'nextVerse') || 'Next Verse'}</span>
+                  <ChevronRight size={18} />
+                </button>
+              )}
+            </div>
+
+            {/* Quick Actions container */}
+            <div className="flex gap-2 shrink-0">
+              <button
+                onClick={() => entry && toggleBookmark(entry)}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Save for later"
+              >
+                <Bookmark
+                  size={20}
+                  className="transition-all"
+                  style={{ color: P.accentDeep }}
+                  fill={entry && bookmarkedIds.has(entry.id) ? P.accentDeep : 'none'}
+                />
+              </button>
+              <Link
+                href={askHref}
+                className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press"
+                style={{ background: P.bgCard, border: `1px solid ${P.borderSoft}` }}
+                aria-label="Ask Guruji"
+              >
+                <Sparkles size={20} style={{ color: P.accentDeep }} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     </ReaderShell>
   );
 

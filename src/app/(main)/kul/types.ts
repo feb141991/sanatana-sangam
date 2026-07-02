@@ -18,13 +18,10 @@ export type MemberRow = {
     full_name: string | null; 
     username: string | null; 
     avatar_url: string | null; 
-    active_symbol_id?: string | null;
     tradition: string | null; 
     sampradaya: string | null; 
     shloka_streak: number | null; 
-    spiritual_level: string | null;
-    karma_points?: number | null;
-    weekly_seva?: number | null;
+    spiritual_level: string | null; 
     bio?: string | null; 
     city?: string | null; 
     country?: string | null; 

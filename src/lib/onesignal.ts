@@ -14,7 +14,7 @@ export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
 // OneSignalDeferred callbacks fire only AFTER init() resolves, so always use it.
 const ONESIGNAL_TIMEOUT_MS = 8000; // 8s — generous for slow mobile connections
 
-export function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
+function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
   if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
 
   return new Promise((resolve) => {
@@ -57,9 +57,8 @@ export function initOneSignal() {
         appId:                       ONESIGNAL_APP_ID,
         notifyButton:                { enable: false },  // we use custom bell
         allowLocalhostAsSecureOrigin: true,              // for dev
-        // Keep OneSignal and Shoonaya offline caching in the same worker scope.
-        serviceWorkerPath:           '/OneSignalSDKWorker.js',
-        serviceWorkerUpdaterPath:    '/OneSignalSDKUpdaterWorker.js',
+        // Safari on iOS 16.4+ requires an explicit service worker scope.
+        // Without this the SDK silently fails to register its worker on iOS PWAs.
         serviceWorkerParam:          { scope: '/' },
       });
     });

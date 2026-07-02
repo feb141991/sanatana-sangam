@@ -58,7 +58,7 @@ export function KulEvents({
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="relative group glass-panel rounded-[2rem] p-5 flex items-center gap-5 border border-[#C5A059]/15 hover:border-[#C5A059]/15 transition-all shadow-sm overflow-hidden"
+              className="relative group glass-panel rounded-[2rem] p-5 flex items-center gap-5 border border-white/5 hover:border-white/10 transition-all shadow-sm overflow-hidden"
             >
               {/* Progress Bar for upcoming */}
               <div className="absolute bottom-0 left-0 h-1 bg-[var(--brand-primary)]/20" style={{ width: `${Math.max(0, 100 - (event.daysUntil / 365) * 100)}%` }} />

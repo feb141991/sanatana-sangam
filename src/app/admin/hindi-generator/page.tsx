@@ -1,7 +1,7 @@
 'use client';
 
 // ─── Admin: Hindi Meanings Generator ─────────────────────────────────────────
-// Batch-generates Hindi meanings for all library entries via Sarvam.
+// Batch-generates Hindi meanings for all library entries via Gemini.
 // Saves directly to the hindi_meanings Supabase table.
 // ─────────────────────────────────────────────────────────────────────────────
 

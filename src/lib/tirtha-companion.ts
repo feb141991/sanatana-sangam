@@ -42,14 +42,14 @@ export const TIRTHA_PRIVACY_OPTIONS: Array<{ id: TirthaPrivacy; label: string; d
 ];
 
 export function tirthaPlaceId(temple: Temple) {
-  return temple.slug ? `curated:${temple.slug}` : `overpass:${temple.id}`;
+  return `overpass:${temple.id}`;
 }
 
 export function templeToPlaceRow(temple: Temple, userId?: string | null) {
   return {
     id: tirthaPlaceId(temple),
-    source: temple.slug ? 'curated' : 'overpass',
-    source_id: temple.slug ?? String(temple.id),
+    source: 'overpass',
+    source_id: String(temple.id),
     name: temple.name,
     tradition: temple.tradition,
     lat: temple.lat,
@@ -171,8 +171,8 @@ export function templeMatchesSmartFilter(temple: Temple, filter: string, saved: 
   if (filter === 'all') return true;
   if (filter === 'saved') return saved;
   if (filter === 'visited') return visited;
-  // 'open' and 'live' handled by page before calling this function
-  if (filter === 'open' || filter === 'live') return false;
+  if (filter === 'open') return true;
+  if (filter === 'live') return false;
 
   const haystack = normalize([temple.name, temple.tradition, temple.deity, temple.sampradaya, temple.address].filter(Boolean).join(' '));
   return haystack.includes(normalize(filter));

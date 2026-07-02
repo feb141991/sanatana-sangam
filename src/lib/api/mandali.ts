@@ -4,7 +4,7 @@ import type { EventRsvp, PostCommentWithAuthor, PostWithAuthor, Profile } from '
 
 const BLEND_THRESHOLD = 5;
 
-export type MandaliMemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
+export type MandaliMemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
 
 export type MandaliProfile = (Profile & {
   mandalis?: {
@@ -53,7 +53,7 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
         .limit(30),
       supabase
         .from('profiles')
-        .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, country, seva_score')
+        .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, seva_score')
         .eq('mandali_id', mandaliId)
         .order('seva_score', { ascending: false })
         .limit(50),
@@ -72,7 +72,7 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
           .order('created_at', { ascending: true }),
         supabase
           .from('event_rsvps')
-          .select('id, post_id, user_id, status, created_at, updated_at')
+          .select('*')
           .in('post_id', postIds),
       ]);
 
@@ -102,13 +102,11 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
   };
 }
 
-export async function joinMandaliForLocation(userId: string, city: string, country: string, lat?: number, lon?: number) {
+export async function joinMandaliForLocation(userId: string, city: string, country: string) {
   const supabase = createClient();
   const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
     p_city: city.trim(),
     p_country: country.trim(),
-    p_lat: lat,
-    p_lon: lon,
   });
 
   if (rpcError) throw rpcError;

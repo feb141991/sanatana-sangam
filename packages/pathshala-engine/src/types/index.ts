@@ -140,8 +140,7 @@ export interface TodayLesson {
 // ── Shruti (Recitation) ───────────────────────────────────────────────────────
 
 export interface RecordingUploadOptions {
-  chunkId?:      string;
-  verseRef?:     string;
+  chunkId:       string;
   audioBlob:     Blob;
   language:      string;
   expectedText:  string;

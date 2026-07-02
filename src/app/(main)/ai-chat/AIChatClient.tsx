@@ -2,31 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Send, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Send, Sparkles, RotateCcw, ChevronDown, BookOpen, ChevronLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { useEngine } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import { getTransliteration } from '@/lib/transliteration';
-import SacredIcon from '@/components/ui/SacredIcon';
-import AiReportButton from '@/components/ai/AiReportButton';
-
-async function readStreamedChatResponse(
-  response: Response,
-  onChunk: (chunk: string) => void
-) {
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error('Streaming response unavailable');
-
-  const decoder = new TextDecoder();
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = decoder.decode(value, { stream: true });
-    if (chunk) onChunk(chunk);
-  }
-}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ScriptureRef {
@@ -45,7 +28,7 @@ interface Message {
   timestamp:  Date;
   /** Scripture verses returned by RAG (only on model messages) */
   verses?:    ScriptureRef[];
-  /** Whether this reply came from scripture RAG vs plain Sarvam */
+  /** Whether this reply came from scripture RAG vs plain Gemini */
   fromRag?:   boolean;
 }
 
@@ -121,7 +104,7 @@ const SUGGESTIONS_BY_TRADITION: Record<string, string[]> = {
 };
 
 // ─── Message Bubble ───────────────────────────────────────────────────────────
-function MessageBubble({ msg, userId, prevUserText, transliterationLanguage }: { msg: Message; userId: string; prevUserText?: string; transliterationLanguage?: string }) {
+function MessageBubble({ msg, transliterationLanguage }: { msg: Message; transliterationLanguage?: string }) {
   const isUser = msg.role === 'user';
   return (
     <motion.div
@@ -136,7 +119,7 @@ function MessageBubble({ msg, userId, prevUserText, transliterationLanguage }: {
           ? 'bg-[rgba(200,100,60,0.30)] text-[var(--text-cream)]'
           : 'bg-gradient-to-br from-[var(--brand-primary)] to-orange-500 text-white'
       }`}>
-        {isUser ? <SacredIcon name="flower" size={16} /> : <SacredIcon name="sparkles" size={16} />}
+        {isUser ? '🙏' : '✨'}
       </div>
 
       {/* Bubble */}
@@ -149,12 +132,12 @@ function MessageBubble({ msg, userId, prevUserText, transliterationLanguage }: {
           }`}
           style={isUser
             ? {
-                background: 'var(--surface-raised)',
+                background: 'var(--brand-primary-soft)',
                 border: '1px solid var(--card-border)',
                 color: 'var(--divine-text)',
               }
             : {
-                background: 'var(--surface-soft)',
+                background: 'var(--card-bg)',
                 borderColor: 'var(--card-border)',
                 color: 'var(--divine-text)',
               }
@@ -192,21 +175,10 @@ function MessageBubble({ msg, userId, prevUserText, transliterationLanguage }: {
                 borderColor: 'var(--card-border)',
               }}
             >
-              <span className="inline-flex items-center gap-1">
-                <SacredIcon name="book" size={10} />
-                Dharma-sourced
-              </span>
+              📖 Dharma-sourced
             </span>
           )}
         </div>
-        {!isUser && (
-          <AiReportButton
-            userId={userId}
-            messageId={msg.id}
-            aiText={msg.text}
-            userPrompt={prevUserText}
-          />
-        )}
       </div>
     </motion.div>
   );
@@ -217,23 +189,13 @@ function TypingIndicator() {
   return (
     <div className="flex gap-2 mb-4">
       <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-sm bg-gradient-to-br from-amber-400 to-orange-500 text-white">
-        <SacredIcon name="sparkles" size={14} />
+        ✨
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-4 py-3" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
-        <div className="flex gap-1.5 items-center h-5">
-          {[0, 1, 2].map((index) => (
-            <motion.span
-              key={index}
-              className="w-2 h-2 rounded-full bg-orange-400"
-              animate={{ opacity: [0.35, 1, 0.35], scale: [0.92, 1.1, 0.92] }}
-              transition={{
-                duration: 0.9,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: index * 0.15,
-              }}
-            />
-          ))}
+        <div className="flex gap-1 items-center h-5">
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+          <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     </div>
@@ -325,48 +287,27 @@ export default function AIChatClient({
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
+  const { engine, isReady } = useEngine();
   const isPro = usePremium();
   const { playHaptic } = useZenithSensory();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [responseLanguage, setResponseLanguage] = useState<string>(() =>
     resolveChatResponseLanguage(appLanguage ?? 'en', initialPrompt ?? '')
   );
-  const [usageData, setUsageData] = useState<{ used: number; limit: number } | null>(null);
-  const [limitReached, setLimitReached] = useState(false);
-  const [hasStreamedToken, setHasStreamedToken] = useState(false);
-
-  // Fetch usage on mount and after each message
-  const refreshUsage = async () => {
-    try {
-      const res = await fetch('/api/ai/chat/usage');
-      if (res.ok) {
-        const data = await res.json();
-        setUsageData({ used: data.used, limit: data.limit });
-        if (data.used >= data.limit && !data.isPro) setLimitReached(true);
-      }
-    } catch { /* silent */ }
-  };
-
-  useEffect(() => { refreshUsage(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Tradition-aware content
   const suggestions = SUGGESTIONS_BY_TRADITION[tradition ?? 'hindu'] ?? SUGGESTIONS_BY_TRADITION.hindu;
   const greetingMap: Record<string, string> = {
-    hindu:    'Hari Om',
-    sikh:     'Sat Sri Akal',
-    buddhist: 'Namo Buddhaya',
-    jain:     'Jai Jinendra',
+    hindu:    'Hari Om 🕉️',
+    sikh:     'Sat Sri Akal ☬',
+    buddhist: 'Namo Buddhaya ☸️',
+    jain:     'Jai Jinendra 🤲',
   };
-  const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste';
+  const greeting = greetingMap[tradition ?? 'hindu'] ?? 'Namaste 🙏';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages.length]);
-
-  useEffect(() => {
-    if (!loading) return;
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [loading, hasStreamedToken]);
+  }, [messages, loading]);
 
   function newId() {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -385,20 +326,48 @@ export default function AIChatClient({
     setLoading(true);
     playHaptic('light');
 
-    const history = messages.map(m => ({ role: m.role, text: m.text }));
-    const assistantId = newId();
-    setMessages(prev => [
-      ...prev,
-      {
-        id: assistantId,
-        role: 'model',
-        text: '',
-        timestamp: new Date(),
-        fromRag: false,
-      },
-    ]);
-    setHasStreamedToken(false);
+    // ── Path A: RAG via engine.search.ask() ──────────────────────────────────
+    // Uses pgvector to find relevant scripture chunks, then Gemini explains them.
+    // Falls through to Path B if engine not ready or user has no scripture indexed.
+    if (resolvedResponseLanguage === 'en' && isReady && engine) {
+      try {
+        const ragResult = await engine.search.ask(msgText, userId, {
+          matchCount:      5,
+          matchThreshold:  0.25,
+          withExplanation: true,
+        });
 
+        if (ragResult.answer) {
+          const modelMsg: Message = {
+            id:        newId(),
+            role:      'model',
+            text:      ragResult.answer,
+            timestamp: new Date(),
+            verses:    (ragResult.verses ?? []).slice(0, 3).map(v => ({
+              text_id:         v.verse?.text_id,
+              chapter:         v.verse?.chapter,
+              verse:           v.verse?.verse,
+              sanskrit:        v.verse?.sanskrit,
+              transliteration: v.verse?.transliteration,
+              // source_label left undefined so formatVerseLabel() handles it
+            })),
+            fromRag: true,
+            transliterationLanguage: transliterationLanguage, // pass to bubble for chips
+          } as any;
+          setMessages(prev => [...prev, modelMsg]);
+          setLoading(false);
+          playHaptic('medium');
+          return;
+        }
+      } catch (ragErr) {
+        console.warn('[AiChat] RAG failed, falling back to direct API:', ragErr);
+        // Fall through to Path B
+      }
+    }
+
+    // ── Path B: Fallback — tradition-aware Gemini via API route ─────────────
+    // Used when: corpus not yet seeded, engine not ready, or RAG returned empty answer.
+    const history = messages.map(m => ({ role: m.role, text: m.text }));
     try {
       const res = await fetch('/api/ai/chat', {
         method:  'POST',
@@ -417,48 +386,28 @@ export default function AIChatClient({
           transliterationLanguage,
         }),
       });
-
-      if (res.status === 429) {
-        const data = await res.json().catch(() => ({}));
-        if (data.error === 'daily_limit_reached') {
-          setLimitReached(true);
-          setMessages(prev => prev.filter(m => m.id !== assistantId));
-          setLoading(false);
-          return;
-        }
+      const data = await res.json();
+      if (data.limitReached && !data.isPro) {
+        setShowPremiumModal(true);
       }
-
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         toast.error(data.error ?? 'Something went wrong');
-        setMessages(prev => prev.filter(m => m.id !== assistantId));
         setLoading(false);
         return;
       }
-
-      let fullText = '';
-      await readStreamedChatResponse(res, (chunk) => {
-        fullText += chunk;
-        setHasStreamedToken(true);
-        setMessages(prev => prev.map((msg) => (
-          msg.id === assistantId ? { ...msg, text: fullText } : msg
-        )));
-      });
-
-      setMessages(prev => prev.filter((msg) => msg.id !== assistantId || msg.text.trim().length > 0));
-      refreshUsage();
-      fetch('/api/karma/award', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: 1, reason: 'ai_chat_response' }),
-      }).catch(() => {});
+      const modelMsg: Message = {
+        id:        newId(),
+        role:      'model',
+        text:      data.reply,
+        timestamp: new Date(),
+        fromRag:   false,
+      };
+      setMessages(prev => [...prev, modelMsg]);
       playHaptic('medium');
     } catch {
       toast.error('Network error — please try again');
-      setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {
       setLoading(false);
-      setHasStreamedToken(false);
     }
   }
 
@@ -496,7 +445,7 @@ export default function AIChatClient({
           </button>
           <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
             style={{ background: 'var(--brand-primary-soft)' }}>
-            <SacredIcon name="sparkles" size={20} />
+            ✨
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -549,9 +498,9 @@ export default function AIChatClient({
           <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-6">
             {/* Welcome */}
             <div className="space-y-2">
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-inner"
+              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-4xl"
                 style={{ background: 'linear-gradient(135deg, #ff770218, #d4a01718)' }}>
-                <SacredIcon name="flower" size={36} />
+                🙏
               </div>
               <h2 className="font-display font-bold text-xl text-[color:var(--text-cream)]">
                 {greeting}, {userName}
@@ -579,23 +528,7 @@ export default function AIChatClient({
           </div>
         )}
 
-        {messages.map((msg, idx) => {
-          let prevUserText: string | undefined;
-          if (msg.role === 'model') {
-            for (let i = idx - 1; i >= 0; i--) {
-              if (messages[i].role === 'user') { prevUserText = messages[i].text; break; }
-            }
-          }
-          return (
-            <MessageBubble
-              key={msg.id}
-              msg={msg}
-              userId={userId}
-              prevUserText={prevUserText}
-              transliterationLanguage={transliterationLanguage}
-            />
-          );
-        })}
+        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} transliterationLanguage={transliterationLanguage} />)}
         {loading && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>
@@ -615,25 +548,8 @@ export default function AIChatClient({
           </div>
         )}
 
-        {/* ── Daily limit reached card ─────────────────────────────────── */}
-        {limitReached && !isPro && (
-          <div className="mb-3 p-4 rounded-2xl border" style={{ background: 'rgba(26,20,14,0.95)', borderColor: 'rgba(197,160,89,0.3)' }}>
-            <p className="font-display font-bold text-[#C5A059] text-sm mb-1">You&apos;ve reached your daily limit</p>
-            <p className="text-xs text-white/60 leading-relaxed mb-3">
-              Free seekers get 5 conversations a day. Upgrade to Shoonaya Zenith for unlimited daily guidance.
-            </p>
-            <a
-              href="/pricing"
-              className="inline-block bg-[#C5A059] text-white text-xs font-bold px-4 py-2 rounded-xl tracking-wide hover:opacity-90 transition"
-            >
-              Unlock Zenith →
-            </a>
-            <p className="text-[10px] text-white/30 mt-2">Resets at midnight · 5 free conversations tomorrow</p>
-          </div>
-        )}
-
         <div className="flex items-end gap-2">
-          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--card-bg)', borderColor: 'var(--card-border)' }}>
+          <div className="flex-1 rounded-2xl border transition overflow-hidden" style={{ background: 'var(--surface-raised)', borderColor: 'var(--card-border)' }}>
             <textarea
               ref={inputRef}
               value={input}
@@ -659,34 +575,6 @@ export default function AIChatClient({
             <Send size={16} />
           </button>
         </div>
-
-        {/* ── Usage bar (free users only) ──────────────────────────────── */}
-        {!isPro && usageData && (
-          <div className="mt-2 space-y-1">
-            <div className="flex justify-between items-center">
-              <div className="h-1 flex-1 rounded-full overflow-hidden mr-3" style={{ background: 'rgba(197,160,89,0.12)' }}>
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${Math.min((usageData.used / usageData.limit) * 100, 100)}%`,
-                    background: '#C5A059',
-                    boxShadow: usageData.used >= usageData.limit - 1 ? '0 0 6px rgba(197,160,89,0.6)' : 'none',
-                  }}
-                />
-              </div>
-              <span
-                className="text-[10px] flex-shrink-0"
-                style={{
-                  color: '#C5A059',
-                  fontWeight: usageData.used >= usageData.limit - 1 ? 700 : 400,
-                }}
-              >
-                {usageData.used} / {usageData.limit} today
-              </span>
-            </div>
-          </div>
-        )}
-
         <p className="text-[10px] text-[color:var(--text-dim)] text-center mt-2">
           Dharma Mitra can make mistakes. Verify important information.
         </p>

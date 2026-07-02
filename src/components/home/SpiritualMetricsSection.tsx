@@ -43,7 +43,7 @@ const RINGS = [
   {
     id:        'viveka',
     labelKey:  'viveka',
-    href:      '/discover/mood',
+    href:      '/discover',
     accent:    '#7ab85a',
     accentEnd: '#9ad878',
     scoreKey:  'renewal' as const,

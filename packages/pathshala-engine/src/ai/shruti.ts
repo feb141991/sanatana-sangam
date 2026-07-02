@@ -31,7 +31,7 @@ export class ShrutiEngine {
     const ext       = options.audioBlob.type.includes('mp4') ? 'mp4'
                     : options.audioBlob.type.includes('ogg') ? 'ogg'
                     : 'webm';
-    const audioPath = `${userId}/${options.chunkId ?? options.verseRef ?? 'unspecified'}/${timestamp}.${ext}`;
+    const audioPath = `${userId}/${options.chunkId}/${timestamp}.${ext}`;
 
     // Upload to Supabase Storage
     const { error: uploadErr } = await this.supabase.storage
@@ -51,8 +51,7 @@ export class ShrutiEngine {
       .from('pathshala_recordings')
       .insert({
         user_id:       userId,
-        chunk_id:      options.chunkId ?? null,
-        verse_ref:     options.verseRef ?? null,
+        chunk_id:      options.chunkId,
         enrollment_id: options.enrollmentId ?? null,
         audio_url:     audioPath,
         audio_bucket:  'pathshala-recordings',
@@ -77,7 +76,7 @@ export class ShrutiEngine {
   /**
    * Trigger AI scoring for an uploaded recording.
    * Calls the ai-recitation-score Edge Function.
-   * The function downloads the audio, runs Sarvam ASR + Sarvam, stores the review.
+   * The function downloads the audio, runs Groq Whisper + Gemini, stores the review.
    */
   async score(recordingId: string): Promise<RecitationResult> {
     const { data, error } = await this.supabase.functions.invoke('ai-recitation-score', {

@@ -10,7 +10,7 @@ export default async function NityaKarmaPage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script, is_pro, nitya_rhythm_mode, nitya_sections_enabled')
+    .select('full_name, username, tradition, life_stage, gender_context, latitude, longitude, timezone, app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
     .eq('id', user.id)
     .single();
 
@@ -27,9 +27,6 @@ export default async function NityaKarmaPage() {
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
       showTransliteration={(profile as any)?.show_transliteration ?? true}
       scriptureScript={(profile as any)?.scripture_script ?? 'original'}
-      isPro={(profile as any)?.is_pro ?? false}
-      nityaRhythmMode={(profile as any)?.nitya_rhythm_mode ?? 'morning'}
-      nityaSectionsEnabled={(profile as any)?.nitya_sections_enabled ?? null}
     />
   );
 }

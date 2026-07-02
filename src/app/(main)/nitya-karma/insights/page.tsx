@@ -24,7 +24,7 @@ export default async function NityaInsightsPage() {
 
     supabase
       .from('profiles')
-      .select('tradition, full_name, username')
+      .select('tradition')
       .eq('id', user.id)
       .single(),
   ]);
@@ -33,7 +33,6 @@ export default async function NityaInsightsPage() {
     <NityaInsightsClient
       logs={logs ?? []}
       tradition={profile?.tradition ?? 'hindu'}
-      userName={profile?.full_name ?? profile?.username ?? 'Shoonaya seeker'}
     />
   );
 }

@@ -32,7 +32,6 @@ import { KulFamilyProfileSheet } from './components/KulFamilyProfileSheet';
 import { KulSummary, MemberRow, TaskRow, MessageRow, FamilyMember, KulEvent, KulView } from './types';
 import { useRef } from 'react';
 import { createClient } from '@/lib/supabase';
-import PageIntro from '@/components/ui/PageIntro';
 
 interface Props {
   userId: string;
@@ -46,7 +45,6 @@ interface Props {
   kulEvents: KulEvent[];
   myRole: 'guardian' | 'sadhak';
   view?: KulView;
-  memberActivity?: any[];
 }
 
 export default function KulClient({
@@ -61,7 +59,6 @@ export default function KulClient({
   kulEvents: initialEvents,
   myRole: initialRole,
   view: initialView = 'hub',
-  memberActivity = [],
 }: Props) {
   const router = useRouter();
   const { t } = useLanguage();
@@ -310,7 +307,6 @@ export default function KulClient({
             isUploading={isUploading}
             userId={userId}
             onSendMessage={(content) => kulMutations.sendMessage.mutate({ kulId: data?.kul?.id ?? '', content })}
-            memberActivity={memberActivity}
           />
         );
     }
@@ -318,13 +314,6 @@ export default function KulClient({
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 pb-24">
-      <PageIntro
-        pageKey="kul"
-        steps={[
-          { emoji: '🏡', title: 'Your Kul', body: 'A sacred family group. Practice together, track each other\'s progress.' },
-          { emoji: '🤝', title: 'Invite your sangha', body: 'Use the invite button to bring family and friends into your Kul.' },
-        ]}
-      />
       <ConfettiOverlay show={showConfetti} />
       {showOnboarding && <KulOnboarding onComplete={closeOnboarding} />}
       

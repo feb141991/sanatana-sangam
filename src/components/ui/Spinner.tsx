@@ -1,24 +1,13 @@
 import { cn } from '@/lib/utils';
 
-/**
- * Spinner — lightweight inline loading indicator.
- *
- * Uses the sacred-pulse animation (gentle opacity breathe) instead of a
- * mechanical spin. Tradition-neutral; for tradition-aware states use
- * <SacredLoader variant="inline" tradition={…} /> instead.
- */
 export function Spinner({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'inline-block animate-sacred-pulse select-none leading-none',
+        'inline-block h-4 w-4 animate-spin rounded-full border-2 border-[color:var(--brand-primary-soft)] border-t-[color:var(--brand-primary-strong)]',
         className
       )}
-      style={{ color: 'var(--brand-primary)', fontSize: '1.1em' }}
       aria-hidden="true"
-      role="status"
-    >
-      ✶
-    </span>
+    />
   );
 }

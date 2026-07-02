@@ -35,7 +35,6 @@ export type TranslationKey =
   | 'liveDarshan' | 'sadhanaPulse' | 'mandali' | 'tirtha'
   | 'liveDarshanDesc' | 'panchangDesc' | 'sadhanaPulseDesc' | 'bhaktiDesc'
   | 'pathshalaDesc' | 'mandaliDesc' | 'kulDesc' | 'tirthaDesc'
-  | 'japaDesc' | 'morningRoutineDesc' | 'sevaHubDesc' | 'quizMasteryDesc' | 'joinDesc' | 'exploreDesc' | 'vichaarDesc'
   // Notifications & UI
   | 'notifications' | 'markAllRead' | 'allQuiet' | 'allCaughtUp' | 'unread'
   | 'join' | 'signIn' | 'joinFree' | 'welcome' | 'study' | 'circle' | 'mirror'
@@ -110,7 +109,7 @@ export type TranslationKey =
   // Home — previously hardcoded UI strings
   | 'mandaliRanks' | 'mandaliRanksDesc'
   | 'upcomingSacredTime' | 'festivalPrepDesc' | 'viewBtn'
-  | 'today' | 'tomorrow' | 'inNDays'
+  | 'tomorrow' | 'inNDays'
   | 'moodChip' | 'feelingPrefix'
   // Mood keys
   | 'moodAnxious' | 'moodGrieving' | 'moodAngry' | 'moodScattered' | 'moodLost'
@@ -130,7 +129,7 @@ export type TranslationKey =
   | 'pathCompleted' | 'lessonComplete' | 'couldNotSaveProgress' | 'nextLesson' | 'markLessonComplete' | 'nextVerse'
   | 'auto' | 'reciteFromMemory' | 'playing' | 'tapListenBack' | 'doneNextVerse'
   | 'yourRecording' | 'reRecord' | 'submitForShrutiScoring' | 'uploadingAndScoring' | 'markAndContinue' | 'scoringFailedConnection' | 'retry'
-  | 'sharedViaShoonaya' | 'kathaFruitOfKatha' | 'kathaRevealBlessing' | 'kathaHidePhal' | 'kathaPhalShruti'
+  | 'sharedViaShoonaya' | 'kathaFruitOfKatha' | 'kathaRevealBlessing' | 'kathaPhalShruti'
   | 'startJapa' | 'moreKathas' | 'exploreSacredLibrary' | 'appreciateThisKatha' | 'jaiShriHari'
   | 'startRecording' | 'stopRecording' | 'recordingTapToStop'
   | 'shrutiFeedback' | 'dismiss' | 'shrutiExcellent' | 'shrutiGood' | 'shrutiKeepPractising'
@@ -145,8 +144,6 @@ export type TranslationKey =
   | 'aartiNaivedyaTitle' | 'aartiNaivedyaTitleDeva' | 'aartiNaivedyaInstruction' | 'aartiNaivedyaAction' | 'aartiNaivedyaHint'
   | 'aartiNamaskarTitle' | 'aartiNamaskarTitleDeva' | 'aartiNamaskarInstruction' | 'aartiNamaskarAction' | 'aartiNamaskarHint'
   | 'guidedAarti' | 'aartiStepOf' | 'previous' | 'nextStep' | 'completeAarti' | 'aartiSequence' | 'aartiComplete' | 'aartiCompleteDesc' | 'aartiCompleteQuote' | 'offerAgain' | 'donePranam' | 'aartiDoneLabel'
-  // Daily Sadhana & Stotram specific
-  | 'todayPractice' | 'dailyStripDesc' | 'openStatus' | 'shareVerse' | 'openVerse' | 'exploreFullHymn'
   // Premium
   | 'premiumPreviewTitle' | 'premiumHeadline' | 'premiumSubcopy' | 'premiumFreeBadge' | 'premiumDeeperRituals' | 'premiumDeeperRitualsTagline' | 'premiumDeeperRitualsF1' | 'premiumDeeperRitualsF2' | 'premiumDeeperRitualsF3' | 'premiumPersonalisedGuidance' | 'premiumPersonalisedGuidanceTagline' | 'premiumPersonalisedGuidanceF1' | 'premiumPersonalisedGuidanceF2' | 'premiumPersonalisedGuidanceF3' | 'premiumPracticeDepth' | 'premiumPracticeDepthTagline' | 'premiumPracticeDepthF1' | 'premiumPracticeDepthF2' | 'premiumPracticeDepthF3' | 'premiumKulSanskar' | 'premiumKulSanskarTagline' | 'premiumKulSanskarF1' | 'premiumKulSanskarF2' | 'premiumKulSanskarF3' | 'premiumComingSoon' | 'premiumComingSoonTagline' | 'premiumComingSoonF1' | 'premiumComingSoonF2' | 'premiumComingSoonF3' | 'premiumInDevelopment' | 'premiumAgreementText' | 'premiumButtonActivating' | 'premiumButtonStart' | 'premiumTrustLine';
 
@@ -199,13 +196,6 @@ const en: TranslationMap = {
   mandaliDesc: 'Join satsang and community circles',
   kulDesc: 'Family, lineage and sacred sanskaras',
   tirthaDesc: 'Find temples near you',
-  japaDesc: 'Chant your ishta mantra',
-  morningRoutineDesc: 'Complete daily rhythms',
-  sevaHubDesc: 'Support sacred causes',
-  quizMasteryDesc: 'Test your dharmic knowledge',
-  joinDesc: 'Create your profile',
-  exploreDesc: 'Explore the dashboard',
-  vichaarDesc: 'Read local discussions',
   // Notifications & UI
   notifications: 'Notifications', markAllRead: 'Mark all read',
   allQuiet: 'All quiet for now', allCaughtUp: 'All caught up',
@@ -500,7 +490,6 @@ const en: TranslationMap = {
   sharedViaShoonaya: 'Shared via Shoonaya',
   kathaFruitOfKatha: 'Phal — Fruit of the Katha',
   kathaRevealBlessing: 'Tap to reveal the blessing and moral',
-  kathaHidePhal: 'Hide the blessing and moral',
   kathaPhalShruti: 'Phal-shruti',
   startJapa: 'Start Japa',
   moreKathas: 'More Kathas',
@@ -574,42 +563,36 @@ const en: TranslationMap = {
   offerAgain: 'Offer again',
   donePranam: 'Done 🙏',
   aartiDoneLabel: 'done',
-  todayPractice: "Today's Practice",
-  dailyStripDesc: "Keep the day moving with one small step.",
-  openStatus: "Open",
-  shareVerse: "Share Verse",
-  openVerse: "Open Verse",
-  exploreFullHymn: "Explore Full Hymn",
   // Premium
   premiumPreviewTitle: "Shoonaya Pro preview",
   premiumHeadline: "A deeper\npractice awaits",
   premiumSubcopy: "Shoonaya Pro is your invitation into a more intentional, supported, and meaningful spiritual life.",
   premiumFreeBadge: "✦ Free to activate now · Pricing added later",
-  premiumDeeperRituals: "Deeper Daily Practice",
+  premiumDeeperRituals: "Deeper Rituals",
   premiumDeeperRitualsTagline: "Your morning, sacred by design",
-  premiumDeeperRitualsF1: "Brahma Muhurta alert — timed to your location and tradition",
-  premiumDeeperRitualsF2: "All Nitya Karma plans + full journey view",
-  premiumDeeperRitualsF3: "Unlimited Dharma Mitra AI — your personal dharmic companion",
-  premiumPersonalisedGuidance: "Study & Wisdom",
-  premiumPersonalisedGuidanceTagline: "Knowledge without limits",
-  premiumPersonalisedGuidanceF1: "All Pathshala learning paths — at your own pace",
-  premiumPersonalisedGuidanceF2: "Full Bhakti library with audio recitation",
-  premiumPersonalisedGuidanceF3: "Quiz practice mode + in-depth analytics",
-  premiumPracticeDepth: "Progress & Community",
-  premiumPracticeDepthTagline: "Your journey, seen and celebrated",
-  premiumPracticeDepthF1: "Full Japa history with insights and export",
-  premiumPracticeDepthF2: "Mandali Pro circles + Seekers nearby",
-  premiumPracticeDepthF3: "Zenith badge — visible across the community",
+  premiumDeeperRitualsF1: "Brahma Muhurta alert — timed to your location",
+  premiumDeeperRitualsF2: "Personalise every step of your Nitya Karma",
+  premiumDeeperRitualsF3: "Custom sadhana reminders at your chosen times",
+  premiumPersonalisedGuidance: "Personalised Guidance",
+  premiumPersonalisedGuidanceTagline: "A path shaped around you",
+  premiumPersonalisedGuidanceF1: "7-day and 21-day guided Sadhana plans",
+  premiumPersonalisedGuidanceF2: "Adaptive practice suggestions from Sattvic AI",
+  premiumPersonalisedGuidanceF3: "Weekly spiritual review and growth insights",
+  premiumPracticeDepth: "Practice Depth",
+  premiumPracticeDepthTagline: "Every mantra. Every milestone",
+  premiumPracticeDepthF1: "Full Japa history with insights and timelines",
+  premiumPracticeDepthF2: "Streak tracking, milestones, and celebrations",
+  premiumPracticeDepthF3: "All Pathshala study paths unlocked",
   premiumKulSanskar: "Kul & Sanskar",
   premiumKulSanskarTagline: "Dharma flows through generations",
-  premiumKulSanskarF1: "Vansh family tree — unlimited generations",
-  premiumKulSanskarF2: "All 16 Sanskaras tracked + printable certificates",
-  premiumKulSanskarF3: "Shared Kul leaderboard and Kul Sabha",
+  premiumKulSanskarF1: "Smart nudges for family observances and kul milestones",
+  premiumKulSanskarF2: "All 16 Sanskaras tracked for every family member",
+  premiumKulSanskarF3: "Pitru Paksha and ancestral remembrance reminders",
   premiumComingSoon: "Coming Soon",
-  premiumComingSoonTagline: "The sanctuary keeps growing",
-  premiumComingSoonF1: "Daily Rashiphal push alerts for your zodiac sign",
-  premiumComingSoonF2: "Sanskrit pronunciation with Bhashini native audio",
-  premiumComingSoonF3: "Seva matching & Tirtha pilgrimage guides",
+  premiumComingSoonTagline: "The sanctuary grows with you",
+  premiumComingSoonF1: "Dharma Mitra AI — your personal dharmic companion",
+  premiumComingSoonF2: "Sanskrit pronunciation with Bhashini audio",
+  premiumComingSoonF3: "Tirtha maps, darshan alerts, and pilgrimage guides",
   premiumInDevelopment: "✦ In development",
   premiumAgreementText: "I understand this is an early-access preview. Shoonaya Pro is free for now — pricing will be introduced later and I'll be notified before any charges apply.",
   premiumButtonActivating: "Entering the sanctuary…",
@@ -664,13 +647,6 @@ const hi: TranslationMap = {
   mandaliDesc: 'सत्संग और सामुदायिक मंडलियों में शामिल हों',
   kulDesc: 'परिवार, वंश और संस्कार',
   tirthaDesc: 'अपने आस-पास के मंदिर खोजें',
-  japaDesc: 'अपने इष्ट मंत्र का जाप करें',
-  morningRoutineDesc: 'दैनिक अनुष्ठान पूरे करें',
-  sevaHubDesc: 'पवित्र कार्यों का समर्थन करें',
-  quizMasteryDesc: 'अपने धार्मिक ज्ञान का परीक्षण करें',
-  joinDesc: 'अपनी प्रोफ़ाइल बनाएं',
-  exploreDesc: 'डैशबोर्ड खोजें',
-  vichaarDesc: 'स्थानीय चर्चाएं पढ़ें',
   // Notifications & UI
   notifications: 'सूचनाएं', markAllRead: 'सब पढ़ लिया गया',
   allQuiet: 'अभी कोई सूचना नहीं है', allCaughtUp: 'सब अपडेट है',
@@ -963,7 +939,6 @@ const hi: TranslationMap = {
   sharedViaShoonaya: 'Shoonaya द्वारा साझा',
   kathaFruitOfKatha: 'फल — कथा का आशीर्वाद',
   kathaRevealBlessing: 'आशीर्वाद और संदेश देखने के लिए टैप करें',
-  kathaHidePhal: 'आशीर्वाद और संदेश छुपाएं',
   kathaPhalShruti: 'फल-श्रुति',
   startJapa: 'जप प्रारम्भ करें',
   moreKathas: 'और कथाएँ',
@@ -1034,15 +1009,9 @@ const hi: TranslationMap = {
   aartiComplete: 'आरती पूर्ण',
   aartiCompleteDesc: 'जय! आपकी आरती भक्ति के साथ अर्पित की गई है।',
   aartiCompleteQuote: 'भक्तिर्भगवतो सेवा — भक्ति ईश्वर की सेवा है।',
-  offerAgain: 'फिर से अर्पण करें',
-  donePranam: 'प्रणाम 🙏',
+  offerAgain: 'पुनः अर्पित करें',
+  donePranam: 'पूर्ण 🙏',
   aartiDoneLabel: 'पूर्ण',
-  todayPractice: 'आज का अभ्यास',
-  dailyStripDesc: 'एक छोटे कदम से दिन को आगे बढ़ाएं।',
-  openStatus: 'बाकी',
-  shareVerse: 'श्लोक साझा करें',
-  openVerse: 'श्लोक खोलें',
-  exploreFullHymn: 'पूरा स्तोत्र देखें',
   // Premium
   premiumPreviewTitle: "Shoonaya Pro पूर्वावलोकन",
   premiumHeadline: "एक गहरा\nअभ्यास आपकी प्रतीक्षा कर रहा है",
@@ -1072,7 +1041,7 @@ const hi: TranslationMap = {
   premiumComingSoonTagline: "अभयारण्य आपके साथ बढ़ता है",
   premiumComingSoonF1: "धर्म मित्र एआई — आपका व्यक्तिगत धार्मिक साथी",
   premiumComingSoonF2: "भाषिणी ऑडियो के साथ संस्कृत उच्चारण",
-  premiumComingSoonF3: "लाइव दर्शन अलर्ट, तीर्थयात्रा मार्गदर्शिकाएँ और सेवा स्मरण",
+  premiumComingSoonF3: "तीर्थ मानचित्र, दर्शन अलर्ट और तीर्थयात्रा मार्गदर्शिकाएँ",
   premiumInDevelopment: "✦ विकास में",
   premiumAgreementText: "मैं समझता हूं कि यह एक प्रारंभिक-पहुंच पूर्वावलोकन है। Shoonaya Pro अभी मुफ्त है - मूल्य निर्धारण बाद में पेश किया जाएगा और कोई भी शुल्क लागू होने से पहले मुझे सूचित किया जाएगा।",
   premiumButtonActivating: "अभयारण्य में प्रवेश कर रहे हैं...",
@@ -1127,13 +1096,6 @@ const pa: TranslationMap = {
   mandaliDesc: 'ਸਤਿਸੰਗ ਅਤੇ ਭਾਈਚਾਰਕ ਮੰਡਲੀਆਂ ਵਿਚ ਸ਼ਾਮਲ ਹੋਵੋ',
   kulDesc: 'ਪਰਿਵਾਰ, ਵੰਸ਼ ਅਤੇ ਸੰਸਕਾਰ',
   tirthaDesc: 'ਆਪਣੇ ਆਲੇ ਦੁਆਲੇ ਦੇ ਮੰਦਰ ਲੱਭੋ',
-  japaDesc: 'ਆਪਣੇ ਇਸ਼ਟ ਮੰਤਰ ਦਾ ਜਾਪ ਕਰੋ',
-  morningRoutineDesc: 'ਰੋਜ਼ਾਨਾ ਦੇ ਕੰਮ ਪੂਰੇ ਕਰੋ',
-  sevaHubDesc: 'ਪਵਿੱਤਰ ਕਾਰਜਾਂ ਦਾ ਸਮਰਥਨ ਕਰੋ',
-  quizMasteryDesc: 'ਆਪਣੇ ਧਾਰਮਿਕ ਗਿਆਨ ਦੀ ਪਰਖ ਕਰੋ',
-  joinDesc: 'ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
-  exploreDesc: 'ਡੈਸ਼ਬੋਰਡ ਦੀ ਪੜਚੋਲ ਕਰੋ',
-  vichaarDesc: 'ਸਥਾਨਕ ਚਰਚਾਵਾਂ ਪੜ੍ਹੋ',
   // Notifications & UI
   notifications: 'ਸੂਚਨਾਵਾਂ', markAllRead: 'ਸਾਰੇ ਪੜ੍ਹੋ',
   allQuiet: 'ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ ਹੈ', allCaughtUp: 'ਸਭ ਅਪਡੇਟ ਹੈ',
@@ -1426,7 +1388,6 @@ const pa: TranslationMap = {
   sharedViaShoonaya: 'Shoonaya ਰਾਹੀਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ',
   kathaFruitOfKatha: 'ਫਲ — ਕਥਾ ਦਾ ਅਸੀਸ',
   kathaRevealBlessing: 'ਅਸੀਸ ਅਤੇ ਸਿੱਖਿਆ ਵੇਖਣ ਲਈ ਟੈਪ ਕਰੋ',
-  kathaHidePhal: 'ਅਸੀਸ ਅਤੇ ਸਿੱਖਿਆ ਲੁਕਾਓ',
   kathaPhalShruti: 'ਫਲ-ਸ਼ਰੁਤੀ',
   startJapa: 'ਜਪ ਸ਼ੁਰੂ ਕਰੋ',
   moreKathas: 'ਹੋਰ ਕਥਾਵਾਂ',
@@ -1497,15 +1458,9 @@ const pa: TranslationMap = {
   aartiComplete: 'ਆਰਤੀ ਸੰਪੂਰਨ',
   aartiCompleteDesc: 'ਜੈ! ਤੁਹਾਡੀ ਆਰਤੀ ਸ਼ਰਧਾ ਨਾਲ ਭੇਟ ਕੀਤੀ ਗਈ ਹੈ।',
   aartiCompleteQuote: 'ਭਗਤੀ ਭਗਵਾਨ ਦੀ ਸੇਵਾ ਹੈ।',
-  offerAgain: 'ਦੁਬਾਰਾ ਅਰਪਣ ਕਰੋ',
-  donePranam: 'ਪ੍ਰਣਾਮ 🙏',
+  offerAgain: 'ਦੁਬਾਰਾ ਭੇਟ ਕਰੋ',
+  donePranam: 'ਪੂਰਾ 🙏',
   aartiDoneLabel: 'ਪੂਰਾ',
-  todayPractice: 'ਅੱਜ ਦਾ ਅਭਿਆਸ',
-  dailyStripDesc: 'ਇਕ ਛੋਟੇ ਕਦਮ ਨਾਲ ਦਿਨ ਨੂੰ ਅੱਗੇ ਵਧਾਓ।',
-  openStatus: 'ਬਾਕੀ',
-  shareVerse: 'ਸ਼ਲੋਕ ਸਾਂਝਾ ਕਰੋ',
-  openVerse: 'ਸ਼ਲੋਕ ਖੋਲ੍ਹੋ',
-  exploreFullHymn: 'ਪੂਰਾ ਸਤੋਤਰ ਦੇਖੋ',
   // Premium
   premiumPreviewTitle: "Shoonaya Pro ਪੂਰਵਦਰਸ਼ਨ",
   premiumHeadline: "ਇੱਕ ਡੂੰਘਾ\nਅਭਿਆਸ ਤੁਹਾਡੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ",
@@ -1535,7 +1490,7 @@ const pa: TranslationMap = {
   premiumComingSoonTagline: "ਅਸਥਾਨ ਤੁਹਾਡੇ ਨਾਲ ਵਧਦਾ ਹੈ",
   premiumComingSoonF1: "ਧਰਮ ਮਿੱਤਰ ਏਆਈ — ਤੁਹਾਡਾ ਨਿੱਜੀ ਧਾਰਮਿਕ ਸਾਥੀ",
   premiumComingSoonF2: "ਭਾਸ਼ਿਨੀ ਆਡੀਓ ਦੇ ਨਾਲ ਸੰਸਕ੍ਰਿਤ ਉਚਾਰਨ",
-  premiumComingSoonF3: "ਲਾਈਵ ਦਰਸ਼ਨ ਅਲਰਟ, ਤੀਰਥ ਯਾਤਰਾ ਗਾਈਡ ਅਤੇ ਸੇਵਾ ਯਾਦ-ਦਿਵਾਉਣੇ",
+  premiumComingSoonF3: "ਤੀਰਥ ਨਕਸ਼ੇ, ਦਰਸ਼ਨ ਚੇਤਾਵਨੀਆਂ, ਅਤੇ ਤੀਰਥ ਯਾਤਰਾ ਗਾਈਡ",
   premiumInDevelopment: "✦ ਵਿਕਾਸ ਵਿੱਚ",
   premiumAgreementText: "ਮੈਂ ਸਮਝਦਾ ਹਾਂ ਕਿ ਇਹ ਇੱਕ ਸ਼ੁਰੂਆਤੀ-ਪਹੁੰਚ ਪੂਰਵਦਰਸ਼ਨ ਹੈ। Shoonaya Pro ਹੁਣੇ ਮੁਫ਼ਤ ਹੈ - ਕੀਮਤਾਂ ਬਾਅਦ ਵਿੱਚ ਪੇਸ਼ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ ਅਤੇ ਕੋਈ ਵੀ ਖਰਚੇ ਲਾਗੂ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ ਮੈਨੂੰ ਸੂਚਿਤ ਕੀਤਾ ਜਾਵੇਗਾ।",
   premiumButtonActivating: "ਅਸਥਾਨ ਵਿੱਚ ਦਾਖਲ ਹੋ ਰਿਹਾ ਹੈ...",

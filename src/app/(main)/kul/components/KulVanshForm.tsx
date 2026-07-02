@@ -49,7 +49,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
           </div>
           <button 
             onClick={onClose} 
-            className="w-11 h-11 rounded-2xl bg-[var(--surface-soft)] flex items-center justify-center text-[#F2EAD6]/40 hover:bg-[var(--surface-soft)] hover:text-[#F2EAD6] transition-all"
+            className="w-11 h-11 rounded-2xl bg-white/5 flex items-center justify-center text-[#F2EAD6]/40 hover:bg-white/10 hover:text-[#F2EAD6] transition-all"
           >
             <X size={20} />
           </button>
@@ -71,7 +71,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                   placeholder="e.g. Pt. Ram Sharma"
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full px-5 py-4 rounded-2xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm transition-all shadow-inner"
+                  className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm transition-all shadow-inner"
                 />
               </div>
 
@@ -87,7 +87,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                       if (['Father', 'Grandfather', 'Great Grandfather', 'Uncle', 'Brother', 'Son', 'Tau Ji', 'Chacha Ji', 'Mama Ji', 'Mausa Ji'].some(r => newRole.includes(r))) newGender = 'male';
                       setForm({ ...form, role: newRole, gender: (newGender || 'male') as 'male' | 'female' | 'other' });
                     }}
-                    className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
+                    className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
                   >
                     <option value="">Select Role...</option>
                     {EXTENDED_ROLES.map(group => (
@@ -109,7 +109,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                   key={g}
                   onClick={() => setForm(f => ({ ...f, gender: g }))}
                   className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                    form.gender === g ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-[var(--surface-soft)] border-[#C5A059]/15 text-[#F2EAD6]/30'
+                    form.gender === g ? 'bg-[#C5A059] text-black border-[#C5A059] shadow-lg shadow-[#C5A059]/20' : 'bg-white/5 border-white/10 text-[#F2EAD6]/30'
                   }`}
                 >
                   {g === 'male' ? t('shivaM') : t('shaktiF')}
@@ -132,7 +132,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                   type="date"
                   value={form.birth_date ?? ''}
                   onChange={e => setForm(f => ({ ...f, birth_date: e.target.value || null, birth_year: e.target.value ? new Date(e.target.value).getFullYear() : f.birth_year }))}
-                  className="w-full px-5 py-4 rounded-2xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
+                  className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
                 />
               </div>
               <div className="space-y-2">
@@ -142,7 +142,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                   placeholder="e.g. 1945"
                   value={form.birth_year ?? ''}
                   onChange={e => setForm(f => ({ ...f, birth_year: e.target.value ? parseInt(e.target.value) : null }))}
-                  className="w-full px-5 py-4 rounded-2xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
+                  className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
                 />
               </div>
             </div>
@@ -153,7 +153,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 placeholder="e.g. Mathura, UP"
                 value={form.birth_place ?? ''}
                 onChange={e => setForm(f => ({ ...f, birth_place: e.target.value }))}
-                className="w-full px-5 py-4 rounded-2xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
+                className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm shadow-inner"
               />
               <p className="text-[9px] text-[#C5A059]/60 font-medium ml-1 flex items-center gap-1">
                 <Info size={10} /> {t('kulBirthPlaceDesc')}
@@ -161,7 +161,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
             </div>
 
             <div className="flex items-center gap-4 p-5 rounded-3xl bg-[#C5A059]/5 border border-[#C5A059]/10">
-               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${form.is_alive ? 'bg-green-500/20 text-green-500' : 'bg-[var(--surface-soft)] text-[#F2EAD6]/30'}`}>
+               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${form.is_alive ? 'bg-green-500/20 text-green-500' : 'bg-white/10 text-[#F2EAD6]/30'}`}>
                  <Baby size={20} />
                </div>
                <div className="flex-1">
@@ -170,7 +170,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                </div>
                <button 
                  onClick={() => setForm(f => ({ ...f, is_alive: !f.is_alive }))}
-                 className={`w-12 h-6 rounded-full relative transition-all duration-300 ${form.is_alive ? 'bg-green-500' : 'bg-[var(--surface-soft)]'}`}
+                 className={`w-12 h-6 rounded-full relative transition-all duration-300 ${form.is_alive ? 'bg-green-500' : 'bg-white/10'}`}
                >
                  <motion.div 
                    animate={{ x: form.is_alive ? 26 : 4 }}
@@ -196,7 +196,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 <select
                   value={form.parent_id ?? ''}
                   onChange={e => setForm(f => ({ ...f, parent_id: e.target.value || null }))}
-                  className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
+                  className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
                 >
                   <option value="">No parent linked (Root)</option>
                   {members.filter(m => m.id !== editMember?.id).map(m => (
@@ -213,7 +213,7 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 <select
                   value={form.spouse_id ?? ''}
                   onChange={e => setForm(f => ({ ...f, spouse_id: e.target.value || null }))}
-                  className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-[#C5A059]/15 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
+                  className="w-full px-5 py-4 rounded-2xl bg-[#252522] border border-white/10 outline-none focus:border-[#C5A059]/40 text-[#F2EAD6] text-sm appearance-none shadow-inner"
                 >
                   <option value="">No spouse linked</option>
                   {members.filter(m => m.id !== editMember?.id && m.gender !== form.gender).map(m => (

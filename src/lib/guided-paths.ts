@@ -66,7 +66,7 @@ export const GUIDED_PLANS: GuidedPlan[] = [
       { day: 4, title: 'Japa Begins',          focus: 'Mantra ✦ Step 4',        practice: 'Wake + Snana + Tilak (steps 1–3 ✓). Now add: one full mala (108 rounds) of your chosen mantra. Sit, close your eyes, and begin before any screen or conversation.', duration: 35 },
       { day: 5, title: 'Sandhya Vandana',      focus: 'Prayer ✦ Step 5',        practice: 'Steps 1–4 ✓. Now add: morning Sandhya Vandana or Surya Namaskar. Turn toward the east and greet the rising sun with the full sequence. If you don\'t know the full form, offer a simple arghya (water in cupped hands lifted toward the sun).', duration: 45 },
       { day: 6, title: 'Shloka Paath',         focus: 'Scripture ✦ Step 6',     practice: 'Steps 1–5 ✓. Now add: read or recite one passage from your chosen scripture. It may be a single shloka or one chapter. Choose one verse to carry in your mind through the day.', duration: 55 },
-      { day: 7, title: 'Full Nitya Karma',     focus: 'All 7 Steps ✦ Complete', practice: 'Today you do the complete Dincharya in one flowing sequence: (1) Rise at Brahma Muhurta, (2) Snana, (3) Tilak, (4) Sandhya Vandana, (5) Japa — one mala, (6) Puja + Aarti, (7) Svadhyaya — scripture reading. No shortcuts. This is your morning from today onward.', duration: 75 },
+      { day: 7, title: 'Full Nitya Karma',     focus: 'All 7 Steps ✦ Complete', practice: 'Today you do the complete Dincharya in one flowing sequence: (1) Rise at Brahma Muhurta, (2) Snana, (3) Tilak, (4) Japa — one mala, (5) Sandhya Vandana, (6) Shloka Paath, (7) Aarti or silent offering to your deity. No shortcuts. This is your morning from today onward.', duration: 75 },
     ],
   },
   {

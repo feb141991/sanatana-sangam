@@ -3,9 +3,8 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Calendar, ChevronRight, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronLeft, Calendar, ChevronRight } from 'lucide-react';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
-import { JAPA_MANTRAS } from '@/lib/tradition-config';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import {
   type MalaSessionRow as Session,
@@ -113,16 +112,6 @@ function fmtTime(secs: number): string {
   const m = Math.floor((secs % 3600) / 60);
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
-}
-
-function relativeTime(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00');
-  const now = new Date();
-  const diffDays = Math.round((now.getTime() - d.getTime()) / (1000 * 3600 * 24));
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
 }
 
 function fmtNum(n: number): string {
@@ -306,9 +295,8 @@ export default function InsightsClient({ sessions }: Props) {
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
 
-  const [filter, setFilter] = useState<FilterKey>('7d');
+  const [filter, setFilter] = useState<FilterKey>('30d');
   const [showCalendar, setShowCalendar] = useState(false);
-  const [expandedSession, setExpandedSession] = useState<number | null>(null);
 
   // Theme tokens
   const bg    = isDark ? '#06060A' : '#F5F0E8';
@@ -528,34 +516,30 @@ export default function InsightsClient({ sessions }: Props) {
                 style={{ background: surface, borderColor: borderCol, boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.06)' }}
               >
                 <p className="text-[12px] font-semibold uppercase tracking-wide mb-4" style={{ color: sub }}>
-                  {filter === '7d' ? 'Weekly Summary' : `Overview (${FILTERS.find(f => f.key === filter)?.label})`}
+                  Overview ({FILTERS.find(f => f.key === filter)?.label})
                 </p>
-                <div className="grid grid-cols-2 gap-3 mb-5">
-                  <StatCard label="Total Beads" value={fmtNum(stats.totalBeads)} isDark={isDark} amber={amber} sub={sub} />
-                  <StatCard label="Total Time" value={stats.totalSecs > 0 ? fmtTime(stats.totalSecs) : '—'} isDark={isDark} amber={amber} sub={sub} />
-                  <StatCard label="Total Sessions" value={`${stats.totalSessions}`} isDark={isDark} amber={amber} sub={sub} />
-                  <StatCard label="Avg/Session" value={stats.totalSessions > 0 ? Math.round(stats.totalBeads / stats.totalSessions).toString() : '0'} isDark={isDark} amber={amber} sub={sub} />
+                <div className="grid grid-cols-2 gap-3">
+                  <StatCard
+                    label="Total Repetitions"
+                    value={fmtNum(stats.totalBeads)}
+                    isDark={isDark} amber={amber} sub={sub}
+                  />
+                  <StatCard
+                    label="Total Sessions"
+                    value={`${stats.totalSessions}`}
+                    isDark={isDark} amber={amber} sub={sub}
+                  />
+                  <StatCard
+                    label="Avg. Per Day"
+                    value={fmtNum(stats.avgPerDay)}
+                    isDark={isDark} amber={amber} sub={sub}
+                  />
+                  <StatCard
+                    label="Total Time"
+                    value={stats.totalSecs > 0 ? fmtTime(stats.totalSecs) : '—'}
+                    isDark={isDark} amber={amber} sub={sub}
+                  />
                 </div>
-                
-                {/* This week's mantra (or selected period) */}
-                {stats.topMantra && (
-                  <div className="mt-4 pt-4 border-t" style={{ borderColor: borderCol }}>
-                    <p className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: sub }}>
-                      {filter === '7d' ? "This week's mantra" : "Most used mantra"}
-                    </p>
-                    <div className="flex flex-col gap-1">
-                      <p className="text-[1.3rem] leading-snug" style={{ fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif', color: text }}>
-                        {JAPA_MANTRAS.find((m: any) => m.id === stats.topMantra)?.devanagari || '—'}
-                      </p>
-                      <p className="text-[14px] font-semibold" style={{ color: amber }}>
-                        {MANTRA_LABELS[stats.topMantra] ?? stats.topMantra.replace(/_/g, ' ')}
-                      </p>
-                      <p className="text-[11px]" style={{ color: sub }}>
-                        {JAPA_MANTRAS.find((m: any) => m.id === stats.topMantra)?.tradition || ''} Tradition
-                      </p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -702,72 +686,54 @@ export default function InsightsClient({ sessions }: Props) {
             {/* ── Recent sessions list ─────────────────────────────────── */}
             <div className="px-5">
               <p className="text-[12px] font-semibold uppercase tracking-wide mb-3 px-1" style={{ color: sub }}>
-                Session History
+                Recent Sessions
               </p>
               <div className="space-y-2">
-                {sessions.filter(s => sessionDate(s)).sort((a, b) => new Date(sessionDate(b)!).getTime() - new Date(sessionDate(a)!).getTime()).slice(0, 7).map((s, i) => {
-                  const dateKey = sessionDate(s)!;
-                  const isExpanded = expandedSession === i;
-                  const mantraId = sessionMantra(s) || 'unknown';
-                  const mantraName = MANTRA_LABELS[mantraId] ?? mantraId.replace(/_/g, ' ');
-                  const mantraDev = JAPA_MANTRAS.find((m: any) => m.id === mantraId)?.devanagari;
-                  const relTime = relativeTime(dateKey);
-                  
+                {filtered.slice(0, 12).map((s, i) => {
+                  const dateKey = sessionDate(s) || '1970-01-01';
+                  const dateObj = new Date(dateKey + 'T12:00:00');
+                  const dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                  const dow     = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dateObj.getDay()];
                   return (
                     <motion.div
-                      key={`${dateKey}-${i}`}
-                      className="rounded-2xl border overflow-hidden"
+                      key={`${sessionDate(s)}-${i}`}
+                      className="flex items-center gap-3 rounded-2xl px-4 py-3 border"
                       style={{ background: isDark ? 'var(--card-bg)' : 'rgba(255,255,255,0.90)', borderColor: borderCol }}
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.25, delay: i * 0.04 }}
                     >
-                      <button 
-                        onClick={() => setExpandedSession(isExpanded ? null : i)}
-                        className="w-full text-left flex items-center justify-between px-4 py-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl leading-none" role="img" aria-label="mala">📿</span>
-                          <div>
-                            <p className="text-[13px] font-semibold" style={{ color: text }}>
-                              {mantraName}
-                            </p>
-                            <p className="text-[11px] mt-0.5" style={{ color: sub }}>
-                              {sessionBeads(s)} beads · {relTime}
-                            </p>
-                          </div>
-                        </div>
-                        {isExpanded ? <ChevronUp size={16} style={{ color: sub }} /> : <ChevronDown size={16} style={{ color: sub }} />}
-                      </button>
-                      
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="px-4 pb-4 overflow-hidden"
-                          >
-                            <div className="pt-2 mt-1 border-t flex flex-col gap-2" style={{ borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
-                              <div className="flex justify-between items-center text-[11px]">
-                                <span style={{ color: sub }}>Duration</span>
-                                <span className="font-medium" style={{ color: text }}>{fmtTime(sessionSecs(s))}</span>
-                              </div>
-                              <div className="flex justify-between items-center text-[11px]">
-                                <span style={{ color: sub }}>Rounds Completed</span>
-                                <span className="font-medium" style={{ color: text }}>{sessionRounds(s)}</span>
-                              </div>
-                              {mantraDev && (
-                                <div className="mt-2 text-center py-2 rounded-xl" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' }}>
-                                  <p className="text-[1.1rem] leading-snug" style={{ fontFamily: 'var(--font-devanagari), "Noto Sans Devanagari", sans-serif', color: amber }}>
-                                    {mantraDev}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      {/* Date bubble */}
+                      <div className="flex flex-col items-center w-10 flex-shrink-0">
+                        <span className="text-[9px] font-bold uppercase" style={{ color: amber }}>{dow}</span>
+                        <span className="text-[15px] font-bold" style={{ color: text }}>
+                          {dateObj.getDate()}
+                        </span>
+                        <span className="text-[9px]" style={{ color: sub }}>
+                          {dateObj.toLocaleDateString('en-GB', { month: 'short' })}
+                        </span>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="w-px h-9 flex-shrink-0" style={{ background: isDark ? 'rgba(197, 160, 89,0.15)' : 'rgba(0,0,0,0.08)' }} />
+
+                      {/* Stats */}
+                      <div className="flex-1">
+                        <p className="text-[13px] font-semibold" style={{ color: text }}>
+                          {sessionRounds(s)} mala{sessionRounds(s) !== 1 ? 's' : ''} · {fmtNum(sessionBeads(s))} beads
+                        </p>
+                        <p className="text-[11px] mt-0.5" style={{ color: sub }}>
+                          {sessionSecs(s) > 0 ? fmtTime(sessionSecs(s)) : ''}
+                          {sessionMantra(s) ? ` · ${sessionMantra(s)!.replace(/_/g, ' ')}` : ''}
+                          {sessionMalaId(s) ? ` · ${MALA_LABELS[sessionMalaId(s)!] ?? sessionMalaId(s)!.replace(/_/g, ' ')}` : ''}
+                        </p>
+                      </div>
+
+                      {/* Mini indicator */}
+                      <div
+                        className="w-2 h-2 rounded-full flex-shrink-0"
+                        style={{ background: amber }}
+                      />
                     </motion.div>
                   );
                 })}

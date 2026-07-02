@@ -1,13 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { ArrowLeft, CheckCircle, Send } from 'lucide-react';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
-import { SACRED_RELICS } from '@/lib/relics';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES, SPIRITUAL_LEVELS } from '@/lib/utils';
 import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
@@ -15,8 +13,6 @@ import type { ThreadWithAuthor, ForumReply, Profile } from '@/types/database';
 type ReplyWithAuthor = ForumReply & {
   profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'spiritual_level'>;
 };
-
-const RELIC_BY_ID = Object.fromEntries(SACRED_RELICS.map((relic) => [relic.id, relic])) as Record<string, (typeof SACRED_RELICS)[number]>;
 
 export default function ThreadDetailClient({
   thread,
@@ -35,49 +31,8 @@ export default function ThreadDetailClient({
   const [replyBody,   setReplyBody] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const [myReactions, setMyReactions] = useState<Set<string>>(new Set());
-  const [reactionCounts, setReactionCounts] = useState<Record<string, number>>(
-    (thread.reactions as any) ?? { pranam: 0, bhakti: 0, prakas: 0 }
-  );
-
-  useEffect(() => {
-    if (!userId) return;
-    fetch(`/api/vichaar/react?thread_ids=${thread.id}`)
-      .then(r => r.json())
-      .then(data => {
-        const types = new Set<string>(
-          (data.reactions ?? []).map((r: any) => r.reaction_type)
-        );
-        setMyReactions(types);
-      })
-      .catch(() => {});
-  }, [thread.id, userId]);
-
-  async function toggleReaction(reactionType: 'pranam' | 'bhakti' | 'prakas') {
-    if (!userId) return;
-    setMyReactions(prev => {
-      const next = new Set(prev);
-      if (next.has(reactionType)) next.delete(reactionType);
-      else next.add(reactionType);
-      return next;
-    });
-    setReactionCounts(prev => {
-      const had = myReactions.has(reactionType);
-      return {
-        ...prev,
-        [reactionType]: Math.max(0, (prev[reactionType] ?? 0) + (had ? -1 : 1)),
-      };
-    });
-    await fetch('/api/vichaar/react', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ thread_id: thread.id, reaction_type: reactionType }),
-    }).catch(() => {});
-  }
-
   const cat = FORUM_CATEGORIES.find((c) => c.value === threadState.category);
   const author = threadState.profiles;
-  const authorRelic = author?.active_symbol_id ? RELIC_BY_ID[author.active_symbol_id] : null;
 
   async function submitReply() {
     if (!replyBody.trim()) return;
@@ -159,63 +114,13 @@ export default function ThreadDetailClient({
         )}
 
         <div className="flex items-center gap-2 pt-2 border-t border-gray-50 text-sm text-[color:var(--brand-muted)]">
-          <div className="relative shrink-0 w-9 h-9">
-            <div className="w-9 h-9 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-xs font-bold">
-              {getInitials(author?.full_name ?? 'S')}
-            </div>
-            {authorRelic?.imageUrl && (
-              <div
-                className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center border"
-                style={{
-                  background: 'var(--bg-primary, #0E0E0F)',
-                  borderColor: 'rgba(197,160,89,0.30)',
-                }}
-              >
-                <Image
-                  src={authorRelic.imageUrl}
-                  width={10}
-                  height={10}
-                  alt={authorRelic.name}
-                  title={authorRelic.name}
-                  unoptimized
-                  className="rounded-full"
-                />
-              </div>
-            )}
+          <div className="w-7 h-7 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-xs font-bold">
+            {getInitials(author?.full_name ?? 'S')}
           </div>
           <span className="font-medium text-[color:var(--text-muted-warm)]">{author?.full_name}</span>
           <span className="text-gray-300">·</span>
           <span>{formatRelativeTime(threadState.created_at)}</span>
         </div>
-
-        {!isGuest && (
-          <div className="flex items-center gap-3 pt-2">
-            {([
-              { type: 'pranam', emoji: '🙏', label: 'Pranam' },
-              { type: 'bhakti', emoji: '❤️', label: 'Bhakti' },
-              { type: 'prakas', emoji: '✨', label: 'Prakas' },
-            ] as const).map(({ type, emoji, label }) => {
-              const active = myReactions.has(type);
-              const count = reactionCounts[type] ?? 0;
-              return (
-                <button
-                  key={type}
-                  onClick={() => toggleReaction(type)}
-                  className="flex items-center gap-1 text-[12px] rounded-full px-2.5 py-1 border transition-all active:scale-90"
-                  style={{
-                    background: active ? 'rgba(197,160,89,0.12)' : 'transparent',
-                    borderColor: active ? 'rgba(197,160,89,0.35)' : 'rgba(255,255,255,0.08)',
-                    color: active ? '#C5A059' : 'var(--text-dim)',
-                    fontWeight: active ? 700 : 400,
-                  }}
-                  title={label}
-                >
-                  {emoji} {count > 0 && count}
-                </button>
-              );
-            })}
-          </div>
-        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">

@@ -32,7 +32,7 @@ export function KulFamilyProfileSheet({
       <div className="w-full max-w-md max-h-[calc(100vh-7rem)] sm:max-h-[85vh] overflow-y-auto clay-card rounded-[2.5rem] p-6 space-y-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-4 min-w-0">
-             <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 border border-[#C5A059]/15 shadow-inner flex items-center justify-center">
+             <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 border border-white/20 shadow-inner flex items-center justify-center">
                 {profile?.avatar_url ? (
                    <Image width={120} height={120} src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -50,13 +50,13 @@ export function KulFamilyProfileSheet({
           <button
             type="button"
             onClick={onClose}
-            className="w-11 h-11 rounded-full glass-panel border border-[#C5A059]/15 flex items-center justify-center theme-muted hover:theme-ink transition-colors"
+            className="w-11 h-11 rounded-full glass-panel border border-white/10 flex items-center justify-center theme-muted hover:theme-ink transition-colors"
           >
             <X size={18} />
           </button>
         </div>
 
-        <div className="glass-panel rounded-[2rem] p-5 space-y-4 border border-[#C5A059]/15 bg-[var(--surface-soft)]">
+        <div className="glass-panel rounded-[2rem] p-5 space-y-4 border border-white/5 bg-white/5">
           {location ? (
             <div className="flex items-center gap-2 text-sm theme-ink">
               <span className="text-base">📍</span>
@@ -75,7 +75,7 @@ export function KulFamilyProfileSheet({
         </div>
 
         {detailRows.length > 0 && (
-          <div className="glass-panel rounded-[2rem] border border-[#C5A059]/15 p-5 bg-[var(--surface-soft)]">
+          <div className="glass-panel rounded-[2rem] border border-white/5 p-5 bg-white/5">
             <div className="grid grid-cols-2 gap-y-5 gap-x-4">
               {detailRows.map((row) => (
                 <div key={row.label} className="min-w-0">

@@ -230,16 +230,6 @@ function generatePanditAiReading(
   chart: AstroChart,
   lang: 'en' | 'hi' | 'pa' = 'en'
 ): string {
-  if (chart.timeUnknown) {
-    if (lang === 'hi') {
-      return 'यह रीडिंग सीमित सटीकता के साथ बनाई गई है क्योंकि जन्म समय उपलब्ध नहीं है। इसलिए इसे चंद्र राशि, नक्षत्र और वर्तमान दशा के आधार पर पढ़ें, न कि लग्न और भावों के अंतिम निष्कर्ष के रूप में। यदि सही जन्म समय मिले, तो चार्ट दोबारा बनाना आवश्यक है।';
-    }
-    if (lang === 'pa') {
-      return 'ਇਹ ਪਾਠ ਸੀਮਿਤ ਸਟੀਕਤਾ ਨਾਲ ਤਿਆਰ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਜਨਮ ਸਮਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇਸ ਲਈ ਇਸ ਨੂੰ ਚੰਦਰ ਰਾਸ਼ੀ, ਨਕਸ਼ਤਰ ਅਤੇ ਵਰਤਮਾਨ ਦਸ਼ਾ ਦੇ ਆਧਾਰ ਤੇ ਪੜ੍ਹੋ, ਨਾ ਕਿ ਲਗਨ ਅਤੇ ਘਰਾਂ ਦੇ ਅੰਤਿਮ ਨਤੀਜੇ ਵਜੋਂ। ਜੇ ਸਹੀ ਜਨਮ ਸਮਾਂ ਮਿਲੇ, ਤਾਂ ਚਾਰਟ ਮੁੜ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ।';
-    }
-    return 'This reading is intentionally limited because birth time is unknown. Read it through Moon sign, Nakshatra, and current Dasha rather than treating ascendant and house conclusions as final. If exact birth time becomes available, regenerate the chart before making deeper judgments.';
-  }
-
   const surya   = placements.find(p => p.name === 'Surya' || p.name === 'सूर्य' || p.name === 'ਸੂਰਜ');
   const chandra = placements.find(p => p.name === 'Chandra' || p.name === 'चंद्र' || p.name === 'ਚੰਦਰ');
   const nakName = chart.nakshatra?.name ?? '';
@@ -323,58 +313,11 @@ function generatePanditAiReading(
   return `${p1}\n\n${p2}\n\n${p3}`;
 }
 
-const SECTION_COPY: Record<'en' | 'hi' | 'pa', Record<string, string>> = {
-  en: {
-    foundationTitle: 'Foundation and svabhava',
-    timingTitle: 'Timing and dasha',
-    strengthTitle: 'Graha strength and cautions',
-    navamshaTitle: 'Navamsha and inner maturity',
-    sadhanaTitle: 'Sadhana and upaya',
-    noBirthTimeTitle: 'Birth-time confidence',
-    noBirthTimeSummary: 'Birth time is unknown, so ascendant, houses, and divisional charts should not be treated as reliable.',
-    noBirthTimePoint1: 'Use Moon sign, Nakshatra, and Dasha as the dependable reading layer.',
-    noBirthTimePoint2: 'Do not make house-level, marriage, or career timing claims from this chart version.',
-    noBirthTimePoint3: 'If an exact birth time becomes available, regenerate the chart before deeper interpretation.',
-    noBirthTimeAction1: 'Show only sign-based and dasha-based guidance.',
-    noBirthTimeAction2: 'Hide lagna, house, D9, and house-driven yogas from the primary reading.',
-  },
-  hi: {
-    foundationTitle: 'मूल आधार और स्वभाव',
-    timingTitle: 'समय और दशा',
-    strengthTitle: 'ग्रह बल और सावधानियाँ',
-    navamshaTitle: 'नवांश और आंतरिक परिपक्वता',
-    sadhanaTitle: 'साधना और उपाय',
-    noBirthTimeTitle: 'जन्म समय की विश्वसनीयता',
-    noBirthTimeSummary: 'जन्म समय अज्ञात है, इसलिए लग्न, भाव और विभाजित चार्ट को विश्वसनीय नहीं माना जाना चाहिए।',
-    noBirthTimePoint1: 'इस स्थिति में चंद्र राशि, नक्षत्र और दशा ही अधिक भरोसेमंद आधार हैं।',
-    noBirthTimePoint2: 'इस चार्ट से भाव-आधारित विवाह, करियर या सूक्ष्म भविष्यवाणी नहीं करनी चाहिए।',
-    noBirthTimePoint3: 'यदि सही जन्म समय मिल जाए, तो गहरी व्याख्या से पहले चार्ट दोबारा बनाएं।',
-    noBirthTimeAction1: 'मुख्य रूप से राशि और दशा आधारित मार्गदर्शन ही दिखाएँ।',
-    noBirthTimeAction2: 'प्राथमिक रीडिंग से लग्न, भाव, D9 और भाव-आधारित योग छिपाएँ।',
-  },
-  pa: {
-    foundationTitle: 'ਮੂਲ ਅਧਾਰ ਅਤੇ ਸੁਭਾਵ',
-    timingTitle: 'ਸਮਾਂ ਅਤੇ ਦਸ਼ਾ',
-    strengthTitle: 'ਗ੍ਰਹਿ ਬਲ ਅਤੇ ਸਾਵਧਾਨੀਆਂ',
-    navamshaTitle: 'ਨਵਾਂਸ਼ ਅਤੇ ਅੰਦਰੂਨੀ ਪਰਿਪੱਕਤਾ',
-    sadhanaTitle: 'ਸਾਧਨਾ ਅਤੇ ਉਪਾਯ',
-    noBirthTimeTitle: 'ਜਨਮ ਸਮੇਂ ਦੀ ਭਰੋਸੇਯੋਗਤਾ',
-    noBirthTimeSummary: 'ਜਨਮ ਸਮਾਂ ਅਣਜਾਣ ਹੈ, ਇਸ ਲਈ ਲਗਨ, ਘਰ ਅਤੇ ਵਭਾਜਿਤ ਚਾਰਟ ਨੂੰ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਮੰਨਣਾ ਚਾਹੀਦਾ।',
-    noBirthTimePoint1: 'ਇਸ ਹਾਲਤ ਵਿੱਚ ਚੰਦਰ ਰਾਸ਼ੀ, ਨਕਸ਼ਤਰ ਅਤੇ ਦਸ਼ਾ ਹੀ ਵਧੇਰੇ ਭਰੋਸੇਯੋਗ ਪੱਧਰ ਹਨ।',
-    noBirthTimePoint2: 'ਇਸ ਚਾਰਟ ਤੋਂ ਘਰ-ਅਧਾਰਿਤ ਵਿਆਹ, ਕਰੀਅਰ ਜਾਂ ਸੁਖਮ ਭਵਿੱਖਬਾਣੀ ਨਹੀਂ ਕਰਨੀ ਚਾਹੀਦੀ।',
-    noBirthTimePoint3: 'ਜੇ ਸਹੀ ਜਨਮ ਸਮਾਂ ਮਿਲ ਜਾਵੇ ਤਾਂ ਡੂੰਘੀ ਵਿਆਖਿਆ ਤੋਂ ਪਹਿਲਾਂ ਚਾਰਟ ਮੁੜ ਬਣਾਓ।',
-    noBirthTimeAction1: 'ਮੁੱਖ ਤੌਰ ਤੇ ਰਾਸ਼ੀ ਅਤੇ ਦਸ਼ਾ ਅਧਾਰਿਤ ਮਾਰਗਦਰਸ਼ਨ ਹੀ ਦਿਖਾਓ।',
-    noBirthTimeAction2: 'ਪ੍ਰਾਥਮਿਕ ਪਾਠ ਤੋਂ ਲਗਨ, ਘਰ, D9 ਅਤੇ ਘਰ-ਅਧਾਰਿਤ ਯੋਗ ਹਟਾਓ।',
-  },
-};
-
 function buildInterpretationSections(
   lagnaMeta: { num: number; sa: string; en: string; ruler: string },
   placements: PlanetPlacement[],
   chart: AstroChart,
-  lang: 'en' | 'hi' | 'pa',
 ): KundaliInterpretationSection[] {
-  const copy = SECTION_COPY[lang];
   const byKey = Object.fromEntries(placements.map(p => [p.key, p]));
   const moon = byKey.Chandra;
   const sun = byKey.Surya;
@@ -385,46 +328,10 @@ function buildInterpretationSections(
   const strongPlanets = placements.filter(p => p.strength >= 78).slice(0, 3);
   const weakPlanets = placements.filter(p => p.strength <= 55).slice(0, 3);
 
-  if (chart.timeUnknown) {
-    return [
-      {
-        id: 'confidence',
-        title: copy.noBirthTimeTitle,
-        priority: 'foundation',
-        summary: copy.noBirthTimeSummary,
-        points: [
-          copy.noBirthTimePoint1,
-          copy.noBirthTimePoint2,
-          copy.noBirthTimePoint3,
-        ],
-        actions: [
-          copy.noBirthTimeAction1,
-          copy.noBirthTimeAction2,
-        ],
-      },
-      {
-        id: 'timing',
-        title: copy.timingTitle,
-        priority: 'timing',
-        summary: currentDasha
-          ? `${currentDasha.planet} Mahadasha is the active timing container${currentAntar ? `, refined by ${currentAntar.planet} Antardasha` : ''}.`
-          : 'Current dasha was not resolved for this chart.',
-        points: [
-          currentDasha ? `${currentDasha.planet} Mahadasha runs until ${currentDasha.endDate}.` : 'No active Mahadasha found.',
-          currentAntar ? `${currentAntar.planet} Antardasha runs ${currentAntar.startDate} to ${currentAntar.endDate}.` : 'No active Antardasha found.',
-          chart.nakshatra ? `Janma Nakshatra ${chart.nakshatra.name}, pada ${chart.nakshatra.pada}, starts the Vimshottari sequence through ${chart.nakshatra.lord}.` : 'Nakshatra unavailable.',
-        ],
-        actions: [
-          'Use dasha and nakshatra as the primary interpretive layer until birth time is confirmed.',
-        ],
-      },
-    ];
-  }
-
   return [
     {
       id: 'foundation',
-      title: copy.foundationTitle,
+      title: 'Foundation and svabhava',
       priority: 'foundation',
       summary: `${lagnaMeta.sa} lagna makes ${lagnaLordName} the chart anchor. The first read should combine Lagna, Lagna lord, Chandra and Surya before judging any single planet.`,
       points: [
@@ -439,7 +346,7 @@ function buildInterpretationSections(
     },
     {
       id: 'timing',
-      title: copy.timingTitle,
+      title: 'Timing and dasha',
       priority: 'timing',
       summary: currentDasha
         ? `${currentDasha.planet} Mahadasha is the active timing container${currentAntar ? `, refined by ${currentAntar.planet} Antardasha` : ''}.`
@@ -456,7 +363,7 @@ function buildInterpretationSections(
     },
     {
       id: 'strength',
-      title: copy.strengthTitle,
+      title: 'Graha strength and cautions',
       priority: 'caution',
       summary: 'This app shows a Vedic Power Index, not classical full Shadbala. It is useful for product guidance but should be labelled as a proxy.',
       points: [
@@ -471,7 +378,7 @@ function buildInterpretationSections(
     },
     {
       id: 'navamsha',
-      title: copy.navamshaTitle,
+      title: 'Navamsha and inner maturity',
       priority: 'relationship',
       summary: 'D9/Navamsha has been added as a divisional layer. It is especially useful for dharma maturity, marriage themes, and inner refinement.',
       points: [
@@ -486,7 +393,7 @@ function buildInterpretationSections(
     },
     {
       id: 'sadhana',
-      title: copy.sadhanaTitle,
+      title: 'Sadhana and upaya',
       priority: 'sadhana',
       summary: 'Remedies should stay sattvic, low-risk, and practice-oriented unless reviewed by a qualified pandit.',
       points: [
@@ -576,41 +483,28 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
   }
 
   const navamshaPlacements: PlanetPlacement[] = [];
-  if (!chart.timeUnknown) {
-    for (const pname of ['Lagna', ...PLANET_ORDER]) {
-      const graha = chart.navamsha[pname];
-      if (!graha) continue;
-      navamshaPlacements.push(makePlacement(pname, graha, lang));
-    }
+  for (const pname of ['Lagna', ...PLANET_ORDER]) {
+    const graha = chart.navamsha[pname];
+    if (!graha) continue;
+    navamshaPlacements.push(makePlacement(pname, graha, lang));
   }
 
   // ── House readings ──────────────────────────────────────────────────────────
   const houseReadings: Record<number, string> = {};
-  if (!chart.timeUnknown) {
-    for (let house = 1; house <= 12; house++) {
-      const tempReading = HOUSE_READINGS_LOCAL[lang][house];
-      if (house === 1) {
-        houseReadings[1] = tempReading.replace('{lagna}', lagnaMeta.sa);
-      } else if (house === 2) {
-        const secondRashiName = RASHI_METADATA[(lagnaRashiIndex + 1) % 12].sa;
-        houseReadings[2] = tempReading.replace('{sign}', secondRashiName);
-      } else {
-        houseReadings[house] = tempReading;
-      }
+  for (let house = 1; house <= 12; house++) {
+    const tempReading = HOUSE_READINGS_LOCAL[lang][house];
+    if (house === 1) {
+      houseReadings[1] = tempReading.replace('{lagna}', lagnaMeta.sa);
+    } else if (house === 2) {
+      const secondRashiName = RASHI_METADATA[(lagnaRashiIndex + 1) % 12].sa;
+      houseReadings[2] = tempReading.replace('{sign}', secondRashiName);
+    } else {
+      houseReadings[house] = tempReading;
     }
   }
 
   const panditAiDestinyReading = generatePanditAiReading(lagnaMeta, placements, chart, lang);
-  const interpretationSections = buildInterpretationSections(lagnaMeta, placements, chart, lang);
-  const lagnaReading = chart.timeUnknown
-    ? (
-      lang === 'hi'
-        ? 'जन्म समय अज्ञात है, इसलिए लग्न और भाव-आधारित व्याख्या को अभी अनुमानात्मक मानें। इस चार्ट का भरोसेमंद भाग चंद्र राशि, नक्षत्र और दशा है।'
-        : lang === 'pa'
-          ? 'ਜਨਮ ਸਮਾਂ ਅਣਜਾਣ ਹੈ, ਇਸ ਲਈ ਲਗਨ ਅਤੇ ਘਰ-ਅਧਾਰਿਤ ਵਿਆਖਿਆ ਨੂੰ ਹਾਲੇ ਅਨੁਮਾਨਾਤਮਕ ਮੰਨੋ। ਇਸ ਚਾਰਟ ਦਾ ਵੱਧ ਭਰੋਸੇਯੋਗ ਹਿੱਸਾ ਚੰਦਰ ਰਾਸ਼ੀ, ਨਕਸ਼ਤਰ ਅਤੇ ਦਸ਼ਾ ਹੈ।'
-          : 'Birth time is unknown, so ascendant and house-based interpretation should be treated as provisional. The dependable layer here is Moon sign, Nakshatra, and Dasha.'
-    )
-    : (LAGNA_READINGS_LOCAL[lang][lagnaNumber] ?? '');
+  const interpretationSections = buildInterpretationSections(lagnaMeta, placements, chart);
 
   return {
     input,
@@ -619,12 +513,12 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
     lagnaNumber,
     placements,
     houseReadings,
-    lagnaReading,
+    lagnaReading:          LAGNA_READINGS_LOCAL[lang][lagnaNumber] ?? '',
     panditAiDestinyReading,
     interpretationSections,
     navamshaPlacements,
-    yogaResults: chart.timeUnknown ? [] : chart.yogas,
-    aspectResults: chart.timeUnknown ? [] : chart.aspects,
+    yogaResults: chart.yogas,
+    aspectResults: chart.aspects,
     precisionNotes: chart.quality.notes,
     chart,
   };
@@ -634,15 +528,6 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
 // Rahu & Ketu are ALWAYS retrograde in Vedic astrology — no (R) shown for them.
 // Other planets use a compact ᴿ superscript to keep labels tidy inside triangles.
 // Multi-planet houses are center-stacked; font shrinks for 3+ planets per house.
-function escapeSvgText(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
-
 export function renderKundaliSVG(result: KundaliResult): string {
   const { lagnaNumber, placements } = result;
 
@@ -683,7 +568,7 @@ export function renderKundaliSVG(result: KundaliResult): string {
   const LINE_H = 12;
 
   const rashiLabels = Object.entries(housePos).map(([h, [x, y]]) =>
-    `<text x="${x}" y="${y}" fill="#C5A059" font-size="10" font-family="'Outfit',sans-serif" font-weight="700" text-anchor="middle">${escapeSvgText(getHouseRashi(Number(h)))}</text>`
+    `<text x="${x}" y="${y}" fill="#C5A059" font-size="10" font-family="'Outfit',sans-serif" font-weight="700" text-anchor="middle">${getHouseRashi(Number(h))}</text>`
   ).join('\n');
 
   const planetLabels = Object.entries(planetPos).map(([h, [cx, cy]]) => {
@@ -703,7 +588,7 @@ export function renderKundaliSVG(result: KundaliResult): string {
     const startY = cy - totalH / 2 + LINE_H / 2;
 
     const rows = visible.map((sym, i) =>
-      `<text x="${cx}" y="${startY + i * LINE_H}" fill="#EDE8DE" font-size="${fs}" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${escapeSvgText(sym)}</text>`
+      `<text x="${cx}" y="${startY + i * LINE_H}" fill="#EDE8DE" font-size="${fs}" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${sym}</text>`
     );
 
     // Overflow indicator (e.g. "+1" when > maxLines planets in same house)

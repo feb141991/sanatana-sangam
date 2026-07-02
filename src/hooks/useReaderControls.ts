@@ -19,7 +19,6 @@ export interface TTSRequestOptions {
   language?: string;
   voice?: 'male' | 'female';
   speed?: number;
-  rate?: number;
   pipelineTags?: Partial<PramanaPipelineTags>;
 }
 
@@ -128,7 +127,6 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
           language: options?.language,
           voice: options?.voice,
           speed: options?.speed,
-          rate: options?.rate,
           pipelineTags: options?.pipelineTags,
         })
       });
@@ -222,9 +220,7 @@ export function useReaderControls(capabilities: ReadableCapabilities) {
         const message = typeof data?.error === 'string'
           ? data.error
           : `Explain request failed: ${res.status}`;
-        const err = new Error(message) as Error & { upgrade_required?: boolean };
-        if (data?.upgrade_required) err.upgrade_required = true;
-        throw err;
+        throw new Error(message);
       }
 
       if (typeof data?.error === 'string') {

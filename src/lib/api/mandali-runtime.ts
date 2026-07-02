@@ -23,7 +23,7 @@ export type { MandaliData, MandaliMemberRow, MandaliProfile } from '@/lib/api/ma
 
 type RuntimeMandaliApi = {
   fetchMandaliData: (userId: string) => Promise<MandaliData>;
-  joinMandaliForLocation: (userId: string, city: string, country: string, lat?: number, lon?: number) => Promise<string>;
+  joinMandaliForLocation: (userId: string, city: string, country: string) => Promise<string>;
   leaveMandali: (userId: string) => Promise<void>;
   createMandaliPost: (payload: {
     userId: string;
@@ -72,8 +72,8 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
   return mandaliRuntimeApi.fetchMandaliData(userId);
 }
 
-export async function joinMandaliForLocation(userId: string, city: string, country: string, lat?: number, lon?: number) {
-  return mandaliRuntimeApi.joinMandaliForLocation(userId, city, country, lat, lon);
+export async function joinMandaliForLocation(userId: string, city: string, country: string) {
+  return mandaliRuntimeApi.joinMandaliForLocation(userId, city, country);
 }
 
 export async function leaveMandali(userId: string) {

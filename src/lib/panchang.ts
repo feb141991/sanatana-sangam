@@ -95,9 +95,6 @@ const SAMVAT_NAMES = [
 
 const MOVABLE_KARANAS = ['Bava', 'Balava', 'Kaulava', 'Taitila', 'Gara', 'Vanija', 'Vishti'];
 const RAHU_KAAL_ORDER = [8, 2, 7, 5, 6, 4, 3];
-
-// Module-level formatters: no timeZone → uses runtime timezone (correct in browser, UTC on server).
-// calculatePanchang creates scoped timezone-aware formatters when `timezone` is supplied.
 const LOCAL_TIME_FORMAT = new Intl.DateTimeFormat('en-US', {
   hour: '2-digit',
   minute: '2-digit',
@@ -108,33 +105,6 @@ const LOCAL_DAY_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
   day: 'numeric',
   month: 'short',
 });
-
-/**
- * Returns the UTC offset in hours for the given IANA timezone and date.
- * e.g. "Europe/London" → 1 (BST), "Asia/Kolkata" → 5.5
- */
-function getUtcOffsetHours(timeZone: string, date: Date): number {
-  try {
-    // Format both in UTC and in the target timezone, then compute the diff.
-    const utcStr  = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC',      hour: 'numeric', minute: 'numeric', hour12: false }).format(date);
-    const localStr = new Intl.DateTimeFormat('en-US', { timeZone,             hour: 'numeric', minute: 'numeric', hour12: false }).format(date);
-
-    const parseHHMM = (s: string) => {
-      // Output is like "13:05" or "24:00" (midnight edge)
-      const [h, m] = s.split(':').map(Number);
-      return (isNaN(h) ? 0 : h) * 60 + (isNaN(m) ? 0 : m);
-    };
-
-    let diffMin = parseHHMM(localStr) - parseHHMM(utcStr);
-    // Handle day-boundary wrap (e.g. local midnight vs UTC 22:30 → diff −22.5h → should be +1.5h)
-    if (diffMin < -720) diffMin += 1440;
-    if (diffMin >  720) diffMin -= 1440;
-    return diffMin / 60;
-  } catch {
-    // Unknown / invalid IANA zone → fall back to runtime offset
-    return -(date.getTimezoneOffset() / 60);
-  }
-}
 
 type PanchangAstronomy = {
   jde: number;
@@ -185,18 +155,12 @@ function computeAstronomy(date: Date): PanchangAstronomy {
   };
 }
 
-// Default (module-level) formatters — used when no timezone is supplied.
-function formatClock(date: Date | null, fmt = LOCAL_TIME_FORMAT): string {
+function formatClock(date: Date | null): string {
   if (!date) return 'Unavailable';
-  return fmt.format(date);
+  return LOCAL_TIME_FORMAT.format(date);
 }
 
-function formatTransition(
-  baseDate: Date,
-  targetDate: Date | null,
-  clockFmt = LOCAL_TIME_FORMAT,
-  dayFmt   = LOCAL_DAY_LABEL_FORMAT,
-): string {
+function formatTransition(baseDate: Date, targetDate: Date | null): string {
   if (!targetDate) return 'Unavailable';
 
   const baseDay = new Date(baseDate);
@@ -204,12 +168,12 @@ function formatTransition(
   const targetDay = new Date(targetDate);
   targetDay.setHours(0, 0, 0, 0);
 
-  const timePart = formatClock(targetDate, clockFmt);
+  const timePart = formatClock(targetDate);
   if (baseDay.getTime() === targetDay.getTime()) {
     return timePart;
   }
 
-  return `${timePart}, ${dayFmt.format(targetDate)}`;
+  return `${timePart}, ${LOCAL_DAY_LABEL_FORMAT.format(targetDate)}`;
 }
 
 function subtractMinutes(date: Date | null, minutes: number): Date | null {
@@ -222,14 +186,7 @@ function addMinutes(date: Date | null, minutes: number): Date | null {
   return new Date(date.getTime() + minutes * 60_000);
 }
 
-function getApproxSunriseSunset(
-  lat: number,
-  lon: number,
-  date: Date,
-  /** Explicit UTC offset in hours (e.g. 5.5 for IST, 1 for BST).
-   *  Defaults to the runtime's local offset via `getTimezoneOffset`. */
-  utcOffsetHours?: number,
-): { sunrise: Date; sunset: Date } {
+function getApproxSunriseSunset(lat: number, lon: number, date: Date): { sunrise: Date; sunset: Date } {
   const localMidday = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0, 0);
   const dayOfYear = Math.floor((localMidday.getTime() - new Date(localMidday.getFullYear(), 0, 0).getTime()) / 86_400_000);
   const latRad = (lat * Math.PI) / 180;
@@ -240,8 +197,7 @@ function getApproxSunriseSunset(
     Math.tan(latRad) * Math.tan(decRad)
   );
   const hourAngle = (Math.acos(Math.max(-1, Math.min(1, cosH))) * 180) / Math.PI;
-  // Use the explicitly-supplied offset when available (correct on both server and client).
-  const timezone = utcOffsetHours !== undefined ? utcOffsetHours : -(date.getTimezoneOffset() / 60);
+  const timezone = -(date.getTimezoneOffset() / 60);
   const equationOfTime = (() => {
     const b = (((360 / 365) * (dayOfYear - 81)) * Math.PI) / 180;
     return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
@@ -258,12 +214,7 @@ function getApproxSunriseSunset(
   };
 }
 
-function getSunriseSunset(
-  lat: number,
-  lon: number,
-  date: Date,
-  utcOffsetHours?: number,
-): { sunrise: Date; sunset: Date; noon: Date } {
+function getSunriseSunset(lat: number, lon: number, date: Date): { sunrise: Date; sunset: Date; noon: Date } {
   try {
     const calendar = new julian.CalendarGregorian(date.getFullYear(), date.getMonth() + 1, date.getDate());
     const sun = new Sunrise(calendar, lat, -lon, 0);
@@ -282,7 +233,7 @@ function getSunriseSunset(
     // Fall back to the older approximation for edge locations or library failures.
   }
 
-  const fallback = getApproxSunriseSunset(lat, lon, date, utcOffsetHours);
+  const fallback = getApproxSunriseSunset(lat, lon, date);
   const noon = new Date((fallback.sunrise.getTime() + fallback.sunset.getTime()) / 2);
   return { ...fallback, noon };
 }
@@ -347,30 +298,8 @@ function solveNextBoundary(
 export function calculatePanchang(
   date: Date = new Date(),
   lat = 51.5074,
-  lon = -0.1278,
-  /** IANA timezone string, e.g. "Asia/Kolkata", "Europe/London", "America/New_York".
-   *  When supplied, ALL time strings (sunrise, Rahu Kaal, etc.) are displayed in that
-   *  timezone. Diaspora users pass their local timezone; IST observers omit / pass
-   *  "Asia/Kolkata". Festival dates remain IST-canonical regardless. */
-  timezone?: string,
+  lon = -0.1278
 ): PanchangData {
-  // ── Timezone-aware formatters ────────────────────────────────────────────────
-  // When a timezone is provided we create scoped formatters so the output is
-  // correct both in Node.js (server-side, UTC runtime) and in the browser.
-  const utcOffsetHours = timezone ? getUtcOffsetHours(timezone, date) : undefined;
-
-  const clockFmt = timezone
-    ? new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: timezone })
-    : LOCAL_TIME_FORMAT;
-
-  const dayFmt = timezone
-    ? new Intl.DateTimeFormat('en-US', { weekday: 'short', day: 'numeric', month: 'short', timeZone: timezone })
-    : LOCAL_DAY_LABEL_FORMAT;
-
-  const fc  = (d: Date | null) => formatClock(d, clockFmt);
-  const ft  = (target: Date | null) => formatTransition(date, target, clockFmt, dayFmt);
-
-  // ── Astronomical calculations (location-independent) ─────────────────────────
   const astro = computeAstronomy(date);
 
   const tithiIndex = Math.floor(astro.elongation / 12) + 1;
@@ -409,8 +338,7 @@ export function calculatePanchang(
     (candidate) => computeAstronomy(candidate).elongation
   );
 
-  // ── Location-dependent timings ───────────────────────────────────────────────
-  const { sunrise, sunset, noon } = getSunriseSunset(lat, lon, date, utcOffsetHours);
+  const { sunrise, sunset, noon } = getSunriseSunset(lat, lon, date);
   const brahmaMuhurtaStart = subtractMinutes(sunrise, 96);
   const brahmaMuhurtaEnd = subtractMinutes(sunrise, 48);
 
@@ -428,35 +356,31 @@ export function calculatePanchang(
   const masaName = MASA_NAMES[masaIndex];
 
   const gregYear = date.getFullYear();
-  // Vikrama Samvat increases by 1 at Chaitra Shukla Pratipada (~late March/early April).
-  // We use April 1 as the approximate cutover — accurate to ±14 days for display purposes.
-  const samvatCutover = new Date(gregYear, 3, 1); // April 1 (month is 0-indexed)
-  const samvatYear = date >= samvatCutover ? gregYear + 57 : gregYear + 56;
+  const samvatYear = gregYear + 57;
   const samvatName = SAMVAT_NAMES[(samvatYear - 1) % 60] ?? '';
 
   return {
     tithi,
     tithiIndex,
     paksha,
-    tithiUpto: ft(nextTithi),
+    tithiUpto: formatTransition(date, nextTithi),
     nakshatra: NAKSHATRAS[nakshatraIndex],
-    nakshatraUpto: ft(nextNakshatra),
+    nakshatraUpto: formatTransition(date, nextNakshatra),
     yoga: YOGAS[yogaIndex],
-    yogaUpto: ft(nextYoga),
+    yogaUpto: formatTransition(date, nextYoga),
     karana: getKaranaName(karanaIndex),
-    karanaUpto: ft(nextKarana),
+    karanaUpto: formatTransition(date, nextKarana),
     vara,
-    rahuKaal: `${fc(rahuStart)} – ${fc(rahuEnd)}`,
-    abhijitMuhurat: `${fc(abhijitStart)} – ${fc(abhijitEnd)}`,
-    sunrise: fc(sunrise),
-    sunset: fc(sunset),
-    brahmaMuhurta: `${fc(brahmaMuhurtaStart)} – ${fc(brahmaMuhurtaEnd)}`,
+    rahuKaal: `${formatClock(rahuStart)} – ${formatClock(rahuEnd)}`,
+    abhijitMuhurat: `${formatClock(abhijitStart)} – ${formatClock(abhijitEnd)}`,
+    sunrise: formatClock(sunrise),
+    sunset: formatClock(sunset),
+    brahmaMuhurta: `${formatClock(brahmaMuhurtaStart)} – ${formatClock(brahmaMuhurtaEnd)}`,
     date: date.toLocaleDateString('en-IN', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-      ...(timezone ? { timeZone: timezone } : {}),
     }),
     masaName,
     samvatYear,
@@ -763,98 +687,4 @@ export function getTodaySpiritualPulses(
   }
 
   return pulses;
-}
-
-// ─── PanchangInfo / getTodayPanchang ─────────────────────────────────────────
-// Lightweight interface used by the daily-digest API route.  It intentionally
-// stays independent of the heavier `PanchangData` (which needs a lat/lon and
-// uses the astronomia library).  Jean Meeus low-precision formulas, ±1 tithi.
-
-export interface PanchangInfo {
-  tithi: number;          // 1–30 (lunar day, Shukla 1–15, Krishna 1–15)
-  tithiName: string;      // 'Pratipada', 'Dwitiya' … 'Purnima', 'Amavasya'
-  paksha: 'Shukla' | 'Krishna';
-  weekday: string;        // 'Monday' … 'Sunday'
-  weekdayDeity: string;   // 'Shiva', 'Mangal', 'Vishnu', 'Guru', 'Shukra', 'Shani', 'Surya'
-  isEkadashi: boolean;
-  isPurnima: boolean;
-  isAmavasya: boolean;
-  isPradosh: boolean;     // Trayodashi (13th tithi)
-  nakshatra?: string;     // optional, approximate
-}
-
-const _WEEKDAY_DEITIES: Record<string, string> = {
-  'Sunday':    'Surya',
-  'Monday':    'Shiva',
-  'Tuesday':   'Mangal',
-  'Wednesday': 'Vishnu',
-  'Thursday':  'Guru',
-  'Friday':    'Shukra',
-  'Saturday':  'Shani',
-};
-
-export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangInfo {
-  // Astronomical calculations always use the real current UTC instant —
-  // the moon's position is time-dependent and doesn't care about timezone.
-  const now  = new Date();
-  const date = dateInput ?? now;
-
-  // Days since J2000.0
-  const jd = date.getTime() / 86_400_000 + 2_440_587.5;
-  const d  = jd - 2_451_545.0;
-
-  // Sun — mean longitude + equation of centre
-  const L_sun  = (280.466 + 0.985_647_4 * d) % 360;
-  const g_sun  = (357.528 + 0.985_600_3 * d) % 360;
-  const λ_sun  = ((L_sun + 1.915 * Math.sin(g_sun * Math.PI / 180) +
-                  0.02 * Math.sin(2 * g_sun * Math.PI / 180)) + 360) % 360;
-
-  // Moon — mean longitude + largest correction
-  const L_moon = (218.316 + 13.176_396 * d) % 360;
-  const M_moon = (134.963 + 13.064_993 * d) % 360;
-  const λ_moon = ((L_moon + 6.289 * Math.sin(M_moon * Math.PI / 180)) + 360) % 360;
-
-  // Tithi
-  const elongation  = ((λ_moon - λ_sun) + 360) % 360;
-  const tithiRaw    = Math.floor(elongation / 12) + 1;
-  const tithi       = Math.max(1, Math.min(30, tithiRaw));
-  const paksha: 'Shukla' | 'Krishna' = tithi <= 15 ? 'Shukla' : 'Krishna';
-  const tithiInPaksha = tithi <= 15 ? tithi : tithi - 15;
-
-  let tithiName: string;
-  if (tithiInPaksha === 15) {
-    tithiName = paksha === 'Shukla' ? 'Purnima' : 'Amavasya';
-  } else {
-    tithiName = TITHIS[tithiInPaksha - 1] ?? 'Pratipada';
-  }
-
-  // Weekday — must reflect the user's LOCAL calendar day, not server UTC.
-  // Use the 'sv' (Swedish) locale which always emits YYYY-MM-DD with no
-  // AM/PM or locale-specific separators — safe to parse as a Date.
-  const weekdayIndex = (() => {
-    if (timezone) {
-      // e.g. "2026-05-27" in the user's local date
-      const localIso = new Intl.DateTimeFormat('sv', { timeZone: timezone }).format(now);
-      // Append noon UTC so getDay() returns the right calendar day regardless of server tz
-      return new Date(`${localIso}T12:00:00Z`).getDay();
-    }
-    return date.getDay();
-  })();
-
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const weekday      = weekdays[weekdayIndex] ?? 'Wednesday';
-  const weekdayDeity = _WEEKDAY_DEITIES[weekday] ?? 'Shiva';
-
-  // Indicators
-  const isEkadashi = tithiInPaksha === 11;
-  const isPurnima  = tithi === 15;
-  const isAmavasya = tithi === 30;
-  const isPradosh  = tithiInPaksha === 13;
-
-  // Approximate nakshatra (27 divisions of the ecliptic)
-  const nakshatraIdx = Math.floor(((λ_moon % 360) + 360) % 360 / (360 / 27));
-  const nakshatra    = NAKSHATRAS[Math.max(0, Math.min(26, nakshatraIdx))];
-
-  return { tithi, tithiName, paksha, weekday, weekdayDeity,
-           isEkadashi, isPurnima, isAmavasya, isPradosh, nakshatra };
 }

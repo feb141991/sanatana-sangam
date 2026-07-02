@@ -3,22 +3,19 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ChevronLeft, Settings, Type, Sun, Moon,
-  Book, Quote, Shield, Lightbulb, Share2, Copy, Check
+import { 
+  ChevronLeft, Settings, Type, Sun, Moon, 
+  Book, Quote, Shield, Lightbulb, Share2, Copy, Check 
 } from 'lucide-react';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import { TRADITION_META } from '@/lib/dharm-veer';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
+import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
-import { createClient } from '@/lib/supabase';
-import { localSpiritualDate } from '@/lib/sacred-time';
-import PageIntro from '@/components/ui/PageIntro';
-import toast from 'react-hot-toast';
 
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -38,74 +35,68 @@ export default function DharmVeerClient({
   meaningLanguage,
 }: DharmVeerClientProps) {
   const router = useRouter();
-  const supabase = createClient();
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const { lang: contextLang } = useLanguage();
-  const localContentLanguage: AppLang = hero.tradition === 'sikh' ? 'pa' : 'hi';
-  const hasCompleteLocalContent =
-    !!hero.nameLocal &&
-    !!hero.taglineLocal &&
-    !!hero.journeyLocal &&
-    !!hero.trialLocal &&
-    !!hero.teachingLocal &&
-    !!hero.moralLocal &&
-    (!hero.quote || !!hero.quoteLocal?.text);
+  const hasLocalContent =
+    !!hero.nameLocal ||
+    !!hero.taglineLocal ||
+    !!hero.journeyLocal ||
+    !!hero.trialLocal ||
+    !!hero.teachingLocal ||
+    !!hero.moralLocal ||
+    !!hero.quoteLocal?.text;
   const preferences = resolveReadablePreferences({
     appLanguage: appLanguage ?? contextLang,
     meaningLanguage,
   });
   const [lang, setLang] = useState<'en' | 'local'>(
-    getInitialReaderDisplayMode(preferences, hasCompleteLocalContent)
+    getInitialReaderDisplayMode(preferences, hasLocalContent)
   );
 
-  const [askMoreQuery, setAskMoreQuery] = useState('');
-  const [askMoreResponse, setAskMoreResponse] = useState('');
-  const [askMoreLoading, setAskMoreLoading] = useState(false);
-
-  const handleAskMore = async () => {
-    if (!askMoreQuery.trim()) return;
-    setAskMoreLoading(true);
-    setAskMoreResponse('');
-    try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: askMoreQuery,
-          mode: 'dharam_veer_reflection',
-          figure_id: hero.id
-        }),
-      });
-      if (res.ok) {
-        const text = await res.text();
-        setAskMoreResponse(text);
-      } else {
-        setAskMoreResponse('Failed to fetch response.');
-      }
-    } catch(err) {
-      setAskMoreResponse('An error occurred.');
-    } finally {
-      setAskMoreLoading(false);
-    }
-  };
-
-
-  const displayLang: AppLang = lang === 'local' ? localContentLanguage : 'en';
+  const effectiveLang: AppLang = lang === 'en' ? 'en' : preferences.effectiveMeaningLanguage;
   const meta = TRADITION_META[hero.tradition];
-  const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
-  const era = lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era;
-  const region = lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region;
-  const tagline = lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline;
-  const journeyText = lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey;
-  const trialText = lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial;
-  const teachingText = lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching;
-  const moralText = lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral;
-  const quoteText = lang === 'local' && hero.quoteLocal?.text ? hero.quoteLocal.text : hero.quote?.text;
-  const quoteAttribution =
-    lang === 'local' && hero.quoteLocal?.attribution
-      ? hero.quoteLocal.attribution
-      : hero.quote?.attribution;
+
+  // ── Localization ──
+  const localizedJourney = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:journey`,
+    sourceMeaning: hero.journey,
+    providedMeaning: hero.journeyLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTrial = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:trial`,
+    sourceMeaning: hero.trial,
+    providedMeaning: hero.trialLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedTeaching = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:teaching`,
+    sourceMeaning: hero.teaching,
+    providedMeaning: hero.teachingLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedMoral = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:moral`,
+    sourceMeaning: hero.moral,
+    providedMeaning: hero.moralLocal,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
+
+  const localizedQuote = useLocalizedMeaning({
+    entryId: `dharm-veer:${hero.id}:quote`,
+    sourceMeaning: hero.quote?.text,
+    providedMeaning: hero.quoteLocal?.text,
+    targetLanguage: effectiveLang,
+    enabled: lang === 'local'
+  });
 
   // Map font sizes to tailwind/css classes or styles
   const fontStyles: Record<FontSize, string> = {
@@ -135,92 +126,46 @@ export default function DharmVeerClient({
   );
 
   const handleCopy = () => {
-    const textToCopy = `${title}\n${tagline}\n\n[Journey]\n${journeyText}\n\n[Trial]\n${trialText}\n\n[Teaching]\n${teachingText}\n\n[Moral]\n${moralText}`;
+    const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
+    const tagline = lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline;
+    const journeyText = lang === 'local' ? localizedJourney.meaning : hero.journey;
+    const trialText = lang === 'local' ? localizedTrial.meaning : hero.trial;
+    const teachingText = lang === 'local' ? localizedTeaching.meaning : hero.teaching;
+    const moralText = lang === 'local' ? localizedMoral.meaning : hero.moral;
 
+    const textToCopy = `${title}\n${tagline}\n\n[Journey]\n${journeyText}\n\n[Trial]\n${trialText}\n\n[Teaching]\n${teachingText}\n\n[Moral]\n${moralText}`;
+    
     void readerControls.handlers.copyText(textToCopy, 'Story');
   };
 
   const handleShare = () => {
     const link = typeof window !== 'undefined' ? window.location.href : '';
+    const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
     const text = `🙏 Jai Shri Hari! Read this inspiring Dharm Veer story of '${title}' and check your daily rashiphal following the link to open those features: ${link} to grow your Sadhana.`;
-
+    
     void readerControls.handlers.share(text, hero.name, link);
   };
 
-  // Mark Dharm Veer done after 30 seconds of active reading — not on page entry.
-  // Timer clears if the user navigates away before 30s elapses.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
-        const today = localSpiritualDate(tz, 4);
-        localStorage.setItem(`shoonaya-dharmveer-done-${today}`, 'true');
-        void (async () => {
-          try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            await supabase
-              .from('daily_sadhana')
-              .upsert(
-                { user_id: user.id, date: today, dharmveer_done: true },
-                { onConflict: 'user_id,date' }
-              );
-          } catch {
-            // Non-fatal: keep local completion even if cross-device sync fails.
-          }
-
-          // Award seva points for reading — fire and forget
-          try {
-            const res = await fetch('/api/karma/award', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ amount: 5, reason: 'dharm_veer' }),
-            });
-            const data = await res.json();
-            if (res.ok) {
-              toast.success('⚔️ +5 seva points — Dharm Veer complete!');
-            } else if (data?.already_awarded) {
-              // Already earned today — no toast, silently ok
-            }
-          } catch {
-            // Non-fatal
-          }
-        })();
-      } catch {
-        // Non-fatal: Dharm Veer progress remains local.
-      }
-    }, 30_000); // 30 s of reading = meaningful engagement
-
-    return () => clearTimeout(timer);
-  }, [supabase]);
-
   return (
-    <div
+    <div 
       className="min-h-screen transition-colors duration-500 pb-24"
-      style={{
+      style={{ 
         backgroundColor: activeTheme.bg,
         color: activeTheme.text,
         fontFamily: 'var(--font-inter)'
       }}
     >
-      <PageIntro
-        pageKey="dharm-veer"
-        steps={[
-          { emoji: '⚔️', title: 'Dharm Veer', body: 'A daily story of dharmic courage. Read for 30 seconds to earn your mark.' },
-          { emoji: '⏱️', title: 'The 30-second rule', body: 'Stay on the page for 30 seconds. The strip will tick automatically.' },
-        ]}
-      />
       {/* ── Fixed Header ─────────────────────────────────────────────────── */}
       <header className="fixed top-0 inset-x-0 z-50 px-4 pt-12 pb-4 flex flex-col gap-3 backdrop-blur-xl border-b" style={{ borderColor: activeTheme.border, backgroundColor: `${activeTheme.bg}d9` }}>
         <div className="flex items-center justify-between gap-3">
-          <button
+          <button 
             onClick={() => router.back()}
             className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition hover:bg-[var(--surface-base)]/20 active:scale-90"
             style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
           >
             <ChevronLeft size={18} />
           </button>
-
+          
           <div className="flex-1 min-w-0 flex flex-col text-center">
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
               {meta.dharmVeerLocal || 'Dharm Veer'}
@@ -229,7 +174,7 @@ export default function DharmVeerClient({
 
           <div className="flex items-center gap-2">
             {/* Theme Toggle */}
-            <button
+            <button 
               onClick={() => setTheme(t => t === 'light' ? 'dark' : t === 'dark' ? 'sepia' : 'light')}
               className="theme-toggle w-9 h-9 rounded-full flex items-center justify-center transition hover:bg-[var(--surface-base)]/20 active:scale-90"
               style={{ backgroundColor: activeTheme.border, color: activeTheme.text }}
@@ -277,7 +222,7 @@ export default function DharmVeerClient({
           </div>
 
           {/* Language Toggle */}
-          {hasCompleteLocalContent && (
+          {hasLocalContent && (
             <div className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ backgroundColor: activeTheme.border }}>
               <span className="text-[9px] uppercase font-bold tracking-wider px-1 opacity-70">Lang:</span>
               <button
@@ -309,29 +254,29 @@ export default function DharmVeerClient({
       <main className="pt-36 px-6 max-w-2xl mx-auto space-y-12">
         {/* Hero Section */}
         <section className="text-center space-y-4">
-          <motion.div
+          <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center text-5xl shadow-2xl"
-            style={{
+            style={{ 
               background: `linear-gradient(135deg, ${meta.color.replace('0.12', '0.2')}, ${meta.color.replace('0.12', '0.05')})`,
               border: `1px solid ${meta.color.replace('0.12', '0.4')}`
             }}
           >
             {hero.emoji}
           </motion.div>
-
+          
           <div className="space-y-1">
             <h1 className="text-3xl font-bold premium-serif tracking-tight">
-              {title}
+              {lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name}
             </h1>
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--brand-primary)]">
-              {era} · {region}
+              {lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era} · {lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region}
             </p>
           </div>
 
           <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
-            &ldquo;{tagline}&rdquo;
+            &ldquo;{lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline}&rdquo;
           </p>
         </section>
 
@@ -340,30 +285,30 @@ export default function DharmVeerClient({
           {/* The Journey */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Book size={14} /> {translateFn(displayLang, 'journeyLabel')}
+              <Book size={14} /> {translateFn(effectiveLang, 'journeyLabel')}
             </div>
-            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap`}>
-              {journeyText}
+            <p className={`${fontStyles[fontSize]} whitespace-pre-wrap ${localizedJourney.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedJourney.meaning : hero.journey}
             </p>
           </div>
 
           {/* The Trial */}
           <div className="clay-card rounded-[2rem] p-6 space-y-4" style={{ backgroundColor: 'rgba(197, 160, 89,0.05)', border: '1px solid rgba(197, 160, 89,0.1)' }}>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--brand-primary)]">
-              <Shield size={14} /> {translateFn(displayLang, 'testOfDharma')}
+              <Shield size={14} /> {translateFn(effectiveLang, 'testOfDharma')}
             </div>
-            <p className={`${fontStyles[fontSize]} font-medium italic`}>
-              {trialText}
+            <p className={`${fontStyles[fontSize]} font-medium italic ${localizedTrial.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedTrial.meaning : hero.trial}
             </p>
           </div>
 
           {/* The Teaching */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">
-              <Lightbulb size={14} /> {translateFn(displayLang, 'wisdom')}
+              <Lightbulb size={14} /> {translateFn(effectiveLang, 'wisdom')}
             </div>
-            <p className={fontStyles[fontSize]}>
-              {teachingText}
+            <p className={`${fontStyles[fontSize]} ${localizedTeaching.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedTeaching.meaning : hero.teaching}
             </p>
           </div>
 
@@ -371,85 +316,32 @@ export default function DharmVeerClient({
           {hero.quote && (
             <div className="py-8 border-y border-white/5 text-center space-y-4">
               <Quote size={32} className="mx-auto opacity-20 text-[var(--brand-primary)]" />
-              <p className="text-xl font-bold premium-serif italic px-6">
-                {quoteText}
+              <p className={`text-xl font-bold premium-serif italic px-6 ${localizedQuote.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+                {lang === 'local' ? localizedQuote.meaning : hero.quote.text}
               </p>
               <p className="text-[10px] uppercase font-bold tracking-widest opacity-60">
-                — {quoteAttribution}
+                — {lang === 'local' && hero.quoteLocal ? hero.quoteLocal.attribution : hero.quote.attribution}
               </p>
             </div>
           )}
 
           {/* Moral */}
           <div className="text-center pt-8">
-            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{translateFn(displayLang, 'essence')}</p>
-            <p className="text-lg font-bold leading-relaxed max-w-sm mx-auto">
-              {moralText}
+            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40 mb-4">{translateFn(effectiveLang, 'essence')}</p>
+            <p className={`text-lg font-bold leading-relaxed max-w-sm mx-auto ${localizedMoral.isLoading ? 'opacity-50 blur-[2px]' : ''}`}>
+              {lang === 'local' ? localizedMoral.meaning : hero.moral}
             </p>
           </div>
         </section>
 
-        {/* Illustration Scene — evocative text for veers generated via AI */}
-        {hero.illustrationPrompt && (
-          <div className="pt-10 pb-4">
-            <div
-              className="rounded-[1.6rem] p-6 relative overflow-hidden"
-              style={{
-                background: 'rgba(197,160,89,0.06)',
-                border: '1px solid rgba(197,160,89,0.18)',
-              }}
-            >
-              <div
-                className="absolute inset-0 pointer-events-none opacity-[0.06]"
-                style={{
-                  background: 'radial-gradient(ellipse at 60% 20%, #C5A059, transparent 70%)',
-                }}
-              />
-              <p className="text-[10px] uppercase font-bold tracking-[0.3em] mb-4" style={{ color: '#C5A059', opacity: 0.7 }}>
-                Imagine the Scene
-              </p>
-              <p className="text-sm leading-relaxed italic" style={{ color: activeTheme.text, opacity: 0.75 }}>
-                {hero.illustrationPrompt}
-              </p>
-            </div>
-          </div>
-        )}
-
-
-        {/* Ask More Section */}
-        <section className="space-y-4 pt-12 border-t border-white/10">
-            <h2 className="text-xl font-bold">Ask more about this Dharam Veer</h2>
-            <div className="flex flex-col gap-2">
-                <input
-                  type="text"
-                  value={askMoreQuery}
-                  onChange={e => setAskMoreQuery(e.target.value)}
-                  placeholder="Ask a question..."
-                  className="w-full p-3 rounded-xl bg-[var(--surface-base)] text-black border border-black/10 focus:outline-none"
-                />
-                <button
-                  onClick={handleAskMore}
-                  disabled={askMoreLoading || !askMoreQuery.trim()}
-                  className="px-6 py-3 rounded-xl bg-[var(--brand-primary)] text-black font-bold disabled:opacity-50 self-end transition hover:scale-105 active:scale-95"
-                >
-                  {askMoreLoading ? 'Asking...' : 'Ask AI'}
-                </button>
-            </div>
-            {askMoreResponse && (
-                <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 text-sm whitespace-pre-wrap leading-relaxed shadow-inner">
-                    {askMoreResponse}
-                </div>
-            )}
-        </section>
-
         {/* Share Button */}
         <div className="flex justify-center pt-12">
-          <button
+          <button 
             onClick={handleShare}
             className="share-button flex items-center gap-2 px-8 py-4 rounded-full bg-[var(--brand-primary)] text-black font-bold shadow-xl hover:scale-105 transition active:scale-95"
           >
             <Share2 size={18} />
-            {translateFn(displayLang, 'shareReflection')}
+            {translateFn(effectiveLang, 'shareReflection')}
           </button>
         </div>
       </main>

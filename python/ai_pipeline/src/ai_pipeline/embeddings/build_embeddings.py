@@ -476,94 +476,6 @@ def build_jain_index(manifests_dir: Path, output_file: Path) -> None:
     print(f"Successfully generated index for {len(documents)} Jain Dharma passages at {output_file}")
 
 
-
-def build_dharam_veer_index(manifests_dir: Path, output_file: Path) -> None:
-    documents = []
-    manifests = sorted((manifests_dir / "dharam_veer").glob("*.json"))
-    manifest_count = 0
-    for manifest_path in manifests:
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            manifest = json.load(f)
-        manifest_count += 1
-        doc_id = manifest.get("doc_id", manifest_path.stem)
-        source_name = manifest.get("source_name", "")
-        tradition = manifest.get("tradition", "")
-
-        for verse in manifest.get("content", []):
-            ref = verse.get("ref", "")
-            text = verse.get("text", "")
-
-            ref_words = f"dharam veer {source_name} passage {ref.replace('.', ' ')}"
-            boosted_metadata = f"{ref_words} {ref} " * 10
-            combined_text = f"{boosted_metadata} dharam veer {source_name} {tradition} {text}"
-            tokens = tokenize(combined_text)
-
-            documents.append({
-                "id": f"{doc_id}_{ref}",
-                "doc_id": doc_id,
-                "ref": ref,
-                "text": text,
-                "source_name": source_name,
-                "tradition": tradition,
-                "tokens": tokens,
-            })
-
-    if not documents:
-        print("No Dharam Veer documents found.")
-        return
-
-    df = {}
-    for doc in documents:
-        seen = set(doc["tokens"])
-        for token in seen:
-            df[token] = df.get(token, 0) + 1
-
-    num_docs = len(documents)
-    idf = {}
-    for token, count in df.items():
-        idf[token] = math.log((1 + num_docs) / (1 + count)) + 1
-
-    indexed_docs = []
-    for doc in documents:
-        tf = {}
-        for token in doc["tokens"]:
-            tf[token] = tf.get(token, 0) + 1
-
-        tfidf = {}
-        for token, count in tf.items():
-            tfidf[token] = count * idf[token]
-
-        squared_sum = sum(val**2 for val in tfidf.values())
-        norm = math.sqrt(squared_sum) if squared_sum > 0 else 1.0
-
-        normalized_tfidf = {token: val / norm for token, val in tfidf.items()}
-
-        indexed_docs.append({
-            "id": doc["id"],
-            "doc_id": doc["doc_id"],
-            "ref": doc["ref"],
-            "text": doc["text"],
-            "source_name": doc["source_name"],
-            "tradition": doc["tradition"],
-            "vector": normalized_tfidf,
-        })
-
-    index_data = {
-        "metadata": {
-            "manifest_count": manifest_count,
-            "document_count": len(documents),
-            "scale_readiness": "Sample-scale"
-        },
-        "idf": idf,
-        "documents": indexed_docs,
-    }
-
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(index_data, f, ensure_ascii=False, indent=2)
-
-    print(f"Successfully generated index for {len(documents)} Dharam Veer passages at {output_file}")
-
-
 def main() -> None:
     root = Path(__file__).resolve().parents[3]
     manifests_dir = root / "corpus" / "manifests"
@@ -582,9 +494,6 @@ def main() -> None:
 
     jain_output = root / "corpus" / "jain_dharma_index.json"
     build_jain_index(manifests_dir, jain_output)
-
-    dharam_veer_output = root / "corpus" / "dharam_veer_index.json"
-    build_dharam_veer_index(manifests_dir, dharam_veer_output)
 
 
 if __name__ == "__main__":

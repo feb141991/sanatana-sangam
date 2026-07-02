@@ -17,7 +17,7 @@ export function KulEventForm({ onClose, onSave }: { onClose: () => void; onSave:
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-[var(--surface-soft)] rounded-[2.5rem] p-8 space-y-6 shadow-2xl border border-[#C5A059]/15"
+        className="w-full max-w-md bg-[var(--surface-soft)] rounded-[2.5rem] p-8 space-y-6 shadow-2xl border border-white/10"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -33,7 +33,7 @@ export function KulEventForm({ onClose, onSave }: { onClose: () => void; onSave:
               placeholder="e.g. Annual Kul Puja"
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[var(--brand-primary)]/40 theme-ink"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[var(--brand-primary)]/40 theme-ink"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -43,7 +43,7 @@ export function KulEventForm({ onClose, onSave }: { onClose: () => void; onSave:
                  type="date"
                  value={form.event_date}
                  onChange={e => setForm(f => ({ ...f, event_date: e.target.value }))}
-                 className="w-full px-4 py-3 rounded-xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[var(--brand-primary)]/40 theme-ink text-sm"
+                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[var(--brand-primary)]/40 theme-ink text-sm"
                />
              </div>
              <div className="flex items-center gap-2 px-3 pt-6">
@@ -62,7 +62,7 @@ export function KulEventForm({ onClose, onSave }: { onClose: () => void; onSave:
               placeholder="Notes or rituals…"
               value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl bg-[var(--surface-soft)] border border-[#C5A059]/15 outline-none focus:border-[var(--brand-primary)]/40 theme-ink resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 outline-none focus:border-[var(--brand-primary)]/40 theme-ink resize-none"
               rows={2}
             />
           </div>

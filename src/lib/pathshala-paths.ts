@@ -3,31 +3,12 @@
 // Kept in a plain (non-'use client') module so server components (e.g. the
 // insights page) can import it without pulling in React client code.
 
-export interface PathshalaPath {
-  id: string;
-  title: string;
-  description: string;
-  title_hi?: string;
-  description_hi?: string;
-  title_pa?: string;
-  description_pa?: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  proRequired: boolean;
-  tradition: string;
-  total_lessons: number;
-  duration_days: number;
-}
-
-export const SEED_PATHS: PathshalaPath[] = [
+export const SEED_PATHS = [
   // ── HINDU PATHS (11) ────────────────────────────────────────────────────────
   {
     id: 'bhagavad-gita-intro',
     title: 'Bhagavad Gita — Foundations',
-    title_hi: 'भगवद गीता — आधार',
-    title_pa: 'ਭਗਵਦ ਗੀਤਾ — ਆਧਾਰ',
     description: 'The 18 chapters of the Gita distilled into 30 focused lessons. Begin at any chapter.',
-    description_hi: 'गीता के 18 अध्यायों को 30 केंद्रित पाठों में प्रस्तुत किया गया। किसी भी अध्याय से शुरू करें।',
-    description_pa: 'ਗੀਤਾ ਦੇ 18 ਅਧਿਆਵਾਂ ਨੂੰ 30 ਕੇਂਦਰਿਤ ਪਾਠਾਂ ਵਿੱਚ ਪੇਸ਼ ਕੀਤਾ ਗਿਆ। ਕਿਸੇ ਵੀ ਅਧਿਆਇ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'hindu',
@@ -37,11 +18,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'upanishads-core',
     title: 'Core Upanishads',
-    title_hi: 'मुख्य उपनिषद',
-    title_pa: 'ਮੁੱਢਲੇ ਉਪਨਿਸ਼ਦ',
     description: 'Isha, Kena, Katha, Mandukya — the four shortest Upanishads with commentary.',
-    description_hi: 'ईश, केन, कठ, माण्डुक्य — व्याख्या सहित चार सबसे संक्षिप्त उपनिषद।',
-    description_pa: 'ਈਸ਼, ਕੇਨ, ਕਠ, ਮਾਂਡੂਕਿਆ — ਵਿਆਖਿਆ ਸਮੇਤ ਚਾਰ ਸਭ ਤੋਂ ਸੰਖੇਪ ਉਪਨਿਸ਼ਦ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'hindu',
@@ -51,11 +28,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'stotra-path',
     title: 'Daily Stotra Practice',
-    title_hi: 'दैनिक स्तोत्र अभ्यास',
-    title_pa: 'ਰੋਜ਼ਾਨਾ ਸਤੋਤਰ ਅਭਿਆਸ',
     description: 'Learn 7 core stotras by heart — Hanuman Chalisa, Durga Saptashati excerpts, Vishnu Sahasranama.',
-    description_hi: '7 मुख्य स्तोत्रों को कंठस्थ करें — हनुमान चालीसा, दुर्गा सप्तशती के अंश, विष्णु सहस्रनाम।',
-    description_pa: '7 ਮੁੱਖ ਸਤੋਤਰ ਕੰਠਸਥ ਕਰੋ — ਹਨੂਮਾਨ ਚਾਲੀਸਾ, ਦੁਰਗਾ ਸਪਤਸ਼ਤੀ ਦੇ ਅੰਸ਼, ਵਿਸ਼ਨੂੰ ਸਹਸਰਨਾਮ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'hindu',
@@ -65,11 +38,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'yoga-sutras',
     title: 'Patanjali Yoga Sutras',
-    title_hi: 'पतंजलि योग सूत्र',
-    title_pa: 'ਪਤੰਜਲੀ ਯੋਗ ਸੂਤਰ',
     description: '196 sutras, 4 chapters — Samadhi, Sadhana, Vibhuti, Kaivalya.',
-    description_hi: '196 सूत्र, 4 अध्याय — समाधि, साधन, विभूति, कैवल्य।',
-    description_pa: '196 ਸੂਤਰ, 4 ਅਧਿਆਇ — ਸਮਾਧੀ, ਸਾਧਨ, ਵਿਭੂਤੀ, ਕੈਵਲਿਆ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'hindu',
@@ -79,11 +48,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'ramayana-bal-kanda',
     title: 'Ramayana — Bal Kanda',
-    title_hi: 'रामायण — बालकाण्ड',
-    title_pa: 'ਰਾਮਾਇਣ — ਬਾਲਕਾਂਡ',
     description: 'The childhood of Rama, the lineage of Ikshvaku, and the marriage to Sita.',
-    description_hi: 'श्री राम का बचपन, इक्ष्वाकु वंश का इतिहास, और सीता जी से विवाह।',
-    description_pa: 'ਸ਼੍ਰੀ ਰਾਮ ਦਾ ਬਚਪਨ, ਇਕਸ਼ਵਾਕੂ ਵੰਸ਼ ਦਾ ਇਤਿਹਾਸ, ਅਤੇ ਸੀਤਾ ਜੀ ਨਾਲ ਵਿਆਹ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'hindu',
@@ -93,11 +58,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'bhagavatam-canto-1',
     title: 'Bhagavatam — Canto 1',
-    title_hi: 'श्रीमद्भागवत — प्रथम स्कन्ध',
-    title_pa: 'ਸ਼੍ਰੀਮਦ ਭਾਗਵਤ — ਪਹਿਲਾ ਸਕੰਧ',
     description: 'The creation, the questions of the sages, and the setting of the greatest Purana.',
-    description_hi: 'सृष्टि की उत्पत्ति, ऋषियों के प्रश्न, और इस महान पुराण की पृष्ठभूमि।',
-    description_pa: 'ਸ੍ਰਿਸ਼ਟੀ ਦੀ ਉਤਪੱਤੀ, ਰਿਸ਼ੀਆਂ ਦੇ ਪ੍ਰਸ਼ਨ, ਅਤੇ ਇਸ ਮਹਾਨ ਪੁਰਾਣ ਦੀ ਪਿਛੋਕੜ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'hindu',
@@ -107,11 +68,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'chanakya-neeti-full',
     title: 'Chanakya Neeti — Mastery',
-    title_hi: 'चाणक्य नीति — पूर्ण ज्ञान',
-    title_pa: 'ਚਾਣਕਿਆ ਨੀਤੀ — ਪੂਰਨ ਗਿਆਨ',
     description: 'The 17 chapters of Chanakya\'s strategic and practical wisdom for life and leadership.',
-    description_hi: 'जीवन और नेतृत्व के लिए चाणक्य के रणनीतिक और व्यावहारिक ज्ञान के 17 अध्याय।',
-    description_pa: 'ਜੀਵਨ ਅਤੇ ਅਗਵਾਈ ਲਈ ਚਾਣਕਿਆ ਦੇ ਰਣਨੀਤਕ ਅਤੇ ਵਿਹਾਰਕ ਗਿਆਨ ਦੇ 17 ਅਧਿਆਇ।',
     difficulty: 'beginner',
     proRequired: true,
     tradition: 'hindu',
@@ -121,11 +78,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'shiva-purana-intro',
     title: 'Shiva Purana — Essential Tales',
-    title_hi: 'शिव पुराण — मुख्य कथाएं',
-    title_pa: 'ਸ਼ਿਵ ਪੁਰਾਣ — ਮੁੱਖ ਕਥਾਵਾਂ',
     description: 'Stories of Mahadev, the origin of the Linga, and the wisdom of the Shaiva path.',
-    description_hi: 'महादेव की कथाएं, शिवलिंग की उत्पत्ति, और शैव मार्ग का दिव्य ज्ञान।',
-    description_pa: 'ਮਹਾਦੇਵ ਦੀਆਂ ਕਥਾਵਾਂ, ਸ਼ਿਵਲਿੰਗ ਦੀ ਉਤਪੱਤੀ, ਅਤੇ ਸ਼ੈਵ ਮਾਰਗ ਦਾ ਦੈਵੀ ਗਿਆਨ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'hindu',
@@ -135,11 +88,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'devi-mahatmyam-path',
     title: 'Devi Mahatmyam — Shakti Path',
-    title_hi: 'देवी महात्म्य — शक्ति पथ',
-    title_pa: 'ਦੇਵੀ ਮਹਾਤਮ — ਸ਼ਕਤੀ ਪਥ',
     description: 'The glory of the Divine Mother — her battles, her forms, and her supreme protection.',
-    description_hi: 'दिव्य माँ की महिमा — उनके युद्ध, उनके रूप, and उनकी परम सुरक्षा।',
-    description_pa: 'ਦੈਵੀ ਮਾਂ ਦੀ ਮਹਿਮਾ — ਉਹਨਾਂ ਦੇ ਯੁੱਧ, ਉਹਨਾਂ ਦੇ ਰੂਪ, ਅਤੇ ਉਹਨਾਂ ਦੀ ਪਰਮ ਸੁਰੱਖਿਆ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'hindu',
@@ -149,11 +98,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'vedic-suktas-core',
     title: 'Vedic Suktas — Foundations',
-    title_hi: 'वैदिक सूक्त — आधार',
-    title_pa: 'ਵੈਦਿਕ ਸੂਕਤ — ਆਧਾਰ',
     description: 'Deep study of Purusha Sukta, Nasadiya Sukta, and the Shanti Mantras.',
-    description_hi: 'पुरुष सूक्त, नासदीय सूक्त, और शांति मंत्रों का गहन अध्ययन।',
-    description_pa: 'ਪੁਰਸ਼ ਸੂਕਤ, ਨਾਸਦੀਆ ਸੂਕਤ, ਅਤੇ ਸ਼ਾਂਤੀ ਮੰਤਰਾਂ ਦਾ ਗਹਿਰਾ ਅਧਿਐਨ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'hindu',
@@ -163,11 +108,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'ramcharitmanas-bhakti',
     title: 'Ramcharitmanas — Bhakti Journey',
-    title_hi: 'रामचरितमानस — भक्ति यात्रा',
-    title_pa: 'ਰਾਮਚਰਿਤਮਾਨਸ — ਭਗਤੀ ਯਾਤਰਾ',
     description: 'Tulsidas\' masterpiece — focusing on the devotional core of the Ramayana.',
-    description_hi: 'तुलसीदास जी की महान रचना — रामायण के भक्ति मार्ग पर केंद्रित।',
-    description_pa: 'ਤੁਲਸੀਦਾਸ ਜੀ ਦੀ ਮਹਾਨ ਰਚਨਾ — ਰਾਮਾਇਣ ਦੇ ਭਗਤੀ ਮਾਰਗ \'ਤੇ ਕੇਂਦਰਿਤ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'hindu',
@@ -179,11 +120,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'nitnem-daily',
     title: 'Nitnem — Daily Banis',
-    title_hi: 'नितनेम — दैनिक बाणियां',
-    title_pa: 'ਨਿਤਨੇਮ — ਰੋਜ਼ਾਨਾ ਬਾਣੀਆਂ',
     description: 'Five core Gurbani prayers for morning and evening practice.',
-    description_hi: 'सुबह और शाम के अभ्यास के लिए पांच मुख्य गुरबाणी प्रार्थनाएं।',
-    description_pa: 'ਸਵੇਰ ਅਤੇ ਸ਼ਾਮ ਦੇ ਅਭਿਆਸ ਲਈ ਪੰਜ ਮੁੱਖ ਗੁਰਬਾਣੀ ਪ੍ਰਾਰਥਨਾਵਾਂ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -193,11 +130,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'japji-sahib-deep',
     title: 'Japji Sahib — Divine Origins',
-    title_hi: 'जपुजी साहिब — दिव्य मूल',
-    title_pa: 'ਜਪੁਜੀ ਸਾਹਿਬ — ਦੈਵੀ ਮੂਲ',
     description: 'The root of Sikh philosophy — understanding the Pauris of Guru Nanak Dev Ji.',
-    description_hi: 'सिख दर्शन का मूल — गुरु नानक देव जी की पौड़ियों को समझना।',
-    description_pa: 'ਸਿੱਖ ਫ਼ਲਸਫ਼ੇ ਦਾ ਮੂਲ — ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ ਦੀਆਂ ਪਉੜੀਆਂ ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -207,11 +140,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'sukhmani-sahib-peace',
     title: 'Sukhmani Sahib — Treasure of Peace',
-    title_hi: 'सुखमनी साहिब — शांति की निधि',
-    title_pa: 'ਸੁਖਮਨੀ ਸਾਹਿਬ — ਸੁਖਾਂ ਦੀ ਮਣੀ',
     description: 'The Jewel of Peace — 24 Ashtpadis by Guru Arjan Dev Ji for spiritual equanimity.',
-    description_hi: 'शांति की मणि — आध्यात्मिक समभाव के लिए गुरु अर्जुन देव जी द्वारा रचित 24 अष्टपदियाँ।',
-    description_pa: 'ਸ਼ਾਂਤੀ ਦੀ ਮਣੀ — ਅਧਿਆਤਮਿਕ ਸ਼ਾਂਤੀ ਲਈ ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਦੁਆਰਾ ਰਚਿਤ 24 ਅਸ਼ਟਪਦੀਆਂ।',
     difficulty: 'intermediate',
     proRequired: false,
     tradition: 'sikh',
@@ -221,11 +150,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'asa-di-var-morning',
     title: 'Asa Di Var — Morning Melody',
-    title_hi: 'आसा दी वार — प्रभात राग',
-    title_pa: 'ਆਸਾ ਦੀ ਵਾਰ — ਸਵੇਰ ਦੀ ਬਾਣੀ',
     description: 'Singing the praises of the Creator — the morning congregational prayer.',
-    description_hi: 'सृष्टिकर्ता की स्तुति का गान — सुबह की सामूहिक प्रार्थना।',
-    description_pa: 'ਸਿਰਜਣਹਾਰ ਦੀ ਸਿਫ਼ਤ-ਸਲਾਹ ਦਾ ਗਾਇਨ — ਸਵੇਰ ਦੀ ਸਮੂਹਿਕ ਪ੍ਰਾਰਥਨਾ।',
     difficulty: 'intermediate',
     proRequired: false,
     tradition: 'sikh',
@@ -235,11 +160,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'jaap-sahib-valour',
     title: 'Jaap Sahib — Divine Names',
-    title_hi: 'जाप साहिब — दिव्य नाम',
-    title_pa: 'ਜਾਪ ਸਾਹਿਬ — ਦੈਵੀ ਨਾਮ',
     description: 'The martial rhythm of Guru Gobind Singh Ji — 199 verses of divine attributes.',
-    description_hi: 'गुरु गोबिंद सिंह जी की वीर रस शैली — ईश्वर के गुणों से युक्त 199 छंद।',
-    description_pa: 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦੀ ਬੀਰ ਰਸ ਸ਼ੈਲੀ — ਪਰਮਾਤਮਾ ਦੇ ਗੁਣਾਂ ਨਾਲ ਭਰਪੂਰ 199 ਛੰਦ।',
     difficulty: 'advanced',
     proRequired: false,
     tradition: 'sikh',
@@ -249,11 +170,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'chaupai-sahib-protection',
     title: 'Benti Chaupai — Protection',
-    title_hi: 'बेन्ती चौपई — संरक्षण',
-    title_pa: 'ਬੇਨਤੀ ਚੌਪਈ — ਰੱਖਿਆ',
     description: 'The prayer for divine shield and protection against all internal and external foes.',
-    description_hi: 'सभी आंतरिक और बाहरी दुश्मनों से सुरक्षा और ईश्वरीय कवच की प्रार्थना।',
-    description_pa: 'ਸਾਰੇ ਅੰਦਰੂਨੀ ਅਤੇ ਬਾਹਰੀ ਦੁਸ਼ਮਣਾਂ ਤੋਂ ਸੁਰੱਖਿਆ ਅਤੇ ਦੈਵੀ ਕਵਚ ਦੀ ਪ੍ਰਾਰਥਨਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -263,11 +180,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'anand-sahib-bliss',
     title: 'Anand Sahib — Song of Bliss',
-    title_hi: 'आनंद साहिब — परम आनंद का गीत',
-    title_pa: 'ਅਨੰਦ ਸਾਹਿਬ — ਅਨੰਦ ਦੀ ਬਾਣੀ',
     description: 'The 40 steps to spiritual joy and union with the Divine by Guru Amar Das Ji.',
-    description_hi: 'गुरु अमर दास जी द्वारा रचित, आध्यात्मिक आनंद और ईश्वर से मिलन की 40 सीढ़ियाँ।',
-    description_pa: 'ਗੁਰੂ ਅਮਰ ਦਾਸ ਜੀ ਦੁਆਰਾ ਰਚਿਤ, ਅਧਿਆਤਮਿਕ ਅਨੰਦ ਅਤੇ ਰੱਬ ਨਾਲ ਮਿਲਾਪ ਦੀਆਂ 40 ਪਉੜੀਆਂ।',
     difficulty: 'intermediate',
     proRequired: false,
     tradition: 'sikh',
@@ -277,11 +190,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'guru-granth-intro',
     title: 'Guru Granth Sahib — Intro',
-    title_hi: 'गुरु ग्रंथ साहिब — परिचय',
-    title_pa: 'ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ — ਪਰਿਚੈ',
     description: 'Understanding the structure, Raags, and the unified message of the living Guru.',
-    description_hi: 'जीवित गुरु की संरचना, रागों और एकीकृत संदेश को समझना।',
-    description_pa: 'ਜੀਵਤ ਗੁਰੂ ਦੀ ਬਣਤਰ, ਰਾਗਾਂ ਅਤੇ ਸਾਂਝੇ ਸੰਦੇਸ਼ ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -291,11 +200,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'sikh-history-gurus',
     title: 'The Ten Gurus — History',
-    title_hi: 'दस गुरु — इतिहास',
-    title_pa: 'ਦਸ ਗੁਰੂ — ਇਤਿਹਾਸ',
     description: 'From Guru Nanak to Guru Gobind Singh — a journey through 239 years of light.',
-    description_hi: 'गुरु नानक से गुरु गोबिंद सिंह तक — प्रकाश के 239 वर्षों की यात्रा।',
-    description_pa: 'ਗੁਰੂ ਨਾਨਕ ਤੋਂ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਤੱਕ — ਪ੍ਰਕਾਸ਼ ਦੇ 239 ਸਾਲਾਂ ਦੀ ਯਾਤਰਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -305,11 +210,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'zafarnama-victory',
     title: 'Zafarnama — Letter of Victory',
-    title_hi: 'ज़फ़रनामा — विजय पत्र',
-    title_pa: 'ਜ਼ਫ਼ਰਨਾਮਾ — ਜਿੱਤ ਦੀ ਚਿੱਠੀ',
     description: 'The historical letter of spiritual victory written in Persian by the Tenth Guru.',
-    description_hi: 'दसवें गुरु द्वारा फ़ारसी में लिखा गया आध्यात्मिक विजय का ऐतिहासिक पत्र।',
-    description_pa: 'ਦਸਵੇਂ ਗੁਰੂ ਦੁਆਰਾ ਫ਼ਾਰਸੀ ਵਿੱਚ ਲਿਖੀ ਗਈ ਅਧਿਆਤਮਿਕ ਜਿੱਤ ਦੀ ਇਤਿਹਾਸਕ ਚਿੱਠੀ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'sikh',
@@ -319,11 +220,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'rehras-sahib-evening',
     title: 'Rehras Sahib — Evening Peace',
-    title_hi: 'रहरास साहिब — शाम की शांति',
-    title_pa: 'ਰਹਿਰਾਸ ਸਾਹਿਬ — ਸ਼ਾਮ ਦੀ ਸ਼ਾਂਤੀ',
     description: 'The evening prayer of gratitude and remembrance, bringing the day to a sacred close.',
-    description_hi: 'कृतज्ञता और स्मरण की शाम की प्रार्थना, जो दिन को एक पवित्र अंत प्रदान करती।',
-    description_pa: 'ਸ਼ੁਕਰਾਨੇ ਅਤੇ ਯਾਦ ਦੀ ਸ਼ਾਮ ਦੀ ਪ੍ਰਾਰਥਨਾ, ਜੋ ਦਿਨ ਨੂੰ ਇੱਕ ਪਵਿੱਤਰ ਅੰਤ ਪ੍ਰਦਾਨ ਕਰਦੀ ਹੈ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'sikh',
@@ -335,11 +232,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'dhammapada-path',
     title: 'Dhammapada — 26 Chapters',
-    title_hi: 'धम्मपद — 26 अध्याय',
-    title_pa: 'ਧੰਮਪਦ — 26 ਅਧਿਆਇ',
     description: "The path of truth — 423 verses on the Buddha's practical teachings.",
-    description_hi: 'सत्य का मार्ग — बुद्ध की व्यावहारिक शिक्षाओं पर 423 छंद।',
-    description_pa: 'ਸੱਚ ਦਾ ਮਾਰਗ — ਬੁੱਧ ਦੀਆਂ ਵਿਹਾਰਕ ਸਿੱਖਿਆਵਾਂ \'ਤੇ 423 ਛੰਦ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'buddhist',
@@ -349,11 +242,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'four-noble-truths',
     title: 'Four Noble Truths — Path',
-    title_hi: 'चार आर्य सत्य — मार्ग',
-    title_pa: 'ਚਾਰ ਆਰੀਆ ਸੱਚ — ਮਾਰਗ',
     description: 'Understanding suffering, its cause, its cessation, and the way to liberation.',
-    description_hi: 'दुःख, उसके कारण, उसके निवारण, और मुक्ति के मार्ग को समझना।',
-    description_pa: 'ਦੁੱਖ, ਉਸਦੇ ਕਾਰਨ, ਉਸਦੇ ਨਿਵਾਰਣ, ਅਤੇ ਮੁਕਤੀ ਦੇ ਮਾਰਗ ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'buddhist',
@@ -363,11 +252,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'eightfold-path-practice',
     title: 'Noble Eightfold Path',
-    title_hi: 'आर्य अष्टांगिक मार्ग',
-    title_pa: 'ਆਰੀਆ ਅਸ਼ਟਾਂਗਿਕ ਮਾਰਗ',
     description: 'A practical guide to ethical conduct, mental discipline, and wisdom.',
-    description_hi: 'नैतिक आचरण, मानसिक अनुशासन, और ज्ञान के लिए एक व्यावहारिक मार्गदर्शिका।',
-    description_pa: 'ਨੈਤਿਕ ਆਚਰਣ, ਮਾਨਸਿਕ ਅਨੁਸ਼ਾਸਨ, ਅਤੇ ਗਿਆਨ ਲਈ ਇੱਕ ਵਿਹਾਰਕ ਮਾਰਗਦਰਸ਼ਕ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'buddhist',
@@ -377,11 +262,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'heart-sutra-wisdom',
     title: 'Heart Sutra — Wisdom',
-    title_hi: 'हृदय सूत्र — प्रज्ञा',
-    title_pa: 'ਹਿਰਦੇ ਸੂਤਰ — ਪ੍ਰਗਿਆ',
     description: 'The core of the Perfection of Wisdom — understanding emptiness and form.',
-    description_hi: 'प्रज्ञापारमिता का सार — शून्यता और रूप को समझना।',
-    description_pa: 'ਪ੍ਰਗਿਆਪਾਰਮਿਤਾ ਦਾ ਸਾਰ — ਸ਼ੂਨਿਆਤਾ ਅਤੇ ਰੂਪ ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'buddhist',
@@ -391,11 +272,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'jataka-tales-morality',
     title: 'Jataka Tales — Morality',
-    title_hi: 'जातक कथाएं — नैतिकता',
-    title_pa: 'ਜਾਤਕ ਕਥਾਵਾਂ — ਨੈਤਿਕਤਾ',
     description: 'Learning the Paramitas (Perfections) through the stories of the Buddha\'s past lives.',
-    description_hi: 'बुद्ध के पूर्व जन्मों की कहानियों के माध्यम से पारमिताओं (पूर्णताओं) को सीखना।',
-    description_pa: 'ਬੁੱਧ ਦੇ ਪਿਛਲੇ ਜਨਮਾਂ ਦੀਆਂ ਕਹਾਣੀਆਂ ਰਾਹੀਂ ਪਾਰਮਿਤਾਵਾਂ (ਪੂਰਨਤਾਵਾਂ) ਨੂੰ ਸਿੱਖਣਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'buddhist',
@@ -405,11 +282,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'metta-sutta-love',
     title: 'Metta Sutta — Loving Kindness',
-    title_hi: 'मेत्त सुत्त — मैत्री भाव',
-    title_pa: 'ਮੇਤ ਸੂਤ — ਮੈਤਰੀ ਭਾਵ',
     description: 'Cultivating universal love and compassion for all living beings.',
-    description_hi: 'सभी जीवित प्राणियों के लिए सार्वभौमिक प्रेम और करुणा विकसित करना।',
-    description_pa: 'ਸਾਰੇ ਜੀਵਾਂ ਲਈ ਸਰਵਵਿਆਪੀ ਪਿਆਰ ਅਤੇ ਹਮਦਰਦੀ ਪੈਦਾ ਕਰਨਾ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'buddhist',
@@ -419,11 +292,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'satipatthana-meditation',
     title: 'Satipatthana — Mindfulness',
-    title_hi: 'सतिपट्ठान — स्मृति',
-    title_pa: 'ਸਤਿਪਠਾਨ — ਸਿਮਰਤੀ',
     description: 'The foundations of mindfulness — body, feelings, mind, and mental objects.',
-    description_hi: 'स्मृति (सजगता) के आधार — शरीर, भावनाएं, मन और मानसिक विषय।',
-    description_pa: 'ਸਿਮਰਤੀ (ਸਜਗਤਾ) ਦੇ ਅਧਾਰ — ਸਰੀਰ, ਭਾਵਨਾਵਾਂ, ਮਨ ਅਤੇ ਮਾਨਸਿਕ ਵਿਸ਼ੇ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'buddhist',
@@ -433,11 +302,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'lotus-sutra-universal',
     title: 'Lotus Sutra — Universal Path',
-    title_hi: 'सद्धर्मपुण्डरीक सूत्र — सार्वभौमिक मार्ग',
-    title_pa: 'ਸੱਧਰਮਪੁੰਡਰੀਕ ਸੂਤਰ — ਸਰਵਵਿਆਪੀ ਮਾਰਗ',
     description: 'The One Vehicle path — exploring the ultimate teachings of the Mahayana.',
-    description_hi: 'एकयान मार्ग — महायान की परम शिक्षाओं की खोज।',
-    description_pa: 'ਏਕਯਾਨ ਮਾਰਗ — ਮਹਾਯਾਨ ਦੀਆਂ ਪਰਮ ਸਿੱਖਿਆਵਾਂ ਦੀ ਖੋਜ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'buddhist',
@@ -447,11 +312,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'diamond-sutra-emptiness',
     title: 'Diamond Sutra — Insight',
-    title_hi: 'वज्रच्छेदिका सूत्र — अन्तर्दृष्टि',
-    title_pa: 'ਵਜਰਛੇਦਿਕਾ ਸੂਤਰ — ਅੰਤਰਦ੍ਰਿਸ਼ਟੀ',
     description: 'Cutting through the diamond of illusion — deep insight into the nature of reality.',
-    description_hi: 'भ्रम के वज्र को काटना — वास्तविकता की प्रकृति में गहन अन्तर्दृष्टि।',
-    description_pa: 'ਭਰਮ ਦੇ ਵਜਰ ਨੂੰ ਕੱਟਣਾ — ਅਸਲੀਅਤ ਦੀ ਪ੍ਰਕਿਰਤੀ ਵਿੱਚ ਗਹਿਰੀ ਅੰਤਰਦ੍ਰਿਸ਼ਟੀ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'buddhist',
@@ -461,11 +322,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'buddhist-history-council',
     title: 'The Great Buddhist Councils',
-    title_hi: 'महान बौद्ध संगीतियाँ',
-    title_pa: 'ਮਹਾਨ ਬੌਧ ਸੰਗੀਤੀਆਂ',
     description: 'How the Dharma was preserved and spread through the centuries.',
-    description_hi: 'सदियों से धम्म को कैसे संरक्षित और प्रसारित किया गया।',
-    description_pa: 'ਸਦੀਆਂ ਤੋਂ ਧੰਮ ਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਅਤੇ ਪ੍ਰਸਾਰਿਤ ਕੀਤਾ ਗਿਆ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'buddhist',
@@ -475,11 +332,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'vinaya-pitaka-ethics',
     title: 'Vinaya — Path of Discipline',
-    title_hi: 'विनय — अनुशासन का मार्ग',
-    title_pa: 'ਵਿਨੈ — ਅਨੁਸ਼ਾਸਨ ਦਾ ਮਾਰਗ',
     description: 'Understanding the ethical foundations and rules of the Sangha.',
-    description_hi: 'संघ के नैतिक आधारों और नियमों को समझना।',
-    description_pa: 'ਸੰਘ ਦੇ ਨੈਤਿਕ ਅਧਾਰਾਂ ਅਤੇ ਨਿਯਮਾਂ ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'buddhist',
@@ -491,11 +344,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'namokar-mantra-foundation',
     title: 'Namokar Mantra — Roots',
-    title_hi: 'णमोकार मंत्र — मूल',
-    title_pa: 'ਣਮੋਕਾਰ ਮੰਤਰ — ਮੂਲ',
     description: 'Deep dive into the five-fold salutation that forms the heart of Jainism.',
-    description_hi: 'पंच-नमस्कार मंत्र का गहन अध्ययन, जो जैन धर्म का हृदय है।',
-    description_pa: 'ਪੰਚ-ਨਮਸਕਾਰ ਮੰਤਰ ਦਾ ਗਹਿਰਾ ਅਧਿਐਨ, ਜੋ ਜੈਨ ਧਰਮ ਦਾ ਹਿਰਦਾ ਹੈ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'jain',
@@ -505,11 +354,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'ahimsa-paramo-dharma',
     title: 'Ahimsa — The Supreme Way',
-    title_hi: 'अहिंसा — परम मार्ग',
-    title_pa: 'ਅਹਿੰਸਾ — ਪਰਮ ਮਾਰਗ',
     description: 'Non-violence in thought, word, and deed — the core pillar of Jain life.',
-    description_hi: 'मन, वचन और कर्म से अहिंसा — जैन जीवन का मुख्य आधार।',
-    description_pa: 'ਮਨ, ਬਚਨ ਅਤੇ ਕਰਮ ਤੋਂ ਅਹਿੰਸਾ — ਜੈਨ ਜੀਵਨ ਦਾ ਮੁੱਖ ਅਧਾਰ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'jain',
@@ -519,11 +364,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'tattvartha-sutra-essence',
     title: 'Tattvartha Sutra — Essence',
-    title_hi: 'तत्त्वार्थ सूत्र — सार',
-    title_pa: 'ਤੱਤਵਾਰਥ ਸੂਤਰ — ਸਾਰ',
     description: 'The compendium of Jain philosophy — understanding the seven Tattvas (Realities).',
-    description_hi: 'जैन दर्शन का संग्रह — सात तत्त्वों (वास्तविकताओं) को समझना।',
-    description_pa: 'ਜੈਨ ਦਰਸ਼ਨ ਦਾ ਸੰਗ੍ਰਹਿ — ਸੱਤ ਤੱਤਾਂ (ਅਸਲੀਅਤਾਂ) ਨੂੰ ਸਮਝਣਾ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'jain',
@@ -533,11 +374,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'jain-cosmology-intro',
     title: 'Jain Cosmology — The Loka',
-    title_hi: 'जैन ब्रह्मांड विज्ञान — लोक',
-    title_pa: 'ਜੈਨ ਬ੍ਰਹਿਮੰਡ ਵਿਗਿਆਨ — ਲੋਕ',
     description: 'Exploring the structure of the universe, heavens, and the path to Moksha.',
-    description_hi: 'ब्रह्मांड की संरचना, स्वर्गों और मोक्ष के मार्ग की खोज।',
-    description_pa: 'ਬ੍ਰਹਿਮੰਡ ਦੀ ਬਣਤਰ, ਸਵਰਗਾਂ ਅਤੇ ਮੋਕਸ਼ ਦੇ ਮਾਰਗ ਦੀ ਖੋਜ।',
     difficulty: 'intermediate',
     proRequired: false,
     tradition: 'jain',
@@ -547,11 +384,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'bhaktamara-stotra-devotion',
     title: 'Bhaktamara Stotra — Hymn',
-    title_hi: 'भक्तामर स्तोत्र — भक्ति',
-    title_pa: 'ਭਕਤਾਮਰ ਸਤੋਤਰ — ਭਗਤੀ',
     description: 'The immortal hymn of devotion to Lord Adinatha, composed by Manatunga Suri.',
-    description_hi: 'आचार्य मानतुंग द्वारा रचित भगवान आदिनाथ की भक्ति का अमर स्तोत्र।',
-    description_pa: 'ਆਚਾਰੀਆ ਮਾਨਤੁੰਗ ਦੁਆਰਾ ਰਚਿਤ ਭਗਵਾਨ ਆਦਿਨਾਥ ਦੀ ਭਗਤੀ ਦਾ ਅਮਰ ਸਤੋਤਰ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'jain',
@@ -561,11 +394,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'karma-theory-jainism',
     title: 'Jain Karma — Cause & Effect',
-    title_hi: 'जैन कर्म सिद्धांत — कार्य-कारण',
-    title_pa: 'ਜੈਨ ਕਰਮ ਸਿਧਾਂਤ — ਕਾਰਜ-ਕਾਰਨ',
     description: 'The science of the soul — how Karma binds and how to achieve Nirvana.',
-    description_hi: 'आत्मा का विज्ञान — कर्म कैसे बंधते हैं और निर्वाण कैसे प्राप्त करें।',
-    description_pa: 'ਆਤਮਾ ਦਾ ਵਿਗਿਆਨ — ਕਰਮ ਕਿਵੇਂ ਬੱਝਦੇ ਹਨ ਅਤੇ ਨਿਰਵਾਣ ਕਿਵੇਂ ਪ੍ਰਾਪਤ ਕਰੀਏ।',
     difficulty: 'intermediate',
     proRequired: true,
     tradition: 'jain',
@@ -575,11 +404,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'jain-tirthankara-lives',
     title: 'The 24 Tirthankaras — Lives',
-    title_hi: '24 तीर्थंकर — जीवन वृत्त',
-    title_pa: '24 ਤੀਰਥੰਕਰ — ਜੀਵਨ ਵਿਰਤ',
     description: 'Inspirational journeys of the Ford-makers from Adinatha to Mahavira.',
-    description_hi: 'आदिनाथ से महावीर तक तीर्थंकरों की प्रेरक जीवन यात्राएं।',
-    description_pa: 'ਆਦਿਨਾਥ ਤੋਂ ਮਹਾਵੀਰ ਤੱਕ ਤੀਰਥੰਕਰਾਂ ਦੇ ਪ੍ਰੇਰਨਾਦਾਇਕ ਜੀਵਨ ਸਫ਼ਰ।',
     difficulty: 'beginner',
     proRequired: false,
     tradition: 'jain',
@@ -589,11 +414,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'anekantavada-philosophy',
     title: 'Anekantavada — Many Views',
-    title_hi: 'अनेकांतवाद — बहुआयामी दृष्टिकोण',
-    title_pa: 'ਅਨੇਕਾਂਤਵਾਦ — ਬਹੁ-ਪੱਖੀ ਦ੍ਰਿਸ਼ਟੀਕੋਣ',
     description: 'The doctrine of non-absolutism — the intellectual foundation of tolerance.',
-    description_hi: 'अनेकांतवाद का सिद्धांत — सहिष्णुता की बौद्धिक नींव।',
-    description_pa: 'ਅਨੇਕਾਂਤਵਾਦ ਦਾ ਸਿਧਾਂਤ — ਸਹਿਣਸ਼ੀਲਤਾ ਦੀ ਬੌਧਿਕ ਨੀਂਹ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'jain',
@@ -603,11 +424,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'samayika-equanimity',
     title: 'Samayika — Equanimity',
-    title_hi: 'सामयिक — समभाव',
-    title_pa: 'ਸਾਮਇਕ — ਸਮਭਾਵ',
     description: 'The 48-minute practice of spiritual stillness and soul-consciousness.',
-    description_hi: 'आद्यात्मिक स्थिरता और आत्म-चेतना का 48 मिनट का अभ्यास।',
-    description_pa: 'ਅਧਿਆਤਮਿਕ ਸਥਿਰਤਾ ਅਤੇ ਆਤਮ-ਚੇਤਨਾ ਦਾ 48 ਮਿੰਟ ਦਾ ਅਭਿਆਸ।',
     difficulty: 'intermediate',
     proRequired: false,
     tradition: 'jain',
@@ -617,11 +434,7 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'jain-yoga-dhyana',
     title: 'Jain Yoga & Meditation',
-    title_hi: 'जैन योग और ध्यान',
-    title_pa: 'ਜੈਨ ਯੋਗ ਅਤੇ ਧਿਆਨ',
     description: 'Advanced practices for internal purification and liberation of the soul.',
-    description_hi: 'आंतरिक शुद्धि और आत्मा की मुक्ति के लिए उन्नत अभ्यास।',
-    description_pa: 'ਅੰਦਰੂਨੀ ਸ਼ੁੱਧੀ ਅਤੇ ਆਤਮਾ ਦੀ ਮੁਕਤੀ ਲਈ ਉੱਨਤ ਅਭਿਆਸ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'jain',
@@ -631,32 +444,18 @@ export const SEED_PATHS: PathshalaPath[] = [
   {
     id: 'kalpa-sutra-scripture',
     title: 'Kalpa Sutra — Sacred Path',
-    title_hi: 'कल्प सूत्र — पवित्र मार्ग',
-    title_pa: 'ਕਲਪ ਸੂਤਰ — ਪਵਿੱਤਰ ਮਾਰਗ',
     description: 'Exploring the biographies of the Tirthankaras and the monastic rules.',
-    description_hi: 'तीर्थंकरों की जीवनियों और उनके साधु नियमों की खोज।',
-    description_pa: 'ਤੀਰਥੰਕਰਾਂ ਦੀਆਂ ਜੀਵਨੀਆਂ ਅਤੇ ਉਹਨਾਂ ਦੇ ਸਾਧੂ ਨਿਯਮਾਂ ਦੀ ਖੋਜ।',
     difficulty: 'advanced',
     proRequired: true,
     tradition: 'jain',
     total_lessons: 20,
     duration_days: 40,
   },
-];
+] as const;
 
 // Array of path IDs — use this to scope guided_path_progress queries so they
 // don't pick up NityaKarma guided-plan rows (brahma-muhurta-7, japa-foundation-7…)
 // which share the same table.
 export const PATHSHALA_PATH_IDS = SEED_PATHS.map(p => p.id) as string[];
 
-export function getPathTitle(path: PathshalaPath, lang?: string | null): string {
-  if (lang === 'hi' && path.title_hi) return path.title_hi;
-  if (lang === 'pa' && path.title_pa) return path.title_pa;
-  return path.title;
-}
-
-export function getPathDesc(path: PathshalaPath, lang?: string | null): string {
-  if (lang === 'hi' && path.description_hi) return path.description_hi;
-  if (lang === 'pa' && path.description_pa) return path.description_pa;
-  return path.description;
-}
+export type SeedPath = typeof SEED_PATHS[number];

@@ -1,5 +1,0 @@
--- Remote migration history placeholder.
---
--- Version 20260624095945 exists in the linked Supabase project, but the local
--- scratch migration file was removed before this branch was finalized. Keep this
--- no-op migration so local migration history stays aligned with remote history.

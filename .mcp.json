@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "onesignal": {
-      "type": "http",
-      "url": "https://server.smithery.ai/onesignal/onesignal?config=eyJhcHBJZCI6ICIxMmIzY2UyYy1mMWQ0LTRhNGEtYmEwNS0yNTk2MzcxNmRiYjUiLCAiYXBpS2V5IjogIm9zX3YyX2FwcF9ja3o0NGxocjJyZmV2b3FmZXdsZG9mdzN3dm9ybDNjNHZmemV0Zm1hdjVoN3E0c2lsNWQ3eDRpa2NuaDdsc3k3NnAzbXhjZWx0MzZ3bWI2ZGZmc2pkYnlkYWd1ZXFkZmt1ZGJod2xxIn0="
-    }
-  }
-}

@@ -76,9 +76,6 @@ export async function GET(request: Request) {
 
     const { sendShoonayaEmail } = await import('@/lib/email');
 
-    // Collect email sends separately so we can track failures without blocking notifications.
-    const emailPromises: Promise<void>[] = [];
-
     const notifications = eligibleUsers.map((u) => {
       const timeZone  = resolveTimeZone((u as any).timezone);
       const localDate = getLocalDateIso(now, timeZone);
@@ -91,20 +88,18 @@ export async function GET(request: Request) {
 
       // ── Trigger Email for Milestones or At-Risk Streaks ──
       if (u.email && (streak === 6 || streak === 29 || streak === 0)) {
-        emailPromises.push(
-          sendShoonayaEmail({
-            to: u.email,
-            subject: streak === 0 ? 'Start Your Infinity' : 'Your Streak is Glowing!',
-            shloka: meta.vocabulary.shloka,
-            meaning: `Take a moment for today's ${meta.sacredTextLabel}.`,
-            title: streak === 0 ? 'Find Your Infinity' : 'Don\'t Let the Flame Go Out',
-            body: streak === 0
-              ? 'Your path at Shoonaya is waiting for your first step today.'
-              : `You have maintained your Sadhana for ${streak} days. One more step and you reach a new milestone!`,
-            ctaText: 'FIND YOUR INFINITY',
-            ctaUrl: actionUrl,
-          }).then(() => undefined),
-        );
+        void sendShoonayaEmail({
+          to: u.email,
+          subject: streak === 0 ? 'Start Your Infinity' : 'Your Streak is Glowing!',
+          shloka: meta.vocabulary.shloka,
+          meaning: `Take a moment for today's ${meta.sacredTextLabel}.`,
+          title: streak === 0 ? 'Find Your Infinity' : 'Don\'t Let the Flame Go Out',
+          body: streak === 0 
+            ? 'Your path at Shoonaya is waiting for your first step today.' 
+            : `You have maintained your Sadhana for ${streak} days. One more step and you reach a new milestone!`,
+          ctaText: 'FIND YOUR INFINITY',
+          ctaUrl: actionUrl
+        });
       }
 
       // Engine enrichment — mention special tithi when relevant
@@ -155,7 +150,7 @@ export async function GET(request: Request) {
 
     const pushResult = await sendOneSignalPush({
       userIds: insertedUserIds,
-      title: 'Your sadhana awaits, Shoonya 🙏',
+      title: 'Your Daily Reading awaits',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
       url: actionUrl,
       data: {
@@ -163,23 +158,10 @@ export async function GET(request: Request) {
       },
     });
 
-    // Settle all email sends and count failures
-    const emailResults = await Promise.allSettled(emailPromises);
-    const emailFailed = emailResults.filter((r) => r.status === 'rejected').length;
-    if (emailFailed > 0) {
-      const reasons = emailResults
-        .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
-        .map((r) => String(r.reason?.message ?? r.reason))
-        .slice(0, 3); // log up to 3 distinct reasons
-      console.warn(`[shloka-reminder] ${emailFailed} email(s) failed:`, reasons);
-    }
-
     return NextResponse.json({
-      message:       'Shloka reminders sent',
-      reminded:      totalInserted,
-      push_targets:  pushResult.sent,
-      emails_sent:   emailResults.length - emailFailed,
-      emails_failed: emailFailed,
+      message:  'Shloka reminders sent',
+      reminded: totalInserted,
+      push_targets: pushResult.sent,
     });
   } catch (error) {
     console.error('Shloka cron crashed:', error);

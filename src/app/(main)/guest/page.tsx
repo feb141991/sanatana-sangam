@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowRight, Bell, Heart, MapPin, MessageSquare, Users } from 'lucide-react';
-import { getAuthUser } from '@/lib/auth-cache';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 const guestPaths = [
   {
@@ -45,8 +45,12 @@ const memberBenefits = [
 
 
 export default async function GuestPage() {
-  const user = await getAuthUser();
-  if (user) redirect('/home');
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    redirect('/home');
+  }
 
   return (
     <div className="space-y-4 fade-in">

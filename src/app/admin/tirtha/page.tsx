@@ -49,14 +49,9 @@ export default function MandaliRegistry() {
               <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">Community Chapters</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/admin/tirtha/review" className="bg-white border border-black/5 text-[var(--brand-muted)] px-6 py-2 rounded-full text-xs font-bold flex items-center gap-2 hover:border-[var(--premium-gold)] hover:text-[var(--premium-gold)] transition-all shadow-sm">
-              <ShieldCheck size={16} /> Review Need
-            </Link>
-            <button className="bg-[var(--premium-gold)] text-white px-6 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-[var(--premium-gold)]/20">
-              <Plus size={16} /> New Mandali
-            </button>
-          </div>
+          <button className="bg-[var(--premium-gold)] text-white px-6 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-lg shadow-[var(--premium-gold)]/20">
+            <Plus size={16} /> New Mandali
+          </button>
         </div>
       </div>
 

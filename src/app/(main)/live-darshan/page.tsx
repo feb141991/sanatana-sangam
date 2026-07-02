@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import LiveDarshanClient from './LiveDarshanClient';
-import { resolveActiveLiveStreams } from '@/lib/live-streams';
+import { LIVE_STREAMS } from '@/lib/live-streams';
 
 
 export default async function LiveDarshanPage() {
@@ -9,31 +9,33 @@ export default async function LiveDarshanPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/');
 
-  // Fetch profile and user darshan preferences in parallel
-  const [profileResult, prefsResult, dbStreamsResult] = await Promise.all([
-    supabase.from('profiles').select('tradition').eq('id', user.id).single(),
-    supabase
-      .from('darshan_preferences')
-      .select('stream_id, is_favourite, notify_morning, notify_evening')
-      .eq('user_id', user.id),
-    supabase
-      .from('live_darshans')
-      .select('id, title, location, schedule, category, tradition, current_video_id, is_active, health_status')
-      .eq('is_active', true)
-      .order('created_at', { ascending: true }),
-  ]);
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('tradition')
+    .eq('id', user.id)
+    .single();
 
-  const { data: dbStreams, error: streamsError } = dbStreamsResult;
-  const activeStreams = resolveActiveLiveStreams(!streamsError ? dbStreams : null);
+  // Fetch live streams from the database
+  const { data: dbStreams, error: streamsError } = await supabase
+    .from('live_darshans')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
 
-  const initialPreferences = prefsResult.data ?? [];
+  // If the database query fails (e.g. migration hasn't been run yet), 
+  // gracefully fall back to the local static list.
+  let activeStreams = LIVE_STREAMS;
+  if (!streamsError && dbStreams && dbStreams.length > 0) {
+    activeStreams = dbStreams.map(row => ({
+      id: row.id,
+      title: row.title,
+      location: row.location,
+      schedule: row.schedule,
+      category: row.category,
+      tradition: row.tradition,
+      youtubeVideoId: row.current_video_id || '', // Fallback handled by UI if empty
+    }));
+  }
 
-  return (
-    <LiveDarshanClient
-      tradition={profileResult.data?.tradition ?? 'hindu'}
-      userId={user.id}
-      streams={activeStreams}
-      initialPreferences={initialPreferences}
-    />
-  );
+  return <LiveDarshanClient tradition={profile?.tradition ?? 'hindu'} userId={user.id} streams={activeStreams} />;
 }

@@ -21,7 +21,6 @@ export type MaterializeYearSummary = {
   skippedManual: number;
   skippedProtected: number;
   missingDefinition: number;
-  suppressedOverlap: number;
 };
 
 export type MaterializeResult = {
@@ -42,7 +41,6 @@ function makeYearSummary(): MaterializeYearSummary {
     skippedManual: 0,
     skippedProtected: 0,
     missingDefinition: 0,
-    suppressedOverlap: 0,
   };
 }
 
@@ -82,10 +80,8 @@ export async function materializeOccurrencesForYears({
   if (existingError) throw existingError;
 
   const existingByDefinitionYear = new Map<string, MaterializeOccurrenceRow>();
-  const existingByDefinitionDate = new Set<string>();
   for (const row of existingRows ?? []) {
     existingByDefinitionYear.set(`${row.definition_id}:${row.year}`, row);
-    existingByDefinitionDate.add(`${row.definition_id}:${row.date}`);
   }
 
   const summary: Record<number, MaterializeYearSummary> = {};
@@ -97,17 +93,8 @@ export async function materializeOccurrencesForYears({
     const calculated = calculateObservancesForYear(year);
     summary[year].calculated = calculated.length;
 
-    // Dates already claimed by a named (non-recurring) observance this year —
-    // recurring vrats are suppressed on these to avoid double-listing (e.g. a
-    // generic Ekadashi landing on Vaikunta Ekadashi / Gita Jayanti).
-    const namedDates = new Set(calculated.filter(o => !o.recurring).map(o => o.date));
-
     const toInsert: any[] = [];
     const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
-    // Track which definitions have already been processed this year to prevent
-    // duplicate inserts when a rule matches more than once (tithi can appear
-    // twice near the edge of a solar-rashi window).
-    const processedThisYear = new Set<string>();
 
     for (const occ of calculated) {
       const definitionId = definitionMap.get(occ.slug);
@@ -115,40 +102,6 @@ export async function materializeOccurrencesForYears({
         summary[year].missingDefinition += 1;
         continue;
       }
-
-      // Recurring vrats are keyed by (definition, date) — many per year, no
-      // update-in-place. Suppress any colliding with a named observance.
-      if (occ.recurring) {
-        if (namedDates.has(occ.date)) {
-          summary[year].suppressedOverlap += 1;
-          continue;
-        }
-        const recurKey = `${definitionId}:${occ.date}`;
-        if (processedThisYear.has(recurKey)) continue;
-        processedThisYear.add(recurKey);
-        if (existingByDefinitionDate.has(recurKey)) continue; // already materialized
-        summary[year].insertable += 1;
-        toInsert.push({
-          definition_id: definitionId,
-          year: occ.year,
-          date: occ.date,
-          calculation_version: RULE_ENGINE_VERSION,
-          calculated_by: calculatedBy,
-          final_date_source: 'calculation_engine',
-          audit_status: 'not_run',
-          verification_status: 'not_checked',
-          source_provenance: {
-            source_name: 'calculation_engine',
-            source_kind: 'curated',
-          },
-        });
-        continue;
-      }
-
-      // Deduplicate: keep only the first match per (definition, year).
-      const dedupKey = `${definitionId}:${occ.year}`;
-      if (processedThisYear.has(dedupKey)) continue;
-      processedThisYear.add(dedupKey);
 
       const existing = existingByDefinitionYear.get(`${definitionId}:${occ.year}`);
       if (!existing) {

@@ -1,9 +1,9 @@
-import { verifyAdminCookieAuth } from '@/lib/admin-auth';
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(req: NextRequest) {
-  const authError = await verifyAdminCookieAuth(req);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const { searchParams } = new URL(req.url);
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const authError = await verifyAdminCookieAuth(req);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const { userId, action } = await req.json();

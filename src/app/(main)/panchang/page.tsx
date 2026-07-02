@@ -1,81 +1,27 @@
-import type { Metadata } from 'next';
-import { cache } from 'react';
-import { calculatePanchang } from '@/lib/panchang';
-import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
-import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
-import PanchangHub from './PanchangHub';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import PanchangClient from './PanchangClient';
 
-// Panchang is fully static — no auth, no cookies, pure computation.
-// ISR with 86400s caused ~509s TTFB on cache miss (cold ISR function spinup
-// + astronomia cold-load). Using revalidate=0 + on-demand revalidation via
-// the midnight cron avoids stale-while-revalidate gaps entirely.
-// The /api/cron/panchang-revalidate route calls revalidatePath('/panchang')
-// at midnight IST so the page is always warm for the day.
-export const revalidate = 0;
-export const preferredRegion = 'iad1'; // US East — nearest to Supabase default region
 
-// Memoised per-request so generateMetadata and the page share one calculation.
-const getPanchang = cache(() => {
-  return calculatePanchang(new Date(), UJJAIN_LAT, UJJAIN_LON);
-});
+export default async function PanchangPage() {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-export async function generateMetadata(): Promise<Metadata> {
-  const panchang = getPanchang();
-  const dateStr = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  let lat       = 28.6139; // Default: New Delhi
+  let lon       = 77.2090;
+  let city      = '';
+  let tradition = 'hindu';
 
-  return {
-    title: `Panchang and Astrology Hub for ${dateStr} | Shoonaya`,
-    description: `Today's Astrology Hub: Panchang Tithi ${panchang.tithi}, Nakshatra ${panchang.nakshatra}. Explore daily horoscopes (Rashiphala) and generate birth charts (Vedic Kundali).`,
-    openGraph: {
-      title: `Daily Panchang & Astrology — ${panchang.tithi}`,
-      description: `Explore today's Panchang, daily horoscope, and generate birth charts. Sunrise: ${panchang.sunrise} · Tithi: ${panchang.tithi}`,
-      type: 'website',
-      url: 'https://shoonaya.com/panchang',
-    },
-    alternates: {
-      canonical: 'https://shoonaya.com/panchang',
-    },
-  };
-}
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('latitude, longitude, city, neighbourhood, tradition')
+      .eq('id', user.id)
+      .single();
+    if (profile?.latitude)  lat       = profile.latitude;
+    if (profile?.longitude) lon       = profile.longitude;
+    if (profile?.city)      city      = profile.neighbourhood ?? profile.city;
+    if (profile?.tradition) tradition = profile.tradition;
+  }
 
-export default function PanchangHubPage() {
-  const panchang = getPanchang();
-
-  const panchangSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": `Hindu Panchang and Astrology Hub for ${panchang.date}`,
-    "description": "Daily Hindu almanac including tithi, nakshatra, daily horoscope, and online Vedic Kundali birth chart generation.",
-    "url": "https://shoonaya.com/panchang",
-    "keywords": ["panchang", "tithi", "horoscope", "kundali", "rashiphala", panchang.tithi, panchang.nakshatra],
-    "creator": { "@type": "Organization", "name": "Shoonaya" },
-    "temporalCoverage": panchang.date,
-    "variableMeasured": [
-      { "@type": "PropertyValue", "name": "Tithi", "value": `${panchang.tithi} (${panchang.paksha})` },
-      { "@type": "PropertyValue", "name": "Nakshatra", "value": panchang.nakshatra },
-      { "@type": "PropertyValue", "name": "Yoga", "value": panchang.yoga },
-      { "@type": "PropertyValue", "name": "Vara", "value": panchang.vara },
-      { "@type": "PropertyValue", "name": "Masa", "value": panchang.masaName },
-    ],
-  };
-
-  return (
-    <>
-      <BreadcrumbJsonLd
-        items={[
-          { name: 'Home', url: 'https://shoonaya.com' },
-          { name: 'Panchang Hub', url: 'https://shoonaya.com/panchang' },
-        ]}
-      />
-      <JsonLd data={panchangSchema} />
-      {/* userRashi and tradition are fetched client-side in PanchangHub
-          so this page can be fully cached at the edge. */}
-      <PanchangHub panchang={panchang as any} />
-    </>
-  );
+  return <PanchangClient lat={lat} lon={lon} city={city} tradition={tradition} />;
 }

@@ -3,8 +3,24 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, buildPipelinePromptHint } from '@/lib/ai/validate-pipeline-tags';
 import { normalizeContentLanguage, getLanguageInstruction } from '@/lib/language-runtime';
-import { createAdminClient } from '@/lib/supabase-admin';
-import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
+
+// ─── GET /api/quiz/daily ──────────────────────────────────────────────────────
+// Returns a tradition-aware "Do You Know?" question for the current UTC date.
+//
+// Query params:
+//   tradition  : 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all'  (default: hindu)
+//   date       : YYYY-MM-DD  (default: today UTC — used as cache key)
+//   language   : 'en' | 'hi' | 'pa' (default: en)
+//
+// Response: { question, options: string[], answerIndex: number, fact: string, source: string, fallbackLanguage?: string }
+//
+// The server generates via the active Pramana inference provider and returns a structured JSON quiz item.
+// The client caches the result in localStorage keyed by tradition + date so
+// the question is consistent for the whole day without repeated API calls.
+//
+// Cache-Control: stale-while-revalidate 86400 so repeated calls within the day
+// are served from edge cache.
+// ─────────────────────────────────────────────────────────────────────────────
 
 const TRADITION_CONTEXT: Record<string, string> = {
   hindu:    'Hindu scriptures, deities, festivals, temples, philosophy (Vedanta, Yoga, Bhakti), rivers, sacred geography, Sanskrit terms, and Puranic stories',
@@ -14,18 +30,97 @@ const TRADITION_CONTEXT: Record<string, string> = {
   all:      'the shared spiritual heritage of India — covering Hindu, Sikh, Buddhist and Jain traditions, common sacred rivers, pilgrimage sites, and inter-tradition concepts',
 };
 
-function buildPrompt(
-  tradition: string,
-  dateStr: string,
-  language?: string | null,
-  recentQuestions?: string[],
-): string {
+const DAILY_FALLBACK_QUIZ: Record<string, Record<string, {
+  question: string;
+  options: string[];
+  answerIndex: number;
+  explanation: string;
+  fact: string;
+  source: string;
+}>> = {
+  en: {
+    hindu: {
+      question: 'Which Upanishad contains the mahavakya "Tat Tvam Asi"?',
+      options: ['Chandogya Upanishad', 'Kena Upanishad', 'Mundaka Upanishad', 'Isha Upanishad'],
+      answerIndex: 0,
+      explanation: 'The mahavakya "Tat Tvam Asi" appears in the Chandogya Upanishad as part of the teaching of Uddalaka to Shvetaketu.',
+      fact: 'Different Vedanta schools interpret this mahavakya differently.',
+      source: 'Chandogya Upanishad 6.8.7',
+    },
+    sikh: {
+      question: 'Who compiled the Adi Granth, which later became Guru Granth Sahib Ji?',
+      options: ['Guru Arjan Dev Ji', 'Guru Gobind Singh Ji', 'Guru Ram Das Ji', 'Guru Tegh Bahadur Ji'],
+      answerIndex: 0,
+      explanation: 'Guru Arjan Dev Ji compiled the Adi Granth in 1604 and installed it at Harmandir Sahib.',
+      fact: 'The scripture includes compositions of Bhagats from diverse backgrounds.',
+      source: 'Sikh tradition',
+    },
+    buddhist: {
+      question: 'Which teaching is grouped as the first sermon traditionally delivered by the Buddha at Sarnath?',
+      options: ['The Four Noble Truths', 'The Five Precepts', 'The Brahmaviharas', 'The Ten Paramitas'],
+      answerIndex: 0,
+      explanation: 'The Buddha’s first sermon at Sarnath is traditionally associated with the Four Noble Truths and the Middle Way.',
+      fact: 'This discourse is commonly referred to as the Dhammacakkappavattana Sutta.',
+      source: 'Buddhist tradition',
+    },
+    jain: {
+      question: 'Which principle is most centrally associated with Jain ethical life?',
+      options: ['Ahimsa', 'Yajna', 'Bhakti', 'Rajadharma'],
+      answerIndex: 0,
+      explanation: 'Ahimsa, or non-violence, is the central ethical principle in Jain dharma.',
+      fact: 'Jain practice extends non-violence with unusual rigor.',
+      source: 'Jain tradition',
+    },
+    all: {
+      question: 'Which river is widely revered across multiple Indian traditions as sacred?',
+      options: ['Ganga', 'Thames', 'Volga', 'Danube'],
+      answerIndex: 0,
+      explanation: 'The Ganga holds sacred status across Hindu traditions and is culturally significant in India.',
+      fact: 'Cities like Varanasi, Haridwar, and Prayagraj are deeply tied to the Ganga.',
+      source: 'Indian sacred geography',
+    },
+  },
+  hi: {
+    hindu: {
+      question: 'किस उपनिषद में महावाक्य "तत् त्वम असि" (Tat Tvam Asi) मिलता है?',
+      options: ['छान्दोग्य उपनिषद', 'केन उपनिषद', 'मुण्डक उपनिषद', 'ईश उपनिषद'],
+      answerIndex: 0,
+      explanation: '"तत् त्वम असि" महावाक्य छान्दोग्य उपनिषद में उद्दालक द्वारा श्वेतकेतु को दिए गए उपदेश का हिस्सा है।',
+      fact: 'वेदांत के विभिन्न संप्रदाय इस महावाक्य की अलग-अलग व्याख्या करते हैं।',
+      source: 'छान्दोग्य उपनिषद 6.8.7',
+    },
+    all: {
+      question: 'किस नदी को भारत की अनेक परंपराओं में पवित्र माना जाता है?',
+      options: ['गंगा', 'टेम्स', 'वोल्गा', 'डेन्यूब'],
+      answerIndex: 0,
+      explanation: 'गंगा हिंदू परंपराओं में पवित्र स्थान रखती है और भारत में सांस्कृतिक रूप से बहुत महत्वपूर्ण है।',
+      fact: 'वाराणसी, हरिद्वार और प्रयागराज जैसे शहर गंगा से गहराई से जुड़े हैं।',
+      source: 'भारतीय पवित्र भूगोल',
+    }
+  },
+  pa: {
+    sikh: {
+      question: 'ਆਦਿ ਗ੍ਰੰਥ ਸਾਹਿਬ, ਜੋ ਬਾਅਦ ਵਿੱਚ ਗੁਰੂ ਗ੍ਰੰਥ ਸਾਹਿਬ ਜੀ ਬਣੇ, ਕਿਸ ਨੇ ਸੰਕਲਿਤ ਕੀਤਾ ਸੀ?',
+      options: ['ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ', 'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ', 'ਗੁਰੂ ਰਾਮ ਦਾਸ ਜੀ', 'ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ'],
+      answerIndex: 0,
+      explanation: 'ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਨੇ 1604 ਵਿੱਚ ਆਦਿ ਗ੍ਰੰਥ ਦਾ ਸੰਕਲਨ ਕੀਤਾ ਅਤੇ ਇਸਨੂੰ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਵਿਖੇ ਸਥਾਪਿਤ ਕੀਤਾ।',
+      fact: 'ਇਸ ਗ੍ਰੰਥ ਵਿੱਚ ਵੱਖ-ਵੱਖ ਪਿਛੋਕੜਾਂ ਵਾਲੇ ਭਗਤਾਂ ਦੀਆਂ ਰਚਨਾਵਾਂ ਸ਼ਾਮਲ ਹਨ।',
+      source: 'ਸਿੱਖ ਪਰੰਪਰਾ',
+    },
+    all: {
+      question: 'ਕਿਸ ਨਦੀ ਨੂੰ ਭਾਰਤ ਦੀਆਂ ਕਈ ਪਰੰਪਰਾਵਾਂ ਵਿੱਚ ਪਵਿੱਤਰ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ?',
+      options: ['ਗੰਗਾ', 'ਥੇਮਜ਼', 'ਵੋਲਗਾ', 'ਡੈਨਿਊਬ'],
+      answerIndex: 0,
+      explanation: 'ਗੰਗਾ ਹਿੰਦੂ ਪਰੰਪਰਾਵਾਂ ਵਿੱਚ ਪਵਿੱਤਰ ਸਥਾਨ ਰੱਖਦੀ ਹੈ ਅਤੇ ਭਾਰਤ ਵਿੱਚ ਸੱਭਿਆਚਾਰਕ ਤੌਰ ਤੇ ਬਹੁਤ ਮਹੱਤਵਪੂਰਨ ਹੈ।',
+      fact: 'ਵਾਰਾਣਸੀ, ਹਰਿਦੁਆਰ ਅਤੇ ਪ੍ਰਯਾਗਰਾਜ ਵਰਗੇ ਸ਼ਹਿਰ ਗੰਗਾ ਨਾਲ ਡੂੰਘਾਈ ਨਾਲ ਜੁੜੇ ਹੋਏ ਹਨ।',
+      source: 'ਭਾਰਤੀ ਪਵਿੱਤਰ ਭੂਗੋਲ',
+    }
+  }
+};
+
+function buildPrompt(tradition: string, dateStr: string, language?: string | null): string {
   const ctx = TRADITION_CONTEXT[tradition] ?? TRADITION_CONTEXT.all;
   const langInstruction = getLanguageInstruction(language);
-
-  const exclusionBlock = recentQuestions && recentQuestions.length > 0
-    ? `\nIMPORTANT — Do NOT repeat or closely paraphrase any of these recently-asked questions:\n${recentQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}\nChoose a completely different topic, deity, scripture, concept, or historical event.\n`
-    : '';
 
   return `You are a precise and engaging spiritual quiz writer for a dharma app.
 
@@ -34,13 +129,12 @@ Generate ONE multiple-choice quiz question about ${ctx}.
 Language Instructions:
 ${langInstruction}
 Ensure that the "question", "options", "explanation", and "fact" fields are in the requested language.
-${exclusionBlock}
+
 Rules:
 - The question must be factual and verifiable
 - Difficulty: intermediate (not a trivial or famous fact, but not academic specialist level)
 - Use exactly 4 answer options
 - Exactly one option is correct
-- Vary the topic widely — cycle through different deities, scriptures, philosophy, festivals, geography, history, and rituals. Avoid repeating the same category two days in a row
 - The "explanation" field explains in 2-3 sentences WHY the correct answer is correct — useful for learners who chose wrong
 - The "fact" field adds a short, fascinating extra detail (1-2 sentences) that enriches the answer
 - No markdown in any field — plain text only
@@ -61,10 +155,6 @@ Respond ONLY with valid JSON matching this schema exactly:
 
 function extractJsonBlock(raw: string): string {
   return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-}
-
-function hasDailyQuizGenerationProvider(): boolean {
-  return Boolean(process.env.SARVAM_API_KEY?.trim());
 }
 
 export async function GET(req: NextRequest) {
@@ -89,76 +179,15 @@ export async function GET(req: NextRequest) {
   const tradition = (rawTradition === 'all' && effectiveTags.tradition === 'generic')
     ? 'all'
     : (effectiveTags.tradition ?? 'hindu');
-  
-  const requestedLanguage = normalizeContentLanguage(rawLanguage);
-  
-  // 1. Look up in DB using Admin Client
-  const supabase = createAdminClient();
-  const { data } = await supabase
-    .from('daily_quiz' as unknown as 'quiz_responses')
-    .select('id, question, options, answer_index, explanation, fact, source, tradition, date')
-    .eq('tradition', tradition)
-    .eq('language', requestedLanguage)
-    .eq('date', dateStr)
-    .maybeSingle();
-
-  if (data) {
-    const existingQuiz = data as unknown as {
-      question: string; options: string[]; answer_index: number;
-      explanation: string; fact: string; source: string; tradition: string; date: string; id: string;
-    };
-    return NextResponse.json({
-      question: existingQuiz.question,
-      options: existingQuiz.options,
-      answerIndex: existingQuiz.answer_index,
-      explanation: existingQuiz.explanation,
-      fact: existingQuiz.fact,
-      source: existingQuiz.source,
-      tradition: existingQuiz.tradition,
-      date: existingQuiz.date,
-      daily_quiz_id: existingQuiz.id,
-    }, { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } });
-  }
-
-  const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((now.getTime() - start.getTime()) / 86400000);
-  const fallbackPool = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
-  const fallbackArr = Array.isArray(fallbackPool) ? fallbackPool : [fallbackPool];
-  const fallbackQuiz = fallbackArr[dayOfYear % fallbackArr.length];
-  const fallbackLanguage = DAILY_FALLBACK_QUIZ[requestedLanguage] && (langFallbacks[tradition] || langFallbacks['all']) ? undefined : 'en';
-
-  if (!hasDailyQuizGenerationProvider()) {
-    return NextResponse.json(
-      { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true }, degraded: true },
-      { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } },
-    );
-  }
-
-  // 2. Not found → fetch last 90 days of questions to avoid repetition
-  const ninetyDaysAgo = new Date(dateStr);
-  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-  const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
-
-  const { data: recentRows } = await supabase
-    .from('daily_quiz' as unknown as 'quiz_responses')
-    .select('question')
-    .eq('tradition', tradition)
-    .eq('language', requestedLanguage)
-    .gte('date', ninetyDaysAgoStr)
-    .lt('date', dateStr)
-    .order('date', { ascending: false })
-    .limit(90);
-
-  const recentQuestions = (recentRows as unknown as { question: string }[] | null)
-    ?.map(r => r.question)
-    .filter(Boolean) ?? [];
-
-  // 3. Generate on demand
   const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
-  const prompt = buildPrompt(tradition, dateStr, requestedLanguage, recentQuestions);
+
+  const prompt = buildPrompt(tradition, dateStr, rawLanguage);
   const startTime = Date.now();
+
+  const requestedLanguage = normalizeContentLanguage(rawLanguage);
+  const langFallbacks = DAILY_FALLBACK_QUIZ[requestedLanguage] ?? DAILY_FALLBACK_QUIZ['en'];
+  const fallbackQuiz = langFallbacks[tradition] ?? langFallbacks['all'] ?? DAILY_FALLBACK_QUIZ['en']['all'];
+  const fallbackLanguage = DAILY_FALLBACK_QUIZ[requestedLanguage] && (langFallbacks[tradition] || langFallbacks['all']) ? undefined : 'en';
 
   try {
     const result = await generateWithProvider(
@@ -170,19 +199,22 @@ export async function GET(req: NextRequest) {
         user: prompt,
         temperature: 0.35,
         reasoningEffort: 'none',
-        maxOutputTokens: 1024,
+        maxOutputTokens: 900,
       },
       { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
     );
 
     const cleaned = extractJsonBlock(result.text);
+
     let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
-    
     try {
       quiz = JSON.parse(cleaned);
     } catch {
       console.error('[quiz/daily] JSON parse failed. Raw:', result.text.slice(0, 200));
-      throw new Error('Parse failed');
+      return NextResponse.json(
+        { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true } },
+        { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600' } }
+      );
     }
 
     if (
@@ -193,31 +225,10 @@ export async function GET(req: NextRequest) {
       quiz.answerIndex < 0 ||
       quiz.answerIndex > 3
     ) {
-      throw new Error('Validation failed');
-    }
-
-    // Insert into DB
-    const { data: insertedQuizData, error: insertError } = await supabase
-      .from('daily_quiz' as unknown as 'quiz_responses')
-      .insert({
-        tradition,
-        language: requestedLanguage,
-        date: dateStr,
-        question: quiz.question,
-        options: quiz.options,
-        answer_index: quiz.answerIndex,
-        explanation: quiz.explanation,
-        fact: quiz.fact,
-        source: quiz.source,
-      } as unknown as never)
-      .select('id')
-      .single();
-
-    const insertedQuiz = insertedQuizData as unknown as { id: string } | null;
-
-    if (insertError) {
-      console.error('[quiz/daily] Failed to insert newly generated quiz:', insertError);
-      // We can still return it to the user even if insert failed
+      return NextResponse.json(
+        { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true } },
+        { headers: { 'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600' } }
+      );
     }
 
     emitEvent({
@@ -233,21 +244,30 @@ export async function GET(req: NextRequest) {
         tradition,
         language: requestedLanguage,
         pipeline_content_type: effectiveTags.content_type ?? null,
+        pipeline_audio_mode: effectiveTags.audio_mode ?? null,
+        pipeline_tradition: effectiveTags.tradition ?? null,
+        pipeline_script: effectiveTags.script ?? null,
       },
     });
 
     return NextResponse.json(
-      { ...quiz, tradition, date: dateStr, daily_quiz_id: insertedQuiz?.id },
-      { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } },
+      { ...quiz, tradition, date: dateStr },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+        },
+      },
     );
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      emitError('ai', err, 'P2', { route: '/api/quiz/daily', latency_ms: Date.now() - startTime });
-      console.error('[quiz/daily] Provider generation failed:', err);
-    }
+  } catch (err: any) {
+    emitError('ai', err, 'P2', { route: '/api/quiz/daily', latency_ms: Date.now() - startTime });
+    console.error('[quiz/daily] Provider generation failed:', err);
     return NextResponse.json(
-      { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true }, degraded: true },
-      { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=300' } },
+      { ...fallbackQuiz, tradition, date: dateStr, fallbackLanguage, ai: { provider: 'fallback', degraded: true } },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=3600',
+        },
+      },
     );
   }
 }

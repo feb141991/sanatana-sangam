@@ -17,13 +17,13 @@ export default function ContactPage() {
       intro={
         isConfigured
           ? 'If you need help with your account, a safety issue, or a product question, you can reach the team through the support address on this page.'
-          : 'If you need help with your account, a safety issue, or a product question, this is where support information should live. Support email configuration is missing.'
+          : 'If you need help with your account, a safety issue, or a product question, this is where support information should live. Before public launch, the production support email should be configured here.'
       }
       asideTitle={isConfigured ? 'Support Is Live' : 'Configuration Needed'}
       asideBody={
         isConfigured
-          ? 'This page exposes the public support route for account help, moderation concerns, and product questions.'
-          : 'Set NEXT_PUBLIC_SUPPORT_EMAIL in the environment to publish the support address on this page.'
+          ? 'This page now exposes the public support route for account help, moderation concerns, and launch questions.'
+          : 'Set NEXT_PUBLIC_SUPPORT_EMAIL in the environment to publish the support address on this page before launch.'
       }
     >
       <section>
@@ -38,7 +38,7 @@ export default function ContactPage() {
           </p>
         ) : (
           <p>
-            Support email is not configured yet. Add <code>NEXT_PUBLIC_SUPPORT_EMAIL</code>
+            Support email is not configured yet. Before launch, add <code>NEXT_PUBLIC_SUPPORT_EMAIL</code>
             {' '}to the environment so users have a real support path.
           </p>
         )}

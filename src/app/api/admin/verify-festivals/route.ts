@@ -1,4 +1,4 @@
-import { verifyAdminCookieAuth } from '@/lib/admin-auth';
+import { checkAdminAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
@@ -34,7 +34,7 @@ function isMissingObservanceModel(error: unknown): boolean {
 }
 
 export async function POST(req: NextRequest) {
-  const authError = await verifyAdminCookieAuth(req);
+  const authError = checkAdminAuth(req);
   if (authError) return authError;
 
   const adminCheck = await requireAdminAccess();

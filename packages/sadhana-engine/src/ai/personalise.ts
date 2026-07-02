@@ -49,7 +49,7 @@ export class PersonalisationEngine {
 
   // ── Primary method: get today's personalised content ──
   // Returns cached content if already generated today,
-  // otherwise calls the Sarvam edge function.
+  // otherwise calls the Gemini edge function.
 
   async getTodayContent(userId: string): Promise<TodayContent> {
     const today = new Date().toISOString().split('T')[0];

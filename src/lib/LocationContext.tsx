@@ -16,11 +16,9 @@
  *   refresh     : () => void
  */
 
-import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { API, LOCATION } from '@/lib/config';
-import PermissionSheet from '@/components/ui/PermissionSheet';
-import { createClient } from '@/lib/supabase';
 
 export interface Coords {
   lat: number;
@@ -34,10 +32,7 @@ interface LocationState {
   countryCode: string;
   loading:     boolean;
   error:       string | null;
-  refresh:     (force?: boolean) => void;
-  showLocationSheet: boolean;
-  confirmLocationRequest: () => void;
-  dismissLocationSheet: () => void;
+  refresh:     () => void;
 }
 
 const LocationContext = createContext<LocationState>({
@@ -47,10 +42,7 @@ const LocationContext = createContext<LocationState>({
   countryCode: '',
   loading:     false,
   error:       null,
-  refresh:     (force?: boolean) => {},
-  showLocationSheet: false,
-  confirmLocationRequest: () => {},
-  dismissLocationSheet: () => {},
+  refresh:     () => {},
 });
 
 export function useLocation() {
@@ -92,7 +84,6 @@ async function reverseGeocode(lat: number, lon: number): Promise<GeoInfo> {
 
 interface Props {
   children:        React.ReactNode;
-  userId?:         string | null;
   savedLat?:       number | null;
   savedLon?:       number | null;
   savedCity?:      string;
@@ -102,7 +93,6 @@ interface Props {
 
 export function LocationProvider({
   children,
-  userId,
   savedLat,
   savedLon,
   savedCity        = '',
@@ -110,7 +100,6 @@ export function LocationProvider({
   savedCountryCode = '',
 }: Props) {
   const pathname = usePathname();
-  const supabase = useMemo(() => createClient(), []);
   const [coords,      setCoords]      = useState<Coords | null>(
     savedLat && savedLon ? { lat: savedLat, lon: savedLon } : null
   );
@@ -119,22 +108,10 @@ export function LocationProvider({
   const [countryCode, setCountryCode] = useState<string>(savedCountryCode);
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState<string | null>(null);
-  const [showLocationSheet, setShowLocationSheet] = useState(false);
-  // Tracks whether we've already attempted auto-location this session so we
-  // don't re-ask every time the user navigates back to /home or /tirtha-map.
-  const autoLocateAttempted = useRef(false);
-  const lastPersistedLocation = useRef<string | null>(null);
 
-  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile' || pathname === '/tirtha-map';
+  const shouldAutoLocate = pathname === '/home' || pathname === '/mandali' || pathname === '/profile';
 
-  const requestLocation = useCallback((force = false) => {
-    if (!force && typeof window !== 'undefined') {
-      const lastAttempt = Number(window.localStorage.getItem(AUTO_REQUEST_STORAGE_KEY) ?? '0');
-      if (lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS) return;
-    }
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
-    }
+  const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
       setError('Geolocation not supported by this browser');
       return;
@@ -164,24 +141,19 @@ export function LocationProvider({
     );
   }, []);
 
-  // Ask for location lazily, only on location-aware screens, and not on every navigation.
+  // Ask for location lazily, only on location-aware screens, and not on every launch.
   useEffect(() => {
-    // Already have coords from DB props or from a previous fetch this session
     if (savedLat && savedLon) return;
-    if (coords) return;
     if (!shouldAutoLocate) return;
     if (typeof window === 'undefined') return;
-    // Only attempt once per session — prevents re-asking on every /home visit
-    if (autoLocateAttempted.current) return;
-    autoLocateAttempted.current = true;
 
-    const run = async () => {
-      const existingPerm = await navigator.permissions.query({ name: 'geolocation' }).catch(() => null);
-      if (existingPerm?.state === 'granted') {
-        requestLocation();
-      } else if (existingPerm?.state === 'prompt') {
-        setShowLocationSheet(true);
-      }
+    const lastAttempt = Number(window.localStorage.getItem(AUTO_REQUEST_STORAGE_KEY) ?? '0');
+    const shouldSkipForCooldown = lastAttempt && (Date.now() - lastAttempt) < AUTO_REQUEST_COOLDOWN_MS;
+    if (shouldSkipForCooldown) return;
+
+    const run = () => {
+      window.localStorage.setItem(AUTO_REQUEST_STORAGE_KEY, String(Date.now()));
+      requestLocation();
     };
 
     const browserWindow = window as Window & typeof globalThis & {
@@ -206,86 +178,13 @@ export function LocationProvider({
         globalThis.clearTimeout(timeoutId);
       }
     };
-  }, [requestLocation, savedLat, savedLon, shouldAutoLocate, coords]);
-
-  const confirmLocationRequest = useCallback(() => {
-    setShowLocationSheet(false);
-    requestLocation();
-  }, [requestLocation]);
-
-  const dismissLocationSheet = useCallback(() => {
-    setShowLocationSheet(false);
-    // Silently resolve an approximate location from IP so downstream features
-    // (Panchang, Tirtha map) have something better than a hardcoded fallback.
-    if (!coords) {
-      fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) })
-        .then(r => r.ok ? r.json() : null)
-        .catch(() => null)
-        .then((data: { latitude?: number; longitude?: number; city?: string; country_name?: string; country_code?: string } | null) => {
-          if (data?.latitude && data?.longitude) {
-            setCoords({ lat: data.latitude, lon: data.longitude });
-            if (data.city)         setCity(data.city);
-            if (data.country_name) setCountry(data.country_name);
-            if (data.country_code) setCountryCode(data.country_code.toUpperCase());
-          }
-        });
-    }
-  }, [coords]);
-
-  // Persist exact browser location from the shared provider, not individual
-  // pages. This prevents repeated location prompts when a user grants access
-  // from /profile, /mandali, /tirtha-map, or any future location-aware screen.
-  useEffect(() => {
-    if (!userId || !coords) return;
-
-    const update: Record<string, unknown> = {};
-    const savedCoordsAreClose =
-      typeof savedLat === 'number' &&
-      typeof savedLon === 'number' &&
-      Math.abs(coords.lat - savedLat) < 0.05 &&
-      Math.abs(coords.lon - savedLon) < 0.05;
-
-    if (!savedCoordsAreClose) {
-      update.latitude = coords.lat;
-      update.longitude = coords.lon;
-    }
-    if (city && city !== savedCity) update.city = city;
-    if (country && country !== savedCountry) update.country = country;
-    if (countryCode && countryCode !== savedCountryCode) update.country_code = countryCode;
-
-    if (Object.keys(update).length === 0) return;
-
-    const signature = JSON.stringify(update);
-    if (lastPersistedLocation.current === signature) return;
-    lastPersistedLocation.current = signature;
-
-    supabase
-      .from('profiles')
-      .update(update)
-      .eq('id', userId)
-      .then(({ error }) => {
-        if (error) {
-          console.warn('[location] failed to persist profile location', {
-            code: error.code,
-            message: error.message,
-          });
-          lastPersistedLocation.current = null;
-        }
-      });
-  }, [city, coords, country, countryCode, savedCity, savedCountry, savedCountryCode, savedLat, savedLon, supabase, userId]);
+  }, [requestLocation, savedLat, savedLon, shouldAutoLocate]);
 
   return (
     <LocationContext.Provider value={{
       coords, city, country, countryCode, loading, error, refresh: requestLocation,
-      showLocationSheet, confirmLocationRequest, dismissLocationSheet
     }}>
       {children}
-      <PermissionSheet
-        type="location"
-        open={showLocationSheet}
-        onAllow={confirmLocationRequest}
-        onDeny={dismissLocationSheet}
-      />
     </LocationContext.Provider>
   );
 }

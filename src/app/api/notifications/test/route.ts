@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const actionPath = '/profile';
     const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
 
-    const { data, error: insertError } = await serviceSupabase
+    const { error: insertError } = await serviceSupabase
       .from('notifications')
       .insert({
         user_id: user.id,
@@ -28,9 +28,7 @@ export async function POST(request: Request) {
         emoji: '🔔',
         type: 'general',
         action_url: actionPath,
-      })
-      .select('id')
-      .single();
+      });
 
     if (insertError) {
       console.error('Notification test insert failed:', insertError);
@@ -50,9 +48,6 @@ export async function POST(request: Request) {
         type: 'test',
         created_at: createdAt.toISOString(),
       },
-    }, {
-      type: 'test',
-      notificationIdsByUserId: insertError ? undefined : { [user.id]: data?.id },
     });
 
     return NextResponse.json({

@@ -11,8 +11,6 @@ import { useSadhana } from '@/contexts/EngineContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { Lesson } from '@/lib/pathshala-lessons';
 import CanonicalReader from '@/components/pathshala/CanonicalReader';
-import { localSpiritualDate } from '@/lib/sacred-time';
-import { useThemePreference } from '@/components/providers/ThemeProvider';
 
 interface Props {
   userId: string;
@@ -49,8 +47,6 @@ export default function LessonClient({
   const engine   = useSadhana();
   const supabase = useRef(createClient()).current;
   const { t } = useLanguage();
-  const { resolvedTheme } = useThemePreference();
-  const isDark = resolvedTheme === 'dark';
 
   const totalLessons = lessons.length;
 
@@ -86,33 +82,6 @@ export default function LessonClient({
       if (error) throw error;
       setCompleted(newCompleted);
       const isPathDone = newCompleted.length === totalLessons;
-
-      const today = localSpiritualDate(
-        typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
-        4
-      );
-      // Write immediately so NextPracticeCard updates in real-time via storage event
-      try { localStorage.setItem(`shoonaya-pathshala-done-${today}`, 'true'); } catch { /* non-fatal */ }
-      // Progress as a 0–1 fraction: the Home readers treat values ≤ 1 as fractions,
-      // so an integer percent of 1 would be misread as 100%.
-      try {
-        const progress = totalLessons > 0 ? newCompleted.length / totalLessons : 0;
-        localStorage.setItem('shoonaya-pathshala-progress', JSON.stringify({ pathId, progress }));
-      } catch { /* non-fatal */ }
-
-      void (async () => {
-        try {
-          await supabase
-            .from('daily_sadhana')
-            .upsert(
-              { user_id: userId, date: today, pathshala_done: true },
-              { onConflict: 'user_id,date' }
-            );
-        } catch {
-          // Non-fatal: lesson completion should still succeed locally and in guided progress.
-        }
-      })();
-
       toast.success(isPathDone ? (t('pathCompleted') || 'Path completed!') : (t('lessonComplete') || 'Lesson completed!'));
       if (isPathDone) setShowConfetti(true);
       if (engine) {
@@ -205,13 +174,13 @@ export default function LessonClient({
         }}
       />
       {showBridge && bridge && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6" style={{ background: isDark ? '#0E0E0F' : '#F7EDD8' }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#F7EDD8]">
           <div className="max-w-2xl text-center flex flex-col items-center">
             <div className="text-4xl text-[#BFA779] mb-8 font-serif">ॐ</div>
-            <p className="text-2xl md:text-3xl font-serif leading-relaxed mb-6" style={{ color: isDark ? '#F0EDE6' : '#4A3D2A' }}>
+            <p className="text-2xl md:text-3xl text-[#4A3D2A] font-serif leading-relaxed mb-6">
               {bridge.bridge}
             </p>
-            <p className="text-lg md:text-xl italic mb-12" style={{ color: isDark ? 'rgba(197,160,89,0.6)' : '#7A6B56' }}>
+            <p className="text-lg md:text-xl text-[#7A6B56] italic mb-12">
               {bridge.next_step}
             </p>
             <button

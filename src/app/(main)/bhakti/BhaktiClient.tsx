@@ -143,17 +143,6 @@ const CONTENT_CARDS: ContentCard[] = [
     tags: ['japa', 'mala', 'simran'],
   },
   {
-    id: 'mantras',
-    kind: 'practice',
-    tradition: 'all',
-    icon: Mic,
-    title: 'Mantras',
-    description: 'Chants & sacred recitations',
-    href:  '/mantras',
-    tint:  'rgba(197, 160, 89,0.10)',
-    tags: ['mantra', 'chant', 'recitation'],
-  },
-  {
     id: 'sattvic-mode',
     kind: 'practice',
     tradition: 'all',

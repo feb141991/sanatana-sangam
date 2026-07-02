@@ -5,58 +5,19 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
   verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
   lunar_tithi_index?: number; // 1-30
-  lunar_masa_name?: string;   // IMPORTANT: must match panchang.ts masaName output (shifted 2 months behind traditional)
-  nanakshahi_month?: string;  // e.g. 'Vaisakh'
-  nanakshahi_day?: number;    // 1-based day within the Nanakshahi month
+  lunar_masa_name?: string;   // e.g. "Chaitra"
   relative_base_slug?: string;
   relative_offset_days?: number;
   nakshatra_name?: string;
-  /**
-   * When a rule matches the same tithi twice in one solar month (dark-half
-   * tithi that spans two lunar months), prefer the LAST match instead of the
-   * first. Use this for festivals like Janmashtami whose correct occurrence
-   * is the later one (Shravana dark half, not the earlier Ashadha dark half).
-   */
-  prefer_last_match?: boolean;
-  /**
-   * When the target tithi moves fast enough to be fully contained between two
-   * consecutive 5am UTC scans, it appears "skipped" in the engine's day-by-day
-   * data (prev day = T-1, next day = T+1). This flag enables detection of such
-   * skipped tithis: the day AFTER the skip (where tithiIndex === target+1) is
-   * treated as the observance date, which matches the tithi's IST-sunrise
-   * prevalence. Use for Shukla tithis 1-14 that can be fast-moving.
-   */
-  allow_skipped_tithi?: boolean;
-  /**
-   * Recurring tithi-based vrats that fall in EVERY lunar masa (not a single
-   * named festival). The target tithi index/indices are matched across all
-   * masas, both pakshas — e.g. Ekadashi = [11, 26], Sankashti Chaturthi = [19].
-   * Used only with rule_family 'lunar_tithi_recurring'.
-   */
-  recurring_tithi_indices?: number[];
-  /** Weekday recurring rules. Uses JS/UTC weekday: 0=Sunday, 1=Monday, ... 6=Saturday. */
-  recurring_weekday?: number;
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
 }
-
-// Tithi index convention (amanta system):
-// 1 = Shukla Pratipada ... 15 = Purnima
-// 16 = Krishna Pratipada ... 30 = Amavasya (new moon)
-//
-// IMPORTANT — lunar_masa_name calibration:
-// panchang.ts computes masaName from the sun's sidereal rashi with a formula that
-// returns names ~2 months BEHIND the traditional chandra-masa name.
-// These rules use the ACTUAL panchang output values (verified against 2025 dates).
-// Traditional → panchang output: Phalguna→Pausha, Chaitra→Magha, Vaishakha→Phalguna,
-// Jyeshtha→Chaitra, Ashadha→Vaishakha, Shravana→Jyeshtha, Bhadrapada→Ashadha,
-// Ashwin→Shravana, Kartika→Bhadrapada, Margashirsha→Ashwin, Magha→Margashirsha.
 
 export const CANONICAL_RULES: ObservanceRule[] = [
   // ── Hindu ──────────────────────────────────────────────────────────────────
@@ -81,7 +42,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha', // traditional Magha
+    lunar_masa_name: 'Margashirsha',
     lunar_tithi_index: 5,
   },
   {
@@ -93,8 +54,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Pausha', // traditional Phalguna (purnimanta) / Magha (amanta)
-    lunar_tithi_index: 28,     // Chaturdashi; use 28 since tithi-29 night falls after the 05:00 UTC scan
+    lunar_masa_name: 'Pausha',
+    lunar_tithi_index: 30,
   },
   {
     slug: 'holi',
@@ -105,7 +66,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Pausha', // traditional Phalguna Purnima
+    lunar_masa_name: 'Pausha',
     lunar_tithi_index: 15,
   },
   {
@@ -117,24 +78,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
+    lunar_masa_name: 'Magha',
     lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
-  },
-  {
-    slug: 'chaitra-navratri-begins',
-    display_name: 'Chaitra Navratri begins',
-    emoji: '🪔',
-    description: 'Spring Navratri beginning on Chaitra Shukla Pratipada, nine days of Devi worship leading to Ram Navami.',
-    kind: 'major',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi',
-    verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Pratipada
-    lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'chaitra-navratri',
   },
   {
     slug: 'ugadi',
@@ -145,9 +90,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
+    lunar_masa_name: 'Magha',
     lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
   },
   {
     slug: 'ram-navami',
@@ -158,9 +102,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Navami
-    lunar_tithi_index: 9,
-    allow_skipped_tithi: true, // Navami can be fast-moving; 5am UTC scan may land on T-1/T+1
+    lunar_masa_name: 'Magha',
+    lunar_tithi_index: 10,
   },
   {
     slug: 'hanuman-jayanti',
@@ -171,8 +114,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Magha', // traditional Chaitra Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Magha',
+    lunar_tithi_index: 24,
   },
   {
     slug: 'akshaya-tritiya',
@@ -183,9 +126,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
-    lunar_tithi_index: 3,
-    allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
+    lunar_masa_name: 'Phalguna',
+    lunar_tithi_index: 5,
   },
   {
     slug: 'narasimha-jayanti',
@@ -196,8 +138,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Chaturdashi
-    lunar_tithi_index: 14,
+    lunar_masa_name: 'Phalguna',
+    lunar_tithi_index: 19,
   },
   {
     slug: 'shani-jayanti',
@@ -208,7 +150,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
+    lunar_masa_name: 'Chaitra',
     lunar_tithi_index: 30,
   },
   {
@@ -220,7 +162,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
+    lunar_masa_name: 'Chaitra',
     lunar_tithi_index: 30,
     route_kind: 'vrat',
     route_slug: 'vat-savitri',
@@ -234,7 +176,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Chaitra', // traditional Jyeshtha Purnima
+    lunar_masa_name: 'Chaitra',
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'vat-savitri-purnima',
@@ -248,23 +190,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Dwitiya
-    lunar_tithi_index: 2,
-  },
-  {
-    slug: 'gupt-navratri-ashadha-begins',
-    display_name: 'Ashadha Gupt Navratri begins',
-    emoji: '🪔',
-    description: 'Gupt Navratri in Ashadha, a quieter Devi sadhana period observed in Shakta and regional traditions.',
-    kind: 'regional',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi',
-    verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Pratipada
-    lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'gupt-navratri',
+    lunar_masa_name: 'Vaishakha',
+    lunar_tithi_index: 9,
   },
   {
     slug: 'guru-purnima',
@@ -275,8 +202,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'all',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Vaishakha',
+    lunar_tithi_index: 26,
     route_kind: 'vrat',
     route_slug: 'purnima',
   },
@@ -289,8 +216,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana Shukla Panchami
-    lunar_tithi_index: 5,
+    lunar_masa_name: 'Jyeshtha',
+    lunar_tithi_index: 14,
   },
   {
     slug: 'raksha-bandhan',
@@ -301,8 +228,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Jyeshtha',
+    lunar_tithi_index: 29,
   },
   {
     slug: 'krishna-janmashtami',
@@ -313,9 +240,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Ashtami (amanta)
-    lunar_tithi_index: 23,
-    prefer_last_match: true,    // 'Jyeshtha'/23 fires twice (Ashadha & Shravana dark halves); want the later one
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 7,
   },
   {
     slug: 'ganesh-chaturthi',
@@ -326,8 +252,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Chaturthi
-    lunar_tithi_index: 4,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 11,
   },
   {
     slug: 'onam',
@@ -338,8 +264,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'nakshatra_based',
     verification_type: 'nakshatra_based',
-    lunar_masa_name: 'Ashadha',  // Chingam = sidereal Leo; panchang gives 'Ashadha' for Leo solar month
-    nakshatra_name: 'Shravana',  // Thiruvonam = moon in Shravana nakshatra
+    lunar_masa_name: 'Ashadha',
+    nakshatra_name: 'Mrigashira',
   },
   {
     slug: 'hartalika-teej',
@@ -350,8 +276,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Tritiya
-    lunar_tithi_index: 3,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 21,
     route_kind: 'vrat',
     route_slug: 'hartalika-teej',
   },
@@ -362,61 +288,26 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Day to offer prayers to ancestors (Pitru Paksha ends)',
     kind: 'vrat',
     tradition: 'hindu',
-    // Mahalaya Amavasya is definitionally the last day of Pitru Paksha — the day
-    // immediately before Navratri (Ashwin Shukla Pratipada). Using a relative rule
-    // is more reliable than detecting the Amavasya tithi directly, which wraps from
-    // tithi 30 → 1 and is easily missed by the 5am UTC scan in some years.
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    relative_base_slug: 'navratri-begins',
-    relative_offset_days: -1,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 8,
     route_kind: 'vrat',
     route_slug: 'amavasya',
   },
   {
     slug: 'navratri-begins',
-    display_name: 'Sharad Navratri begins',
+    display_name: 'Navratri begins',
     emoji: '🪔',
     description: 'Nine nights of worship of Goddess Durga, Lakshmi and Saraswati',
     kind: 'major',
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Pratipada
-    lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 9,
     route_kind: 'vrat',
-    route_slug: 'sharad-navratri',
-  },
-  {
-    slug: 'chintpurni-mata-chaitra-navratri',
-    display_name: 'Chintpurni Mata Chaitra Navratri',
-    emoji: '🌺',
-    description: 'Regional Shakti Peeth observance at Maa Chintpurni, associated with Chaitra Navratri Devi worship.',
-    kind: 'regional',
-    tradition: 'hindu',
-    rule_family: 'relative_to_other_observance',
-    verification_type: 'regional_calendar',
-    relative_base_slug: 'chaitra-navratri-begins',
-    relative_offset_days: 0,
-    route_kind: 'vrat',
-    route_slug: 'chintpurni-mata-navratri',
-    region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
-  },
-  {
-    slug: 'chintpurni-mata-sharad-navratri',
-    display_name: 'Chintpurni Mata Sharad Navratri',
-    emoji: '🌺',
-    description: 'Regional Shakti Peeth observance at Maa Chintpurni, associated with Sharad Navratri Devi worship.',
-    kind: 'regional',
-    tradition: 'hindu',
-    rule_family: 'relative_to_other_observance',
-    verification_type: 'regional_calendar',
-    relative_base_slug: 'navratri-begins',
-    relative_offset_days: 0,
-    route_kind: 'vrat',
-    route_slug: 'chintpurni-mata-navratri',
-    region: 'Himachal Pradesh / Chintpurni Shakti Peeth',
+    route_slug: 'navratri',
   },
   {
     slug: 'dussehra',
@@ -425,10 +316,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Victory of Rama over Ravana — triumph of good over evil',
     kind: 'major',
     tradition: 'hindu',
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    relative_base_slug: 'navratri-begins',
-    relative_offset_days: 9, // Vijaya Dashami = the 10th tithi, nine calendar days after Pratipada begins
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 18,
   },
   {
     slug: 'karva-chauth',
@@ -439,8 +330,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Krishna Chaturthi
-    lunar_tithi_index: 19,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 5,
     route_kind: 'vrat',
     route_slug: 'karva-chauth',
   },
@@ -465,8 +356,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'all',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Amavasya
-    lunar_tithi_index: 29,          // Amavasya (30) begins that evening; 5am scan shows 29
+    lunar_masa_name: 'Bhadrapada',
+    lunar_tithi_index: 19,
   },
   {
     slug: 'govardhan-puja',
@@ -501,8 +392,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Bhadrapada', // traditional Kartika Shukla Shashthi
-    lunar_tithi_index: 6,
+    lunar_masa_name: 'Bhadrapada',
+    lunar_tithi_index: 23,
   },
   {
     slug: 'kartik-purnima',
@@ -511,13 +402,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Full moon of Kartik month — extremely auspicious for bathing',
     kind: 'vrat',
     tradition: 'hindu',
-    // Kartika Purnima = Purnima after Diwali (Kartika Amavasya). The panchang masaName
-    // for this Purnima shifts between years (Bhadrapada vs Ashwin), and the tithi can be
-    // too short to capture at 5am UTC. Relative rule is more reliable.
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    relative_base_slug: 'diwali',
-    relative_offset_days: 16, // Kartika Purnima ≈ 16 calendar days after Diwali (Amavasya)
+    lunar_masa_name: 'Bhadrapada',
+    lunar_tithi_index: 4,
     route_kind: 'vrat',
     route_slug: 'purnima',
   },
@@ -530,8 +418,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Panchami
-    lunar_tithi_index: 5,
+    lunar_masa_name: 'Ashwin',
+    lunar_tithi_index: 19,
   },
   {
     slug: 'gita-jayanti',
@@ -542,8 +430,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
-    lunar_tithi_index: 11,
+    lunar_masa_name: 'Ashwin',
+    lunar_tithi_index: 25,
   },
   {
     slug: 'vaikunta-ekadashi',
@@ -554,25 +442,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'hindu',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
-    lunar_tithi_index: 11,
+    lunar_masa_name: 'Kartika',
+    lunar_tithi_index: 13,
     route_kind: 'vrat',
     route_slug: 'vaikunta-ekadashi',
-  },
-  {
-    slug: 'gupt-navratri-magha-begins',
-    display_name: 'Magha Gupt Navratri begins',
-    emoji: '🪔',
-    description: 'Gupt Navratri in Magha, a quieter Devi sadhana period observed in Shakta and regional traditions.',
-    kind: 'regional',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi',
-    verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha', // traditional Magha Shukla Pratipada
-    lunar_tithi_index: 1,
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'gupt-navratri',
   },
 
   // ── Sikh ───────────────────────────────────────────────────────────────────
@@ -609,8 +482,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'sikh',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Margashirsha',
+    lunar_tithi_index: 25,
   },
   {
     slug: 'holla-mohalla',
@@ -619,10 +492,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Sikh martial festival initiated by Guru Gobind Singh Ji — mock battles, poetry, music and langar at Anandpur Sahib',
     kind: 'major',
     tradition: 'sikh',
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    relative_base_slug: 'holi',
-    relative_offset_days: 1, // always the day after Holi (Phalguna Krishna Pratipada)
+    lunar_masa_name: 'Pausha',
+    lunar_tithi_index: 16,
   },
   {
     slug: 'baisakhi',
@@ -643,10 +516,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Birth anniversary of Guru Amar Das Ji — 3rd Sikh Guru who abolished purdah and caste discrimination',
     kind: 'regional',
     tradition: 'sikh',
-    rule_family: 'regional_calendar',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    nanakshahi_month: 'Jeth',
-    nanakshahi_day: 9,
+    lunar_masa_name: 'Chaitra',
+    lunar_tithi_index: 8,
   },
   {
     slug: 'guru-arjan-dev-martyrdom',
@@ -655,10 +528,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Shaheedi Diwas — remembrance of the martyrdom of Guru Arjan Dev Ji, 5th Guru and compiler of the Adi Granth',
     kind: 'major',
     tradition: 'sikh',
-    rule_family: 'regional_calendar',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    nanakshahi_month: 'Harh',
-    nanakshahi_day: 2,
+    lunar_masa_name: 'Chaitra',
+    lunar_tithi_index: 21,
   },
   {
     slug: 'guru-har-krishan-gurpurab',
@@ -667,10 +540,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Birth anniversary of Guru Har Krishan Ji — 8th Sikh Guru who became Guru at age 5',
     kind: 'regional',
     tradition: 'sikh',
-    rule_family: 'regional_calendar',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    nanakshahi_month: 'Sawan',
-    nanakshahi_day: 8,
+    lunar_masa_name: 'Vaishakha',
+    lunar_tithi_index: 22,
   },
   {
     slug: 'guru-ram-das-gurpurab',
@@ -679,10 +552,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Birth anniversary of Guru Ram Das Ji — 4th Sikh Guru and founder of Amritsar',
     kind: 'regional',
     tradition: 'sikh',
-    rule_family: 'regional_calendar',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    nanakshahi_month: 'Assu',
-    nanakshahi_day: 25,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 29,
   },
   {
     slug: 'bandhi-chhor-divas',
@@ -703,12 +576,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Prakash Utsav of Guru Nanak Dev Ji — founder of Sikhism. The most important Sikh celebration, marked by Akhand Path, nagar kirtan and langar.',
     kind: 'major',
     tradition: 'sikh',
-    // Observed on Kartika Purnima — same day as kartik-purnima. Using relative rule
-    // because the Purnima masaName shifts between years and can be missed by the 5am scan.
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    relative_base_slug: 'diwali',
-    relative_offset_days: 16, // Kartika Purnima = 16 calendar days after Diwali (Kartika Amavasya)
+    lunar_masa_name: 'Ashwin',
+    lunar_tithi_index: 14,
   },
   {
     slug: 'guru-tegh-bahadur-martyrdom',
@@ -717,10 +588,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Shaheedi Diwas — remembrance of the martyrdom of Guru Tegh Bahadur Ji, 9th Guru, who sacrificed his life for religious freedom',
     kind: 'major',
     tradition: 'sikh',
-    rule_family: 'regional_calendar',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    nanakshahi_month: 'Maghar',
-    nanakshahi_day: 10,
+    lunar_masa_name: 'Ashwin',
+    lunar_tithi_index: 15,
   },
   {
     slug: 'sahibzade-shaheedi-diwas',
@@ -757,8 +628,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'regional_calendar',
-    lunar_masa_name: 'Pausha', // traditional Phalguna Pratipada (Tibetan 1st month day 1)
-    lunar_tithi_index: 1,
+    lunar_masa_name: 'Pausha',
+    lunar_tithi_index: 30,
   },
   {
     slug: 'magha-puja',
@@ -769,7 +640,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
+    lunar_masa_name: 'Pausha',
     lunar_tithi_index: 15,
   },
   {
@@ -781,8 +652,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Phalguna', // traditional Vaishakha Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Phalguna',
+    lunar_tithi_index: 24,
   },
   {
     slug: 'asalha-puja',
@@ -793,8 +664,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Vaishakha',
+    lunar_tithi_index: 26,
   },
   {
     slug: 'vassa-begins-rains-retreat',
@@ -805,8 +676,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Krishna Pratipada (day after Purnima)
-    lunar_tithi_index: 16,
+    lunar_masa_name: 'Vaishakha',
+    lunar_tithi_index: 27,
   },
   {
     slug: 'ullambana-ancestor-day',
@@ -817,8 +688,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 19,
   },
   {
     slug: 'pavarana-end-of-vassa',
@@ -829,8 +700,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana', // traditional Ashwin Purnima
-    lunar_tithi_index: 15,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 29,
   },
   {
     slug: 'kathina',
@@ -841,8 +712,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'buddhist',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Shravana', // traditional Ashwin Krishna Pratipada
-    lunar_tithi_index: 16,
+    lunar_masa_name: 'Shravana',
+    lunar_tithi_index: 30,
   },
   {
     slug: 'sangha-day-loy-krathong',
@@ -851,11 +722,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Buddhist Sangha Day — celebration of the spiritual community. Coincides with Loy Krathong in Thailand, where lotus-shaped lanterns are floated on water.',
     kind: 'major',
     tradition: 'buddhist',
-    // Observed on Kartika Purnima — relative rule more reliable across years
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    relative_base_slug: 'diwali',
-    relative_offset_days: 16,
+    lunar_masa_name: 'Bhadrapada',
+    lunar_tithi_index: 2,
   },
   {
     slug: 'bodhi-day',
@@ -880,8 +750,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Magha', // traditional Chaitra Shukla Trayodashi
-    lunar_tithi_index: 13,
+    lunar_masa_name: 'Magha',
+    lunar_tithi_index: 10,
   },
   {
     slug: 'akshaya-tritiya-jain',
@@ -892,9 +762,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
-    lunar_tithi_index: 3,
-    allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
+    lunar_masa_name: 'Phalguna',
+    lunar_tithi_index: 5,
   },
   {
     slug: 'paryushana-parva-begins',
@@ -905,8 +774,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Dvadashi / Bhadrapada Shukla 12
-    lunar_tithi_index: 27,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 16,
   },
   {
     slug: 'samvatsari-paryushana-ends',
@@ -917,8 +786,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
-    lunar_tithi_index: 5,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 23,
   },
   {
     slug: 'das-lakshana-dharma-begins',
@@ -929,8 +798,8 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     tradition: 'jain',
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
-    lunar_tithi_index: 5,
+    lunar_masa_name: 'Ashadha',
+    lunar_tithi_index: 24,
   },
   {
     slug: 'jain-new-year-pratipada',
@@ -963,128 +832,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     description: 'Sacred full moon — commemorates the Nirvana of Bhagwan Rishabhanatha (Adinath), the first Tirthankara. A day for fasting and pilgrimage.',
     kind: 'major',
     tradition: 'jain',
-    // Observed on Kartika Purnima — relative rule more reliable across years
-    rule_family: 'relative_to_other_observance',
+    rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
-    relative_base_slug: 'diwali',
-    relative_offset_days: 16,
-  },
-
-  // ── Recurring tithi-based vrats (every lunar masa) ───────────────────────────
-  // Emitted across all masas via rule_family 'lunar_tithi_recurring' + the
-  // engine's skipped-tithi handling (multiple occurrences per year). The
-  // materialize/query layer is responsible for suppressing these on any date
-  // already claimed by a named observance (e.g. Vaikunta Ekadashi).
-  {
-    slug: 'ekadashi',
-    display_name: 'Ekadashi',
-    emoji: '🌙',
-    description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [11, 26],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'ekadashi',
-  },
-  {
-    slug: 'pradosh-vrat',
-    display_name: 'Pradosh Vrat',
-    emoji: '🪔',
-    description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [13, 28],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'pradosh',
-  },
-  {
-    slug: 'purnima-vrat',
-    display_name: 'Purnima Vrat',
-    emoji: '🌕',
-    description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [15],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'purnima',
-  },
-  {
-    slug: 'amavasya-vrat',
-    display_name: 'Amavasya',
-    emoji: '🌑',
-    description: 'Monthly new moon observance for stillness, ancestor remembrance, charity, and local family practice.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [30],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'amavasya',
-  },
-  {
-    slug: 'vinayaka-chaturthi',
-    display_name: 'Vinayaka Chaturthi',
-    emoji: '🐘',
-    description: 'Monthly Shukla Chaturthi observance for Lord Ganesha, distinct from the Krishna-paksha Sankashti Chaturthi vrat.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [4],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'chaturthi',
-  },
-  {
-    slug: 'sankashti-chaturthi',
-    display_name: 'Sankashti Chaturthi',
-    emoji: '🐘',
-    description: 'Monthly Sankashti Chaturthi vrat to Lord Ganesha — the 4th tithi of the waning moon.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'lunar_tithi_recurring',
-    verification_type: 'lunar_tithi',
-    recurring_tithi_indices: [19],
-    allow_skipped_tithi: true,
-    route_kind: 'vrat',
-    route_slug: 'sankashti-chaturthi',
-  },
-  {
-    slug: 'shravan-somvar',
-    display_name: 'Shravan Somvar',
-    emoji: '🕉️',
-    description: 'Mondays of the Shravan month, observed with Shiva worship and fasting according to family or sampradaya practice.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'weekday_recurring',
-    verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
-    recurring_weekday: 1,
-    route_kind: 'vrat',
-    route_slug: 'somvar',
-  },
-  {
-    slug: 'mangala-gauri-vrat',
-    display_name: 'Mangala Gauri Vrat',
-    emoji: '🌺',
-    description: 'Tuesdays of Shravan, especially observed by married women in several regional traditions for Gauri worship.',
-    kind: 'vrat',
-    tradition: 'hindu',
-    rule_family: 'weekday_recurring',
-    verification_type: 'lunar_tithi',
-    lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
-    recurring_weekday: 2,
-    route_kind: 'vrat',
-    route_slug: 'mangala-gauri',
+    lunar_masa_name: 'Bhadrapada',
+    lunar_tithi_index: 4,
   },
 ];

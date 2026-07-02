@@ -4,26 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 // ─── /api/waitlist ─────────────────────────────────────────────────────────────
 // GET  — returns { count: number } (waitlist size for the landing page counter)
 // POST — saves a pre-registration; returns { success, foundingNumber, alreadyRegistered }
-//        Sends a Shoonaya welcome email via Resend (if RESEND_API_KEY is set).
+//        Sends a Sthapaka welcome email via Resend (if RESEND_API_KEY is set).
 // Body: { email, tradition?, name?, source?, timezone? }
 // ──────────────────────────────────────────────────────────────────────────────
 
-export const dynamic = 'force-dynamic';
-
-// Lazily initialized — createClient is never called at module import time
-// (which happens during Next.js build when env vars are absent).
-// biome-ignore lint: untyped DB schema
-let _sb: ReturnType<typeof createClient<any>> | undefined;
-function db() {
-  return (_sb ??= createClient<any>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } }
-  ));
-}
-
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
-const DOMAIN = BASE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  { auth: { persistSession: false } }
+);
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -38,7 +27,7 @@ export async function OPTIONS() {
 // ─── GET — live waitlist count ─────────────────────────────────────────────────
 export async function GET() {
   try {
-    const { count, error } = await db()
+    const { count, error } = await supabase
       .from('waitlist')
       .select('*', { count: 'exact', head: true });
     if (error) throw error;
@@ -84,11 +73,11 @@ const TRAD_SYMBOL: Record<string, string> = {
 
 // ─── Native-script badge label ─────────────────────────────────────────────────
 const TRAD_NATIVE_LABEL: Record<string, string> = {
-  hindu:    'Shoonaya · शून्य',
-  sikh:     'Shoonaya · ਸ਼ੂਨ੍ਯ',
-  buddhist: 'Shoonaya · शून्य',
-  jain:     'Shoonaya · शून्य',
-  default:  'Shoonaya · शून्य',
+  hindu:    'Sthapaka · स्थापक',
+  sikh:     'Sthapaka · ਸਥਾਪਕ',
+  buddhist: 'Sthapaka · स्थापक',
+  jain:     'Sthapaka · स्थापक',
+  default:  'Sthapaka · स्थापक',
 };
 
 // ─── Tradition-specific sacred verse ──────────────────────────────────────────
@@ -131,7 +120,7 @@ const TRAD_WELCOME: Record<string, string> = {
   sikh: `In Gurbani, <em>Sunn</em> is not absence — it is the fullness that holds all of creation.
     The silence before the Shabad. The stillness from which Kirtan rises. You have joined a space
     built to honour that stillness — a living sangam where the Sikh seeker finds community,
-    scripture, and practice gathered in one place. Your Shoonaya account is ready.`,
+    scripture, and practice gathered in one place. You helped lay the first stone.`,
 
   hindu: `The Rigveda knew it before the traditions divided — <em>Ekaṃ sat</em>, one truth,
     many rivers flowing toward it. This sangam is where those rivers meet. Built for the
@@ -150,7 +139,7 @@ const TRAD_WELCOME: Record<string, string> = {
 
   default: `You are among the very first to arrive — a space where the ancient streams of
     Hindu, Sikh, Buddhist, and Jain wisdom flow together into one living community.
-    Your Shoonaya account is ready.`,
+    You helped lay the first stone.`,
 };
 
 // ─── Tradition-specific share copy ────────────────────────────────────────────
@@ -163,14 +152,14 @@ const TRAD_SHARE_COPY: Record<string, string> = {
 };
 
 const FOUNDING_PERKS = [
-  'A warm Shoonaya welcome for your profile',
-  'Your practice, community, and learning tools in one place',
-  'First month of Shoonaya Pro free',
+  'Permanent Sthapaka badge on your profile — visible to the whole sangam',
+  'Your founding number (#1–1000) displayed in your profile and posts',
+  'First month of Shoonaya Pro free on launch day',
   '20% lifetime discount on all Pro subscriptions',
-  'Access to every new feature',
-  'Access to Mandali community spaces as they expand',
-  'Tradition-aware profile and daily practice experience',
-  'A calmer home for daily dharma',
+  'Early access to every new feature before public release',
+  'Access to the Sthapaka-only Mandali channel (OG founders only)',
+  'Tradition-coloured avatar ring — marks you as a founding member',
+  'Name in the Founding Members scroll on launch day',
 ];
 
 type WaitlistRow = {
@@ -193,12 +182,13 @@ function normaliseTradition(value: unknown): string | null {
   return tradition && VALID_TRADITIONS.has(tradition) ? tradition : null;
 }
 
-function buildShareText(): string {
-  return `I joined Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Enter Shoonaya: ${BASE_URL}`;
+function buildShareText(foundingNumber: number): string {
+  const numberLabel = foundingNumber > 0 ? `#${foundingNumber}` : 'founding member';
+  return `I just became Sthapaka ${numberLabel} of Shoonaya — a home for Hindu, Sikh, Buddhist and Jain dharma. Join the founding members: https://shoonaya.app`;
 }
 
 async function findRegistration(email: string): Promise<WaitlistRow | null> {
-  const { data, error } = await db()
+  const { data, error } = await supabase
     .from('waitlist')
     .select('id, founding_number, tradition, email_sent')
     .ilike('email', email)
@@ -215,7 +205,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
     return row.founding_number;
   }
 
-  const { data: latest } = await db()
+  const { data: latest } = await supabase
     .from('waitlist')
     .select('founding_number')
     .not('founding_number', 'is', null)
@@ -226,7 +216,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
   const nextNumber = ((latest?.founding_number as number | null | undefined) ?? 0) + 1;
 
 
-  const { data: updated, error } = await db()
+  const { data: updated, error } = await supabase
     .from('waitlist')
     .update({ founding_number: nextNumber })
     .eq('id', row.id)
@@ -238,7 +228,7 @@ async function ensureFoundingNumber(row: WaitlistRow): Promise<number> {
     return updated.founding_number;
   }
 
-  const { data: reread } = await db()
+  const { data: reread } = await supabase
     .from('waitlist')
     .select('founding_number')
     .eq('id', row.id)
@@ -254,11 +244,9 @@ async function updateExistingRegistration(
     name: string | null;
     source: string | null;
     timezone: string | null;
-    referred_by_number?: number | null;
-    referral_source?: string | null;
   }
 ): Promise<void> {
-  const patch: Record<string, any> = {};
+  const patch: Record<string, string> = {};
 
   if (updates.tradition && updates.tradition !== row.tradition) {
     patch.tradition = updates.tradition;
@@ -266,12 +254,10 @@ async function updateExistingRegistration(
   if (updates.name) patch.name = updates.name;
   if (updates.source) patch.source = updates.source;
   if (updates.timezone) patch.timezone = updates.timezone;
-  if (updates.referred_by_number) patch.referred_by_number = updates.referred_by_number;
-  if (updates.referral_source) patch.referral_source = updates.referral_source;
 
   if (!Object.keys(patch).length) return;
 
-  const { error } = await db()
+  const { error } = await supabase
     .from('waitlist')
     .update(patch)
     .eq('id', row.id);
@@ -308,12 +294,12 @@ function buildEmailHtml(opts: {
                   : t === 'jain'     ? 'rgba(42,107,74,0.35)'
                   :                    'rgba(216,138,28,0.35)';
 
-  const shareUrl = encodeURIComponent(BASE_URL);
+  const shareUrl = encodeURIComponent('https://shoonaya.app');
   const twitterText = encodeURIComponent(
-    `I joined Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma:`
+    `I'm Sthapaka #${foundingNumber} of Shoonaya — a home for Hindu, Sikh, Buddhist & Jain dharma. Join the founding 1,000:`
   );
   const waText = encodeURIComponent(
-    `I joined Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Enter Shoonaya: ${BASE_URL}`
+    `I'm Sthapaka #${foundingNumber} of Shoonaya — one home for Hindu, Sikh, Buddhist & Jain wisdom. Launching June 17, 2026. Join the founding members: https://shoonaya.app`
   );
 
   const verseBlock = verse ? `
@@ -332,7 +318,7 @@ function buildEmailHtml(opts: {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Welcome to Shoonaya</title>
+<title>Welcome, Sthapaka #${foundingNumber}</title>
 </head>
 <body style="margin:0;padding:0;background:#0d0805;font-family:Georgia,serif;color:#FAF6EF;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0805;">
@@ -346,11 +332,11 @@ function buildEmailHtml(opts: {
     ${tradLabel ? `<div style="font-size:11px;letter-spacing:0.12em;color:rgba(250,246,239,0.35);margin-top:4px;">${tradLabel}</div>` : ''}
   </td></tr>
 
-  <!-- Welcome Badge -->
+  <!-- Founding Number Badge -->
   <tr><td align="center" style="padding-bottom:32px;">
     <div style="background:${accentBg};border:1px solid ${accentBdr};border-radius:20px;padding:36px 24px;display:inline-block;min-width:260px;">
-      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Your Shoonaya Welcome</div>
-      <div style="font-size:42px;font-weight:700;color:${accent};line-height:1;font-family:'Georgia',serif;">शून्य</div>
+      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(250,246,239,0.50);margin-bottom:14px;">Your Founding Number</div>
+      <div style="font-size:68px;font-weight:700;color:${accent};line-height:1;font-family:'Georgia',serif;">#${foundingNumber}</div>
       <div style="font-size:13px;color:rgba(250,246,239,0.45);margin-top:10px;letter-spacing:0.12em;">${badgeLabel}</div>
     </div>
   </td></tr>
@@ -373,7 +359,7 @@ function buildEmailHtml(opts: {
 
   <!-- Perks -->
   <tr><td style="padding-bottom:32px;">
-    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">Your Shoonaya Welcome</div>
+    <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:${accent};opacity:0.80;margin-bottom:20px;">Your Founding Member Boons</div>
     ${FOUNDING_PERKS.map(p => `
     <div style="padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
       <span style="color:${accent};font-size:14px;margin-right:10px;">${symbol}</span>
@@ -398,16 +384,16 @@ function buildEmailHtml(opts: {
 
   <!-- CTA Button -->
   <tr><td align="center" style="padding:32px 0;">
-    <a href="${BASE_URL}/join"
+    <a href="https://shoonaya.app/join"
        style="display:inline-block;background:${accent};color:#fff;font-weight:700;padding:16px 48px;border-radius:100px;text-decoration:none;font-size:15px;letter-spacing:0.02em;">
-      Enter Shoonaya →
+      Enter Shoonaya on June 17 →
     </a>
   </td></tr>
 
   <!-- Footer -->
   <tr><td align="center" style="border-top:1px solid ${accentBdr};opacity:0.5;padding-top:24px;">
     <div style="font-size:11px;color:rgba(250,246,239,0.28);line-height:1.7;">
-      Shoonaya · Live Now<br>
+      Shoonaya · Launching June 17, 2026<br>
       Questions? Reply to this email or write to <a href="mailto:cyber.prince@outlook.com" style="color:${accent};text-decoration:none;opacity:0.7;">cyber.prince@outlook.com</a><br>
       <a href="#" style="color:rgba(250,246,239,0.28);text-decoration:underline;">Unsubscribe from founding member communications</a>
     </div>
@@ -438,9 +424,9 @@ async function sendWelcomeEmail(opts: {
       method: 'POST',
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from:    `Shoonaya <noreply@${DOMAIN}>`,
+        from:    'Shoonaya <noreply@shoonaya.app>',
         to:      [opts.email],
-        subject: `${tradGreeting} — आपका स्वागत है 🪔`,
+        subject: `${tradGreeting} — आपका स्वागत है, Sthapaka #${opts.foundingNumber} 🪔`,
         html:    buildEmailHtml(opts),
       }),
     });
@@ -473,23 +459,11 @@ export async function POST(req: NextRequest) {
     const source = textOrNull(body.source) ?? 'landing';
     const timezone = textOrNull(body.timezone);
 
-    const url = new URL(req.url);
-    const queryRef = url.searchParams.get('ref')?.trim();
-    const querySource = url.searchParams.get('utm_source')?.trim() ?? url.searchParams.get('source')?.trim();
-
-    const refRaw = body.ref ? String(body.ref).trim() : (queryRef || null);
-    const referred_by_number = refRaw && /^\d+$/.test(refRaw) ? parseInt(refRaw, 10) : null;
-    
-    const referral_source = textOrNull(body.referral_source) 
-      ?? textOrNull(body.utm_source) 
-      ?? textOrNull(querySource) 
-      ?? (refRaw ? 'direct' : null);
-
     // ── Check if already registered ─────────────────────────────────────────
     const existing = await findRegistration(emailLower);
 
     if (existing) {
-      await updateExistingRegistration(existing, { tradition, name, source, timezone, referred_by_number, referral_source });
+      await updateExistingRegistration(existing, { tradition, name, source, timezone });
       const foundingNumber = await ensureFoundingNumber(existing);
 
       return NextResponse.json(
@@ -497,15 +471,15 @@ export async function POST(req: NextRequest) {
           success: true,
           foundingNumber,
           alreadyRegistered: true,
-          message: 'This email is already registered with Shoonaya.',
-          shareText: buildShareText(),
+          message: `This email is already registered as Sthapaka #${foundingNumber}.`,
+          shareText: buildShareText(foundingNumber),
         },
         { status: 200, headers: CORS_HEADERS }
       );
     }
 
     // ── Insert new registration (founding_number auto-assigned via sequence) ─
-    const { data: inserted, error: insertError } = await db()
+    const { data: inserted, error: insertError } = await supabase
       .from('waitlist')
       .insert({
         email:     emailLower,
@@ -513,8 +487,6 @@ export async function POST(req: NextRequest) {
         name,
         source,
         timezone,
-        referred_by_number,
-        referral_source,
       })
       .select('id, founding_number, tradition, email_sent')
       .single();
@@ -531,8 +503,8 @@ export async function POST(req: NextRequest) {
               success: true,
               foundingNumber,
               alreadyRegistered: true,
-              message: 'This email is already registered with Shoonaya.',
-              shareText: buildShareText(),
+              message: `This email is already registered as Sthapaka #${foundingNumber}.`,
+              shareText: buildShareText(foundingNumber),
             },
             { status: 200, headers: CORS_HEADERS }
           );
@@ -547,7 +519,7 @@ export async function POST(req: NextRequest) {
     void sendWelcomeEmail({ email: emailLower, name: name ?? undefined, tradition: tradition ?? undefined, foundingNumber });
 
     // Mark email_sent flag (best-effort)
-    void db()
+    void supabase
       .from('waitlist')
       .update({ email_sent: true })
       .eq('email', emailLower);
@@ -557,8 +529,8 @@ export async function POST(req: NextRequest) {
         success: true,
         foundingNumber,
         alreadyRegistered: false,
-        message: 'You are registered with Shoonaya.',
-        shareText: buildShareText(),
+        message: `You are registered as Sthapaka #${foundingNumber}.`,
+        shareText: buildShareText(foundingNumber),
       },
       { status: 200, headers: CORS_HEADERS }
     );

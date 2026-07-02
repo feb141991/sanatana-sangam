@@ -6,40 +6,6 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-}
-
-/* ─── PWA / Mobile Hardening ─────────────────────────────────────────────── */
-
-/* Prevent iOS callout menus on long-press on UI chrome */
-button, a, [role="button"], nav {
-  -webkit-touch-callout: none;
-}
-
-/* Prevent text selection on interactive elements — feels like native app */
-button, a, label, [role="button"], nav {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* iOS input auto-zoom prevention:
-   Any focused input < 16px triggers Safari to zoom.
-   Font-size floor stops that without disabling user pinch-zoom (WCAG 1.4.4). */
-input, select, textarea {
-  font-size: max(16px, 1em);
-}
-
-/* iOS momentum scrolling in scrollable regions */
-.overflow-y-auto, .overflow-x-auto, [class*="overflow-y-scroll"],
-.overscroll-contain {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* PWA standalone mode — prevent pull-to-refresh fighting page scroll */
-@media (display-mode: standalone) {
-  html, body {
-    overscroll-behavior-y: contain;
-  }
 }
 
 /* ─── 120fps Zenith Performance Layer ─── */
@@ -252,10 +218,10 @@ html[data-practice-immersive='true'] body {
 /* ── Reset & base ──────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 html,
 body {
-  max-width: 100%;
-  overflow-x: hidden;
   text-rendering: optimizeLegibility;
 }
 
@@ -269,42 +235,6 @@ body {
   background: var(--surface-base);
   color: var(--brand-ink);
   -webkit-font-smoothing: antialiased;
-  overflow-wrap: break-word;
-}
-
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-li,
-blockquote,
-figcaption {
-  overflow-wrap: break-word;
-}
-
-img,
-video,
-canvas {
-  max-width: 100%;
-  height: auto;
-}
-
-pre {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.mobile-wrap-safe {
-  min-width: 0;
-  overflow-wrap: break-word;
-}
-
-.mobile-wrap-anywhere {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 :root[data-theme='light'] body {
@@ -1337,38 +1267,9 @@ pre {
   display: block;
 }
 
-.quiz-spark-card-immersive {
-  position: relative;
-  overflow: hidden;
-  margin: 0 0 12px;
-  padding: 18px 18px;
-  border: 0;
-  border-radius: 0;
-  background:
-    radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--brand-primary) 20%, transparent), transparent 34%),
-    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 92%, transparent), color-mix(in srgb, var(--divine-bg) 88%, transparent));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--brand-primary) 18%, transparent);
-}
-
-.quiz-spark-card-immersive::after {
-  content: '';
-  position: absolute;
-  inset: auto 18px 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--brand-primary) 34%, transparent), transparent);
-  pointer-events: none;
-}
-
 :root[data-theme='light'] .quiz-spark-card {
   background: rgba(140, 140, 220, 0.07);
   border-color: rgba(100, 100, 180, 0.22);
-}
-
-:root[data-theme='light'] .quiz-spark-card-immersive {
-  border: 0;
-  background:
-    radial-gradient(circle at 12% 10%, color-mix(in srgb, var(--brand-primary) 16%, transparent), transparent 34%),
-    linear-gradient(135deg, color-mix(in srgb, var(--surface-soft) 96%, transparent), color-mix(in srgb, var(--card-bg) 92%, transparent));
 }
 
 .quiz-spark-header {
@@ -1513,16 +1414,16 @@ pre {
 .divine-feature-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  padding: 0 12px 20px;
+  gap: 12px;
+  padding: 0 16px 24px;
 }
 
 .divine-feature-card {
-  min-height: 130px;
+  min-height: 154px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  padding: 13px;
+  gap: 9px;
+  padding: 16px;
 }
 
 .divine-feature-icon {
@@ -1537,13 +1438,13 @@ pre {
 }
 
 .divine-feature-title {
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .divine-feature-copy {
   position: relative;
   z-index: 1;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .divine-card-motif {
@@ -1957,41 +1858,6 @@ body::after {
 }
 .gentle-pulse { animation: gentlePulse 2.4s ease-in-out infinite; }
 
-/* ── Sacred Loader animations ────────────────────────────────────────────────
- *
- *  Three presets consumed by SacredLoader.tsx:
- *
- *  animate-sacred-breathe  — scale + opacity pulse (Jain, Buddhist)
- *                            Still, inward, meditative
- *
- *  animate-sacred-halo     — radial expansion pulse (Hindu, Sikh)
- *                            Light emanating outward
- *
- *  animate-sacred-pulse    — opacity-only, used for inline/micro loaders
- *                            Keeps the symbol sharp, only dims gently
- * ──────────────────────────────────────────────────────────────────────────── */
-
-@keyframes sacred-breathe {
-  0%, 100% { transform: scale(1);     opacity: 0.58; }
-  50%       { transform: scale(1.13); opacity: 1.00; }
-}
-
-@keyframes sacred-halo {
-  0%        { transform: scale(1);     opacity: 0.60; }
-  35%       { transform: scale(1.07); opacity: 1.00; }
-  65%       { transform: scale(1.12); opacity: 0.92; }
-  100%      { transform: scale(1);     opacity: 0.60; }
-}
-
-@keyframes sacred-pulse {
-  0%, 100% { opacity: 0.42; }
-  50%       { opacity: 1.00; }
-}
-
-.animate-sacred-breathe { animation: sacred-breathe 2.6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-.animate-sacred-halo    { animation: sacred-halo    2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-.animate-sacred-pulse   { animation: sacred-pulse   1.8s ease-in-out infinite; }
-
 /* ── Glass surface system ────────────────────────────────────────────────────── */
 .glass-panel,
 .glass-panel-strong,
@@ -2288,81 +2154,6 @@ body::after {
 .mood-sparkle-one { top: 22%; right: 20%; animation: moodSparkle 2.8s ease-in-out infinite; }
 .mood-sparkle-two { bottom: 24%; right: 34%; animation: moodSparkle 3.4s ease-in-out 0.7s infinite; }
 
-/* ── Shared sacred glyph glow ──────────────────────────────────────────────── */
-.sacred-glow-icon {
-  --sacred-glow-size: 28px;
-  --sacred-glow-color: var(--brand-primary);
-  --sacred-glow-alpha: 22%;
-  --sacred-glow-scale: 1;
-  --sacred-glow-blur: 14px;
-  position: relative;
-  display: inline-flex;
-  width: var(--sacred-glow-size);
-  height: var(--sacred-glow-size);
-  flex: 0 0 var(--sacred-glow-size);
-  align-items: center;
-  justify-content: center;
-  isolation: isolate;
-  color: var(--sacred-glow-color);
-}
-
-.sacred-glow-icon::before,
-.sacred-glow-icon::after {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-}
-
-.sacred-glow-icon::before {
-  inset: -32%;
-  z-index: -1;
-  border-radius: 9999px;
-  opacity: 0.72;
-  background:
-    radial-gradient(circle, color-mix(in srgb, var(--sacred-glow-color) var(--sacred-glow-alpha), transparent) 0%, transparent 66%);
-  filter: blur(var(--sacred-glow-blur));
-  transform: scale(var(--sacred-glow-scale));
-}
-
-.sacred-glow-icon::after {
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  opacity: 0;
-  background: linear-gradient(116deg, transparent 0%, transparent 34%, color-mix(in srgb, var(--text-cream) 34%, transparent) 48%, transparent 64%, transparent 100%);
-  transform: translateX(-110%);
-}
-
-.sacred-glow-icon__content {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--sacred-glow-color) 30%, transparent));
-}
-
-.sacred-glow-icon--active {
-  --sacred-glow-alpha: 34%;
-  --sacred-glow-scale: 1.08;
-  --sacred-glow-blur: 12px;
-}
-
-.sacred-glow-icon--milestone {
-  --sacred-glow-alpha: 42%;
-  --sacred-glow-scale: 1.14;
-  --sacred-glow-blur: 16px;
-}
-
-.sacred-glow-icon--animated::before {
-  animation: sacredGlowPulse 2.8s ease-in-out infinite;
-}
-
-.sacred-glow-icon--animated::after {
-  opacity: 1;
-  animation: sacredGlowGlint 2.4s var(--ease-out) infinite;
-}
-
 .home-luminous-card {
   position: relative;
   overflow: hidden;
@@ -2464,23 +2255,10 @@ body::after {
   45%      { opacity: 0.95; transform: scale(1.2); }
 }
 
-@keyframes sacredGlowPulse {
-  0%, 100% { opacity: 0.48; transform: scale(calc(var(--sacred-glow-scale) * 0.92)); }
-  48%      { opacity: 0.92; transform: scale(var(--sacred-glow-scale)); }
-}
-
-@keyframes sacredGlowGlint {
-  0%, 38% { transform: translateX(-110%); }
-  66%     { transform: translateX(112%); }
-  100%    { transform: translateX(112%); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .mood-discovery-card::after,
   .home-luminous-card::after,
-  .mood-sparkle,
-  .sacred-glow-icon--animated::before,
-  .sacred-glow-icon--animated::after {
+  .mood-sparkle {
     animation: none !important;
   }
 }
@@ -3005,26 +2783,4 @@ body::after {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Loading pulse animation — slow breathe, not a blink */
-.loading-pulse {
-  animation: pulse 3s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 0.6; transform: scale(0.97); }
-  50%       { opacity: 1;   transform: scale(1);    }
-}
-
-/* Dark-mode text safety net */
-.dark-surface p, .dark-surface span, .dark-surface label,
-.dark-surface h1, .dark-surface h2, .dark-surface h3 {
-  color: inherit;
-}
-
-/* Force readable muted text on dark surfaces */
-[data-theme='dark'] .text-muted,
-[data-theme='dark'] .text-gray-500,
-[data-theme='dark'] .text-gray-600 {
-  color: rgba(240, 220, 180, 0.6) !important;
 }

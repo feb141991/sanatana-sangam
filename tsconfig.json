@@ -31,7 +31,6 @@
     "packages/*/supabase/**",
     "packages/*/dist/**",
     "android/**",
-    "ios/**",
-    "supabase/**"
+    "ios/**"
   ]
 }

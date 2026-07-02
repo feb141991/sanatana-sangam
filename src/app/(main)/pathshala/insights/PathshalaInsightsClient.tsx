@@ -13,28 +13,14 @@ interface ProgressRow {
   path_id: string; status: string; completed_at: string | null;
   current_lesson: number; completed_lessons: number[]; created_at: string; updated_at: string;
 }
-
-interface Props {
-  progress: ProgressRow[];
-  tradition: string;
-  shrutiStats?: {
-    total_recordings: number;
-    scored_count: number;
-    avg_overall_score: number | null;
-    unique_verses_attempted: number;
-    certified_count: number;
-  } | null;
-  communityRank?: number;
-  totalReciters?: number;
-}
+interface Props { progress: ProgressRow[]; tradition: string; }
 
 // Path metadata derived from central SEED_PATHS
-const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number; tradition: string }>(
+const PATH_INFO_MAP = new Map<string, { name: string; icon: SacredIconName; total_lessons: number }>(
   SEED_PATHS.map(p => [p.id, { 
     name: p.title, 
     icon: 'book', 
-    total_lessons: (p as any).total_lessons || 0,
-    tradition: p.tradition || 'all'
+    total_lessons: (p as any).total_lessons || 0 
   }])
 );
 
@@ -42,8 +28,7 @@ function getPathInfo(id: string) {
   return PATH_INFO_MAP.get(id) ?? { 
     name: id.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), 
     icon: 'book', 
-    total_lessons: 0,
-    tradition: 'all'
+    total_lessons: 0 
   };
 }
 
@@ -152,7 +137,7 @@ function PathCard({ row, isDark, amber }: { row: ProgressRow; isDark: boolean; a
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export default function PathshalaInsightsClient({ progress, tradition, shrutiStats, communityRank, totalReciters }: Props) {
+export default function PathshalaInsightsClient({ progress }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark = resolvedTheme === 'dark';
@@ -166,23 +151,9 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
   const pageBg = isDark ? '#0d1209'                  : '#f4f8f4';
 
   const stats = useMemo(() => {
-    // Sort paths by tradition:
-    // 1. user's tradition
-    // 2. all/generic traditions
-    // 3. other traditions
-    const sortedProgress = [...progress].sort((a, b) => {
-      const tradA = getPathInfo(a.path_id).tradition;
-      const tradB = getPathInfo(b.path_id).tradition;
-
-      const rankA = tradA === tradition ? 0 : (tradA === 'all' || tradA === 'generic') ? 1 : 2;
-      const rankB = tradB === tradition ? 0 : (tradB === 'all' || tradB === 'generic') ? 1 : 2;
-
-      return rankA - rankB;
-    });
-
-    const completed  = sortedProgress.filter(p => p.status === 'completed');
-    const active     = sortedProgress.filter(p => p.status === 'active');
-    const dismissed  = sortedProgress.filter(p => p.status === 'dismissed');
+    const completed  = progress.filter(p => p.status === 'completed');
+    const active     = progress.filter(p => p.status === 'active');
+    const dismissed  = progress.filter(p => p.status === 'dismissed');
 
     // "Enrolled" = any path the user has touched that isn't just left behind.
     // Dismissed paths are excluded from the enrolled count (user actively left them).
@@ -204,7 +175,7 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
     const daysOnJourney = first ? Math.max(1, Math.round((Date.now() - first.getTime()) / 86400000)) : 0;
 
     return { completed, active, dismissed, totalLessons, totalPaths, completedPaths, daysOnJourney };
-  }, [progress, tradition]);
+  }, [progress]);
 
   function handleShare() {
     const t = `📚 Pathshala — ${stats.completedPaths} paths completed, ${stats.totalLessons} lessons, ${stats.daysOnJourney} days of learning 🙏`;
@@ -261,55 +232,6 @@ export default function PathshalaInsightsClient({ progress, tradition, shrutiSta
           <StatCard label="Active Paths" value={String(stats.active.length)} icon="book" sub={sub} isDark={isDark} amber={amber}
             detail={stats.active.length > 0 ? `${stats.active.length} path${stats.active.length !== 1 ? 's' : ''} in progress. Continue your studies daily.` : 'No active paths — start a new study journey.'} />
         </div>
-
-        {shrutiStats && shrutiStats.scored_count >= 1 && (
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3 px-1"
-              style={{ color: `${amber}80` }}>
-              🎙️ Shruti Recitation
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <StatCard
-                label="Shruti Score"
-                value={`${Math.round((shrutiStats.avg_overall_score ?? 0) * 20)} / 100`}
-                icon="sparkles"
-                sub={`${shrutiStats.scored_count} recording${shrutiStats.scored_count !== 1 ? 's' : ''} scored`}
-                isDark={isDark}
-                amber={amber}
-                detail="Your Shruti score averages pronunciation (uccharan), rhythm (laya), sandhi accuracy, and fluency across all your scored recitations."
-              />
-
-              <StatCard
-                label="Community Rank"
-                value={communityRank && communityRank > 0 ? `#${communityRank}` : '—'}
-                icon="star"
-                sub={`of ${totalReciters ?? 0} active reciters`}
-                isDark={isDark}
-                amber={amber}
-                detail="Rank is based on average score across all reciters with 3+ recordings."
-              />
-
-              <StatCard
-                label="Verses Attempted"
-                value={String(shrutiStats.unique_verses_attempted)}
-                icon="book"
-                sub={`${shrutiStats.certified_count} certified`}
-                isDark={isDark}
-                amber={amber}
-                detail={`${shrutiStats.total_recordings} total recordings across ${shrutiStats.unique_verses_attempted} verses.`}
-              />
-            </div>
-            <div className="mt-3">
-              <button
-                onClick={() => router.push('/scoreboard?tab=shruti')}
-                className="w-full text-xs font-semibold py-2 rounded-xl transition-opacity hover:opacity-80"
-                style={{ backgroundColor: `${amber}20`, color: amber }}
-              >
-                See Shruti Leaderboard →
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Path list — active/completed first, dismissed at bottom */}
         {progress.length > 0 ? (

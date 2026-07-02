@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
 import {
   malaSessionBeads,
   malaSessionDate,
@@ -15,8 +14,8 @@ import {
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const userId = user.id;
   const now    = new Date();
@@ -35,7 +34,7 @@ export async function GET() {
   // ── 2. Japa sessions ────────────────────────────────────────────────────────
   const { data: japaSessions } = await supabase
     .from('mala_sessions')
-    .select('id, mantra, mantra_id, count, bead_count, target_count, rounds, duration_seconds, duration_secs, completed_at, spiritual_date, date, created_at')
+    .select('*')
     .eq('user_id', userId)
     .gte('completed_at', from.toISOString())
     .order('completed_at', { ascending: true });
@@ -106,8 +105,8 @@ export async function GET() {
 
   // ── 5. Community activity ───────────────────────────────────────────────────
   const [{ count: postsCount }, { count: threadsCount }] = await Promise.all([
-    supabase.from('posts').select('id', { count: 'exact', head: true }).eq('author_id', userId).gte('created_at', from.toISOString()),
-    supabase.from('threads').select('id', { count: 'exact', head: true }).eq('author_id', userId).gte('created_at', from.toISOString()),
+    supabase.from('posts').select('*', { count: 'exact', head: true }).eq('author_id', userId).gte('created_at', from.toISOString()),
+    supabase.from('threads').select('*', { count: 'exact', head: true }).eq('author_id', userId).gte('created_at', from.toISOString()),
   ]);
 
   // ── 6. Build 30-day heatmap (activity per day) ─────────────────────────────

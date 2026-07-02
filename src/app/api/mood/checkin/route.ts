@@ -1,46 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
 
 export async function GET(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { user, error: authError } = await requireUserNotBanned(supabase);
-    if (authError) return authError;
+    const { data: { user } } = await supabase.auth.getUser();
 
-    const url = new URL(request.url);
-    const historyParam = url.searchParams.get('history');
-    
-    if (historyParam) {
-      const days = parseInt(historyParam, 10) || 7;
-      const historyStart = new Date();
-      historyStart.setHours(0, 0, 0, 0);
-      historyStart.setDate(historyStart.getDate() - (days - 1));
-      
-      const { data, error } = await supabase
-        .from('user_mood_checkins')
-        .select('created_at, before_mood, session_status')
-        .eq('user_id', user.id)
-        .gte('created_at', historyStart.toISOString())
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching mood history:', error);
-        return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 });
-      }
-
-      // We only care about completed or abandoned/dismissed checkins that had a mood
-      const historyMap = new Map<string, string>();
-      for (const entry of (data || [])) {
-        if (!entry.before_mood) continue;
-        const dateStr = entry.created_at.split('T')[0];
-        if (!historyMap.has(dateStr)) {
-          historyMap.set(dateStr, entry.before_mood);
-        }
-      }
-
-      const historyResult = Array.from(historyMap.entries()).map(([date, mood]) => ({ date, mood }));
-      return NextResponse.json(historyResult);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const todayStart = new Date();
@@ -98,8 +65,11 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { user, error: authError } = await requireUserNotBanned(supabase);
-    if (authError) return authError;
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const body = await request.json();
 

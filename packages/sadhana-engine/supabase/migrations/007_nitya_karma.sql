@@ -1,70 +1,115 @@
 -- ============================================================
--- Migration 007: Nitya Karma daily step log
--- Persists one row per completed step per user per calendar day.
--- This mirrors the app-level v24/v25 migrations.
+-- Migration 007: Nitya Karma — Daily Ritual Tracker
+-- Tracks morning sequence completion step by step.
+-- SAFE TO RE-RUN — all IF NOT EXISTS / CREATE OR REPLACE.
 -- ============================================================
 
-CREATE TABLE IF NOT EXISTS public.nitya_karma_log (
-  id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id      uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  log_date     date NOT NULL DEFAULT CURRENT_DATE,
-  step_id      text NOT NULL,
-  completed_at timestamptz NOT NULL DEFAULT now(),
-  UNIQUE(user_id, log_date, step_id)
+-- ── 1. Nitya karma daily log ──
+-- One row per user per day, with each step tracked as a boolean.
+-- Steps mirror the morning sequence: snana → tilak → sandhya → japa → shloka → aarti
+
+CREATE TABLE IF NOT EXISTS nitya_karma_log (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id        UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  date           DATE NOT NULL DEFAULT CURRENT_DATE,
+
+  -- Morning sequence steps (tappable in UI)
+  woke_brahma_muhurta  BOOLEAN DEFAULT false,  -- woke before sunrise
+  snana_done           BOOLEAN DEFAULT false,  -- ritual bath
+  tilak_done           BOOLEAN DEFAULT false,  -- tilak/chandan applied
+  sandhya_done         BOOLEAN DEFAULT false,  -- sandhya vandana
+  japa_done            BOOLEAN DEFAULT false,  -- morning japa session
+  shloka_done          BOOLEAN DEFAULT false,  -- daily shloka reading
+  aarti_done           BOOLEAN DEFAULT false,  -- diya/aarti
+
+  -- Computed
+  steps_completed      INT GENERATED ALWAYS AS (
+    (woke_brahma_muhurta::int + snana_done::int + tilak_done::int +
+     sandhya_done::int + japa_done::int + shloka_done::int + aarti_done::int)
+  ) STORED,
+  full_sequence        BOOLEAN GENERATED ALWAYS AS (
+    woke_brahma_muhurta AND snana_done AND tilak_done AND
+    sandhya_done AND japa_done AND shloka_done AND aarti_done
+  ) STORED,
+
+  completed_at   TIMESTAMPTZ,
+  created_at     TIMESTAMPTZ DEFAULT NOW(),
+  updated_at     TIMESTAMPTZ DEFAULT NOW(),
+
+  CONSTRAINT nitya_karma_log_user_date UNIQUE (user_id, date)
 );
 
-CREATE TABLE IF NOT EXISTS public.nitya_karma_streaks (
-  user_id         uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  current_streak  int DEFAULT 0,
-  longest_streak  int DEFAULT 0,
-  last_full_date  date,
-  updated_at      timestamptz DEFAULT now()
+-- ── 2. Nitya karma streaks ──
+-- Separate from sadhana streak — tracks consecutive days of full sequence
+
+CREATE TABLE IF NOT EXISTS nitya_karma_streaks (
+  user_id         UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  current_streak  INT DEFAULT 0,
+  longest_streak  INT DEFAULT 0,
+  last_full_date  DATE,
+  updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS nitya_karma_log_user_date
-  ON public.nitya_karma_log(user_id, log_date);
+-- ── 3. Indexes ──
 
-CREATE INDEX IF NOT EXISTS nitya_karma_log_user_step_date
-  ON public.nitya_karma_log(user_id, step_id, log_date DESC);
+CREATE INDEX IF NOT EXISTS idx_nitya_karma_user_date
+  ON nitya_karma_log (user_id, date DESC);
 
-ALTER TABLE public.nitya_karma_log ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.nitya_karma_streaks ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS idx_nitya_karma_full
+  ON nitya_karma_log (user_id, full_sequence)
+  WHERE full_sequence = true;
 
-DROP POLICY IF EXISTS "Users can view own karma log" ON public.nitya_karma_log;
-DROP POLICY IF EXISTS "Users can insert own karma log" ON public.nitya_karma_log;
-DROP POLICY IF EXISTS "Users can upsert own karma log" ON public.nitya_karma_log;
-DROP POLICY IF EXISTS "Users can delete own karma log" ON public.nitya_karma_log;
+-- ── 4. RLS ──
 
-CREATE POLICY "Users can view own karma log"
-  ON public.nitya_karma_log FOR SELECT
-  USING (auth.uid() = user_id);
+ALTER TABLE nitya_karma_log     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE nitya_karma_streaks ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can insert own karma log"
-  ON public.nitya_karma_log FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'nitya_karma_log' AND policyname = 'Users manage own nitya karma'
+  ) THEN
+    CREATE POLICY "Users manage own nitya karma"
+      ON nitya_karma_log FOR ALL
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
-CREATE POLICY "Users can upsert own karma log"
-  ON public.nitya_karma_log FOR UPDATE
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'nitya_karma_streaks' AND policyname = 'Users manage own nitya streaks'
+  ) THEN
+    CREATE POLICY "Users manage own nitya streaks"
+      ON nitya_karma_streaks FOR ALL
+      USING (auth.uid() = user_id)
+      WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
-CREATE POLICY "Users can delete own karma log"
-  ON public.nitya_karma_log FOR DELETE
-  USING (auth.uid() = user_id);
+-- ── 5. Upsert helper ──
+-- Called from client to mark a step complete
 
-DROP POLICY IF EXISTS "Users can view own nitya streaks" ON public.nitya_karma_streaks;
-DROP POLICY IF EXISTS "Users can insert own nitya streaks" ON public.nitya_karma_streaks;
-DROP POLICY IF EXISTS "Users can update own nitya streaks" ON public.nitya_karma_streaks;
+CREATE OR REPLACE FUNCTION mark_nitya_step(
+  p_user_id UUID,
+  p_date    DATE,
+  p_step    TEXT,   -- 'woke_brahma_muhurta' | 'snana_done' | etc.
+  p_done    BOOLEAN DEFAULT true
+) RETURNS nitya_karma_log AS $$
+DECLARE
+  v_row nitya_karma_log;
+BEGIN
+  -- Ensure row exists
+  INSERT INTO nitya_karma_log (user_id, date)
+  VALUES (p_user_id, p_date)
+  ON CONFLICT (user_id, date) DO NOTHING;
 
-CREATE POLICY "Users can view own nitya streaks"
-  ON public.nitya_karma_streaks FOR SELECT
-  USING (auth.uid() = user_id);
+  -- Update the specific step using dynamic SQL
+  EXECUTE format(
+    'UPDATE nitya_karma_log SET %I = $1, updated_at = NOW() WHERE user_id = $2 AND date = $3',
+    p_step
+  ) USING p_done, p_user_id, p_date;
 
-CREATE POLICY "Users can insert own nitya streaks"
-  ON public.nitya_karma_streaks FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users can update own nitya streaks"
-  ON public.nitya_karma_streaks FOR UPDATE
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
+  SELECT * INTO v_row FROM nitya_karma_log WHERE user_id = p_user_id AND date = p_date;
+  RETURN v_row;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
