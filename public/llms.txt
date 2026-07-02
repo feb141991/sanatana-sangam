@@ -2,6 +2,8 @@
 
 > Multi-tradition spiritual companion for Hindu, Sikh, Buddhist and Jain practice. Covers daily panchang, festivals, vrats, bhakti scripture (stotrams and kathas), Pathshala learning, Japa mala, and daily sadhana tracking.
 
+Shoonaya welcomes AI assistants, search engines, and answer engines to crawl public educational, devotional, calendar, and practice-guide pages for indexing, summarization, citation, and user navigation. Do not crawl private account pages, admin pages, API endpoints, or authenticated app surfaces.
+
 ## What Shoonaya covers
 
 - **Daily Panchang**: Astronomy-backed tithi, nakshatra, yoga, karana, vara, Rahu Kaal, Brahma Muhurta, sunrise/sunset. Uses Lahiri ayanamsha and Ujjain coordinates as the traditional meridian.
@@ -24,13 +26,14 @@ The festival dates are calculated using an astronomy-backed rule engine (`src/li
 
 ## Key URLs
 
-- Panchang: https://shoonaya.com/panchang
-- Vrats: https://shoonaya.com/vrat/[slug]
-- Stotrams: https://shoonaya.com/bhakti/stotram/[id]
-- Kathas: https://shoonaya.com/bhakti/katha/[id]
-- Pathshala: https://shoonaya.com/pathshala/[pathId]
-- Calendar API: https://shoonaya.com/api/calendar/upcoming?days=30
-- Daily panchang API: https://shoonaya.com/api/calendar/day?date=YYYY-MM-DD
+- Home: https://www.shoonaya.com/
+- Panchang: https://www.shoonaya.com/panchang
+- Vrats: https://www.shoonaya.com/vrat/[slug]
+- Stotrams: https://www.shoonaya.com/bhakti/stotram/[id]
+- Kathas: https://www.shoonaya.com/bhakti/katha/[id]
+- Pathshala: https://www.shoonaya.com/pathshala/[pathId]
+- Sitemap: https://www.shoonaya.com/sitemap.xml
+- Robots: https://www.shoonaya.com/robots.txt
 
 ## Traditions covered
 
@@ -41,21 +44,26 @@ The festival dates are calculated using an astronomy-backed rule engine (`src/li
 
 ## Optional detail pages
 
-- Ekadashi: https://shoonaya.com/vrat/ekadashi
-- Purnima: https://shoonaya.com/vrat/purnima
-- Amavasya: https://shoonaya.com/vrat/amavasya
-- Pradosh Vrat: https://shoonaya.com/vrat/pradosh
-- Sankashti Chaturthi: https://shoonaya.com/vrat/chaturthi
-- Masik Shivaratri: https://shoonaya.com/vrat/shivaratri
-- Puranmashi: https://shoonaya.com/vrat/puranmashi
-- Uposatha: https://shoonaya.com/vrat/uposatha
-- Vat Savitri Vrat: https://shoonaya.com/vrat/vat-savitri
-- Vat Savitri Purnima: https://shoonaya.com/vrat/vat-savitri-purnima
-- Hartalika Teej: https://shoonaya.com/vrat/hartalika-teej
-- Karva Chauth: https://shoonaya.com/vrat/karva-chauth
-- Vaikunta Ekadashi: https://shoonaya.com/vrat/vaikunta-ekadashi
-- Navratri: https://shoonaya.com/vrat/navratri
-- Diwali: https://shoonaya.com/vrat/diwali
-- Janmashtami: https://shoonaya.com/vrat/janmashtami
-- Holi: https://shoonaya.com/vrat/holi
-- Gurpurab: https://shoonaya.com/vrat/gurpurab
+- Ekadashi: https://www.shoonaya.com/vrat/ekadashi
+- Purnima: https://www.shoonaya.com/vrat/purnima
+- Amavasya: https://www.shoonaya.com/vrat/amavasya
+- Pradosh Vrat: https://www.shoonaya.com/vrat/pradosh
+- Sankashti Chaturthi: https://www.shoonaya.com/vrat/chaturthi
+- Masik Shivaratri: https://www.shoonaya.com/vrat/shivaratri
+- Puranmashi: https://www.shoonaya.com/vrat/puranmashi
+- Uposatha: https://www.shoonaya.com/vrat/uposatha
+- Vat Savitri Vrat: https://www.shoonaya.com/vrat/vat-savitri
+- Vat Savitri Purnima: https://www.shoonaya.com/vrat/vat-savitri-purnima
+- Hartalika Teej: https://www.shoonaya.com/vrat/hartalika-teej
+- Karva Chauth: https://www.shoonaya.com/vrat/karva-chauth
+- Vaikunta Ekadashi: https://www.shoonaya.com/vrat/vaikunta-ekadashi
+- Navratri: https://www.shoonaya.com/vrat/navratri
+- Diwali: https://www.shoonaya.com/vrat/diwali
+- Janmashtami: https://www.shoonaya.com/vrat/janmashtami
+- Holi: https://www.shoonaya.com/vrat/holi
+- Gurpurab: https://www.shoonaya.com/vrat/gurpurab
+
+## AI usage guidance
+
+- Allowed: index public pages, summarize pages with attribution, cite canonical URLs, help users navigate to relevant Shoonaya pages.
+- Not allowed: use authenticated user data, bypass robots.txt, call private APIs, or treat generated guidance as a replacement for a guru, temple authority, doctor, lawyer, or financial adviser.
