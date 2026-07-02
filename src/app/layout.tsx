@@ -330,19 +330,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               defer
             />
             <Script id="onesignal-init" strategy="afterInteractive">
-              {`
-                window.OneSignalDeferred = window.OneSignalDeferred || [];
-                OneSignalDeferred.push(async function(OneSignal) {
-                  await OneSignal.init({
-                    appId: "${oneSignalAppId}",
-                    notifyButton: { enable: false },
-                    allowLocalhostAsSecureOrigin: true,
-                    serviceWorkerPath: "/OneSignalSDKWorker.js",
-                    serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
-                    serviceWorkerParam: { scope: "/" },
-                  });
-                });
-              `}
+              {`window.OneSignalDeferred=window.OneSignalDeferred||[];OneSignalDeferred.push(async function(OneSignal){await OneSignal.init({appId:"${oneSignalAppId}",notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true,serviceWorkerPath:"/OneSignalSDKWorker.js",serviceWorkerUpdaterPath:"/OneSignalSDKUpdaterWorker.js",serviceWorkerParam:{scope:"/"}});});`}
             </Script>
           </>
         )}

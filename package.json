@@ -67,6 +67,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "critters": "^0.0.23",
     "dotenv": "^17.4.2",
     "eslint": "^8",
     "eslint-config-next": "15.5.15",
