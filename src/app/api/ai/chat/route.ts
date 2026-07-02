@@ -9,9 +9,15 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 import { FESTIVALS_2026 } from '@/lib/festivals';
 import { dharamVeerRetriever } from '@/lib/ai/retrieval';
+import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const GEMINI_MODEL       = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
+const MAX_CHAT_BODY_BYTES = 32 * 1024;
+const MAX_CHAT_MESSAGE_CHARS = 4_000;
+const MAX_CHAT_HISTORY_ITEMS = 12;
+const MAX_CHAT_HISTORY_TEXT_CHARS = 2_000;
+const CHAT_RATE_LIMIT = { keyPrefix: 'ai-chat', limit: 30, windowMs: 60_000 };
 
 type ChatHistoryMessage = { role: 'user' | 'model'; text: string };
 type UpcomingVrat = {
@@ -36,15 +42,27 @@ async function checkAndIncrementAiUsage(
       p_limit: limit,
     });
     if (error || data === null) {
-      console.warn('[ai/chat] rate limit check failed, failing open:', error);
-      return { allowed: true, used: 0, limit };
+      console.warn('[ai/chat] rate limit check failed, failing closed:', error);
+      return { allowed: false, used: 0, limit };
     }
     const res = data as { new_count: number; was_allowed: boolean };
     return { allowed: res.was_allowed, used: res.new_count, limit };
   } catch (err) {
     console.error('[ai/chat] error inside checkAndIncrementAiUsage:', err);
-    return { allowed: true, used: 0, limit };
+    return { allowed: false, used: 0, limit };
   }
+}
+
+function sanitiseHistory(history: unknown): ChatHistoryMessage[] {
+  if (!Array.isArray(history)) return [];
+
+  return history.slice(-MAX_CHAT_HISTORY_ITEMS).flatMap((item): ChatHistoryMessage[] => {
+    if (!item || typeof item !== 'object') return [];
+    const candidate = item as { role?: unknown; text?: unknown };
+    const role = candidate.role === 'model' ? 'model' : candidate.role === 'user' ? 'user' : null;
+    const text = asBoundedString(candidate.text, MAX_CHAT_HISTORY_TEXT_CHARS);
+    return role && text ? [{ role, text }] : [];
+  });
 }
 
 async function recordAiChatEvent(
@@ -276,6 +294,12 @@ async function getUpcomingVrats(input: {
 
 // ─── Main handler ───────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const sizeRejection = rejectLargeRequest(req, MAX_CHAT_BODY_BYTES);
+  if (sizeRejection) return sizeRejection;
+
+  const rateRejection = rateLimitByIp(req, CHAT_RATE_LIMIT);
+  if (rateRejection) return rateRejection;
+
   // Determine which providers are available
   const sarvamKey = process.env.SARVAM_API_KEY?.trim();
   const geminiKey = process.env.GEMINI_API_KEY?.trim();
@@ -324,6 +348,8 @@ export async function POST(req: NextRequest) {
     appLanguage?: string | null;
     meaningLanguage?: string | null;
     transliterationLanguage?: string | null;
+    mode?: string;
+    figure_id?: string;
   };
 
   try {
@@ -332,9 +358,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  if (!body.message?.trim()) {
-    return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+  const message = asBoundedString(body.message, MAX_CHAT_MESSAGE_CHARS);
+  if (!message) {
+    return NextResponse.json({ error: 'Message is required or too long' }, { status: 400 });
   }
+  const history = sanitiseHistory(body.history);
 
   const tradition             = body.tradition ?? profile?.tradition ?? null;
   const sampradaya            = body.sampradaya ?? profile?.sampradaya ?? null;
@@ -354,8 +382,8 @@ export async function POST(req: NextRequest) {
   });
 
 
-  const mode = (body as any).mode;
-  const figureId = (body as any).figure_id;
+  const mode = body.mode;
+  const figureId = body.figure_id;
 
   if (mode === 'dharam_veer_reflection') {
     if (!figureId) {
@@ -364,7 +392,7 @@ export async function POST(req: NextRequest) {
 
     // Retrieve passages for the figure
     const result = await dharamVeerRetriever.retrieve({
-        text: body.message,
+        text: message,
         filters: { title: figureId },
         topK: 5
     });
@@ -392,7 +420,7 @@ End your response by noting this is an "AI reflection based on verified sources"
 Source Passages:
 ${passages}
 
-User Question: ${body.message}
+User Question: ${message}
 `;
 
     // Override system prompt
@@ -417,7 +445,7 @@ User Question: ${body.message}
   const startTime = Date.now();
 
 
-  if (isUpcomingVratQuery(body.message)) {
+  if (isUpcomingVratQuery(message)) {
     const { vrats, to, source } = await getUpcomingVrats({
       supabase,
       from: spiritualDate,
@@ -456,7 +484,7 @@ User Question: ${body.message}
   // (the client reads chunks progressively so single-chunk works correctly).
   if (sarvamKey) {
     try {
-      const userMessage = buildPramanaUserMessage(body.history ?? [], body.message);
+      const userMessage = buildPramanaUserMessage(history, message);
       const result = await generateWithProvider(
         { system: systemPrompt, user: userMessage, maxOutputTokens: 900 },
         { providerOverride: 'sarvam-hosted' }
@@ -491,7 +519,7 @@ User Question: ${body.message}
 
   // ── Path B: Gemini (fallback / Sarvam not configured) ──────────────────────
   try {
-    const userMessage = buildPramanaUserMessage(body.history ?? [], body.message);
+    const userMessage = buildPramanaUserMessage(history, message);
     const payload = {
       contents: [{ role: 'user', parts: [{ text: userMessage }] }],
       systemInstruction: { parts: [{ text: systemPrompt }] },

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Share2, X } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -831,9 +832,14 @@ export default function KundaliClient({ lat, lon, city, timezone }: Props) {
                 <h4 className="text-xs font-bold uppercase tracking-wider self-start" style={{ color: 'var(--brand-muted)' }}>
                   {t('northIndianRashiChart')}
                 </h4>
-                <div className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-md border"
+                <Image
+                  src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgHtml)}`}
+                  alt={t('northIndianRashiChart')}
+                  width={340}
+                  height={340}
+                  unoptimized
+                  className="w-full max-w-[340px] aspect-square rounded-2xl overflow-hidden shadow-md border"
                   style={{ borderColor: 'var(--premium-border)' }}
-                  dangerouslySetInnerHTML={{ __html: svgHtml }}
                 />
                 <span className="text-[10px] italic" style={{ color: 'var(--brand-muted)' }}>
                   {t('rashiPlacementsHint')}

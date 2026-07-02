@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import {
   NAME_STORY_INTENTS,
   isNameStoryIntent,
@@ -13,6 +14,9 @@ import {
   type NameStoryTradition,
   type NameStoryTranslationLanguage,
 } from '@/lib/name-story';
+
+const MAX_NAME_STORY_BODY_BYTES = 8 * 1024;
+const NAME_STORY_RATE_LIMIT = { keyPrefix: 'name-story-generate', limit: 10, windowMs: 60_000 };
 
 type NameStoryRequest = {
   displayName?: string;
@@ -244,6 +248,12 @@ function errorMessage(error: unknown): string {
 }
 
 export async function POST(req: NextRequest) {
+  const sizeRejection = rejectLargeRequest(req, MAX_NAME_STORY_BODY_BYTES);
+  if (sizeRejection) return sizeRejection;
+
+  const rateRejection = rateLimitByIp(req, NAME_STORY_RATE_LIMIT);
+  if (rateRejection) return rateRejection;
+
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();

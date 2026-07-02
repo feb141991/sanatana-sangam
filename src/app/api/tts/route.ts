@@ -7,8 +7,13 @@ import { chunkText, mergeAudioChunks } from '@/lib/tts/chunk';
 import { preprocessTTS, stripSSMLForPlainTTS } from '@/lib/tts/preprocessing';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, canGenerateTTS, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
+import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
 export const runtime = 'nodejs';
+
+const MAX_TTS_BODY_BYTES = 12 * 1024;
+const MAX_TTS_TEXT_CHARS = 3_000;
+const TTS_RATE_LIMIT = { keyPrefix: 'tts', limit: 20, windowMs: 60_000 };
 
 function hasDevanagari(text: string): boolean { return /[ऀ-ॿ]/.test(text); }
 function hasGurmukhi(text: string): boolean { return /[਀-੿]/.test(text); }
@@ -24,6 +29,12 @@ function getSarvamVoiceConfig(text: string, quality: 'standard' | 'pandit' | 'ak
 }
 
 export async function POST(req: NextRequest) {
+  const sizeRejection = rejectLargeRequest(req, MAX_TTS_BODY_BYTES);
+  if (sizeRejection) return sizeRejection;
+
+  const rateRejection = rateLimitByIp(req, TTS_RATE_LIMIT);
+  if (rateRejection) return rateRejection;
+
   let text: string;
   let quality: 'standard' | 'pandit' | 'akash';
   let requestedRate: number | null = null;
@@ -53,6 +64,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     text = String(body.text ?? '').trim();
+    if (text.length > MAX_TTS_TEXT_CHARS) {
+      return NextResponse.json({ error: 'text is too long' }, { status: 413 });
+    }
 
     // pandit / akash voices = Zenith only. Downgrade silently for free users.
     const requestedQuality = body.quality === 'pandit'

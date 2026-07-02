@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import CopyShareButton from '@/components/share/CopyShareButton';
 
 // ─── Dynamic OG metadata ──────────────────────────────────────────────────────
 export async function generateMetadata({
@@ -404,13 +405,10 @@ export default async function NameStorySharePage({
           >
             𝕏 Twitter
           </a>
-          <button
+          <CopyShareButton
             className="share-btn share-cp"
-            data-copy-url={pageUrl}
-            id="copy-btn"
-          >
-            🔗 Copy Link
-          </button>
+            url={pageUrl}
+          />
         </div>
 
         <div className="cta-divider" />
@@ -423,16 +421,6 @@ export default async function NameStorySharePage({
         </Link>
       </div>
 
-      {/* Copy link script */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        document.getElementById('copy-btn').addEventListener('click', function() {
-          navigator.clipboard.writeText('${pageUrl}').then(function() {
-            var btn = document.getElementById('copy-btn');
-            btn.textContent = '✓ Copied!';
-            setTimeout(function(){ btn.textContent = '🔗 Copy Link'; }, 2000);
-          });
-        });
-      ` }} />
     </>
   );
 }

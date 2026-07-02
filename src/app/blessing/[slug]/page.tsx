@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getBlessingBySlug, FESTIVAL_BLESSINGS } from '@/lib/festival-blessings';
+import CopyShareButton from '@/components/share/CopyShareButton';
 
 // ─── Static params ────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -254,8 +255,9 @@ export default async function BlessingPage({
         <div
           className="script-line"
           style={{ fontFamily: scriptStyle.match(/font-family:([^;]+)/)?.[1]?.trim() ?? 'Georgia' }}
-          dangerouslySetInnerHTML={{ __html: b.scriptLine.replace(/\n/g, '<br/>') }}
-        />
+        >
+          {b.scriptLine}
+        </div>
 
         <div className="divider2" />
 
@@ -280,14 +282,11 @@ export default async function BlessingPage({
           >
             𝕏 Twitter
           </a>
-          <button
+          <CopyShareButton
             className="share-btn share-cp"
-            onClick={undefined}
-            data-copy-url={pageUrl}
-            id="copy-btn"
-          >
-            🔗 Copy Link
-          </button>
+            url={pageUrl}
+            awardBlessingShare
+          />
         </div>
 
         <div className="cta-divider" />
@@ -300,29 +299,6 @@ export default async function BlessingPage({
         </Link>
       </div>
 
-      {/* Copy link script */}
-      <script dangerouslySetInnerHTML={{ __html: `
-        document.querySelectorAll('.share-btn').forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            fetch('/api/karma/award', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ 
-                reason: 'blessing_shared', 
-                amount: 10 
-              })
-            }).catch(function() {});
-          });
-        });
-
-        document.getElementById('copy-btn').addEventListener('click', function() {
-          navigator.clipboard.writeText('${pageUrl}').then(function() {
-            var btn = document.getElementById('copy-btn');
-            btn.textContent = '✓ Copied!';
-            setTimeout(function(){ btn.textContent = '🔗 Copy Link'; }, 2000);
-          });
-        });
-      ` }} />
     </>
   );
 }

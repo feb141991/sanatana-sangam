@@ -634,6 +634,15 @@ export function generateKundali(input: KundaliInput, lang: 'en' | 'hi' | 'pa' = 
 // Rahu & Ketu are ALWAYS retrograde in Vedic astrology — no (R) shown for them.
 // Other planets use a compact ᴿ superscript to keep labels tidy inside triangles.
 // Multi-planet houses are center-stacked; font shrinks for 3+ planets per house.
+function escapeSvgText(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 export function renderKundaliSVG(result: KundaliResult): string {
   const { lagnaNumber, placements } = result;
 
@@ -674,7 +683,7 @@ export function renderKundaliSVG(result: KundaliResult): string {
   const LINE_H = 12;
 
   const rashiLabels = Object.entries(housePos).map(([h, [x, y]]) =>
-    `<text x="${x}" y="${y}" fill="#C5A059" font-size="10" font-family="'Outfit',sans-serif" font-weight="700" text-anchor="middle">${getHouseRashi(Number(h))}</text>`
+    `<text x="${x}" y="${y}" fill="#C5A059" font-size="10" font-family="'Outfit',sans-serif" font-weight="700" text-anchor="middle">${escapeSvgText(getHouseRashi(Number(h)))}</text>`
   ).join('\n');
 
   const planetLabels = Object.entries(planetPos).map(([h, [cx, cy]]) => {
@@ -694,7 +703,7 @@ export function renderKundaliSVG(result: KundaliResult): string {
     const startY = cy - totalH / 2 + LINE_H / 2;
 
     const rows = visible.map((sym, i) =>
-      `<text x="${cx}" y="${startY + i * LINE_H}" fill="#EDE8DE" font-size="${fs}" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${sym}</text>`
+      `<text x="${cx}" y="${startY + i * LINE_H}" fill="#EDE8DE" font-size="${fs}" font-family="'Outfit',sans-serif" font-weight="600" text-anchor="middle">${escapeSvgText(sym)}</text>`
     );
 
     // Overflow indicator (e.g. "+1" when > maxLines planets in same house)
