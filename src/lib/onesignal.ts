@@ -57,8 +57,9 @@ export function initOneSignal() {
         appId:                       ONESIGNAL_APP_ID,
         notifyButton:                { enable: false },  // we use custom bell
         allowLocalhostAsSecureOrigin: true,              // for dev
-        // Safari on iOS 16.4+ requires an explicit service worker scope.
-        // Without this the SDK silently fails to register its worker on iOS PWAs.
+        // Keep OneSignal and Shoonaya offline caching in the same worker scope.
+        serviceWorkerPath:           '/OneSignalSDKWorker.js',
+        serviceWorkerUpdaterPath:    '/OneSignalSDKUpdaterWorker.js',
         serviceWorkerParam:          { scope: '/' },
       });
     });

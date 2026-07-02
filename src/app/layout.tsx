@@ -201,6 +201,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     appId: "${oneSignalAppId}",
                     notifyButton: { enable: false },
                     allowLocalhostAsSecureOrigin: true,
+                    serviceWorkerPath: "/OneSignalSDKWorker.js",
+                    serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
                     serviceWorkerParam: { scope: "/" },
                   });
                 });

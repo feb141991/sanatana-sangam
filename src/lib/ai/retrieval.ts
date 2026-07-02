@@ -13,6 +13,52 @@ export type RetrievalChunkMetadata = {
 
 export type RetrievalChunk = PramanaRetrievalDocument<RetrievalChunkMetadata>;
 
+type SparseVector = Record<string, number>;
+
+type DharamVeerIndexDocument = {
+  id: string;
+  doc_id: string;
+  ref: string;
+  text: string;
+  vector: SparseVector;
+  tradition?: string;
+  source_name?: string;
+};
+
+type DharamVeerIndexData = {
+  idf: Record<string, number>;
+  documents: DharamVeerIndexDocument[];
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isSparseVector(value: unknown): value is SparseVector {
+  return isRecord(value) && Object.values(value).every((entry) => typeof entry === 'number');
+}
+
+function isDharamVeerIndexDocument(value: unknown): value is DharamVeerIndexDocument {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === 'string' &&
+    typeof value.doc_id === 'string' &&
+    typeof value.ref === 'string' &&
+    typeof value.text === 'string' &&
+    isSparseVector(value.vector)
+  );
+}
+
+function isDharamVeerIndexData(value: unknown): value is DharamVeerIndexData {
+  if (!isRecord(value)) return false;
+  return (
+    isRecord(value.idf) &&
+    Object.values(value.idf).every((entry) => typeof entry === 'number') &&
+    Array.isArray(value.documents) &&
+    value.documents.every(isDharamVeerIndexDocument)
+  );
+}
+
 import { PramanaRetrieverSelector, SimpleCorpusSelector } from '@sangam/pramana-serve';
 
 export interface PramanaManifestRetrieverOptions {
@@ -1083,20 +1129,22 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
 export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
   private fallbackRetriever: PramanaManifestRetriever;
   private indexPath: string;
-  private indexData: any = null;
+  private indexData: DharamVeerIndexData | null = null;
 
   constructor(fallbackRetriever: PramanaManifestRetriever) {
     this.fallbackRetriever = fallbackRetriever;
     this.indexPath = path.join(process.cwd(), 'python/ai_pipeline/corpus/dharam_veer_index.json');
   }
 
-  private loadIndex() {
+  private loadIndex(): DharamVeerIndexData | null {
     if (this.indexData) return this.indexData;
     if (!fs.existsSync(this.indexPath)) return null;
     try {
       const data = fs.readFileSync(this.indexPath, 'utf-8');
-      this.indexData = JSON.parse(data);
-      return this.indexData;
+      const parsed = JSON.parse(data) as unknown;
+      if (!isDharamVeerIndexData(parsed)) return null;
+      this.indexData = parsed;
+      return parsed;
     } catch {
       return null;
     }
@@ -1115,7 +1163,7 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
     const queryText = query.text.trim();
     const reqTitle = (query.filters?.title as string || '').toLowerCase(); // expected figure_id
 
-    const docsWithScores: Array<{ doc: any; score: number }> = [];
+    const docsWithScores: Array<{ doc: DharamVeerIndexDocument; score: number }> = [];
 
     // For Dharam Veer, we just want to retrieve the passages specific to the requested figure (if specified)
     // or fallback to similarity search. Since it's an "ask more" feature, reqTitle is highly specific.

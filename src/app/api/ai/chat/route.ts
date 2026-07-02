@@ -408,7 +408,9 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    const passages = result.documents.map((d: any) => `- [${d.metadata?.sourceName || 'Source'} - ${d.metadata?.chunkId || 'N/A'}]: ${d.content}`).join('\n');
+    const passages = result.documents
+      .map((document) => `- [${document.metadata?.sourceName || 'Source'} - ${document.metadata?.chunkId || 'N/A'}]: ${document.content}`)
+      .join('\n');
 
     const reflectionPrompt = `
 You are an AI assistant reflecting on the life of ${figureId}.
