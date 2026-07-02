@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
+import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import DharmVeerListClient from './DharmVeerListClient';
 
 export const metadata = {
@@ -19,11 +19,13 @@ export default async function DharmVeerListPage() {
     .eq('id', user.id)
     .maybeSingle();
 
-  const todayHero = await getDharmVeerOfTheDay(supabase, profile?.tradition ?? null);
+  const roster = await getDharmVeerRoster(supabase);
+  const todayHero = selectDharmVeerOfTheDayFromRoster(roster, profile?.tradition ?? null);
 
   return (
     <DharmVeerListClient
       todayHero={todayHero}
+      roster={roster}
       tradition={profile?.tradition ?? null}
     />
   );

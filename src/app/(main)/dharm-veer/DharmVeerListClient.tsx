@@ -6,13 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, BookOpen, CheckCircle2, Flame, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import type { DharmVeer } from '@/lib/dharm-veer';
-import { DHARM_VEERS, TRADITION_META, selectDharmVeer } from '@/lib/dharm-veer';
+import { TRADITION_META, selectDharmVeer } from '@/lib/dharm-veer';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
 type TraditionFilter = 'all' | 'hindu' | 'sikh' | 'buddhist' | 'jain';
 
 interface Props {
   todayHero: DharmVeer;
+  roster: DharmVeer[];
   tradition: string | null;
 }
 
@@ -34,7 +35,7 @@ const TRADITION_ACCENT: Record<string, string> = {
   tribal:   '#3CA05A',
 };
 
-export default function DharmVeerListClient({ todayHero, tradition }: Props) {
+export default function DharmVeerListClient({ todayHero, roster, tradition }: Props) {
   const router = useRouter();
   const [filter, setFilter]     = useState<TraditionFilter>('all');
   const [readIds, setReadIds]   = useState<Set<string>>(new Set());
@@ -67,7 +68,7 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
       const lastSelectedId = localStorage.getItem('shoonaya-dharmveer-last-selected-id');
 
       if (lastSelectedDate === today && lastSelectedId) {
-        const found = DHARM_VEERS.find(h => h.id === lastSelectedId);
+        const found = roster.find(h => h.id === lastSelectedId);
         if (found) setLiveTodayHero(found);
       } else {
         // If not set yet (they came here directly), run the selection logic
@@ -75,6 +76,7 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
         const selected = selectDharmVeer({
           userTradition: tradition,
           historyIds,
+          roster,
         });
         setLiveTodayHero(selected);
 
@@ -86,13 +88,13 @@ export default function DharmVeerListClient({ todayHero, tradition }: Props) {
       }
 
     } catch { /* ignore */ }
-  }, [todayHero.id, tradition]);
+  }, [todayHero.id, roster, tradition]);
 
   const filtered = filter === 'all'
-    ? DHARM_VEERS
-    : DHARM_VEERS.filter(h => h.tradition === filter);
+    ? roster
+    : roster.filter(h => h.tradition === filter);
 
-  const totalCount = DHARM_VEERS.length;
+  const totalCount = roster.length;
 
   // Colour helpers
   const gold = '#C5A059';

@@ -162,6 +162,7 @@ interface Props {
   quizDoneToday?:      boolean;
   dharmVeerDoneToday?: boolean;
   dharmVeer:           DharmVeer;
+  dharmVeerRoster:     DharmVeer[];
   activeSymbolId?:     string | null;
   activeSankalpa?:     { id: string; text: string; start_date: string; end_date: string; tradition: string; related_practice?: string | null } | null;
   karmaPoints?:        number;
@@ -283,6 +284,7 @@ export default function HomeDashboard({
   quizDoneToday = false,
   dharmVeerDoneToday = false,
   dharmVeer,
+  dharmVeerRoster,
   activeSymbolId = null,
   activeSankalpa: initialActiveSankalpa = null,
   karmaPoints = 0,
@@ -414,11 +416,13 @@ export default function HomeDashboard({
         selected = selectDharmVeer({
           userTradition: tradition,
           historyIds: effectiveHistory,
+          roster: dharmVeerRoster,
         });
       } else {
         selected = selectDharmVeer({
           userTradition: tradition,
           historyIds,
+          roster: dharmVeerRoster,
         });
 
         // It's a new day, save today's selection
@@ -432,7 +436,7 @@ export default function HomeDashboard({
     } catch {
       // Keep SSR fallback on error
     }
-  }, [dharmVeerDoneToday, quizDoneToday, tradition]);
+  }, [dharmVeerDoneToday, dharmVeerRoster, quizDoneToday, tradition]);
 
   const [activeStoryFestival, setActiveStoryFestival] = useState<Festival | null>(null);
   const [isQuizModalOpen,  setQuizModalOpen]    = useState(false);

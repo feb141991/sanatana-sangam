@@ -3,32 +3,14 @@ import DharmVeerClient from './DharmVeerClient';
 import { notFound } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { unstable_cache } from 'next/cache';
 
-// Cache hero content for 1 hour — it only changes when the daily cron runs
-const getCachedHero = unstable_cache(
-  async (slug: string) => {
-    const admin = createAdminClient() as unknown as { from: (t: string) => any };
-    // Try daily cache table first
-    const { data: daily } = await admin
-      .from('dharm_veer_daily')
-      .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, quote, quote_local, quote_source, tags, date')
-      .eq('slug', slug)
-      .order('date', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (daily) return daily;
-    // Fallback to legacy table
-    const { data } = await admin
-      .from('dharm_veers')
-      .select('slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, illustration_prompt, quote, quote_local, quote_source, tags')
-      .eq('slug', slug)
-      .maybeSingle();
-    return data ?? null;
-  },
-  ['dharm-veer-hero'],
-  { revalidate: 3600, tags: ['dharm-veer'] }
-);
+type DharmVeerProfilePreferences = {
+  app_language: string | null;
+  meaning_language: string | null;
+  transliteration_language: string | null;
+  show_transliteration: boolean | null;
+  scripture_script: string | null;
+};
 
 export default async function DharmVeerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -38,7 +20,7 @@ export default async function DharmVeerPage({ params }: { params: Promise<{ id: 
   const [rawHero, supabase] = await Promise.all([
     getDharmVeerBySlug(
       // Inline a lightweight admin client for the parallel hero fetch
-      createAdminClient() as any,
+      createAdminClient(),
       id
     ),
     createServerSupabaseClient(),
@@ -53,17 +35,17 @@ export default async function DharmVeerPage({ params }: { params: Promise<{ id: 
         .from('profiles')
         .select('app_language, meaning_language, transliteration_language, show_transliteration, scripture_script')
         .eq('id', user.id)
-        .single()).data
+        .single()).data as DharmVeerProfilePreferences | null
     : null;
 
   return (
     <DharmVeerClient
       hero={rawHero}
-      appLanguage={(profile as any)?.app_language ?? 'en'}
-      meaningLanguage={(profile as any)?.meaning_language ?? 'en'}
-      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
-      showTransliteration={(profile as any)?.show_transliteration ?? true}
-      scriptureScript={(profile as any)?.scripture_script ?? 'original'}
+      appLanguage={profile?.app_language ?? 'en'}
+      meaningLanguage={profile?.meaning_language ?? 'en'}
+      transliterationLanguage={profile?.transliteration_language ?? 'en'}
+      showTransliteration={profile?.show_transliteration ?? true}
+      scriptureScript={profile?.scripture_script ?? 'original'}
     />
   );
 }

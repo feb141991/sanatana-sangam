@@ -18,7 +18,7 @@ import { resolveActiveLiveStreams } from '@/lib/live-streams';
 import { type GuidedPathProgressRow } from '@/lib/guided-paths';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
-import { getDharmVeerOfTheDay } from '@/lib/dharm-veer-db';
+import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import type { DharmVeer } from '@/lib/dharm-veer';
 import type { Database } from '@/types/database';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -76,7 +76,9 @@ const getCachedObservances = unstable_cache(
 const getCachedDharmVeer = unstable_cache(
   async (tradition: string | null) => {
     const admin = createAdminClient();
-    return getDharmVeerOfTheDay(admin, tradition);
+    const roster = await getDharmVeerRoster(admin);
+    const today = selectDharmVeerOfTheDayFromRoster(roster, tradition);
+    return { today, roster };
   },
   ['dharm_veer_v1'],
   { revalidate: 3600 }, // 60 min — changes once per day
@@ -247,7 +249,8 @@ export default async function HomePage() {
   const heroAssetRows   = heroAssetRowsRaw as any[] | null;
   const liveDarshanData = liveDarshanDataRaw as any[] | null;
   const calendarRows    = calendarRowsRaw as any[] | null;
-  const dharmVeer: DharmVeer = (dharmVeerCached ?? null) as unknown as DharmVeer;
+  const dharmVeer: DharmVeer = dharmVeerCached.today;
+  const dharmVeerRoster: DharmVeer[] = dharmVeerCached.roster;
 
   const guidedPathProgress = (guidedResult.status === 'fulfilled' ? guidedResult.value.data : null) as any[] | null;
 
@@ -413,6 +416,7 @@ export default async function HomePage() {
       quizDoneToday={Boolean(todaySadhana?.quiz_done)}
       dharmVeerDoneToday={Boolean(todaySadhana?.dharmveer_done)}
       dharmVeer={dharmVeer}
+      dharmVeerRoster={dharmVeerRoster}
       activeSymbolId={(profile as any)?.active_symbol_id ?? null}
       activeSankalpa={activeSankalpa}
       karmaPoints={(profile as any)?.karma_points ?? 0}
