@@ -14,8 +14,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shoonaya">
 <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+Devanagari:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 /* ── TOKENS — light ivory theme, matches app data-theme=light ────────────── */
@@ -33,10 +31,10 @@
   /* Card border — warm cream (app --card-border light) */
   --border: rgba(200,160,110,0.30);
   /* Fonts */
-  --fd: 'Cormorant Garamond', Georgia, serif;
-  --fb: 'Outfit', 'Inter', system-ui, sans-serif;
-  --fh: 'Noto Serif Devanagari', serif;
-  --fg: 'Noto Sans Gurmukhi', sans-serif;
+  --fd: Georgia, 'Times New Roman', serif;
+  --fb: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --fh: 'Devanagari Sangam MN', 'Nirmala UI', Mangal, Georgia, serif;
+  --fg: 'Gurmukhi MN', 'Nirmala UI', Raavi, sans-serif;
   /* Tradition palette */
   --c-hindu:    #D88A1C; --c-hindu-bg:    rgba(216,138,28,0.10);
   --c-sikh:     #1B5E8B; --c-sikh-bg:     rgba(27,94,139,0.10);
@@ -2556,13 +2554,13 @@ function initMainPage() {
   const layer = document.getElementById('glyph-layer');
   if (!layer) return;
   const pool = [
-    { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#D88A1C' },
-    { ch: 'ੴ',  fam: "'Noto Sans Gurmukhi',sans-serif",     col: '#1B5E8B' },
+    { ch: 'ॐ',  fam: "'Devanagari Sangam MN','Nirmala UI',Mangal,Georgia,serif",       col: '#D88A1C' },
+    { ch: 'ੴ',  fam: "'Gurmukhi MN','Nirmala UI',Raavi,sans-serif",     col: '#1B5E8B' },
     { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#8B2D3E' },
-    { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#9F6314' },
-    { ch: 'ੴ',  fam: "'Noto Sans Gurmukhi',sans-serif",     col: '#1B5E8B' },
+    { ch: 'ॐ',  fam: "'Devanagari Sangam MN','Nirmala UI',Mangal,Georgia,serif",       col: '#9F6314' },
+    { ch: 'ੴ',  fam: "'Gurmukhi MN','Nirmala UI',Raavi,sans-serif",     col: '#1B5E8B' },
     { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#2A6B4A' },
-    { ch: 'ॐ',  fam: "'Noto Serif Devanagari',serif",       col: '#D88A1C' },
+    { ch: 'ॐ',  fam: "'Devanagari Sangam MN','Nirmala UI',Mangal,Georgia,serif",       col: '#D88A1C' },
     { ch: '☸',  fam: "'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col: '#8B2D3E' },
   ];
   const COUNT = 26;
@@ -2960,10 +2958,10 @@ window.switchShloka    = switchShloka;
   let nextMeteorIn = 0.35 + Math.random() * 0.9;
 
   const GPOOL = [
-    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#E8A030' },
-    { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                            col:'#5BA4D4' },
+    { ch:'ॐ',  fam:"'Devanagari Sangam MN','Nirmala UI',Mangal,Georgia,serif",                              col:'#E8A030' },
+    { ch:'ੴ',  fam:"'Gurmukhi MN','Nirmala UI',Raavi,sans-serif",                            col:'#5BA4D4' },
     { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#E08090' },
-    { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#C89040' },
+    { ch:'ॐ',  fam:"'Devanagari Sangam MN','Nirmala UI',Mangal,Georgia,serif",                              col:'#C89040' },
     { ch:'☸',  fam:"'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols',serif", col:'#60B890' },
   ];
 
