@@ -69,6 +69,7 @@ nav {
 #splash-deva { font-family:var(--fh);font-size:clamp(32px,4.4vw,52px);color:rgba(197,160,89,0.85);letter-spacing:0.25em;margin-bottom:24px; text-shadow: 0 0 40px rgba(197,160,89,0.4); }
 #splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
 #splash-title em { color:#C5A059;font-style:italic; }
+.splash-value { max-width:760px;margin:0 auto 22px;color:rgba(255,254,248,0.74);font-size:clamp(16px,2.2vw,21px);line-height:1.55;font-weight:400;letter-spacing:0; }
 #splash-sub { font-size:clamp(22px,3.2vw,28px);color:rgba(255,254,248,0.55);letter-spacing:0.12em;margin-bottom:40px;font-weight:400; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
 #splash-trads { display:flex;gap:40px;justify-content:center;align-items:center; }
 .s-trad { font-size:56px; transition: transform 0.3s ease; }
@@ -79,8 +80,8 @@ nav {
 .s-trad.jain svg { display:block; }
 /* tradition pulse — each glows in turn, 8 s cycle, 2 s stagger */
 @keyframes tradPulse {
-  0%,20%,100% { opacity:0.35; filter:none; transform: scale(0.85); }
-  25%,45%     { opacity:1; filter:drop-shadow(0 0 24px currentColor) drop-shadow(0 0 10px currentColor); transform: scale(1.3); }
+  0%,20%,100% { opacity:0.42; transform:scale(0.9); }
+  25%,45%     { opacity:1; transform:scale(1.16); }
 }
 .s-trad.hindu { animation:tradPulse 8s 0s   ease-in-out infinite; }
 .s-trad.sikh  { animation:tradPulse 8s 2s   ease-in-out infinite; }
@@ -126,7 +127,7 @@ nav {
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
 .scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(197,160,89,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.75);border:1.5px solid rgba(197,160,89,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197, 160, 89, 0.15); }
+#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:rgba(12,10,7,0.75);border:1.5px solid rgba(197,160,89,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;transition:background 0.25s,border-color 0.25s,color 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197, 160, 89, 0.15); }
 #explore-btn:hover { background:rgba(197,160,89,0.18);border-color:rgba(197,160,89,0.95);color:#C5A059; }
 @keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .explore-arrow { display: inline-block; animation: bounceArrow 1.4s ease-in-out infinite; color:#C5A059; margin-left:6px; font-weight:700; }
@@ -182,7 +183,7 @@ body.landing-entered #explore-btn {
 @keyframes celebrationRing { to { opacity:0; transform:scale(9); } }
 @keyframes celebrationSpark { 0% { opacity:0; transform:translate(0,0) scale(0.65); } 12% { opacity:1; } 100% { opacity:0; transform:translate(var(--dx), var(--dy)) scale(0.22); } }
 @keyframes celebrationRay { 0% { opacity:0; transform:rotate(var(--r)) scaleY(0.15); } 22% { opacity:0.85; } 100% { opacity:0; transform:rotate(var(--r)) scaleY(1.9); } }
-@keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
+@keyframes pulseGlow { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.86;transform:scale(1.015)} }
 #main-page { min-height:100vh; }
 
 /* ── LOGO ANIMATION — Infinity + Bindu ─────────────────────────────────── */
@@ -727,6 +728,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
 
     <h1 id="splash-title">Find your <em>infinite.</em></h1>
+    <p class="splash-value">Daily Dharma, Panchang, Japa, scripture and Sangam across Hindu, Sikh, Buddhist and Jain traditions.</p>
     <div id="splash-trads">
       <span class="s-trad hindu" title="Hindu">ॐ</span>
       <span class="s-trad sikh"  title="Sikh">ੴ</span>
@@ -814,7 +816,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow">↓</span></button>
+  <button id="explore-btn">Explore Shoonaya <span class="explore-arrow">↓</span></button>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->

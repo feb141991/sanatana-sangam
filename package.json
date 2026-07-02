@@ -26,7 +26,8 @@
     "diagnostics:json": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --json-only",
     "diagnostics:warn": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --fail-on-warn",
     "diagnostics:dashboard": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.generate_markdown_dashboard",
-    "generate:splash": "npx tsx scripts/generate-splash.ts"
+    "generate:splash": "npx tsx scripts/generate-splash.ts",
+    "minify:static-html": "node scripts/minify-static-html.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",
@@ -71,6 +72,7 @@
     "dotenv": "^17.4.2",
     "eslint": "^8",
     "eslint-config-next": "15.5.15",
+    "html-minifier-terser": "^7.2.0",
     "postcss": "^8",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
