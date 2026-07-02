@@ -104,7 +104,7 @@ export const metadata: Metadata = {
     title: 'Shoonaya App | Find Your Infinity',
     description: 'Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.',
     siteName: 'Shoonaya',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Shoonaya' }],
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Shoonaya — Find Your Infinity. Daily Dharma, Panchang & Community for Hindu, Sikh, Buddhist and Jain traditions.' }],
     type: 'website',
     locale: 'en_GB',
   },
@@ -151,6 +151,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          * preference. Dark default (#0C0A07) matches --surface-base dark.
          * Light users get #FAF6EF. No flicker on either theme.
          */}
+        {/* Preconnect hints — DNS + TLS handshake before first paint */}
+        <link rel="preconnect" href="https://cdn.onesignal.com" />
+        <link rel="dns-prefetch" href="https://cdn.onesignal.com" />
+        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <style dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }} />
         <script
           type="application/ld+json"
@@ -171,6 +175,117 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "url": "https://www.shoonaya.com",
                 "name": "Shoonaya",
                 "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+              },
+              {
+                "@type": "SoftwareApplication",
+                "@id": "https://www.shoonaya.com/#app",
+                "name": "Shoonaya",
+                "alternateName": "Shoonya",
+                "applicationCategory": "LifestyleApplication",
+                "applicationSubCategory": "Spiritual App",
+                "operatingSystem": "Web, iOS, Android",
+                "description": "Shoonaya is a spiritual companion app for Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.",
+                "url": "https://www.shoonaya.com",
+                "image": "https://www.shoonaya.com/og-image.png",
+                "screenshot": "https://www.shoonaya.com/og-image.png",
+                "publisher": { "@id": "https://www.shoonaya.com/#organization" },
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD",
+                  "description": "Core features free — Daily Dharma, Panchang, japa, scripture, festival calendar and Tirtha Map.",
+                },
+                "featureList": [
+                  "Daily Dharma & sacred text",
+                  "Vedic Panchang with tithi, nakshatra, and rahu kalam",
+                  "Japa & mala counter with streak tracking",
+                  "Sacred festival calendar across four traditions",
+                  "Tirtha map — temples, gurdwaras, and sacred sites",
+                  "Guided scripture study paths (Pathshala)",
+                  "Community and local sangha discovery (Mandali)",
+                  "Family lineage and Kul management",
+                  "Tradition-aware for Hindu, Sikh, Buddhist, and Jain",
+                ],
+                "inLanguage": ["en", "hi", "pa"],
+                "countriesSupported": "Worldwide",
+              },
+              {
+                "@type": "FAQPage",
+                "@id": "https://www.shoonaya.com/#faq",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "What is Shoonaya?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Shoonaya is a spiritual companion app built for seekers of Sanatan, Sikh, Jain and Buddhist wisdom. It brings Daily Dharma, Panchang, scripture, japa, sacred festivals, and community into one living space — personalised to your tradition, your language, and your timezone. The name comes from Shoonya — the Sanskrit word for zero, emptiness, and infinite potential.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is Shoonaya only for Hindus?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "No. Shoonaya is built for four dharmic traditions — Sanatan (Hindu), Sikh, Jain and Buddhist. The app adapts its content, calendar, scripture and community features based on your tradition. A Sikh user sees Gurbani, Gurpurab reminders and Sikh community content. A Buddhist user sees Dhamma teachings, Pali texts and mindfulness practices. Everyone belongs here.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Does Shoonaya work outside India?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes — Shoonaya is built specifically for the global diaspora. Whether you are in London, Toronto, Dubai, Singapore, Sydney or New York, the app finds temples and gurdwaras near you, shows your local Panchang timings, and connects you with your local community.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is Shoonaya free?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Core features are completely free — Daily Dharma, Panchang, japa counter, scripture library, festival calendar and the Tirtha Map. The tradition should never be behind a paywall. Premium features for deeper community spaces, family lineage tools and advanced learning paths are available through Shoonaya Premium.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How is Shoonaya different from Headspace, Calm or other meditation apps?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Headspace and Calm are Western mindfulness products. Shoonaya is rooted in living dharmic tradition — with actual scripture, Panchang, japa, community, family lineage, and sacred calendar built in. It is not generic wellness. It knows what Ekadashi is, who Guru Nanak Dev Ji was, and what the Dhammapada says.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is my spiritual data private?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes. Your japa count, prayers, reflections and check-ins are private by default. You choose what to share — with family, your local community (Mandali), or publicly. Your spiritual practice is yours. We do not sell personal data.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is Shoonaya live?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Shoonaya is live now as a web app. You can enter from your browser today; native iOS and Android apps are planned later.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How do I install Shoonaya as a web app on iPhone?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Open Shoonaya in Safari, tap the Share button, then choose Add to Home Screen. Shoonaya will appear on your home screen like a native app.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Are native iOS and Android apps available?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Not yet. Shoonaya is live as a web app today. Native iOS and Android apps are planned later, but the web app already works on phone, tablet, and desktop.",
+                    },
+                  },
+                ],
               },
             ],
           })}}
