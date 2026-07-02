@@ -2,24 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Bell, CalendarDays, X, ChevronRight, Share2 } from 'lucide-react';
+import { Bell, X, Share2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
-import { buildShoonayaShareCardData, shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import { format as fmtDate } from 'date-fns';
-import { type Shloka, getShlokaByLanguage } from '@/lib/shlokas';
+import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
+import { calculatePanchang } from '@/lib/panchang';
 import { getFestivalStory } from '@/lib/festival-stories';
-import { TRADITION_META, selectDharmVeer, type DharmVeer } from '@/lib/dharm-veer';
+import { selectDharmVeer, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
 import { getMoodSpiritualDate } from '@/lib/mood/registry';
-import { resolveVratSlug } from '@/lib/vrat-data';
 import { getGreeting, isGreetingCompatibleWithTradition } from '@/lib/traditions';
-import { getUnlockedRelics } from '@/lib/relics';
 import type { GuidedPathProgressRow } from '@/lib/guided-paths';
 import { useLocation } from '@/lib/LocationContext';
 import { createClient } from '@/lib/supabase';
@@ -27,9 +23,6 @@ import { usePremium } from '@/hooks/usePremium';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { APP } from '@/lib/config';
 import { getTraditionMeta } from '@/lib/tradition-config';
-import PerfectDayCeremony from '@/components/home/PerfectDayCeremony';
-import SankalpaBanner from '@/components/home/SankalpaBanner';
-import SetSankalpSheet from '@/components/home/SetSankalpSheet';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
@@ -44,29 +37,28 @@ import {
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { getRelicAccent } from '@/lib/relic-accents';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
-import { withOneSignal } from '@/lib/onesignal';
-import MoodPulse from '@/components/mood/MoodPulse';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
 import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
-import FirstWeekGuide from '@/components/home/FirstWeekGuide';
-import VratCarousel from '@/components/home/VratCarousel';
 import { HeroSection } from './sections/HeroSection';
-import { CalendarSection } from './sections/CalendarSection';
 
 // Heavy modals — defer JS until user interaction, not needed on first paint
 const BelowFoldSections = dynamic(() => import('./BelowFoldSections'), { ssr: false });
+const FirstWeekGuide = dynamic(() => import('@/components/home/FirstWeekGuide'), { ssr: false });
+const VratCarousel = dynamic(() => import('@/components/home/VratCarousel'), { ssr: false });
+const CalendarSection = dynamic(() => import('./sections/CalendarSection').then((mod) => mod.CalendarSection), { ssr: false });
 const MoodJourneySheet = dynamic(() => import('@/components/mood/MoodJourneySheet'), { ssr: false });
 const ConfettiOverlay = dynamic(() => import('@/components/ui/ConfettiOverlay'), { ssr: false });
+const PerfectDayCeremony = dynamic(() => import('@/components/home/PerfectDayCeremony'), { ssr: false });
+const SetSankalpSheet = dynamic(() => import('@/components/home/SetSankalpSheet'), { ssr: false });
 
 // ── Refactored Modals & Sheets ──
-import { DatePickerModal } from './sections/DatePickerModal';
-import { GreetingEditSheet } from './sections/GreetingEditSheet';
-import { CalendarModal } from './sections/CalendarModal';
-import { InviteModal } from './sections/InviteModal';
+const DatePickerModal = dynamic(() => import('./sections/DatePickerModal').then((mod) => mod.DatePickerModal), { ssr: false });
+const GreetingEditSheet = dynamic(() => import('./sections/GreetingEditSheet').then((mod) => mod.GreetingEditSheet), { ssr: false });
+const InviteModal = dynamic(() => import('./sections/InviteModal').then((mod) => mod.InviteModal), { ssr: false });
 
 interface Panchang {
   tithi:           string;
@@ -223,12 +215,21 @@ function deriveHomePathshalaProgress(raw: unknown): number {
 
 function getVratHref(festival: Festival): string | null {
   if (festival.route_kind === 'vrat') {
-    return festival.route_slug || resolveVratSlug(festival.name);
+    return festival.route_slug || toRouteSlug(festival.name);
   }
   if (festival.route_kind === null || festival.route_kind === undefined) {
-    return resolveVratSlug(festival.name);
+    return toRouteSlug(festival.name);
   }
   return null;
+}
+
+function toRouteSlug(value: string) {
+  return value
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 function formatFestDate(dateStr: string) {
@@ -996,11 +997,13 @@ export default function HomeDashboard({
         onDismissRashiphalNudge={() => {
           try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'yes'); } catch {}
           setShowRashiphalNudge(false);
-          withOneSignal(async (OS) => {
-            if (typeof OS.User?.addTag === 'function') {
-              await OS.User.addTag('wants_rashiphal', '1');
-            }
-          }).catch(() => {});
+          import('@/lib/onesignal')
+            .then(({ withOneSignal }) => withOneSignal(async (OS) => {
+              if (typeof OS.User?.addTag === 'function') {
+                await OS.User.addTag('wants_rashiphal', '1');
+              }
+            }))
+            .catch(() => {});
         }}
         showDharmaMitraNudge={showDharmaMitraNudge}
         onDismissDharmaMitraNudge={() => {
@@ -1449,6 +1452,7 @@ export default function HomeDashboard({
                          onClick={async () => {
                            const correctCount = quizAnswered === quiz.answerIndex ? 1 : 0;
                            const totalCount = 1;
+                           const { buildShoonayaShareCardData, shareShoonayaShareCard } = await import('@/lib/share/shoonaya-card-data');
                            const data = buildShoonayaShareCardData({
                              tradition: _quizTrad || 'universal',
                              title: 'Quiz Complete',

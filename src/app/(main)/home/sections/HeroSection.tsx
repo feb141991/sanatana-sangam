@@ -25,7 +25,6 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { resolveHomeHeroTheme, HOME_HERO_THEMES, type HomeHeroTheme } from '@/config/festivalThemes';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
-import { resolveVratSlug } from '@/lib/vrat-data';
 import MoodGlyph from '@/components/ui/MoodGlyph';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
 import NextPracticeCard from '@/components/home/NextPracticeCard';
@@ -216,6 +215,15 @@ function stripGreetingIcon(greeting: string) {
     .replace(/[🙏🕉️☬☸️🤲✨🌺🌸🦚🔱⚔️🪔🌟]/gu, '')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+function toRouteSlug(value: string) {
+  return value
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 async function shareContent(title: string, text: string) {
@@ -837,7 +845,7 @@ export function HeroSection({
                   <Link
                     href={
                       upcomingSacredObservance.festival.route_kind === 'vrat'
-                        ? `/vrat/${upcomingSacredObservance.festival.route_slug ?? resolveVratSlug(upcomingSacredObservance.festival.name)}`
+                        ? `/vrat/${upcomingSacredObservance.festival.route_slug ?? toRouteSlug(upcomingSacredObservance.festival.name)}`
                         : `/festivals/${upcomingSacredObservance.festival.route_slug ?? ''}`
                     }
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full active:scale-95 transition-transform"
