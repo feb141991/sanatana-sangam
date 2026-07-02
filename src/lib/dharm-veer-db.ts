@@ -5,6 +5,7 @@ import { DHARM_VEERS, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 // ── Shared select columns ─────────────────────────────────────────────────────
 const DAILY_COLS = 'slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, quote, quote_local, quote_source, tags';
 const DHARM_VEER_COLS = `${DAILY_COLS}, illustration_prompt, day_index, created_at`;
+const CORE_TRADITIONS: Array<DharmVeer['tradition']> = ['hindu', 'sikh', 'buddhist', 'jain'];
 
 type DailyRow = {
   slug: string;
@@ -67,23 +68,29 @@ function fallbackRoster(): DharmVeer[] {
   return DHARM_VEERS;
 }
 
+function hasUsableDbRoster(rows: DailyRow[]): boolean {
+  if (rows.length < DHARM_VEERS.length) return false;
+  return CORE_TRADITIONS.every((tradition) => rows.some((row) => row.tradition === tradition));
+}
+
 export function selectDharmVeerOfTheDayFromRoster(
   roster: DharmVeer[],
   userTradition?: string | null,
 ): DharmVeer {
+  const effectiveRoster = roster.length > 0 ? roster : fallbackRoster();
   const epoch = new Date('2024-01-01T00:00:00.000Z').getTime();
   const istNow = new Date(Date.now() + 5.5 * 60 * 60 * 1000);
   const dayN = Math.floor((istNow.getTime() - epoch) / (1000 * 60 * 60 * 24));
 
   if (!userTradition) {
-    return roster[dayN % roster.length];
+    return effectiveRoster[dayN % effectiveRoster.length];
   }
 
-  const same = roster.filter((hero) => hero.tradition === userTradition);
-  const other = roster.filter((hero) => hero.tradition !== userTradition);
+  const same = effectiveRoster.filter((hero) => hero.tradition === userTradition);
+  const other = effectiveRoster.filter((hero) => hero.tradition !== userTradition);
   const pool = [...same, ...same, ...other];
 
-  return (pool.length > 0 ? pool : roster)[dayN % (pool.length > 0 ? pool.length : roster.length)];
+  return (pool.length > 0 ? pool : effectiveRoster)[dayN % (pool.length > 0 ? pool.length : effectiveRoster.length)];
 }
 
 export async function getDharmVeerRoster(supabase: SupabaseClient): Promise<DharmVeer[]> {
@@ -98,11 +105,20 @@ export async function getDharmVeerRoster(supabase: SupabaseClient): Promise<Dhar
     return fallbackRoster();
   }
 
-  if (!data?.length) {
+  const rows = data as DailyRow[] | null;
+
+  if (!rows?.length) {
     return fallbackRoster();
   }
 
-  return (data as DailyRow[]).map(rowToDharmVeer);
+  if (!hasUsableDbRoster(rows)) {
+    console.warn(
+      `[dharm-veer] DB roster has ${rows.length}/${DHARM_VEERS.length} rows or missing core traditions; using static fallback until backfill completes.`,
+    );
+    return fallbackRoster();
+  }
+
+  return rows.map(rowToDharmVeer);
 }
 
 export async function getDharmVeerOfTheDay(

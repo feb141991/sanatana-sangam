@@ -66,13 +66,29 @@ export default function DharmVeerListClient({ todayHero, roster, tradition }: Pr
       // Resolve the true user-specific daily hero
       const lastSelectedDate = localStorage.getItem('shoonaya-dharmveer-last-selected-date');
       const lastSelectedId = localStorage.getItem('shoonaya-dharmveer-last-selected-id');
+      const historyIds = Array.from(ids);
+      const saveSelection = (selected: DharmVeer) => {
+        const newHistory = [...historyIds.filter((id) => id !== selected.id), selected.id].slice(-14);
+        localStorage.setItem('shoonaya-dharmveer-history', JSON.stringify(newHistory));
+        localStorage.setItem('shoonaya-dharmveer-last-selected-date', today);
+        localStorage.setItem('shoonaya-dharmveer-last-selected-id', selected.id);
+      };
 
       if (lastSelectedDate === today && lastSelectedId) {
         const found = roster.find(h => h.id === lastSelectedId);
-        if (found) setLiveTodayHero(found);
+        if (found) {
+          setLiveTodayHero(found);
+        } else {
+          const selected = selectDharmVeer({
+            userTradition: tradition,
+            historyIds,
+            roster,
+          });
+          setLiveTodayHero(selected);
+          saveSelection(selected);
+        }
       } else {
         // If not set yet (they came here directly), run the selection logic
-        const historyIds = Array.from(ids);
         const selected = selectDharmVeer({
           userTradition: tradition,
           historyIds,
@@ -81,10 +97,7 @@ export default function DharmVeerListClient({ todayHero, roster, tradition }: Pr
         setLiveTodayHero(selected);
 
         // Save to cache
-        const newHistory = [...historyIds, selected.id].slice(-14);
-        localStorage.setItem('shoonaya-dharmveer-history', JSON.stringify(newHistory));
-        localStorage.setItem('shoonaya-dharmveer-last-selected-date', today);
-        localStorage.setItem('shoonaya-dharmveer-last-selected-id', selected.id);
+        saveSelection(selected);
       }
 
     } catch { /* ignore */ }
