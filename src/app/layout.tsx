@@ -32,7 +32,28 @@ const fontVars = [
 export const metadata: Metadata = {
   title:       'Shoonaya App | Sanatan, Sikh, Jain & Buddhist Spiritual App',
   description: 'Shoonaya is a spiritual app for Daily Dharma, Panchang, scripture, japa, festivals, and community across Sanatan, Hindu, Sikh, Jain, and Buddhist traditions.',
-  keywords:    ['panchang', 'japa', 'mantra', 'Sanskrit', 'bhakti', 'dharma', 'Hindu', 'Sikh', 'Buddhist', 'Jain', 'Sanatan', 'meditation', 'sadhana', 'kirtan', 'Vedanta', 'spiritual app'],
+  keywords:    [
+      // Brand
+      'Shoonaya', 'shoonaya app', 'Shoonya', 'shoonya app',
+      // Traditions (short + full)
+      'Hindu', 'Hinduism', 'Sikh', 'Sikhism', 'Buddhist', 'Buddhism', 'Jain', 'Jainism',
+      'Sanatan', 'Sanatan Dharma', 'Vedic',
+      // App category
+      'spiritual app', 'Hindu app', 'prayer app', 'devotional app', 'Indian spiritual app',
+      // Daily practice
+      'sadhana', 'japa', 'japa mala', 'mala', 'nitya karma', 'dinacharya', 'meditation',
+      // Bhakti content
+      'bhakti', 'aarti', 'stotram', 'bhajan', 'shloka', 'kirtan', 'mantra',
+      // Most-searched content
+      'Hanuman Chalisa', 'Gayatri Mantra', 'Bhagavad Gita', 'Gurbani', 'Nitnem',
+      // Calendar & panchang
+      'panchang', 'Hindu calendar', 'festival calendar', 'tithi', 'nakshatra',
+      'Diwali', 'Navratri', 'Ekadashi', 'Gurpurab',
+      // Tirtha
+      'tirtha', 'pilgrimage', 'temple', 'mandir',
+      // Concepts & language
+      'dharma', 'karma', 'moksha', 'Sanskrit', 'Vedanta',
+    ],
   manifest:    '/manifest.json',
   icons: {
     icon: [
