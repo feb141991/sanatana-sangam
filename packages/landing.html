@@ -2587,6 +2587,7 @@ window.switchShloka    = switchShloka;
   const cv  = document.getElementById('sky-canvas');
   if (!cv) return;
   const ctx = cv.getContext('2d');
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
   let stars = [], glowStars = [], floaters = [], meteors = [];
   let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
@@ -2613,8 +2614,10 @@ window.switchShloka    = switchShloka;
   function buildStars() {
     stars = [];
     const mobile = W < 600;
-    const n = mobile ? Math.min(120, Math.floor(W * H / 5500) + 40)
-                     : Math.min(380, Math.floor(W * H / 4000) + 90);
+    const n = reduceMotion
+      ? (mobile ? 36 : 80)
+      : mobile ? Math.min(72, Math.floor(W * H / 9000) + 24)
+               : Math.min(220, Math.floor(W * H / 7000) + 56);
     for (let i = 0; i < n; i++) {
       stars.push({
         x: Math.random() * W, y: Math.random() * H,
@@ -2629,7 +2632,7 @@ window.switchShloka    = switchShloka;
 
   function buildFloaters() {
     floaters = [];
-    const n = W < 600 ? 10 : 20;
+    const n = reduceMotion ? 0 : (W < 600 ? 6 : 12);
     for (let i = 0; i < n; i++) {
       const g = GPOOL[i % GPOOL.length];
       floaters.push({
@@ -2646,8 +2649,9 @@ window.switchShloka    = switchShloka;
 
   function buildGlowStars() {
     glowStars = [];
-    // 6 large hero stars — gradients pre-baked at build time (not recreated each frame)
-    for (let i = 0; i < 6; i++) {
+    // Large hero stars — gradients pre-baked at build time (not recreated each frame)
+    const count = reduceMotion ? 2 : 4;
+    for (let i = 0; i < count; i++) {
       const x     = sr(i * 7 + 1) * W;
       const y     = sr(i * 7 + 2) * H;
       const r     = 2.5 + sr(i * 7 + 3) * 3.5;
@@ -2667,6 +2671,7 @@ window.switchShloka    = switchShloka;
   }
 
   function spawnMeteor() {
+    if (reduceMotion) return;
     if (meteors.length >= 4) return;
     // always start from the right half, near the top — sweep across full width
     const startX = W * (0.45 + Math.random() * 0.55);
@@ -2857,7 +2862,9 @@ window.switchShloka    = switchShloka;
   }
 
   let rafId;
+  let stopped = false;
   function frame(ts) {
+    if (stopped) return;
     t = ts / 1000;
     const dt = Math.min(t - lastT, 0.05);
     lastT = t;
@@ -2888,13 +2895,21 @@ window.switchShloka    = switchShloka;
   }
 
   resize();
-  rafId = requestAnimationFrame(frame);
+  if (reduceMotion) {
+    frame(0);
+    cancelAnimationFrame(rafId);
+  } else {
+    rafId = requestAnimationFrame(frame);
+  }
   window.addEventListener('resize', resize);
   window.addEventListener('mousemove', e => {
     rawMX = (e.clientX - W / 2) / W;
     rawMY = (e.clientY - H / 2) / H;
   });
-  window._stopSkyCanvas = () => { cancelAnimationFrame(rafId); };
+  window._stopSkyCanvas = () => {
+    stopped = true;
+    cancelAnimationFrame(rafId);
+  };
 })();
 
 /* ─── SPLASH LOGO — Infinity + Bindu Animation ─────────────────────────── */
@@ -3292,6 +3307,7 @@ document.getElementById('splash').addEventListener('touchend', function (e) {
 document.getElementById('explore-btn').addEventListener('click', function () {
   const main   = document.getElementById('main-page');
   document.body.classList.add('landing-entered');
+  if (typeof window._stopSkyCanvas === 'function') window._stopSkyCanvas();
   this.textContent = 'Continue below ↓';
 
   main.style.display    = 'block';
