@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getBlessingBySlug, FESTIVAL_BLESSINGS } from '@/lib/festival-blessings';
 import CopyShareButton from '@/components/share/CopyShareButton';
+import TrackedShareLink from '@/components/share/TrackedShareLink';
 
 // ─── Static params ────────────────────────────────────────────────────────────
 export async function generateStaticParams() {
@@ -266,22 +267,24 @@ export default async function BlessingPage({
 
         {/* Share */}
         <div className="share-row">
-          <a
+          <TrackedShareLink
             className="share-btn share-wa"
             href={`https://wa.me/?text=${waText}`}
             target="_blank"
             rel="noopener noreferrer"
+            awardBlessingShare
           >
             📲 WhatsApp
-          </a>
-          <a
+          </TrackedShareLink>
+          <TrackedShareLink
             className="share-btn share-tw"
             href={`https://twitter.com/intent/tweet?text=${twText}&url=${twUrl}`}
             target="_blank"
             rel="noopener noreferrer"
+            awardBlessingShare
           >
             𝕏 Twitter
-          </a>
+          </TrackedShareLink>
           <CopyShareButton
             className="share-btn share-cp"
             url={pageUrl}

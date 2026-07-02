@@ -6,10 +6,25 @@ type Bucket = {
 };
 
 const buckets = new Map<string, Bucket>();
+const MAX_RATE_LIMIT_BUCKETS = 5000;
 
 function clientIp(req: Request): string {
   const forwarded = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
   return forwarded || req.headers.get('x-real-ip') || 'unknown';
+}
+
+function pruneBuckets(now: number) {
+  for (const [key, bucket] of buckets) {
+    if (bucket.resetAt <= now) {
+      buckets.delete(key);
+    }
+  }
+
+  while (buckets.size >= MAX_RATE_LIMIT_BUCKETS) {
+    const oldestKey = buckets.keys().next().value;
+    if (!oldestKey) break;
+    buckets.delete(oldestKey);
+  }
 }
 
 export function rejectLargeRequest(req: Request, maxBytes: number) {
@@ -37,6 +52,7 @@ export function rateLimitByIp(
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt <= now) {
+    pruneBuckets(now);
     buckets.set(key, { count: 1, resetAt: now + options.windowMs });
     return null;
   }

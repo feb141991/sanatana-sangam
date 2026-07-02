@@ -16,15 +16,18 @@ export default function CopyShareButton({
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
+    let copiedSuccessfully = false;
+
     try {
       await navigator.clipboard.writeText(url);
+      copiedSuccessfully = true;
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
     }
 
-    if (awardBlessingShare) {
+    if (copiedSuccessfully && awardBlessingShare) {
       fetch('/api/karma/award', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
