@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getAuthUser } from '@/lib/auth-cache';
 import { redirect } from 'next/navigation';
 import PathshalaClient from './PathshalaClient';
 
@@ -8,15 +9,35 @@ export default async function PathshalaPage({
 }: {
   searchParams: Promise<{ tab?: string; entryId?: string; sectionId?: string }>;
 }) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) redirect('/');
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, username, tradition, app_language, meaning_language, transliteration_language, show_transliteration, is_pro')
-    .eq('id', user.id)
-    .single();
+  const supabase = await createServerSupabaseClient();
+
+  const [{ data: profile }, { data: shrutiStats }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('full_name, username, tradition, app_language, meaning_language, transliteration_language, show_transliteration, is_pro')
+      .eq('id', user.id)
+      .single(),
+
+    supabase
+      .from('pathshala_recitation_stats')
+      .select('user_id, avg_overall_score, scored_count, unique_verses_attempted, certified_count, total_recordings')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+  ]);
+
+  let communityRank: number | undefined = undefined;
+  if (shrutiStats && shrutiStats.scored_count >= 3) {
+    const { count: betterCount } = await supabase
+      .from('pathshala_recitation_stats')
+      .select('id', { count: 'exact', head: true })
+      .gt('avg_overall_score', shrutiStats.avg_overall_score ?? 0)
+      .gte('scored_count', 3);
+    
+    communityRank = (betterCount ?? 0) + 1;
+  }
 
   const params = await searchParams;
   const validTabs = ['learn', 'scripture', 'explore'] as const;
@@ -43,6 +64,8 @@ export default async function PathshalaPage({
       transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
       showTransliteration={(profile as any)?.show_transliteration ?? true}
       isPro={(profile as any)?.is_pro ?? false}
+      shrutiStats={shrutiStats}
+      communityRank={communityRank}
     />
   );
 }

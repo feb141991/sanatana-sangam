@@ -35,6 +35,13 @@ function ensureMockProfile(userId: string): Profile {
       languages: ['en'],
       seeking: ['daily_practice'],
       seva_score: 120,
+      weekly_seva: 24,
+      monthly_seva: 84,
+      streak_freeze_count: 1,
+      last_freeze_used: null,
+      active_symbol_id: null,
+      onboarding_completed: true,
+      onboarding_goal: 'daily_practice',
       mandali_id: 'mock-mandali-1',
       onesignal_player_id: null,
       country_code: 'GB',
@@ -65,6 +72,12 @@ function ensureMockProfile(userId: string): Profile {
       life_stage_locked: false,
       gender_context: 'general',
       date_of_birth: null,
+      japa_reminder_enabled: false,
+      japa_reminder_time: '07:00',
+      quiz_reminder_enabled: false,
+      quiz_reminder_time: '08:00',
+      nitya_reminder_enabled: false,
+      nitya_reminder_time: '06:30',
     });
   }
 

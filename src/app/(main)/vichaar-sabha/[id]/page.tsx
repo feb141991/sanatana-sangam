@@ -12,7 +12,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
 
   const { data: thread } = await supabase
     .from('forum_threads')
-    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
+    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id)')
     .eq('id', id)
     .single();
 

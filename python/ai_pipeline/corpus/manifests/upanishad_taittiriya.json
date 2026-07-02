@@ -2,14 +2,21 @@
   "doc_id": "pathshala_upanishads_taittiriya",
   "title": "Taittiriya Upanishad",
   "tradition": "Sanatana Dharma",
-  "scripture_family": "upanishads",
+  "corpus": "upanishads",
   "section_id": "taittiriya",
   "source_name": "Principal Upanishads",
   "source_class": "scripture",
   "rights_status": "public_domain",
   "language": "en",
+  "translation_basis": "Robert Ernest Hume (1921)",
   "is_live_in_app": true,
   "content": [
+    {
+      "ref": "2.9.1",
+      "sanskrit": "यतो वाचो निवर्तन्ते अप्राप्य मनसा सह । आनन्दं ब्रह्मणो विद्वान् न बिभेति कुतश्चन ॥",
+      "transliteration": "yato vāco nivartante aprāpya manasā saha | ānandaṁ brahmaṇo vidvān na bibheti kutaścana ||",
+      "text": "From where speech, together with the mind, turns back, unable to reach — he who knows the bliss of Brahman fears nothing at all."
+    },
     {
       "ref": "1.1.1",
       "sanskrit": "शीक्षां व्याख्यास्यामः । वर्णः स्वरः । मात्रा बलम् । साम सन्तानः । इत्युक्तः शीक्षाध्यायः ॥",
@@ -33,12 +40,6 @@
       "sanskrit": "असन्नेव स भवति असद्ब्रह्मेति वेद चेत् अस्ति ब्रह्मेति चेद्वेद सन्तमेनं ततो विदुः ॥",
       "transliteration": "asanneva sa bhavati asadbrahmeti veda cet asti brahmeti cedveda santamenaṁ tato viduḥ ||",
       "text": "If one knows Brahman as non-existent, one becomes non-existent. If one knows Brahman as existing, then they know that he truly exists."
-    },
-    {
-      "ref": "2.9.1",
-      "sanskrit": "यतो वाचो निवर्तन्ते अप्राप्य मनसा सह । आनन्दं ब्रह्मणो विद्वान् न बिभेति कुतश्चन ॥",
-      "transliteration": "yato vāco nivartante aprāpya manasā saha | ānandaṁ brahmaṇo vidvān na bibheti kutaścana ||",
-      "text": "From where speech, together with the mind, turns back, unable to reach — he who knows the bliss of Brahman fears nothing at all."
     },
     {
       "ref": "3.1.1",

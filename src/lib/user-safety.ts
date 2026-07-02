@@ -12,7 +12,17 @@ export const SAFETY_CONTENT_LABELS = {
   mandali_post: 'Mandali post',
   thread: 'Vichaar thread',
   reply: 'Vichaar reply',
+  ai_chat_response: 'AI response',
 } as const;
+
+export const AI_REPORT_REASON_OPTIONS = [
+  { value: 'incorrect',              label: 'Factually incorrect' },
+  { value: 'harmful',                label: 'Harmful or dangerous' },
+  { value: 'religiously_inaccurate', label: 'Religiously inaccurate' },
+  { value: 'offensive',              label: 'Offensive content' },
+  { value: 'other',                  label: 'Other' },
+] as const;
+export type AiReportReason = (typeof AI_REPORT_REASON_OPTIONS)[number]['value'];
 
 export type ReportReason = (typeof REPORT_REASON_OPTIONS)[number]['value'];
 export type SafetyContentType = keyof typeof SAFETY_CONTENT_LABELS;

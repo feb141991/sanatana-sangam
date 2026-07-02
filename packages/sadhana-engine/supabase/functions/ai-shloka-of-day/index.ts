@@ -255,7 +255,7 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'no scripture chunks found' }), { status: 404 });
     }
 
-    // ── 7. Generate personalised reflection via Gemini ─────────────────────────
+    // ── 7. Generate personalised reflection via Sarvam ─────────────────────────
     const prompt = `You are a warm, knowledgeable spiritual guide in the ${tradition} tradition.
 
 Today is ${panchang.vaara}, ${panchang.tithi} (${panchang.paksha}).
@@ -284,7 +284,7 @@ Be warm, direct, and inspiring. Address them as a sincere seeker. Respond in Eng
     try {
       reflection = await generateText(prompt, { temperature: 0.7, maxTokens: 350 });
     } catch (err) {
-      console.warn('[ai-shloka-of-day] Gemini call failed, using fallback reflection:', err);
+      console.warn('[ai-shloka-of-day] Sarvam call failed, using fallback reflection:', err);
     }
 
     // ── 8. Build response payload ─────────────────────────────────────────────

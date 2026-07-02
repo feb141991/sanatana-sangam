@@ -3,9 +3,9 @@
 //
 // Flow:
 //   1. Fetch audio from Supabase Storage
-//   2. Transcribe via Groq Whisper large-v3 (free tier)
+//   2. Transcribe via Sarvam ASR
 //   3. Word-level diff: transcript vs expected text
-//   4. Gemini analyses phonological errors per language rules
+//   4. Sarvam analyses phonological errors per language rules
 //   5. Store result → pathshala_recordings + pathshala_recitation_reviews
 //
 // POST body:
@@ -18,7 +18,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { generateText } from '../_shared/pramana-client.ts';
 
-const GROQ_API_KEY   = Deno.env.get('GROQ_API_KEY')   ?? '';
 const SUPABASE_URL   = Deno.env.get('SUPABASE_URL')   ?? '';
 const SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 
@@ -158,9 +157,9 @@ function wordDiff(expected: string, transcript: string, language: string): WordD
   return diffs;
 }
 
-// ── Score calculation from diff + Gemini response ─────────────────────────────
+// ── Score calculation from diff + Sarvam response ─────────────────────────────
 
-interface GeminiScore {
+interface RecitationScore {
   uccharan:   number | null;
   sandhi:     number | null;
   visarga:    number | null;
@@ -177,7 +176,7 @@ interface GeminiScore {
   }>;
 }
 
-function extractJSON(text: string): GeminiScore | null {
+function extractJSON(text: string): RecitationScore | null {
   const match = text.match(/```(?:json)?\s*([\s\S]*?)```/) ||
                 text.match(/(\{[\s\S]*\})/);
   if (!match) return null;
@@ -188,7 +187,7 @@ function extractJSON(text: string): GeminiScore | null {
   }
 }
 
-function buildFallbackScore(diffs: WordDiff[]): GeminiScore {
+function buildFallbackScore(diffs: WordDiff[]): RecitationScore {
   const total    = diffs.length;
   const correct  = diffs.filter(d => d.match === 'correct').length;
   const accuracy = total > 0 ? correct / total : 0;
@@ -252,25 +251,31 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'audio download failed' }), { status: 500 });
     }
 
-    // ── 3. Groq Whisper transcription ─────────────────────────────────────────
+    // ── 3. ASR transcription (Sarvam saarika:v2) ─────────────────────────────
     let transcript = '';
-    if (GROQ_API_KEY) {
-      const formData = new FormData();
-      formData.append('file', new Blob([await audioData.arrayBuffer()], { type: 'audio/webm' }), 'recording.webm');
-      formData.append('model', 'whisper-large-v3');
-      formData.append('language', language === 'awa' ? 'hi' : language); // Awadhi → Hindi STT
-      formData.append('response_format', 'verbose_json');
-      formData.append('temperature', '0');
+    const SARVAM_API_KEY = Deno.env.get('SARVAM_API_KEY') ?? '';
 
-      const groqRes = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-        method:  'POST',
-        headers: { Authorization: `Bearer ${GROQ_API_KEY}` },
-        body:    formData,
-      });
+    if (SARVAM_API_KEY) {
+      try {
+        const formData = new FormData();
+        formData.append('file', new Blob([await audioData.arrayBuffer()], { type: 'audio/webm' }), 'recording.webm');
+        formData.append('model', 'saarika:v2');
+        formData.append('language_code', 'sa-IN');
+        formData.append('with_timestamps', 'false');
+        formData.append('with_disfluencies', 'false');
 
-      if (groqRes.ok) {
-        const groqData = await groqRes.json();
-        transcript = groqData.text ?? '';
+        const sarvamRes = await fetch('https://api.sarvam.ai/speech-to-text', {
+          method: 'POST',
+          headers: { 'api-subscription-key': SARVAM_API_KEY },
+          body: formData,
+        });
+
+        if (sarvamRes.ok) {
+          const sarvamData = await sarvamRes.json();
+          transcript = sarvamData.transcript ?? '';
+        }
+      } catch (err) {
+        console.error('[shruti] Sarvam ASR exception:', err);
       }
     }
 
@@ -278,14 +283,14 @@ Deno.serve(async (req: Request) => {
       await supabase.from('pathshala_recordings')
         .update({ status: 'error', error_message: 'STT transcription failed' })
         .eq('id', recording_id);
-      return new Response(JSON.stringify({ error: 'transcription failed — check GROQ_API_KEY' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'transcription failed — Sarvam ASR returned no transcript' }), { status: 500 });
     }
 
     // ── 4. Word-level diff ────────────────────────────────────────────────────
     const diffs = wordDiff(expectedText, transcript, language);
     const errorWords = diffs.filter(d => d.match !== 'correct');
 
-    // ── 5. Gemini phonological analysis ──────────────────────────────────────
+    // ── 5. Sarvam phonological analysis ──────────────────────────────────────
     const rules     = PHONOLOGY_RULES[language] ?? PHONOLOGY_RULES['sa'];
     const errorList = errorWords.slice(0, 15).map(d =>
       `- Expected "${d.expected}", heard "${d.said ?? '(skipped)'}" (position ${d.position + 1})`
@@ -329,12 +334,12 @@ Analyse the recitation and return ONLY a JSON object with this exact structure:
 Corrections: include only the most important errors (max 8). Be specific about the rule (e.g. "visarga dropped", "retroflex ṭ pronounced as dental t", "sandhi break between words").
 Feedback: be encouraging — address the student as a sincere practitioner. Note what they did well first.`;
 
-    let scores: GeminiScore = buildFallbackScore(diffs);
+    let scores: RecitationScore = buildFallbackScore(diffs);
     try {
-      const geminiText = await generateText(prompt, { temperature: 0.3, maxTokens: 1024 });
-      scores = extractJSON(geminiText) ?? buildFallbackScore(diffs);
+      const scoringText = await generateText(prompt, { temperature: 0.3, maxTokens: 1024 });
+      scores = extractJSON(scoringText) ?? buildFallbackScore(diffs);
     } catch (err) {
-      console.warn('[ai-recitation-score] Gemini call failed, using fallback score:', err);
+      console.warn('[ai-recitation-score] Sarvam scoring call failed, using fallback score:', err);
     }
 
     // ── 6. Persist results ────────────────────────────────────────────────────
@@ -378,6 +383,7 @@ Feedback: be encouraging — address the student as a sincere practitioner. Note
       JSON.stringify({
         recording_id,
         transcript,
+        asr_provider: 'sarvam',
         scores: {
           uccharan: scores.uccharan,
           sandhi:   scores.sandhi,

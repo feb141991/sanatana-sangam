@@ -1,9 +1,9 @@
 'use client';
 
-import { io, type Socket } from 'socket.io-client';
+import { createClient } from '@/lib/supabase';
 
 export interface RealtimeTransport {
-  kind: 'noop' | 'socket-io';
+  kind: 'noop' | 'supabase';
   subscribe(channel: string, onMessage: (payload: unknown) => void): () => void;
   emit(channel: string, payload: unknown): void;
   disconnect(): void;
@@ -20,35 +20,34 @@ function createNoopRealtimeTransport(): RealtimeTransport {
   };
 }
 
-function createSocketIoTransport(url: string): RealtimeTransport {
-  let socket: Socket | null = null;
-
-  function getSocket() {
-    if (!socket) {
-      socket = io(url, {
-        autoConnect: true,
-        transports: ['websocket'],
-      });
-    }
-    return socket;
-  }
+function createSupabaseRealtimeTransport(): RealtimeTransport {
+  const supabase = createClient();
+  const channels: Map<string, ReturnType<typeof supabase.channel>> = new Map();
 
   return {
-    kind: 'socket-io',
+    kind: 'supabase',
     subscribe(channel, onMessage) {
-      const activeSocket = getSocket();
-      const handler = (payload: unknown) => onMessage(payload);
-      activeSocket.on(channel, handler);
+      const ch = supabase
+        .channel(`transport:${channel}`)
+        .on('broadcast', { event: 'message' }, ({ payload }) => onMessage(payload))
+        .subscribe();
+
+      channels.set(channel, ch);
+
       return () => {
-        activeSocket.off(channel, handler);
+        void supabase.removeChannel(ch);
+        channels.delete(channel);
       };
     },
     emit(channel, payload) {
-      getSocket().emit(channel, payload);
+      const ch = channels.get(channel);
+      if (ch) {
+        void ch.send({ type: 'broadcast', event: 'message', payload });
+      }
     },
     disconnect() {
-      socket?.disconnect();
-      socket = null;
+      channels.forEach((ch) => void supabase.removeChannel(ch));
+      channels.clear();
     },
   };
 }
@@ -57,8 +56,6 @@ let transportSingleton: RealtimeTransport | null = null;
 
 export function getRealtimeTransport(): RealtimeTransport {
   if (transportSingleton) return transportSingleton;
-
-  const url = process.env.NEXT_PUBLIC_SOCKET_URL?.trim();
-  transportSingleton = url ? createSocketIoTransport(url) : createNoopRealtimeTransport();
+  transportSingleton = createSupabaseRealtimeTransport();
   return transportSingleton;
 }

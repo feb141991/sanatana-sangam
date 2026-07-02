@@ -3,12 +3,14 @@
 // Loaded dynamically with ssr:false — Leaflet needs the browser's window object
 import { useEffect, useState, useRef } from 'react';
 import type { Temple } from '@/lib/overpass';
+import type { LiveStream } from '@/lib/live-streams';
 import { MAP } from '@/lib/config';
 
 interface Props {
   temples:  Temple[];
   center:   [number, number];
   loading:  boolean;
+  liveMatches?: Map<number, LiveStream>;
 }
 
 // ── Tradition marker styles ────────────────────────────────────────────────
@@ -33,8 +35,38 @@ const TRADITION_VISIT_HINT: Record<string, string> = {
   other: 'Visit details',
 };
 
-function makeMarkerHtml(tradition: string) {
+function makeMarkerHtml(tradition: string, isLive?: boolean) {
   const { glyph, gradient, shadow } = TRADITION_MARKER[tradition] ?? TRADITION_MARKER.other;
+  
+  if (isLive) {
+    return `
+      <div style="position: relative; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+        <div style="position: absolute; inset: 0; background: rgba(220,38,38,0.4); border-radius: 50%; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;"></div>
+        <div style="
+          position: relative;
+          background: linear-gradient(135deg, #ef4444, #b91c1c);
+          border: 2px solid white;
+          border-radius: 50%;
+          width: 32px; height: 32px;
+          display: flex; align-items: center; justify-content: center;
+          font-size: 16px;
+          color: white;
+          font-weight: 700;
+          line-height: 1;
+          box-shadow: 0 2px 12px rgba(220,38,38,0.6);
+          cursor: pointer;
+          z-index: 2;
+        ">${glyph}</div>
+      </div>
+      <style>
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.4); }
+        }
+      </style>
+    `;
+  }
+
   return `<div style="
     background: ${gradient};
     border: 2px solid white;
@@ -50,7 +82,7 @@ function makeMarkerHtml(tradition: string) {
   ">${glyph}</div>`;
 }
 
-export default function TirthaMapComponent({ temples, center, loading }: Props) {
+export default function TirthaMapComponent({ temples, center, loading, liveMatches }: Props) {
   const mapRef    = useRef<any>(null);
   const mapDivRef = useRef<HTMLDivElement>(null);
   const initialCenterRef = useRef(center);
@@ -99,10 +131,11 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
     temples.forEach((t) => {
       const trad      = t.tradition ?? 'other';
       const tradLabel = TRADITION_LABEL[trad] ?? 'Sacred Place';
+      const liveStream = liveMatches?.get(t.id);
 
       const icon = L.divIcon({
-        html: makeMarkerHtml(trad),
-        className: '', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34],
+        html: makeMarkerHtml(trad, !!liveStream),
+        className: '', iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
       });
 
       const popup = `
@@ -110,6 +143,20 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
           <div style="font-weight:700;font-size:14px;color:#1a1a1a;margin-bottom:4px">${t.name}</div>
           <div style="font-size:11px;color:#888;margin-bottom:4px;font-style:italic">${tradLabel}</div>
           <div style="font-size:11px;color:#9f5d74;margin-bottom:4px">${TRADITION_VISIT_HINT[trad] ?? TRADITION_VISIT_HINT.other}</div>
+          
+          ${liveStream ? `
+            <div style="background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.2); border-radius: 6px; padding: 6px 8px; margin: 8px 0;">
+              <div style="font-size: 10px; font-weight: bold; color: #dc2626; text-transform: uppercase; margin-bottom: 2px;">🔴 Live Darshan</div>
+              <div style="font-size: 12px; font-weight: 500; color: #1a1a1a;">${liveStream.title}</div>
+              ${liveStream.aartis ? `
+                <div style="font-size: 11px; color: #C5A059; margin-top: 4px; font-weight: 500;">
+                  ${liveStream.aartis.morning ? `🌅 ${liveStream.aartis.morning.split(' — ')[0]}` : ''}
+                  ${liveStream.aartis.morning && liveStream.aartis.evening ? ' · ' : ''}
+                  ${liveStream.aartis.evening ? `🪔 ${liveStream.aartis.evening.split(' — ')[0]}` : ''}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
           ${t.deity    ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Known for: ${t.deity}</div>` : ''}
           ${t.address  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Address: ${t.address}</div>` : ''}
           ${t.opening  ? `<div style="font-size:12px;color:#666;margin-bottom:2px">Opening: ${t.opening}</div>` : ''}
@@ -123,11 +170,23 @@ export default function TirthaMapComponent({ temples, center, loading }: Props) 
           </div>
         </div>
       `;
-      L.marker([t.lat, t.lon], { icon, _isPlace: true } as any)
+      const marker = L.marker([t.lat, t.lon], { icon, _isPlace: true } as any)
         .addTo(map)
         .bindPopup(popup, { maxWidth: 250 });
+
+      // Apply aarti times tooltip on marker hover if it's a live stream
+      if (liveStream?.aartis) {
+        const tooltipHtml = `
+          <div style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#C5A059;text-align:center;white-space:nowrap;">
+            ${liveStream.aartis.morning ? `🌅 ${liveStream.aartis.morning.split(' — ')[0]}` : ''}
+            ${liveStream.aartis.morning && liveStream.aartis.evening ? ' &nbsp;·&nbsp; ' : ''}
+            ${liveStream.aartis.evening ? `🪔 ${liveStream.aartis.evening.split(' — ')[0]}` : ''}
+          </div>
+        `;
+        marker.bindTooltip(tooltipHtml, { direction: 'top', offset: [0, -32], opacity: 1 });
+      }
     });
-  }, [temples, ready]);
+  }, [temples, ready, liveMatches]);
 
   return (
     <div className="relative w-full h-full rounded-2xl overflow-hidden">

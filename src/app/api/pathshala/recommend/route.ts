@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { runPathshalaRecommend } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { createAdminClient } from '@/lib/supabase-admin';
@@ -15,14 +16,23 @@ function extractReason(raw: string) {
 }
 
 export async function POST(req: Request) {
+  // Auth guard — use the server-verified user, never trust client-provided userId.
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  }
+
   const {
-    userId,
     tradition,
     language = 'en',
   } = await req.json().catch(() => ({}));
 
-  if (!userId || !tradition) {
-    return NextResponse.json({ error: 'Missing userId or tradition' }, { status: 400 });
+  // userId is now always the authenticated user — ignore any client-provided value.
+  const userId = user.id;
+
+  if (!tradition) {
+    return NextResponse.json({ error: 'Missing tradition' }, { status: 400 });
   }
 
   const startTime = Date.now();

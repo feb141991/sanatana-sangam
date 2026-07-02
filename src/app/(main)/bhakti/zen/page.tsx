@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, RotateCcw, Settings2 } from 'lucide-react';
-import ChantAudioPlayer from '@/components/bhakti/ChantAudioPlayer';
-import { BHAKTI_MANTRAS } from '@/lib/bhakti-practice';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
 import toast from 'react-hot-toast';
 import { createClient } from '@/lib/supabase';
@@ -15,18 +13,22 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 
 // ─── Timing ──────────────────────────────────────────────────────────────────
 const PRESET_DURATIONS = [12, 24, 48];
-const BREATH_PHASES = {
-  inhale: { duration: 4000, label: 'Inhale', next: 'hold'   },
-  hold:   { duration: 2000, label: 'Hold',   next: 'exhale' },
-  exhale: { duration: 6000, label: 'Exhale', next: 'inhale' },
-} as const;
-type Phase = keyof typeof BREATH_PHASES;
+
+const BREATH_PATTERNS = [
+  { id: 'nadi',   label: 'Nāḍī Śodhana',  inhale: 4, hold: 2, exhale: 6, desc: 'Calming · Reduces anxiety' },
+  { id: 'box',    label: 'Box Breath',      inhale: 4, hold: 4, exhale: 4, holdAfter: 4, desc: 'Focus · Equalizes mind' },
+  { id: 'sleep',  label: '4-7-8',           inhale: 4, hold: 7, exhale: 8, desc: 'Sleep · Deep rest' },
+  { id: 'shitali',label: 'Shītalī',         inhale: 6, hold: 0, exhale: 6, desc: 'Cooling · Reduces heat' },
+] as const;
+type PatternId = typeof BREATH_PATTERNS[number]['id'];
+type Phase = 'inhale' | 'hold' | 'exhale' | 'holdAfter';
 
 // ─── Phase colours ─────────────────────────────────────────────────────────
-const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string }> = {
-  inhale: { primary: '#C5A059', glow: 'rgba(197,160,89,',  ring: 'rgba(197,160,89,0.45)'  },
-  hold:   { primary: '#FFFFFF', glow: 'rgba(255,255,255,', ring: 'rgba(255,255,255,0.3)'  },
-  exhale: { primary: '#D4B483', glow: 'rgba(212,180,131,', ring: 'rgba(212,180,131,0.4)' },
+const PHASE_COLOURS: Record<Phase, { primary: string; glow: string; ring: string; label: string }> = {
+  inhale:    { primary: '#C5A059', glow: 'rgba(197,160,89,',  ring: 'rgba(197,160,89,0.45)', label: 'Inhale' },
+  hold:      { primary: '#A89880', glow: 'rgba(168,152,128,', ring: 'rgba(168,152,128,0.3)', label: 'Hold' },
+  exhale:    { primary: '#D4B483', glow: 'rgba(212,180,131,', ring: 'rgba(212,180,131,0.4)', label: 'Exhale' },
+  holdAfter: { primary: '#A89880', glow: 'rgba(168,152,128,', ring: 'rgba(168,152,128,0.3)', label: 'Hold' },
 };
 
 // ─── Environments ───────────────────────────────────────────────────────────
@@ -39,12 +41,7 @@ const ENVIRONMENTS: Record<EnvId, { label: string; icon: SacredIconName; bg: str
   night:     { label: 'Night sky',    icon: 'moon', bg: 'linear-gradient(180deg, #111827 0%, #020617 100%)', glowColor: 'rgba(197,160,89,', particleColor: 'rgba(237,233,254,' },
 };
 
-// ─── Modes ──────────────────────────────────────────────────────────────────
-const MODES = [
-  { id: 'reading', icon: 'book' as SacredIconName, title: 'Svādhyāya', description: 'Silent scripture in sattva.' },
-  { id: 'breath',  icon: 'wind' as SacredIconName, title: 'Prānāyāma', description: 'Nāḍī śodhana — 4-2-6 cycle.' },
-  { id: 'chant',   icon: 'chant' as SacredIconName, title: 'Kīrtana',   description: 'One mantra, one pointed mind.' },
-] as const;
+
 
 // ─── Ambient options ─────────────────────────────────────────────────────────
 const AMBIENT_OPTIONS = [
@@ -178,7 +175,7 @@ function playBell(freq: number, durationSecs: number, volume = 0.18) {
 function hapticPhase(phase: Phase) {
   if (!navigator.vibrate) return;
   if (phase === 'inhale') navigator.vibrate([20, 30, 15]);
-  if (phase === 'hold')   navigator.vibrate([8, 20, 8]);
+  if (phase === 'hold' || phase === 'holdAfter') navigator.vibrate([8, 20, 8]);
   if (phase === 'exhale') navigator.vibrate([35]);
 }
 function hapticFinish() { navigator.vibrate?.([30, 50, 30, 50, 60]); }
@@ -240,12 +237,17 @@ function SacredMandala({ color, size = 300 }: { color: string; size?: number }) 
 }
 
 // ─── Breath Circle ──────────────────────────────────────────────────────────
-function BreathCircle({ running, glowColor, phase, remaining, totalSecs }: {
-  running: boolean; glowColor: string; phase: Phase; remaining: number; totalSecs: number;
+function BreathCircle({ running, glowColor, phase, remaining, totalSecs, pattern, cycleCount }: {
+  running: boolean; glowColor: string; phase: Phase; remaining: number; totalSecs: number; pattern: PatternId; cycleCount: number;
 }) {
   const colours = PHASE_COLOURS[phase];
-  const scale   = phase === 'inhale' ? 1.22 : phase === 'hold' ? 1.22 : 0.82;
-  const dur     = phase === 'inhale' ? 4    : phase === 'hold'  ? 0.3  : 6;
+  const scale   = phase === 'inhale' ? 1.22 : phase === 'hold' || phase === 'holdAfter' ? 1.22 : 0.82;
+  const currentPattern = BREATH_PATTERNS.find(p => p.id === pattern)!;
+  let durSec = phase === 'inhale' ? currentPattern.inhale :
+               phase === 'hold' ? currentPattern.hold :
+               phase === 'exhale' ? currentPattern.exhale :
+               ('holdAfter' in currentPattern && currentPattern.holdAfter) ? currentPattern.holdAfter : 1;
+  const dur = phase === 'hold' || phase === 'holdAfter' ? 0.3 : durSec;
   const ringSpring = { type: 'spring' as const, stiffness: 28, damping: 14 };
 
   return (
@@ -286,7 +288,7 @@ function BreathCircle({ running, glowColor, phase, remaining, totalSecs }: {
         <motion.p key={phase} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
           className="text-sm font-semibold tracking-widest uppercase"
           style={{ color: colours.primary, textShadow: `0 0 12px ${glowColor}0.5)` }}>
-          {running ? BREATH_PHASES[phase].label : 'Ready'}
+          {running ? colours.label : 'Ready'}
         </motion.p>
         <p className="font-mono text-2xl font-light mt-1"
           style={{ color: colours.primary, textShadow: `0 0 16px ${glowColor}0.6)` }}>
@@ -294,7 +296,7 @@ function BreathCircle({ running, glowColor, phase, remaining, totalSecs }: {
         </p>
         {running && (
           <p className="text-[10px] mt-1" style={{ color: `${glowColor}0.5)` }}>
-            {Math.round(((totalSecs - remaining) / totalSecs) * 100)}%
+            Cycle {cycleCount} · {Math.round(remaining/60)}m left
           </p>
         )}
       </div>
@@ -444,11 +446,11 @@ export default function SattvicModePage() {
   const sattvaLabel  = gold;
   const sattvaHints  = textMuted;
 
-  const [mode,       setMode]     = useState<'reading' | 'breath' | 'chant'>('breath');
+  const [pattern,    setPattern]  = useState<PatternId>('nadi');
+  const [cycleCount, setCycleCount] = useState(0);
   const [duration,   setDuration] = useState(24);
   const [customInput,setCustomInput] = useState('');
   const [showCustom, setShowCustom]  = useState(false);
-  const [chantMantra,setMantra]   = useState<string>(BHAKTI_MANTRAS[0].value);
   const [remaining,  setRemaining]= useState(24 * 60);
   const [running,    setRunning]  = useState(false);
   const [focusMode,  setFocusMode]= useState(false);
@@ -477,28 +479,23 @@ export default function SattvicModePage() {
       if (!mounted) return;
       setTradition(nextTradition);
       if (nextTradition === 'sikh') {
-        setMode('chant');
-        setMantra('Waheguru');
         setEnv('temple');
       } else if (nextTradition === 'buddhist') {
-        setMode('breath');
-        setMantra('Om Mani Padme Hum');
         setEnv('mountains');
       } else if (nextTradition === 'jain') {
-        setMode('reading');
-        setMantra('Namokar Mantra');
         setEnv('temple');
       }
     });
     return () => { mounted = false; };
   }, []);
 
-  // Reset on duration/mode change
+  // Reset on duration/pattern change
   useEffect(() => {
     setRemaining(duration * 60);
     setRunning(false);
     setPhase('inhale');
-  }, [duration, mode]);
+    setCycleCount(0);
+  }, [duration, pattern]);
 
   // Countdown
   useEffect(() => {
@@ -514,12 +511,14 @@ export default function SattvicModePage() {
           // Save session
           createClient().auth.getUser().then(({ data: { user } }) => {
             if (user) {
+              const todayStr = new Date().toISOString().split('T')[0];
+              localStorage.setItem(`shoonaya-pranayama-done-${todayStr}`, 'true');
               const row = {
                 user_id: user.id,
-                mode: mode,
+                mode: 'breath',
                 duration_secs: totalSecs,
                 environment: focusEnv,
-                mantra: mode === 'chant' ? chantMantra : null,
+                mantra: null,
                 tradition,
                 ambient_id: ambientId,
                 completion_type: 'completed',
@@ -544,23 +543,42 @@ export default function SattvicModePage() {
       });
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [running, totalSecs, mode, focusEnv, chantMantra, tradition, ambientId]);
+  }, [running, totalSecs, focusEnv, tradition, ambientId]);
 
   // Breath phase cycle
   useEffect(() => {
-    if (!running || mode !== 'breath') return;
+    if (!running) return;
+    const currentPattern = BREATH_PATTERNS.find(p => p.id === pattern)!;
     function cyclePhase(current: Phase) {
       hapticPhase(current);
-      playHaptic(current === 'hold' ? 'light' : 'medium'); // Zenith Haptic
+      playHaptic(current.includes('hold') ? 'light' : 'medium'); // Zenith Haptic
       if (current === 'inhale') playBell(432, 0.8, 0.12);
       if (current === 'exhale') playBell(528, 1.2, 0.1);
       setPhase(current);
-      const next = BREATH_PHASES[current].next as Phase;
-      phaseTimeout.current = setTimeout(() => cyclePhase(next), BREATH_PHASES[current].duration);
+      
+      let nextPhase: Phase = 'inhale';
+      let durationSec: number = currentPattern.inhale;
+      
+      if (current === 'inhale') {
+        if (currentPattern.hold > 0) { nextPhase = 'hold'; durationSec = currentPattern.hold; }
+        else { nextPhase = 'exhale'; durationSec = currentPattern.exhale; }
+      } else if (current === 'hold') {
+        nextPhase = 'exhale'; durationSec = currentPattern.exhale;
+      } else if (current === 'exhale') {
+        setCycleCount(c => c + 1);
+        if ('holdAfter' in currentPattern && currentPattern.holdAfter! > 0) {
+          nextPhase = 'holdAfter'; durationSec = currentPattern.holdAfter!;
+        } else {
+          nextPhase = 'inhale'; durationSec = currentPattern.inhale;
+        }
+      } else if (current === 'holdAfter') {
+        nextPhase = 'inhale'; durationSec = currentPattern.inhale;
+      }
+      phaseTimeout.current = setTimeout(() => cyclePhase(nextPhase), durationSec * 1000);
     }
     cyclePhase('inhale');
     return () => { if (phaseTimeout.current) clearTimeout(phaseTimeout.current); };
-  }, [running, mode, playHaptic]);
+  }, [running, pattern, playHaptic]);
 
   // Ambient
   useEffect(() => {
@@ -585,14 +603,12 @@ export default function SattvicModePage() {
     return () => clearInterval(id);
   }, [running]);
 
-  const activeMode  = MODES.find(m => m.id === mode) ?? MODES[0];
-  const activeChant = BHAKTI_MANTRAS.find(m => m.value === chantMantra) ?? BHAKTI_MANTRAS[0];
+  const activePattern = BREATH_PATTERNS.find(m => m.id === pattern) ?? BREATH_PATTERNS[0];
   const activeEnv   = ENVIRONMENTS[focusEnv];
   const progress    = ((totalSecs - remaining) / totalSecs) * 100;
-  const chantTrackIds = activeChant.audioTrackId ? [activeChant.audioTrackId] : ['gayatri-mantra-as-it-is', 'guru-stotram'];
 
   function toggleRunning() { setRunning(r => !r); navigator.vibrate?.([10]); }
-  function reset() { setRunning(false); setRemaining(totalSecs); setPhase('inhale'); }
+  function reset() { setRunning(false); setRemaining(totalSecs); setPhase('inhale'); setCycleCount(0); }
   function enterFocus() { setFocusMode(true); setRunning(true); setShowFocusSettings(false); }
 
   function applyCustomDuration() {
@@ -612,7 +628,7 @@ export default function SattvicModePage() {
           <ChevronLeft size={18} style={{ color: '#C5A059' }} />
         </button>
         <h1 className="text-sm font-bold uppercase tracking-[0.2em] text-center flex-1 pr-9" style={{ color: '#C5A059', fontFamily: 'var(--font-serif)' }}>
-          {tradition === 'sikh' ? 'Simran mode' : tradition === 'buddhist' ? 'Dhamma stillness' : tradition === 'jain' ? 'Samayika mode' : 'Sattvic mode'}
+          {tradition === 'sikh' ? 'Simran Breath' : tradition === 'buddhist' ? 'Ānāpāna' : tradition === 'jain' ? 'Samayika Breath' : 'Prāṇāyāma'}
         </h1>
       </div>
 
@@ -627,60 +643,37 @@ export default function SattvicModePage() {
 
         <div className="relative px-5 pt-5 pb-6 space-y-4">
 
-          {/* Mode pills */}
-          <div className="flex gap-2">
-            {MODES.map(item => (
+          {/* Pattern pills */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+            {BREATH_PATTERNS.map(item => (
               <motion.button key={item.id}
-                onClick={() => setMode(item.id as any)}
-                className="flex-1 rounded-[1.2rem] py-2.5 text-center transition-all"
+                onClick={() => setPattern(item.id as any)}
+                className="flex-1 rounded-[1.2rem] px-3 py-2.5 text-center transition-all flex-shrink-0"
                 whileTap={{ scale: 0.96 }}
                 style={{
-                  background: mode === item.id ? pillBgAct : pillBgInact,
-                  border: `1px solid ${mode === item.id ? pillBdrAct : pillBdrInact}`,
+                  background: pattern === item.id ? pillBgAct : pillBgInact,
+                  border: `1px solid ${pattern === item.id ? pillBdrAct : pillBdrInact}`,
                 }}>
-                <SacredIcon name={item.icon} size={17} className="mx-auto" />
-                <p className="text-[11px] mt-1 font-medium"
-                  style={{ color: mode === item.id ? textPrimary : textSecond }}>
-                  {item.title}
+                <p className="text-[12px] font-medium"
+                  style={{ color: pattern === item.id ? textPrimary : textSecond }}>
+                  {item.label}
+                </p>
+                <p className="text-[9px] mt-1" style={{ color: textMuted }}>
+                  {item.inhale}-{item.hold}-{item.exhale}{'holdAfter' in item && item.holdAfter ? `-${item.holdAfter}` : ''}
                 </p>
               </motion.button>
             ))}
           </div>
 
-          {/* Timer display */}
-          {mode === 'breath' ? (
-            <div className="flex justify-center py-2">
-              <BreathCircle running={running} glowColor="rgba(180,140,60,"
-                phase={phase} remaining={remaining} totalSecs={totalSecs} />
-            </div>
-          ) : (
-            <div className="text-center py-3">
-              <motion.p className="font-mono font-light"
-                style={{ color: textPrimary, fontSize: '3.2rem', textShadow: '0 0 28px rgba(197, 160, 89,0.25)' }}
-                animate={{ opacity: running ? [0.85, 1, 0.85] : 1 }}
-                transition={{ duration: 4, repeat: running ? Infinity : 0 }}>
-                {formatClock(remaining)}
-              </motion.p>
-              <p className="text-xs mt-1" style={{ color: textSecond }}>{activeMode.description}</p>
-            </div>
-          )}
-
-          {/* Chant picker */}
-          <AnimatePresence>
-            {mode === 'chant' && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden rounded-[1.3rem] border px-3 py-3"
-                style={{ background: chantPickerBg, borderColor: chantPickerBdr }}>
-                <select value={chantMantra} onChange={e => setMantra(e.target.value)}
-                  className="w-full rounded-xl px-3 py-2 text-sm outline-none mb-2"
-                  style={{ background: inputBg, border: `1px solid ${inputBdr}`, color: textPrimary }}>
-                  {BHAKTI_MANTRAS.map(m => <option key={m.value} value={m.value}>{m.value}</option>)}
-                </select>
-                <ChantAudioPlayer title="Chant companion" trackIds={chantTrackIds}
-                  initialTrackId={activeChant.audioTrackId ?? undefined} compact />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Breath display */}
+          <div className="flex justify-center py-2">
+            <BreathCircle running={running} glowColor="rgba(180,140,60,"
+              phase={phase} remaining={remaining} totalSecs={totalSecs} pattern={pattern} cycleCount={cycleCount} />
+          </div>
+          
+          <div className="text-center pb-2">
+            <p className="text-xs" style={{ color: textSecond }}>{activePattern.desc}</p>
+          </div>
 
           {/* Duration + custom */}
           <div className="space-y-3">
@@ -838,8 +831,8 @@ export default function SattvicModePage() {
               sub: sessionMins > 0 ? 'this session' : 'not started',
             },
             {
-              value: running ? activeMode.title : mode === 'breath' ? 'Prānāyāma' : mode === 'chant' ? 'Kīrtana' : 'Svādhyāya',
-              label: 'Mode',
+              value: activePattern.label,
+              label: 'Pattern',
               sub: running ? 'in session' : 'selected',
             },
             {
@@ -881,10 +874,7 @@ export default function SattvicModePage() {
             <EnvParticles env={focusEnv} />
 
             {/* ── Top bar ── */}
-            <div
-              className="relative flex items-center gap-3 px-4 pb-3 flex-shrink-0"
-              style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 18px)' }}
-            >
+            <div className="flex items-center gap-3 px-4 pb-3 flex-shrink-0 pt-safe-top">
               {/* Back button — TOP LEFT */}
               <button
                 onClick={() => { setFocusMode(false); setRunning(false); }}
@@ -906,7 +896,7 @@ export default function SattvicModePage() {
                   <span className="inline-flex items-center gap-1.5"><SacredIcon name={activeEnv.icon} size={14} />{activeEnv.label}</span>
                 </p>
                 <p className="text-[10px] mt-0.5 truncate" style={{ color: 'rgba(245,220,150,0.42)' }}>
-                  {activeMode.title}{mode === 'chant' ? ` · ${chantMantra}` : ''}
+                  {activePattern.label}
                   {ambientId !== 'off' ? ` · ${AMBIENT_OPTIONS.find(a => a.id === ambientId)?.label}` : ''}
                 </p>
               </div>
@@ -964,54 +954,8 @@ export default function SattvicModePage() {
 
             {/* ── Centre ── */}
             <div className="flex-1 flex flex-col items-center justify-center gap-5 min-h-0 px-4">
-              {mode === 'breath' ? (
-                <BreathCircle running={running} glowColor={activeEnv.glowColor}
-                  phase={phase} remaining={remaining} totalSecs={totalSecs} />
-              ) : (
-                <div className="relative flex items-center justify-center" style={{ width: 280, height: 280 }}>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-65">
-                    <SacredMandala color={activeEnv.glowColor.includes('212,120') ? '#f5dfa0' : '#b4c8ff'} size={280} />
-                  </div>
-                  <motion.div className="absolute rounded-full"
-                    style={{ width: 262, height: 262, border: `1px solid ${activeEnv.glowColor}0.14)` }}
-                    animate={{ scale: running ? [1, 1.04, 1] : 1 }}
-                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                  />
-                  <motion.div className="absolute rounded-full"
-                    style={{ width: 218, height: 218, border: `1.5px solid ${activeEnv.glowColor}0.3)`, boxShadow: running ? `0 0 40px ${activeEnv.glowColor}0.2), inset 0 0 30px ${activeEnv.glowColor}0.08)` : 'none' }}
-                    animate={{ scale: running ? [1, 1.03, 1] : 1 }}
-                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                  />
-                  <motion.div className="absolute rounded-full"
-                    style={{ width: 158, height: 158, background: `radial-gradient(circle at 38% 38%, ${activeEnv.glowColor}0.3) 0%, ${activeEnv.glowColor}0.1) 60%, transparent 100%)`, boxShadow: running ? `0 0 50px ${activeEnv.glowColor}0.3)` : 'none' }}
-                    animate={{ scale: running ? [1, 1.06, 1] : 1 }}
-                    transition={{ duration: 4.5, repeat: running ? Infinity : 0 }}
-                  />
-                  <div className="relative z-10 text-center">
-                    <p className="font-mono text-4xl font-light"
-                      style={{ color: '#f5dfa0', textShadow: `0 0 20px ${activeEnv.glowColor}0.6)` }}>
-                      {formatClock(remaining)}
-                    </p>
-                    <p className="text-[11px] mt-1.5" style={{ color: `${activeEnv.glowColor}0.5)` }}>
-                      {mode === 'chant' ? chantMantra : activeMode.description}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Progress line */}
-              <div className="h-0.5 w-44 overflow-hidden rounded-full" style={{ background: `${activeEnv.glowColor}0.1)` }}>
-                <motion.div className="h-full rounded-full"
-                  style={{ background: `linear-gradient(90deg,${activeEnv.glowColor}0.7),${activeEnv.glowColor}1))` }}
-                  animate={{ width: `${progress}%` }} transition={{ duration: 0.6 }} />
-              </div>
-
-              {mode === 'chant' && (
-                <div className="w-full max-w-xs">
-                  <ChantAudioPlayer title="Focus chant" trackIds={chantTrackIds}
-                    initialTrackId={activeChant.audioTrackId ?? undefined} compact />
-                </div>
-              )}
+              <BreathCircle running={running} glowColor={activeEnv.glowColor}
+                  phase={phase} remaining={remaining} totalSecs={totalSecs} pattern={pattern} cycleCount={cycleCount} />
             </div>
 
             {/* ── Bottom controls ── */}

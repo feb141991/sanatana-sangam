@@ -1,0 +1,18 @@
+{
+  "figure_id": "guru_gobind_singh",
+  "name": "GURU GOBIND SINGH",
+  "tradition": "Sikh",
+  "virtue": "Courage",
+  "short_card_title": "The Story of guru_gobind_singh",
+  "short_story": "Based on sources: Guru Gobind Singh Ji was the tenth Sikh Guru, a spiritual master, warrior, poet and philosopher. He founded the Khalsa in 1699, initiating the Panj Pyare and giving them the title of Singh. He fought many battles against the Mughals to protect the oppressed and established a strong martial tradition.",
+  "daily_lesson": "Always stand up for righteousness.",
+  "citations": [
+    "Sikh History - 1.1",
+    "Sikh History - 1.2",
+    "Sikh History - 1.3"
+  ],
+  "source_class": "narrative",
+  "confidence": 0.95,
+  "unsupported_claims": [],
+  "review_status": "draft_needs_review"
+}

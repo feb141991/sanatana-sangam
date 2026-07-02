@@ -60,7 +60,7 @@ export default function MoodInsightsPage() {
   return (
     <div className="min-h-screen pb-24" style={{ background: 'var(--bg-colour)' }}>
       {/* App Bar */}
-      <div className="sticky top-0 z-50 px-4 pt-12 pb-4 backdrop-blur-xl border-b"
+      <div className="sticky top-0 z-50 px-4 pt-safe-top pb-4 backdrop-blur-xl border-b"
         style={{ borderBottomColor: border, background: isDark ? 'rgba(19,14,8,0.8)' : 'rgba(253,246,236,0.8)' }}>
         <div className="flex items-center gap-3">
           <Link href="/my-progress" className="w-10 h-10 rounded-full flex items-center justify-center"

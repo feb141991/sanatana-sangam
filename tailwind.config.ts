@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      spacing: {
+        'safe-top': 'max(env(safe-area-inset-top, 0px), 12px)',
+      },
       colors: {
         saffron: {
           50:  "#FDFBF7",

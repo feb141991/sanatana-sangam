@@ -1,0 +1,18 @@
+{
+  "figure_id": "shivaji",
+  "name": "SHIVAJI",
+  "tradition": "Hindu",
+  "virtue": "Courage",
+  "short_card_title": "The Story of shivaji",
+  "short_story": "Based on sources: Shivaji was born in the hill-fort of Shivneri, near Junnar in Pune district. He was named after a local deity, the goddess Shivai. Shivaji's mother Jijabai deeply influenced his life and upbringing, teaching him the stories of the Ramayana and Mahabharata. He founded the Maratha Empire. His vision was to establish Hindavi Swarajya, a self-rule of Hindu people.",
+  "daily_lesson": "Always stand up for righteousness.",
+  "citations": [
+    "Shivaji The Great - 1.1",
+    "Shivaji The Great - 1.2",
+    "Shivaji The Great - 1.3"
+  ],
+  "source_class": "narrative",
+  "confidence": 0.95,
+  "unsupported_claims": [],
+  "review_status": "draft_needs_review"
+}

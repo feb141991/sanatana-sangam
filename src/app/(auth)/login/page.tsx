@@ -1,5 +1,6 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
@@ -8,6 +9,8 @@ import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
+import { getAuthCallbackUrl } from '@/lib/auth-redirect';
+import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
 
 function LoginForm() {
   const router       = useRouter();
@@ -16,6 +19,14 @@ function LoginForm() {
     if (typeof window === 'undefined') return null;
     return createClient();
   }, []);
+
+  const handleOAuth = async (provider: 'google' | 'apple') => {
+    if (!supabase) return;
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: getAuthCallbackUrl('/home') },
+    });
+  };
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -23,6 +34,7 @@ function LoginForm() {
   const presetEmail = searchParams.get('email')?.trim().toLowerCase() ?? '';
   const message = searchParams.get('message');
   const errorCode = searchParams.get('error');
+  const reason = searchParams.get('reason');
   const emailHint = email.trim().toLowerCase() || presetEmail;
 
   const forgotPasswordHref = emailHint
@@ -54,7 +66,16 @@ function LoginForm() {
     if (errorCode === 'password_reset_failed') {
       toast.error('Password reset link was invalid or expired. Request a fresh one.');
     }
-  }, [errorCode, message, presetEmail]);
+    if (reason === 'session_expired') {
+      toast.error('Your session expired. Please sign in again.');
+    }
+    if (reason === 'session_missing') {
+      toast.error('We could not finish sign in. Please try again.');
+    }
+    if (reason === 'missing_profile') {
+      toast.error('We could not find your profile. Please sign in again.');
+    }
+  }, [errorCode, message, presetEmail, reason]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -69,8 +90,9 @@ function LoginForm() {
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success('Jai Shri Ram! Welcome back 🙏');
-      router.push('/home');
+      toast.success('Welcome back, Seeker 🙏');
+      const destination = await getClientPostAuthDestination('/home');
+      router.push(destination);
       router.refresh();
     }
     setLoading(false);
@@ -109,7 +131,37 @@ function LoginForm() {
           ))}
         </div>
 
-        <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
+        <div className="flex items-center gap-4 w-full">
+    <div className="h-px flex-1 bg-[var(--premium-border)]" />
+    <span className="text-[9px] font-bold text-[var(--brand-muted)] uppercase tracking-[0.3em]">
+      or continue with
+    </span>
+    <div className="h-px flex-1 bg-[var(--premium-border)]" />
+  </div>
+  <div className="flex flex-col gap-3 my-4">
+    <button
+      type="button"
+      onClick={() => handleOAuth('google')}
+      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-300 bg-white py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
+    >
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EA4335] text-[11px] font-bold text-white">G</span>
+      Continue with Google
+    </button>
+    <button
+      type="button"
+      onClick={() => handleOAuth('apple')}
+      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-800 bg-black py-3 text-sm font-medium text-white hover:bg-gray-900"
+    >
+      🍎 Continue with Apple
+    </button>
+    <button
+      type="button"
+      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-[#25D366] bg-[#25D366] py-3 text-sm font-medium text-white hover:bg-[#128C7E] transition-colors"
+    >
+      <span className="text-lg">💬</span> Continue with WhatsApp
+    </button>
+  </div>
+  <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-[color:var(--text-muted-warm)] mb-1.5">Email</label>
             <input

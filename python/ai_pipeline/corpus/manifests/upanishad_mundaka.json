@@ -2,14 +2,21 @@
   "doc_id": "pathshala_upanishads_mundaka",
   "title": "Mundaka Upanishad",
   "tradition": "Sanatana Dharma",
-  "scripture_family": "upanishads",
+  "corpus": "upanishads",
   "section_id": "mundaka",
   "source_name": "Principal Upanishads",
   "source_class": "scripture",
   "rights_status": "public_domain",
   "language": "en",
+  "translation_basis": "Robert Ernest Hume (1921)",
   "is_live_in_app": true,
   "content": [
+    {
+      "ref": "3.1.6",
+      "sanskrit": "नायमात्मा प्रवचनेन लभ्यो न मेधया न बहुना श्रुतेन । यमेवैष वृणुते तेन लभ्यस्तस्यैष आत्मा विवृणुते तनूं स्वाम् ॥",
+      "transliteration": "nāyamātmā pravacanena labhyo na medhayā na bahunā śrutena | yamevaiṣa vṛṇute tena labhyastasyaiṣa ātmā vivṛṇute tanūṁ svām ||",
+      "text": "The Atman cannot be attained by the study of the Vedas, nor by intellect, nor by much hearing. He alone can be attained whom the Self chooses. To him the Self reveals its own form."
+    },
     {
       "ref": "1.1.1",
       "sanskrit": "ब्रह्मा देवानां प्रथमः संबभूव विश्वस्य कर्ता भुवनस्य गोप्ता ।",
@@ -45,12 +52,6 @@
       "sanskrit": "ब्रह्मैवेदं विश्वमिदं वरिष्ठम् ।",
       "transliteration": "brahmaivedam viśvamidaṁ variṣṭham |",
       "text": "Brahman alone is this universe — this most excellent (Brahman)."
-    },
-    {
-      "ref": "3.1.6",
-      "sanskrit": "नायमात्मा प्रवचनेन लभ्यो न मेधया न बहुना श्रुतेन । यमेवैष वृणुते तेन लभ्यस्तस्यैष आत्मा विवृणुते तनूं स्वाम् ॥",
-      "transliteration": "nāyamātmā pravacanena labhyo na medhayā na bahunā śrutena | yamevaiṣa vṛṇute tena labhyastasyaiṣa ātmā vivṛṇute tanūṁ svām ||",
-      "text": "The Atman cannot be attained by the study of the Vedas, nor by intellect, nor by much hearing. He alone can be attained whom the Self chooses. To him the Self reveals its own form."
     }
   ]
 }

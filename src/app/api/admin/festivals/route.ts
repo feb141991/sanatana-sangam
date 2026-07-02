@@ -1,4 +1,4 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/lib/festivals';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import type { Database } from '@/types/database';
+import type { Json } from '@/types/database';
 
 type FestivalRow = Pick<
   Database['public']['Tables']['festivals']['Row'],
@@ -49,6 +50,13 @@ type FestivalAdminStats = {
 
 const FESTIVAL_SELECT_FULL = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, verification_type';
 const FESTIVAL_SELECT_LEGACY = 'id, name, date, emoji, description, type, tradition, year, source_name, source_kind, review_status';
+
+type ReviewActionBody = {
+  occurrenceId?: unknown;
+  date?: unknown;
+  reviewNotes?: unknown;
+  sourceName?: unknown;
+};
 
 function isMissingVerificationColumn(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -91,7 +99,7 @@ function buildFestivalAdminStats(festivals: Festival[]): FestivalAdminStats {
 }
 
 export async function GET(request: NextRequest) {
-  const authError = checkAdminAuth(request);
+  const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();
@@ -183,6 +191,105 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fetch festivals';
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function isIsoDate(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime());
+}
+
+export async function PATCH(request: NextRequest) {
+  const authError = await verifyAdminCookieAuth(request);
+  if (authError) return authError;
+
+  const admin = await requireAdminAccess();
+  if ('response' in admin) {
+    return admin.response;
+  }
+
+  try {
+    const body = await request.json() as ReviewActionBody;
+    const occurrenceId = readString(body.occurrenceId);
+    const dateOverride = readString(body.date);
+    const reviewNotes = readString(body.reviewNotes)
+      ?? 'Reviewed from Shoonaya admin festival calendar';
+    const sourceName = readString(body.sourceName)
+      ?? 'Shoonaya admin review';
+
+    if (!occurrenceId) {
+      return NextResponse.json({ error: 'Missing occurrenceId' }, { status: 400 });
+    }
+    if (dateOverride && !isIsoDate(dateOverride)) {
+      return NextResponse.json({ error: 'Date must be YYYY-MM-DD' }, { status: 400 });
+    }
+
+    const { data: existing, error: fetchError } = await admin.supabase
+      .from('observance_occurrences')
+      .select('id, date, manual_date_override, source_provenance')
+      .eq('id', occurrenceId)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+    if (!existing) {
+      return NextResponse.json({ error: 'Occurrence not found' }, { status: 404 });
+    }
+
+    const reviewedDate = dateOverride ?? existing.manual_date_override ?? existing.date;
+    const previousProvenance = existing.source_provenance && typeof existing.source_provenance === 'object'
+      ? existing.source_provenance
+      : {};
+    const sourceProvenance: Json = {
+      ...previousProvenance,
+      source_kind: 'curated',
+      source_name: sourceName,
+      reviewed_via: 'admin_festival_calendar',
+      reviewed_date: reviewedDate,
+    };
+
+    const nowIso = new Date().toISOString();
+    const updatePayload: Database['public']['Tables']['observance_occurrences']['Update'] = {
+      date: reviewedDate,
+      review_status: 'reviewed',
+      verification_status: 'verified',
+      verification_confidence: 'high',
+      verification_note: reviewNotes,
+      audit_status: 'completed',
+      audit_failure_reason: null,
+      audit_retry_count: 0,
+      last_audited_at: nowIso,
+      verification_run_at: nowIso,
+      reviewed_at: nowIso,
+      review_notes: reviewNotes,
+      source_provenance: sourceProvenance,
+      final_date_source: dateOverride ? 'manual_override' : 'calculation_engine_reviewed',
+      manual_date_override: dateOverride ?? existing.manual_date_override,
+      manual_override_reason: dateOverride
+        ? 'Date corrected and approved from Shoonaya admin festival calendar'
+        : existing.manual_date_override
+          ? 'Previously manually corrected date approved from Shoonaya admin festival calendar'
+          : null,
+    };
+
+    const { data: updated, error: updateError } = await admin.supabase
+      .from('observance_occurrences')
+      .update(updatePayload)
+      .eq('id', occurrenceId)
+      .select('*, observance_definitions(*)')
+      .maybeSingle();
+
+    if (updateError) throw updateError;
+
+    return NextResponse.json({
+      success: true,
+      festival: updated ? mapOccurrenceToFestival(updated) : null,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to update observance review';
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -2,7 +2,7 @@
 // ai-shloka-quiz — Quiz generation for shloka memorisation
 //
 // Generates multiple-choice or fill-in-the-blank questions
-// from a scripture verse, powered by Gemini.
+// from a scripture verse, powered by Sarvam.
 //
 // POST { user_id, chunk_id?, text_id?, chapter?, verse?, mode? }
 // mode: 'mcq' | 'fill' | 'meaning' (default: 'mcq')
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'verse not found' }), { status: 404 });
     }
 
-    if (!geminiKey) {
+    if (!sarvamKey) {
       return new Response(JSON.stringify(buildFallbackQuiz(chunk, mode as QuizMode)), {
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       });

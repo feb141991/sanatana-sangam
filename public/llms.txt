@@ -1,0 +1,61 @@
+# Shoonaya
+
+> Multi-tradition spiritual companion for Hindu, Sikh, Buddhist and Jain practice. Covers daily panchang, festivals, vrats, bhakti scripture (stotrams and kathas), Pathshala learning, Japa mala, and daily sadhana tracking.
+
+## What Shoonaya covers
+
+- **Daily Panchang**: Astronomy-backed tithi, nakshatra, yoga, karana, vara, Rahu Kaal, Brahma Muhurta, sunrise/sunset. Uses Lahiri ayanamsha and Ujjain coordinates as the traditional meridian.
+- **Festivals & Observances**: 82 observances across 4 traditions. Computed via a declarative rule engine (lunar tithi, solar fixed, nakshatra-based, relative).
+- **Vrats (fasting days)**: Ekadashi, Purnima, Amavasya, Pradosh Vrat, Sankashti Chaturthi, Masik Shivaratri, Puranmashi, Uposatha, Vat Savitri Vrat, Vat Savitri Purnima, Hartalika Teej, Karva Chauth, Vaikunta Ekadashi, Navratri, Diwali, Janmashtami, Holi, Gurpurab — with significance, practice instructions, puja items, dos/donts, and mantra.
+- **Bhakti Library**: Stotrams (Sanskrit hymns with transliteration and translation), Kathas (sacred stories) across traditions.
+- **Pathshala**: Structured learning paths through Bhagavad Gita, Guru Granth Sahib, Dhammapada, Jain Agamas, Ramayana.
+- **Japa Mala**: 108-bead digital mala counter with tradition-specific mantras and ambient audio.
+- **Daily Sadhana**: Tracks Japa, Nitya Seva (morning routine), Pathshala study, Quiz, Dharm Veer challenge.
+
+## Panchang notes
+
+- Method: Astronomy-backed Panchang estimate
+- Precision: Higher precision for daily guidance; observance rules still under validation
+- Guidance: This Panchang now uses astronomy-backed solar and lunar positions plus solved transition windows. It is materially stronger than the older in-app estimate, but temple- or guru-specific observances should still win when exact vrata timing matters.
+
+## Festival calendar
+
+The festival dates are calculated using an astronomy-backed rule engine (`src/lib/calendar/engine.ts`, version `1.0.0`). Dates are calculated for the current Gregorian year using Ujjain as the reference meridian (23.1765°N, 75.7885°E).
+
+## Key URLs
+
+- Panchang: https://shoonaya.com/panchang
+- Vrats: https://shoonaya.com/vrat/[slug]
+- Stotrams: https://shoonaya.com/bhakti/stotram/[id]
+- Kathas: https://shoonaya.com/bhakti/katha/[id]
+- Pathshala: https://shoonaya.com/pathshala/[pathId]
+- Calendar API: https://shoonaya.com/api/calendar/upcoming?days=30
+- Daily panchang API: https://shoonaya.com/api/calendar/day?date=YYYY-MM-DD
+
+## Traditions covered
+
+- Hindu (Vaishnava, Shaiva, Shakta perspectives)
+- Sikh (Gurmat tradition, Nanakshahi calendar)
+- Buddhist (Theravada and Tibetan Mahayana)
+- Jain (Shvetambara and Digambara)
+
+## Optional detail pages
+
+- Ekadashi: https://shoonaya.com/vrat/ekadashi
+- Purnima: https://shoonaya.com/vrat/purnima
+- Amavasya: https://shoonaya.com/vrat/amavasya
+- Pradosh Vrat: https://shoonaya.com/vrat/pradosh
+- Sankashti Chaturthi: https://shoonaya.com/vrat/chaturthi
+- Masik Shivaratri: https://shoonaya.com/vrat/shivaratri
+- Puranmashi: https://shoonaya.com/vrat/puranmashi
+- Uposatha: https://shoonaya.com/vrat/uposatha
+- Vat Savitri Vrat: https://shoonaya.com/vrat/vat-savitri
+- Vat Savitri Purnima: https://shoonaya.com/vrat/vat-savitri-purnima
+- Hartalika Teej: https://shoonaya.com/vrat/hartalika-teej
+- Karva Chauth: https://shoonaya.com/vrat/karva-chauth
+- Vaikunta Ekadashi: https://shoonaya.com/vrat/vaikunta-ekadashi
+- Navratri: https://shoonaya.com/vrat/navratri
+- Diwali: https://shoonaya.com/vrat/diwali
+- Janmashtami: https://shoonaya.com/vrat/janmashtami
+- Holi: https://shoonaya.com/vrat/holi
+- Gurpurab: https://shoonaya.com/vrat/gurpurab

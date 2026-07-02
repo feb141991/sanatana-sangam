@@ -6,8 +6,9 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { Twitter, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { APP } from '@/lib/config';
 import { createClient } from '@/lib/supabase';
@@ -15,12 +16,12 @@ import type { HiddenContentSummary, SafetyProfileSummary } from '@/lib/user-safe
 import { getInitials, TRADITIONS, SAMPRADAYAS_BY_TRADITION, ISHTA_DEVATAS_BY_TRADITION, getIshtaDevataLabel, getSampradayaLabel } from '@/lib/utils';
 import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, TRANSLITERATION_LANGUAGE_OPTIONS } from '@/lib/language-preferences';
 import type { TraditionKey } from '@/lib/traditions';
-import { useLocation } from '@/lib/LocationContext';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
-import { getPlayerId, getPermissionState, logoutFromOneSignal } from '@/lib/onesignal';
+import { getPlayerId, getPermissionState, logoutFromOneSignal, requestNotificationPermission } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { ageToAshrama, ageFromDob, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
+import TierBadge from '@/components/ui/TierBadge';
 import { MetricTile, SurfaceSection } from '@/components/ui';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
@@ -34,6 +35,113 @@ import { updateAppIcon } from '@/lib/app-icon';
 import { formatError } from '@/lib/error-handler';
 import { inviteFriendsToWhatsApp } from '@/lib/whatsapp';
 import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
+import { getRelicFrame } from '@/lib/relic-frames';
+import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
+import { InviteModal } from '@/app/(main)/home/sections/InviteModal';
+
+import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
+import InviteCard from '@/components/home/InviteCard';
+
+const PATH_LABELS: Record<string, string> = {
+  universal: 'Universal path',
+  hindu:     'Hindu path',
+  sikh:      'Sikh path',
+  buddhist:  'Buddhist path',
+  jain:      'Jain path',
+};
+
+// ── Relic emoji map (copied inline from KoshClient) ─────────────────────────
+const RELIC_EMOJI: Record<string, string> = {
+  // Universal
+  'diya-bronze':         '🪔',
+  'clay-kalash':         '🏺',
+  'incense-sandalwood':  '🪷',
+  'camphor-flame':       '🕯️',
+  'mindful-bell':        '🔔',
+  'copper-lota':         '🫙',
+  'asana-kusha':         '🌿',
+  'sacred-mala':         '📿',
+  'shankha-conch':       '🐚',
+  'prarthana-pothi':     '📖',
+  'the-sage-halo':       '✨',
+  // Hindu
+  'ganesha-modak':       '🍡',
+  'vibhuti-ash':         '🌫️',
+  'trishula-gold':       '🔱',
+  'krishna-flute':       '🎶',
+  'rama-bow':            '🏹',
+  'peacock-feather':     '🦚',
+  'durga-shield':        '🛡️',
+  'ananta-shesha':       '🐍',
+  'tulsi-leaf':          '🌱',
+  'shiva-damaru':        '🥁',
+  'nandi-devotion':      '🐂',
+  'brahma-lotus':        '🪷',
+  'hanuman-gada':        '🏏',
+  'sudarshana-chakra':   '🌀',
+  'ganga-kalash':        '🏺',
+  'rishi-kamandalu':     '🫙',
+  'chintamani-gem':      '💎',
+  // Sikh
+  'steel-kara':          '⭕',
+  'sacred-kirpan':       '⚔️',
+  'khanda-gold':         '☬',
+  'sikh-chaur':          '🌾',
+  'kartarpur-nishan':    '🚩',
+  'wooden-kangha':       '🪥',
+  'nishan-sahib':        '🏴',
+  'deg-teg':             '⚔️',
+  'gurbani-pothi':       '📜',
+  // Buddhist
+  'lotus-bloom':         '🌸',
+  'alms-bowl':           '🍵',
+  'dharma-wheel-gold':   '☸️',
+  'treasure-vase':       '🫙',
+  'golden-fish':         '🐟',
+  'bodhi-leaf':          '🍃',
+  'prayer-wheel':        '☸️',
+  'vajra-scepter':       '⚡',
+  'parasol-royalty':     '☂️',
+  // Jain
+  'jain-swastika':       '🔯',
+  'peacock-brush':       '🦚',
+  'siddhashila-moon':    '🌙',
+  'ahimsa-hand':         '🤲',
+  'three-jewels':        '💎',
+  'siddhachakra-wheel':  '🔵',
+  'jain-kalasha':        '🏺',
+};
+
+function relicEmoji(id: string | null | undefined): string | null {
+  if (!id) return null;
+  return RELIC_EMOJI[id] ?? '🔱';
+}
+
+const ASHRAMA_DESCRIPTIONS: Record<string, string> = {
+  brahmacharya: "Brahmacharya is the sacred stage of learning, self-discipline, and spiritual preparation. During these formative years, a seeker focuses on acquiring wisdom, cultivating physical and mental purity, and mastering the senses under the guidance of truth. It is a period of laying a secure foundation through study, contemplation, and consistent daily rituals, paving the path for a life of purpose, virtue, and deep spiritual awareness.",
+  grihastha: "Grihastha is the householder stage of active service, family, and community responsibility. In this phase, the seeker integrates spiritual practice with worldly duties, supporting family, society, and ancestral lineages. It is a profound path of karma yoga, where every action is performed as a selfless offering. Sadhana is not abandoned but is integrated into the rhythm of daily duties, fostering patience, love, and spiritual maturity.",
+  vanaprastha: "Vanaprastha is the transition stage of gradual retirement and turning inward. As worldly responsibilities are handed down to the next generation, the seeker withdraws from active societal ambitions to focus on deeper contemplation, meditation, and spiritual study. It is a time of sharing wisdom, letting go of attachments, and simplifying life, preparing the soul for the ultimate journey of self-realization and formless union.",
+  sannyasa: "Sannyasa is the stage of complete renunciation and absolute spiritual freedom. The renunciate breaks all worldly bonds, dedicating the remainder of life solely to the pursuit of Moksha—liberation. Moving beyond personal identity, family ties, and possessions, the sannyasi beholds the Divine in all beings and walks as a pure channel of peace, wisdom, and selfless love, completely absorbed in the contemplation of the ultimate reality."
+};
+
+const ASHRAMA_BULLETS: Record<string, string[]> = {
+  brahmacharya: [
+    "Develop a robust foundation of learning and scripture through Pathshala and study of sacred verses.",
+    "Cultivate steady concentration and mental clarity through daily Japa mala practice."
+  ],
+  grihastha: [
+    "Your sadhana supports family and community — Kul and Mandali are your path.",
+    "Perform karma yoga and build consistency through daily Nitya and Seva point tracking."
+  ],
+  vanaprastha: [
+    "Deepen your meditation and study by tracking your progress and streaks on long-term pathshala paths.",
+    "Engage in selfless service and ancestral remembrance using custom vrat, tithi, and lunar panchang timing."
+  ],
+  sannyasa: [
+    "Embrace the formless path with pure, unattached Japa mala focus and silent meditation tracking.",
+    "Accumulate spiritual treasury by equipping sacred relics and guiding seekers in the community."
+  ]
+};
 
 // ── Practice path options per tradition (mirrors OnboardingClient) ─────────────
 function getPracticePathOptions(tradition: TraditionKey | '') {
@@ -136,6 +244,17 @@ export default function ProfileClient({
   blockedProfiles: initialBlockedProfiles,
   mutedProfiles: initialMutedProfiles,
   hiddenItems: initialHiddenItems,
+  totalBeads,
+  totalRounds,
+  totalMinutes,
+  totalSessions,
+  streak: initialHighlightsStreak,
+  topMantra,
+  nityaDays,
+  pathshalaEntries,
+  bookmarkedVerses,
+  showSadhanaHighlights: initialShowSadhanaHighlights,
+  isOwnProfile,
 }: {
   profile:     Profile | null;
   threadCount: number;
@@ -145,6 +264,17 @@ export default function ProfileClient({
   blockedProfiles: SafetyProfileSummary[];
   mutedProfiles: SafetyProfileSummary[];
   hiddenItems: HiddenContentSummary[];
+  totalBeads: number;
+  totalRounds: number;
+  totalMinutes: number;
+  totalSessions: number;
+  streak: number;
+  topMantra: string | null;
+  nityaDays: number;
+  pathshalaEntries: number;
+  bookmarkedVerses: number;
+  showSadhanaHighlights: boolean;
+  isOwnProfile: boolean;
 }) {
   const router      = useRouter();
   const supabase    = useRef(createClient()).current;
@@ -159,6 +289,8 @@ export default function ProfileClient({
   const [koshOpen,  setKoshOpen]  = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [socialShareOpen, setSocialShareOpen] = useState(false);
+  const [ashramaInfoOpen, setAshramaInfoOpen] = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
@@ -169,18 +301,95 @@ export default function ProfileClient({
   const [safetyBusyKey, setSafetyBusyKey] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>((profile as any)?.avatar_url ?? null);
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
+  const [drawersMounted, setDrawersMounted] = useState(false);
+  // Mount drawers/modals after first paint — they're never visible on load
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setDrawersMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const [blockedProfiles, setBlockedProfiles] = useState(initialBlockedProfiles);
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
+  const [showSadhanaHighlights, setShowSadhanaHighlights] = useState(initialShowSadhanaHighlights);
   const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
   const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
+  const [newRelicIds, setNewRelicIds] = useState<string[]>([]);
+
+  const [reminderEnabled, setReminderEnabled] = useState<boolean>(
+    (profile as any)?.japa_reminder_enabled ?? false
+  );
+  const [reminderTime, setReminderTime] = useState<string>(
+    (profile as any)?.japa_reminder_time ?? '07:00'
+  );
+
+  async function handleToggleReminder() {
+    if (!reminderEnabled) {
+      try {
+        const granted = await requestNotificationPermission();
+        if (!granted) {
+          toast.error('Enable notifications in browser settings');
+          return;
+        }
+
+        const playerId = await getPlayerId();
+        if (playerId) {
+          await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+        }
+
+        const prefRes = await fetch('/api/push/preferences', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ japa_reminder_enabled: true }),
+        });
+
+        if (!prefRes.ok) throw new Error('Failed to save push preferences');
+
+        setReminderEnabled(true);
+        toast.success('Japa reminder enabled 🙏');
+      } catch (err: unknown) {
+        console.error('Failed to enable japa reminder:', err);
+        toast.error(err instanceof Error ? err.message : 'Failed to enable japa reminder');
+      }
+    } else {
+      try {
+        const prefRes = await fetch('/api/push/preferences', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ japa_reminder_enabled: false }),
+        });
+
+        if (!prefRes.ok) throw new Error('Failed to save push preferences');
+
+        setReminderEnabled(false);
+        toast.success('Japa reminder disabled');
+      } catch (err: unknown) {
+        console.error('Failed to disable japa reminder:', err);
+        toast.error(err instanceof Error ? err.message : 'Failed to disable japa reminder');
+      }
+    }
+  }
+
+  async function handleTimeChange(newTime: string) {
+    setReminderTime(newTime);
+    try {
+      const res = await fetch('/api/push/preferences', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ japa_reminder_time: newTime }),
+      });
+      if (!res.ok) throw new Error('Failed to update reminder time');
+      toast.success(`Reminder time set to ${newTime} 🙏`);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update reminder time');
+    }
+  }
 
   const [form, setForm] = useState({
     full_name:        liveProfile?.full_name        ?? '',
     bio:              liveProfile?.bio              ?? '',
     city:             liveProfile?.city             ?? '',
     country:          liveProfile?.country          ?? '',
-    tradition:        (liveProfile as any)?.tradition        ?? '',
+    tradition:        liveProfile?.tradition        ?? '',
     sampradaya:       liveProfile?.sampradaya       ?? '',
     ishta_devata:     liveProfile?.ishta_devata     ?? '',
     spiritual_level:  liveProfile?.spiritual_level  ?? 'jigyasu',
@@ -196,9 +405,40 @@ export default function ProfileClient({
     transliteration_language: (liveProfile as any)?.transliteration_language ?? 'en',
     date_of_birth:    (liveProfile as any)?.date_of_birth    ?? '',
     gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
+    rashi:            (liveProfile as any)?.rashi            ?? '',
   });
 
   const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
+  const streak    = initialHighlightsStreak;
+  const profileTradition = liveProfile?.tradition ?? 'hindu';
+  const visibleRelics = SACRED_RELICS.filter((relic) => relic.tradition === 'universal' || relic.tradition === profileTradition);
+  const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, profileTradition);
+  const unlockedCount = unlockedRelics.length;
+  const totalVisible = visibleRelics.length;
+  const activeRelic = SACRED_RELICS.find((relic) => relic.id === (liveProfile as any)?.active_symbol_id) ?? null;
+  const relicFrame = getRelicFrame((liveProfile as any)?.active_symbol_id);
+
+  // Ashrama life stage — computed from DOB
+  const profileDob = (liveProfile as any)?.date_of_birth ?? '';
+  const ashramaStage = profileDob ? ageToAshrama(profileDob) : 'grihastha' as const;
+  const ashramaMeta = getAshramaMeta(profileTradition, ashramaStage, (liveProfile as any)?.gender_context ?? 'general');
+
+  useEffect(() => {
+    if (!koshOpen || typeof window === 'undefined') return;
+    const raw = localStorage.getItem('shoonaya_last_seen_relic_count');
+    const lastSeenCount = Number.isFinite(Number(raw)) ? Math.max(0, Number(raw)) : 0;
+    if (unlockedCount > lastSeenCount) {
+      setNewRelicIds(unlockedRelics.slice(lastSeenCount).map((relic) => relic.id));
+    } else {
+      setNewRelicIds([]);
+    }
+  }, [koshOpen, unlockedCount, unlockedRelics]);
+
+  useEffect(() => {
+    if (koshOpen || typeof window === 'undefined') return;
+    localStorage.setItem('shoonaya_last_seen_relic_count', String(unlockedCount));
+    setNewRelicIds([]);
+  }, [koshOpen, unlockedCount]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -217,11 +457,7 @@ export default function ProfileClient({
   const sampradayaLabel = getSampradayaLabel(form.tradition);
   const ishtaDevataLabel = getIshtaDevataLabel(form.tradition);
 
-  const { coords, city: liveCity, country: liveCountry, countryCode: liveCountryCode } = useLocation();
-
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
-  const streak    = (liveProfile as any)?.shloka_streak ?? 0;
-  const profileCountryCode = (liveProfile as any)?.country_code ?? null;
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
   const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -264,25 +500,6 @@ export default function ProfileClient({
     
     syncMembership().then(() => setRepairing(false));
   }, [userId, supabase]);
-
-  // Silently save coords + city + country + country_code when location resolves
-  useEffect(() => {
-    if (!coords || !userId) return;
-    const isSame =
-      liveProfile?.latitude  && Math.abs(coords.lat - (liveProfile.latitude  ?? 0)) < 0.05 &&
-      liveProfile?.longitude && Math.abs(coords.lon - (liveProfile.longitude ?? 0)) < 0.05;
-    if (isSame) return;
-
-    const update: Record<string, any> = {
-      latitude:  coords.lat,
-      longitude: coords.lon,
-    };
-    if (liveCity        && !liveProfile?.city)         update.city         = liveCity;
-    if (liveCountry     && !liveProfile?.country)      update.country      = liveCountry;
-    if (liveCountryCode && !profileCountryCode)
-                                                   update.country_code = liveCountryCode;
-    supabase.from('profiles').update(update).eq('id', userId);
-  }, [coords, liveCity, liveCountry, liveCountryCode, liveProfile?.latitude, liveProfile?.longitude, liveProfile?.city, liveProfile?.country, profileCountryCode, supabase, userId]);
 
   // Save OneSignal player ID when permission is granted
   useEffect(() => {
@@ -358,11 +575,14 @@ export default function ProfileClient({
   async function saveProfile() {
     setSaving(true);
     // tradition is locked at signup — never include it in updates
+    // kul → legacy_family_name (profiles has no 'kul' column)
+    // kul_devata → stored separately, not a profiles column
     // date_of_birth: empty string → null (date column rejects empty strings)
-    const { tradition: _locked, date_of_birth, ...rest } = form;
+    const { tradition: _locked, date_of_birth, kul, kul_devata, ...rest } = form;
     const formToSave = {
       ...rest,
       date_of_birth: date_of_birth || null,
+      legacy_family_name: kul || null,
     };
     try {
       await updateProfileMutation.mutateAsync(formToSave);
@@ -677,6 +897,22 @@ export default function ProfileClient({
     }
   }
 
+  async function toggleHighlights() {
+    const next = !showSadhanaHighlights;
+    setShowSadhanaHighlights(next);
+    try {
+      const res = await fetch('/api/user/highlights-consent', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ show: next }),
+      });
+      if (!res.ok) throw new Error('Could not update highlights setting');
+    } catch (error) {
+      setShowSadhanaHighlights(!next);
+      toast.error(formatError(error));
+    }
+  }
+
   const hasSafetyItems = blockedProfiles.length > 0 || mutedProfiles.length > 0 || hiddenItems.length > 0;
   const themeIconMap = {
     system: Monitor,
@@ -863,6 +1099,12 @@ export default function ProfileClient({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 20 }}
                 className="sacred-seal-ring !w-32 !h-32"
+                style={{
+                  borderRadius: '50%',
+                  border: relicFrame?.border ?? '2px solid rgba(197,160,89,0.2)',
+                  boxShadow: relicFrame?.shadow ?? 'none',
+                  transition: 'border 0.4s ease, box-shadow 0.4s ease',
+                }}
               >
                 <button
                   type="button"
@@ -893,9 +1135,20 @@ export default function ProfileClient({
               transition={{ delay: 0.15, type: 'spring', stiffness: 200 }}
               className="text-center space-y-3"
             >
-                <div className="flex items-center justify-center gap-3">
-                  <h1 className="text-3xl font-medium theme-ink premium-serif">
-                    {liveProfile?.full_name}
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <h1 className="text-3xl font-medium theme-ink premium-serif flex items-center gap-2 flex-wrap justify-center">
+                    <span>{liveProfile?.full_name}</span>
+                    {liveProfile?.active_symbol_id && (
+                      <span
+                        className="px-2 py-0.5 rounded-full text-[13px] inline-flex items-center justify-center"
+                        style={{
+                          background: 'rgba(197,160,89,0.12)',
+                          border: '1px solid rgba(197,160,89,0.22)',
+                        }}
+                      >
+                        {relicEmoji(liveProfile.active_symbol_id)}
+                      </span>
+                    )}
                   </h1>
                   <button
                     onClick={() => setEditing(true)}
@@ -914,6 +1167,28 @@ export default function ProfileClient({
                     </div>
                   )}
                 </div>
+
+                {activeRelic ? (
+                  <button
+                    type="button"
+                    onClick={() => setKoshOpen(true)}
+                    className="mx-auto flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/[0.04] border border-amber-500/20 transition-colors hover:bg-white/[0.06]"
+                    title="Open Sacred Kosh"
+                  >
+                    <div className="relative h-6 w-6 overflow-hidden rounded-full border border-amber-500/30">
+                      <Image src={activeRelic.imageUrl} alt={activeRelic.name} fill sizes="24px" className="object-contain" />
+                    </div>
+                    <span className="text-[10px] font-medium text-amber-400/70">{activeRelic.name}</span>
+                  </button>
+                ) : unlockedCount > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => setKoshOpen(true)}
+                    className="mx-auto text-[10px] text-white/30 transition-colors hover:text-white/50"
+                  >
+                    Tap Kosh to equip your relic
+                  </button>
+                ) : null}
               
               {(liveProfile?.city || liveProfile?.country) && (
                 <div className="mt-4 flex items-center justify-center gap-2 text-[12px] font-medium theme-muted">
@@ -923,6 +1198,9 @@ export default function ProfileClient({
                   <div className="w-8 h-px bg-gradient-to-l from-transparent to-[#C5A059]/30" />
                 </div>
               )}
+              <div className="mt-6 flex justify-center">
+                <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="lg" showProgress={true} />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -934,73 +1212,174 @@ export default function ProfileClient({
         transition={{ duration: 0.4, delay: 0.1 }}
         className="max-w-xl mx-auto px-5 -mt-6 space-y-5 relative z-30 pb-32"
       >
-          {/* Metric Row with Clay Cards */}
-          {/* Metric Row (Compact Zenith) */}
+          <SadhanaHighlightsCard
+            tradition={liveProfile?.tradition ?? 'hindu'}
+            totalBeads={totalBeads}
+            totalRounds={totalRounds}
+            totalMinutes={totalMinutes}
+            totalSessions={totalSessions}
+            streak={streak}
+            topMantra={topMantra}
+            nityaDays={nityaDays}
+            pathshalaEntries={pathshalaEntries}
+            bookmarkedVerses={bookmarkedVerses}
+            showHighlights={showSadhanaHighlights}
+            onToggleHighlights={toggleHighlights}
+            isOwnProfile={isOwnProfile}
+          />
+
+          {/* Metric Row — Redesigned: Streak / Seva / Relics / Ashrama */}
           <div className="grid grid-cols-4 gap-2">
-            {[
-              { label: 'Threads', value: threadCount },
-              { label: 'Posts', value: postCount },
-              { label: 'Streak', value: isPro ? `${streak}🔥` : '🔒' },
-              { label: 'Kul', value: kulData ? 'Connected' : 'None' }
-            ].map((m, i) => (
-              <motion.div
+            {([
+              { label: 'Streak', value: String(streak), suffix: '🔥', href: '/my-progress' },
+              { label: 'Seva', value: String(liveProfile?.seva_score ?? 0), suffix: '', href: '/my-progress' },
+              { label: 'Relics', value: `${unlockedCount}/${totalVisible}`, suffix: '', href: '/kosh' },
+              { label: 'Ashrama', value: ashramaMeta.label, suffix: '', href: '#ashrama' },
+            ] as { label: string; value: string; suffix: string; href: string }[]).map((m, i) => (
+              <Link
                 key={m.label}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 * i }}
-                className={`clay-card rounded-2xl p-2.5 text-center transition-all ${m.label === 'Kul' && !kulData ? 'border-red-500/20' : 'hover:border-[#C5A059]/30'}`}
+                href={m.href}
+                className="active:scale-95 transition-transform block"
               >
-                <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
-                <p className="text-sm font-medium theme-ink truncate">{m.value}</p>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * i }}
+                  className="clay-card rounded-2xl p-2.5 text-center transition-all hover:border-[#C5A059]/30 h-full flex flex-col justify-between items-center"
+                >
+                  <p className="text-[11px] font-medium theme-dim mb-1">{m.label}</p>
+                  <p className="text-sm font-medium theme-ink truncate">{m.value}{m.suffix}</p>
+                  <div className="flex justify-center mt-1">
+                    <ChevronRight size={10} className="opacity-25" />
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
 
+          {/* Ashrama Life Stage Card */}
+          {profileDob && (
+            <motion.div
+              id="ashrama"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <button
+                type="button"
+                onClick={() => setAshramaInfoOpen(true)}
+                className="w-full rounded-[1.5rem] border p-4 flex items-center gap-3.5 text-left transition-all active:scale-[0.98] bg-[var(--surface-soft)]"
+                style={{ borderColor: `${ashramaMeta.accent}26`, boxShadow: `0 6px 18px ${ashramaMeta.accent}12` }}
+              >
+                <div
+                  className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: `${ashramaMeta.accent}16` }}
+                >
+                  <SacredIcon name={ashramaMeta.icon} size={20} style={{ color: ashramaMeta.accent }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold tracking-[0.18em] uppercase theme-dim mb-0.5">Life Stage</p>
+                  <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">{ashramaMeta.label}</p>
+                  <p className="text-[12px] theme-muted mt-0.5 leading-snug truncate">{ashramaMeta.subtitle}</p>
+                </div>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <p className="text-[10px] theme-dim">{ashramaMeta.ageRange}</p>
+                  <ChevronRight size={16} className="theme-dim" aria-hidden="true" />
+                </div>
+              </button>
+            </motion.div>
+          )}
+
           <CompletionBar profile={liveProfile} onEdit={() => setEditing(true)} />
 
-          {/* ── Zenith Action Grid (Tightened) ── */}
-          <div className="grid grid-cols-2 gap-3">
-            <motion.button
-              onClick={() => setKoshOpen(true)}
-              className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Star className="text-[#C5A059] group-hover:animate-pulse" size={20} />
+          {/* ── Sacred Kosh — Inline Relic Scroll ── */}
+          <div className="clay-card rounded-2xl p-4 border-[#C5A059]/15">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#C5A059]/60">Sacred Kosh</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif">Your relics</p>
               </div>
-              <div className="text-center">
-                <p className="text-base font-medium theme-ink premium-serif">Sacred kosh</p>
-                <p className="text-xs theme-muted mt-0.5">Divine relics</p>
-              </div>
-            </motion.button>
-
-            {kulData ? (
-              <motion.button
-                onClick={() => setShowInviteModal(true)}
-                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-[#C5A059]/20"
+              <button
+                onClick={() => setKoshOpen(true)}
+                className="text-[11px] text-[#C5A059]/70 hover:text-[#C5A059] transition-colors font-medium"
               >
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <Users className="text-[#C5A059]" size={20} />
-                </div>
-                <div className="text-center">
-                  <p className="text-base font-medium theme-ink premium-serif">Sacred invite</p>
-                  <p className="text-xs theme-muted mt-0.5">Invite to {kulData.name}</p>
-                </div>
-              </motion.button>
-            ) : (
-              <motion.button
-                onClick={() => router.push('/kul')}
-                className="clay-card rounded-[2rem] p-5 flex flex-col items-center gap-2.5 group border-white/5"
-              >
-                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                  <Shield className="text-[#F2EAD6]/40" size={20} />
-                </div>
-                <div className="text-center">
-                  <p className="text-base font-medium theme-ink premium-serif">Join Kul</p>
-                  <p className="text-xs theme-muted mt-0.5">Start lineage</p>
-                </div>
-              </motion.button>
+                View all →
+              </button>
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+              {visibleRelics.map((relic) => {
+                const isUnlocked = unlockedRelics.some((r) => r.id === relic.id);
+                const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+                return (
+                  <button
+                    key={relic.id}
+                    type="button"
+                    onClick={() => isUnlocked && setKoshOpen(true)}
+                    className="flex-shrink-0 flex flex-col items-center gap-1.5"
+                  >
+                    <div
+                      className={`w-14 h-14 rounded-full flex items-center justify-center border transition-all ${
+                        isActive
+                          ? 'border-[#C5A059]/60 bg-[#C5A059]/10 shadow-lg shadow-[#C5A059]/20'
+                          : isUnlocked
+                          ? 'border-white/10 bg-white/5 hover:border-[#C5A059]/30'
+                          : 'border-white/5 bg-white/[0.03]'
+                      }`}
+                    >
+                      {isUnlocked ? (
+                        <div className="relative w-9 h-9">
+                          <Image src={relic.imageUrl} alt={relic.name} fill sizes="36px" className="object-contain" />
+                        </div>
+                      ) : (
+                        <Lock size={13} className="text-white/20" />
+                      )}
+                    </div>
+                    <p className={`text-[9px] text-center leading-tight max-w-[56px] ${isUnlocked ? 'theme-muted' : 'text-white/20'}`}>
+                      {relic.name}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-[9px] theme-dim mt-2.5 text-center">{unlockedCount} of {totalVisible} relics unlocked</p>
+            {!(liveProfile as any)?.active_symbol_id && (
+              <p className="text-[11px] text-center mt-2" style={{ color: 'var(--text-dim)' }}>
+                Tap a relic to equip it — it will appear on your profile and in the leaderboard
+              </p>
             )}
           </div>
+
+          {/* ── Kul Card ── */}
+          {kulData ? (
+            <motion.button
+              onClick={() => setShowInviteModal(true)}
+              className="clay-card rounded-2xl p-4 w-full flex items-center gap-4 border-[#C5A059]/20 transition-all hover:border-[#C5A059]/40"
+            >
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C5A059]/20 to-transparent flex items-center justify-center shadow-inner flex-shrink-0">
+                <Users className="text-[#C5A059]" size={18} />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#C5A059]/60">Sacred Invite</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">Invite to {kulData.name}</p>
+              </div>
+              <ChevronRight size={16} className="text-[#C5A059]/40 flex-shrink-0" />
+            </motion.button>
+          ) : (
+            <motion.button
+              onClick={() => router.push('/kul')}
+              className="clay-card rounded-2xl p-4 w-full flex items-center gap-4 border-white/5 transition-all hover:border-white/10"
+            >
+              <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shadow-inner flex-shrink-0">
+                <Shield className="text-[#F2EAD6]/40" size={18} />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-white/20">Lineage</p>
+                <p className="text-[15px] font-medium theme-ink premium-serif leading-tight">Join your Kul</p>
+                <p className="text-[12px] theme-dim mt-0.5">Connect with your ancestral lineage</p>
+              </div>
+              <ChevronRight size={16} className="text-white/20 flex-shrink-0" />
+            </motion.button>
+          )}
 
           {showAvatarPreview && avatarUrl && (
             <AvatarPreviewModal
@@ -1010,21 +1389,98 @@ export default function ProfileClient({
             />
           )}
 
-          <button 
-            onClick={() => {
-              const link = inviteFriendsToWhatsApp(liveProfile?.full_name || liveProfile?.username || 'A friend');
-              window.open(link, '_blank');
+          {/* Invite & Refer — referral card */}
+          <div className="-mx-1">
+            <InviteCard
+              userId={userId}
+              userName={liveProfile?.full_name ?? undefined}
+              tradition={profileTradition}
+            />
+          </div>
+
+          {/* Redesigned Share your practice Card */}
+          <button
+            type="button"
+            onClick={() => setSocialShareOpen(true)}
+            className="w-full text-left rounded-[2rem] p-5 relative overflow-hidden transition-all active:scale-[0.98] border border-[#C5A059]/25 hover:border-[#C5A059]/40"
+            style={{
+              background: 'linear-gradient(180deg, rgba(197,160,89,0.06) 0%, transparent 100%)',
             }}
-            className="clay-card rounded-[1.5rem] p-4 flex items-center gap-4 group hover:bg-[#C5A059]/5"
           >
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
-              <MessageCircle size={20} />
+            {/* Top section with emoji & glow */}
+            <div className="relative flex flex-col items-center justify-center mb-4 pt-4">
+              <div
+                className="pointer-events-none absolute w-24 h-24 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(197,160,89,0.18) 0%, transparent 70%)',
+                  filter: 'blur(10px)',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+              <span className="text-[2.5rem] leading-none z-10 select-none">
+                {TRADITIONS.find((t) => t.value === profileTradition)?.emoji ?? '🔱'}
+              </span>
             </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-medium theme-ink">Expand the Mandali</p>
-              <p className="text-xs theme-muted mt-0.5">Invite on WhatsApp</p>
+
+            {/* Display name */}
+            <p className="font-serif text-lg text-center theme-ink font-bold leading-tight">
+              {liveProfile?.full_name ?? liveProfile?.username ?? "Your Practice"}
+            </p>
+
+            {/* Subtitle with live values */}
+            <p className="text-xs text-center tracking-widest theme-muted mt-1.5 uppercase font-medium">
+              {streak}-day streak · {liveProfile?.seva_score ?? 0} seva · {PATH_LABELS[profileTradition] ?? 'Universal path'}
+            </p>
+
+            {/* Three Share Action Pills */}
+            <div className="mt-6 flex justify-center gap-6 w-full border-t border-white/5 pt-5">
+              {/* WhatsApp */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(34,197,94,0.08)',
+                    border: `1px solid rgba(34,197,94,0.2)`,
+                    color: '#22c55e',
+                  }}
+                >
+                  <MessageCircle size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">WhatsApp</span>
+              </div>
+
+              {/* X/Twitter */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `1px solid rgba(255,255,255,0.15)`,
+                    color: 'var(--brand-ink)',
+                  }}
+                >
+                  <Twitter size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">X / Twitter</span>
+              </div>
+
+              {/* Copy Link */}
+              <div className="flex flex-col items-center gap-1.5">
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105"
+                  style={{
+                    background: 'rgba(197,160,89,0.08)',
+                    border: `1px solid rgba(197,160,89,0.2)`,
+                    color: 'var(--brand-primary)',
+                  }}
+                >
+                  <LinkIcon size={22} />
+                </div>
+                <span className="text-[9px] theme-muted font-bold uppercase tracking-wider">Copy Link</span>
+              </div>
             </div>
-            <ChevronRight size={16} className="text-white/20 group-hover:translate-x-1 transition-transform" />
           </button>
 
           {hasSafetyItems && (
@@ -1061,185 +1517,7 @@ export default function ProfileClient({
             </div>
           )}
 
-          {/* ── Edit Form (Zenith Sheet) ── */}
-          {editing && (
-            <div className="clay-card rounded-[2.5rem] p-8 space-y-8 shadow-2xl fade-in relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-6">
-                <button onClick={() => setEditing(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center transition-all hover:bg-white/10 active:scale-90">
-                  <X size={20} className="text-[#F2EAD6]/40" />
-                </button>
-              </div>
-              
-              <div className="space-y-1">
-                <h2 className="text-2xl font-medium theme-ink premium-serif">Personal details</h2>
-                <p className="text-sm theme-muted">Update your spiritual identity</p>
-              </div>
-
-              {/* ── Tradition — locked ── */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <label className="text-xs font-medium theme-muted">Spiritual tradition</label>
-                  <span className="flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] border border-[var(--card-border)] font-medium">
-                    <Lock size={10} /> Secured
-                  </span>
-                </div>
-                {(() => {
-                  const t = TRADITIONS.find(t => t.value === form.tradition);
-                  return t ? (
-                    <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
-                      <span className="text-3xl drop-shadow-md">{t.emoji}</span>
-                      <div>
-                        <p className="font-medium text-sm theme-ink">{t.label}</p>
-                        <p className="text-xs theme-muted mt-0.5">{t.desc}</p>
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
-              </div>
-
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
-                    { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
-                  ].map(({ label, key, placeholder }) => (
-                    <div key={key} className="space-y-2">
-                      <label className="block text-xs font-medium theme-muted px-1">{label}</label>
-                      <input type="text" placeholder={placeholder}
-                        value={(form as Record<string, string>)[key]}
-                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                        className="zenith-input w-full"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">{sampradayaLabel}</label>
-                    <select value={form.sampradaya}
-                      onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
-                      className="zenith-input w-full appearance-none">
-                      <option value="">Select {sampradayaLabel.toLowerCase()}</option>
-                      {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">{ishtaDevataLabel}</label>
-                    <select value={form.ishta_devata}
-                      onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
-                      className="zenith-input w-full appearance-none">
-                      <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
-                      {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* ── Hindu-specific fields ── */}
-              {(activeTradition === 'hindu') && (
-                <div className="space-y-6">
-                  <p className="text-sm font-medium text-[var(--brand-primary)]">Vansh identity</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      { label: 'Gotra',      key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
-                      { label: 'Kul Devata', key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
-                      { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'    },
-                    ].map(({ label, key, placeholder }) => (
-                      <div key={key} className="space-y-2">
-                        <label className="block text-xs font-medium theme-muted px-1">{label}</label>
-                        <input type="text" placeholder={placeholder}
-                          value={(form as Record<string, string>)[key]}
-                          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          className="zenith-input w-full"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <p className="text-sm font-medium text-[var(--brand-primary)]">Life stage</p>
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
-                    <input
-                      type="date"
-                      value={form.date_of_birth}
-                      max={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
-                      className="zenith-input w-full"
-                      style={{ colorScheme: 'dark' }}
-                    />
-                    {form.date_of_birth && (() => {
-                      const suggested = ageToAshrama(form.date_of_birth);
-                      const age       = ageFromDob(form.date_of_birth);
-                      const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
-                      return (
-                        <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
-                          <SacredIcon name={meta.icon} size={16} strokeWidth={1.7} />
-                          <p className="text-xs font-medium theme-muted">
-                            Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </div>
-
-                  <div className="space-y-3">
-                    <label className="block text-xs font-medium theme-muted px-1">Practice path</label>
-                    <div className="grid grid-cols-2 gap-3">
-                      {getPracticePathOptions(activeTradition).map(opt => {
-                        const sel = form.gender_context === opt.key;
-                        return (
-                          <button
-                            key={opt.key}
-                            type="button"
-                            onClick={() => setForm({ ...form, gender_context: opt.key })}
-                            className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
-                              sel
-                                ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
-                                : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
-                            }`}
-                          >
-                            <div className="mb-2"><SacredIcon name={opt.icon} size={22} strokeWidth={1.6} /></div>
-                            <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
-                            <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-xs font-medium theme-muted px-1">Bio</label>
-                <textarea placeholder="Share your spiritual journey…"
-                  value={form.bio}
-                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
-                  rows={4}
-                  className="zenith-input w-full resize-none min-h-[100px]"
-                />
-              </div>
-
-              <div className="flex gap-4 pt-6">
-                <button onClick={() => setEditing(false)}
-                  className="flex-1 py-4 rounded-2xl text-sm font-medium theme-muted border border-[var(--card-border)] transition-all hover:bg-[var(--card-bg-soft)] active:scale-95">
-                  Cancel
-                </button>
-                <button onClick={saveProfile} disabled={saving}
-                  className="flex-1 py-4 rounded-2xl text-sm font-medium bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 disabled:opacity-50">
-                  {saving ? 'Saving...' : 'Save changes'}
-                </button>
-              </div>
-            </div>
-          )}
+          {/* ── Edit Form — now a BottomDrawer (see drawers section below) ── */}
 
           {/* ── Account Summary (Refined Zenith) ── */}
           <div className="clay-card rounded-[2.5rem] p-6 space-y-6">
@@ -1292,88 +1570,436 @@ export default function ProfileClient({
               ))}
             </div>
             <p className="text-[9px] text-white/10 font-medium">
-              Sanatan Sangam · Built with 🙏
+              Shoonaya · Built with 🙏
             </p>
           </div>
         </motion.div>
       </div>
 
-      {/* ── Drawers (Zenith Modals) ── */}
-      <BottomDrawer
+      {/* ── Drawers (Zenith Modals) — deferred until after first paint ── */}
+      {drawersMounted && <><BottomDrawer
         isOpen={koshOpen}
         onClose={() => setKoshOpen(false)}
         title="Sacred Kosh"
         description="Your treasury of divine symbols and relics."
       >
-        <div className="grid grid-cols-4 gap-5 py-6">
-          {SACRED_RELICS.map((relic) => {
-            const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu');
-            const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
-            const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+        {(() => {
+          const userTradition = liveProfile?.tradition ?? 'hindu';
+          const visibleRelics = SACRED_RELICS.filter(r => r.tradition === 'universal' || r.tradition === userTradition);
+          const unlockedRelics = getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, userTradition);
+          const nextRelic = visibleRelics.find(r => !unlockedRelics.some(u => u.id === r.id));
+          const unlockedCount = unlockedRelics.length;
 
-            return (
-              <div key={relic.id} className="flex flex-col items-center group">
-                <button 
-                  onClick={() => {
-                    if (!isUnlocked) {
-                      toast.error(`Maintain your streak to unlock ${relic.name} 🙏`);
-                      return;
-                    }
-                    if (isActive) return;
-                    patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
-                  }}
-                  className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
-                    isActive
-                      ? 'bg-[var(--brand-primary-soft)] border border-[var(--brand-primary)] shadow-sm'
-                      : isUnlocked
-                        ? 'bg-[var(--card-bg-soft)] border border-[var(--card-border)]'
-                        : 'bg-[var(--card-bg-soft)] border border-[var(--card-border)] grayscale opacity-40'
-                  } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[var(--brand-primary)]' : ''}`}
-                >
-                  {isActive && (
-                    <div className="absolute inset-0 bg-[var(--brand-primary-soft)] animate-pulse opacity-70" />
-                  )}
-                  
-                  <div className="relative w-14 h-14 flex items-center justify-center">
-                    {relic.imageUrl ? (
-                      <Image 
-                        src={relic.imageUrl} 
-                        alt={relic.name} 
-                        fill 
-                        className={`object-contain transition-transform duration-700 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
-                      />
+          return (
+            <div className="flex flex-col w-full py-6">
+              {nextRelic && (
+                <div className="bg-white/[0.04] border border-[#C5A059]/15 rounded-2xl p-4 mb-5 flex items-center gap-4">
+                  <div className="w-14 h-14 relative flex-shrink-0 bg-[var(--card-bg-soft)] rounded-[1.25rem] border border-[var(--card-border)] overflow-hidden flex items-center justify-center grayscale opacity-40">
+                    {nextRelic.imageUrl ? (
+                      <Image src={nextRelic.imageUrl} alt={nextRelic.name} fill className="object-contain" />
                     ) : (
-                      <span className="text-2xl">{isUnlocked ? '✨' : '🔒'}</span>
+                      <span className="text-2xl">🔒</span>
                     )}
                   </div>
-
-                  {isActive && (
-                    <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand-primary)] rounded-full flex items-center justify-center border-2 border-[var(--surface-raised)] z-10 shadow-lg">
-                      <Star size={10} className="text-white fill-white" />
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
+                    <span className="text-[10px] font-bold text-[#C5A059] uppercase tracking-wider mb-1.5 block">Next: {nextRelic.name}</span>
+                    <div className="w-full bg-white/[0.04] h-2.5 rounded-full overflow-hidden mb-1.5 border border-white/[0.02]">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, Math.max(0, nextRelic.milestoneType === 'streak' ? (streak / nextRelic.milestoneValue) * 100 : ((liveProfile?.seva_score ?? 0) / nextRelic.milestoneValue) * 100))}%` }}
+                        transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
+                        className="h-full bg-[#C5A059] rounded-full"
+                      />
                     </div>
-                  )}
-                </button>
-                <p className={`text-xs font-medium mt-4 text-center line-clamp-1 transition-opacity ${isActive ? 'text-[var(--brand-primary-strong)]' : isUnlocked ? 'theme-ink' : 'theme-muted opacity-40'}`}>
-                  {relic.name}
-                </p>
+                    <div className="flex justify-between items-center text-[11px] text-white/40 font-medium">
+                      <span>{nextRelic.milestoneType === 'streak' ? `Day ${streak} of ${nextRelic.milestoneValue}` : `${liveProfile?.seva_score ?? 0} / ${nextRelic.milestoneValue} pts`}</span>
+                      <span>{nextRelic.milestoneType === 'streak' ? `${nextRelic.milestoneValue - streak} more days away` : `${nextRelic.milestoneValue - (liveProfile?.seva_score ?? 0)} more pts away`}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-4 gap-5">
+                {visibleRelics.map((relic) => {
+                  const isUnlocked = unlockedRelics.some(r => r.id === relic.id);
+                  const isActive = (liveProfile as any)?.active_symbol_id === relic.id;
+                  const isNew = newRelicIds.includes(relic.id);
+
+                  return (
+                    <div key={relic.id} className="flex flex-col items-center group">
+                      <button 
+                        onClick={() => {
+                          if (!isUnlocked) {
+                            if (relic.milestoneType === 'streak') {
+                              toast.error(`${relic.milestoneValue - streak} more day${(relic.milestoneValue - streak) !== 1 ? 's' : ''} of streak to unlock ${relic.name} 🙏`);
+                            } else {
+                              toast.error(`${relic.milestoneValue - (liveProfile?.seva_score ?? 0)} more seva points to unlock ${relic.name} 🙏`);
+                            }
+                            return;
+                          }
+                          if (isActive) return;
+                          patchProfile({ active_symbol_id: relic.id } as any, `${relic.name} set as active symbol ✨`);
+                        }}
+                        className={`relative w-20 h-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 overflow-hidden ${
+                          isActive
+                            ? 'bg-[var(--brand-primary-soft)] border border-[var(--brand-primary)] shadow-sm'
+                            : isUnlocked
+                              ? 'bg-[var(--card-bg-soft)] border border-[var(--card-border)]'
+                              : 'bg-[var(--card-bg-soft)] border border-[var(--card-border)] grayscale opacity-40'
+                        } ${!isActive && isUnlocked ? 'hover:scale-110 hover:border-[var(--brand-primary)]' : ''}`}
+                      >
+                        {isActive && (
+                          <div className="absolute inset-0 bg-[var(--brand-primary-soft)] animate-pulse opacity-70" />
+                        )}
+
+                        {isNew && (
+                          <div className="absolute top-1 left-1 rounded bg-amber-400 px-1 text-[8px] font-bold uppercase text-black">
+                            New
+                          </div>
+                        )}
+                        
+                        <div className="relative w-14 h-14 flex items-center justify-center">
+                          {relic.imageUrl ? (
+                            <Image 
+                              src={relic.imageUrl} 
+                              alt={relic.name} 
+                              fill 
+                              className={`object-contain transition-transform duration-700 ${isUnlocked ? 'group-hover:scale-110' : ''}`}
+                            />
+                          ) : (
+                            <span className="text-2xl">{isUnlocked ? '✨' : '🔒'}</span>
+                          )}
+                        </div>
+
+                        {isActive && (
+                          <div className="absolute top-2 right-2 w-5 h-5 bg-[var(--brand-primary)] rounded-full flex items-center justify-center border-2 border-[var(--surface-raised)] z-10 shadow-lg">
+                            <Star size={10} className="text-white fill-white" />
+                          </div>
+                        )}
+                      </button>
+                      <p className={`text-xs font-medium mt-4 text-center line-clamp-1 transition-opacity ${isActive ? 'text-[var(--brand-primary-strong)]' : isUnlocked ? 'theme-ink' : 'theme-muted opacity-40'}`}>
+                        {relic.name}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-        {!SACRED_RELICS.some(r => getUnlockedRelics(streak, liveProfile?.seva_score ?? 0, liveProfile?.tradition ?? 'hindu').some(ur => ur.id === r.id)) && (
-          <div className="mt-8 p-6 rounded-[2rem] bg-[#C5A059]/5 border border-dashed border-[#C5A059]/20 text-center">
-            <p className="text-[12px] text-[#C5A059]/60 font-bold uppercase tracking-widest leading-relaxed">Continue your daily sadhana<br/>to unlock these relics 🙏</p>
+              {unlockedCount === 0 && (
+                <div className="mt-8 p-6 rounded-[2rem] bg-[#C5A059]/5 border border-dashed border-[#C5A059]/20 text-center">
+                  <p className="text-[12px] text-[#C5A059]/60 font-bold uppercase tracking-widest leading-relaxed">Continue your daily sadhana<br/>to unlock these relics 🙏</p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </BottomDrawer>
+
+      {/* Ashrama Life Stage Drawer */}
+      <BottomDrawer
+        isOpen={ashramaInfoOpen}
+        onClose={() => setAshramaInfoOpen(false)}
+        title="Ashrama Life Stage"
+        description="Understanding your current dharmic stage of life."
+      >
+        <div className="flex flex-col items-center text-center py-6">
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+            style={{ background: `${ashramaMeta.accent}18` }}
+          >
+            <SacredIcon name={ashramaMeta.icon} size={32} style={{ color: ashramaMeta.accent }} />
           </div>
-        )}
+          <h2 className="font-serif text-2xl font-bold theme-ink leading-tight">
+            {ashramaMeta.label}
+          </h2>
+          <span
+            className="mt-2 inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wider"
+            style={{
+              background: 'var(--card-bg-soft)',
+              color: 'var(--brand-primary)',
+              border: '1px solid var(--card-border)',
+            }}
+          >
+            {ashramaMeta.ageRange}
+          </span>
+          <p className="mt-6 text-sm theme-muted leading-relaxed max-w-md">
+            {ASHRAMA_DESCRIPTIONS[ashramaStage]}
+          </p>
+
+          <div className="w-full text-left mt-8 space-y-4 border-t border-white/5 pt-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#C5A059]">
+              What this means for your practice
+            </h3>
+            <ul className="space-y-3">
+              {(ASHRAMA_BULLETS[ashramaStage] ?? []).map((bullet, idx) => (
+                <li key={idx} className="flex gap-3 text-sm theme-muted leading-relaxed">
+                  <span className="text-[#C5A059]">•</span>
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </BottomDrawer>
+
+      {/* ── Edit Profile Drawer ── */}
+      <BottomDrawer
+        isOpen={editing}
+        onClose={() => setEditing(false)}
+        title="Personal details"
+        description="Update your spiritual identity"
+      >
+        <div className="space-y-8 py-2">
+          <div className="space-y-3">
+            <label className="text-xs font-medium theme-muted">Spiritual Level</label>
+            <div className="pt-1">
+              <TierBadge sevaScore={liveProfile?.seva_score ?? 0} size="md" />
+            </div>
+          </div>
+
+          {/* ── Tradition — locked ── */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <label className="text-xs font-medium theme-muted">Spiritual tradition</label>
+              <span className="flex items-center gap-1.5 text-[11px] px-3 py-1 rounded-full bg-[var(--brand-primary-soft)] text-[var(--brand-primary)] border border-[var(--card-border)] font-medium">
+                <Lock size={10} /> Secured
+              </span>
+            </div>
+            {(() => {
+              const t = TRADITIONS.find(t => t.value === form.tradition);
+              return t ? (
+                <div className="flex items-center gap-4 px-5 py-4 rounded-[1.5rem] bg-white/[0.03] border border-[#C5A059]/20 shadow-inner">
+                  <span className="text-3xl drop-shadow-md">{t.emoji}</span>
+                  <div>
+                    <p className="font-medium text-sm theme-ink">{t.label}</p>
+                    <p className="text-xs theme-muted mt-0.5">{t.desc}</p>
+                  </div>
+                </div>
+              ) : null;
+            })()}
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
+                { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
+              ].map(({ label, key, placeholder }) => (
+                <div key={key} className="space-y-2">
+                  <label className="block text-xs font-medium theme-muted px-1">{label}</label>
+                  <input type="text" placeholder={placeholder}
+                    value={(form as Record<string, string>)[key]}
+                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                    className="zenith-input w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">{sampradayaLabel}</label>
+                <select value={form.sampradaya}
+                  onChange={(e) => setForm({ ...form, sampradaya: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select {sampradayaLabel.toLowerCase()}</option>
+                  {sampradayaOptions.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">{ishtaDevataLabel}</label>
+                <select value={form.ishta_devata}
+                  onChange={(e) => setForm({ ...form, ishta_devata: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
+                  {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Rashi — used for Rashiphala personalisation and daily alerts */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <label className="block text-xs font-medium theme-muted px-1">Moon sign (Rashi)</label>
+                <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(197,160,89,0.12)', color: 'var(--brand-primary)' }}>
+                  Used for Rashiphala
+                </span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { key: 'aries',       emoji: '♈', label: 'Mesha' },
+                  { key: 'taurus',      emoji: '♉', label: 'Vrishabha' },
+                  { key: 'gemini',      emoji: '♊', label: 'Mithuna' },
+                  { key: 'cancer',      emoji: '♋', label: 'Karka' },
+                  { key: 'leo',         emoji: '♌', label: 'Simha' },
+                  { key: 'virgo',       emoji: '♍', label: 'Kanya' },
+                  { key: 'libra',       emoji: '♎', label: 'Tula' },
+                  { key: 'scorpio',     emoji: '♏', label: 'Vrishchika' },
+                  { key: 'sagittarius', emoji: '♐', label: 'Dhanu' },
+                  { key: 'capricorn',   emoji: '♑', label: 'Makara' },
+                  { key: 'aquarius',    emoji: '♒', label: 'Kumbha' },
+                  { key: 'pisces',      emoji: '♓', label: 'Meena' },
+                ].map((r) => (
+                  <button
+                    key={r.key}
+                    type="button"
+                    onClick={() => setForm({ ...form, rashi: form.rashi === r.key ? '' : r.key })}
+                    className="flex flex-col items-center gap-0.5 rounded-xl py-2 px-1 text-center transition-all border"
+                    style={{
+                      background: form.rashi === r.key ? 'rgba(197,160,89,0.14)' : 'var(--surface-soft)',
+                      borderColor: form.rashi === r.key ? 'rgba(197,160,89,0.5)' : 'var(--card-border)',
+                    }}
+                  >
+                    <span className="text-base leading-none">{r.emoji}</span>
+                    <span className="text-[9px] font-semibold leading-tight theme-muted">{r.label}</span>
+                  </button>
+                ))}
+              </div>
+              {!form.rashi && (
+                <p className="text-[10px] theme-muted px-1">Set your Vedic moon sign to get personalised daily Rashiphala readings.</p>
+              )}
+            </div>
+          </div>
+
+          {(activeTradition === 'hindu') && (
+            <div className="space-y-6">
+              <p className="text-sm font-medium text-[var(--brand-primary)]">Vansh identity</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  { label: 'Gotra',       key: 'gotra',      placeholder: 'e.g. Kashyapa'     },
+                  { label: 'Kul Devata',  key: 'kul_devata', placeholder: 'e.g. Shiva, Durga' },
+                  { label: 'Family Name', key: 'kul',        placeholder: 'Kul / Vansh'       },
+                ].map(({ label, key, placeholder }) => (
+                  <div key={key} className="space-y-2">
+                    <label className="block text-xs font-medium theme-muted px-1">{label}</label>
+                    <input type="text" placeholder={placeholder}
+                      value={(form as Record<string, string>)[key]}
+                      onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                      className="zenith-input w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            <p className="text-sm font-medium text-[var(--brand-primary)]">Life stage</p>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
+                <input
+                  type="date"
+                  value={form.date_of_birth}
+                  max={new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
+                  className="zenith-input w-full"
+                  style={{ colorScheme: 'dark' }}
+                />
+                {form.date_of_birth && (() => {
+                  const suggested = ageToAshrama(form.date_of_birth);
+                  const age       = ageFromDob(form.date_of_birth);
+                  const meta      = getAshramaMeta(activeTradition, suggested as LifeStage, form.gender_context);
+                  return (
+                    <div className="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-[#C5A059]/5 border border-[#C5A059]/10">
+                      <SacredIcon name={meta.icon} size={16} strokeWidth={1.7} />
+                      <p className="text-xs font-medium theme-muted">
+                        Age {age} · Suggested stage: <span style={{ color: meta.accent }}>{meta.label}</span>
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-xs font-medium theme-muted px-1">Practice path</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {getPracticePathOptions(activeTradition).map(opt => {
+                    const sel = form.gender_context === opt.key;
+                    return (
+                      <button
+                        key={opt.key}
+                        type="button"
+                        onClick={() => setForm({ ...form, gender_context: opt.key })}
+                        className={`rounded-2xl border p-4 text-left transition-all relative overflow-hidden ${
+                          sel
+                            ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
+                            : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
+                        }`}
+                      >
+                        <div className="mb-2"><SacredIcon name={opt.icon} size={22} strokeWidth={1.6} /></div>
+                        <p className={`text-sm font-medium ${sel ? 'text-[var(--brand-primary-strong)]' : 'theme-ink'}`}>{opt.label}</p>
+                        <p className="text-xs theme-muted mt-1 leading-snug">{opt.sub}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-medium theme-muted px-1">Bio</label>
+            <textarea placeholder="Share your spiritual journey…"
+              value={form.bio}
+              onChange={(e) => setForm({ ...form, bio: e.target.value })}
+              rows={4}
+              className="zenith-input w-full resize-none min-h-[100px]"
+            />
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button onClick={() => setEditing(false)}
+              className="flex-1 py-4 rounded-2xl text-sm font-medium theme-muted border border-[var(--card-border)] transition-all hover:bg-[var(--card-bg-soft)] active:scale-95">
+              Cancel
+            </button>
+            <button onClick={saveProfile} disabled={saving}
+              className="flex-1 py-4 rounded-2xl text-sm font-medium bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save changes'}
+            </button>
+          </div>
+        </div>
       </BottomDrawer>
 
       <BottomDrawer
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title="Sanatan Settings"
+        title="Shoonaya Settings"
         description="Personalize your spiritual experience."
       >
         <div className="space-y-8 py-6">
+
+          {/* Subscription & Billing */}
+          <div>
+            <p className="text-sm font-medium text-[var(--brand-primary)] mb-3">Plan & Billing</p>
+            <Link
+              href="/settings/subscription"
+              onClick={() => setSettingsOpen(false)}
+              className="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl border transition-all"
+              style={{
+                background: 'rgba(197,160,89,0.06)',
+                borderColor: 'rgba(197,160,89,0.18)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197,160,89,0.12)' }}>
+                  <span style={{ color: '#C5A059', fontSize: 14 }}>✦</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--divine-text)' }}>
+                    {isPro ? 'Zenith Plan' : 'Seeker (Free)'}
+                  </p>
+                  <p className="text-[11px]" style={{ color: 'rgba(197,160,89,0.6)' }}>
+                    {isPro ? 'Manage, cancel or change plan' : 'Upgrade to Zenith'}
+                  </p>
+                </div>
+              </div>
+              <span style={{ color: '#C5A059', fontSize: 18 }}>›</span>
+            </Link>
+          </div>
+
           {/* Theme */}
           <div className="space-y-4">
             <p className="text-sm font-medium text-[var(--brand-primary)]">Visual theme</p>
@@ -1406,18 +2032,13 @@ export default function ProfileClient({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-[var(--brand-primary)]">App identity</p>
-              {!isPro && (
-                 <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Pro Exclusive</span>
-              )}
             </div>
             <div className="flex gap-4">
               {[
-                { key: 'normal', img: '/assets/images/logos/logo-normal.png', label: 'Classic' },
-                { key: 'pro', img: '/assets/images/logos/logo-pro.png', label: 'Divine Gold' },
+                { key: 'normal', img: '/icons/icon-192x192.png', label: 'Shoonaya' },
               ].map((icon) => (
                 <button
                   key={icon.key}
-                  disabled={icon.key === 'pro' && !isPro}
                   onClick={() => {
                     setLocalAppIcon(icon.key as any);
                     localStorage.setItem('shoonaya_app_icon', icon.key);
@@ -1427,7 +2048,7 @@ export default function ProfileClient({
                     localAppIcon === icon.key
                       ? 'bg-[var(--brand-primary-soft)] border-[var(--brand-primary)] text-[var(--brand-primary-strong)] shadow-sm'
                       : 'bg-[var(--card-bg-soft)] border-[var(--card-border)] theme-muted hover:border-[var(--brand-primary)]'
-                  } ${icon.key === 'pro' && !isPro ? 'grayscale opacity-30 cursor-not-allowed' : ''}`}
+                  }`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl overflow-hidden shadow-2xl border border-white/10">
                     <Image src={icon.img} alt={icon.label} fill className="object-cover" />
@@ -1503,8 +2124,19 @@ export default function ProfileClient({
                   return (
                     <button
                       key={item.key}
-                      onClick={() => {
+                      onClick={async () => {
                         const next = !checked;
+                        if (next && getPermissionState() !== 'granted') {
+                          const granted = await requestNotificationPermission();
+                          if (!granted) {
+                            toast.error('Enable notifications in browser settings');
+                            return;
+                          }
+                          const playerId = await getPlayerId();
+                          if (playerId) {
+                            await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
+                          }
+                        }
                         setNotificationPrefs(prev => ({ ...prev, [item.key]: next }));
                         patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
                       }}
@@ -1520,6 +2152,43 @@ export default function ProfileClient({
                   );
                 })}
              </div>
+
+             {/* Japa Daily Reminder Section */}
+             <div className="space-y-3 pt-2">
+                 <div className="flex items-center justify-between px-5 py-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] shadow-sm">
+                   <div>
+                     <p className="text-sm font-medium theme-ink">Japa Reminder</p>
+                     <p className="text-xs theme-muted mt-0.5">Daily nudge if you haven&apos;t done Japa</p>
+                   </div>
+                   <button
+                     type="button"
+                     onClick={handleToggleReminder}
+                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                       reminderEnabled ? 'bg-[var(--brand-primary)]' : 'bg-[var(--text-dim)]/30'
+                     }`}
+                     aria-label="Toggle Japa Reminder"
+                   >
+                     <span
+                       className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                         reminderEnabled ? 'translate-x-5' : 'translate-x-0'
+                       }`}
+                     />
+                   </button>
+                 </div>
+
+                 {reminderEnabled && (
+                   <div className="flex items-center justify-between px-5 py-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg-soft)] shadow-sm">
+                     <span className="text-sm font-medium theme-ink">Remind me at</span>
+                     <input
+                       type="time"
+                       value={reminderTime}
+                       onChange={(e) => handleTimeChange(e.target.value)}
+                       className="rounded-lg border border-[var(--brand-primary)] bg-transparent px-3 py-1.5 text-sm theme-ink outline-none focus:ring-1 focus:ring-[var(--brand-primary)]"
+                     />
+                   </div>
+                 )}
+             </div>
+
              <button
                onClick={sendTestNotification}
                disabled={sendingTestNotification}
@@ -1555,15 +2224,32 @@ export default function ProfileClient({
             <p className="text-[10px] uppercase tracking-[0.25em] font-black text-[#C5A059]/60 px-1">Privacy & Data</p>
             <button 
               onClick={async () => {
-                const { data, error } = await supabase.rpc('export_user_data');
-                if (error) return toast.error('Export failed: ' + error.message);
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `shoonaya_data_${new Date().toISOString().split('T')[0]}.json`;
-                a.click();
-                toast.success('Data exported successfully! 🙏');
+                try {
+                  setReportLoading(true);
+                  const res = await fetch('/api/user/export');
+                  if (!res.ok) {
+                    const data = await res.json().catch(() => null);
+                    throw new Error(data?.error || 'Export failed');
+                  }
+
+                  const blob = await res.blob();
+                  const disposition = res.headers.get('Content-Disposition') ?? '';
+                  const match = disposition.match(/filename=([^;]+)/i);
+                  const fileName = match?.[1]?.replace(/["']/g, '') || `shoonaya-export-${new Date().toISOString().split('T')[0]}.json`;
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = fileName;
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                  URL.revokeObjectURL(url);
+                  toast.success('Your data export has been downloaded');
+                } catch (error) {
+                  toast.error(error instanceof Error ? error.message : 'Export failed');
+                } finally {
+                  setReportLoading(false);
+                }
               }}
               className="w-full flex items-center justify-between p-5 rounded-2xl bg-white/5 border border-white/5 text-[#F2EAD6]/80 hover:bg-white/10 transition-all group"
             >
@@ -1607,80 +2293,11 @@ export default function ProfileClient({
       </BottomDrawer>
 
       <AnimatePresence>
-        {inviteOpen && (() => {
-          const code = generateInviteCode(userId);
-          const baseUrl = typeof window !== 'undefined' ? window.location.origin : APP.BASE_URL;
-          const link = `${baseUrl}/join?ref=${code}`;
-          
-          const onCopy = async () => {
-            try {
-              await navigator.clipboard.writeText(link);
-              toast.success('Invite link copied! 🙏');
-            } catch {
-              toast.error('Failed to copy');
-            }
-          };
-
-          const onShare = async () => {
-            const shareText = `Join me on Shoonaya — your dharmic home.\n\nInvite code: ${code}\n${link}`;
-            if (typeof navigator !== 'undefined' && navigator.share) {
-              try {
-                await navigator.share({ title: 'Join Shoonaya 🙏', text: shareText, url: link });
-              } catch (err) {
-                if ((err as Error).name !== 'AbortError') onCopy();
-              }
-            } else {
-              onCopy();
-            }
-          };
-
-          return (
-            <motion.div className="fixed inset-0 z-[150] flex items-end" onClick={() => setInviteOpen(false)}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-              <motion.div className="relative w-full rounded-t-[3.5rem] p-10 space-y-8" onClick={e => e.stopPropagation()}
-                style={{ background: 'var(--surface-raised)', borderTop: '1px solid var(--card-border)', boxShadow: 'var(--profile-shadow)' }}
-                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-                transition={{ type: 'spring', damping: 28, stiffness: 180 }}>
-                <div className="w-16 h-1.5 rounded-full mx-auto mb-4 bg-[#C5A059]/30" />
-                <div className="flex items-center justify-between mb-2">
-                  <div className="space-y-1">
-                    <h3 className="text-3xl font-medium theme-ink premium-serif">Expand the circle</h3>
-                    <p className="text-sm theme-muted">Invite your Mandali</p>
-                  </div>
-                  <button onClick={() => setInviteOpen(false)} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 transition-all hover:bg-white/10 active:scale-90">
-                    <X size={22} className="text-[#F2EAD6]/40" />
-                  </button>
-                </div>
-                
-                <div className="space-y-6">
-                  <p className="text-sm theme-muted leading-relaxed">Your devotion grows when shared. Invite your family and close friends to the Shoonaya community.</p>
-                  
-                  <div className="relative group cursor-pointer" onClick={onCopy}>
-                    <div className="rounded-[2.5rem] p-10 text-center border bg-[#C5A059]/5 border-[#C5A059]/20 shadow-inner overflow-hidden relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <p className="text-[11px] mb-4 font-black uppercase tracking-[0.3em] text-[#C5A059]/40 relative z-10">Personal Invite Code</p>
-                      <p className="text-5xl font-serif font-black tracking-[0.15em] text-[#C5A059] uppercase drop-shadow-2xl relative z-10">{code}</p>
-                      <div className="absolute top-4 right-4 text-[#C5A059]/40 group-hover:text-[#C5A059] transition-colors">
-                        <Star size={16} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <button onClick={onCopy} className="py-5 rounded-2xl font-medium text-sm bg-[var(--card-bg-soft)] border border-[var(--card-border)] theme-ink transition-all hover:border-[var(--brand-primary)] active:scale-95 flex items-center justify-center gap-2">
-                      Copy Link
-                    </button>
-                    <button onClick={onShare} className="py-5 rounded-2xl font-medium text-sm bg-[var(--brand-primary)] text-white shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2">
-                      🙏 Share Now
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          );
-        })()}
+        {inviteOpen && (
+          <InviteModal userId={userId} onClose={() => setInviteOpen(false)} />
+        )}
       </AnimatePresence>
+
 
       {/* ── Kul Invite Modal (Sacred Invite) ── */}
       <AnimatePresence>
@@ -1720,7 +2337,10 @@ export default function ProfileClient({
                 <div className="grid grid-cols-2 gap-3">
                   <button 
                     onClick={() => {
-                      const link = `https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      const base = typeof window !== 'undefined'
+                        ? window.location.origin
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                      const link = `${base}/kul/join?code=${kulData.code}`;
                       navigator.clipboard.writeText(link);
                       toast.success('Join link copied 🙏');
                     }}
@@ -1734,7 +2354,10 @@ export default function ProfileClient({
 
                   <button 
                     onClick={() => {
-                      const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: https://shoonaya.app/kul/join?code=${kulData.code}`;
+                      const base = typeof window !== 'undefined'
+                        ? window.location.origin
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                      const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: ${base}/kul/join?code=${kulData.code}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="flex flex-col items-center gap-2 p-5 rounded-[2rem] bg-green-500/10 border border-green-500/20 hover:bg-green-500/20 transition-all active:scale-95 group"
@@ -1757,6 +2380,19 @@ export default function ProfileClient({
           </div>
         )}
       </AnimatePresence>
+      {/* Social Share Drawer */}
+      <AnimatePresence>
+        {socialShareOpen && (
+          <SocialShareDrawer
+            userId={userId}
+            userName={liveProfile?.full_name ?? liveProfile?.username ?? 'Seeker'}
+            streak={initialHighlightsStreak}
+            tradition={liveProfile?.tradition ?? null}
+            onClose={() => setSocialShareOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
       <BottomDrawer
         isOpen={showPhotoOptions}
         onClose={() => setShowPhotoOptions(false)}
@@ -1789,7 +2425,7 @@ export default function ProfileClient({
             </div>
           </button>
         </div>
-      </BottomDrawer>
+      </BottomDrawer></>}
     </motion.div>
   );
 }

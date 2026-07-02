@@ -9,7 +9,7 @@ import { validatePipelineTags, getDefaultTags, mergeTags, logValidationResult, b
 // Returns today's personalised shloka + practice suggestion for the authenticated user.
 // Checks the recommendations cache first; generates via the active Pramana provider if stale.
 
-// Curated fallback shlokas (tradition-neutral; used when Gemini is unavailable)
+// Curated fallback shlokas (tradition-neutral; used when Sarvam is unavailable)
 const FALLBACK_SHLOKAS = [
   {
     text:    'योगः कर्मसु कौशलम्',
@@ -94,7 +94,10 @@ export async function GET() {
     const seeking   = (profile?.seeking as string[])?.join(', ') ?? '';
     const name      = profile?.full_name ?? profile?.username ?? 'Seeker';
 
-    const dayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+    const dayOfWeek = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+      timeZone: tzRow?.timezone ?? 'Asia/Kolkata',
+    }).format(new Date());
     const startTime = Date.now();
 
     const prompt = `You are a warm, wise spiritual guide. Generate a personalised daily practice suggestion for ${name}.
@@ -109,11 +112,11 @@ Return ONLY this JSON (no markdown fences, no extra keys):
 {
   "suggestion": "<A specific, actionable practice for today. 2-3 short sentences.>",
   "nudge": "<One short warm sentence of encouragement>",
-  "context_label": "<A 2-4 word label>",
+  "context_label": "<A 2-4 word label for the day — e.g. 'Thursday Practice', 'Morning Sadhana'>",
   "action": {
-    "label": "<Short CTA label>",
-    "href": "<A valid internal route>",
-    "type": "<'link' | 'primary'>"
+    "label": "<Short CTA label, max 4 words>",
+    "href": "<MUST be one of exactly: /pathshala, /bhakti, /bhakti/mala, /japa, /bhakti/stotram, /panchang, /vrat, /quiz>",
+    "type": "primary"
   }
 }
 
@@ -130,7 +133,7 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
           user: prompt,
           temperature: 0.7,
           reasoningEffort: 'none',
-          maxOutputTokens: 250,
+          maxOutputTokens: 2048,
         },
         { 
           responseFormat: 'json',
@@ -163,7 +166,8 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
     }
 
     if (!raw) {
-      const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
+      const dayNum = parseInt(today.split('-')[2] ?? '1', 10);
+      const fallback = FALLBACK_SHLOKAS[dayNum % FALLBACK_SHLOKAS.length];
       return NextResponse.json({ suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice', from_cache: false });
     }
     const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/) || raw.match(/(\{[\s\S]*\})/);
@@ -173,8 +177,17 @@ Keep the tone warm, grounded, and personal — not preachy. No shloka text neede
     }
 
     if (!parsed?.suggestion) {
-      const fallback = FALLBACK_SHLOKAS[new Date().getDate() % FALLBACK_SHLOKAS.length];
+      const dayNum = parseInt(today.split('-')[2] ?? '1', 10);
+      const fallback = FALLBACK_SHLOKAS[dayNum % FALLBACK_SHLOKAS.length];
       parsed = { suggestion: fallback.suggestion, nudge: null, context_label: 'Today\'s practice' };
+    }
+
+    // Validate the AI-generated action href against the known route whitelist.
+    // Prevents hallucinated paths like /pathshala/bhagavad-gita causing 404s.
+    const VALID_ACTION_HREFS = new Set(['/pathshala', '/bhakti', '/bhakti/mala', '/japa', '/bhakti/stotram', '/panchang', '/vrat', '/quiz']);
+    const action = (parsed as any).action;
+    if (action?.href && !VALID_ACTION_HREFS.has(action.href)) {
+      action.href = '/pathshala'; // safe fallback
     }
 
     // ── 4. Cache result ──────────────────────────────────────────────────────────

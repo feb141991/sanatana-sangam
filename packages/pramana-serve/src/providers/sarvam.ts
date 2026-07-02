@@ -74,32 +74,46 @@ function buildThinkingParam(
 }
 
 /**
- * Returns the minimum max_tokens budget needed given a reasoning effort.
+ * Sarvam starter-tier hard limit on max_tokens.
+ * Sending anything above this causes an immediate HTTP 400.
+ */
+const SARVAM_MAX_TOKENS_LIMIT = 4096;
+
+/**
+ * Returns the minimum max_tokens budget needed given a reasoning effort,
+ * capped at the starter-tier limit (4096).
  *
  * When reasoning is enabled, some of the token budget is consumed by the
  * chain-of-thought before the final answer. We add the thinking budget on
  * top of the caller's requested output tokens so the final answer is never
- * squeezed out by the reasoning chain.
+ * squeezed out by the reasoning chain — but we never exceed the API cap.
  */
 function resolveMaxTokens(
   requestedTokens: number | undefined,
   effort: 'none' | 'low' | 'medium' | 'high' | undefined
 ): number {
-  const base = requestedTokens ?? 800;
+  const base = Math.max(requestedTokens ?? 800, 400);
+  let resolved: number;
   switch (effort) {
     case 'none':
-      return base;
+      resolved = base;
+      break;
     case 'low':
       // 1024 thinking + base for response
-      return Math.max(base, base + 1024);
+      resolved = base + 1024;
+      break;
     case 'medium':
-      return Math.max(base, base + 4096);
+      resolved = base + 4096;
+      break;
     case 'high':
-      return Math.max(base, base + 8192);
+      resolved = base + 8192;
+      break;
     default:
-      // Unknown effort or not set — use safe default that covers a reasoning chain
-      return Math.max(base, 4000);
+      // No reasoning effort set → thinking is disabled, no overhead needed
+      resolved = base;
+      break;
   }
+  return Math.min(resolved, SARVAM_MAX_TOKENS_LIMIT);
 }
 
 // ---------------------------------------------------------------------------
@@ -116,7 +130,7 @@ function resolveMaxTokens(
  * - Per-request reasoning effort via prompt.reasoningEffort → thinking param
  * - Automatic single retry with reasoning disabled on no-final-answer condition
  * - Typed errors (PramanaNoFinalAnswerError / PramanaOutputTruncatedError)
- *   so inference.ts can classify and fall through to Gemini
+ *   so inference.ts can classify and fall through to the next provider
  */
 export class SarvamProvider implements PramanaInferenceProvider {
   readonly info: InferenceProviderInfo = {
@@ -168,19 +182,18 @@ export class SarvamProvider implements PramanaInferenceProvider {
           `Retrying once with thinking disabled.`
         );
         try {
-          const retryResult = await this._doGenerate(request, 'none');
+          const retryResult = await this._doGenerate(request, 'none', true);
           console.info(
             `[${this.info.id}] final_success_after_retry: ` +
             `recovered with thinking disabled.`
           );
           return retryResult;
         } catch (retryErr) {
-          // Retry also failed — re-throw the original typed error so
-          // inference.ts can fall through to the Gemini fallback.
+          // Retry also failed — re-throw so inference.ts can fall through to the next available provider.
           console.warn(
             `[${this.info.id}] retry_failed: ` +
             `second attempt also failed to produce a complete final answer. ` +
-            `Falling through to next provider.`
+            `Re-throwing for caller to handle failover.`
           );
           throw err;
         }
@@ -192,13 +205,16 @@ export class SarvamProvider implements PramanaInferenceProvider {
   /**
    * Executes one HTTP round-trip to the Sarvam completions endpoint.
    *
-   * @param request      - The inference request
+   * @param request        - The inference request
    * @param effortOverride - If supplied, overrides request.prompt.reasoningEffort
    *                         for this specific call (used by the retry path).
+   * @param isRetry        - True only on the second attempt (thinking-disabled retry).
+   *                         Used to activate the enlarged token budget for that path.
    */
   private async _doGenerate(
     request: InferenceRequest,
-    effortOverride?: 'none' | 'low' | 'medium' | 'high' | undefined
+    effortOverride?: 'none' | 'low' | 'medium' | 'high' | undefined,
+    isRetry = false,
   ): Promise<InferenceResponse> {
     const effort = effortOverride !== undefined ? effortOverride : request.prompt.reasoningEffort;
     const url = 'https://api.sarvam.ai/v1/chat/completions';
@@ -235,9 +251,13 @@ export class SarvamProvider implements PramanaInferenceProvider {
 
     // ── Build payload ──────────────────────────────────────────────────────
     const thinking = buildThinkingParam(effort);
-    const maxTokens = effortOverride === 'none'
-      // Retry path: use the raw requested budget (no reasoning headroom needed)
-      ? (request.prompt.maxOutputTokens ?? 800)
+    const maxTokens = isRetry
+      // Retry path: thinking is disabled so no reasoning headroom needed,
+      // but if we got here because of OUTPUT_TRUNCATED the caller's budget
+      // was too small — double it (floor 2048) so the retry actually has a
+      // chance of succeeding instead of truncating a second time.
+      // Still cap at the starter-tier limit so we never send > 4096.
+      ? Math.min(Math.max((request.prompt.maxOutputTokens ?? 800) * 2, 2048), SARVAM_MAX_TOKENS_LIMIT)
       : resolveMaxTokens(request.prompt.maxOutputTokens, effort);
 
     const payload: Record<string, unknown> = {

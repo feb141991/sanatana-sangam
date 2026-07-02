@@ -64,6 +64,7 @@ export async function POST(request: Request) {
   const actionUrl       = '/my-progress';
 
   const serviceSupabase = createServiceRoleSupabaseClient();
+  const bodyText = `${copy.body} Fellow Shoonyas celebrate with you!`;
 
   // Upsert with ignoreDuplicates — idempotent: calling twice does nothing
   const { error: upsertError } = await serviceSupabase
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
     .upsert({
       user_id:          user.id,
       title:            `${copy.emoji} ${copy.title}`,
-      body:             copy.body,
+      body:             bodyText,
       emoji:            copy.emoji,
       type:             'milestone',
       action_url:       actionUrl,
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
     await sendOneSignalPush({
       userIds: [user.id],
       title:   `${copy.emoji} ${copy.title}`,
-      body:    copy.body,
+      body:    bodyText,
       url:     new URL(actionUrl, new URL(request.url).origin).toString(),
     });
   } catch (pushErr) {

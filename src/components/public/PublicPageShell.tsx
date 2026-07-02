@@ -24,20 +24,20 @@ export default function PublicPageShell({
   title,
   intro,
   children,
-  asideTitle = 'Launch Trust Layer',
-  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support as the product moves toward public launch.',
+  asideTitle = 'Platform Trust Layer',
+  asideBody = 'These pages define how Shoonaya handles privacy, conduct, safety, and support to ensure a pure dharmic environment.',
 }: PublicPageShellProps) {
   return (
-    <main className="min-h-screen px-4 py-6 md:py-10">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <nav className="glass-panel-strong rounded-[1.85rem] px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <Link href="/" className="flex items-center gap-2 text-[color:var(--text-cream)]">
+    <main className="min-h-screen overflow-x-hidden px-4 py-6 md:py-10">
+      <div className="max-w-6xl mx-auto min-w-0 space-y-6">
+        <nav className="glass-panel-strong min-w-0 rounded-[1.85rem] px-4 py-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Link href="/" className="flex min-w-0 items-center gap-2 text-[color:var(--text-cream)]">
             <BrandMark size="sm" />
-            <span className="font-display font-bold text-lg">
+            <span className="font-display font-bold text-lg break-words">
               Shoo<span className="text-gradient">naya</span>
             </span>
           </Link>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-[color:var(--brand-muted)]">
+          <div className="flex min-w-0 flex-wrap items-center gap-3 text-sm text-[color:var(--brand-muted)]">
             {footerLinks.map((link) => (
               <Link key={link.href} href={link.href} className="hover:text-[color:var(--text-cream)] transition-colors">
                 {link.label}
@@ -50,23 +50,23 @@ export default function PublicPageShell({
         </nav>
 
         <section className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <article className="glass-panel-strong rounded-[2rem] p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/75 mb-4">{eyebrow}</p>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-[color:var(--text-cream)] leading-tight mb-4">
+          <article className="glass-panel-strong min-w-0 rounded-[2rem] p-6 md:p-8">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#7B1A1A]/75 mb-4 break-words">{eyebrow}</p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-[color:var(--text-cream)] leading-tight mb-4 break-words">
               {title}
             </h1>
-            <p className="text-[color:var(--brand-muted)] leading-relaxed max-w-3xl">{intro}</p>
+            <p className="text-[color:var(--brand-muted)] leading-relaxed max-w-3xl break-words">{intro}</p>
 
-            <div className="mt-8 space-y-6 text-sm leading-7 text-[color:var(--text-muted-warm)]">
+            <div className="mt-8 min-w-0 space-y-6 text-sm leading-7 text-[color:var(--text-muted-warm)]">
               {children}
             </div>
           </article>
 
-          <aside className="space-y-4">
+          <aside className="min-w-0 space-y-4">
             <div className="glass-panel rounded-[1.75rem] p-5">
-              <p className="text-xs uppercase tracking-[0.22em] text-[#7B1A1A]/70 mb-2">Why This Matters</p>
-              <h2 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mb-3">{asideTitle}</h2>
-              <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed">{asideBody}</p>
+              <p className="text-xs uppercase tracking-[0.22em] text-[#7B1A1A]/70 mb-2 break-words">Why This Matters</p>
+              <h2 className="font-display text-2xl font-bold text-[color:var(--text-cream)] mb-3 break-words">{asideTitle}</h2>
+              <p className="text-sm text-[color:var(--brand-muted)] leading-relaxed break-words">{asideBody}</p>
             </div>
 
             <div className="glass-panel rounded-[1.75rem] p-5">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { getMoodInsights } from '@/lib/mood/insights';
 
 export async function GET(request: Request) {
   try {
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
     
     const { data: checkins, error } = await supabase
       .from('user_mood_checkins')
-      .select('*')
+      .select('id, user_id, before_mood, after_mood, completed_action, clicked_action, completed_at, context_need, context_time, context_type, session_status, dismissed, source_surface, recommended_action_type, recommended_action_target, reflection_note, closed_at, created_at')
       .eq('user_id', user.id)
       .eq('dismissed', false)
       .neq('session_status', 'abandoned')
@@ -34,26 +35,39 @@ export async function GET(request: Request) {
       });
     }
 
+    const insightSnapshot = await getMoodInsights(14).catch(() => null);
+
     // Try to get AI summary
     try {
-      const summaryPayload = checkins.map(c => ({
+      const summaryPayload = checkins.slice(0, 10).map(c => ({
         date: new Date(c.created_at).toLocaleDateString(),
         mood: c.before_mood,
-        action: c.completed_action || c.clicked_action || 'none'
+        action: c.completed_action || c.clicked_action || 'none',
+        need: c.context_need || 'unspecified',
+        time: c.context_time || 'unspecified',
+        practiceType: c.context_type || 'unspecified',
+        afterMood: c.after_mood || 'not_logged',
       }));
 
-      const prompt = `You are a wise, empathetic spiritual guide (Sanatan Dharma perspective).
-Review the following user's mood check-ins over the past 14 days. 
-They logged their mood and chose a spiritual action to practice.
-Provide a 2-3 sentence encouraging reflection on their emotional journey. Use a warm tone, and optionally 1-2 Sanskrit terms (like Sadhana, Abhyasa, Shanti). No bullet points.
+      const prompt = `You are Dharma Mitra, a grounded spiritual guide for Shoonaya.
+Review the user's last 14 days of mood check-ins and return a short reflection that is:
+- observably tied to the data
+- emotionally intelligent
+- suggestive, with one concrete next-step recommendation
+- 3 to 4 sentences only
+- warm but not vague
+- no bullet points
+- no exaggerated mysticism
+- no generic praise
 
-Data: ${JSON.stringify(summaryPayload)}
+Analytics snapshot: ${JSON.stringify(insightSnapshot)}
+Recent check-ins: ${JSON.stringify(summaryPayload)}
 `;
 
       const aiResponse = await generateWithProvider({
         user: prompt,
         temperature: 0.7,
-        maxOutputTokens: 500,
+        maxOutputTokens: 2048,
         reasoningEffort: 'none'
       }, {
         responseFormat: 'text'
@@ -67,8 +81,17 @@ Data: ${JSON.stringify(summaryPayload)}
     }
 
     // Fallback if AI fails or times out
+    const fallbackMood = checkins[0]?.before_mood ?? 'recently mixed';
+    const fallbackCompleted = checkins.filter((checkin) => Boolean(checkin.completed_action && checkin.completed_at)).length;
+    const fallbackNeedCounts = checkins.reduce<Record<string, number>>((acc, checkin) => {
+      if (!checkin.context_need) return acc;
+      acc[checkin.context_need] = (acc[checkin.context_need] ?? 0) + 1;
+      return acc;
+    }, {});
+    const fallbackTopNeed = Object.entries(fallbackNeedCounts).sort((left, right) => right[1] - left[1])[0]?.[0] ?? null;
+
     return NextResponse.json({ 
-      summary: `You have checked in ${checkins.length} times in the past two weeks. Keep up your consistent practice, the path reveals itself step by step.` 
+      summary: `You checked in ${checkins.length} times over the last two weeks, most recently feeling ${fallbackMood}. You completed ${fallbackCompleted} practices,${fallbackTopNeed ? ` and ${fallbackTopNeed} appears as a recurring need.` : ''} Keep the next step simple and repeat the practice that feels easiest to complete before you add more variety.` 
     });
 
   } catch (err) {

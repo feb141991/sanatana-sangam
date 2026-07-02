@@ -6,6 +6,7 @@ import { fetchMessageThreads, fetchThreadMessages, markThreadRead, sendThreadMes
 import type { MessageThread, ThreadMessage } from '@/lib/contracts/messages';
 import { queryKeys } from '@/lib/query-keys';
 import { getRealtimeTransport } from '@/lib/realtime/transport';
+import { createClient } from '@/lib/supabase';
 
 export function useMessageThreadsQuery(userId: string, initialData?: MessageThread[]) {
   return useQuery({
@@ -28,7 +29,28 @@ export function useThreadMessagesQuery(threadId: string | null, userId: string, 
       void queryClient.invalidateQueries({ queryKey: queryKeys.messages.threads(userId) });
     });
 
-    return unsubscribe;
+    const supabase = createClient();
+    const dbChannel = supabase
+      .channel(`db-thread-messages:${threadId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'thread_messages',
+          filter: `thread_id=eq.${threadId}`,
+        },
+        () => {
+          void queryClient.invalidateQueries({ queryKey: queryKeys.messages.thread(userId, threadId) });
+          void queryClient.invalidateQueries({ queryKey: queryKeys.messages.threads(userId) });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      unsubscribe();
+      void supabase.removeChannel(dbChannel);
+    };
   }, [queryClient, threadId, userId]);
 
   return useQuery({

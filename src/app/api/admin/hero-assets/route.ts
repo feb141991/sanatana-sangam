@@ -1,4 +1,4 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 
@@ -20,7 +20,7 @@ function slugifyFileName(value: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const authError = checkAdminAuth(request);
+  const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
   const { data, error: metadataError } = await admin.supabase
     .from('hero_assets')
     .insert(metadata)
-    .select('*')
+    .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, tags, priority, is_active, uploaded_by')
     .single();
 
   return NextResponse.json({

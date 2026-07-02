@@ -64,12 +64,17 @@ export async function POST(req: Request) {
   try {
     const { data } = await supabase
       .from('content_meanings')
-      .select('meaning')
+      .select('meaning, source_meaning_hash')
       .eq('entry_id', entryId)
       .eq('language', targetLanguage)
       .maybeSingle();
 
-    if (typeof data?.meaning === 'string' && data.meaning.trim()) {
+    const currentHash = stableHash(sourceMeaning);
+    if (
+      typeof data?.meaning === 'string' &&
+      data.meaning.trim() &&
+      data.source_meaning_hash === currentHash
+    ) {
       emitEvent({ severity: 'P3', domain: 'translation', route: '/api/i18n/meaning', context: { status: 'cached' } });
       return NextResponse.json({ meaning: data.meaning, language: targetLanguage, status: 'cached' });
     }
@@ -143,7 +148,9 @@ export async function POST(req: Request) {
     }
 
     // Store to reasoning cache (non-blocking)
-    storeReasoningCache('meaning_generate', cacheKey, { meaning, aiMetadata }).catch(() => {});
+    storeReasoningCache('meaning_generate', cacheKey, { meaning, aiMetadata }).catch((e: unknown) => {
+      console.warn('[i18n/meaning] reasoning cache write failed:', (e as Error)?.message);
+    });
 
     await supabase
       .from('content_meanings')

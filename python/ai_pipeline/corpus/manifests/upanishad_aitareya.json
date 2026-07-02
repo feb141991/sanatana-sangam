@@ -1,0 +1,21 @@
+{
+  "doc_id": "pathshala_upanishads_aitareya",
+  "title": "Aitareya Upanishad",
+  "tradition": "Sanatana Dharma",
+  "corpus": "upanishads",
+  "section_id": "aitareya",
+  "source_name": "Principal Upanishads",
+  "source_class": "scripture",
+  "rights_status": "public_domain",
+  "language": "en",
+  "translation_basis": "Robert Ernest Hume (1921)",
+  "is_live_in_app": true,
+  "content": [
+    {
+      "ref": "1.1.1",
+      "sanskrit": "आत्मा वा इदमेक एवाग्र आसीत् नान्यत् किंचन मिषत् । स ईक्षत लोकान्नु सृजा इति ॥",
+      "transliteration": "ātmā vā idameka evāgra āsīt nānyat kiṁcana miṣat | sa īkṣata lokānnu sṛjā iti ||",
+      "text": "In the beginning, this was the Self alone — there was nothing else that blinked. He thought, 'Let me now create the worlds.'"
+    }
+  ]
+}

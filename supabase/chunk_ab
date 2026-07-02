@@ -1,0 +1,5000 @@
+ALTER TABLE public.pathshala_recordings OWNER TO postgres;
+
+--
+-- Name: pathshala_recitation_stats; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.pathshala_recitation_stats WITH (security_invoker='true') AS
+ SELECT r.user_id,
+    count(*) AS total_recordings,
+    count(*) FILTER (WHERE (r.status = 'scored'::text)) AS scored_count,
+    round(avg(rr.overall_score), 2) AS avg_overall_score,
+    round(avg(rr.score_uccharan), 2) AS avg_uccharan,
+    round(avg(rr.score_fluency), 2) AS avg_fluency,
+    count(DISTINCT r.chunk_id) AS unique_verses_attempted,
+    count(*) FILTER (WHERE (rr.is_certified = true)) AS certified_count,
+    max(rr.reviewed_at) AS last_reviewed_at
+   FROM (public.pathshala_recordings r
+     LEFT JOIN public.pathshala_recitation_reviews rr ON (((rr.recording_id = r.id) AND (rr.reviewer_type = 'ai'::text))))
+  GROUP BY r.user_id;
+
+
+ALTER VIEW public.pathshala_recitation_stats OWNER TO postgres;
+
+--
+-- Name: pathshala_verse_mastery; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.pathshala_verse_mastery (
+    user_id uuid NOT NULL,
+    chunk_id uuid NOT NULL,
+    best_ai_score numeric(3,1),
+    best_guru_score numeric(3,1),
+    attempt_count integer DEFAULT 0 NOT NULL,
+    last_attempt_at timestamp with time zone,
+    certified boolean DEFAULT false NOT NULL,
+    certified_by uuid,
+    certified_at timestamp with time zone,
+    memorization_sm2 integer DEFAULT 0 NOT NULL,
+    comprehension integer DEFAULT 0 NOT NULL,
+    is_fully_mastered boolean GENERATED ALWAYS AS ((certified AND (memorization_sm2 >= 3) AND (comprehension >= 4))) STORED,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.pathshala_verse_mastery OWNER TO postgres;
+
+--
+-- Name: scripture_chunks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.scripture_chunks (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    text_id text NOT NULL,
+    chapter integer NOT NULL,
+    verse integer NOT NULL,
+    sanskrit text NOT NULL,
+    transliteration text,
+    translation text NOT NULL,
+    word_by_word jsonb,
+    commentary text,
+    tags text[] DEFAULT ARRAY[]::text[],
+    embedding public.vector(384),
+    created_at timestamp with time zone DEFAULT now(),
+    search_vector tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, COALESCE(translation, ''::text))) STORED,
+    language text DEFAULT 'sa'::text,
+    script text DEFAULT 'Devanagari'::text,
+    tradition_region text,
+    text_category text DEFAULT 'shruti'::text
+);
+
+
+ALTER TABLE public.scripture_chunks OWNER TO postgres;
+
+--
+-- Name: COLUMN scripture_chunks.transliteration; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.scripture_chunks.transliteration IS 'IAST romanisation for Sanskrit; helpful for non-script readers and STT comparison';
+
+
+--
+-- Name: COLUMN scripture_chunks.language; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.scripture_chunks.language IS 'ISO 639-1/3 language code: sa=Sanskrit, hi=Hindi, ta=Tamil, bn=Bengali, te=Telugu, kn=Kannada, ml=Malayalam, mr=Marathi, gu=Gujarati, or=Odia, awa=Awadhi, en=English';
+
+
+--
+-- Name: COLUMN scripture_chunks.script; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.scripture_chunks.script IS 'Writing system: Devanagari, Tamil, Bengali, Telugu, Kannada, Malayalam, Gujarati, Odia, IAST, Latin';
+
+
+--
+-- Name: COLUMN scripture_chunks.tradition_region; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.scripture_chunks.tradition_region IS 'Geographic tradition: north | south | east | west | pan (pan-India)';
+
+
+--
+-- Name: COLUMN scripture_chunks.text_category; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.scripture_chunks.text_category IS 'Canonical text classification for corpus browsing';
+
+
+--
+-- Name: pathshala_today_lessons; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.pathshala_today_lessons WITH (security_invoker='true') AS
+ SELECT e.user_id,
+    e.id AS enrollment_id,
+    e.path_id,
+    p.title AS path_title,
+    p.cover_emoji,
+    e.current_position,
+    pc.chunk_id,
+    pc.week_number,
+    pc.day_number,
+    sc.text_id,
+    sc.chapter,
+    sc.verse,
+    sc.sanskrit AS original_text,
+    sc.translation AS default_translation,
+    sc.language,
+    sc.script,
+    sc.transliteration,
+    COALESCE(pr.read_count, 0) AS times_read,
+    COALESCE(pr.recitation_score, (0)::numeric) AS best_recitation,
+    vm.certified
+   FROM (((((public.pathshala_enrollments e
+     JOIN public.pathshala_paths p ON ((p.id = e.path_id)))
+     JOIN public.pathshala_path_chunks pc ON (((pc.path_id = e.path_id) AND (pc."position" = e.current_position))))
+     JOIN public.scripture_chunks sc ON ((sc.id = pc.chunk_id)))
+     LEFT JOIN public.pathshala_progress pr ON (((pr.user_id = e.user_id) AND (pr.chunk_id = pc.chunk_id) AND (pr.path_id = e.path_id))))
+     LEFT JOIN public.pathshala_verse_mastery vm ON (((vm.user_id = e.user_id) AND (vm.chunk_id = pc.chunk_id))))
+  WHERE ((e.paused = false) AND (e.completed_at IS NULL));
+
+
+ALTER VIEW public.pathshala_today_lessons OWNER TO postgres;
+
+--
+-- Name: pathshala_translations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.pathshala_translations (
+    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
+    chunk_id uuid NOT NULL,
+    language text NOT NULL,
+    script text NOT NULL,
+    translation text NOT NULL,
+    transliteration text,
+    translator text,
+    is_ai_generated boolean DEFAULT false NOT NULL,
+    verified boolean DEFAULT false NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.pathshala_translations OWNER TO postgres;
+
+--
+-- Name: pathshala_user_badges; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.pathshala_user_badges (
+    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    badge_id uuid NOT NULL,
+    earned_at timestamp with time zone DEFAULT now() NOT NULL,
+    context jsonb DEFAULT '{}'::jsonb
+);
+
+
+ALTER TABLE public.pathshala_user_badges OWNER TO postgres;
+
+--
+-- Name: pathshala_user_state; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.pathshala_user_state (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    tradition text NOT NULL,
+    section_id text NOT NULL,
+    entry_id text NOT NULL,
+    last_opened_at timestamp with time zone DEFAULT now() NOT NULL,
+    bookmarked_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT pathshala_user_state_tradition_check CHECK ((tradition = ANY (ARRAY['hindu'::text, 'sikh'::text, 'buddhist'::text, 'jain'::text])))
+);
+
+
+ALTER TABLE public.pathshala_user_state OWNER TO postgres;
+
+--
+-- Name: post_comments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.post_comments (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    post_id uuid NOT NULL,
+    author_id uuid NOT NULL,
+    body text NOT NULL,
+    parent_id uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.post_comments OWNER TO postgres;
+
+--
+-- Name: post_upvotes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.post_upvotes (
+    post_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.post_upvotes OWNER TO postgres;
+
+--
+-- Name: posts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.posts (
+    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    author_id uuid NOT NULL,
+    mandali_id uuid,
+    content text NOT NULL,
+    type text DEFAULT 'update'::text,
+    upvotes integer DEFAULT 0,
+    comment_count integer DEFAULT 0,
+    is_pinned boolean DEFAULT false,
+    event_date timestamp with time zone,
+    event_location text,
+    CONSTRAINT posts_type_check CHECK ((type = ANY (ARRAY['update'::text, 'event'::text, 'question'::text, 'announcement'::text])))
+);
+
+
+ALTER TABLE public.posts OWNER TO postgres;
+
+--
+-- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.profiles (
+    id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    full_name text NOT NULL,
+    username text NOT NULL,
+    avatar_url text,
+    bio text,
+    city text,
+    country text,
+    latitude double precision,
+    longitude double precision,
+    sampradaya text,
+    ishta_devata text,
+    spiritual_level text DEFAULT 'jigyasu'::text,
+    legacy_family_name text,
+    gotra text,
+    languages text[] DEFAULT ARRAY['en'::text],
+    seeking text[] DEFAULT ARRAY[]::text[],
+    seva_score integer DEFAULT 0,
+    mandali_id uuid,
+    kul_devata text,
+    home_town text,
+    shloka_streak integer DEFAULT 0,
+    last_shloka_date date,
+    onesignal_player_id text,
+    country_code text,
+    tradition text,
+    custom_greeting text,
+    kul_id uuid,
+    neighbourhood text,
+    looking_for_satsang boolean DEFAULT false NOT NULL,
+    location_visible boolean DEFAULT false NOT NULL,
+    timezone text,
+    wants_festival_reminders boolean DEFAULT true NOT NULL,
+    wants_shloka_reminders boolean DEFAULT true NOT NULL,
+    wants_community_notifications boolean DEFAULT true NOT NULL,
+    wants_family_notifications boolean DEFAULT true NOT NULL,
+    notification_quiet_hours_start smallint,
+    notification_quiet_hours_end smallint,
+    app_language text DEFAULT 'en'::text NOT NULL,
+    scripture_script text DEFAULT 'original'::text NOT NULL,
+    show_transliteration boolean DEFAULT true NOT NULL,
+    meaning_language text DEFAULT 'en'::text NOT NULL,
+    is_pro boolean DEFAULT false NOT NULL,
+    pro_activated_at timestamp with time zone,
+    pro_note text,
+    life_stage text,
+    gender_context text,
+    date_of_birth date,
+    life_stage_locked boolean DEFAULT false NOT NULL,
+    transliteration_language text DEFAULT 'en'::text NOT NULL,
+    is_admin boolean DEFAULT false,
+    is_banned boolean DEFAULT false,
+    ban_reason text,
+    karma_points integer DEFAULT 0 NOT NULL,
+    is_founding_member boolean DEFAULT false NOT NULL,
+    founding_number integer,
+    active_symbol_id text,
+    consent_religious_data boolean DEFAULT false NOT NULL,
+    consent_updated_at timestamp with time zone,
+    cover_url text,
+    wants_nitya_reminders boolean DEFAULT true NOT NULL,
+    subscription_status text DEFAULT 'free'::text NOT NULL,
+    subscription_expires_at timestamp with time zone,
+    entitlement_source text,
+    entitlement_updated_at timestamp with time zone,
+    show_sadhana_highlights boolean DEFAULT false NOT NULL,
+    weekly_seva integer DEFAULT 0,
+    monthly_seva integer DEFAULT 0,
+    streak_freeze_count integer DEFAULT 0,
+    last_freeze_used date,
+    onboarding_completed boolean DEFAULT false,
+    onboarding_goal text,
+    japa_reminder_enabled boolean DEFAULT false,
+    japa_reminder_time text DEFAULT '07:00'::text,
+    marketing_consent boolean DEFAULT false,
+    email_newsletter boolean DEFAULT false,
+    whatsapp_updates boolean DEFAULT false,
+    newsletter_frequency text DEFAULT 'weekly'::text,
+    comm_prefs_set boolean DEFAULT false,
+    email_festivals boolean DEFAULT true,
+    unsubscribe_token text DEFAULT (gen_random_uuid())::text,
+    quiz_reminder_enabled boolean DEFAULT false,
+    quiz_reminder_time text DEFAULT '08:00'::text,
+    nitya_reminder_enabled boolean DEFAULT false,
+    nitya_reminder_time text DEFAULT '06:30'::text,
+    CONSTRAINT profiles_gender_context_check CHECK ((gender_context = ANY (ARRAY['female'::text, 'general'::text]))),
+    CONSTRAINT profiles_life_stage_check CHECK ((life_stage = ANY (ARRAY['brahmacharya'::text, 'grihastha'::text, 'vanaprastha'::text, 'sannyasa'::text]))),
+    CONSTRAINT profiles_subscription_status_check CHECK ((subscription_status = ANY (ARRAY['free'::text, 'pro'::text, 'kul_pro'::text, 'grace'::text, 'expired'::text])))
+);
+
+
+ALTER TABLE public.profiles OWNER TO postgres;
+
+--
+-- Name: COLUMN profiles.is_pro; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.is_pro IS 'True when the user has an active Sangam Pro subscription or early access grant.';
+
+
+--
+-- Name: COLUMN profiles.pro_note; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.pro_note IS 'Free-text note for how Pro was granted (early_access, coupon code, payment reference, etc.)';
+
+
+--
+-- Name: COLUMN profiles.life_stage; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.life_stage IS 'User''s current Ashrama / life stage. Universal key regardless of tradition.
+   brahmacharya = student (0-25), grihastha = householder (25-50),
+   vanaprastha = forest dweller / elder (50-75), sannyasa = renunciate (75+).
+   NULL means the user has not yet selected a stage (skip Ashrama section).';
+
+
+--
+-- Name: COLUMN profiles.gender_context; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.gender_context IS 'Practice path preference. female = Stridharma duties; general = default path. NULL = unset.';
+
+
+--
+-- Name: COLUMN profiles.transliteration_language; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.transliteration_language IS 'Preferred script for transliteration (en for Roman, hi for Devanagari)';
+
+
+--
+-- Name: COLUMN profiles.active_symbol_id; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.active_symbol_id IS 'The ID of the sacred symbol (relic) currently active for the user profile.';
+
+
+--
+-- Name: COLUMN profiles.consent_religious_data; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.consent_religious_data IS 'Explicit consent for processing religious/spiritual data (GDPR Art. 9)';
+
+
+--
+-- Name: COLUMN profiles.subscription_status; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.subscription_status IS 'Canonical server-side entitlement state. Replaces ad hoc is_pro-only gating for production billing.';
+
+
+--
+-- Name: COLUMN profiles.entitlement_source; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.entitlement_source IS 'Source of current entitlement truth, e.g. early_access, admin_grant, stripe:webhook, app_store, play_store.';
+
+
+--
+-- Name: COLUMN profiles.show_sadhana_highlights; Type: COMMENT; Schema: public; Owner: postgres
+--
+
+COMMENT ON COLUMN public.profiles.show_sadhana_highlights IS 'When true, this user''s sadhana highlights (beads, streak, shields) are visible on their public profile.';
+
+
+--
+-- Name: push_subscriptions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.push_subscriptions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    endpoint text NOT NULL,
+    p256dh text NOT NULL,
+    auth text NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.push_subscriptions OWNER TO postgres;
+
+--
+-- Name: quiz_responses; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.quiz_responses (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    date date DEFAULT CURRENT_DATE NOT NULL,
+    question text NOT NULL,
+    chosen_index integer NOT NULL,
+    correct_index integer NOT NULL,
+    is_correct boolean NOT NULL,
+    tradition text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    explanation text,
+    daily_quiz_id uuid,
+    streak_at_answer smallint
+);
+
+
+ALTER TABLE public.quiz_responses OWNER TO postgres;
+
+--
+-- Name: quiz_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.quiz_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    tradition text NOT NULL,
+    topic text NOT NULL,
+    difficulty text NOT NULL,
+    questions_total integer DEFAULT 5 NOT NULL,
+    questions_correct integer DEFAULT 0 NOT NULL,
+    karma_earned integer DEFAULT 0 NOT NULL,
+    completed_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT quiz_sessions_difficulty_check CHECK ((difficulty = ANY (ARRAY['seeker'::text, 'gyani'::text, 'pandit'::text])))
+);
+
+
+ALTER TABLE public.quiz_sessions OWNER TO postgres;
+
+--
+-- Name: reading_progress; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.reading_progress (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    text_id text NOT NULL,
+    chapter integer NOT NULL,
+    verse integer NOT NULL,
+    completed boolean DEFAULT false,
+    bookmarked boolean DEFAULT false,
+    time_spent_s integer DEFAULT 0,
+    read_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.reading_progress OWNER TO postgres;
+
+--
+-- Name: recommendations; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.recommendations (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    date date NOT NULL,
+    type text NOT NULL,
+    content jsonb NOT NULL,
+    generated_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.recommendations OWNER TO postgres;
+
+--
+-- Name: sankalpa; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sankalpa (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    type text NOT NULL,
+    description text NOT NULL,
+    target_days integer NOT NULL,
+    target_count integer,
+    mantra_id text,
+    text_id text,
+    started_at timestamp with time zone DEFAULT now(),
+    current_streak integer DEFAULT 0,
+    longest_streak integer DEFAULT 0,
+    status text DEFAULT 'active'::text,
+    completed_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.sankalpa OWNER TO postgres;
+
+--
+-- Name: sankalpa_checkins; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sankalpa_checkins (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    sankalpa_id uuid NOT NULL,
+    checked_date date NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.sankalpa_checkins OWNER TO postgres;
+
+--
+-- Name: sankalpa_reflections; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sankalpa_reflections (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    sankalpa_id uuid NOT NULL,
+    reflection_type text DEFAULT 'midpoint'::text NOT NULL,
+    mood text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT sankalpa_reflections_mood_check CHECK ((mood = ANY (ARRAY['strong'::text, 'struggling'::text, 'grateful'::text])))
+);
+
+
+ALTER TABLE public.sankalpa_reflections OWNER TO postgres;
+
+--
+-- Name: sankalpas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sankalpas (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    text text NOT NULL,
+    tradition text DEFAULT 'hindu'::text NOT NULL,
+    related_practice text,
+    target_days integer DEFAULT 30 NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    status text DEFAULT 'active'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    completed_at timestamp with time zone,
+    CONSTRAINT sankalpas_status_check CHECK ((status = ANY (ARRAY['active'::text, 'completed'::text, 'abandoned'::text])))
+);
+
+
+ALTER TABLE public.sankalpas OWNER TO postgres;
+
+--
+-- Name: sanskars; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sanskars (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug text NOT NULL,
+    sequence_number integer NOT NULL,
+    name text NOT NULL,
+    name_sanskrit text,
+    name_meaning text,
+    life_stage text NOT NULL,
+    typical_age text,
+    significance text NOT NULL,
+    presiding_deity text,
+    key_mantras text[],
+    samagri text[],
+    vidhi_steps jsonb NOT NULL,
+    duration_hours double precision,
+    priest_required boolean DEFAULT true,
+    can_self_perform boolean DEFAULT false,
+    notes text,
+    CONSTRAINT sanskars_life_stage_check CHECK ((life_stage = ANY (ARRAY['prenatal'::text, 'birth'::text, 'infancy'::text, 'childhood'::text, 'education'::text, 'adulthood'::text, 'marriage'::text, 'elder'::text, 'death'::text])))
+);
+
+
+ALTER TABLE public.sanskars OWNER TO postgres;
+
+--
+-- Name: sattvic_sessions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.sattvic_sessions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    mode text NOT NULL,
+    duration_secs integer NOT NULL,
+    environment text NOT NULL,
+    mantra text,
+    completed_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT sattvic_sessions_mode_check CHECK ((mode = ANY (ARRAY['breath'::text, 'chant'::text, 'reading'::text, 'silent'::text])))
+);
+
+
+ALTER TABLE public.sattvic_sessions OWNER TO postgres;
+
+--
+-- Name: seva_log; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.seva_log (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    seva_type text NOT NULL,
+    note text,
+    logged_at timestamp with time zone DEFAULT now() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.seva_log OWNER TO postgres;
+
+--
+-- Name: seva_task_completions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.seva_task_completions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_id uuid NOT NULL,
+    task_key text NOT NULL,
+    points integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public.seva_task_completions OWNER TO postgres;
+
+--
+-- Name: shlokas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.shlokas (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    name text NOT NULL,
+    devanagari text NOT NULL,
+    translation text,
+    sync_metadata jsonb DEFAULT '[]'::jsonb,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.shlokas OWNER TO postgres;
+
+--
+-- Name: thread_messages; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.thread_messages (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    thread_id uuid NOT NULL,
+    sender_id uuid,
+    sender_name text,
+    body text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    delivery_state text DEFAULT 'sent'::text NOT NULL
+);
+
+
+ALTER TABLE public.thread_messages OWNER TO postgres;
+
+--
+-- Name: thread_participants; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.thread_participants (
+    thread_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    unread_count integer DEFAULT 0 NOT NULL,
+    joined_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.thread_participants OWNER TO postgres;
+
+--
+-- Name: thread_reactions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.thread_reactions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    thread_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    reaction_type text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT thread_reactions_reaction_type_check CHECK ((reaction_type = ANY (ARRAY['pranam'::text, 'bhakti'::text, 'prakas'::text])))
+);
+
+
+ALTER TABLE public.thread_reactions OWNER TO postgres;
+
+--
+-- Name: thread_reaction_counts; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.thread_reaction_counts AS
+ SELECT thread_id,
+    reaction_type,
+    count(*) AS count
+   FROM public.thread_reactions
+  GROUP BY thread_id, reaction_type;
+
+
+ALTER VIEW public.thread_reaction_counts OWNER TO postgres;
+
+--
+-- Name: thread_upvotes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.thread_upvotes (
+    thread_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.thread_upvotes OWNER TO postgres;
+
+--
+-- Name: tirtha_checkins; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_checkins (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    place_id text NOT NULL,
+    visited_at timestamp with time zone DEFAULT now() NOT NULL,
+    privacy text DEFAULT 'private'::text NOT NULL,
+    darshan_mood text,
+    intention text,
+    reflection text,
+    companions text,
+    family_member_ids uuid[] DEFAULT '{}'::uuid[] NOT NULL,
+    pradakshina_count integer DEFAULT 0 NOT NULL,
+    seva_note text,
+    photo_url text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT tirtha_checkins_pradakshina_count_check CHECK ((pradakshina_count >= 0)),
+    CONSTRAINT tirtha_checkins_privacy_check CHECK ((privacy = ANY (ARRAY['private'::text, 'family'::text, 'mandali'::text, 'public'::text])))
+);
+
+
+ALTER TABLE public.tirtha_checkins OWNER TO postgres;
+
+--
+-- Name: tirtha_collections; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_collections (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug text NOT NULL,
+    title text NOT NULL,
+    description text,
+    tradition text DEFAULT 'all'::text NOT NULL,
+    season_key text,
+    place_ids text[] DEFAULT '{}'::text[] NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.tirtha_collections OWNER TO postgres;
+
+--
+-- Name: tirtha_place_media; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_place_media (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    place_id text NOT NULL,
+    user_id uuid,
+    media_url text NOT NULL,
+    media_type text DEFAULT 'photo'::text NOT NULL,
+    license text,
+    status text DEFAULT 'pending'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT tirtha_place_media_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])))
+);
+
+
+ALTER TABLE public.tirtha_place_media OWNER TO postgres;
+
+--
+-- Name: tirtha_place_notes; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_place_notes (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    place_id text NOT NULL,
+    user_id uuid,
+    note_type text DEFAULT 'practical'::text NOT NULL,
+    body text NOT NULL,
+    status text DEFAULT 'pending'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT tirtha_place_notes_note_type_check CHECK ((note_type = ANY (ARRAY['practical'::text, 'etiquette'::text, 'accessibility'::text, 'parking'::text, 'timing'::text, 'seva'::text, 'correction'::text]))),
+    CONSTRAINT tirtha_place_notes_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])))
+);
+
+
+ALTER TABLE public.tirtha_place_notes OWNER TO postgres;
+
+--
+-- Name: tirtha_places; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_places (
+    id text NOT NULL,
+    source text DEFAULT 'overpass'::text NOT NULL,
+    source_id text,
+    name text NOT NULL,
+    tradition text DEFAULT 'other'::text NOT NULL,
+    lat double precision NOT NULL,
+    lon double precision NOT NULL,
+    address text,
+    website text,
+    phone text,
+    opening_hours text,
+    deity text,
+    sampradaya text,
+    source_confidence text DEFAULT 'community_import'::text NOT NULL,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.tirtha_places OWNER TO postgres;
+
+--
+-- Name: tirtha_reports; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_reports (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    place_id text,
+    reason text NOT NULL,
+    details text,
+    status text DEFAULT 'open'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT tirtha_reports_reason_check CHECK ((reason = ANY (ARRAY['wrong_location'::text, 'closed'::text, 'duplicate'::text, 'tradition_mismatch'::text, 'inappropriate'::text, 'other'::text]))),
+    CONSTRAINT tirtha_reports_status_check CHECK ((status = ANY (ARRAY['open'::text, 'reviewing'::text, 'resolved'::text, 'dismissed'::text])))
+);
+
+
+ALTER TABLE public.tirtha_reports OWNER TO postgres;
+
+--
+-- Name: tirtha_reviews; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_reviews (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_id uuid NOT NULL,
+    place_id text NOT NULL,
+    place_name text NOT NULL,
+    rating integer NOT NULL,
+    note text,
+    lat double precision,
+    lon double precision,
+    CONSTRAINT tirtha_reviews_rating_check CHECK (((rating >= 1) AND (rating <= 5)))
+);
+
+
+ALTER TABLE public.tirtha_reviews OWNER TO postgres;
+
+--
+-- Name: tirtha_saves; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_saves (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    place_id text NOT NULL,
+    note text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE public.tirtha_saves OWNER TO postgres;
+
+--
+-- Name: tirtha_visits; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirtha_visits (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    tirtha_id uuid NOT NULL,
+    visited_at date NOT NULL,
+    notes text,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.tirtha_visits OWNER TO postgres;
+
+--
+-- Name: tirthas; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.tirthas (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    slug text NOT NULL,
+    name text NOT NULL,
+    name_sanskrit text,
+    deity text,
+    tradition text,
+    tirtha_type text NOT NULL,
+    series_name text,
+    series_number integer,
+    state text,
+    country text DEFAULT 'India'::text,
+    lat double precision,
+    lng double precision,
+    elevation_m integer,
+    significance text,
+    best_months text[],
+    darshan_url text,
+    tags text[],
+    CONSTRAINT tirthas_tirtha_type_check CHECK ((tirtha_type = ANY (ARRAY['char_dham'::text, 'chota_char_dham'::text, 'jyotirlinga'::text, 'shakti_peeth'::text, 'divya_desam'::text, 'pancha_dwaraka'::text, 'kshetra'::text, 'river'::text, 'other'::text]))),
+    CONSTRAINT tirthas_tradition_check CHECK ((tradition = ANY (ARRAY['vaishnav'::text, 'shaiv'::text, 'shakta'::text, 'smarta'::text, 'general'::text])))
+);
+
+
+ALTER TABLE public.tirthas OWNER TO postgres;
+
+--
+-- Name: user_blocked_profiles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_blocked_profiles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    blocker_id uuid NOT NULL,
+    blocked_user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT user_blocked_profiles_no_self CHECK ((blocker_id <> blocked_user_id))
+);
+
+
+ALTER TABLE public.user_blocked_profiles OWNER TO postgres;
+
+--
+-- Name: user_hidden_content; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_hidden_content (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    content_type text NOT NULL,
+    content_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT user_hidden_content_content_type_check CHECK ((content_type = ANY (ARRAY['mandali_post'::text, 'thread'::text, 'reply'::text])))
+);
+
+
+ALTER TABLE public.user_hidden_content OWNER TO postgres;
+
+--
+-- Name: user_mood_checkins; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_mood_checkins (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    before_mood text,
+    after_mood text,
+    completed_at timestamp with time zone,
+    source_surface text,
+    recommended_action_type text,
+    recommended_action_target text,
+    clicked_action text,
+    completed_action text,
+    reflection_note text,
+    context_need text,
+    context_time text,
+    context_type text,
+    dismissed boolean DEFAULT false NOT NULL,
+    recommendations_shown jsonb,
+    skipped_actions jsonb,
+    session_status text DEFAULT 'open'::text,
+    closed_at timestamp with time zone
+);
+
+
+ALTER TABLE public.user_mood_checkins OWNER TO postgres;
+
+--
+-- Name: user_muted_profiles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_muted_profiles (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    muter_id uuid NOT NULL,
+    muted_user_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT user_muted_profiles_no_self CHECK ((muter_id <> muted_user_id))
+);
+
+
+ALTER TABLE public.user_muted_profiles OWNER TO postgres;
+
+--
+-- Name: user_sanskaras; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_sanskaras (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    sanskara_id text NOT NULL,
+    completed_date date,
+    notes text,
+    performed_by text,
+    location text,
+    created_at timestamp with time zone DEFAULT now(),
+    kul_member_id uuid,
+    expected_date date
+);
+
+
+ALTER TABLE public.user_sanskaras OWNER TO postgres;
+
+--
+-- Name: user_sanskars; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_sanskars (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    sanskar_id uuid NOT NULL,
+    beneficiary_name text,
+    beneficiary_dob date,
+    status text DEFAULT 'planned'::text,
+    scheduled_date date,
+    completed_date date,
+    priest_name text,
+    location text,
+    notes text,
+    family_members text[],
+    created_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT user_sanskars_status_check CHECK ((status = ANY (ARRAY['planned'::text, 'in_progress'::text, 'completed'::text])))
+);
+
+
+ALTER TABLE public.user_sanskars OWNER TO postgres;
+
+--
+-- Name: user_tirtha_progress; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.user_tirtha_progress WITH (security_invoker='true') AS
+ SELECT p.id AS user_id,
+    t.tirtha_type,
+    t.series_name,
+    count(DISTINCT t.id) AS total_in_series,
+    count(DISTINCT tv.tirtha_id) AS visited,
+    round((((count(DISTINCT tv.tirtha_id))::numeric / (NULLIF(count(DISTINCT t.id), 0))::numeric) * (100)::numeric), 1) AS pct_complete
+   FROM (((public.profiles p
+     CROSS JOIN ( SELECT DISTINCT tirthas.tirtha_type,
+            tirthas.series_name
+           FROM public.tirthas
+          WHERE (tirthas.series_name IS NOT NULL)) s)
+     JOIN public.tirthas t ON (((t.tirtha_type = s.tirtha_type) AND (t.series_name = s.series_name))))
+     LEFT JOIN public.tirtha_visits tv ON (((tv.tirtha_id = t.id) AND (tv.user_id = p.id))))
+  GROUP BY p.id, t.tirtha_type, t.series_name;
+
+
+ALTER VIEW public.user_tirtha_progress OWNER TO postgres;
+
+--
+-- Name: user_warnings; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.user_warnings (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid,
+    admin_name text,
+    reason text NOT NULL,
+    admin_note text,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.user_warnings OWNER TO postgres;
+
+--
+-- Name: waitlist; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.waitlist (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    email text NOT NULL,
+    tradition text,
+    name text,
+    source text DEFAULT 'landing'::text,
+    country_hint text,
+    created_at timestamp with time zone DEFAULT now(),
+    founding_number integer,
+    timezone text,
+    email_sent boolean DEFAULT false NOT NULL,
+    CONSTRAINT waitlist_tradition_check CHECK ((tradition = ANY (ARRAY['hindu'::text, 'sikh'::text, 'buddhist'::text, 'jain'::text])))
+);
+
+
+ALTER TABLE public.waitlist OWNER TO postgres;
+
+--
+-- Name: waitlist_founding_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.waitlist_founding_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.waitlist_founding_seq OWNER TO postgres;
+
+--
+-- Name: waitlist_founding_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.waitlist_founding_seq OWNED BY public.waitlist.founding_number;
+
+
+--
+-- Name: yatra_plans; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.yatra_plans (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_id uuid NOT NULL,
+    name text NOT NULL,
+    description text,
+    tirtha_ids uuid[] NOT NULL,
+    status text DEFAULT 'planned'::text,
+    target_date date,
+    started_at date,
+    completed_at date,
+    created_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT yatra_plans_status_check CHECK ((status = ANY (ARRAY['planned'::text, 'in_progress'::text, 'completed'::text, 'cancelled'::text])))
+);
+
+
+ALTER TABLE public.yatra_plans OWNER TO postgres;
+
+--
+-- Name: messages; Type: TABLE; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+CREATE TABLE realtime.messages (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+)
+PARTITION BY RANGE (inserted_at);
+
+
+ALTER TABLE realtime.messages OWNER TO supabase_realtime_admin;
+
+--
+-- Name: messages_2026_05_30; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_05_30 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_05_30 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_05_31; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_05_31 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_05_31 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_06_01; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_06_01 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_06_01 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_06_02; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_06_02 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_06_02 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_06_03; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_06_03 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_06_03 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_06_04; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_06_04 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_06_04 OWNER TO supabase_admin;
+
+--
+-- Name: messages_2026_06_05; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.messages_2026_06_05 (
+    topic text NOT NULL,
+    extension text NOT NULL,
+    payload jsonb,
+    event text,
+    private boolean DEFAULT false,
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    inserted_at timestamp without time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
+);
+
+
+ALTER TABLE realtime.messages_2026_06_05 OWNER TO supabase_admin;
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.schema_migrations (
+    version bigint NOT NULL,
+    inserted_at timestamp(0) without time zone
+);
+
+
+ALTER TABLE realtime.schema_migrations OWNER TO supabase_admin;
+
+--
+-- Name: subscription; Type: TABLE; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TABLE realtime.subscription (
+    id bigint NOT NULL,
+    subscription_id uuid NOT NULL,
+    entity regclass NOT NULL,
+    filters realtime.user_defined_filter[] DEFAULT '{}'::realtime.user_defined_filter[] NOT NULL,
+    claims jsonb NOT NULL,
+    claims_role regrole GENERATED ALWAYS AS (realtime.to_regrole((claims ->> 'role'::text))) STORED NOT NULL,
+    created_at timestamp without time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+    action_filter text DEFAULT '*'::text,
+    CONSTRAINT subscription_action_filter_check CHECK ((action_filter = ANY (ARRAY['*'::text, 'INSERT'::text, 'UPDATE'::text, 'DELETE'::text])))
+);
+
+
+ALTER TABLE realtime.subscription OWNER TO supabase_admin;
+
+--
+-- Name: subscription_id_seq; Type: SEQUENCE; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE realtime.subscription ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME realtime.subscription_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: buckets; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets (
+    id text NOT NULL,
+    name text NOT NULL,
+    owner uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    public boolean DEFAULT false,
+    avif_autodetection boolean DEFAULT false,
+    file_size_limit bigint,
+    allowed_mime_types text[],
+    owner_id text,
+    type storage.buckettype DEFAULT 'STANDARD'::storage.buckettype NOT NULL
+);
+
+
+ALTER TABLE storage.buckets OWNER TO supabase_storage_admin;
+
+--
+-- Name: COLUMN buckets.owner; Type: COMMENT; Schema: storage; Owner: supabase_storage_admin
+--
+
+COMMENT ON COLUMN storage.buckets.owner IS 'Field is deprecated, use owner_id instead';
+
+
+--
+-- Name: buckets_analytics; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets_analytics (
+    name text NOT NULL,
+    type storage.buckettype DEFAULT 'ANALYTICS'::storage.buckettype NOT NULL,
+    format text DEFAULT 'ICEBERG'::text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    deleted_at timestamp with time zone
+);
+
+
+ALTER TABLE storage.buckets_analytics OWNER TO supabase_storage_admin;
+
+--
+-- Name: buckets_vectors; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.buckets_vectors (
+    id text NOT NULL,
+    type storage.buckettype DEFAULT 'VECTOR'::storage.buckettype NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.buckets_vectors OWNER TO supabase_storage_admin;
+
+--
+-- Name: migrations; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.migrations (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    hash character varying(40) NOT NULL,
+    executed_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+ALTER TABLE storage.migrations OWNER TO supabase_storage_admin;
+
+--
+-- Name: objects; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.objects (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    bucket_id text,
+    name text,
+    owner uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    last_accessed_at timestamp with time zone DEFAULT now(),
+    metadata jsonb,
+    path_tokens text[] GENERATED ALWAYS AS (string_to_array(name, '/'::text)) STORED,
+    version text,
+    owner_id text,
+    user_metadata jsonb
+);
+
+
+ALTER TABLE storage.objects OWNER TO supabase_storage_admin;
+
+--
+-- Name: COLUMN objects.owner; Type: COMMENT; Schema: storage; Owner: supabase_storage_admin
+--
+
+COMMENT ON COLUMN storage.objects.owner IS 'Field is deprecated, use owner_id instead';
+
+
+--
+-- Name: s3_multipart_uploads; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.s3_multipart_uploads (
+    id text NOT NULL,
+    in_progress_size bigint DEFAULT 0 NOT NULL,
+    upload_signature text NOT NULL,
+    bucket_id text NOT NULL,
+    key text NOT NULL COLLATE pg_catalog."C",
+    version text NOT NULL,
+    owner_id text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    user_metadata jsonb,
+    metadata jsonb
+);
+
+
+ALTER TABLE storage.s3_multipart_uploads OWNER TO supabase_storage_admin;
+
+--
+-- Name: s3_multipart_uploads_parts; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.s3_multipart_uploads_parts (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    upload_id text NOT NULL,
+    size bigint DEFAULT 0 NOT NULL,
+    part_number integer NOT NULL,
+    bucket_id text NOT NULL,
+    key text NOT NULL COLLATE pg_catalog."C",
+    etag text NOT NULL,
+    owner_id text,
+    version text NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.s3_multipart_uploads_parts OWNER TO supabase_storage_admin;
+
+--
+-- Name: vector_indexes; Type: TABLE; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TABLE storage.vector_indexes (
+    id text DEFAULT gen_random_uuid() NOT NULL,
+    name text NOT NULL COLLATE pg_catalog."C",
+    bucket_id text NOT NULL,
+    data_type text NOT NULL,
+    dimension integer NOT NULL,
+    distance_metric text NOT NULL,
+    metadata_configuration jsonb,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+ALTER TABLE storage.vector_indexes OWNER TO supabase_storage_admin;
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: supabase_migrations; Owner: postgres
+--
+
+CREATE TABLE supabase_migrations.schema_migrations (
+    version text NOT NULL,
+    statements text[],
+    name text
+);
+
+
+ALTER TABLE supabase_migrations.schema_migrations OWNER TO postgres;
+
+--
+-- Name: messages_2026_05_30; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_05_30 FOR VALUES FROM ('2026-05-30 00:00:00') TO ('2026-05-31 00:00:00');
+
+
+--
+-- Name: messages_2026_05_31; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_05_31 FOR VALUES FROM ('2026-05-31 00:00:00') TO ('2026-06-01 00:00:00');
+
+
+--
+-- Name: messages_2026_06_01; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_01 FOR VALUES FROM ('2026-06-01 00:00:00') TO ('2026-06-02 00:00:00');
+
+
+--
+-- Name: messages_2026_06_02; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_02 FOR VALUES FROM ('2026-06-02 00:00:00') TO ('2026-06-03 00:00:00');
+
+
+--
+-- Name: messages_2026_06_03; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_03 FOR VALUES FROM ('2026-06-03 00:00:00') TO ('2026-06-04 00:00:00');
+
+
+--
+-- Name: messages_2026_06_04; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_04 FOR VALUES FROM ('2026-06-04 00:00:00') TO ('2026-06-05 00:00:00');
+
+
+--
+-- Name: messages_2026_06_05; Type: TABLE ATTACH; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages ATTACH PARTITION realtime.messages_2026_06_05 FOR VALUES FROM ('2026-06-05 00:00:00') TO ('2026-06-06 00:00:00');
+
+
+--
+-- Name: refresh_tokens id; Type: DEFAULT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens ALTER COLUMN id SET DEFAULT nextval('auth.refresh_tokens_id_seq'::regclass);
+
+
+--
+-- Name: waitlist founding_number; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.waitlist ALTER COLUMN founding_number SET DEFAULT nextval('public.waitlist_founding_seq'::regclass);
+
+
+--
+-- Name: mfa_amr_claims amr_id_pk; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_amr_claims
+    ADD CONSTRAINT amr_id_pk PRIMARY KEY (id);
+
+
+--
+-- Name: audit_log_entries audit_log_entries_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.audit_log_entries
+    ADD CONSTRAINT audit_log_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custom_oauth_providers custom_oauth_providers_identifier_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.custom_oauth_providers
+    ADD CONSTRAINT custom_oauth_providers_identifier_key UNIQUE (identifier);
+
+
+--
+-- Name: custom_oauth_providers custom_oauth_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.custom_oauth_providers
+    ADD CONSTRAINT custom_oauth_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flow_state flow_state_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.flow_state
+    ADD CONSTRAINT flow_state_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: identities identities_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.identities
+    ADD CONSTRAINT identities_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: identities identities_provider_id_provider_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.identities
+    ADD CONSTRAINT identities_provider_id_provider_unique UNIQUE (provider_id, provider);
+
+
+--
+-- Name: instances instances_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.instances
+    ADD CONSTRAINT instances_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mfa_amr_claims mfa_amr_claims_session_id_authentication_method_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_amr_claims
+    ADD CONSTRAINT mfa_amr_claims_session_id_authentication_method_pkey UNIQUE (session_id, authentication_method);
+
+
+--
+-- Name: mfa_challenges mfa_challenges_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_challenges
+    ADD CONSTRAINT mfa_challenges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mfa_factors mfa_factors_last_challenged_at_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_factors
+    ADD CONSTRAINT mfa_factors_last_challenged_at_key UNIQUE (last_challenged_at);
+
+
+--
+-- Name: mfa_factors mfa_factors_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.mfa_factors
+    ADD CONSTRAINT mfa_factors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_authorization_code_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_authorization_code_key UNIQUE (authorization_code);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_authorization_id_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_authorization_id_key UNIQUE (authorization_id);
+
+
+--
+-- Name: oauth_authorizations oauth_authorizations_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_authorizations
+    ADD CONSTRAINT oauth_authorizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_client_states oauth_client_states_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_client_states
+    ADD CONSTRAINT oauth_client_states_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_clients oauth_clients_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_clients
+    ADD CONSTRAINT oauth_clients_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_consents oauth_consents_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_consents oauth_consents_user_client_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.oauth_consents
+    ADD CONSTRAINT oauth_consents_user_client_unique UNIQUE (user_id, client_id);
+
+
+--
+-- Name: one_time_tokens one_time_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.one_time_tokens
+    ADD CONSTRAINT one_time_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens
+    ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_token_unique; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.refresh_tokens
+    ADD CONSTRAINT refresh_tokens_token_unique UNIQUE (token);
+
+
+--
+-- Name: saml_providers saml_providers_entity_id_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_providers
+    ADD CONSTRAINT saml_providers_entity_id_key UNIQUE (entity_id);
+
+
+--
+-- Name: saml_providers saml_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_providers
+    ADD CONSTRAINT saml_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: saml_relay_states saml_relay_states_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.saml_relay_states
+    ADD CONSTRAINT saml_relay_states_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sessions
+    ADD CONSTRAINT sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_domains sso_domains_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sso_domains
+    ADD CONSTRAINT sso_domains_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sso_providers sso_providers_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.sso_providers
+    ADD CONSTRAINT sso_providers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_phone_key; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.users
+    ADD CONSTRAINT users_phone_key UNIQUE (phone);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webauthn_challenges webauthn_challenges_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_challenges
+    ADD CONSTRAINT webauthn_challenges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: webauthn_credentials webauthn_credentials_pkey; Type: CONSTRAINT; Schema: auth; Owner: supabase_auth_admin
+--
+
+ALTER TABLE ONLY auth.webauthn_credentials
+    ADD CONSTRAINT webauthn_credentials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ai_chat_usage ai_chat_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ai_chat_usage
+    ADD CONSTRAINT ai_chat_usage_pkey PRIMARY KEY (user_id, usage_date);
+
+
+--
+-- Name: birth_profiles birth_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.birth_profiles
+    ADD CONSTRAINT birth_profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: content_meanings content_meanings_entry_id_language_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.content_meanings
+    ADD CONSTRAINT content_meanings_entry_id_language_key UNIQUE (entry_id, language);
+
+
+--
+-- Name: content_meanings content_meanings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.content_meanings
+    ADD CONSTRAINT content_meanings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: content_reports content_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.content_reports
+    ADD CONSTRAINT content_reports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: daily_quiz daily_quiz_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.daily_quiz
+    ADD CONSTRAINT daily_quiz_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: daily_quiz daily_quiz_tradition_language_date_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.daily_quiz
+    ADD CONSTRAINT daily_quiz_tradition_language_date_key UNIQUE (tradition, language, date);
+
+
+--
+-- Name: daily_sadhana daily_sadhana_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.daily_sadhana
+    ADD CONSTRAINT daily_sadhana_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: daily_sadhana daily_sadhana_user_id_date_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.daily_sadhana
+    ADD CONSTRAINT daily_sadhana_user_id_date_key UNIQUE (user_id, date);
+
+
+--
+-- Name: darshan_preferences darshan_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.darshan_preferences
+    ADD CONSTRAINT darshan_preferences_pkey PRIMARY KEY (user_id, stream_id);
+
+
+--
+-- Name: device_tokens device_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.device_tokens
+    ADD CONSTRAINT device_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: devotional_tracks devotional_tracks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.devotional_tracks
+    ADD CONSTRAINT devotional_tracks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dharm_veer_daily dharm_veer_daily_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veer_daily
+    ADD CONSTRAINT dharm_veer_daily_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dharm_veer_daily dharm_veer_daily_tradition_date_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veer_daily
+    ADD CONSTRAINT dharm_veer_daily_tradition_date_key UNIQUE (tradition, date);
+
+
+--
+-- Name: dharm_veers dharm_veers_day_index_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veers
+    ADD CONSTRAINT dharm_veers_day_index_key UNIQUE (day_index);
+
+
+--
+-- Name: dharm_veers dharm_veers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veers
+    ADD CONSTRAINT dharm_veers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dharm_veers dharm_veers_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veers
+    ADD CONSTRAINT dharm_veers_slug_key UNIQUE (slug);
+
+
+--
+-- Name: event_rsvps event_rsvps_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.event_rsvps
+    ADD CONSTRAINT event_rsvps_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_rsvps event_rsvps_post_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.event_rsvps
+    ADD CONSTRAINT event_rsvps_post_id_user_id_key UNIQUE (post_id, user_id);
+
+
+--
+-- Name: festivals festivals_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.festivals
+    ADD CONSTRAINT festivals_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: forum_replies forum_replies_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.forum_replies
+    ADD CONSTRAINT forum_replies_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: forum_threads forum_threads_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.forum_threads
+    ADD CONSTRAINT forum_threads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: guided_path_progress guided_path_progress_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.guided_path_progress
+    ADD CONSTRAINT guided_path_progress_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: guided_path_progress guided_path_progress_user_id_path_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.guided_path_progress
+    ADD CONSTRAINT guided_path_progress_user_id_path_id_key UNIQUE (user_id, path_id);
+
+
+--
+-- Name: hero_assets hero_assets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.hero_assets
+    ADD CONSTRAINT hero_assets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: karma_award_log karma_award_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.karma_award_log
+    ADD CONSTRAINT karma_award_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: karma_ledger karma_ledger_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.karma_ledger
+    ADD CONSTRAINT karma_ledger_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kul_events kul_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_events
+    ADD CONSTRAINT kul_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kul_family_members kul_family_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_family_members
+    ADD CONSTRAINT kul_family_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kul_members kul_members_kul_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_members
+    ADD CONSTRAINT kul_members_kul_id_user_id_key UNIQUE (kul_id, user_id);
+
+
+--
+-- Name: kul_members kul_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_members
+    ADD CONSTRAINT kul_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kul_messages kul_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_messages
+    ADD CONSTRAINT kul_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kul_tasks kul_tasks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kul_tasks
+    ADD CONSTRAINT kul_tasks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuls kuls_invite_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kuls
+    ADD CONSTRAINT kuls_invite_code_key UNIQUE (invite_code);
+
+
+--
+-- Name: kuls kuls_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.kuls
+    ADD CONSTRAINT kuls_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: live_darshans live_darshans_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.live_darshans
+    ADD CONSTRAINT live_darshans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mala_sessions mala_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mala_sessions
+    ADD CONSTRAINT mala_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mandalis mandalis_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mandalis
+    ADD CONSTRAINT mandalis_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mantras mantras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.mantras
+    ADD CONSTRAINT mantras_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: message_threads message_threads_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.message_threads
+    ADD CONSTRAINT message_threads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: monitoring_events monitoring_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.monitoring_events
+    ADD CONSTRAINT monitoring_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nitya_karma_log nitya_karma_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.nitya_karma_log
+    ADD CONSTRAINT nitya_karma_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: nitya_karma_log nitya_karma_log_user_date; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.nitya_karma_log
+    ADD CONSTRAINT nitya_karma_log_user_date UNIQUE (user_id, date);
+
+
+--
+-- Name: nitya_karma_log nitya_karma_log_user_id_log_date_step_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.nitya_karma_log
+    ADD CONSTRAINT nitya_karma_log_user_id_log_date_step_id_key UNIQUE (user_id, log_date, step_id);
+
+
+--
+-- Name: nitya_karma_streaks nitya_karma_streaks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.nitya_karma_streaks
+    ADD CONSTRAINT nitya_karma_streaks_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: notification_schedule notification_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notification_schedule
+    ADD CONSTRAINT notification_schedule_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: observance_definitions observance_definitions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.observance_definitions
+    ADD CONSTRAINT observance_definitions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: observance_definitions observance_definitions_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.observance_definitions
+    ADD CONSTRAINT observance_definitions_slug_key UNIQUE (slug);
+
+
+--
+-- Name: observance_occurrences observance_occurrences_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.observance_occurrences
+    ADD CONSTRAINT observance_occurrences_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_badges pathshala_badges_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_badges
+    ADD CONSTRAINT pathshala_badges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_badges pathshala_badges_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_badges
+    ADD CONSTRAINT pathshala_badges_slug_key UNIQUE (slug);
+
+
+--
+-- Name: pathshala_circle_members pathshala_circle_members_circle_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_circle_members
+    ADD CONSTRAINT pathshala_circle_members_circle_id_user_id_key UNIQUE (circle_id, user_id);
+
+
+--
+-- Name: pathshala_circle_members pathshala_circle_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_circle_members
+    ADD CONSTRAINT pathshala_circle_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_enrollments pathshala_enrollments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_enrollments
+    ADD CONSTRAINT pathshala_enrollments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_enrollments pathshala_enrollments_user_id_path_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_enrollments
+    ADD CONSTRAINT pathshala_enrollments_user_id_path_id_key UNIQUE (user_id, path_id);
+
+
+--
+-- Name: pathshala_path_chunks pathshala_path_chunks_path_id_chunk_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_path_chunks
+    ADD CONSTRAINT pathshala_path_chunks_path_id_chunk_id_key UNIQUE (path_id, chunk_id);
+
+
+--
+-- Name: pathshala_path_chunks pathshala_path_chunks_path_id_position_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_path_chunks
+    ADD CONSTRAINT pathshala_path_chunks_path_id_position_key UNIQUE (path_id, "position");
+
+
+--
+-- Name: pathshala_path_chunks pathshala_path_chunks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_path_chunks
+    ADD CONSTRAINT pathshala_path_chunks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_paths pathshala_paths_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_paths
+    ADD CONSTRAINT pathshala_paths_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_paths pathshala_paths_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_paths
+    ADD CONSTRAINT pathshala_paths_slug_key UNIQUE (slug);
+
+
+--
+-- Name: pathshala_progress pathshala_progress_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_progress
+    ADD CONSTRAINT pathshala_progress_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_progress pathshala_progress_user_id_chunk_id_path_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_progress
+    ADD CONSTRAINT pathshala_progress_user_id_chunk_id_path_id_key UNIQUE (user_id, chunk_id, path_id);
+
+
+--
+-- Name: pathshala_recitation_reviews pathshala_recitation_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_recitation_reviews
+    ADD CONSTRAINT pathshala_recitation_reviews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_recordings pathshala_recordings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_recordings
+    ADD CONSTRAINT pathshala_recordings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_study_circles pathshala_study_circles_kul_id_path_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_study_circles
+    ADD CONSTRAINT pathshala_study_circles_kul_id_path_id_key UNIQUE (kul_id, path_id);
+
+
+--
+-- Name: pathshala_study_circles pathshala_study_circles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_study_circles
+    ADD CONSTRAINT pathshala_study_circles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_translations pathshala_translations_chunk_id_language_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_translations
+    ADD CONSTRAINT pathshala_translations_chunk_id_language_key UNIQUE (chunk_id, language);
+
+
+--
+-- Name: pathshala_translations pathshala_translations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_translations
+    ADD CONSTRAINT pathshala_translations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_user_badges pathshala_user_badges_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_user_badges
+    ADD CONSTRAINT pathshala_user_badges_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_user_badges pathshala_user_badges_user_id_badge_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_user_badges
+    ADD CONSTRAINT pathshala_user_badges_user_id_badge_id_key UNIQUE (user_id, badge_id);
+
+
+--
+-- Name: pathshala_user_state pathshala_user_state_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_user_state
+    ADD CONSTRAINT pathshala_user_state_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pathshala_user_state pathshala_user_state_user_id_entry_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_user_state
+    ADD CONSTRAINT pathshala_user_state_user_id_entry_id_key UNIQUE (user_id, entry_id);
+
+
+--
+-- Name: pathshala_verse_mastery pathshala_verse_mastery_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.pathshala_verse_mastery
+    ADD CONSTRAINT pathshala_verse_mastery_pkey PRIMARY KEY (user_id, chunk_id);
+
+
+--
+-- Name: post_comments post_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.post_comments
+    ADD CONSTRAINT post_comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_upvotes post_upvotes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.post_upvotes
+    ADD CONSTRAINT post_upvotes_pkey PRIMARY KEY (post_id, user_id);
+
+
+--
+-- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.posts
+    ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profiles profiles_unsubscribe_token_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_unsubscribe_token_key UNIQUE (unsubscribe_token);
+
+
+--
+-- Name: profiles profiles_username_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.profiles
+    ADD CONSTRAINT profiles_username_key UNIQUE (username);
+
+
+--
+-- Name: push_subscriptions push_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.push_subscriptions
+    ADD CONSTRAINT push_subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: push_subscriptions push_subscriptions_user_id_endpoint_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.push_subscriptions
+    ADD CONSTRAINT push_subscriptions_user_id_endpoint_key UNIQUE (user_id, endpoint);
+
+
+--
+-- Name: quiz_responses quiz_responses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.quiz_responses
+    ADD CONSTRAINT quiz_responses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: quiz_responses quiz_responses_user_date_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.quiz_responses
+    ADD CONSTRAINT quiz_responses_user_date_unique UNIQUE (user_id, date);
+
+
+--
+-- Name: quiz_sessions quiz_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.quiz_sessions
+    ADD CONSTRAINT quiz_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reading_progress reading_progress_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reading_progress
+    ADD CONSTRAINT reading_progress_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reading_progress reading_progress_user_id_text_id_chapter_verse_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reading_progress
+    ADD CONSTRAINT reading_progress_user_id_text_id_chapter_verse_key UNIQUE (user_id, text_id, chapter, verse);
+
+
+--
+-- Name: recommendations recommendations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recommendations
+    ADD CONSTRAINT recommendations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: recommendations recommendations_user_id_date_type_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.recommendations
+    ADD CONSTRAINT recommendations_user_id_date_type_key UNIQUE (user_id, date, type);
+
+
+--
+-- Name: sadhana_events sadhana_events_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sadhana_events
+    ADD CONSTRAINT sadhana_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sankalpa_checkins sankalpa_checkins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sankalpa_checkins
+    ADD CONSTRAINT sankalpa_checkins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sankalpa_checkins sankalpa_checkins_user_id_sankalpa_id_checked_date_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sankalpa_checkins
+    ADD CONSTRAINT sankalpa_checkins_user_id_sankalpa_id_checked_date_key UNIQUE (user_id, sankalpa_id, checked_date);
+
+
+--
+-- Name: sankalpa sankalpa_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sankalpa
+    ADD CONSTRAINT sankalpa_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sankalpa_reflections sankalpa_reflections_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sankalpa_reflections
+    ADD CONSTRAINT sankalpa_reflections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sankalpas sankalpas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sankalpas
+    ADD CONSTRAINT sankalpas_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sanskars sanskars_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sanskars
+    ADD CONSTRAINT sanskars_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sanskars sanskars_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sanskars
+    ADD CONSTRAINT sanskars_slug_key UNIQUE (slug);
+
+
+--
+-- Name: sattvic_sessions sattvic_sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.sattvic_sessions
+    ADD CONSTRAINT sattvic_sessions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: scripture_chunks scripture_chunks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scripture_chunks
+    ADD CONSTRAINT scripture_chunks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: scripture_chunks scripture_chunks_text_id_chapter_verse_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scripture_chunks
+    ADD CONSTRAINT scripture_chunks_text_id_chapter_verse_key UNIQUE (text_id, chapter, verse);
+
+
+--
+-- Name: seva_log seva_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seva_log
+    ADD CONSTRAINT seva_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: seva_task_completions seva_task_completions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seva_task_completions
+    ADD CONSTRAINT seva_task_completions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: shlokas shlokas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.shlokas
+    ADD CONSTRAINT shlokas_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thread_messages thread_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.thread_messages
+    ADD CONSTRAINT thread_messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thread_participants thread_participants_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.thread_participants
+    ADD CONSTRAINT thread_participants_pkey PRIMARY KEY (thread_id, user_id);
+
+
+--
+-- Name: thread_reactions thread_reactions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.thread_reactions
+    ADD CONSTRAINT thread_reactions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thread_reactions thread_reactions_thread_id_user_id_reaction_type_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.thread_reactions
+    ADD CONSTRAINT thread_reactions_thread_id_user_id_reaction_type_key UNIQUE (thread_id, user_id, reaction_type);
+
+
+--
+-- Name: thread_upvotes thread_upvotes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.thread_upvotes
+    ADD CONSTRAINT thread_upvotes_pkey PRIMARY KEY (thread_id, user_id);
+
+
+--
+-- Name: tirtha_checkins tirtha_checkins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_checkins
+    ADD CONSTRAINT tirtha_checkins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_collections tirtha_collections_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_collections
+    ADD CONSTRAINT tirtha_collections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_collections tirtha_collections_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_collections
+    ADD CONSTRAINT tirtha_collections_slug_key UNIQUE (slug);
+
+
+--
+-- Name: tirtha_place_media tirtha_place_media_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_place_media
+    ADD CONSTRAINT tirtha_place_media_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_place_notes tirtha_place_notes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_place_notes
+    ADD CONSTRAINT tirtha_place_notes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_places tirtha_places_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_places
+    ADD CONSTRAINT tirtha_places_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_reports tirtha_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_reports
+    ADD CONSTRAINT tirtha_reports_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_reviews tirtha_reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_reviews
+    ADD CONSTRAINT tirtha_reviews_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_saves tirtha_saves_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_saves
+    ADD CONSTRAINT tirtha_saves_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_saves tirtha_saves_user_id_place_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_saves
+    ADD CONSTRAINT tirtha_saves_user_id_place_id_key UNIQUE (user_id, place_id);
+
+
+--
+-- Name: tirtha_visits tirtha_visits_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_visits
+    ADD CONSTRAINT tirtha_visits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirtha_visits tirtha_visits_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirtha_visits
+    ADD CONSTRAINT tirtha_visits_unique UNIQUE (user_id, tirtha_id, visited_at);
+
+
+--
+-- Name: tirthas tirthas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirthas
+    ADD CONSTRAINT tirthas_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tirthas tirthas_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.tirthas
+    ADD CONSTRAINT tirthas_slug_key UNIQUE (slug);
+
+
+--
+-- Name: observance_occurrences uq_observance_definition_date; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.observance_occurrences
+    ADD CONSTRAINT uq_observance_definition_date UNIQUE (definition_id, date);
+
+
+--
+-- Name: user_blocked_profiles user_blocked_profiles_blocker_id_blocked_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_blocked_profiles
+    ADD CONSTRAINT user_blocked_profiles_blocker_id_blocked_user_id_key UNIQUE (blocker_id, blocked_user_id);
+
+
+--
+-- Name: user_blocked_profiles user_blocked_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_blocked_profiles
+    ADD CONSTRAINT user_blocked_profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_hidden_content user_hidden_content_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_hidden_content
+    ADD CONSTRAINT user_hidden_content_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_hidden_content user_hidden_content_user_id_content_type_content_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_hidden_content
+    ADD CONSTRAINT user_hidden_content_user_id_content_type_content_id_key UNIQUE (user_id, content_type, content_id);
+
+
+--
+-- Name: user_mood_checkins user_mood_checkins_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_mood_checkins
+    ADD CONSTRAINT user_mood_checkins_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_muted_profiles user_muted_profiles_muter_id_muted_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_muted_profiles
+    ADD CONSTRAINT user_muted_profiles_muter_id_muted_user_id_key UNIQUE (muter_id, muted_user_id);
+
+
+--
+-- Name: user_muted_profiles user_muted_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_muted_profiles
+    ADD CONSTRAINT user_muted_profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_practice user_practice_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_practice
+    ADD CONSTRAINT user_practice_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: user_sanskaras user_sanskaras_member_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sanskaras
+    ADD CONSTRAINT user_sanskaras_member_unique UNIQUE (user_id, kul_member_id, sanskara_id);
+
+
+--
+-- Name: user_sanskaras user_sanskaras_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sanskaras
+    ADD CONSTRAINT user_sanskaras_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_sanskaras user_sanskaras_user_sanskara_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sanskaras
+    ADD CONSTRAINT user_sanskaras_user_sanskara_unique UNIQUE (user_id, sanskara_id);
+
+
+--
+-- Name: user_sanskars user_sanskars_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_sanskars
+    ADD CONSTRAINT user_sanskars_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_warnings user_warnings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.user_warnings
+    ADD CONSTRAINT user_warnings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: waitlist waitlist_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.waitlist
+    ADD CONSTRAINT waitlist_email_key UNIQUE (email);
+
+
+--
+-- Name: waitlist waitlist_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.waitlist
+    ADD CONSTRAINT waitlist_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: yatra_plans yatra_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.yatra_plans
+    ADD CONSTRAINT yatra_plans_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: messages messages_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER TABLE ONLY realtime.messages
+    ADD CONSTRAINT messages_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_05_30 messages_2026_05_30_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_05_30
+    ADD CONSTRAINT messages_2026_05_30_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_05_31 messages_2026_05_31_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_05_31
+    ADD CONSTRAINT messages_2026_05_31_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_06_01 messages_2026_06_01_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_06_01
+    ADD CONSTRAINT messages_2026_06_01_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_06_02 messages_2026_06_02_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_06_02
+    ADD CONSTRAINT messages_2026_06_02_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_06_03 messages_2026_06_03_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_06_03
+    ADD CONSTRAINT messages_2026_06_03_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_06_04 messages_2026_06_04_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_06_04
+    ADD CONSTRAINT messages_2026_06_04_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: messages_2026_06_05 messages_2026_06_05_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.messages_2026_06_05
+    ADD CONSTRAINT messages_2026_06_05_pkey PRIMARY KEY (id, inserted_at);
+
+
+--
+-- Name: subscription pk_subscription; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.subscription
+    ADD CONSTRAINT pk_subscription PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: realtime; Owner: supabase_admin
+--
+
+ALTER TABLE ONLY realtime.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: buckets_analytics buckets_analytics_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets_analytics
+    ADD CONSTRAINT buckets_analytics_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: buckets buckets_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets
+    ADD CONSTRAINT buckets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: buckets_vectors buckets_vectors_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.buckets_vectors
+    ADD CONSTRAINT buckets_vectors_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: migrations migrations_name_key; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.migrations
+    ADD CONSTRAINT migrations_name_key UNIQUE (name);
+
+
+--
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.migrations
+    ADD CONSTRAINT migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: objects objects_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.objects
+    ADD CONSTRAINT objects_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: s3_multipart_uploads_parts s3_multipart_uploads_parts_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads_parts
+    ADD CONSTRAINT s3_multipart_uploads_parts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: s3_multipart_uploads s3_multipart_uploads_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.s3_multipart_uploads
+    ADD CONSTRAINT s3_multipart_uploads_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vector_indexes vector_indexes_pkey; Type: CONSTRAINT; Schema: storage; Owner: supabase_storage_admin
+--
+
+ALTER TABLE ONLY storage.vector_indexes
+    ADD CONSTRAINT vector_indexes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: supabase_migrations; Owner: postgres
+--
+
+ALTER TABLE ONLY supabase_migrations.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: audit_logs_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX audit_logs_instance_id_idx ON auth.audit_log_entries USING btree (instance_id);
+
+
+--
+-- Name: confirmation_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX confirmation_token_idx ON auth.users USING btree (confirmation_token) WHERE ((confirmation_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: custom_oauth_providers_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_created_at_idx ON auth.custom_oauth_providers USING btree (created_at);
+
+
+--
+-- Name: custom_oauth_providers_enabled_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_enabled_idx ON auth.custom_oauth_providers USING btree (enabled);
+
+
+--
+-- Name: custom_oauth_providers_identifier_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_identifier_idx ON auth.custom_oauth_providers USING btree (identifier);
+
+
+--
+-- Name: custom_oauth_providers_provider_type_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX custom_oauth_providers_provider_type_idx ON auth.custom_oauth_providers USING btree (provider_type);
+
+
+--
+-- Name: email_change_token_current_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX email_change_token_current_idx ON auth.users USING btree (email_change_token_current) WHERE ((email_change_token_current)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: email_change_token_new_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX email_change_token_new_idx ON auth.users USING btree (email_change_token_new) WHERE ((email_change_token_new)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: factor_id_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX factor_id_created_at_idx ON auth.mfa_factors USING btree (user_id, created_at);
+
+
+--
+-- Name: flow_state_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX flow_state_created_at_idx ON auth.flow_state USING btree (created_at DESC);
+
+
+--
+-- Name: identities_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX identities_email_idx ON auth.identities USING btree (email text_pattern_ops);
+
+
+--
+-- Name: INDEX identities_email_idx; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON INDEX auth.identities_email_idx IS 'Auth: Ensures indexed queries on the email column';
+
+
+--
+-- Name: identities_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX identities_user_id_idx ON auth.identities USING btree (user_id);
+
+
+--
+-- Name: idx_auth_code; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_auth_code ON auth.flow_state USING btree (auth_code);
+
+
+--
+-- Name: idx_oauth_client_states_created_at; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_oauth_client_states_created_at ON auth.oauth_client_states USING btree (created_at);
+
+
+--
+-- Name: idx_user_id_auth_method; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX idx_user_id_auth_method ON auth.flow_state USING btree (user_id, authentication_method);
+
+
+--
+-- Name: mfa_challenge_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX mfa_challenge_created_at_idx ON auth.mfa_challenges USING btree (created_at DESC);
+
+
+--
+-- Name: mfa_factors_user_friendly_name_unique; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX mfa_factors_user_friendly_name_unique ON auth.mfa_factors USING btree (friendly_name, user_id) WHERE (TRIM(BOTH FROM friendly_name) <> ''::text);
+
+
+--
+-- Name: mfa_factors_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX mfa_factors_user_id_idx ON auth.mfa_factors USING btree (user_id);
+
+
+--
+-- Name: oauth_auth_pending_exp_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_auth_pending_exp_idx ON auth.oauth_authorizations USING btree (expires_at) WHERE (status = 'pending'::auth.oauth_authorization_status);
+
+
+--
+-- Name: oauth_clients_deleted_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_clients_deleted_at_idx ON auth.oauth_clients USING btree (deleted_at);
+
+
+--
+-- Name: oauth_consents_active_client_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_active_client_idx ON auth.oauth_consents USING btree (client_id) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: oauth_consents_active_user_client_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_active_user_client_idx ON auth.oauth_consents USING btree (user_id, client_id) WHERE (revoked_at IS NULL);
+
+
+--
+-- Name: oauth_consents_user_order_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX oauth_consents_user_order_idx ON auth.oauth_consents USING btree (user_id, granted_at DESC);
+
+
+--
+-- Name: one_time_tokens_relates_to_hash_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX one_time_tokens_relates_to_hash_idx ON auth.one_time_tokens USING hash (relates_to);
+
+
+--
+-- Name: one_time_tokens_token_hash_hash_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX one_time_tokens_token_hash_hash_idx ON auth.one_time_tokens USING hash (token_hash);
+
+
+--
+-- Name: one_time_tokens_user_id_token_type_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX one_time_tokens_user_id_token_type_key ON auth.one_time_tokens USING btree (user_id, token_type);
+
+
+--
+-- Name: reauthentication_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX reauthentication_token_idx ON auth.users USING btree (reauthentication_token) WHERE ((reauthentication_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: recovery_token_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX recovery_token_idx ON auth.users USING btree (recovery_token) WHERE ((recovery_token)::text !~ '^[0-9 ]*$'::text);
+
+
+--
+-- Name: refresh_tokens_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_instance_id_idx ON auth.refresh_tokens USING btree (instance_id);
+
+
+--
+-- Name: refresh_tokens_instance_id_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_instance_id_user_id_idx ON auth.refresh_tokens USING btree (instance_id, user_id);
+
+
+--
+-- Name: refresh_tokens_parent_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_parent_idx ON auth.refresh_tokens USING btree (parent);
+
+
+--
+-- Name: refresh_tokens_session_id_revoked_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_session_id_revoked_idx ON auth.refresh_tokens USING btree (session_id, revoked);
+
+
+--
+-- Name: refresh_tokens_updated_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX refresh_tokens_updated_at_idx ON auth.refresh_tokens USING btree (updated_at DESC);
+
+
+--
+-- Name: saml_providers_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_providers_sso_provider_id_idx ON auth.saml_providers USING btree (sso_provider_id);
+
+
+--
+-- Name: saml_relay_states_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_created_at_idx ON auth.saml_relay_states USING btree (created_at DESC);
+
+
+--
+-- Name: saml_relay_states_for_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_for_email_idx ON auth.saml_relay_states USING btree (for_email);
+
+
+--
+-- Name: saml_relay_states_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX saml_relay_states_sso_provider_id_idx ON auth.saml_relay_states USING btree (sso_provider_id);
+
+
+--
+-- Name: sessions_not_after_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_not_after_idx ON auth.sessions USING btree (not_after DESC);
+
+
+--
+-- Name: sessions_oauth_client_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_oauth_client_id_idx ON auth.sessions USING btree (oauth_client_id);
+
+
+--
+-- Name: sessions_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sessions_user_id_idx ON auth.sessions USING btree (user_id);
+
+
+--
+-- Name: sso_domains_domain_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX sso_domains_domain_idx ON auth.sso_domains USING btree (lower(domain));
+
+
+--
+-- Name: sso_domains_sso_provider_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sso_domains_sso_provider_id_idx ON auth.sso_domains USING btree (sso_provider_id);
+
+
+--
+-- Name: sso_providers_resource_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX sso_providers_resource_id_idx ON auth.sso_providers USING btree (lower(resource_id));
+
+
+--
+-- Name: sso_providers_resource_id_pattern_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX sso_providers_resource_id_pattern_idx ON auth.sso_providers USING btree (resource_id text_pattern_ops);
+
+
+--
+-- Name: unique_phone_factor_per_user; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX unique_phone_factor_per_user ON auth.mfa_factors USING btree (user_id, phone);
+
+
+--
+-- Name: user_id_created_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX user_id_created_at_idx ON auth.sessions USING btree (user_id, created_at);
+
+
+--
+-- Name: users_email_partial_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX users_email_partial_key ON auth.users USING btree (email) WHERE (is_sso_user = false);
+
+
+--
+-- Name: INDEX users_email_partial_key; Type: COMMENT; Schema: auth; Owner: supabase_auth_admin
+--
+
+COMMENT ON INDEX auth.users_email_partial_key IS 'Auth: A partial unique index that applies only when is_sso_user is false';
+
+
+--
+-- Name: users_instance_id_email_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_instance_id_email_idx ON auth.users USING btree (instance_id, lower((email)::text));
+
+
+--
+-- Name: users_instance_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_instance_id_idx ON auth.users USING btree (instance_id);
+
+
+--
+-- Name: users_is_anonymous_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX users_is_anonymous_idx ON auth.users USING btree (is_anonymous);
+
+
+--
+-- Name: webauthn_challenges_expires_at_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_challenges_expires_at_idx ON auth.webauthn_challenges USING btree (expires_at);
+
+
+--
+-- Name: webauthn_challenges_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_challenges_user_id_idx ON auth.webauthn_challenges USING btree (user_id);
+
+
+--
+-- Name: webauthn_credentials_credential_id_key; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE UNIQUE INDEX webauthn_credentials_credential_id_key ON auth.webauthn_credentials USING btree (credential_id);
+
+
+--
+-- Name: webauthn_credentials_user_id_idx; Type: INDEX; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE INDEX webauthn_credentials_user_id_idx ON auth.webauthn_credentials USING btree (user_id);
+
+
+--
+-- Name: darshan_pref_evening_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX darshan_pref_evening_idx ON public.darshan_preferences USING btree (stream_id) WHERE (notify_evening = true);
+
+
+--
+-- Name: darshan_pref_morning_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX darshan_pref_morning_idx ON public.darshan_preferences USING btree (stream_id) WHERE (notify_morning = true);
+
+
+--
+-- Name: devotional_tracks_deity_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX devotional_tracks_deity_idx ON public.devotional_tracks USING btree (deity);
+
+
+--
+-- Name: devotional_tracks_is_active_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX devotional_tracks_is_active_idx ON public.devotional_tracks USING btree (is_active);
+
+
+--
+-- Name: devotional_tracks_tradition_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX devotional_tracks_tradition_idx ON public.devotional_tracks USING btree (tradition);
+
+
+--
+-- Name: devotional_tracks_type_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX devotional_tracks_type_idx ON public.devotional_tracks USING btree (type);
+
+
+--
+-- Name: dharm_veer_daily_tradition_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX dharm_veer_daily_tradition_date ON public.dharm_veer_daily USING btree (tradition, date DESC);
+
+
+--
+-- Name: dharm_veers_day_index_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX dharm_veers_day_index_idx ON public.dharm_veers USING btree (day_index);
+
+
+--
+-- Name: dharm_veers_tradition_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX dharm_veers_tradition_idx ON public.dharm_veers USING btree (tradition);
+
+
+--
+-- Name: hero_assets_active_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX hero_assets_active_idx ON public.hero_assets USING btree (is_active, priority DESC);
+
+
+--
+-- Name: hero_assets_festival_slugs_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX hero_assets_festival_slugs_idx ON public.hero_assets USING gin (festival_slugs);
+
+
+--
+-- Name: hero_assets_traditions_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX hero_assets_traditions_idx ON public.hero_assets USING gin (traditions);
+
+
+--
+-- Name: idx_birth_profiles_owner; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_birth_profiles_owner ON public.birth_profiles USING btree (owner_id);
+
+
+--
+-- Name: idx_birth_profiles_primary; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_birth_profiles_primary ON public.birth_profiles USING btree (owner_id) WHERE (is_primary = true);
+
+
+--
+-- Name: idx_birth_profiles_primary_order; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_birth_profiles_primary_order ON public.birth_profiles USING btree (owner_id, is_primary DESC) WHERE (owner_id IS NOT NULL);
+
+
+--
+-- Name: idx_birth_profiles_rashi_notify; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_birth_profiles_rashi_notify ON public.birth_profiles USING btree (owner_id, rashi) WHERE ((is_primary = true) AND (rashi IS NOT NULL));
+
+
+--
+-- Name: idx_birth_profiles_session; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_birth_profiles_session ON public.birth_profiles USING btree (session_token) WHERE (session_token IS NOT NULL);
+
+
+--
+-- Name: idx_daily_sadhana_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_daily_sadhana_user ON public.daily_sadhana USING btree (user_id, date DESC);
+
+
+--
+-- Name: idx_device_tokens_player; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX idx_device_tokens_player ON public.device_tokens USING btree (player_id);
+
+
+--
+-- Name: idx_device_tokens_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_device_tokens_user ON public.device_tokens USING btree (user_id) WHERE (is_active = true);
+
+
+--
+-- Name: idx_event_rsvps_post; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_event_rsvps_post ON public.event_rsvps USING btree (post_id, created_at DESC);
+
+
+--
+-- Name: idx_event_rsvps_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_event_rsvps_user ON public.event_rsvps USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: idx_family_members_kul; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_family_members_kul ON public.kul_family_members USING btree (kul_id, generation, display_order);
+
+
+--
+-- Name: idx_family_members_parent; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_family_members_parent ON public.kul_family_members USING btree (parent_id);
+
+
+--
+-- Name: idx_festivals_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_festivals_date ON public.festivals USING btree (date);
+
+
+--
+-- Name: idx_festivals_tradition_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_festivals_tradition_date ON public.festivals USING btree (tradition, date);
+
+
+--
+-- Name: idx_festivals_verification_run_at; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_festivals_verification_run_at ON public.festivals USING btree (verification_run_at DESC);
+
+
+--
+-- Name: idx_festivals_verification_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_festivals_verification_status ON public.festivals USING btree (verification_status);
+
+
+--
+-- Name: idx_guided_path_progress_active_day; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_guided_path_progress_active_day ON public.guided_path_progress USING btree (status, day_reached, updated_at DESC) WHERE (status = 'active'::text);
+
+
+--
+-- Name: idx_guided_path_progress_user_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_guided_path_progress_user_status ON public.guided_path_progress USING btree (user_id, status, updated_at DESC);
+
+
+--
+-- Name: idx_kul_events_kul; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_events_kul ON public.kul_events USING btree (kul_id, event_date);
+
+
+--
+-- Name: idx_kul_events_upcoming; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_events_upcoming ON public.kul_events USING btree (kul_id, event_date);
+
+
+--
+-- Name: idx_kul_is_pro; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_is_pro ON public.kuls USING btree (is_pro) WHERE (is_pro = true);
+
+
+--
+-- Name: idx_kul_members_kul; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_members_kul ON public.kul_members USING btree (kul_id);
+
+
+--
+-- Name: idx_kul_members_kul_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_members_kul_id ON public.kul_members USING btree (kul_id);
+
+
+--
+-- Name: idx_kul_members_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_members_user ON public.kul_members USING btree (user_id);
+
+
+--
+-- Name: idx_kul_members_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_members_user_id ON public.kul_members USING btree (user_id);
+
+
+--
+-- Name: idx_kul_messages_kul; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_messages_kul ON public.kul_messages USING btree (kul_id, created_at DESC);
+
+
+--
+-- Name: idx_kul_tasks_assigned; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_tasks_assigned ON public.kul_tasks USING btree (assigned_to);
+
+
+--
+-- Name: idx_kul_tasks_kul_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_tasks_kul_id ON public.kul_tasks USING btree (kul_id);
+
+
+--
+-- Name: idx_kul_tasks_kul_pending; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_kul_tasks_kul_pending ON public.kul_tasks USING btree (kul_id, completed, due_date) WHERE (completed = false);
+
+
+--
+-- Name: idx_kuls_invite; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX idx_kuls_invite ON public.kuls USING btree (invite_code);
+
+
+--
+-- Name: idx_mala_sessions_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mala_sessions_user ON public.mala_sessions USING btree (user_id, completed_at DESC);
+
+
+--
+-- Name: idx_mala_sessions_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mala_sessions_user_date ON public.mala_sessions USING btree (user_id, completed_at DESC);
+
+
+--
+-- Name: idx_mala_sessions_user_mala; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mala_sessions_user_mala ON public.mala_sessions USING btree (user_id, mala_id);
+
+
+--
+-- Name: idx_mala_sessions_user_practice_type; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mala_sessions_user_practice_type ON public.mala_sessions USING btree (user_id, practice_type, spiritual_date DESC);
+
+
+--
+-- Name: idx_mala_sessions_user_spiritual_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mala_sessions_user_spiritual_date ON public.mala_sessions USING btree (user_id, spiritual_date DESC);
+
+
+--
+-- Name: idx_mantras_deity; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mantras_deity ON public.mantras USING btree (deity);
+
+
+--
+-- Name: idx_mantras_level; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mantras_level ON public.mantras USING btree (level);
+
+
+--
+-- Name: idx_mantras_tags; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mantras_tags ON public.mantras USING gin (tags);
+
+
+--
+-- Name: idx_mantras_tradition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_mantras_tradition ON public.mantras USING btree (tradition);
+
+
+--
+-- Name: idx_monitoring_events_domain_timestamp; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_monitoring_events_domain_timestamp ON public.monitoring_events USING btree (domain, "timestamp" DESC);
+
+
+--
+-- Name: idx_monitoring_events_provider_timestamp; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_monitoring_events_provider_timestamp ON public.monitoring_events USING btree (provider, "timestamp" DESC) WHERE (provider IS NOT NULL);
+
+
+--
+-- Name: idx_monitoring_events_severity_timestamp; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_monitoring_events_severity_timestamp ON public.monitoring_events USING btree (severity, "timestamp" DESC);
+
+
+--
+-- Name: idx_monitoring_events_timestamp; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_monitoring_events_timestamp ON public.monitoring_events USING btree ("timestamp" DESC);
+
+
+--
+-- Name: idx_nitya_karma_full; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_nitya_karma_full ON public.nitya_karma_log USING btree (user_id, full_sequence) WHERE (full_sequence = true);
+
+
+--
+-- Name: idx_nitya_karma_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_nitya_karma_user_date ON public.nitya_karma_log USING btree (user_id, date DESC);
+
+
+--
+-- Name: idx_notification_schedule_pending; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_notification_schedule_pending ON public.notification_schedule USING btree (send_at, status) WHERE (status = 'pending'::text);
+
+
+--
+-- Name: idx_notification_schedule_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_notification_schedule_user ON public.notification_schedule USING btree (user_id);
+
+
+--
+-- Name: idx_notifications_key; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX idx_notifications_key ON public.notifications USING btree (notification_key) WHERE (notification_key IS NOT NULL);
+
+
+--
+-- Name: idx_notifications_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: idx_observance_definitions_guarantee_level; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_definitions_guarantee_level ON public.observance_definitions USING btree (guarantee_level);
+
+
+--
+-- Name: idx_observance_definitions_slug; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_definitions_slug ON public.observance_definitions USING btree (slug);
+
+
+--
+-- Name: idx_observance_definitions_tradition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_definitions_tradition ON public.observance_definitions USING btree (tradition);
+
+
+--
+-- Name: idx_observance_occurrences_audit_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_audit_status ON public.observance_occurrences USING btree (audit_status);
+
+
+--
+-- Name: idx_observance_occurrences_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_date ON public.observance_occurrences USING btree (date);
+
+
+--
+-- Name: idx_observance_occurrences_definition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_definition ON public.observance_occurrences USING btree (definition_id);
+
+
+--
+-- Name: idx_observance_occurrences_final_date_source; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_final_date_source ON public.observance_occurrences USING btree (final_date_source);
+
+
+--
+-- Name: idx_observance_occurrences_locked; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_locked ON public.observance_occurrences USING btree (locked_for_regeneration);
+
+
+--
+-- Name: idx_observance_occurrences_ver_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_ver_status ON public.observance_occurrences USING btree (verification_status);
+
+
+--
+-- Name: idx_observance_occurrences_year; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_observance_occurrences_year ON public.observance_occurrences USING btree (year);
+
+
+--
+-- Name: idx_pathshala_circle_members_circle; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_circle_members_circle ON public.pathshala_circle_members USING btree (circle_id, current_position DESC);
+
+
+--
+-- Name: idx_pathshala_circle_members_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_circle_members_user ON public.pathshala_circle_members USING btree (user_id);
+
+
+--
+-- Name: idx_pathshala_enrollments_path; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_enrollments_path ON public.pathshala_enrollments USING btree (path_id);
+
+
+--
+-- Name: idx_pathshala_enrollments_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_enrollments_user ON public.pathshala_enrollments USING btree (user_id);
+
+
+--
+-- Name: idx_pathshala_path_chunks_path; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_path_chunks_path ON public.pathshala_path_chunks USING btree (path_id, "position");
+
+
+--
+-- Name: idx_pathshala_progress_chunk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_progress_chunk ON public.pathshala_progress USING btree (chunk_id, user_id);
+
+
+--
+-- Name: idx_pathshala_progress_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_progress_user ON public.pathshala_progress USING btree (user_id, path_id);
+
+
+--
+-- Name: idx_pathshala_recordings_chunk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_recordings_chunk ON public.pathshala_recordings USING btree (chunk_id, user_id);
+
+
+--
+-- Name: idx_pathshala_recordings_status; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_recordings_status ON public.pathshala_recordings USING btree (status) WHERE (status = ANY (ARRAY['processing'::text, 'pending_guru'::text]));
+
+
+--
+-- Name: idx_pathshala_recordings_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_recordings_user ON public.pathshala_recordings USING btree (user_id, submitted_at DESC);
+
+
+--
+-- Name: idx_pathshala_reviews_recording; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_reviews_recording ON public.pathshala_recitation_reviews USING btree (recording_id);
+
+
+--
+-- Name: idx_pathshala_reviews_reviewer; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_reviews_reviewer ON public.pathshala_recitation_reviews USING btree (reviewer_id) WHERE (reviewer_id IS NOT NULL);
+
+
+--
+-- Name: idx_pathshala_study_circles_kul; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_study_circles_kul ON public.pathshala_study_circles USING btree (kul_id, is_active);
+
+
+--
+-- Name: idx_pathshala_translations_chunk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_translations_chunk ON public.pathshala_translations USING btree (chunk_id, language);
+
+
+--
+-- Name: idx_pathshala_user_badges_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_user_badges_user ON public.pathshala_user_badges USING btree (user_id, earned_at DESC);
+
+
+--
+-- Name: idx_pathshala_user_state_bookmarks; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_user_state_bookmarks ON public.pathshala_user_state USING btree (user_id, bookmarked_at DESC);
+
+
+--
+-- Name: idx_pathshala_user_state_recent; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_user_state_recent ON public.pathshala_user_state USING btree (user_id, last_opened_at DESC);
+
+
+--
+-- Name: idx_pathshala_verse_mastery_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_pathshala_verse_mastery_user ON public.pathshala_verse_mastery USING btree (user_id, certified, is_fully_mastered);
+
+
+--
+-- Name: idx_post_comments_parent; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_post_comments_parent ON public.post_comments USING btree (parent_id, created_at);
+
+
+--
+-- Name: idx_post_comments_post; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_post_comments_post ON public.post_comments USING btree (post_id, created_at);
+
+
+--
+-- Name: idx_posts_author; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_posts_author ON public.posts USING btree (author_id);
+
+
+--
+-- Name: idx_posts_mandali; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_posts_mandali ON public.posts USING btree (mandali_id, created_at DESC);
+
+
+--
+-- Name: idx_profiles_dob; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_dob ON public.profiles USING btree (date_of_birth) WHERE (date_of_birth IS NOT NULL);
+
+
+--
+-- Name: idx_profiles_founding_number; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_founding_number ON public.profiles USING btree (founding_number) WHERE (founding_number IS NOT NULL);
+
+
+--
+-- Name: idx_profiles_gender_context; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_gender_context ON public.profiles USING btree (gender_context) WHERE (gender_context IS NOT NULL);
+
+
+--
+-- Name: idx_profiles_is_pro; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_is_pro ON public.profiles USING btree (is_pro) WHERE (is_pro = true);
+
+
+--
+-- Name: idx_profiles_life_stage; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_life_stage ON public.profiles USING btree (life_stage) WHERE (life_stage IS NOT NULL);
+
+
+--
+-- Name: idx_profiles_location; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_location ON public.profiles USING btree (latitude, longitude);
+
+
+--
+-- Name: idx_profiles_mandali; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_mandali ON public.profiles USING btree (mandali_id);
+
+
+--
+-- Name: idx_profiles_monthly_seva; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_monthly_seva ON public.profiles USING btree (monthly_seva DESC);
+
+
+--
+-- Name: idx_profiles_neighbourhood; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_neighbourhood ON public.profiles USING btree (neighbourhood) WHERE (neighbourhood IS NOT NULL);
+
+
+--
+-- Name: idx_profiles_satsang_radar; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_satsang_radar ON public.profiles USING btree (latitude, longitude) WHERE ((location_visible = true) AND (looking_for_satsang = true));
+
+
+--
+-- Name: idx_profiles_weekly_seva; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_profiles_weekly_seva ON public.profiles USING btree (weekly_seva DESC);
+
+
+--
+-- Name: idx_quiz_responses_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_quiz_responses_user_date ON public.quiz_responses USING btree (user_id, date);
+
+
+--
+-- Name: idx_quiz_sessions_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_quiz_sessions_user ON public.quiz_sessions USING btree (user_id, completed_at DESC);
+
+
+--
+-- Name: idx_reading_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_reading_user ON public.reading_progress USING btree (user_id, text_id, chapter, verse);
+
+
+--
+-- Name: idx_recommendations_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_recommendations_user_date ON public.recommendations USING btree (user_id, date DESC);
+
+
+--
+-- Name: idx_replies_thread; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_replies_thread ON public.forum_replies USING btree (thread_id, created_at);
+
+
+--
+-- Name: idx_sadhana_events_type; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sadhana_events_type ON public.sadhana_events USING btree (event_type, created_at DESC);
+
+
+--
+-- Name: idx_sadhana_events_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sadhana_events_user ON public.sadhana_events USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: idx_sanskars_sequence; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sanskars_sequence ON public.sanskars USING btree (sequence_number);
+
+
+--
+-- Name: idx_sanskars_stage; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_sanskars_stage ON public.sanskars USING btree (life_stage);
+
+
+--
+-- Name: idx_scripture_chunks_language; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_scripture_chunks_language ON public.scripture_chunks USING btree (language, text_category);
+
+
+--
+-- Name: idx_scripture_chunks_tradition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_scripture_chunks_tradition ON public.scripture_chunks USING btree (tradition_region, text_category);
+
+
+--
+-- Name: idx_scripture_embedding; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_scripture_embedding ON public.scripture_chunks USING ivfflat (embedding public.vector_cosine_ops) WITH (lists='50');
+
+
+--
+-- Name: idx_scripture_fulltext; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_scripture_fulltext ON public.scripture_chunks USING gin (search_vector);
+
+
+--
+-- Name: idx_scripture_text; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_scripture_text ON public.scripture_chunks USING btree (text_id, chapter, verse);
+
+
+--
+-- Name: idx_seva_task_unique; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX idx_seva_task_unique ON public.seva_task_completions USING btree (user_id, task_key);
+
+
+--
+-- Name: idx_threads_author; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_threads_author ON public.forum_threads USING btree (author_id);
+
+
+--
+-- Name: idx_threads_category; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_threads_category ON public.forum_threads USING btree (category, created_at DESC);
+
+
+--
+-- Name: idx_tirtha_places_tradition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirtha_places_tradition ON public.tirtha_places USING btree (tradition);
+
+
+--
+-- Name: idx_tirtha_reviews_place; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirtha_reviews_place ON public.tirtha_reviews USING btree (place_id);
+
+
+--
+-- Name: idx_tirtha_visits_tirtha; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirtha_visits_tirtha ON public.tirtha_visits USING btree (tirtha_id);
+
+
+--
+-- Name: idx_tirtha_visits_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirtha_visits_user ON public.tirtha_visits USING btree (user_id);
+
+
+--
+-- Name: idx_tirthas_state; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirthas_state ON public.tirthas USING btree (state);
+
+
+--
+-- Name: idx_tirthas_tradition; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirthas_tradition ON public.tirthas USING btree (tradition);
+
+
+--
+-- Name: idx_tirthas_type; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_tirthas_type ON public.tirthas USING btree (tirtha_type);
+
+
+--
+-- Name: idx_user_blocked_profiles_blocked; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_blocked_profiles_blocked ON public.user_blocked_profiles USING btree (blocked_user_id, created_at DESC);
+
+
+--
+-- Name: idx_user_blocked_profiles_blocker; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_blocked_profiles_blocker ON public.user_blocked_profiles USING btree (blocker_id, created_at DESC);
+
+
+--
+-- Name: idx_user_hidden_content_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_hidden_content_user ON public.user_hidden_content USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: idx_user_mood_checkins_created_at; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_mood_checkins_created_at ON public.user_mood_checkins USING btree (created_at);
+
+
+--
+-- Name: idx_user_mood_checkins_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_mood_checkins_user_id ON public.user_mood_checkins USING btree (user_id);
+
+
+--
+-- Name: idx_user_muted_profiles_muter; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_muted_profiles_muter ON public.user_muted_profiles USING btree (muter_id, created_at DESC);
+
+
+--
+-- Name: idx_user_sanskaras_member; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_sanskaras_member ON public.user_sanskaras USING btree (kul_member_id) WHERE (kul_member_id IS NOT NULL);
+
+
+--
+-- Name: idx_user_sanskaras_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_sanskaras_user ON public.user_sanskaras USING btree (user_id);
+
+
+--
+-- Name: idx_user_sanskars_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_sanskars_user ON public.user_sanskars USING btree (user_id);
+
+
+--
+-- Name: idx_user_warnings_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_user_warnings_user_id ON public.user_warnings USING btree (user_id);
+
+
+--
+-- Name: idx_waitlist_founding_number; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_waitlist_founding_number ON public.waitlist USING btree (founding_number);
+
+
+--
+-- Name: idx_yatra_plans_user; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX idx_yatra_plans_user ON public.yatra_plans USING btree (user_id);
+
+
+--
+-- Name: karma_award_log_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX karma_award_log_user_date ON public.karma_award_log USING btree (user_id, awarded_date);
+
+
+--
+-- Name: karma_award_log_user_reason_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX karma_award_log_user_reason_date ON public.karma_award_log USING btree (user_id, reason, awarded_date);
+
+
+--
+-- Name: karma_ledger_user_date; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX karma_ledger_user_date ON public.karma_ledger USING btree (user_id, created_at DESC);
+
+
+--
+-- Name: notifications_local_date_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX notifications_local_date_idx ON public.notifications USING btree (local_date DESC);
+
+
+--
+-- Name: notifications_user_notification_key_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX notifications_user_notification_key_idx ON public.notifications USING btree (user_id, notification_key) WHERE (notification_key IS NOT NULL);
+
+
+--
+-- Name: sankalpas_user_id_status_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX sankalpas_user_id_status_idx ON public.sankalpas USING btree (user_id, status);
+
+
+--
+-- Name: sattvic_sessions_completed_at_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX sattvic_sessions_completed_at_idx ON public.sattvic_sessions USING btree (completed_at);
+
+
+--
+-- Name: sattvic_sessions_user_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX sattvic_sessions_user_id_idx ON public.sattvic_sessions USING btree (user_id);
+
+
+--
+-- Name: seva_log_user_logged_at_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX seva_log_user_logged_at_idx ON public.seva_log USING btree (user_id, logged_at DESC);
+
+
+--
+-- Name: waitlist_created_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX waitlist_created_idx ON public.waitlist USING btree (created_at DESC);
+
+
+--
+-- Name: waitlist_tradition_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX waitlist_tradition_idx ON public.waitlist USING btree (tradition);
+
+
+--
+-- Name: ix_realtime_subscription_entity; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX ix_realtime_subscription_entity ON realtime.subscription USING btree (entity);
+
+
+--
+-- Name: messages_inserted_at_topic_index; Type: INDEX; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+CREATE INDEX messages_inserted_at_topic_index ON ONLY realtime.messages USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_05_30_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_05_30_inserted_at_topic_idx ON realtime.messages_2026_05_30 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_05_31_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_05_31_inserted_at_topic_idx ON realtime.messages_2026_05_31 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_06_01_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_06_01_inserted_at_topic_idx ON realtime.messages_2026_06_01 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_06_02_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_06_02_inserted_at_topic_idx ON realtime.messages_2026_06_02 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_06_03_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_06_03_inserted_at_topic_idx ON realtime.messages_2026_06_03 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_06_04_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_06_04_inserted_at_topic_idx ON realtime.messages_2026_06_04 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: messages_2026_06_05_inserted_at_topic_idx; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE INDEX messages_2026_06_05_inserted_at_topic_idx ON realtime.messages_2026_06_05 USING btree (inserted_at DESC, topic) WHERE ((extension = 'broadcast'::text) AND (private IS TRUE));
+
+
+--
+-- Name: subscription_subscription_id_entity_filters_action_filter_key; Type: INDEX; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE UNIQUE INDEX subscription_subscription_id_entity_filters_action_filter_key ON realtime.subscription USING btree (subscription_id, entity, filters, action_filter);
+
+
+--
+-- Name: bname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX bname ON storage.buckets USING btree (name);
+
+
+--
+-- Name: bucketid_objname; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX bucketid_objname ON storage.objects USING btree (bucket_id, name);
+
+
+--
+-- Name: buckets_analytics_unique_name_idx; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX buckets_analytics_unique_name_idx ON storage.buckets_analytics USING btree (name) WHERE (deleted_at IS NULL);
+
+
+--
+-- Name: idx_multipart_uploads_list; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_multipart_uploads_list ON storage.s3_multipart_uploads USING btree (bucket_id, key, created_at);
+
+
+--
+-- Name: idx_objects_bucket_id_name; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_objects_bucket_id_name ON storage.objects USING btree (bucket_id, name COLLATE "C");
+
+
+--
+-- Name: idx_objects_bucket_id_name_lower; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX idx_objects_bucket_id_name_lower ON storage.objects USING btree (bucket_id, lower(name) COLLATE "C");
+
+
+--
+-- Name: name_prefix_search; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE INDEX name_prefix_search ON storage.objects USING btree (name text_pattern_ops);
+
+
+--
+-- Name: vector_indexes_name_bucket_id_idx; Type: INDEX; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE UNIQUE INDEX vector_indexes_name_bucket_id_idx ON storage.vector_indexes USING btree (name, bucket_id);
+
+
+--
+-- Name: messages_2026_05_30_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_05_30_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_05_30_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_05_30_pkey;
+
+
+--
+-- Name: messages_2026_05_31_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_05_31_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_05_31_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_05_31_pkey;
+
+
+--
+-- Name: messages_2026_06_01_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_01_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_06_01_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_01_pkey;
+
+
+--
+-- Name: messages_2026_06_02_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_02_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_06_02_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_02_pkey;
+
+
+--
+-- Name: messages_2026_06_03_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_03_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_06_03_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_03_pkey;
+
+
+--
+-- Name: messages_2026_06_04_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_04_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_06_04_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_04_pkey;
+
+
+--
+-- Name: messages_2026_06_05_inserted_at_topic_idx; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_inserted_at_topic_index ATTACH PARTITION realtime.messages_2026_06_05_inserted_at_topic_idx;
+
+
+--
+-- Name: messages_2026_06_05_pkey; Type: INDEX ATTACH; Schema: realtime; Owner: supabase_realtime_admin
+--
+
+ALTER INDEX realtime.messages_pkey ATTACH PARTITION realtime.messages_2026_06_05_pkey;
+
+
+--
+-- Name: users on_auth_user_created; Type: TRIGGER; Schema: auth; Owner: supabase_auth_admin
+--
+
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+
+--
+-- Name: birth_profiles birth_profiles_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER birth_profiles_updated_at BEFORE UPDATE ON public.birth_profiles FOR EACH ROW EXECUTE FUNCTION public.update_birth_profiles_updated_at();
+
+
+--
+-- Name: darshan_preferences darshan_preferences_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER darshan_preferences_updated_at BEFORE UPDATE ON public.darshan_preferences FOR EACH ROW EXECUTE FUNCTION public.update_darshan_preferences_updated_at();
+
+
+--
+-- Name: guided_path_progress guided_path_progress_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER guided_path_progress_updated_at BEFORE UPDATE ON public.guided_path_progress FOR EACH ROW EXECUTE FUNCTION public.update_guided_path_progress_timestamp();
+
+
+--
+-- Name: profiles on_profile_insert_assign_mandali; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER on_profile_insert_assign_mandali BEFORE INSERT ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.auto_assign_mandali_on_insert();
+
+
+--
+-- Name: profiles on_profile_location_change; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER on_profile_location_change BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.auto_assign_mandali();
+
+
+--
+-- Name: profiles on_profile_mandali_change; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER on_profile_mandali_change AFTER UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.update_mandali_member_count();
+
+
+--
+-- Name: event_rsvps set_event_rsvps_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_event_rsvps_updated_at BEFORE UPDATE ON public.event_rsvps FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+
+--
+-- Name: forum_threads set_forum_threads_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_forum_threads_updated_at BEFORE UPDATE ON public.forum_threads FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+
+--
+-- Name: posts set_posts_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_posts_updated_at BEFORE UPDATE ON public.posts FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+
+--
+-- Name: profiles set_profiles_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER set_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+
+--
+-- Name: post_comments sync_post_comment_count_on_delete; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER sync_post_comment_count_on_delete AFTER DELETE ON public.post_comments FOR EACH ROW EXECUTE FUNCTION public.sync_post_comment_count();
+
+
+--
+-- Name: post_comments sync_post_comment_count_on_insert; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER sync_post_comment_count_on_insert AFTER INSERT ON public.post_comments FOR EACH ROW EXECUTE FUNCTION public.sync_post_comment_count();
+
+
+--
+-- Name: device_tokens trg_device_tokens_updated; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_device_tokens_updated BEFORE UPDATE ON public.device_tokens FOR EACH ROW EXECUTE FUNCTION public.update_device_token_timestamp();
+
+
+--
+-- Name: kul_family_members trg_family_member_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_family_member_updated_at BEFORE UPDATE ON public.kul_family_members FOR EACH ROW EXECUTE FUNCTION public.update_family_member_updated_at();
+
+
+--
+-- Name: hero_assets trg_hero_assets_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_hero_assets_updated_at BEFORE UPDATE ON public.hero_assets FOR EACH ROW EXECUTE FUNCTION public.set_hero_assets_updated_at();
+
+
+--
+-- Name: kuls trg_kul_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_kul_updated_at BEFORE UPDATE ON public.kuls FOR EACH ROW EXECUTE FUNCTION public.update_kul_updated_at();
+
+
+--
+-- Name: observance_definitions trg_sync_definition_to_festival; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_sync_definition_to_festival AFTER UPDATE ON public.observance_definitions FOR EACH ROW EXECUTE FUNCTION public.sync_definition_to_festival();
+
+
+--
+-- Name: festivals trg_sync_festival_to_observance; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_sync_festival_to_observance AFTER INSERT OR DELETE OR UPDATE ON public.festivals FOR EACH ROW EXECUTE FUNCTION public.sync_festival_to_observance();
+
+
+--
+-- Name: observance_occurrences trg_sync_occurrence_to_festival; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_sync_occurrence_to_festival AFTER INSERT OR DELETE OR UPDATE ON public.observance_occurrences FOR EACH ROW EXECUTE FUNCTION public.sync_occurrence_to_festival();
+
+
+--
+-- Name: pathshala_recitation_reviews trg_verse_mastery_after_review; Type: TRIGGER; Schema: public; Owner: postgres
+--
+
+CREATE TRIGGER trg_verse_mastery_after_review AFTER INSERT ON public.pathshala_recitation_reviews FOR EACH ROW EXECUTE FUNCTION public.update_verse_mastery_after_review();
+
+
+--
+-- Name: subscription tr_check_filters; Type: TRIGGER; Schema: realtime; Owner: supabase_admin
+--
+
+CREATE TRIGGER tr_check_filters BEFORE INSERT OR UPDATE ON realtime.subscription FOR EACH ROW EXECUTE FUNCTION realtime.subscription_check_filters();
+
+
+--
+-- Name: buckets enforce_bucket_name_length_trigger; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER enforce_bucket_name_length_trigger BEFORE INSERT OR UPDATE OF name ON storage.buckets FOR EACH ROW EXECUTE FUNCTION storage.enforce_bucket_name_length();
+
+
+--
+-- Name: buckets protect_buckets_delete; Type: TRIGGER; Schema: storage; Owner: supabase_storage_admin
+--
+
+CREATE TRIGGER protect_buckets_delete BEFORE DELETE ON storage.buckets FOR EACH STATEMENT EXECUTE FUNCTION storage.protect_delete();
+
+
+--

@@ -2,6 +2,8 @@
 
 This document records the current integration, routing, and evaluation status for each Pramana corpus in the repository.
 
+> **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`. This document is retained for its per-corpus integration/eval detail.
+
 ## 1. Corpus Registry & Status Matrix
 
 | Corpus ID | Ingested | Explicitly Targetable | Auto-Routed | Eval-Covered | Manifest / Source Files |
@@ -9,7 +11,7 @@ This document records the current integration, routing, and evaluation status fo
 | **`pathshala_gita`** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | `python/ai_pipeline/corpus/manifests/gita_chapter_*.json` |
 | **`bhakti_katha`** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes | `python/ai_pipeline/corpus/manifests/katha_chapter_1.json` |
 | **`bhakti_panchatantra`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/panchatantra_chapter_1.json` |
-| **`pathshala_upanishads`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/upanishad_chapter_1.json` |
+| **`pathshala_upanishads`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/upanishad_*.json` |
 | **`sikh_gurbani`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/sikh_gurbani_japji.json` |
 | **`tamil_tirukkural`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/tamil_tirukkural.json` |
 | **`tamil_prabandham`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/tamil_prabandham.json` |
@@ -23,6 +25,7 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
 | **`buddhist_dhamma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
 | **`jain_dharma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
+| **`valmiki_ramayana`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_bala.json` |
 
 ### Column Definitions:
 * **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
@@ -47,9 +50,11 @@ This document records the current integration, routing, and evaluation status fo
    - Themes: Moral fables (Monkey and Crocodile, Talkative Tortoise, Lion and Rabbit, Blue Jackal).
 
 4. **Upanishads (`pathshala_upanishads`)**
-   - Active chapters: 1 (`upanishad_chapter_1.json`)
-   - Themes: Principal Upanishads (*Isha*, *Katha*, *Chandogya*).
-   - Note: The current embedding index (`upanishads_index.json`) is a small sample index generated from `upanishad_chapter_1.json`, not a large corpus build.
+   - Active texts: 11 (`upanishad_*.json`)
+   - Scale: **45 curated passages across 11 principal Upanishad names; curated explicit starter / sample-scale**
+   - Themes: 11 Principal Upanishads (Isha, Kena, Katha, Mundaka, Mandukya, Prashna, Taittiriya, Aitareya, Chandogya, Brihadaranyaka, Shvetashvatara).
+   - Translation Basis: Robert Ernest Hume (1921), public domain.
+   - Note: The embedding index supports explicit RAG queries. It is a curated selection of principal verses rather than exhaustive canon.
 
 5. **Gurbani (`sikh_gurbani`)**
    - Active chapters: 1 (`sikh_gurbani_japji.json`)
@@ -64,3 +69,10 @@ This document records the current integration, routing, and evaluation status fo
    - Active chapters: 3 (`jain_dharma.json` containing Tattvartha Sutra chapters and Saman Suttam)
    - Scale: **Production-scale** (107 passages indexed).
    - Themes: Foundational Jain Dharma Agamas and ethical verses (Three Jewels, Ahimsa, Anekantavada, Mahavratas, Samata, Navkar Mantra).
+
+8. **Valmiki Ramayana (`valmiki_ramayana`)**
+   - Active texts: 1 (`valmiki_ramayana_bala.json`)
+   - Scale: **Source-audit pending curated starter slice** (15 passages with Kanda/Sarga/Shloka references; not full-canon coverage).
+   - Translation Basis: Shoonaya literal study renderings cross-checked against Ralph T. H. Griffith; not Griffith verbatim.
+   - Note: This is an explicit-only Pramana Ramayana starter lane, distinct from Shoonaya curated Ramayana lessons, and must not be called verified/canonical until source audit clears.
+   - Next steps: clear source/rights audit, expand verified passage count, strengthen Kanda coverage, improve eval suite, decide Uttara Kanda policy if unresolved.

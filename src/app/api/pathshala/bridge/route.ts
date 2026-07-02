@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { runPathshalaBridge } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 
@@ -13,6 +14,13 @@ function extractBridge(raw: string) {
 }
 
 export async function POST(req: Request) {
+  // Require authentication — bridge is included in free plan but not open to the internet.
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  }
+
   const {
     lessonTitle,
     pathTitle,

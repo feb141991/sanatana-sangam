@@ -2,12 +2,16 @@
 
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Download, Lock, TrendingUp, TrendingDown, Minus, Calendar, Activity, Sparkles, Share2, ExternalLink, Target, Flame } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { localSpiritualDate } from '@/lib/sacred-time';
+import PageIntro from '@/components/ui/PageIntro';
+import SankalpaCompletionCeremony from '@/components/home/SankalpaCompletionCeremony';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface ReportData {
@@ -24,12 +28,23 @@ interface ReportData {
   topMantra:     string | null;
 }
 
+interface PillarData {
+  japa:        number;
+  nitya:       number;
+  quiz:        number;
+  pathshala:   number;
+  dharmveer:   number;
+  perfectDays: number;
+  window:      number;   // days in the window (≤30)
+}
+
 interface Props {
   userName:         string;
   tradition:        string | null;
   isPro:            boolean;
   streak:           number;
   heatmap:          { date: string; japa: boolean; nitya: boolean }[];
+  sixMonthHeatmap?: { date: string; japa: boolean; nitya: boolean }[];
   japa30dSessions:  number;
   japa30dRounds:    number;
   japa30dBeads:     number;
@@ -38,7 +53,27 @@ interface Props {
   dowCounts:        number[];
   totalJapaSessions: number;
   nitya30dDays:     number;
+  sevaScore?:       number;
+  karmaPoints?:     number;
+  weeklySevaScore?: number;
+  mandaliPostCount?: number;
+  kulTasksDone?:    number;
+  pillarData?:      PillarData;
+  quiz30dTotal?:    number;
+  quiz30dCorrect?:  number;
+  vratTotal?:       number;
+  karma30dTotal?:   number;
+  karma30dBreakdown?: { reason: string; total: number }[];
   report:           ReportData;
+  sankalpas:        any[];
+  shrutiStats:      {
+    avgScore: number;
+    avgPronunciation: number;
+    avgFluency: number;
+    scoredCount: number;
+    versesAttempted: number;
+    certified: number;
+  } | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -167,6 +202,156 @@ function SparklineView({ days, isDark }: { days: Props['heatmap']; isDark: boole
   );
 }
 
+// ── 6-Month GitHub-Style Contribution Heatmap ─────────────────────────────────
+// 26 weeks × 7 days grid. Columns = weeks (oldest → newest), rows = Sun–Sat.
+function SixMonthHeatmap({
+  days, isDark,
+}: {
+  days: Props['heatmap']; isDark: boolean;
+}) {
+  const amber  = '#C5A059';
+  const green  = '#8fb46e';
+  const dimBg  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const sub    = isDark ? 'rgba(245,210,130,0.38)' : 'rgba(100,60,10,0.45)';
+
+  const dayMap = useMemo(() => {
+    const m: Record<string, { japa: boolean; nitya: boolean }> = {};
+    days.forEach(d => { m[d.date] = { japa: d.japa, nitya: d.nitya }; });
+    return m;
+  }, [days]);
+
+  const todayIso = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  // Build 26 full weeks anchored to today (Sunday start)
+  const weeks = useMemo(() => {
+    // Find the most recent Sunday (or today if Sunday)
+    const anchor = new Date();
+    anchor.setDate(anchor.getDate() - anchor.getDay()); // roll back to Sunday
+    // Build 26 weeks going backwards
+    const allWeeks: (string | null)[][] = [];
+    for (let w = 25; w >= 0; w--) {
+      const week: (string | null)[] = [];
+      for (let d = 0; d < 7; d++) {
+        const date = new Date(anchor);
+        date.setDate(anchor.getDate() - w * 7 + d);
+        const iso = date.toISOString().slice(0, 10);
+        // Only include dates within our data window
+        week.push(iso <= todayIso ? iso : null);
+      }
+      allWeeks.push(week);
+    }
+    return allWeeks;
+  }, [todayIso]);
+
+  // Month labels for the top axis
+  const monthLabels = useMemo(() => {
+    const labels: { label: string; weekIndex: number }[] = [];
+    let lastMonth = -1;
+    weeks.forEach((week, wi) => {
+      const firstDate = week.find(d => d !== null);
+      if (!firstDate) return;
+      const m = new Date(firstDate + 'T12:00:00Z').getUTCMonth();
+      if (m !== lastMonth) {
+        labels.push({
+          label: new Date(firstDate + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short' }),
+          weekIndex: wi,
+        });
+        lastMonth = m;
+      }
+    });
+    return labels;
+  }, [weeks]);
+
+  function cellColor(iso: string | null): string {
+    if (!iso) return 'transparent';
+    const d = dayMap[iso];
+    if (!d) return dimBg;
+    if (d.japa && d.nitya) return amber;
+    if (d.japa)            return `${amber}bb`;
+    if (d.nitya)           return `${green}99`;
+    return dimBg;
+  }
+
+  const totalJapa  = days.filter(d => d.japa).length;
+  const totalNitya = days.filter(d => d.nitya).length;
+  const longestRun = useMemo(() => {
+    let max = 0, cur = 0;
+    const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
+    for (const d of sorted) {
+      if (d.japa) { cur++; max = Math.max(max, cur); } else cur = 0;
+    }
+    return max;
+  }, [days]);
+
+  return (
+    <div>
+      {/* Stats row */}
+      <div className="flex gap-4 mb-3 text-[11px]" style={{ color: sub }}>
+        <span><span style={{ color: amber }} className="font-bold">{totalJapa}</span> japa days</span>
+        <span><span style={{ color: green }} className="font-bold">{totalNitya}</span> nitya days</span>
+        <span>best run: <span className="font-bold" style={{ color: isDark ? '#f5dfa0' : '#2a1002' }}>{longestRun}</span></span>
+      </div>
+
+      {/* Month labels */}
+      <div className="relative h-4 mb-1" style={{ minWidth: 0 }}>
+        {monthLabels.map(({ label, weekIndex }) => (
+          <span
+            key={label + weekIndex}
+            className="absolute text-[9px]"
+            style={{
+              left: `${(weekIndex / 26) * 100}%`,
+              color: sub,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+
+      {/* Grid: columns = weeks, rows = Sun(0)…Sat(6) */}
+      <div className="flex gap-[3px]">
+        {weeks.map((week, wi) => (
+          <div key={wi} className="flex flex-col gap-[3px]">
+            {week.map((iso, di) => (
+              <div
+                key={di}
+                title={iso ? `${iso}${dayMap[iso]?.japa ? ' · Japa' : ''}${dayMap[iso]?.nitya ? ' · Nitya' : ''}` : ''}
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 2,
+                  background: cellColor(iso),
+                  outline: iso === todayIso ? `1.5px solid ${amber}` : 'none',
+                  outlineOffset: 1,
+                  cursor: iso ? 'default' : 'default',
+                  opacity: iso ? 1 : 0,
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-3 mt-2.5 text-[10px]" style={{ color: sub }}>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: dimBg, display: 'inline-block' }} /> None
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: `${amber}bb`, display: 'inline-block' }} /> Japa
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: `${green}99`, display: 'inline-block' }} /> Nitya
+        </span>
+        <span className="flex items-center gap-1">
+          <span style={{ width: 10, height: 10, borderRadius: 2, background: amber, display: 'inline-block' }} /> Both
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ── Interactive Activity Calendar ─────────────────────────────────────────────
 function InteractiveCalendar({
   days, isDark,
@@ -205,9 +390,9 @@ function InteractiveCalendar({
         </span>
         <br />
         <span style={{ color: isDark ? 'rgba(245,210,130,0.65)' : 'rgba(100,55,10,0.65)' }}>
-          {d?.japa ? '📿 Japa' : ''}
+          {d?.japa ? 'Japa' : ''}
           {d?.japa && d?.nitya ? ' · ' : ''}
-          {d?.nitya ? '🌅 Nitya' : ''}
+          {d?.nitya ? 'Nitya' : ''}
           {!hasAny ? 'Rest day' : ''}
         </span>
       </motion.div>
@@ -363,6 +548,11 @@ function Trend({ cur, prev }: { cur: number; prev: number }) {
 }
 
 // ── Achievement Shields ───────────────────────────────────────────────────────
+const shieldIconMap: Record<string, SacredIconName> = {
+  '🔥': 'flame', '🪔': 'flame', '🌟': 'star', '📿': 'japa', '🙏': 'flower', '🌱': 'tree',
+  '🌕': 'moon', '⚡': 'sparkles', '🔆': 'sun', '💎': 'shield', '🕯️': 'flame', '☀️': 'sun'
+};
+
 const STREAK_SHIELDS = [
   { threshold: 7,   name: 'Saptāha',    emoji: '🔥', desc: '7-day streak'    },
   { threshold: 9,   name: 'Navarātri',  emoji: '🪔', desc: '9-day streak'    },
@@ -404,10 +594,9 @@ function ShieldBadgesPreview({
   const nextSession = SESSION_SHIELDS.find(s => totalSessions < s.threshold);
 
   return (
-    <motion.div 
-      className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-      style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', perspective: 1000 }}
-      whileHover={{ rotateX: 1, rotateY: -1, scale: 1.005 }}
+    <motion.div
+      className="rounded-2xl p-5"
+      style={{ background: cardBg, border: `1px solid ${cardBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}
     >
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -457,7 +646,7 @@ function ShieldBadgesPreview({
                   filter: earned ? 'none' : 'grayscale(1) opacity(0.2)',
                 }}
               >
-                {shield.emoji}
+                <SacredIcon name={shieldIconMap[shield.emoji]} size={16} />
                 {earned && isMilestone && (
                   <motion.div 
                     className="absolute inset-0"
@@ -478,12 +667,13 @@ function ShieldBadgesPreview({
         const val  = nextStreak ? streak : totalSessions;
         const pct  = Math.min(100, Math.round((val / next.threshold) * 100));
         return (
-          <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+          <div className="p-4 rounded-2xl"
+            style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)'}` }}>
             <div className="flex justify-between mb-2">
-              <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+              <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.40)' }}>
                 Target: <span className="text-amber-500">{next.name}</span>
               </span>
-              <span className="text-[10px] font-bold text-white/40">
+              <span className="text-[10px] font-bold" style={{ color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.45)' }}>
                 {val}/{next.threshold}
               </span>
             </div>
@@ -502,6 +692,464 @@ function ShieldBadgesPreview({
         </p>
       )}
     </motion.div>
+  );
+}
+
+// ── Advanced Analytics (Zenith) ───────────────────────────────────────────────
+interface AdvancedData {
+  quiz:  { total_answered: number; accuracy_pct: number; by_tradition: { tradition: string; answered: number; accuracy_pct: number }[] };
+  mood:  { total_checkins: number; most_frequent_mood: string | null; mood_frequency: { mood: string; count: number }[]; action_rate_pct: number };
+  vrat:  { total_observed: number; unique_vratas: number; last_30_days: number; recent: { vrat_id: string; vrat_name: string; date: string; karma_earned: number }[] };
+  karma: { current_total: number; seva_score: number; last_30_days_earned: number; breakdown: { reason: string; total: number }[] };
+}
+
+const MOOD_EMOJI: Record<string, string> = {
+  peaceful: '🕊️', grateful: '🙏', focused: '🎯', energised: '⚡',
+  anxious: '😰', sad: '😔', distracted: '🌀', angry: '🔥',
+  neutral: '😐', hopeful: '🌱', joyful: '😊', tired: '😴',
+};
+
+const KARMA_REASON_LABELS: Record<string, string> = {
+  japa_complete:       'Japa',
+  quiz_complete:       'Quiz',
+  nitya_karma:         'Nitya Karma',
+  pathshala_lesson:    'Pathshala',
+  sankalpa_complete:   'Sankalpa',
+  vrat_complete:       'Vrat',
+  mala_session:        'Mala Session',
+  streak_milestone:    'Streak',
+  profile_complete:    'Profile',
+  seva:                'Seva',
+  referral:            'Referral',
+  kul_event:           'Kul Event',
+};
+
+function AdvancedAnalyticsSection({ isPro, isDark }: { isPro: boolean; isDark: boolean }) {
+  const [data, setData]       = useState<AdvancedData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState<string | null>(null);
+
+  const h1    = isDark ? '#f5dfa0' : '#1a0a02';
+  const muted = isDark ? 'rgba(245,210,130,0.45)' : 'rgba(100,55,10,0.50)';
+  const amber = 'rgba(197,160,89,';
+  const cardBg  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.92)';
+  const cardBdr = isDark ? 'rgba(197,160,89,0.14)' : 'rgba(180,120,40,0.14)';
+
+  useEffect(() => {
+    if (!isPro) return;
+    setLoading(true);
+    fetch('/api/analytics/advanced')
+      .then(r => r.json())
+      .then(d => { if (d.error) setError(d.error); else setData(d); })
+      .catch(() => setError('Could not load analytics'))
+      .finally(() => setLoading(false));
+  }, [isPro]);
+
+  // ── Locked preview for non-pro users ─────────────────────────────────────
+  if (!isPro) {
+    return (
+      <motion.section
+        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+        className="mb-8 relative overflow-hidden rounded-[1.8rem]"
+        style={{ background: isDark ? 'rgba(197,160,89,0.06)' : 'rgba(197,160,89,0.04)', border: `1px solid rgba(197,160,89,0.22)` }}
+      >
+        {/* Blurred preview */}
+        <div className="p-5 blur-[5px] pointer-events-none select-none">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: `${amber}0.70)` }}>
+            ✦ Advanced Analytics
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {['Quiz Accuracy', 'Mood Pattern', 'Vrat Practice', 'Karma Flow'].map(label => (
+              <div key={label} className="rounded-xl p-3" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+                <div className="h-8 w-12 rounded-full mb-2" style={{ background: `${amber}0.15)` }} />
+                <p className="text-xs font-medium" style={{ color: h1 }}>{label}</p>
+                <p className="text-[10px]" style={{ color: muted }}>—</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Lock overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-6">
+          <Lock size={22} style={{ color: `${amber}0.80)` }} />
+          <div className="text-center">
+            <p className="font-serif text-base font-semibold" style={{ color: h1 }}>Advanced Analytics</p>
+            <p className="text-xs mt-1" style={{ color: muted }}>Quiz accuracy, mood patterns, vrat history, karma flow — all in one place.</p>
+          </div>
+          <Link
+            href="/settings/subscription"
+            className="px-6 py-2.5 rounded-full text-xs font-bold transition-opacity hover:opacity-90"
+            style={{ background: `${amber}0.90)`, color: '#1c1208' }}
+          >
+            Upgrade to Zenith →
+          </Link>
+        </div>
+      </motion.section>
+    );
+  }
+
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <motion.section
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+        className="mb-8 rounded-[1.8rem] p-5"
+        style={{ background: cardBg, border: `1px solid ${cardBdr}` }}
+      >
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] mb-4" style={{ color: `${amber}0.70)` }}>
+          ✦ Advanced Analytics
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          {[0,1,2,3].map(i => (
+            <div key={i} className="rounded-xl p-3 animate-pulse" style={{ background: `${amber}0.07)`, border: `1px solid ${amber}0.10)` }}>
+              <div className="h-14 rounded-lg" style={{ background: `${amber}0.10)` }} />
+            </div>
+          ))}
+        </div>
+      </motion.section>
+    );
+  }
+
+  if (error || !data) return null;
+
+  const { quiz, mood, vrat, karma } = data;
+
+  // Quiz accuracy ring (SVG)
+  const R = 28, CX = 36, CY = 36;
+  const circ = 2 * Math.PI * R;
+  const quizDash = (quiz.accuracy_pct / 100) * circ;
+
+  // Mood frequency bars
+  const topMoods = mood.mood_frequency.slice(0, 4);
+  const maxMoodCount = topMoods[0]?.count || 1;
+
+  // Karma breakdown bars
+  const topKarma = karma.breakdown.slice(0, 4);
+  const maxKarma = topKarma[0]?.total || 1;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}
+      className="mb-8 rounded-[1.8rem] overflow-hidden"
+      style={{ background: isDark ? 'rgba(197,160,89,0.04)' : 'rgba(255,253,245,0.96)', border: `1px solid rgba(197,160,89,0.20)` }}
+    >
+      {/* Header */}
+      <div className="px-5 pt-5 pb-3 flex items-center justify-between">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: `${amber}0.80)` }}>
+          ✦ Advanced Analytics
+        </p>
+        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ background: `${amber}0.12)`, color: `${amber}0.85)` }}>
+          Zenith
+        </span>
+      </div>
+
+      <div className="px-5 pb-5 grid grid-cols-2 gap-3">
+
+        {/* ── Quiz accuracy ring ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: `${amber}0.65)` }}>Quiz</p>
+          <div className="flex items-center gap-3">
+            <svg width="72" height="72" viewBox="0 0 72 72">
+              <circle cx={CX} cy={CY} r={R} fill="none" stroke={`${amber}0.12)`} strokeWidth="7" />
+              <circle cx={CX} cy={CY} r={R} fill="none"
+                stroke={quiz.total_answered > 0 ? `${amber}0.85)` : `${amber}0.15)`}
+                strokeWidth="7" strokeLinecap="round"
+                strokeDasharray={`${quizDash} ${circ - quizDash}`}
+                strokeDashoffset={circ / 4}
+                style={{ transition: 'stroke-dasharray 0.9s ease' }}
+              />
+              <text x={CX} y={CY + 5} textAnchor="middle" fontSize="12" fontWeight="700" fill={quiz.total_answered > 0 ? (isDark ? '#f5dfa0' : '#1a0a02') : `${amber}0.30)`}>
+                {quiz.total_answered > 0 ? `${quiz.accuracy_pct}%` : '—'}
+              </text>
+            </svg>
+            <div>
+              <p className="text-xs font-semibold" style={{ color: h1 }}>
+                {quiz.total_answered > 0 ? 'Accuracy' : 'No data yet'}
+              </p>
+              <p className="text-[10px] mt-0.5" style={{ color: muted }}>{quiz.total_answered} answered</p>
+              {quiz.by_tradition.length > 0 && (
+                <p className="text-[9px] mt-1" style={{ color: muted }}>
+                  Best: {quiz.by_tradition.sort((a, b) => b.accuracy_pct - a.accuracy_pct)[0]?.tradition ?? '—'}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Mood frequency ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#10b981' }}>Mood</p>
+          {mood.total_checkins === 0 ? (
+            <div className="flex items-center justify-center h-14">
+              <p className="text-[10px]" style={{ color: muted }}>No check-ins yet</p>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {topMoods.slice(0, 3).map(({ mood: m, count }) => (
+                <div key={m} className="flex items-center gap-1.5">
+                  <span className="text-[12px] w-4">{MOOD_EMOJI[m] ?? '🫧'}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(16,185,129,0.12)' }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: 'rgba(16,185,129,0.70)' }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((count / maxMoodCount) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                  <span className="text-[9px] w-3 text-right" style={{ color: muted }}>{count}</span>
+                </div>
+              ))}
+              <p className="text-[9px] mt-1" style={{ color: muted }}>{mood.action_rate_pct}% acted on mood</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Vrat practice ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: '#9575cd' }}>Vrat</p>
+          {vrat.total_observed === 0 ? (
+            <div>
+              <p className="text-[10px]" style={{ color: muted }}>No vratas recorded</p>
+              <Link href="/vrat/ekadashi" className="text-[9px] mt-1 block" style={{ color: `${amber}0.75)` }}>
+                Start with Ekadashi →
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <p className="text-2xl font-bold font-serif" style={{ color: h1 }}>{vrat.total_observed}</p>
+              <p className="text-[10px]" style={{ color: muted }}>total observations</p>
+              <p className="text-[9px] mt-1" style={{ color: muted }}>
+                {vrat.unique_vratas} unique · {vrat.last_30_days} this month
+              </p>
+              {vrat.recent[0] && (
+                <p className="text-[9px] mt-1.5 truncate" style={{ color: `${amber}0.70)` }}>
+                  Last: {vrat.recent[0].vrat_name}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ── Karma breakdown ── */}
+        <div className="rounded-2xl p-4" style={{ background: cardBg, border: `1px solid ${cardBdr}` }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: `${amber}0.70)` }}>Karma</p>
+          {karma.last_30_days_earned === 0 && topKarma.length === 0 ? (
+            <div>
+              <p className="text-2xl font-bold font-serif" style={{ color: h1 }}>{karma.current_total}</p>
+              <p className="text-[10px]" style={{ color: muted }}>total points</p>
+              <p className="text-[9px] mt-1" style={{ color: muted }}>Seva: {karma.seva_score}</p>
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {topKarma.slice(0, 3).map(({ reason, total }) => (
+                <div key={reason} className="flex items-center gap-1.5">
+                  <span className="text-[9px] w-14 truncate" style={{ color: muted }}>
+                    {KARMA_REASON_LABELS[reason] ?? reason}
+                  </span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: `${amber}0.10)` }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: `${amber}0.75)` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((total / maxKarma) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                  <span className="text-[9px]" style={{ color: muted }}>{total}</span>
+                </div>
+              ))}
+              {karma.last_30_days_earned > 0 && (
+                <p className="text-[9px] mt-0.5" style={{ color: muted }}>+{karma.last_30_days_earned} this month</p>
+              )}
+            </div>
+          )}
+        </div>
+
+      </div>
+    </motion.section>
+  );
+}
+
+// ── 5-Pillar 30-Day Scorecard ─────────────────────────────────────────────────
+const PILLAR_META = [
+  { key: 'japa',      emoji: '📿', label: 'Japa',       colour: '#F59E4A', bg: 'rgba(245,158,74,0.12)'  },
+  { key: 'nitya',     emoji: '🌅', label: 'Nitya',      colour: '#C5A059', bg: 'rgba(197,160,89,0.10)'  },
+  { key: 'quiz',      emoji: '🧠', label: 'Quiz',       colour: '#A594E0', bg: 'rgba(165,148,224,0.12)' },
+  { key: 'pathshala', emoji: '📖', label: 'Pathshala',  colour: '#6BC47E', bg: 'rgba(107,196,126,0.12)' },
+  { key: 'dharmveer', emoji: '⚔️', label: 'Dharm Veer', colour: '#FF8A65', bg: 'rgba(255,138,101,0.12)' },
+];
+
+const KARMA_LABELS: Record<string, string> = {
+  japa_complete: 'Japa', quiz_complete: 'Quiz', nitya_karma: 'Nitya',
+  pathshala_lesson: 'Pathshala', sankalpa_complete: 'Sankalpa',
+  vrat_complete: 'Vrat', mala_session: 'Mala', streak_milestone: 'Streak',
+  profile_complete: 'Profile', seva: 'Seva', referral: 'Referral', kul_event: 'Kul',
+};
+
+function SadhanaScorecard({
+  pillarData, quiz30dTotal, quiz30dCorrect, vratTotal, karma30dTotal, karma30dBreakdown, isDark, h1, muted,
+}: {
+  pillarData: PillarData;
+  quiz30dTotal: number; quiz30dCorrect: number;
+  vratTotal: number;
+  karma30dTotal: number;
+  karma30dBreakdown: { reason: string; total: number }[];
+  isDark: boolean; h1: string; muted: string;
+}) {
+  const window = Math.max(pillarData.window, 1);
+  const quizAccuracy = quiz30dTotal > 0 ? Math.round((quiz30dCorrect / quiz30dTotal) * 100) : null;
+
+  return (
+    <div className="space-y-3">
+
+      {/* ── 5-Pillar scorecard ── */}
+      <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.90)', border: isDark ? '1px solid rgba(197,160,89,0.14)' : '1px solid rgba(197,160,89,0.14)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: 'rgba(197,160,89,0.65)' }}>
+          5-Pillar Scorecard · 30 days
+        </p>
+        <div className="space-y-3">
+          {PILLAR_META.map(p => {
+            const count = pillarData[p.key as keyof PillarData] as number;
+            const pct   = Math.min(100, Math.round((count / window) * 100));
+            return (
+              <div key={p.key} className="flex items-center gap-3">
+                <span className="text-[16px] shrink-0 w-6 text-center">{p.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold" style={{ color: h1 }}>{p.label}</span>
+                    <span className="text-[11px] font-bold tabular-nums" style={{ color: p.colour }}>
+                      {count}<span className="font-normal text-[9px]" style={{ color: muted }}>/{window}d</span>
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: p.bg }}>
+                    <motion.div
+                      className="h-full rounded-full"
+                      style={{ background: p.colour }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: PILLAR_META.indexOf(p) * 0.06 }}
+                    />
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold w-9 text-right shrink-0" style={{ color: pct >= 70 ? p.colour : muted }}>
+                  {pct}%
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Perfect days */}
+        {pillarData.perfectDays > 0 && (
+          <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(197,160,89,0.08)', border: '1px solid rgba(197,160,89,0.14)' }}>
+            <span className="text-base">⭐</span>
+            <div className="flex-1">
+              <span className="text-[12px] font-semibold" style={{ color: h1 }}>Perfect days</span>
+              <span className="text-[11px] ml-1.5" style={{ color: muted }}>all 5 pillars in one day</span>
+            </div>
+            <span className="text-[18px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>{pillarData.perfectDays}</span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Quiz accuracy + Vrat row ── */}
+      <div className="grid grid-cols-2 gap-3">
+        {/* Quiz accuracy */}
+        <div className="rounded-2xl p-4" style={{ background: isDark ? 'rgba(165,148,224,0.08)' : 'rgba(165,148,224,0.06)', border: '1px solid rgba(165,148,224,0.18)', boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-2" style={{ color: 'rgba(165,148,224,0.80)' }}>Quiz · 30d</p>
+          {quiz30dTotal === 0 ? (
+            <Link href="/quiz">
+              <p className="text-[11px] font-medium mb-1" style={{ color: muted }}>No quiz sessions yet</p>
+              <p className="text-[10px] font-bold" style={{ color: 'rgba(165,148,224,0.75)' }}>Start now →</p>
+            </Link>
+          ) : (
+            <>
+              {/* Accuracy ring */}
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const R = 18, CX = 22, CY = 22;
+                  const circ = 2 * Math.PI * R;
+                  const dash = ((quizAccuracy ?? 0) / 100) * circ;
+                  return (
+                    <svg width="44" height="44" viewBox="0 0 44 44" className="shrink-0">
+                      <circle cx={CX} cy={CY} r={R} fill="none" stroke="rgba(165,148,224,0.12)" strokeWidth="4" />
+                      <motion.circle cx={CX} cy={CY} r={R} fill="none"
+                        stroke="rgba(165,148,224,0.85)" strokeWidth="4" strokeLinecap="round"
+                        strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={circ / 4}
+                        initial={{ strokeDasharray: `0 ${circ}` }}
+                        animate={{ strokeDasharray: `${dash} ${circ - dash}` }}
+                        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                      <text x={CX} y={CY + 4} textAnchor="middle" fontSize="9" fontWeight="700"
+                        fill={isDark ? '#c4b5fd' : '#7c3aed'}>
+                        {quizAccuracy ?? 0}%
+                      </text>
+                    </svg>
+                  );
+                })()}
+                <div>
+                  <p className="text-[13px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{quiz30dTotal}</p>
+                  <p className="text-[9px] mt-0.5 font-medium uppercase tracking-wider" style={{ color: muted }}>answered</p>
+                  <p className="text-[11px] font-semibold mt-1" style={{ color: 'rgba(165,148,224,0.85)' }}>{quiz30dCorrect} correct</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Vrat observations */}
+        <div className="rounded-2xl p-4" style={{ background: isDark ? 'rgba(196,181,253,0.07)' : 'rgba(196,181,253,0.06)', border: '1px solid rgba(196,181,253,0.18)', boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] mb-3" style={{ color: 'rgba(196,181,253,0.75)' }}>Vrat · All time</p>
+          {vratTotal === 0 ? (
+            <Link href="/vrat">
+              <p className="text-[11px] font-medium mb-1" style={{ color: muted }}>No vratas yet</p>
+              <p className="text-[10px] font-bold" style={{ color: 'rgba(196,181,253,0.70)' }}>Observe Ekadashi →</p>
+            </Link>
+          ) : (
+            <>
+              <p className="text-[28px] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{vratTotal}</p>
+              <p className="text-[10px] mt-1 font-medium" style={{ color: muted }}>total observations</p>
+              <Link href="/vrat" className="text-[10px] font-bold mt-2 block" style={{ color: 'rgba(196,181,253,0.75)' }}>
+                View calendar →
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ── Karma 30d breakdown ── */}
+      <div className="rounded-2xl p-5" style={{ background: isDark ? 'rgba(197,160,89,0.05)' : 'rgba(255,248,230,0.90)', border: '1px solid rgba(197,160,89,0.16)', boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.05)' }}>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.65)' }}>Karma Earned · 30 days</p>
+          <span className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>+{karma30dTotal}</span>
+        </div>
+        {karma30dTotal > 0 && (
+          <div className="space-y-2 mb-4">
+            {karma30dBreakdown.map(({ reason, total }) => {
+              const maxKarma = karma30dBreakdown[0]?.total ?? 1;
+              return (
+                <div key={reason} className="flex items-center gap-2.5">
+                  <span className="text-[10px] w-16 truncate shrink-0" style={{ color: muted }}>{KARMA_LABELS[reason] ?? reason}</span>
+                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(197,160,89,0.10)' }}>
+                    <motion.div className="h-full rounded-full"
+                      style={{ background: 'rgba(197,160,89,0.75)' }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.round((total / maxKarma) * 100)}%` }}
+                      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} />
+                  </div>
+                  <span className="text-[10px] font-bold tabular-nums shrink-0" style={{ color: h1 }}>+{total}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div className="flex justify-end">
+          <Link href="/my-progress/ledger" className="text-xs font-semibold hover:underline" style={{ color: '#C8924A' }}>
+            View Seva History →
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -697,7 +1345,9 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => japaAi.explain(`This user's japa practice this month: ${report.curSessions} sessions, ${report.curRounds} rounds, ${report.curBeads} beads${report.topMantra ? `, favourite mantra: ${report.topMantra}` : ''}. Last month was ${report.prevSessions} sessions, ${report.prevRounds} rounds, ${report.prevBeads} beads. Current streak: ${streak} days. Interpret this data as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🪷 Japa Practice</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(197, 160, 89,0.7)' }}>
+                  <SacredIcon name="japa" size={14} /> Japa Practice
+                </p>
                 <div className="flex items-center gap-2">
                   <Link href="/bhakti/mala/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
@@ -757,7 +1407,9 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
               style={{ background: card, border: `1px solid ${border}` }}
               onClick={() => nityaAi.explain(`This user completed Nitya Karma (daily dharmic duties) on ${report.curNityaDays} out of ${report.curDaysElapsed} days this month (${nityaRate}% completion rate). Their overall streak is ${streak} days. Interpret this as a spiritual guide.`)}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(197, 160, 89,0.7)' }}>🌅 Nitya Karma</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'rgba(197, 160, 89,0.7)' }}>
+                  <SacredIcon name="sunrise" size={14} /> Nitya Karma
+                </p>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights" onClick={e => e.stopPropagation()}
                     className="flex items-center gap-1 text-[10px] rounded-full px-2 py-0.5"
@@ -878,9 +1530,11 @@ function ReportModal({ report, isPro, onClose, isDark, streak }: {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function MyProgressClient({
   userName,
+  tradition,
   isPro,
   streak,
   heatmap,
+  sixMonthHeatmap,
   japa30dSessions,
   japa30dRounds,
   japa30dBeads,
@@ -889,13 +1543,140 @@ export default function MyProgressClient({
   dowCounts,
   totalJapaSessions,
   nitya30dDays,
+  sevaScore,
+  karmaPoints = 0,
+  weeklySevaScore,
+  mandaliPostCount,
+  kulTasksDone,
+  pillarData,
+  quiz30dTotal = 0,
+  quiz30dCorrect = 0,
+  vratTotal = 0,
+  karma30dTotal = 0,
+  karma30dBreakdown = [],
   report,
+  sankalpas,
+  shrutiStats,
 }: Props) {
   const router = useRouter();
   const { resolvedTheme } = useThemePreference();
   const isDark    = resolvedTheme === 'dark';
   const [showReport, setShowReport]     = useState(false);
+  const [belowFoldMounted, setBelowFoldMounted] = useState(false);
+  // Mount below-fold sections after first paint
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setBelowFoldMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   const [calView, setCalView] = useState<'calendar' | 'sparkline'>('calendar');
+  const [midpointRefreshKey, setMidpointRefreshKey] = useState(0);
+
+  const [completionCeremony, setCompletionCeremony] = useState<{
+    open: boolean;
+    title: string;
+    durationDays: number;
+  }>({ open: false, title: '', durationDays: 0 });
+
+  const [checkinMap, setCheckinMap] = useState<Map<string, Set<string>>>(new Map());
+
+  useEffect(() => {
+    const activeSankalpas = sankalpas.filter((s) => s.status === 'active');
+    if (activeSankalpas.length === 0) return;
+
+    async function fetchCheckins() {
+      try {
+        const promises = activeSankalpas.map(async (s) => {
+          const res = await fetch(`/api/sankalpa/checkin?sankalpa_id=${s.id}`);
+          if (!res.ok) throw new Error(`Failed to fetch checkin for sankalpa ${s.id}`);
+          const data = await res.json();
+          return { id: s.id, dates: new Set<string>(data.checkins || []) };
+        });
+
+        const results = await Promise.all(promises);
+        setCheckinMap((prev) => {
+          const next = new Map(prev);
+          for (const res of results) {
+            next.set(res.id, res.dates);
+          }
+          return next;
+        });
+      } catch (err) {
+        console.error('[MyProgressClient] load checkins failed:', err);
+      }
+    }
+
+    fetchCheckins();
+  }, [sankalpas]);
+
+  function hasFiredCompletion(id: string) {
+    try { return localStorage.getItem(`shoonaya-sankalpa-completed-${id}`) === 'true'; }
+    catch { return false; }
+  }
+
+  async function handleComplete(id: string, title: string, durationDays: number) {
+    try {
+      localStorage.setItem(`shoonaya-sankalpa-completed-${id}`, 'true');
+    } catch {}
+    
+    setCompletionCeremony({ open: true, title, durationDays });
+    
+    fetch('/api/sankalpa/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sankalpa_id: id }),
+    }).catch(console.error);
+  }
+
+  const handleCheckin = useCallback(async (sankalpaId: string) => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    setCheckinMap((prev) => {
+      const next = new Map(prev);
+      const set = new Set(next.get(sankalpaId) ?? []);
+      set.add(todayStr);
+      next.set(sankalpaId, set);
+      return next;
+    });
+
+    try {
+      await fetch('/api/sankalpa/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sankalpa_id: sankalpaId }),
+      });
+      toast.success('Checked in! 🙏');
+    } catch (err) {
+      console.error('[sankalpa/checkin] Failed to checkin:', err);
+    }
+  }, []);
+
+  const hasMidpointReflection = useCallback((sankalpaId: string) => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(`shoonaya-midpoint-${sankalpaId}`) === 'done';
+  }, []);
+
+  const handleMidpointReaction = useCallback((sankalpaId: string, mood: 'strong' | 'struggling' | 'grateful') => {
+    try {
+      localStorage.setItem(`shoonaya-midpoint-${sankalpaId}`, 'done');
+    } catch {
+      // keep UI-only fallback
+    }
+
+    setMidpointRefreshKey((current) => current + 1);
+
+    fetch('/api/sankalpa/reflection', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sankalpa_id: sankalpaId, mood, reflection_type: 'midpoint' }),
+    }).catch(console.error);
+
+    const messages = {
+      strong: 'Stay the course. The divine sees your effort. 🙏',
+      struggling: 'Even struggle is sadhana. Keep going. 🌱',
+      grateful: 'Gratitude itself is the fruit. Keep walking. ✨',
+    } as const;
+
+    toast.success(messages[mood]);
+  }, []);
 
   // ── Page + shared tokens ──────────────────────────────────────────────────
   const pageBg  = isDark
@@ -954,147 +1735,123 @@ export default function MyProgressClient({
 
   return (
     <>
+      <PageIntro
+        pageKey="sankalpa"
+        steps={[
+          { emoji: '🕯️', title: 'Sankalpa', body: 'A sacred vow or intention. Set one and the app will track your journey.' },
+          { emoji: '📅', title: 'Sacred durations', body: '11, 21, 40, or 108 days — each tied to a cycle of spiritual significance.' },
+          { emoji: '🌓', title: 'Mid-point check-in', body: "At the halfway point, we'll ask how you're feeling. Your answer is private." },
+        ]}
+      />
       <div className="min-h-screen pb-28" style={{ background: pageBg }}>
-        {/* Safe area */}
-        <div style={{ height: 'max(env(safe-area-inset-top,0px),16px)' }} />
+        {/* ── Hero header ── */}
+        <div className="relative px-5 pt-safe-top pb-5 flex items-start justify-center">
+          {/* Subtle ambient radial */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-28 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.08) 0%, transparent 70%)' }}
+          />
 
-        {/* ── Top bar — Premium Revamp ── */}
-        <div className="relative overflow-hidden pt-8 pb-12 px-6">
-          {/* 3D Background Pulse */}
-          <div className="absolute inset-0 pointer-events-none opacity-40">
-            <motion.div 
-              className="absolute -top-24 -left-24 w-64 h-64 rounded-full"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-              style={{ background: 'radial-gradient(circle, rgba(251,191,36,0.15) 0%, transparent 70%)' }}
-            />
-          </div>
+          {/* Back button */}
+          <button
+            onClick={() => router.back()}
+            className="absolute left-5 w-9 h-9 rounded-full flex items-center justify-center transition-opacity active:opacity-60"
+            style={{ top: 'calc(max(env(safe-area-inset-top, 0px), 12px) + 4px)', background: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)', border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.08)' }}
+          >
+            <ChevronLeft size={18} style={{ color: h1 }} />
+          </button>
 
-          <div className="relative flex flex-col items-center text-center">
+          {/* Center: streak + name */}
+          <div className="flex flex-col items-center text-center mt-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] mb-3" style={{ color: 'rgba(197,160,89,0.55)' }}>
+              Sādhana Progress
+            </p>
+
+            {/* Streak hero */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="mb-6 relative"
+              className="flex items-center gap-2.5 mb-1"
             >
-              {/* The 9D Sadhana Sphere */}
-              <motion.div
-                className="w-32 h-32 rounded-full relative z-10"
-                style={{
-                  background: 'radial-gradient(circle at 30% 30%, #fcd34d 0%, #d97706 50%, #78350f 100%)',
-                  boxShadow: '0 0 40px rgba(251, 191, 36, 0.3), inset -10px -10px 30px rgba(0,0,0,0.5)',
-                }}
-                whileHover={{ 
-                  scale: 1.15, 
-                  rotateY: 720,
-                  transition: { duration: 1.2, ease: "easeOut" }
-                }}
-                animate={streak >= 9 ? {
-                  rotateY: 360,
-                  scale: [1, 1.05, 1],
-                  boxShadow: '0 0 60px rgba(251, 191, 36, 0.5), inset -10px -10px 30px rgba(0,0,0,0.5)'
-                } : { rotateY: 360 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              />
-              {/* Outer Rings */}
-              <motion.div 
-                className="absolute inset-0 -m-4 border border-amber-500/20 rounded-full"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div 
-                className="absolute inset-0 -m-8 border border-amber-500/10 rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              />
+              <motion.span
+                className="text-3xl leading-none"
+                animate={streak > 0 ? { scale: [1, 1.12, 1] } : {}}
+                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                🔥
+              </motion.span>
+              <span
+                className="text-5xl font-bold leading-none"
+                style={{ fontFamily: 'var(--font-serif)', color: streak > 0 ? '#C5A059' : h1 }}
+              >
+                {streak}
+              </span>
             </motion.div>
+            <p className="text-[12px] font-medium mt-1" style={{ color: muted }}>
+              {streak === 0
+                ? 'Begin today — every great sādhaka started with day one'
+                : `day${streak !== 1 ? 's' : ''} of unbroken practice`}
+            </p>
 
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <p className="text-[11px] tracking-[0.25em] uppercase font-bold text-amber-500/60 mb-2">Sādhana Trajectory</p>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: 800, color: h1, letterSpacing: '-0.02em' }}>
-                {userName}
-              </h1>
-              <div className="flex items-center justify-center gap-4 mt-4">
-                <div className="text-center">
-                  <p className="text-2xl font-black text-amber-500" style={{ fontFamily: 'var(--font-serif)' }}>{streak}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Streak</p>
-                </div>
-                <div className="w-px h-8 bg-white/10" />
-                <div className="text-center">
-                  <p className="text-2xl font-black text-amber-200" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 9)}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Navarātri</p>
-                </div>
-                <div className="w-px h-8 bg-white/10" />
-                <div className="text-center">
-                  <p className="text-2xl font-black text-slate-300" style={{ fontFamily: 'var(--font-serif)' }}>{Math.floor(streak / 7)}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-white/30 font-bold">Saptāha</p>
-                </div>
-              </div>
-            </motion.div>
+            <p className="text-base font-serif mt-3" style={{ color: h1 }}>{userName}</p>
           </div>
 
-          <button onClick={() => router.back()}
-            className="absolute top-8 left-6 w-10 h-10 rounded-full flex items-center justify-center bg-white/5 border border-white/10 backdrop-blur-xl">
-            <ChevronLeft size={20} className="text-amber-500" />
-          </button>
+          {/* ── 4-stat grid ── */}
+          <div className="grid grid-cols-4 gap-2 mt-5 relative">
+            {[
+              { val: String(japa30dSessions), label: 'sessions' },
+              { val: fmt(japa30dBeads),       label: 'beads'    },
+              { val: `${nityaRate}%`,          label: 'nitya'   },
+              { val: karmaPoints > 999 ? `${(karmaPoints/1000).toFixed(1)}k` : String(karmaPoints), label: 'karma' },
+            ].map(({ val, label }) => (
+              <div
+                key={label}
+                className="rounded-2xl py-3 px-1 text-center"
+                style={{
+                  background: isDark ? 'rgba(197,160,89,0.07)' : 'rgba(197,160,89,0.06)',
+                  border: `1px solid rgba(197,160,89,${isDark ? '0.14' : '0.12'})`,
+                }}
+              >
+                <p className="text-[18px] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>{val}</p>
+                <p className="text-[9px] mt-1 font-medium uppercase tracking-wider" style={{ color: muted }}>{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="px-4 space-y-4">
 
-          {/* ── 9-Day Rhythm Card — Premium Addition ── */}
-          <motion.section
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(0,0,0,0) 100%)',
-              border: '1px solid rgba(251,191,36,0.15)',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              perspective: 1000
-            }}
-            whileHover={{ rotateX: 2, rotateY: -2, scale: 1.01 }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-[11px] uppercase tracking-[0.2em] font-bold text-amber-500/70">9-Day Rhythm</h2>
-                <p className="text-xl font-bold mt-1" style={{ fontFamily: 'var(--font-serif)', color: h1 }}>Navarātri Readiness</p>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                <Sparkles size={24} className="text-amber-500" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {[
-                { label: 'Current Cycle', val: `${(streak % 9) + 1}/9`, icon: 'sparkles' as SacredIconName },
-                { label: 'Intensity', val: streak > 40 ? 'High' : 'Steady', icon: 'flame' as SacredIconName },
-                { label: 'Focus', val: 'Devotion', icon: 'heart' as SacredIconName },
-              ].map(item => (
-                <div key={item.label} className="text-center">
-                  <div className="mb-1"><SacredIcon name={item.icon} size={22} strokeWidth={1.6} style={{ color: 'var(--brand-primary)' }} /></div>
-                  <p className="text-lg font-bold" style={{ color: h1 }}>{item.val}</p>
-                  <p className="text-[9px] uppercase tracking-tighter text-white/30 font-bold">{item.label}</p>
+          {/* ── 6-Month History — GitHub-style heatmap ── */}
+          {sixMonthHeatmap && sixMonthHeatmap.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}
+              className="rounded-[2rem] p-5 overflow-hidden"
+              style={{
+                background: isDark ? 'rgba(30,18,4,0.65)' : 'rgba(255,248,235,0.80)',
+                border: isDark ? '1px solid rgba(197,160,89,0.14)' : '1px solid rgba(197,160,89,0.22)',
+                backdropFilter: 'blur(12px)',
+              }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: amber + 'aa' }}>
+                    6-Month History
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>
+                    26 weeks · Japa & Nitya
+                  </p>
                 </div>
-              ))}
-            </div>
-
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-              <p className="text-[12px] leading-relaxed italic text-amber-200/80">
-                &ldquo;{streak >= 9 ? 'You have completed a full Navarātri cycle. Your spirit is attuned to the divine rhythm.' : 'You are approaching your first Navarātri milestone. Every breath is a step toward liberation.'}&rdquo;
-              </p>
-            </div>
-          </motion.section>
+              </div>
+              <div className="overflow-x-auto pb-1">
+                <SixMonthHeatmap days={sixMonthHeatmap} isDark={isDark} />
+              </div>
+            </motion.section>
+          )}
 
           {/* ── Activity Calendar ── */}
           <motion.section
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-[2.2rem] p-6 divine-glass-card-premium"
-            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: '0 20px 50px rgba(0,0,0,0.5)', perspective: 1000 }}
-            whileHover={{ scale: 1.005 }}
+            className="rounded-2xl p-5"
+            style={{ background: cardCalBg, border: `1px solid ${cardCalBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}
           >
             {/* ... calendar content ... */}
 
@@ -1168,269 +1925,478 @@ export default function MyProgressClient({
           {/* ── Practice pillars ── */}
           <motion.section
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.10 }}
-            className="space-y-4"
+            className="space-y-3"
           >
-            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] px-2 text-amber-500/50">
-              Practice Pillars · 30 Days
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1" style={{ color: 'rgba(197,160,89,0.55)' }}>
+              Practice Pillars · 30 days
             </p>
 
-            {/* Japa card — Premium Revamp */}
-            <motion.div 
-              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-              style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
-              whileHover={{ rotateX: 1, rotateY: 1, scale: 1.01 }}
+            {/* Japa card */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+              className="rounded-2xl p-5"
+              style={{ background: cardJapaBg, border: `1px solid ${cardJapaBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">🪷</span>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">📿</span>
                   <div>
-                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-amber-500/70">Japa</h2>
-                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Mantra Repetition</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(212,120,74,0.80)' }}>Japa · 30 days</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: muted }}>Mantra repetition</p>
                   </div>
                 </div>
                 <Link href="/bhakti/mala/insights"
-                  className="rounded-full px-4 py-2 text-[11px] font-bold bg-amber-500/10 border border-amber-500/20 text-amber-500">
+                  className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(212,120,74,0.10)', color: 'rgba(212,120,74,0.85)', border: '1px solid rgba(212,120,74,0.18)' }}>
                   Insights →
                 </Link>
               </div>
 
               {japa30dSessions === 0 ? (
-                <div className="text-center py-6">
-                  <p className="text-3xl mb-3">📿</p>
-                  <p className="text-sm font-bold" style={{ color: h1 }}>No sessions this cycle</p>
+                <div className="text-center py-4">
+                  <p className="text-sm font-semibold mb-3" style={{ color: muted }}>No sessions this cycle</p>
                   <Link href="/bhakti/mala"
-                    className="inline-flex items-center mt-4 rounded-full px-6 py-2 text-[11px] font-bold bg-amber-500 text-black">
+                    className="inline-flex items-center rounded-full px-5 py-2 text-[11px] font-bold"
+                    style={{ background: 'rgba(212,120,74,0.88)', color: '#fff' }}>
                     Begin Japa →
                   </Link>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2.5 mb-4">
                     {[
                       { val: String(japa30dSessions), sub: 'sessions' },
                       { val: fmt(japa30dBeads),       sub: 'beads'    },
                       { val: japa30dRounds > 0 ? String(japa30dRounds) : '—', sub: 'rounds' },
-                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—',       sub: 'time'   },
+                      { val: japa30dMins > 0 ? `${japa30dMins}m` : '—', sub: 'time' },
                     ].map(({ val, sub: s }) => (
-                      <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
-                        <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
-                        <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
+                      <div key={s} className="text-center rounded-xl py-2.5"
+                        style={{ background: isDark ? 'rgba(212,120,74,0.09)' : 'rgba(212,120,74,0.07)', border: '1px solid rgba(212,120,74,0.12)' }}>
+                        <p className="text-[17px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                        <p className="text-[9px] mt-1 font-medium uppercase tracking-wide" style={{ color: muted }}>{s}</p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-6">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Consistency</span>
-                      <span className="text-[10px] font-bold text-amber-500">{japaRate}%</span>
+                  <div>
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Consistency</span>
+                      <span className="text-[10px] font-bold" style={{ color: 'rgba(212,120,74,0.85)' }}>{japaRate}%</span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden bg-white/5">
-                      <motion.div
-                        className="h-full rounded-full bg-gradient-to-r from-amber-600 to-amber-400"
+                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(212,120,74,0.10)' : 'rgba(212,120,74,0.08)' }}>
+                      <motion.div className="h-full rounded-full"
+                        style={{ background: 'linear-gradient(90deg,rgba(212,100,40,0.85),rgba(245,158,74,0.90))' }}
                         initial={{ width: 0 }} animate={{ width: `${japaRate}%` }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
-                      />
+                        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }} />
                     </div>
                   </div>
                 </>
               )}
             </motion.div>
 
-            {/* Nitya Karma card — Premium Revamp */}
-            <motion.div 
-              className="rounded-[2.2rem] p-6 divine-glass-card-premium" 
-              style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: '0 20px 40px rgba(0,0,0,0.35)', perspective: 1000 }}
-              whileHover={{ rotateX: 1, rotateY: -1, scale: 1.01 }}
+            {/* Nitya Karma card */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}
+              className="rounded-2xl p-5"
+              style={{ background: cardNityaBg, border: `1px solid ${cardNityaBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">🌅</span>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">🌅</span>
                   <div>
-                    <h2 className="text-[11px] font-bold uppercase tracking-widest text-green-500/70">Nitya Karma</h2>
-                    <p className="text-[10px] text-white/30 uppercase tracking-tight">Daily Dharma</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(100,160,100,0.85)' }}>Nitya Karma · 30 days</p>
+                    <p className="text-[11px] mt-0.5" style={{ color: muted }}>Daily dharma practice</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link href="/nitya-karma/insights"
-                    className="rounded-full px-3 py-1.5 text-[11px] font-bold bg-green-500/10 border border-green-500/20 text-green-500">
-                    Insights
-                  </Link>
-                  <Link href="/nitya-karma"
-                    className="rounded-full px-4 py-1.5 text-[11px] font-bold bg-green-500 text-black">
-                    Open →
+                    className="text-[11px] font-bold px-3 py-1.5 rounded-full"
+                    style={{ background: 'rgba(100,160,100,0.10)', color: 'rgba(100,160,100,0.90)', border: '1px solid rgba(100,160,100,0.18)' }}>
+                    Insights →
                   </Link>
                 </div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-3 mb-6">
+
+              <div className="grid grid-cols-3 gap-2.5 mb-4">
                 {[
-                  { val: String(nitya30dDays), sub: 'completed' },
-                  { val: `${nityaRate}%`,      sub: 'rate'      },
-                  { val: `${30 - nitya30dDays}`, sub: 'remaining' },
+                  { val: String(nitya30dDays), sub: 'done' },
+                  { val: `${nityaRate}%`,      sub: 'rate' },
+                  { val: `${Math.max(0, 30 - nitya30dDays)}`, sub: 'left' },
                 ].map(({ val, sub: s }) => (
-                  <div key={s} className="text-center rounded-2xl py-3 bg-white/5 border border-white/5">
-                    <p className="text-xl font-bold" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
-                    <p className="text-[9px] mt-1 font-bold uppercase tracking-tighter text-white/30">{s}</p>
+                  <div key={s} className="text-center rounded-xl py-2.5"
+                    style={{ background: isDark ? 'rgba(100,160,100,0.09)' : 'rgba(100,160,100,0.07)', border: '1px solid rgba(100,160,100,0.12)' }}>
+                    <p className="text-[17px] font-bold leading-none" style={{ color: h1, fontFamily: 'var(--font-serif)' }}>{val}</p>
+                    <p className="text-[9px] mt-1 font-medium uppercase tracking-wide" style={{ color: muted }}>{s}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex justify-between mb-2">
-                <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Momentum</span>
-                <span className="text-[10px] font-bold text-green-500">{nityaRate}%</span>
-              </div>
-              <div className="h-2 rounded-full overflow-hidden bg-white/5">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-green-600 to-green-400"
-                  initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
-                  transition={{ duration: 1.2, ease: "easeOut", delay: 0.1 }}
-                />
+              <div>
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: muted }}>Momentum</span>
+                  <span className="text-[10px] font-bold" style={{ color: 'rgba(100,160,100,0.90)' }}>{nityaRate}%</span>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? 'rgba(100,160,100,0.10)' : 'rgba(100,160,100,0.08)' }}>
+                  <motion.div className="h-full rounded-full"
+                    style={{ background: 'linear-gradient(90deg,rgba(80,140,80,0.85),rgba(107,196,126,0.90))' }}
+                    initial={{ width: 0 }} animate={{ width: `${nityaRate}%` }}
+                    transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.1 }} />
+                </div>
               </div>
             </motion.div>
 
-            {/* Pathshala + Bhakti mini cards */}
+            {/* Mini feature cards — 2×2 grid */}
             <div className="grid grid-cols-2 gap-3">
-              <Link href="/pathshala/insights"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardPathBg, border: `1px solid ${cardPathBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(80,160,200,0.55)' }} />
-                <span className="text-xl block mb-2">📖</span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Pathshala</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Study paths</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(80,160,200,0.70)' }}>Open →</p>
-              </Link>
-              <Link href="/bhakti/insights"
-                className="block rounded-[1.6rem] p-4"
-                style={{ background: cardBhaktiBg, border: `1px solid ${cardBhaktiBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.30)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
-                <div className="h-0.5 rounded-full mb-3" style={{ background: 'rgba(196,120,154,0.55)' }} />
-                <span className="text-xl block mb-2">🪷</span>
-                <p className="text-sm font-semibold" style={{ color: h1 }}>Bhakti</p>
-                <p className="text-[10px] mt-0.5" style={{ color: muted }}>Devotion insights</p>
-                <p className="text-[10px] mt-3 font-medium" style={{ color: 'rgba(196,120,154,0.70)' }}>Open →</p>
-              </Link>
+              {[
+                { href: '/pathshala/insights', emoji: '📖', label: 'Pathshala', sub: 'Study paths', accent: 'rgba(80,160,200,' },
+                { href: '/bhakti/insights',    emoji: '🪷', label: 'Bhakti',    sub: 'Devotion insights', accent: 'rgba(196,120,154,' },
+                { href: '/quiz',               emoji: '🧠', label: 'Quiz',      sub: 'Knowledge mastery', accent: 'rgba(165,148,224,' },
+                { href: '/mandali',            emoji: '🕊️', label: 'Mandali',   sub: `${mandaliPostCount ?? 0} posts`, accent: 'rgba(107,196,126,' },
+              ].map(({ href, emoji, label, sub, accent }) => (
+                <Link key={href} href={href}
+                  className="block rounded-2xl p-4 active:opacity-70 transition-opacity"
+                  style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.88)', border: `1px solid ${accent}0.16)`, boxShadow: isDark ? '0 2px 16px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+                  <div className="w-1 h-5 rounded-full mb-3" style={{ background: `${accent}0.55)` }} />
+                  <span className="text-xl block mb-2">{emoji}</span>
+                  <p className="text-sm font-semibold" style={{ color: h1 }}>{label}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{sub}</p>
+                  <p className="text-[10px] mt-3 font-semibold" style={{ color: `${accent}0.75)` }}>Open →</p>
+                </Link>
+              ))}
             </div>
           </motion.section>
 
-          {/* ── Quiz Mastery ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
-            className="mb-8"
-          >
-            <Link href="/quiz">
-              <div className="rounded-[1.8rem] p-5 relative overflow-hidden group" 
-                style={{ 
-                  background: isDark ? 'rgba(126, 87, 194, 0.08)' : 'rgba(126, 87, 194, 0.05)',
-                  border: `1px solid ${isDark ? 'rgba(126, 87, 194, 0.2)' : 'rgba(126, 87, 194, 0.15)'}`,
-                  boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)'
-                }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: '#9575cd' }}>
-                      🧠 Quiz Mastery
-                    </p>
-                    <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
-                      Track your spiritual knowledge
-                    </p>
-                  </div>
-                  <ChevronRight size={18} style={{ color: '#9575cd' }} />
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Knowledge Hub</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Target size={14} style={{ color: '#9575cd' }} />
-                      View Stats
-                    </p>
-                  </div>
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Streak</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Flame size={14} className="text-orange-500" />
-                      Historical log
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Ambient glow */}
-                <div className="absolute -bottom-8 -right-8 w-24 h-24 blur-[40px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity"
-                  style={{ background: '#7e57c2' }}
-                />
-              </div>
-            </Link>
-          </motion.section>
+          {/* ── 5-Pillar Scorecard + Quiz + Vrat + Karma ── */}
+          {pillarData && (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1 mb-3" style={{ color: 'rgba(197,160,89,0.55)' }}>
+                Practice Insights · 30 days
+              </p>
+              <SadhanaScorecard
+                pillarData={pillarData}
+                quiz30dTotal={quiz30dTotal}
+                quiz30dCorrect={quiz30dCorrect}
+                vratTotal={vratTotal}
+                karma30dTotal={karma30dTotal}
+                karma30dBreakdown={karma30dBreakdown}
+                isDark={isDark}
+                h1={h1}
+                muted={muted}
+              />
+            </motion.div>
+          )}
 
-          {/* ── Mood Insights ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.19 }}
-            className="mb-8"
-          >
-            <Link href="/my-progress/mood">
-              <div className="rounded-[1.8rem] p-5 relative overflow-hidden group" 
-                style={{ 
-                  background: isDark ? 'rgba(52, 211, 153, 0.08)' : 'rgba(52, 211, 153, 0.05)',
-                  border: `1px solid ${isDark ? 'rgba(52, 211, 153, 0.2)' : 'rgba(52, 211, 153, 0.15)'}`,
-                  boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)'
-                }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: '#10b981' }}>
-                      🧘 Mood Insights
-                    </p>
-                    <p className="text-[13px] font-bold mt-0.5" style={{ color: h1 }}>
-                      Track your emotional journey
-                    </p>
-                  </div>
-                  <ChevronRight size={18} style={{ color: '#10b981' }} />
+          {/* ── Shruti (Sanskrit recitation) scores ── */}
+          {shrutiStats && shrutiStats.scoredCount >= 1 && (
+            <motion.div
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+              className="rounded-[1.6rem] p-5"
+              style={{ background: isDark ? 'rgba(197,160,89,0.07)' : 'rgba(197,160,89,0.06)', border: '1px solid rgba(197,160,89,0.18)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'rgba(197,160,89,0.75)' }}>Shruti · Recitation</p>
+                  <p className="text-[13px] font-semibold mt-0.5" style={{ color: h1 }}>Sanskrit pronunciation score</p>
                 </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">Weekly & Monthly</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Activity size={14} style={{ color: '#10b981' }} />
-                      Pattern Stats
-                    </p>
-                  </div>
-                  <div className="flex-1 rounded-xl p-3 bg-white/5 border border-white/5">
-                    <p className="text-[10px] text-[color:var(--brand-muted)] mb-1">AI Guided</p>
-                    <p className="text-sm font-bold flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-amber-500" />
-                      Reflections
-                    </p>
-                  </div>
+                <div className="text-right">
+                  <p className="text-[2.2rem] font-bold leading-none" style={{ fontFamily: 'var(--font-serif)', color: shrutiStats.avgScore >= 80 ? '#5cb85c' : shrutiStats.avgScore >= 60 ? '#C5A059' : h1 }}>
+                    {shrutiStats.avgScore}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>/ 100 avg</p>
                 </div>
-                
-                {/* Ambient glow */}
-                <div className="absolute -bottom-8 -right-8 w-24 h-24 blur-[40px] rounded-full opacity-20 group-hover:opacity-40 transition-opacity"
-                  style={{ background: '#10b981' }}
-                />
               </div>
-            </Link>
-          </motion.section>
 
-          {/* ── Achievement Shields (compact preview → full page) ── */}
-          <motion.section
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
-            <ShieldBadgesPreview
-              streak={streak}
-              totalSessions={totalJapaSessions}
-              isDark={isDark}
-            />
-          </motion.section>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {[
+                  { label: 'Uccharan', value: shrutiStats.avgPronunciation, sub: 'Pronunciation' },
+                  { label: 'Fluency',  value: shrutiStats.avgFluency,       sub: 'Flow' },
+                  { label: 'Verses',   value: shrutiStats.versesAttempted,  sub: 'Attempted' },
+                ].map(s => (
+                  <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: isDark ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.6)' }}>
+                    <p className="text-[15px] font-bold" style={{ fontFamily: 'var(--font-serif)', color: '#C5A059' }}>{s.value}</p>
+                    <p className="text-[9px] font-bold uppercase tracking-wider mt-0.5" style={{ color: muted }}>{s.label}</p>
+                    <p className="text-[9px] mt-0.5" style={{ color: muted, opacity: 0.7 }}>{s.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-[11px]" style={{ color: muted }}>
+                  {shrutiStats.scoredCount} recitation{shrutiStats.scoredCount !== 1 ? 's' : ''} scored
+                  {shrutiStats.certified > 0 && ` · ${shrutiStats.certified} certified 🏅`}
+                </p>
+                <Link href="/pathshala" className="text-[11px] font-semibold" style={{ color: '#C5A059' }}>
+                  Practice →
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Advanced Analytics (Zenith) — deferred until after first paint ── */}
+          {belowFoldMounted && <AdvancedAnalyticsSection isPro={isPro} isDark={isDark} />}
+
+          {/* ── Deep-dive links row ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}
+            className="grid grid-cols-2 gap-3"
+          >
+            {[
+              { href: '/quiz',            emoji: '🧠', label: 'Quiz', sub: 'Spiritual knowledge', accent: 'rgba(165,148,224,' },
+              { href: '/my-progress/mood', emoji: '🕊️', label: 'Mood Journal', sub: 'Emotional patterns', accent: 'rgba(52,211,153,' },
+            ].map(({ href, emoji, label, sub, accent }) => (
+              <Link key={href} href={href}
+                className="flex items-center gap-3 rounded-2xl p-4 active:opacity-70 transition-opacity"
+                style={{ background: isDark ? `${accent}0.08)` : `${accent}0.06)`, border: `1px solid ${accent}0.18)`, boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.22)' : '0 1px 8px rgba(0,0,0,0.05)' }}>
+                <span className="text-2xl">{emoji}</span>
+                <div className="min-w-0">
+                  <p className="text-[12px] font-semibold leading-tight" style={{ color: h1 }}>{label}</p>
+                  <p className="text-[10px] mt-0.5" style={{ color: muted }}>{sub}</p>
+                </div>
+                <ChevronRight size={14} className="ml-auto shrink-0" style={{ color: `${accent}0.55)` }} />
+              </Link>
+            ))}
+          </motion.div>
+
+          {/* ── Achievement Shields — deferred until after first paint ── */}
+          {belowFoldMounted && (
+            <motion.section
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.20 }}>
+              <ShieldBadgesPreview
+                streak={streak}
+                totalSessions={totalJapaSessions}
+                isDark={isDark}
+              />
+            </motion.section>
+          )}
 
           {/* ── Day-of-week chart ── */}
           <motion.section
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.30 }}
-            className="rounded-[1.8rem] p-5"
-            style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 32px rgba(0,0,0,0.35)' : '0 2px 16px rgba(0,0,0,0.07)' }}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] mb-0.5" style={{ color: amber }}>
+            className="rounded-2xl p-5"
+            style={{ background: cardRhythmBg, border: `1px solid ${cardRhythmBdr}`, boxShadow: isDark ? '0 4px 24px rgba(0,0,0,0.28)' : '0 1px 12px rgba(0,0,0,0.06)' }}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-0.5" style={{ color: 'rgba(197,160,89,0.65)' }}>
               Practice Rhythm
             </p>
-            <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa (last 30 days)</p>
+            <p className="text-[10px] mb-4" style={{ color: muted }}>Which days you sit for japa · last 30 days</p>
             <DowChart counts={dowCounts} isDark={isDark} />
           </motion.section>
+
+          {/* ── Sankalpa History ── */}
+          {sankalpas && sankalpas.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
+              className="mb-8 rounded-[1.8rem] p-5"
+              style={{ 
+                background: isDark ? 'rgba(197, 160, 89, 0.05)' : 'rgba(197, 160, 89, 0.03)',
+                border: `1px solid ${isDark ? 'rgba(197, 160, 89, 0.15)' : 'rgba(197, 160, 89, 0.1)'}`,
+              }}>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: 'var(--brand-primary)' }}>
+                    🌅 Sankalpa History
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {sankalpas.filter(s => s.status === 'completed').length}/{sankalpas.length} completed
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                {sankalpas.map(s => {
+                  const startDate = new Date(s.start_date);
+                  const endDate = new Date(s.end_date);
+                  const todayStr = localSpiritualDate(Intl.DateTimeFormat().resolvedOptions().timeZone, 4);
+                  const today = new Date(todayStr);
+                  
+                  // days elapsed and remaining
+                  const diffTime = endDate.getTime() - today.getTime();
+                  const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                  const totalDays = s.target_days;
+                  
+                  let progress = 0;
+                  if (s.status === 'completed') progress = 100;
+                  else if (s.status === 'abandoned') progress = 0;
+                  else {
+                    const elapsed = totalDays - daysRemaining;
+                    progress = Math.max(0, Math.min(100, Math.round((elapsed / totalDays) * 100)));
+                  }
+
+                  const isMidpoint = s.status === 'active'
+                    && progress >= 48
+                    && progress <= 52
+                    && !hasMidpointReflection(s.id);
+                  const isOverdue = s.status === 'active' && daysRemaining < 0;
+                  const isComplete = s.status === 'active' && daysRemaining <= 0;
+                  const shortenedText = s.text.length > 30 ? `${s.text.slice(0, 30)}...` : s.text;
+
+                  return (
+                    <div key={`${s.id}-${midpointRefreshKey}`} className="space-y-3">
+                      <AnimatePresence initial={false}>
+                        {isMidpoint && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -8 }}
+                            className="rounded-2xl border p-4 mb-3"
+                            style={{ background: 'rgba(197,160,89,0.06)', borderColor: 'rgba(197,160,89,0.20)' }}
+                          >
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400/60 mb-1">
+                              Halfway ✦ {shortenedText}
+                            </p>
+                            <p className="text-sm font-medium text-white/80 mb-3">
+                              You&apos;re halfway through your sankalpa. How are you feeling?
+                            </p>
+                            <div className="flex gap-2">
+                              {[
+                                { key: 'strong', emoji: '💪', label: 'Strong' },
+                                { key: 'struggling', emoji: '😤', label: 'Struggling' },
+                                { key: 'grateful', emoji: '🙏', label: 'Grateful' },
+                              ].map(({ key, emoji, label }) => (
+                                <button
+                                  key={key}
+                                  onClick={() => handleMidpointReaction(s.id, key as 'strong' | 'struggling' | 'grateful')}
+                                  className="flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors"
+                                  style={{ borderColor: 'rgba(197,160,89,0.15)', background: 'rgba(255,255,255,0.03)' }}
+                                >
+                                  <span className="text-xl">{emoji}</span>
+                                  <span className="text-[10px] font-medium text-white/50">{label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <div className="relative bg-black/5 dark:bg-white/5 p-4 rounded-[2rem] overflow-hidden border border-black/5 dark:border-white/10 shadow-sm">
+                      
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 pr-4">
+                          <p className="text-base font-serif leading-snug theme-ink font-medium">&ldquo;{s.text}&rdquo;</p>
+                          <p className="text-[11px] text-muted-foreground mt-1.5 uppercase tracking-wide">
+                            {startDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {endDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          {s.status === 'completed' ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/20">Completed</span>
+                          ) : s.status === 'abandoned' ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-black/5 dark:bg-white/5 text-muted-foreground px-2.5 py-1 rounded-md border border-black/10 dark:border-white/10">Abandoned</span>
+                          ) : isOverdue ? (
+                            <span className="inline-block text-[10px] uppercase font-bold tracking-wider bg-red-500/10 text-red-600 dark:text-red-400 px-2.5 py-1 rounded-md border border-red-500/20">Overdue</span>
+                          ) : (
+                            <div>
+                              <span className={`text-xl font-black font-serif ${daysRemaining <= 7 ? 'text-yellow-500' : 'text-amber-500/80'}`}>{daysRemaining}</span>
+                              <p className="text-[9px] uppercase tracking-tighter text-muted-foreground font-bold leading-tight">Days<br/>Left</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="mb-4">
+                        <div className="flex justify-between items-center mb-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                          <span>Progress</span>
+                          <span className="text-amber-500/80">{progress}%</span>
+                        </div>
+                        <div className="h-1 rounded-full overflow-hidden bg-black/10 dark:bg-white/10">
+                          <motion.div
+                            className="h-full rounded-full bg-amber-500"
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${progress}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Timeline View */}
+                      {s.status === 'active' && (
+                        <div className="mt-2">
+                          <div className="flex items-center justify-between px-2">
+                            {[...Array(7)].map((_, i) => {
+                              const todayIndex = (today.getDay() + 6) % 7;
+                              const isToday = i === todayIndex;
+                              const isPast = i < todayIndex;
+                              
+                              const dayOffset = i - todayIndex;
+                              const circleDate = new Date(today);
+                              circleDate.setDate(circleDate.getDate() + dayOffset);
+                              const yyyy = circleDate.getFullYear();
+                              const mm = String(circleDate.getMonth() + 1).padStart(2, '0');
+                              const dd = String(circleDate.getDate()).padStart(2, '0');
+                              const dateStr = `${yyyy}-${mm}-${dd}`;
+
+                              const checkedIn = checkinMap.get(s.id)?.has(dateStr) ?? false;
+
+                              if (checkedIn) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <div 
+                                      className="w-[20px] h-[20px] rounded-full flex items-center justify-center bg-[#C5A059] text-white text-[10px] font-bold shadow-lg shadow-black/20 select-none"
+                                    >
+                                      ✓
+                                    </div>
+                                    <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              if (isToday) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <button
+                                      onClick={() => handleCheckin(s.id)}
+                                      className="w-[20px] h-[20px] rounded-full border-2 border-[#C5A059] animate-pulse transition-all duration-300 cursor-pointer bg-transparent"
+                                      style={{ boxShadow: '0 0 8px rgba(197,160,89,0.4)' }}
+                                      title="Tap to check-in today"
+                                    />
+                                    <span className="text-[8px] text-[#C5A059] font-bold">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              if (isPast) {
+                                return (
+                                  <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                    <div 
+                                      className="w-[20px] h-[20px] rounded-full border border-[#C5A059]/20 bg-transparent opacity-60"
+                                    />
+                                    <span className="text-[8px] text-black/40 dark:text-white/30">{['M','T','W','T','F','S','S'][i]}</span>
+                                  </div>
+                                );
+                              }
+
+                              // isFuture
+                              return (
+                                <div key={i} className="flex flex-col items-center gap-1.5 relative">
+                                  <div 
+                                    className="w-[20px] h-[20px] rounded-full border border-[#C5A059]/20 bg-transparent opacity-30"
+                                  />
+                                  <span className="text-[8px] text-black/20 dark:text-white/10">{['M','T','W','T','F','S','S'][i]}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {isComplete && !hasFiredCompletion(s.id) && (
+                        <button
+                          onClick={() => handleComplete(s.id, s.text, s.target_days)}
+                          className="w-full mt-3 rounded-full py-3 font-bold text-black text-sm cursor-pointer transition-transform active:scale-95"
+                          style={{ background: '#C5A059' }}
+                        >
+                          Mark as Fulfilled ✨
+                        </button>
+                      )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.section>
+          )}
 
           {/* ── Monthly Sadhana Report CTA ── */}
           <motion.section
@@ -1473,6 +2439,17 @@ export default function MyProgressClient({
           />
         )}
       </AnimatePresence>
+
+      <SankalpaCompletionCeremony
+        isOpen={completionCeremony.open}
+        onClose={() => {
+          setCompletionCeremony(prev => ({ ...prev, open: false }));
+          router.refresh();
+        }}
+        sankalpaTitle={completionCeremony.title}
+        durationDays={completionCeremony.durationDays}
+        tradition={tradition ?? 'hindu'}
+      />
     </>
   );
 }

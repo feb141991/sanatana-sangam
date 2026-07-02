@@ -1,9 +1,9 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
-  const authError = checkAdminAuth(request);
+  const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
   const supabase = createAdminClient();
@@ -17,17 +17,17 @@ export async function GET(request: NextRequest) {
       mandaliCount,
       traditionsData
     ] = await Promise.all([
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('onboarding_completed', true),
-      supabase.from('profiles').select('*', { count: 'exact', head: true }).gt('shloka_streak', 0),
-      supabase.from('content_reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-      supabase.from('mandalis').select('*', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('onboarding_completed', true),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('shloka_streak', 0),
+      supabase.from('content_reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('mandalis').select('id', { count: 'exact', head: true }),
       supabase.from('profiles').select('tradition')
     ]);
 
     // Calculate tradition distribution
     const traditionStats: Record<string, number> = {};
-    (traditionsData.data as any[])?.forEach(p => {
+    (traditionsData.data as { tradition: string | null }[] | null)?.forEach(p => {
       const t = p.tradition || 'Universal';
       traditionStats[t] = (traditionStats[t] || 0) + 1;
     });

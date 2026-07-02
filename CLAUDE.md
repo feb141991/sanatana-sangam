@@ -1,3 +1,7 @@
+## Shoonaya workflow
+
+Before making changes in this repository, read `.claude/WORKFLOW.md` and follow its agent routing, scope lock, regression guardrails, and verification requirements.
+
 ## graphify
 
 This project has a graphify knowledge graph at graphify-out/.

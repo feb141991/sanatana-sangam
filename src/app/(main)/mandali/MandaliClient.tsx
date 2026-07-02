@@ -1,27 +1,44 @@
 'use client';
 
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, CornerDownRight, MoreHorizontal } from 'lucide-react';
+import { Users, Calendar, MessageSquare, Plus, MapPin, Globe, Heart, HelpCircle, Megaphone, Search, X, UserPlus, ChevronDown, ChevronLeft, ChevronRight, CornerDownRight, MoreHorizontal, Navigation } from 'lucide-react';
 import Link from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase';
+import { queryKeys } from '@/lib/query-keys';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
-import { formatRelativeTime, getInitials, ISHTA_DEVATAS } from '@/lib/utils';
+import { formatRelativeTime, getInitials } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
 import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp, ThreadWithAuthor } from '@/types/database';
-import VichaarClient from '../vichaar-sabha/VichaarClient';
+// VichaarClient is 955 lines — lazy-load it so it doesn't block initial parse/hydration.
+// Only users who switch to "Sabha" scope will trigger the download.
+const VichaarClient = dynamic(() => import('../vichaar-sabha/VichaarClient'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-3 animate-pulse pt-2">
+      <div className="h-10 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
+    </div>
+  ),
+});
 import { AsyncStateCard, EmptyState } from '@/components/ui';
+import type { MandaliProfile } from '@/lib/api/mandali';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
-
-type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'seva_score'>;
+import SeekersNearYou from './SeekersNearYou';
+import { Shimmer } from '@/components/ui/Shimmer';
+type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
 
 type Props = {
-  profile:      (Profile & { mandalis?: { name: string; city: string; country: string; member_count: number } | null }) | null;
+  profile:      MandaliProfile;
   posts:        PostWithAuthor[];
   comments:     PostCommentWithAuthor[];
   rsvps:        EventRsvp[];
@@ -38,9 +55,41 @@ type Props = {
 type Scope = 'nearby' | 'sabha';
 type NearbyTab = 'feed' | 'events' | 'members';
 
+/** Pre-filled compose state used by the welcome card and event bootstrapping */
+type ComposePreset = {
+  postType: 'update' | 'event';
+  content: string;
+  eventDate?: string;
+  eventLoc?: string;
+};
+
 type RsvpStatus = 'going' | 'interested' | 'not_going';
 
-const POST_TYPES = [
+const MandaliMembers = dynamic(() => import('./MandaliMembers'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-2">
+      <Shimmer className="h-16 rounded-2xl" />
+      <Shimmer className="h-16 rounded-2xl" />
+      <Shimmer className="h-16 rounded-2xl" />
+    </div>
+  ),
+});
+
+const MandaliEvents = dynamic(() => import('./MandaliEvents'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-3">
+      <Shimmer className="h-20 rounded-2xl" />
+      <Shimmer className="h-20 rounded-2xl" />
+      <Shimmer className="h-20 rounded-2xl" />
+    </div>
+  ),
+});
+
+type PostType = 'update' | 'event' | 'question' | 'announcement';
+
+const POST_TYPES: Array<{ value: PostType; label: string; icon: string }> = [
   { value: 'update',       label: 'Update',       icon: '💬' },
   { value: 'event',        label: 'Event',        icon: '🎉' },
   { value: 'question',     label: 'Question',     icon: '🙋' },
@@ -88,19 +137,21 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-black/5 dark:border-white/8">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b"
+          style={{ borderBottomColor: 'var(--card-border)' }}>
           <div>
             <h2 className="font-display font-bold theme-ink">Find Sanatani</h2>
             <p className="text-xs theme-dim mt-0.5">Search by name or username</p>
           </div>
           <button onClick={onClose}
-            className="w-11 h-11 rounded-full bg-black/5 dark:bg-white/[0.06] flex items-center justify-center">
+            className="w-11 h-11 rounded-full bg-[var(--surface-soft)] flex items-center justify-center">
             <X size={16} className="theme-dim" />
           </button>
         </div>
 
         {/* Search input */}
-        <div className="px-5 py-3 border-b border-black/5 dark:border-white/8">
+        <div className="px-5 py-3 border-b"
+          style={{ borderBottomColor: 'var(--card-border)' }}>
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 theme-dim" />
@@ -156,7 +207,7 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
                 </p>
               </div>
               <button
-                onClick={() => { toast('Wider Sangam connections open after launch polish.', { icon: '🙏' }); }}
+                onClick={() => { toast('Wider Sangam connections will open in a future update.', { icon: '🙏' }); }}
                 className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition"
                 style={{ border: '1px solid rgba(212, 166, 70, 0.18)', color: 'var(--text-cream)', background: 'var(--card-bg)' }}>
                 Connect
@@ -312,21 +363,25 @@ function CityPicker({ value, onChange }: {
         <input
           type="text"
           placeholder="Search your city (e.g. Manchester, London…)"
+          aria-label="Search your city"
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
-          className="w-full pl-9 pr-8 py-3 rounded-xl border border-white/10 outline-none text-sm"
-          style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
+          className="surface-input pl-9 pr-8 py-3 outline-none text-sm"
         />
         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--brand-muted)]" />
       </div>
 
-      {open && filtered.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 rounded-2xl border border-white/10 shadow-lg max-h-56 overflow-y-auto">
+      {/* Dropdown must also render when only the custom-city row applies,
+          otherwise unlisted cities have no way in. */}
+      {open && (filtered.length > 0 || query.trim() !== '') && (
+        <div className="absolute z-50 w-full mt-1 rounded-2xl border shadow-lg max-h-56 overflow-y-auto"
+          style={{ borderColor: 'var(--card-border)', background: 'var(--card-bg)' }}>
           {filtered.map(c => (
             <button
               key={`${c.city}-${c.country}`}
-              onMouseDown={() => select(c)}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => select(c)}
               className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition hover:bg-[var(--brand-primary-soft)]"
             >
               <span className="text-base flex-shrink-0">{c.flag}</span>
@@ -336,22 +391,34 @@ function CityPicker({ value, onChange }: {
               </div>
             </button>
           ))}
-          {/* Custom city option */}
+          {/* Custom city option — needs "City, Country" so the join has a country */}
           {query.trim() && !CITIES.some(c => c.city.toLowerCase() === query.toLowerCase().split(',')[0].trim()) && (
-            <button
-              onMouseDown={() => {
-                const parts = query.split(',');
-                onChange({ city: parts[0].trim(), country: parts[1]?.trim() || '' });
-                setOpen(false);
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t border-white/8 transition hover:bg-[var(--brand-primary-soft)]"
-            >
-              <span className="text-base">🌍</span>
-              <div>
-                <p className="text-sm font-medium" style={{ color: 'var(--brand-primary-strong)' }}>Use &ldquo;{query}&rdquo;</p>
-                <p className="text-xs text-[color:var(--brand-muted)]">Custom city</p>
+            query.split(',')[1]?.trim() ? (
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  const parts = query.split(',');
+                  onChange({ city: parts[0].trim(), country: parts[1].trim() });
+                  setOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-left border-t transition hover:bg-[var(--brand-primary-soft)]"
+                style={{ borderTopColor: 'var(--card-border)' }}
+              >
+                <span className="text-base">🌍</span>
+                <div>
+                  <p className="text-sm font-medium" style={{ color: 'var(--brand-primary-strong)' }}>Use &ldquo;{query}&rdquo;</p>
+                  <p className="text-xs text-[color:var(--brand-muted)]">Custom city</p>
+                </div>
+              </button>
+            ) : (
+              <div className="w-full flex items-center gap-3 px-4 py-2.5 border-t"
+                style={{ borderTopColor: 'var(--card-border)' }}>
+                <span className="text-base">🌍</span>
+                <p className="text-xs text-[color:var(--brand-muted)]">
+                  Type as City, Country — e.g. {query.trim()}, India
+                </p>
               </div>
-            </button>
+            )
           )}
         </div>
       )}
@@ -359,23 +426,90 @@ function CityPicker({ value, onChange }: {
   );
 }
 
+// ─── Geo helper (mirrors SeekersNearYou) ─────────────────────────
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+type NearbyMandali = {
+  id: string;
+  name: string;
+  city: string;
+  country: string;
+  member_count: number;
+  latitude: number | null;
+  longitude: number | null;
+  distanceKm?: number;
+};
+
 // ─── No-Mandali Prompt ────────────────────────────────────────────
 function NoMandaliPrompt({ userId }: { userId: string }) {
   const { city: liveCity, country: liveCountry } = useLocation();
   const mandaliMutations = useMandaliMutations(userId);
+  const queryClient = useQueryClient();
+  const supabase = createClient();
 
-  const [locating,  setLocating]  = useState(false);
-  const [detected,  setDetected]  = useState<{ city: string; country: string } | null>(null);
-  const [geoError,  setGeoError]  = useState('');
+  const [locating,       setLocating]       = useState(false);
+  const [detected,       setDetected]       = useState<{ city: string; country: string; lat?: number; lon?: number } | null>(null);
+  const [geoError,       setGeoError]       = useState('');
+  const [nearbyMandalis, setNearbyMandalis] = useState<NearbyMandali[]>([]);
+  const [loadingNearby,  setLoadingNearby]  = useState(false);
+  const [joiningId,      setJoiningId]      = useState<string | null>(null);
 
-  // If LocationContext already has a city (from saved profile GPS), pre-fill it
+  // If LocationContext already has a city, pre-fill it — once. Without the
+  // ref guard, clearing the chip re-triggers this effect and the X becomes
+  // a no-op, locking users out of GPS retry and the manual picker.
+  const prefilledFromContext = useRef(false);
   useEffect(() => {
-    if (liveCity && !detected) {
+    if (liveCity && !detected && !prefilledFromContext.current) {
+      prefilledFromContext.current = true;
       setDetected({ city: liveCity, country: liveCountry ?? '' });
     }
   }, [detected, liveCity, liveCountry]);
 
-  function detectLocation() {
+  // Fetch nearby mandalis whenever we have a lat/lon
+  useEffect(() => {
+    async function fetchNearby(lat: number, lon: number) {
+      setLoadingNearby(true);
+      const LAT_DELTA = 120 / 111;
+      const LON_DELTA = 120 / 85;
+      const { data } = await supabase
+        .from('mandalis')
+        .select('id, name, city, country, member_count, latitude, longitude')
+        .gte('latitude', lat - LAT_DELTA)
+        .lte('latitude', lat + LAT_DELTA)
+        .gte('longitude', lon - LON_DELTA)
+        .lte('longitude', lon + LON_DELTA)
+        .limit(20);
+
+      if (data) {
+        const withDist: NearbyMandali[] = (data as NearbyMandali[])
+          .map((m) =>
+            m.latitude != null && m.longitude != null
+              ? { ...m, distanceKm: haversineKm(lat, lon, m.latitude, m.longitude) }
+              : m
+          )
+          .filter((m) => (m.distanceKm ?? 0) <= 120)
+          .sort((a, b) => (a.distanceKm ?? 0) - (b.distanceKm ?? 0));
+        setNearbyMandalis(withDist);
+      }
+      setLoadingNearby(false);
+    }
+
+    if (detected?.lat != null && detected?.lon != null) {
+      fetchNearby(detected.lat, detected.lon);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [detected?.lat, detected?.lon]);
+
+  async function detectLocation() {
     if (!navigator.geolocation) {
       setGeoError('Geolocation is not supported by your browser.'); return;
     }
@@ -383,15 +517,22 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     setGeoError('');
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
         try {
+          // The proxy handles the Nominatim request (with User-Agent and English language)
+          // so we don't expose exact coordinates to third parties directly from the client.
           const res  = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`
+            `/api/mandali/reverse-geocode?lat=${lat}&lon=${lon}`
           );
+          if (!res.ok) throw new Error('Reverse geocoding failed');
+          
           const data = await res.json();
-          const city    = data.address?.city || data.address?.town || data.address?.village || '';
-          const country = data.address?.country ?? '';
+          const city    = data.city || '';
+          const country = data.country || '';
+          
           if (city) {
-            setDetected({ city, country });
+            setDetected({ city, country, lat, lon });
           } else {
             setGeoError('Could not detect your city. Please try again.');
           }
@@ -409,35 +550,63 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
     );
   }
 
-  async function joinMandali() {
+  async function joinExistingMandali(mandaliId: string) {
+    setJoiningId(mandaliId);
+    try {
+      const res = await fetch('/api/mandali/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mandali_id: mandaliId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Join failed');
+      // Join-by-id doesn't set city; backfill it so the page recognises the
+      // membership (the no-mandali view checks profile.city too). The Slice 0
+      // trigger never reassigns when mandali_id is already set.
+      if (detected?.city) {
+        await supabase
+          .from('profiles')
+          .update({ city: detected.city, country: detected.country })
+          .eq('id', userId);
+      }
+      toast.success('Joined mandali! Welcome 🙏');
+      await queryClient.invalidateQueries({ queryKey: queryKeys.mandali.byUser(userId) });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Failed to join mandali');
+    } finally {
+      setJoiningId(null);
+    }
+  }
+
+  async function joinMyMandali() {
     if (!detected?.city || !detected?.country) {
-      toast.error('Please detect your location first');
+      toast.error('Detect or choose your city first');
       return;
     }
     try {
       await mandaliMutations.joinMandali.mutateAsync({
         city: detected.city,
         country: detected.country,
+        lat: detected.lat,
+        lon: detected.lon,
       });
       toast.success('Mandali found! Welcome 🙏');
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not join your Mandali right now.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not join your Mandali right now.');
     }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4 text-center space-y-6 fade-in">
-      <div className="w-20 h-20 rounded-full flex items-center justify-center text-4xl" style={{ background: 'var(--brand-primary-soft)' }}>🏡</div>
-      <div>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 600, color: 'var(--text-cream)', letterSpacing: '-0.01em', marginBottom: '0.5rem' }}>Find Your Mandali</h2>
-        <p className="text-[color:var(--brand-muted)] max-w-sm text-sm">
-          We&rsquo;ll place you in your city&rsquo;s Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. We&rsquo;ll create one if it doesn&rsquo;t exist yet.
-        </p>
-      </div>
+    <div className="flex flex-col items-center justify-center py-4 px-4 text-center space-y-5 fade-in">
+      {/* The onboarding hero above this prompt owns the headline; this card
+          owns the action. No duplicate hero so the GPS button stays in view. */}
+      <p className="text-[color:var(--brand-muted)] max-w-sm text-sm">
+        We&rsquo;ll place you in your city&rsquo;s Sanatani Mandali — Wembley, Brampton, Andheri, or wherever you are. If your city is new, your Mandali opens quietly when you join.
+      </p>
 
-      <div className="glass-panel rounded-2xl border border-white/10 shadow-card p-5 w-full max-w-sm space-y-3">
+      <div className="glass-panel rounded-2xl border shadow-card p-5 w-full max-w-sm space-y-3" style={{ borderColor: 'var(--card-border)' }}>
 
-        {/* Detected city display */}
+        {/* Location detection */}
         {detected ? (
           <div className="flex items-center gap-2 px-3 py-3 rounded-xl border" style={{ background: 'var(--brand-primary-soft)', borderColor: 'rgba(200, 127, 146, 0.18)' }}>
             <MapPin size={14} className="flex-shrink-0" style={{ color: 'var(--brand-primary)' }} />
@@ -445,8 +614,9 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
               <p className="text-sm font-semibold" style={{ color: 'var(--brand-primary-strong)' }}>{detected.city}</p>
               {detected.country && <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>{detected.country}</p>}
             </div>
-            <button onClick={() => setDetected(null)}
-              className="text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)]">
+            <button onClick={() => { setDetected(null); setNearbyMandalis([]); }}
+              aria-label="Clear detected city"
+              className="flex items-center justify-center min-w-[44px] min-h-[44px] -m-3 text-[color:var(--brand-muted)]">
               <X size={14} />
             </button>
           </div>
@@ -464,156 +634,141 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
               </>
             ) : (
               <>
-                <MapPin size={16} />
+                <Navigation size={16} />
                 Detect My Location
               </>
             )}
           </button>
         )}
 
+        {/* Manual city fallback — same join path as GPS */}
+        {!detected && (
+          <>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+              <span className="text-[11px]" style={{ color: 'var(--text-dim)' }}>or choose your city</span>
+              <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+            </div>
+            <CityPicker
+              value={null}
+              onChange={(v) => { setDetected({ city: v.city, country: v.country }); setGeoError(''); }}
+            />
+          </>
+        )}
+
         {geoError && <p className="text-xs text-red-500 text-center">{geoError}</p>}
 
-        <button onClick={joinMandali} disabled={mandaliMutations.joinMandali.isPending || !detected}
+        {/* Nearby mandalis list — shown when location is detected */}
+        {detected && (
+          <div className="space-y-2">
+            {loadingNearby ? (
+              <p className="text-xs text-center py-2" style={{ color: 'var(--brand-muted)' }}>Finding nearby mandalis…</p>
+            ) : nearbyMandalis.length > 0 ? (
+              <>
+                <p className="text-xs font-semibold uppercase tracking-wide text-left" style={{ color: 'var(--brand-muted)' }}>
+                  Mandalis near you
+                </p>
+                {nearbyMandalis.slice(0, 5).map((m) => (
+                  <div key={m.id} className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl border" style={{ borderColor: 'rgba(200,127,146,0.16)', background: 'var(--surface-soft)' }}>
+                    <div className="flex-1 text-left">
+                      <p className="text-sm font-semibold" style={{ color: 'var(--text-cream)' }}>{m.name || `${m.city} Mandali`}</p>
+                      <p className="text-xs" style={{ color: 'var(--brand-muted)' }}>
+                        {m.city}{m.distanceKm != null ? ` · ${Math.round(m.distanceKm)} km away` : ''} · {m.member_count} members
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => joinExistingMandali(m.id)}
+                      disabled={joiningId === m.id}
+                      className="flex-shrink-0 px-4 py-2.5 min-h-[44px] text-sm font-semibold rounded-full disabled:opacity-50 transition"
+                      style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))', color: 'white' }}
+                    >
+                      {joiningId === m.id ? 'Joining…' : 'Join'}
+                    </button>
+                  </div>
+                ))}
+                <p className="text-[11px] text-center pt-1" style={{ color: 'var(--brand-muted)' }}>
+                  Or join your city&apos;s own Mandali below
+                </p>
+              </>
+            ) : null}
+          </div>
+        )}
+
+        <button onClick={joinMyMandali} disabled={mandaliMutations.joinMandali.isPending || !detected?.city || !detected?.country}
           className="w-full py-3 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition"
           style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-          {mandaliMutations.joinMandali.isPending ? 'Finding your Mandali…' : 'Join My Mandali 🙏'}
+          {mandaliMutations.joinMandali.isPending
+            ? 'Finding your Mandali…'
+            : detected?.city ? `Join ${detected.city} Mandali` : 'Join My Mandali'}
         </button>
       </div>
 
       <div className="flex items-center gap-2 text-xs text-[color:var(--brand-muted)]">
         <Globe size={12} />
-        <span>Used to show nearby temples, connect you with local Mandalis, and calculate accurate sacred-times for your area. Your exact location is never stored.</span>
+        <span>Your location is used to find your city&apos;s Mandali and nearby sacred places. Only your city and country are saved — never your exact coordinates.</span>
       </div>
     </div>
   );
 }
 
-// ─── Members Tab ────────────────────────────────────────────────
-function MembersTab({ members, userId }: { members: MemberRow[]; userId: string }) {
-  const supabase = createClient();
-  const [reportingId, setReportingId] = useState<string | null>(null);
-
-  async function reportMember(memberId: string) {
-    setReportingId(memberId);
-    const { error } = await supabase.from('content_reports').insert({
-      reported_by: userId,
-      content_type: 'user_profile',
-      content_id: memberId,
-      reason: 'inappropriate_behaviour',
-    });
-    setReportingId(null);
-    if (error) { toast.error('Could not submit report'); return; }
-    toast.success('Report submitted for review 🙏');
-  }
-
-  if (members.length === 0) {
-    return (
-      <EmptyState
-        icon="👥"
-        title="No members yet"
-        description="Your local Mandali has not surfaced any members here yet."
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      {members.map((m, idx) => {
-        const devata = ISHTA_DEVATAS.find((d) => d.value === m.ishta_devata);
-        const isMe = m.id === userId;
-        return (
-          <div key={m.id}
-            className="glass-panel rounded-2xl border border-white/8 p-3 flex items-center gap-3"
-            style={{ borderColor: isMe ? 'rgba(200, 127, 146, 0.32)' : 'rgba(255,255,255,0.08)' }}>
-            {/* Rank */}
-            <div className="w-5 text-center text-xs font-bold text-white/25">
-              {idx + 1}
-            </div>
-            {/* Avatar */}
-            <div className="relative w-10 h-10 rounded-full flex items-center justify-center text-[var(--divine-text)] dark:text-white text-sm font-bold flex-shrink-0 overflow-hidden"
-              style={{ background: isMe ? 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
-              {m.avatar_url
-                ? <Image src={m.avatar_url} alt="" fill sizes="40px" className="object-cover" />
-                : getInitials(m.full_name || m.username || '?')
-              }
-            </div>
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <p className="font-semibold text-[color:var(--brand-ink)] text-sm truncate">
-                  {m.full_name || m.username}
-                  {isMe && <span className="ml-1 text-[10px] font-medium" style={{ color: 'var(--brand-primary-strong)' }}>(you)</span>}
-                </p>
-              </div>
-              <p className="text-xs text-[color:var(--brand-muted)] truncate">
-                {devata?.emoji} {devata?.label ?? 'Sanatani'} · {m.spiritual_level ?? 'Seeker'}
-              </p>
-            </div>
-            {/* Seva Score */}
-            <div className="text-right mr-1">
-              <div className="font-bold text-sm" style={{ color: 'var(--brand-primary-strong)' }}>{m.seva_score ?? 0}</div>
-              <div className="text-[10px] text-[color:var(--brand-muted)]">seva</div>
-            </div>
-            {/* Report button (not shown for self) */}
-            {!isMe && (
-              <button
-                onClick={() => reportMember(m.id)}
-                disabled={reportingId === m.id}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[color:var(--brand-muted)] hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-40"
-                title="Report this member"
-              >
-                {reportingId === m.id
-                  ? <span className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin block" />
-                  : <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-                }
-              </button>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Events Tab ─────────────────────────────────────────────────
-function EventRsvpBar({
-  postId,
-  rsvps,
-  userId,
-  onRsvp,
-}: {
-  postId: string;
-  rsvps: EventRsvp[];
-  userId: string;
-  onRsvp: (postId: string, status: RsvpStatus) => void;
+// ─── Living Empty State (small/new Mandalis) ─────────────────────
+// Every action is real: two open the composer pre-filled, one switches
+// to the Global Sabha. No placeholder CTAs.
+function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGathering, onBrowseSabha }: {
+  isFirstMember: boolean;
+  cityLabel: string;
+  onIntroduce: () => void;
+  onStartGathering: () => void;
+  onBrowseSabha: () => void;
 }) {
-  const counts = {
-    going: rsvps.filter((item) => item.status === 'going').length,
-    interested: rsvps.filter((item) => item.status === 'interested').length,
-    not_going: rsvps.filter((item) => item.status === 'not_going').length,
-  };
-  const myStatus = rsvps.find((item) => item.user_id === userId)?.status ?? null;
+  const actions = [
+    {
+      icon: <MessageSquare size={16} className="theme-muted" />,
+      label: 'Introduce yourself',
+      hint: 'A short hello sets the tone for everyone after you',
+      onClick: onIntroduce,
+    },
+    {
+      icon: <Calendar size={16} className="theme-muted" />,
+      label: 'Start the first local gathering',
+      hint: 'A simple satsang, japa circle, or temple visit',
+      onClick: onStartGathering,
+    },
+    {
+      icon: <Globe size={16} className="theme-muted" />,
+      label: 'Read the wider Sangam',
+      hint: 'Global Sabha conversations while your city grows',
+      onClick: onBrowseSabha,
+    },
+  ];
 
   return (
-    <div className="mt-3 space-y-2">
-      <div className="flex flex-wrap gap-2">
-        {[
-          { value: 'going', label: 'Going', count: counts.going },
-          { value: 'interested', label: 'Interested', count: counts.interested },
-          { value: 'not_going', label: "Can't make it", count: counts.not_going },
-        ].map((item) => (
+    <div className="clay-card rounded-[1.8rem] p-5 space-y-4 fade-in">
+      <div>
+        <p className="type-card-heading">
+          {isFirstMember
+            ? <>You&apos;re the first member in {cityLabel}</>
+            : <>It&apos;s quiet in {cityLabel} right now</>}
+        </p>
+        <p className="type-body mt-1">
+          {isFirstMember
+            ? 'Others nearby will find their way here as they join. Set the tone with a first hello.'
+            : 'Someone has to go first — it may as well be you.'}
+        </p>
+      </div>
+      <div className="space-y-2">
+        {actions.map((a) => (
           <button
-            key={item.value}
-            onClick={() => onRsvp(postId, item.value as RsvpStatus)}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-              myStatus === item.value
-                ? 'text-white'
-                : 'border border-[rgba(200,127,146,0.25)] bg-white/6 text-[color:var(--brand-muted)]'
-            }`}
-            style={myStatus === item.value ? { background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' } : undefined}
+            key={a.label}
+            onClick={a.onClick}
+            className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left text-sm theme-ink transition hover:bg-[var(--surface-soft)]"
+            style={{ border: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
           >
-            {item.label}
-            {item.count > 0 ? ` · ${item.count}` : ''}
+            <div className="clay-icon-well flex-shrink-0">{a.icon}</div>
+            <div>
+              <p className="font-medium">{a.label}</p>
+              <p className="text-xs theme-dim mt-0.5">{a.hint}</p>
+            </div>
           </button>
         ))}
       </div>
@@ -621,53 +776,8 @@ function EventRsvpBar({
   );
 }
 
-function EventsTab({ posts, rsvps, userId, onRsvp }: { posts: PostWithAuthor[]; rsvps: EventRsvp[]; userId: string; onRsvp: (postId: string, status: RsvpStatus) => void; }) {
-  const events = posts.filter((p) => p.type === 'event');
-  if (events.length === 0) {
-    return (
-      <EmptyState
-        icon="📅"
-        title="No upcoming events"
-        description="Create the first Mandali event to gather people around a real local moment."
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      {events.map((post) => (
-        <div key={post.id} className="glass-panel rounded-2xl border border-black/5 dark:border-white/8 p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/8 flex items-center justify-center text-xl flex-shrink-0">🎉</div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-[color:var(--brand-ink)] leading-snug">{post.content}</p>
-              {post.event_date && (
-                <p className="text-xs text-[color:var(--brand-primary-strong)] mt-1 font-medium">
-                  📅 {new Date(post.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                </p>
-              )}
-              {post.event_location && (
-                <p className="text-xs text-[color:var(--brand-muted)] mt-0.5">📍 {post.event_location}</p>
-              )}
-              <p className="text-xs text-[color:var(--brand-muted)] mt-1">
-                {post.profiles?.full_name ?? post.profiles?.username} · {formatRelativeTime(post.created_at)}
-              </p>
-              <EventRsvpBar
-                postId={post.id}
-                rsvps={rsvps.filter((item) => item.post_id === post.id)}
-                userId={userId}
-                onRsvp={onRsvp}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ─── Reflections Tab (Neighborhood Shared Contemplation) ─────────
-function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false }: {
+function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false, composePreset = null, hideEmpty = false }: {
   posts: PostWithAuthor[];
   userId: string;
   comments: PostCommentWithAuthor[];
@@ -686,6 +796,10 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   onHideAuthor: (authorId: string, mode?: 'mute' | 'block') => void;
   allowCompose?: boolean;
   isPro?: boolean;
+  /** Pre-fills the composer (welcome-card actions); new object re-applies */
+  composePreset?: ComposePreset | null;
+  /** Suppress the inline EmptyState when a richer empty state renders above */
+  hideEmpty?: boolean;
 }) {
   const [postType,   setPostType]   = useState<'update' | 'event' | 'question' | 'announcement'>('update');
   const [content,    setContent]    = useState('');
@@ -693,6 +807,15 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
   const [eventLoc,   setEventLoc]   = useState('');
   const [submitting, setSubmitting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (composePreset) {
+      setPostType(composePreset.postType);
+      setContent(composePreset.content);
+      setEventDate(composePreset.eventDate ?? '');
+      setEventLoc(composePreset.eventLoc ?? '');
+    }
+  }, [composePreset]);
 
   const nonEvents = posts.filter((p) => p.type !== 'event');
 
@@ -744,7 +867,7 @@ function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upv
         />
       )}
 
-      {nonEvents.length === 0 && !showCompose && (
+      {nonEvents.length === 0 && !showCompose && !hideEmpty && (
         <EmptyState
           icon="💬"
           title="No posts yet"
@@ -776,11 +899,25 @@ const QUICK_EMOJIS = [
   '👍', '🙌', '💪', '✅', '❓', '💡', '🤝', '🌺', '😇', '🤲',
 ];
 
-function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro, textareaRef }: any) {
+function ComposePanel({ postType, setPostType, content, setContent, eventDate, setEventDate, eventLoc, setEventLoc, submitting, onClose, onPost, isPro, textareaRef }: {
+  postType: PostType;
+  setPostType: (t: PostType) => void;
+  content: string;
+  setContent: React.Dispatch<React.SetStateAction<string>>;
+  eventDate: string;
+  setEventDate: (v: string) => void;
+  eventLoc: string;
+  setEventLoc: (v: string) => void;
+  submitting: boolean;
+  onClose: () => void;
+  onPost: () => void;
+  isPro: boolean;
+  textareaRef: React.RefObject<HTMLTextAreaElement>;
+}) {
   function insertEmoji(emoji: string) {
-    const el = textareaRef?.current as HTMLTextAreaElement | null;
+    const el = textareaRef.current;
     if (!el) {
-      setContent((prev: string) => prev + emoji);
+      setContent((prev) => prev + emoji);
       return;
     }
     const start = el.selectionStart ?? el.value.length;
@@ -794,7 +931,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
   }
 
   return (
-    <div className="glass-panel rounded-2xl border border-white/70 p-4 shadow-card space-y-3 fade-in">
+    <div className="glass-panel rounded-2xl border p-4 shadow-card space-y-3 fade-in" style={{ borderColor: 'var(--card-border)' }}>
       {/* Post type selector */}
       <div className="flex gap-2 flex-wrap">
         {POST_TYPES.map((t) => {
@@ -808,9 +945,9 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
               className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition ${
                 postType === t.value
                   ? ''
-                  : 'bg-white/4 text-[color:var(--brand-muted)] border border-white/10'
+                  : 'bg-[var(--surface-soft)] text-[color:var(--brand-muted)] border'
               } ${locked ? 'opacity-60' : ''}`}
-              style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : undefined}>
+              style={postType === t.value ? { background: 'var(--brand-primary-soft)', color: 'var(--brand-primary-strong)', border: '1px solid rgba(200, 127, 146, 0.3)' } : { borderColor: 'var(--card-border)' }}>
               {t.icon} {t.label}{locked && ' 🔒'}
             </button>
           );
@@ -824,7 +961,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
         value={content}
         onChange={(e) => setContent(e.target.value)}
         rows={3}
-        className="w-full px-4 py-3 rounded-xl border border-white/10 outline-none resize-none text-sm"
+        className="w-full px-4 py-3 rounded-xl border outline-none resize-none text-sm"
         style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }}
       />
 
@@ -836,7 +973,7 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
               key={emoji}
               type="button"
               onClick={() => insertEmoji(emoji)}
-              className="text-[1.25rem] leading-none p-1.5 rounded-xl hover:bg-white/10 flex-shrink-0 transition active:scale-90"
+              className="text-[1.25rem] leading-none p-1.5 rounded-xl hover:bg-[var(--card-bg)] flex-shrink-0 transition active:scale-90"
               title={emoji}
             >
               {emoji}
@@ -848,10 +985,10 @@ function ComposePanel({ postType, setPostType, content, setContent, eventDate, s
       {postType === 'event' && (
         <div className="grid grid-cols-2 gap-3">
           <input type="datetime-local" value={eventDate} onChange={(e) => setEventDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
           <input type="text" placeholder="Location" value={eventLoc} onChange={(e) => setEventLoc(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-white/10 outline-none text-sm"
+            className="px-3 py-2 rounded-xl border outline-none text-sm"
             style={{ borderColor: 'rgba(200, 127, 146, 0.18)' }} />
         </div>
       )}
@@ -904,18 +1041,22 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
   }
 
   return (
-    <div className="glass-panel rounded-2xl border border-white/8 p-4">
+    <div className="clay-card rounded-2xl p-4">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
-          {getInitials((author?.full_name || author?.username) ?? '?')}
+        {/* Avatar — show real image when available */}
+        <div className="relative w-9 h-9 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center text-white text-xs font-bold"
+          style={{ background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+          {author?.avatar_url
+            ? <Image src={author.avatar_url} alt={author.full_name ?? ''} fill sizes="36px" className="object-cover" />
+            : getInitials((author?.full_name || author?.username) ?? '?')}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm text-[color:var(--brand-ink)]">
+            <span className="font-semibold text-sm theme-ink">
               {author?.full_name ?? author?.username}
             </span>
-            <span className="text-white/25">·</span>
-            <span className="text-xs text-[color:var(--brand-muted)]">{formatRelativeTime(post.created_at)}</span>
+            <span className="theme-dim opacity-30">·</span>
+            <span className="text-xs theme-muted">{formatRelativeTime(post.created_at)}</span>
             <div className="ml-auto flex items-center gap-1">
               <span>{typeIcon[post.type]}</span>
               <ContentSafetyMenu
@@ -928,22 +1069,23 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
               />
             </div>
           </div>
-          <p className="text-sm text-[color:var(--brand-ink)] leading-relaxed">{post.content}</p>
+          <p className="text-sm theme-ink leading-relaxed">{post.content}</p>
           {post.event_date && (
-            <div className="mt-2 px-3 py-2 rounded-xl border border-white/10 bg-white/6 text-xs text-[color:var(--brand-muted)]">
-              📅 {new Date(post.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+            <div className="mt-2 px-3 py-2 rounded-xl theme-dim text-xs"
+              style={{ background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.15)' }}>
+              📅 {new Date(post.event_date).toLocaleDateString('en', { weekday: 'short', day: 'numeric', month: 'short' })}
               {post.event_location && ` · 📍 ${post.event_location}`}
             </div>
           )}
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex items-center gap-4 mt-2.5">
             <button onClick={() => onUpvote(post.id)}
-              className={`flex items-center gap-1 text-xs transition ${isUpvoted ? 'text-rose-500' : 'text-[color:var(--brand-muted)] hover:text-rose-400'}`}>
+              className={`flex items-center gap-1.5 text-xs transition ${isUpvoted ? 'text-rose-500' : 'theme-muted hover:text-rose-400'}`}>
               <Heart size={13} fill={isUpvoted ? 'currentColor' : 'none'} />
-              {post.upvotes > 0 && <span>{post.upvotes}</span>}
+              {post.upvotes > 0 && <span className="font-medium">{post.upvotes}</span>}
             </button>
             <button
               onClick={() => setShowComments((current) => !current)}
-              className="flex items-center gap-1 text-xs text-[color:var(--brand-muted)] hover:text-[color:var(--brand-muted)] transition"
+              className="flex items-center gap-1.5 text-xs theme-muted hover:theme-ink transition"
             >
               <MessageSquare size={13} />
               <span>{post.comment_count > 0 ? post.comment_count : 'Comment'}</span>
@@ -957,7 +1099,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                   <p className="text-xs text-[color:var(--brand-muted)]">No comments yet.</p>
                 ) : (
                   rootComments.map((comment) => (
-                    <div key={comment.id} className="space-y-2 rounded-2xl bg-white/6 px-3 py-3">
+                    <div key={comment.id} className="space-y-2 rounded-2xl bg-[var(--surface-soft)] px-3 py-3">
                       <div className="flex items-start gap-2">
                         <div className="w-7 h-7 rounded-full bg-[var(--brand-primary)] text-white text-[10px] font-bold flex items-center justify-center overflow-hidden flex-shrink-0">
                           {comment.profiles?.avatar_url ? (
@@ -1006,7 +1148,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                             onChange={(event) => setReplyBody(event.target.value)}
                             rows={2}
                             placeholder="Reply gently…"
-                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
+                            className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                           />
                           <div className="flex justify-end gap-2">
                             <button onClick={() => setReplyTo(null)} className="text-xs text-[color:var(--brand-muted)]">Cancel</button>
@@ -1032,7 +1174,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
                   onChange={(event) => setCommentBody(event.target.value)}
                   rows={2}
                   placeholder="Add a comment…"
-                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-white/6 px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
+                  className="w-full rounded-xl border border-[rgba(200,127,146,0.2)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[color:var(--brand-ink)] outline-none placeholder:text-[color:var(--brand-muted)]"
                 />
                 <div className="flex justify-end">
                   <button
@@ -1080,14 +1222,17 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   // ── Scope + sub-tab state ──────────────────────────────────────
   const [scope,      setScope]      = useState<Scope>('nearby');
+  // Empty mandalis land on the feed so the living empty state (welcome
+  // card) is the first thing a new member sees — not their own member row.
   const [nearbyTab,  setNearbyTab]  = useState<NearbyTab>(
-    initialVichaarCount > 0 ? 'feed' : initialEventCount > 0 ? 'events' : 'members'
+    initialVichaarCount === 0 && initialEventCount > 0 ? 'events' : 'feed'
   );
   const switchScope = (s: Scope) => { setScope(s); playHaptic('light'); };
   const switchNearbyTab = (t: NearbyTab) => { setNearbyTab(t); playHaptic('light'); };
 
   const [showSearch,      setShowSearch]      = useState(false);
   const [showCompose,     setShowCompose]     = useState(false);
+  const [composePreset,   setComposePreset]   = useState<ComposePreset | null>(null);
   const [showMandaliMenu, setShowMandaliMenu] = useState(false);
   const [portalTarget,    setPortalTarget]    = useState<Element | null>(null);
   const [upvoted,     setUpvoted]     = useState<Set<string>>(new Set());
@@ -1100,6 +1245,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     return (
       <AsyncStateCard
         state="loading"
+        tradition={userTradition}
         title="Loading your Mandali"
         description="Pulling your local Sangam, posts, members, and events into one place."
       />
@@ -1123,21 +1269,89 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const rsvps = data.rsvps.filter((item) => !hiddenContentIds.has(item.post_id) && !hiddenAuthorIds.has(item.user_id));
   const visibleMembers = data.members.filter((member) => !hiddenAuthorIds.has(member.id));
 
+  // No local Mandali yet — show a rich onboarding hero + the join flow + global Sabha.
   if (!liveProfile?.city || !liveProfile?.mandali_id) {
-    return <NoMandaliPrompt userId={userId} />;
+    return (
+      <div className="space-y-5 fade-in">
+
+        {/* ── Onboarding hero ─────────────────────────────────────── */}
+        <div className="clay-card rounded-[1.8rem] p-5 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+              style={{ background: 'var(--brand-primary-soft)', border: '1px solid var(--card-border)' }}>
+              🕉️
+            </div>
+            <div>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--type-hero)', fontWeight: 700, color: 'var(--text-cream)', lineHeight: 1.2 }}>
+                Your local Sangam awaits
+              </h2>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-dim)' }}>
+                Join your city&apos;s Sanatani circle — share, connect, practise together
+              </p>
+            </div>
+          </div>
+
+          {/* What a Mandali gives you */}
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { icon: '📅', label: 'Local Events'   },
+              { icon: '👥', label: 'Nearby Seekers' },
+              { icon: '💬', label: 'City Feed'      },
+            ].map(v => (
+              <div key={v.label} className="rounded-2xl p-3 text-center"
+                style={{ background: 'var(--surface-soft)', border: '1px solid var(--card-border)' }}>
+                <div className="text-xl mb-1">{v.icon}</div>
+                <p className="text-xs font-semibold leading-tight" style={{ color: 'var(--text-cream)' }}>{v.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Trust signals */}
+          <div className="flex items-center gap-3 pt-1">
+            <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+            <p className="text-[11px] font-medium" style={{ color: 'var(--text-dim)' }}>
+              🌏 Sanatani Mandalis are opening across the world
+            </p>
+            <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+          </div>
+        </div>
+
+        {/* ── Join flow — always visible ──────────────────────────── */}
+        <NoMandaliPrompt userId={userId} />
+
+        {/* ── Global Sabha divider ────────────────────────────────── */}
+        <div className="flex items-center gap-2 pt-2">
+          <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+          <span className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5"
+            style={{ background: 'var(--surface-soft)', color: 'var(--text-dim)', border: '1px solid var(--card-border)' }}>
+            <Globe size={11} /> Global Sabha
+          </span>
+          <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
+        </div>
+        <p className="text-[11px] text-center -mt-2" style={{ color: 'var(--text-dim)' }}>
+          Read from the wider Sanatani community while your local Mandali is set up
+        </p>
+
+        <VichaarClient
+          threads={threads}
+          userId={userId}
+          userTradition={userTradition}
+          embedded
+        />
+      </div>
+    );
   }
 
   const mandali    = liveProfile?.mandalis;
   const eventCount = posts.filter((p) => p.type === 'event').length;
   const vichaarCount = posts.filter((p) => p.type !== 'event').length;
-  const neighbourhoodLabel = (liveProfile as any)?.neighbourhood
-    ? `${(liveProfile as any).neighbourhood} Mandali`
-    : mandali?.name ?? 'Your Mandali';
-  const placeLabel = (liveProfile as any)?.neighbourhood
-    ? `${(liveProfile as any).neighbourhood}, ${mandali?.city ?? liveProfile?.city ?? ''}`
-    : mandali
-      ? `${mandali.city}, ${mandali.country}`
-      : liveProfile?.city ?? '';
+  // Community identity comes from the mandali (canonical city). The user's
+  // profile may legitimately keep a different suburb/city — alias merging
+  // (Slice 0) routes e.g. Salford members into Manchester Mandali.
+  const mandaliTitle = mandali?.name ?? (mandali?.city ? `${mandali.city} Mandali` : 'Your Mandali');
+  const placeLabel = mandali
+    ? `${mandali.city}, ${mandali.country}`
+    : liveProfile?.city ?? '';
   const primaryMandaliAction =
     eventCount > 0
       ? {
@@ -1153,12 +1367,52 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
-        : {
-            label: 'Meet your Mandali',
-            hint: `${visibleMembers.length} member${visibleMembers.length === 1 ? '' : 's'} nearby`,
-            onClick: () => { setScope('nearby'); setNearbyTab('members'); },
-            icon: <Users size={16} className="text-[color:var(--brand-muted)]" />,
-          };
+        : visibleMembers.length > 1
+          ? {
+              label: 'Meet your Mandali',
+              hint: `${visibleMembers.length} members nearby`,
+              onClick: () => { setScope('nearby'); setNearbyTab('members'); },
+              icon: <Users size={16} className="text-[color:var(--brand-muted)]" />,
+            }
+          : {
+              label: 'Say the first hello',
+              hint: 'Be the first voice in your Mandali',
+              onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
+              icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
+            };
+
+  // Welcome-card actions: open the composer pre-filled. A fresh preset
+  // object each call re-applies even if tapped twice.
+  function startIntroPost() {
+    setComposePreset({
+      postType: 'update',
+      content: `Namaste 🙏 I'm new to the ${mandali?.city ?? 'local'} Mandali. A little about me and my practice: `,
+    });
+    setNearbyTab('feed');
+    setShowCompose(true);
+  }
+
+  function startFirstGathering() {
+    setComposePreset({
+      postType: 'event',
+      content: `First ${mandali?.city ?? 'local'} satsang — bhajan, chai, and a short katha. All traditions and newcomers welcome 🙏`,
+    });
+    setNearbyTab('feed');
+    setShowCompose(true);
+  }
+
+  // Events-tab bootstrapping: template (or blank event) opens the composer
+  // in the feed tab; after posting, submitPost returns the user to Events.
+  function startEventCompose(template: { content: string; eventDate?: string; eventLoc?: string }) {
+    setComposePreset({
+      postType: 'event',
+      content: template.content,
+      eventDate: template.eventDate,
+      eventLoc: template.eventLoc,
+    });
+    setNearbyTab('feed');
+    setShowCompose(true);
+  }
 
   function hideContentFromView(contentId: string) {
     setHiddenContentIds((current) => new Set(current).add(contentId));
@@ -1175,6 +1429,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     eventLoc: string;
   }) {
     if (!payload.content.trim()) { toast.error('Write something first'); return false; }
+    if (payload.postType === 'event' && !payload.eventDate) {
+      toast.error('Add a date and time so people can come');
+      return false;
+    }
     if (!liveProfile?.mandali_id) { toast.error('You are not in a Mandali yet'); return false; }
     try {
       await mandaliMutations.submitPost.mutateAsync({
@@ -1185,8 +1443,11 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         eventLoc: payload.eventLoc,
       });
       toast.success('Posted! 🙏');
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not post right now.');
+      // Events don't show in the Reflections feed — land the author on the
+      // Events tab so their first gathering doesn't appear to vanish.
+      if (payload.postType === 'event') setNearbyTab('events');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not post right now.');
       return false;
     }
     return true;
@@ -1197,8 +1458,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     try {
       await mandaliMutations.leaveMandali.mutateAsync();
       toast.success('You have left the Mandali');
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not leave the Mandali.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not leave the Mandali.');
     }
   }
 
@@ -1216,8 +1477,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         }
         return next;
       });
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not update the upvote right now.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not update the upvote right now.');
     }
   }
 
@@ -1231,8 +1492,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     try {
       await mandaliMutations.addComment.mutateAsync({ postId, body: content, parentId });
       toast.success(parentId ? 'Reply posted' : 'Comment posted');
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not post the comment.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not post the comment.');
     }
   }
 
@@ -1240,8 +1501,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     try {
       await mandaliMutations.updateRsvp.mutateAsync({ postId, status });
       toast.success(status === 'going' ? 'You are in' : status === 'interested' ? 'Marked interested' : 'RSVP updated');
-    } catch (error: any) {
-      toast.error(error.message ?? 'Could not update the RSVP.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not update the RSVP.');
     }
   }
 
@@ -1252,7 +1513,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   ];
 
   return (
-    <div className="space-y-4 fade-in">
+    <div className="space-y-4 fade-in pt-4">
 
       {/* ── Mandali Header ── */}
       <div className="surface-soft-card decorative-orbit rounded-[1.8rem] p-5">
@@ -1269,7 +1530,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <div className="mb-1 flex items-center gap-2">
               <Users size={16} className="theme-muted" />
               <span className="type-card-heading">
-                {neighbourhoodLabel}
+                {mandaliTitle}
               </span>
             </div>
             <div className="type-body flex items-center gap-1">
@@ -1282,6 +1543,25 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             <p className="type-body mt-3 sm:hidden">
               Start with one local step.
             </p>
+            {/* Member avatar stack */}
+            {visibleMembers.length > 0 && (
+              <div className="flex items-center gap-2 mt-3">
+                <div className="flex -space-x-2">
+                  {visibleMembers.slice(0, 6).map((m) => (
+                    <div key={m.id}
+                      className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center text-[11px] font-bold text-white"
+                      style={{ border: '2px solid var(--surface-soft)', background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
+                      {m.avatar_url
+                        ? <Image src={m.avatar_url} alt="" fill sizes="28px" className="object-cover" />
+                        : getInitials(m.full_name || m.username || '?')}
+                    </div>
+                  ))}
+                </div>
+                {visibleMembers.length > 6 && (
+                  <span className="text-[11px]" style={{ color: 'var(--text-dim)' }}>+{visibleMembers.length - 6} more</span>
+                )}
+              </div>
+            )}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
@@ -1292,14 +1572,16 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         {/* Action row */}
         <div className="mt-3 flex items-center gap-2">
           <button onClick={() => setShowSearch(true)}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/[0.04] px-3 py-2 text-xs font-medium theme-ink transition hover:bg-white/[0.06]">
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl border bg-[var(--surface-soft)] px-3 py-2 text-xs font-medium theme-ink transition hover:bg-[var(--surface-soft)]"
+            style={{ borderColor: 'var(--card-border)' }}>
             <Search size={13} /> Find Sanatani
           </button>
 
           {/* Mandali options menu — opens as a portal bottom sheet to escape overflow:hidden parent */}
           <button
             onClick={() => setShowMandaliMenu(true)}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/8 bg-white/[0.04] theme-ink transition hover:bg-white/[0.06]"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border bg-[var(--surface-soft)] theme-ink transition hover:bg-[var(--surface-soft)]"
+            style={{ borderColor: 'var(--card-border)' }}
             title="Mandali options"
           >
             <MoreHorizontal size={16} />
@@ -1311,9 +1593,12 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         <button
           type="button"
           onClick={primaryMandaliAction.onClick}
-          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-white/[0.06] decorative-orbit"
+          className="glass-panel rounded-[1.7rem] p-4 text-left transition hover:bg-[var(--surface-soft)] decorative-orbit"
         >
-          <p className="type-card-label">Start here</p>
+          <div className="flex items-center justify-between">
+            <p className="type-card-label">Start here</p>
+            <ChevronRight size={14} className="theme-muted" />
+          </div>
           <div className="flex items-start justify-between gap-3 mt-3">
             <div>
               <p className="type-card-heading">{primaryMandaliAction.label}</p>
@@ -1323,7 +1608,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           </div>
         </button>
 
-        <div className="hidden sm:block glass-panel rounded-[1.7rem] p-4">
+        <div className="glass-panel rounded-[1.7rem] p-4">
           <p className="type-card-label">Local pulse</p>
           <div className="grid grid-cols-3 gap-2 mt-3">
             {[
@@ -1331,7 +1616,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               { label: 'Events', value: eventCount },
               { label: 'Vichaar', value: vichaarCount },
             ].map((item) => (
-              <div key={item.label} className="rounded-[1.1rem] bg-white/[0.04] border border-white/8 px-3 py-3 text-center">
+              <div key={item.label} className="rounded-[1.1rem] bg-[var(--surface-soft)] border px-3 py-3 text-center" style={{ borderColor: 'var(--card-border)' }}>
                 <p className="type-metric">{item.value}</p>
                 <p className="type-card-label mt-1">{item.label}</p>
               </div>
@@ -1372,8 +1657,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 setShowMandaliMenu(false);
                 await mandaliMutations.leaveMandali.mutateAsync();
               }}
-              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-white/[0.06]"
-              style={{ border: '1px solid rgba(255,255,255,0.06)', background: 'var(--card-bg)' }}
+              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm theme-ink transition hover:bg-[var(--surface-soft)]"
+              style={{ border: '1px solid var(--card-border)', background: 'var(--card-bg)' }}
             >
               <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(197, 160, 89,0.1)' }}>
                 <MapPin size={15} style={{ color: 'var(--brand-primary)' }} />
@@ -1389,8 +1674,8 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 await leaveMandali();
               }}
               disabled={mandaliMutations.leaveMandali.isPending}
-              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition disabled:opacity-50 hover:bg-red-500/10"
-              style={{ border: '1px solid rgba(255,80,80,0.15)', background: 'rgba(255,80,80,0.04)', color: '#f87171' }}
+              className="w-full flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm transition disabled:opacity-50 hover:bg-red-500/10 text-red-400"
+              style={{ border: '1px solid rgba(255,80,80,0.15)', background: 'rgba(255,80,80,0.04)' }}
             >
               <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'rgba(255,80,80,0.1)' }}>
                 <X size={15} />
@@ -1407,7 +1692,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
       {/* ── Scope Toggle: Nearby | Sabha ── */}
       <div className="relative flex rounded-2xl p-1 gap-1"
-        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
+        style={{ background: 'var(--surface-soft)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
         {([
           { key: 'nearby' as Scope, label: 'Nearby',  icon: <MapPin size={13} strokeWidth={2.2} /> },
           { key: 'sabha'  as Scope, label: 'Sabha',   icon: <Globe  size={13} strokeWidth={2.2} /> },
@@ -1415,14 +1700,13 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           <button
             key={key}
             onClick={() => switchScope(key)}
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all"
+            className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all ${
+              scope === key ? 'text-white' : 'text-[color:var(--text-dim)]'
+            }`}
             style={scope === key ? {
               background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
-              color: '#fff',
               boxShadow: '0 2px 10px rgba(197, 160, 89,0.25)',
-            } : {
-              color: 'var(--text-dim)',
-            }}
+            } : undefined}
           >
             {icon}
             {label}
@@ -1457,13 +1741,27 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
           {/* Nearby tab content */}
           {nearbyTab === 'members' && (
-            <MembersTab members={visibleMembers} userId={userId} />
+            <>
+              <MandaliMembers members={visibleMembers} userId={userId} />
+              <SeekersNearYou userId={userId} profile={liveProfile} />
+            </>
           )}
           {nearbyTab === 'events' && (
-            <EventsTab posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} />
+            <MandaliEvents posts={posts} rsvps={rsvps} userId={userId} onRsvp={updateRsvp} onStartEvent={startEventCompose} />
           )}
           {nearbyTab === 'feed' && (
             <>
+              {/* Living empty state — no local posts at all. Hidden while the
+                  composer is open so a preset tap can't wipe typed content. */}
+              {posts.length === 0 && !showCompose && (
+                <MandaliWelcome
+                  isFirstMember={data.members.length <= 1}
+                  cityLabel={mandali?.city ?? 'your city'}
+                  onIntroduce={startIntroPost}
+                  onStartGathering={startFirstGathering}
+                  onBrowseSabha={() => switchScope('sabha')}
+                />
+              )}
               <VichaarTab
                 posts={posts}
                 userId={userId}
@@ -1473,10 +1771,17 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                 upvoted={upvoted}
                 onCompose={submitPost}
                 showCompose={showCompose}
-                setShowCompose={setShowCompose}
+                setShowCompose={(v: boolean) => {
+                  // Closing the composer (cancel or successful post) discards
+                  // the welcome-card preset so it can't resurface stale text.
+                  if (!v) setComposePreset(null);
+                  setShowCompose(v);
+                }}
                 onHideContent={hideContentFromView}
                 onHideAuthor={hideAuthorFromView}
                 isPro={isPro}
+                composePreset={composePreset}
+                hideEmpty={posts.length === 0}
               />
               {/* "Don't feel alone" blended posts */}
               {widerPosts.length > 0 && (

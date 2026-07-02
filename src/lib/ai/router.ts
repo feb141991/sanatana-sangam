@@ -113,7 +113,7 @@ export async function runPathshalaExplain(input: PathshalaExplainInput) {
 
     const result = await generateWithProvider(built.prompt, {
       responseFormat: 'json',
-      providerOverride: 'sarvam-hosted',
+      maxOutputTokens: 4096,
     });
 
     return {
@@ -217,7 +217,7 @@ export async function runPathshalaBridge(input: { lessonTitle: string; pathTitle
 
     const result = await generateWithProvider({ system, user: userPrompt }, {
       responseFormat: 'json',
-      providerOverride: 'sarvam-hosted',
+      maxOutputTokens: 1024,
     });
 
     return {
@@ -250,7 +250,7 @@ export async function runPathshalaRecommend(input: { tradition: string; complete
 
     const result = await generateWithProvider({ system, user: userPrompt }, {
       responseFormat: 'json',
-      providerOverride: 'sarvam-hosted',
+      maxOutputTokens: 512,
     });
 
     return {

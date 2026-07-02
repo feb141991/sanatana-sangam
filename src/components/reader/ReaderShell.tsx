@@ -45,6 +45,8 @@ export interface ReaderShellProps {
   onCopy?: () => void;
   isCopied?: boolean;
   onShare?: () => void;
+  ttsRate?: number;
+  onTTSRateChange?: (rate: number) => void;
 
   // Bottom Quick Actions (Bottom Bar layout - optional)
   bottomBar?: ReactNode;
@@ -85,6 +87,8 @@ export default function ReaderShell({
   onCopy,
   isCopied,
   onShare,
+  ttsRate,
+  onTTSRateChange,
   bottomBar,
   shellBackgroundColor,
   shellHeaderBackgroundColor,
@@ -246,6 +250,25 @@ export default function ReaderShell({
                   ))}
                 </div>
               )}
+
+              {onTTS && ttsRate !== undefined && onTTSRateChange && (
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-full border" style={{ background: bgSubCard, borderColor: bdr }}>
+                  {[0.75, 1.0, 1.25].map(rate => (
+                    <button
+                      key={rate}
+                      onClick={() => onTTSRateChange(rate)}
+                      className="px-2 py-1 rounded-full text-[10px] font-bold transition-all"
+                      style={{
+                        background: ttsRate === rate ? themeColor : 'transparent',
+                        color: ttsRate === rate ? (isDark ? '#000' : '#fff') : textDim,
+                        boxShadow: ttsRate === rate ? `0 2px 5px ${themeColor}40` : 'none'
+                      }}
+                    >
+                      {rate === 1.0 ? '1' : rate}×
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Content Toggles Group */}
@@ -288,10 +311,30 @@ export default function ReaderShell({
 
       {/* ── Fixed Bottom Bar ── */}
       {bottomBar && (
-        <div 
-          className="fixed bottom-0 inset-x-0 z-40 backdrop-blur-xl border-t pb-[env(safe-area-inset-bottom)]"
-          style={{ background: bgCard, borderTopColor: bdr }}
+        <div
+          className="fixed bottom-0 inset-x-0 z-40 border-t pb-[env(safe-area-inset-bottom)]"
+          style={{
+            /* Frosted-glass: strong blur keeps the bar legible while letting
+               content bleed through. Opacity kept at ~50% so scrolled text
+               is visible underneath and the bar feels lighter on the page. */
+            backdropFilter: 'blur(24px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            background: isDark
+              ? 'rgba(14, 8, 4, 0.50)'
+              : 'rgba(255, 246, 232, 0.50)',
+            borderTopColor: bdr,
+          }}
         >
+          {/* Soft gradient fade at the very top of the bar so text underneath
+              transitions in smoothly rather than hitting a hard edge */}
+          <div
+            className="absolute inset-x-0 top-0 -translate-y-full h-8 pointer-events-none"
+            style={{
+              background: isDark
+                ? 'linear-gradient(to top, rgba(14,8,4,0.35), transparent)'
+                : 'linear-gradient(to top, rgba(255,246,232,0.35), transparent)',
+            }}
+          />
           {bottomBar}
         </div>
       )}

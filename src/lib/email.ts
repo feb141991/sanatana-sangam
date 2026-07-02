@@ -13,12 +13,13 @@ interface EmailOptions {
   body: string;
   ctaText: string;
   ctaUrl: string;
+  unsubUrl?: string;
 }
 
 /**
  * Builds the Shoonaya Zenith-themed HTML wrapper for all emails.
  */
-function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl }: Omit<EmailOptions, 'to' | 'subject'>) {
+function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl, unsubUrl }: EmailOptions) {
   return `
     <!DOCTYPE html>
     <html>
@@ -59,6 +60,7 @@ function buildPremiumHtml({ shloka, meaning, title, body, ctaText, ctaUrl }: Omi
         <div class="footer">
           <div class="signs">🕉️ ☬ ☸️ 🤲</div>
           <p class="legal">Join the Shoonaya Mandali.<br>© 2026 Shoonaya. All rights reserved.</p>
+          ${unsubUrl ? `<p class="legal"><a href="${unsubUrl}&type=newsletter">Unsubscribe from digest</a> · <a href="${unsubUrl}&type=festivals">Unsubscribe from festivals</a></p>` : ''}
         </div>
       </div>
     </body>

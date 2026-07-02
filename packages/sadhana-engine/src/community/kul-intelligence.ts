@@ -219,7 +219,7 @@ export class KulIntelligence {
    *   1. Checks if the user already practiced → skips if yes
    *   2. Finds their kuls → checks kul_practice_today view
    *   3. Picks the kul with the most active members
-   *   4. Generates a Gemini-powered "your kul mates are practicing" message
+   *   4. Generates a Sarvam-powered "your kul mates are practicing" message
    *   5. Writes to the notifications table (in-app bell)
    *   6. Optionally sends OneSignal push
    *
@@ -273,7 +273,7 @@ export class KulIntelligence {
    * The Edge Function:
    *   1. Reads kul_weekly_stats view (7-day aggregation)
    *   2. Reads pending tasks + upcoming events for context
-   *   3. Generates Gemini digest: a kul_message (posted to feed) +
+   *   3. Generates Sarvam digest: a kul_message (posted to feed) +
    *      a member_notification (short push body)
    *   4. Posts the message to kul_messages as a bot post
    *   5. Upserts a notification for every member (idempotent via notification_key)
@@ -359,7 +359,7 @@ export class KulIntelligence {
   // ──────────────────────────────────────────────────────────
 
   /**
-   * Ask Gemini to suggest a spiritually appropriate task for a kul member,
+   * Ask Sarvam to suggest a spiritually appropriate task for a kul member,
    * WITHOUT creating it. Returns the suggestion for the guardian to review.
    *
    * Example (guardian reviews before assigning):

@@ -1,115 +1,167 @@
-import type { ModelAdapter, PromptSpec, TextResult } from '@sangam/pramana-core';
+import type {
+  PramanaInferenceProvider,
+  InferenceProviderInfo,
+  InferenceRequest,
+  InferenceResponse,
+} from '@sangam/pramana-core';
 
-export interface GeminiAdapterOptions {
-  apiKey: string;
-  models?: string[];
+export interface GeminiProviderConfig {
+  apiKey?: string;
+  model?: string;
+  timeoutMs?: number;
 }
 
-const DEFAULT_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
+const DEFAULT_MODEL = 'gemini-2.0-flash';
 
-function geminiUrl(model: string) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+interface GeminiContent {
+  role: 'user' | 'model';
+  parts: Array<{ text: string }>;
 }
 
-function extractGeminiText(data: any): string {
-  const candidates = Array.isArray(data?.candidates) ? data.candidates : [];
-  const parts = candidates.flatMap((candidate: any) =>
-    Array.isArray(candidate?.content?.parts) ? candidate.content.parts : []
-  );
-  const text = parts
-    .map((part: any) => (typeof part?.text === 'string' ? part.text : ''))
-    .filter(Boolean)
-    .join('\n')
-    .trim();
-  return text;
+interface GeminiRawResponse {
+  candidates?: Array<{
+    content?: { parts?: Array<{ text?: string }>; role?: string };
+    finishReason?: string;
+  }>;
+  usageMetadata?: {
+    promptTokenCount?: number;
+    candidatesTokenCount?: number;
+    totalTokenCount?: number;
+  };
+  error?: { code?: number; message?: string; status?: string };
 }
 
-function summarizeGeminiEmptyResponse(model: string, data: any): string {
-  const candidates = Array.isArray(data?.candidates) ? data.candidates : [];
-  const finishReasons = candidates
-    .map((candidate: any) => candidate?.finishReason || candidate?.finish_reason)
-    .filter(Boolean)
-    .join(',');
-  const blockReason = data?.promptFeedback?.blockReason || data?.prompt_feedback?.block_reason || null;
-  const pieces = [`${model}: empty response`];
-  if (finishReasons) pieces.push(`finishReason=${finishReasons}`);
-  if (blockReason) pieces.push(`blockReason=${blockReason}`);
-  return pieces.join(' ');
-}
+export class GeminiProvider implements PramanaInferenceProvider {
+  readonly info: InferenceProviderInfo = {
+    id: 'google-gemini',
+    displayName: 'Google Gemini',
+    providerClass: 'hosted',
+    capabilities: {
+      textGeneration: true,
+      structuredJsonGeneration: true,
+      retrievalGroundedGeneration: false,
+      streaming: false,
+      embeddings: false,
+    },
+  };
 
-export class GeminiModelAdapter implements ModelAdapter {
-  constructor(private readonly options: GeminiAdapterOptions) {}
+  private readonly config: GeminiProviderConfig | undefined;
 
-  async generate(prompt: PromptSpec): Promise<TextResult> {
-    const models = this.options.models?.length ? this.options.models : DEFAULT_MODELS;
-    const attempts: string[] = [];
+  constructor(config?: GeminiProviderConfig) {
+    this.config = config;
+  }
 
-    for (const model of models) {
-      const contents: any[] = [];
-      let systemInstruction: any = undefined;
+  isAvailable(): boolean {
+    return Boolean(this.config?.apiKey);
+  }
 
-      if (prompt.system && !prompt.messages?.length) {
-        // Fallback for old style prompt
-        contents.push({
-          role: 'user',
-          parts: [{ text: [prompt.system, prompt.user].filter(Boolean).join('\n\n') }]
-        });
-      } else {
-        if (prompt.system) {
-          systemInstruction = { parts: [{ text: prompt.system }] };
-        }
-        if (prompt.messages) {
-          for (const msg of prompt.messages) {
-            contents.push({
-              role: msg.role === 'assistant' ? 'model' : 'user',
-              parts: [{ text: msg.content }]
-            });
-          }
-        }
-        if (prompt.user) {
-          contents.push({
-            role: 'user',
-            parts: [{ text: prompt.user }]
-          });
-        }
-      }
-
-      const res = await fetch(`${geminiUrl(model)}?key=${this.options.apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: systemInstruction,
-          contents,
-          generationConfig: {
-            temperature: prompt.temperature ?? 0.3,
-            maxOutputTokens: prompt.maxOutputTokens ?? 800,
-          },
-        }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const text = extractGeminiText(data);
-        if (text) {
-          return {
-            text,
-            modelUsed: model,
-            provider: 'gemini',
-          };
-        }
-        attempts.push(summarizeGeminiEmptyResponse(model, data));
-        continue;
-      }
-
-      if (res.status === 429 || res.status === 404) {
-        attempts.push(`${model}: HTTP ${res.status}`);
-        continue;
-      }
-      const errText = await res.text().catch(() => '');
-      throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
+  async generate(request: InferenceRequest): Promise<InferenceResponse> {
+    if (!this.config?.apiKey) {
+      throw new Error(`[${this.info.id}] GEMINI_API_KEY is not configured.`);
     }
 
-    const detail = attempts.length > 0 ? ` Attempts: ${attempts.join(' | ')}` : '';
-    throw new Error(`No response generated. Please try again.${detail}`);
+    const model = this.config.model ?? DEFAULT_MODEL;
+    const timeoutMs = request.timeoutMs ?? this.config.timeoutMs ?? 30_000;
+    const maxTokens = request.prompt.maxOutputTokens ?? 900;
+
+    // Build Gemini contents array from history + current message
+    const contents: GeminiContent[] = [];
+
+    if (request.prompt.messages && request.prompt.messages.length > 0) {
+      for (const msg of request.prompt.messages) {
+        contents.push({
+          role: msg.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: msg.content }],
+        });
+      }
+    }
+
+    let userText = request.prompt.user ?? '';
+    if (request.groundingContext && request.groundingContext.length > 0) {
+      const ctx = request.groundingContext
+        .map((c, i) => `Source [${i + 1}]: ${c.metadata?.sourceName ?? ''}\n${c.content}`)
+        .join('\n\n');
+      userText = `${ctx}\n\n====================\n\n${userText}`;
+    }
+    contents.push({ role: 'user', parts: [{ text: userText }] });
+
+    const payload: Record<string, unknown> = {
+      contents,
+      generationConfig: {
+        maxOutputTokens: maxTokens,
+        temperature: request.prompt.temperature ?? 0.3,
+        ...(request.responseFormat === 'json'
+          ? { responseMimeType: 'application/json' }
+          : {}),
+      },
+    };
+
+    if (request.prompt.system) {
+      payload['systemInstruction'] = { parts: [{ text: request.prompt.system }] };
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${this.config.apiKey}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    let rawResponse: Response;
+    try {
+      rawResponse = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`[${this.info.id}] HTTP request failed: ${msg}`);
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!rawResponse.ok) {
+      let errorBody = '';
+      try { errorBody = await rawResponse.text(); } catch { /* ignore */ }
+      throw new Error(`[${this.info.id}] Server returned HTTP ${rawResponse.status}: ${errorBody.slice(0, 300)}`);
+    }
+
+    let data: GeminiRawResponse;
+    try {
+      data = await rawResponse.json() as GeminiRawResponse;
+    } catch {
+      throw new Error(`[${this.info.id}] Server response is not valid JSON.`);
+    }
+
+    if (data.error) {
+      throw new Error(`[${this.info.id}] API error ${data.error.code}: ${data.error.message}`);
+    }
+
+    const candidate = data.candidates?.[0];
+    const text = candidate?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
+
+    if (!text.trim()) {
+      throw new Error(`[${this.info.id}] Empty response from Gemini (finishReason: ${candidate?.finishReason ?? 'unknown'})`);
+    }
+
+    return {
+      text,
+      modelUsed: model,
+      provider: this.info.id,
+      providerClass: 'hosted',
+      finishReason: candidate?.finishReason,
+      usage: data.usageMetadata
+        ? {
+            inputTokens: data.usageMetadata.promptTokenCount,
+            outputTokens: data.usageMetadata.candidatesTokenCount,
+            totalTokens: data.usageMetadata.totalTokenCount,
+          }
+        : undefined,
+    };
+  }
+
+  async *generateStream(_request: InferenceRequest): AsyncIterable<string> {
+    throw new Error(`[${this.info.id}] generateStream is not yet implemented.`);
   }
 }

@@ -2,15 +2,18 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { Plus, MessageSquare, ArrowUp, CheckCircle, Search, X } from 'lucide-react';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
+import { SACRED_RELICS } from '@/lib/relics';
 import { createClient } from '@/lib/supabase';
 import { formatRelativeTime, getInitials, FORUM_CATEGORIES } from '@/lib/utils';
 import type { ThreadWithAuthor } from '@/types/database';
 
 type FeedFilter = 'active' | 'recent' | 'popular' | 'unanswered' | 'quality';
+type RelicLookup = Record<string, (typeof SACRED_RELICS)[number]>;
 
 const FEED_FILTERS: Array<{ value: FeedFilter; label: string; desc: string }> = [
   { value: 'active',    label: 'Active',      desc: 'Recently updated threads' },
@@ -59,6 +62,10 @@ export default function VichaarClient({
 }) {
   const isGuest = !userId;
   const supabase = useMemo(() => createClient(), []);
+  const relicById = useMemo<RelicLookup>(
+    () => Object.fromEntries(SACRED_RELICS.map((relic) => [relic.id, relic])) as RelicLookup,
+    [],
+  );
   const [threads,     setThreads]     = useState(initialThreads);
   // Smart default: if the user has a tradition with a matching category that has threads, use it
   const defaultTab = useMemo(() => {
@@ -74,6 +81,7 @@ export default function VichaarClient({
   const [showCompose, setShowCompose] = useState(false);
   const [submitting,  setSubmitting]  = useState(false);
   const [upvoted,     setUpvoted]     = useState<Set<string>>(new Set());
+  const [myReactions, setMyReactions] = useState<Map<string, Set<string>>>(new Map());
   const deferredSearch = useDeferredValue(searchQuery);
 
   const [form, setForm] = useState({
@@ -98,6 +106,20 @@ export default function VichaarClient({
         if (cancelled || error) return;
         setUpvoted(new Set((data ?? []).map((row) => row.thread_id)));
       });
+
+    fetch(`/api/vichaar/react?thread_ids=${threadIds.join(',')}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        const map = new Map<string, Set<string>>();
+        (data.reactions ?? []).forEach((r: { thread_id: string; reaction_type: string }) => {
+          const set = map.get(r.thread_id) ?? new Set<string>();
+          set.add(r.reaction_type);
+          map.set(r.thread_id, set);
+        });
+        setMyReactions(map);
+      })
+      .catch((err) => console.error('Failed to load reactions', err));
 
     return () => {
       cancelled = true;
@@ -216,12 +238,16 @@ export default function VichaarClient({
         body:      form.body.trim(),
         tags:      form.tags ? form.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       })
-      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
+      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id)')
       .single();
 
     if (error) { toast.error(error.message); }
     else {
-      setThreads((prev) => [data as ThreadWithAuthor, ...prev]);
+      const newThread = {
+        ...(data as any),
+        reactions: { pranam: 0, bhakti: 0, prakas: 0 },
+      };
+      setThreads((prev) => [newThread as ThreadWithAuthor, ...prev]);
       setForm({ title: '', body: '', category: 'prashnottari', tags: '' });
       setSearchQuery('');
       setFeedFilter('recent');
@@ -250,6 +276,40 @@ export default function VichaarClient({
       setUpvoted((s) => new Set([...s, threadId]));
       setThreads((ts) => ts.map((t) => t.id === threadId ? { ...t, upvotes: t.upvotes + 1 } : t));
     }
+  }
+
+  async function toggleReaction(threadId: string, reactionType: 'pranam' | 'bhakti' | 'prakas') {
+    if (!userId || isGuest) return;
+    
+    // Optimistic update
+    setMyReactions((prev) => {
+      const next = new Map(prev);
+      const set = new Set(next.get(threadId) ?? []);
+      if (set.has(reactionType)) {
+        set.delete(reactionType);
+      } else {
+        set.add(reactionType);
+      }
+      next.set(threadId, set);
+      return next;
+    });
+
+    // Also update reaction counts on threads state
+    setThreads((prev) =>
+      prev.map((t) => {
+        if (t.id !== threadId) return t;
+        const reactions = { ...(t.reactions ?? {}) };
+        const had = myReactions.get(threadId)?.has(reactionType);
+        reactions[reactionType] = Math.max(0, (reactions[reactionType] ?? 0) + (had ? -1 : 1));
+        return { ...t, reactions };
+      })
+    );
+
+    await fetch('/api/vichaar/react', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ thread_id: threadId, reaction_type: reactionType }),
+    }).catch(() => {});
   }
 
   function hideThreadFromView(threadId: string) {
@@ -468,12 +528,15 @@ export default function VichaarClient({
             <ThreadCard
               key={thread.id}
               thread={thread}
+              relicById={relicById}
               viewerId={userId}
               isGuest={isGuest}
               isUpvoted={upvoted.has(thread.id)}
               onUpvote={() => toggleUpvote(thread.id)}
               onHideContent={hideThreadFromView}
               onHideAuthor={hideAuthorFromView}
+              myReactions={myReactions}
+              onReact={(type) => toggleReaction(thread.id, type)}
             />
           ))}
         </div>
@@ -725,25 +788,38 @@ function ComposeThreadModal({
   );
 }
 
+const REACTIONS = [
+  { type: 'pranam', emoji: '🙏', label: 'Pranam' },
+  { type: 'bhakti', emoji: '❤️', label: 'Bhakti' },
+  { type: 'prakas', emoji: '✨', label: 'Prakas' },
+] as const;
+
 function ThreadCard({
   thread,
+  relicById,
   viewerId,
   isGuest,
   isUpvoted,
   onUpvote,
   onHideContent,
   onHideAuthor,
+  myReactions,
+  onReact,
 }: {
   thread: ThreadWithAuthor;
+  relicById: RelicLookup;
   viewerId: string;
   isGuest: boolean;
   isUpvoted: boolean;
   onUpvote: () => void;
   onHideContent: (threadId: string) => void;
   onHideAuthor: (authorId: string) => void;
+  myReactions?: Map<string, Set<string>>;
+  onReact: (type: 'pranam' | 'bhakti' | 'prakas') => void;
 }) {
   const cat     = FORUM_CATEGORIES.find((c) => c.value === thread.category);
   const author  = thread.profiles;
+  const relic = author?.active_symbol_id ? relicById[author.active_symbol_id] : null;
   const initials = getInitials(author?.full_name ?? 'S');
   const activityTime = thread.reply_count > 0 ? thread.updated_at : thread.created_at;
 
@@ -802,14 +878,56 @@ function ThreadCard({
         {/* Footer */}
         <div className="flex items-center justify-between pt-1 border-t border-gray-50">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
-              {initials}
+            <div className="relative shrink-0 w-9 h-9">
+              <div className="w-9 h-9 rounded-full bg-gradient-sacred flex items-center justify-center text-white text-[10px] font-bold">
+                {initials}
+              </div>
+              {relic?.imageUrl && (
+                <div
+                  className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center border"
+                  style={{
+                    background: 'var(--bg-primary, #0E0E0F)',
+                    borderColor: 'rgba(197,160,89,0.30)',
+                  }}
+                >
+                  <Image
+                    src={relic.imageUrl}
+                    width={10}
+                    height={10}
+                    alt={relic.name}
+                    title={relic.name}
+                    unoptimized
+                    className="rounded-full"
+                  />
+                </div>
+              )}
             </div>
             <span className="text-xs text-[color:var(--brand-muted)]">{author?.full_name}</span>
             <span className="text-gray-300">·</span>
             <span className="text-xs text-[color:var(--text-dim)]">{formatRelativeTime(activityTime)}</span>
           </div>
           <div className="flex items-center gap-3 text-xs text-[color:var(--text-dim)]">
+            {/* Reactions Block */}
+            <div className="flex items-center gap-2 mr-1">
+              {REACTIONS.map(({ type, emoji, label }) => {
+                const myReacted = myReactions?.get(thread.id)?.has(type) ?? false;
+                const count = thread.reactions?.[type] ?? 0;
+                return (
+                  <button
+                    key={type}
+                    onClick={(e) => { e.preventDefault(); onReact(type); }}
+                    disabled={isGuest}
+                    className="flex items-center gap-0.5 text-[11px] transition-transform active:scale-90"
+                    style={{ opacity: isGuest ? 0.5 : 1, fontWeight: myReacted ? 700 : 400 }}
+                    title={label}
+                  >
+                    <span className="text-[13px]">{emoji}</span>
+                    {count > 0 && <span style={{ color: myReacted ? 'var(--brand-primary)' : 'var(--text-dim)' }}>{count}</span>}
+                  </button>
+                );
+              })}
+            </div>
+
             {isGuest ? (
               <span className="flex items-center gap-1">
                 <ArrowUp size={13} />

@@ -29,11 +29,15 @@ export interface TraditionMeta {
   /** Default Pathshala section id to land on */
   librarySection:   string;
   /** Label for the daily sacred text card */
-  sacredTextLabel:  string;
+  sacredTextLabel:     string;
+  sacredTextLabel_hi?: string;
+  sacredTextLabel_pa?: string;
   /** Icon shown on the daily sacred text card */
   sacredTextIcon:   string;
   /** How to share the daily text: e.g. "Aaj Ka Shloka" / "Aaj Ka Shabad" */
-  sacredTextShareLabel: string;
+  sacredTextShareLabel:     string;
+  sacredTextShareLabel_hi?: string;
+  sacredTextShareLabel_pa?: string;
   /** Calendar system used by this tradition */
   calendarType:     'vedic' | 'nanakshahi' | 'buddhist_lunar' | 'jain' | 'gregorian';
   /** Bottom-nav Pathshala tab label */
@@ -249,8 +253,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     accentLight:          '#fff4e6',
     librarySection:       'gita',
     sacredTextLabel:      "Aaj Ka Shloka",
+    sacredTextLabel_hi:   'आज का श्लोक',
+    sacredTextLabel_pa:   'ਅੱਜ ਦਾ ਸ਼ਲੋਕ',
     sacredTextIcon:       '🕉️',
-    sacredTextShareLabel: 'Aaj Ka Shloka',
+    sacredTextShareLabel:     'Aaj Ka Shloka',
+    sacredTextShareLabel_hi:  'आज का श्लोक',
+    sacredTextShareLabel_pa:  'ਅੱਜ ਦਾ ਸ਼ਲੋਕ',
     calendarType:         'vedic',
     navLibraryLabel:      'Scriptures',
     aiGreeting:           'Hari Om 🕉️ I am Dharma Mitra — your guide on the Sanatana path. Ask me anything about dharma, scripture, your sampradaya, or spiritual practice.',
@@ -299,8 +307,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     accentLight:          '#eef5ff',
     librarySection:       'gurbani',
     sacredTextLabel:      "Aaj Da Shalok",
+    sacredTextLabel_hi:   'आज का शलोक',
+    sacredTextLabel_pa:   'ਅੱਜ ਦਾ ਸ਼ਲੋਕ',
     sacredTextIcon:       '☬',
-    sacredTextShareLabel: 'Aaj Da Shalok',
+    sacredTextShareLabel:     'Aaj Da Shalok',
+    sacredTextShareLabel_hi:  'आज का शलोक',
+    sacredTextShareLabel_pa:  'ਅੱਜ ਦਾ ਸ਼ਲੋਕ',
     calendarType:         'nanakshahi',
     navLibraryLabel:      'Bani',
     aiGreeting:           'Sat Sri Akal ☬ I am Dharma Mitra — here to explore the Guru\'s wisdom with you. Ask me about Gurbani, Sikh history, Gurmat, or your spiritual journey.',
@@ -349,8 +361,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     accentLight:          '#fdf5e8',
     librarySection:       'dhammapada',
     sacredTextLabel:      "Aaj Ka Dhamma Verse",
+    sacredTextLabel_hi:   'आज का धम्म वचन',
+    sacredTextLabel_pa:   'ਅੱਜ ਦਾ ਧੰਮ ਵਚਨ',
     sacredTextIcon:       '☸️',
-    sacredTextShareLabel: 'Dhamma Verse',
+    sacredTextShareLabel:     'Dhamma Verse',
+    sacredTextShareLabel_hi:  'धम्म वचन',
+    sacredTextShareLabel_pa:  'ਧੰਮ ਵਚਨ',
     calendarType:         'buddhist_lunar',
     navLibraryLabel:      'Dhamma',
     aiGreeting:           'Namo Buddhaya ☸️ I am Dharma Mitra — walking the Eightfold Path with you. Ask me about the Dhamma, meditation, mindfulness, or the Buddha\'s teachings.',
@@ -361,7 +377,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     japaPracticeType:     'buddhist_mantra',
     japaRecommendedMantras: ['om_mani'],
     japaRecommendedMalas: ['crystal', 'sandalwood'],
-    nityaKarmaTitle:      'Morning Practice',
+    nityaKarmaTitle:      'Morning Sadhana',
     pathshalaVocabulary:  'Dhamma',
     mapPinEmoji:          '☸️',
     bhaktiGreeting:       'Namo Buddhaya',
@@ -399,8 +415,12 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     accentLight:          '#fffbf0',
     librarySection:       'jain',
     sacredTextLabel:      "Aaj Ka Sutra",
+    sacredTextLabel_hi:   'आज का सूत्र',
+    sacredTextLabel_pa:   'ਅੱਜ ਦਾ ਸੂਤਰ',
     sacredTextIcon:       '🤲',
-    sacredTextShareLabel: 'Aaj Ka Sutra',
+    sacredTextShareLabel:     'Aaj Ka Sutra',
+    sacredTextShareLabel_hi:  'आज का सूत्र',
+    sacredTextShareLabel_pa:  'ਅੱਜ ਦਾ ਸੂਤਰ',
     calendarType:         'jain',
     navLibraryLabel:      'Agamas',
     aiGreeting:           'Jai Jinendra 🤲 I am Dharma Mitra — exploring the Jain path of Ahimsa with you. Ask me about the Agamas, Mahavir\'s teachings, Anekantavada, or Jain philosophy.',
@@ -461,7 +481,7 @@ export const TRADITION_CONFIG: Record<TraditionKey, TraditionMeta> = {
     japaPracticeType:     'daily_japa',
     japaRecommendedMantras: ['gayatri', 'waheguru', 'om_mani', 'namokar'],
     japaRecommendedMalas: ['sandalwood', 'crystal'],
-    nityaKarmaTitle:      'Daily Practice',
+    nityaKarmaTitle:      'Morning Dinacharya',
     pathshalaVocabulary:  'Wisdom',
     mapPinEmoji:          '✨',
     bhaktiGreeting:       'Pranam',

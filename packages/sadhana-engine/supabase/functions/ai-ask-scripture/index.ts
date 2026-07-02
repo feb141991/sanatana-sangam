@@ -1,6 +1,6 @@
 // ============================================================
 // Edge Function: ai-ask-scripture
-// Semantic search across scripture_chunks + Gemini explanation
+// Semantic search across scripture_chunks + Sarvam explanation
 //
 // POST body:
 //   question       string   — user's question
@@ -8,12 +8,12 @@
 //   match_count    number   — verses to retrieve (default 5)
 //   match_threshold number  — similarity cutoff (default 0.3)
 //   text_ids       string[] — filter by text e.g. ['gita']
-//   with_explanation bool   — call Gemini (default true)
+//   with_explanation bool   — call Sarvam (default true)
 //
 // Deploy:
 //   supabase functions deploy ai-ask-scripture
 // Secrets needed:
-//   supabase secrets set GEMINI_API_KEY=AIza...
+//   supabase secrets set SARVAM_API_KEY=AIza...
 // ============================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -52,7 +52,7 @@ serve(async (req: Request) => {
 
     // ── Step 1: Generate query embedding using the same LSA approach ──
     // We use a simple keyword extraction + stored embedding lookup.
-    // For production: replace with Gemini embedding API.
+    // For production: use Sarvam or a dedicated embedding model.
     // For now: call the match_scriptures_text function (keyword-based fallback).
 
     const { data: verses, error: searchError } = await supabase.rpc(
@@ -95,7 +95,7 @@ serve(async (req: Request) => {
       profile = p;
     }
 
-    // ── Step 3: Gemini explanation ──
+    // ── Step 3: Sarvam explanation ──
     let answer = '';
     if (with_explanation && matchedVerses.length > 0) {
       answer = await generateExplanation(question, matchedVerses, profile);
@@ -139,14 +139,14 @@ serve(async (req: Request) => {
   }
 });
 
-// ── Gemini explanation generator ──
+// ── Sarvam explanation generator ──
 
 async function generateExplanation(
   question: string,
   verses: Array<{ text_id: string; chapter: number; verse: number; translation: string; transliteration: string }>,
   profile: Record<string, unknown> | null
 ): Promise<string> {
-  if (!geminiKey) return verses.map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}: ${v.translation}`).join('\n\n');
+  if (!sarvamKey) return verses.map(v => `${v.text_id.toUpperCase()} ${v.chapter}.${v.verse}: ${v.translation}`).join('\n\n');
 
   const tradition = profile?.tradition ?? 'general';
   const depth = profile?.content_depth ?? 'intermediate';
@@ -176,7 +176,7 @@ Write in a warm, scholarly tone — like a trusted guru speaking directly to the
 
       const text = await generateText(prompt, { temperature: 0.4, maxTokens: 400 });
   if (!resp.ok) {
-    console.error('Gemini error:', await resp.text());
+    console.error('Sarvam error:', await resp.text());
     return verses[0]?.translation ?? '';
   }
 

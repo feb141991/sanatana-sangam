@@ -8,6 +8,7 @@ import { activatePro } from '@/lib/premium';
 import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { TranslationKey } from '@/lib/i18n/translations';
+import toast from 'react-hot-toast';
 
 // ─── Individual luxury benefit cards ──────────────────────────────────────────
 const LUXURY_CARDS = [
@@ -15,7 +16,7 @@ const LUXURY_CARDS = [
     icon: 'sunrise' as SacredIconName,
     labelKey: 'premiumDeeperRituals' as TranslationKey,
     taglineKey: 'premiumDeeperRitualsTagline' as TranslationKey,
-    surface: 'linear-gradient(160deg, rgba(197, 160, 89,0.14) 0%, rgba(197, 160, 89,0.05) 100%)',
+    surface: 'linear-gradient(160deg, rgba(197,160,89,0.12) 0%, rgba(197, 160, 89,0.05) 100%)',
     border: 'rgba(197, 160, 89,0.22)',
     accent: '#C5A059',
     glow: 'rgba(197, 160, 89,0.18)',
@@ -29,7 +30,7 @@ const LUXURY_CARDS = [
     icon: 'compass' as SacredIconName,
     labelKey: 'premiumPersonalisedGuidance' as TranslationKey,
     taglineKey: 'premiumPersonalisedGuidanceTagline' as TranslationKey,
-    surface: 'linear-gradient(160deg, rgba(100,140,220,0.14) 0%, rgba(80,120,200,0.05) 100%)',
+    surface: 'linear-gradient(160deg, rgba(80,110,200,0.10) 0%, rgba(80,120,200,0.05) 100%)',
     border: 'rgba(100,140,220,0.22)',
     accent: '#6a9cd4',
     glow: 'rgba(100,140,220,0.18)',
@@ -43,7 +44,7 @@ const LUXURY_CARDS = [
     icon: 'heart' as SacredIconName,
     labelKey: 'premiumPracticeDepth' as TranslationKey,
     taglineKey: 'premiumPracticeDepthTagline' as TranslationKey,
-    surface: 'linear-gradient(160deg, rgba(160,100,220,0.14) 0%, rgba(140,80,200,0.05) 100%)',
+    surface: 'linear-gradient(160deg, rgba(140,80,200,0.10) 0%, rgba(140,80,200,0.05) 100%)',
     border: 'rgba(160,100,220,0.22)',
     accent: '#b07ad4',
     glow: 'rgba(160,100,220,0.18)',
@@ -57,7 +58,7 @@ const LUXURY_CARDS = [
     icon: 'kul' as SacredIconName,
     labelKey: 'premiumKulSanskar' as TranslationKey,
     taglineKey: 'premiumKulSanskarTagline' as TranslationKey,
-    surface: 'linear-gradient(160deg, rgba(80,160,100,0.14) 0%, rgba(60,140,80,0.05) 100%)',
+    surface: 'linear-gradient(160deg, rgba(60,140,80,0.10) 0%, rgba(60,140,80,0.05) 100%)',
     border: 'rgba(80,160,100,0.22)',
     accent: '#6ab87a',
     glow: 'rgba(80,160,100,0.18)',
@@ -72,7 +73,7 @@ const LUXURY_CARDS = [
     labelKey: 'premiumComingSoon' as TranslationKey,
     taglineKey: 'premiumComingSoonTagline' as TranslationKey,
     surface: 'linear-gradient(160deg, rgba(197, 160, 89,0.07) 0%, rgba(197, 160, 89,0.03) 100%)',
-    border: 'rgba(197, 160, 89,0.12)',
+    border: 'rgba(197, 160, 89,0.18)',
     accent: 'rgba(197, 160, 89,0.5)',
     glow: 'rgba(197, 160, 89,0.08)',
     features: [
@@ -91,14 +92,14 @@ function SacredHero({ prefersReducedMotion }: { prefersReducedMotion: boolean | 
       {/* Outer breathing ring */}
       <motion.div
         className="absolute rounded-full"
-        style={{ width: 110, height: 110, border: '1px solid rgba(197, 160, 89,0.16)' }}
+        style={{ width: 110, height: 110, border: '1px solid rgba(197,160,89,0.35)' }}
         animate={prefersReducedMotion ? {} : { scale: [1, 1.08, 1], opacity: [0.5, 0.9, 0.5] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
       {/* Mid ring */}
       <motion.div
         className="absolute rounded-full"
-        style={{ width: 78, height: 78, border: '1px solid rgba(197, 160, 89,0.24)' }}
+        style={{ width: 78, height: 78, border: '1px solid rgba(197,160,89,0.50)' }}
         animate={prefersReducedMotion ? {} : { scale: [1, 1.12, 1], opacity: [0.4, 0.75, 0.4] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
       />
@@ -135,15 +136,18 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
   const prefersReducedMotion = useReducedMotion();
   const { t } = useLanguage();
 
-  function handleActivate() {
+  async function handleActivate() {
     if (!accepted) return;
     setActivating(true);
-    setTimeout(() => {
-      activatePro();
+    try {
+      await activatePro();
       setActivating(false);
       onActivated?.();
       onClose();
-    }, 700);
+    } catch (error) {
+      setActivating(false);
+      toast.error('Failed to activate Pro. Please try again.');
+    }
   }
 
   if (typeof window === 'undefined') return null;
@@ -168,8 +172,8 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
             className="fixed inset-x-0 bottom-0 rounded-t-[2.2rem] overflow-hidden flex flex-col"
             style={{
               zIndex: 9999,
-              background: 'linear-gradient(175deg, #180c18 0%, #0e0808 45%, #120c06 100%)',
-              border: '1px solid rgba(197, 160, 89, 0.16)',
+              background: 'linear-gradient(175deg, #fdf7ed 0%, #faf3e5 50%, #f5ecd8 100%)',
+              border: '1px solid rgba(197,160,89,0.25)',
               borderBottom: 'none',
               maxHeight: '94dvh',
               paddingBottom: 'env(safe-area-inset-bottom, 20px)',
@@ -181,12 +185,12 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
           >
             {/* Ambient top glow */}
             <div className="absolute top-0 inset-x-0 h-40 pointer-events-none" style={{
-              background: 'radial-gradient(ellipse at 50% 0%, rgba(197, 160, 89,0.10) 0%, transparent 70%)',
+              background: 'radial-gradient(ellipse at 50% 0%, rgba(197,160,89,0.18) 0%, transparent 70%)',
             }} />
 
             {/* Drag handle */}
             <div className="flex justify-center pt-3.5 pb-0 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197, 160, 89,0.25)' }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: 'rgba(197,160,89,0.45)' }} />
             </div>
 
             {/* Close */}
@@ -194,9 +198,9 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
               <button
                 onClick={onClose}
                 className="w-11 h-11 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+                style={{ background: 'rgba(197,160,89,0.10)', border: '1px solid rgba(197,160,89,0.20)' }}
               >
-                <X size={14} style={{ color: 'rgba(197, 160, 89,0.65)' }} />
+                <X size={14} style={{ color: 'rgba(140,100,40,0.8)' }} />
               </button>
             </div>
 
@@ -229,7 +233,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                     fontWeight: 600,
                     lineHeight: 1.15,
                     letterSpacing: '-0.02em',
-                    color: '#f0e2c0',
+                    color: '#3d2b0a',
                     marginTop: '0.5rem',
                     whiteSpace: 'pre-line'
                   }}
@@ -243,7 +247,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   animate={prefersReducedMotion ? undefined : { opacity: 1 }}
                   transition={{ delay: 0.4 }}
                   className="text-sm leading-relaxed mt-3 max-w-[280px] mx-auto"
-                  style={{ color: 'rgba(220,190,130,0.48)' }}
+                  style={{ color: 'rgba(100,75,30,0.65)' }}
                 >
                   {t('premiumSubcopy')}
                 </motion.p>
@@ -255,9 +259,9 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                   transition={{ delay: 0.5, type: 'spring', stiffness: 400, damping: 24 }}
                   className="inline-flex items-center gap-1.5 mt-4 px-4 py-1.5 rounded-full text-xs font-semibold"
                   style={{
-                    background: 'rgba(197, 160, 89, 0.12)',
+                    background: 'rgba(197, 160, 89, 0.18)',
                     border: '1px solid rgba(197, 160, 89, 0.22)',
-                    color: '#d4a85a',
+                    color: '#8a6420',
                   }}
                 >
                   {t('premiumFreeBadge')}
@@ -265,7 +269,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
               </div>
 
               {/* ── Divider ── */}
-              <div className="mx-5 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(197, 160, 89,0.16), transparent)' }} />
+              <div className="mx-5 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(197,160,89,0.30), transparent)' }} />
 
               {/* ── Luxury benefit cards ── */}
               <div className="px-5 py-5 space-y-3">
@@ -307,7 +311,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                             fontFamily: 'var(--font-serif)',
                             fontSize: '1.05rem',
                             fontWeight: 600,
-                            color: card.dimmed ? 'rgba(220,195,145,0.55)' : '#ede0c4',
+                            color: card.dimmed ? 'rgba(60,40,10,0.40)' : '#2d1f05',
                             lineHeight: 1.25,
                             marginTop: '2px',
                           }}
@@ -330,7 +334,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                           >
                             <Check size={9} style={{ color: card.accent }} strokeWidth={2.8} />
                           </div>
-                          <p className="text-[12px] leading-snug" style={{ color: card.dimmed ? 'rgba(200,175,120,0.45)' : 'rgba(220,195,145,0.72)' }}>
+                          <p className="text-[12px] leading-snug" style={{ color: card.dimmed ? 'rgba(60,40,10,0.40)' : 'rgba(60,40,10,0.75)' }}>
                             {t(f.textKey)}
                           </p>
                         </div>
@@ -358,7 +362,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
             {/* ── Sticky footer — accept + activate ── */}
             <div
               className="flex-shrink-0 px-5 pt-4 pb-3 space-y-3"
-              style={{ borderTop: '1px solid rgba(197, 160, 89, 0.10)', background: 'rgba(14, 10, 8, 0.92)', backdropFilter: 'blur(12px)' }}
+              style={{ borderTop: '1px solid rgba(197,160,89,0.20)', background: 'rgba(253,247,237,0.95)', backdropFilter: 'blur(12px)' }}
             >
               {/* Agreement */}
               <button
@@ -381,7 +385,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
                     )}
                   </AnimatePresence>
                 </motion.div>
-                <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(200,170,120,0.55)' }}>
+                <p className="text-[11px] leading-relaxed" style={{ color: 'rgba(100,70,20,0.65)' }}>
                   {t('premiumAgreementText')}
                 </p>
               </button>
@@ -418,7 +422,7 @@ export default function PremiumActivateModal({ open, onClose, onActivated }: Pro
               </motion.button>
 
               {/* Trust line */}
-              <p className="text-center text-[10px]" style={{ color: 'rgba(180,150,90,0.35)' }}>
+              <p className="text-center text-[10px]" style={{ color: 'rgba(120,90,30,0.45)' }}>
                 {t('premiumTrustLine')}
               </p>
             </div>

@@ -4,13 +4,23 @@ import BrandMark from '@/components/BrandMark';
 export default async function JoinPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ ref?: string }>;
+  searchParams?: Promise<{ ref?: string; utm_source?: string; source?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const ref = typeof resolvedSearchParams?.ref === 'string'
     ? resolvedSearchParams.ref.trim().toUpperCase()
     : '';
-  const signupHref = ref ? `/signup?ref=${encodeURIComponent(ref)}` : '/signup';
+  const utmSource = resolvedSearchParams?.utm_source?.trim() 
+    ?? resolvedSearchParams?.source?.trim() 
+    ?? '';
+
+  let signupHref = '/signup';
+  const queryParts: string[] = [];
+  if (ref) queryParts.push(`ref=${encodeURIComponent(ref)}`);
+  if (utmSource) queryParts.push(`utm_source=${encodeURIComponent(utmSource)}`);
+  if (queryParts.length > 0) {
+    signupHref += `?${queryParts.join('&')}`;
+  }
 
   return (
     <main className="min-h-screen px-4 py-12 flex items-center justify-center">

@@ -4,9 +4,8 @@ import { CalendarStrategy } from './CalendarStrategy';
 export class VedicStrategy implements CalendarStrategy {
   name = 'Vedic Panchang';
 
-  calculate(date: Date, lat: number, lon: number): PanchangData {
-    // For Vedic, we use our existing astronomy-backed calculation engine.
-    return calculatePanchang(date, lat, lon);
+  calculate(date: Date, lat: number, lon: number, timezone?: string): PanchangData {
+    return calculatePanchang(date, lat, lon, timezone);
   }
 
   getLabels() {

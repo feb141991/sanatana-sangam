@@ -4,12 +4,10 @@ import { CalendarStrategy } from './CalendarStrategy';
 export class BuddhistStrategy implements CalendarStrategy {
   name = 'Buddhist Lunar Calendar';
 
-  calculate(date: Date, lat: number, lon: number): PanchangData {
-    const p = calculatePanchang(date, lat, lon);
-    
+  calculate(date: Date, lat: number, lon: number, timezone?: string): PanchangData {
+    const p = calculatePanchang(date, lat, lon, timezone);
     return {
       ...p,
-      // Buddhist Era (BE) starts 544 years before the Gregorian calendar
       samvatYear: date.getFullYear() + 544,
       samvatName: 'B.E.',
     };

@@ -37,9 +37,8 @@ interface Report {
 export default function ModerationClient({ initialReports }: { initialReports: Report[] }) {
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [filter, setFilter] = useState<'all' | 'pending' | 'resolved'>('all');
-  const supabase = createClient();
-
   const handleAction = async (report: Report, action: 'resolve' | 'dismiss' | 'delete' | 'ban') => {
+    const supabase = createClient();
     try {
       if (action === 'delete') {
         let table = '';

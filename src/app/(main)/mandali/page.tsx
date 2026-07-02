@@ -1,11 +1,17 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
+import type { ThreadWithAuthor } from '@/types/database';
 import MandaliClient from './MandaliClient';
+
+/** Thread row as selected below — reactions come embedded and are
+    aggregated into counts before reaching the client. */
+type ThreadRowWithReactions = ThreadWithAuthor & {
+  thread_reactions?: { reaction_type: string }[] | null;
+};
 
 // If the local Mandali has fewer than this many members, blend in Sangam-wide posts
 const BLEND_THRESHOLD = 5;
-
 
 export default async function MandaliPage() {
   const supabase = await createServerSupabaseClient();
@@ -14,81 +20,92 @@ export default async function MandaliPage() {
   // Mandali requires auth — guests redirected to signup
   if (!user) redirect('/signup');
 
-  // Fetch profile with mandali + neighbourhood fields + tradition (for Sabha default tab)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, mandalis(*), tradition')
-    .eq('id', user.id)
-    .single();
+  // ── Wave 1: profile + safety state in PARALLEL (was sequential) ──────────
+  const [{ data: profile }, safetyState] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('*, mandalis(*), tradition')
+      .eq('id', user.id)
+      .single(),
+    getUserSafetyState(supabase, user.id),
+  ]);
 
   const mandaliId = profile?.mandali_id;
-  const safetyState = await getUserSafetyState(supabase, user.id);
 
-  // Fetch mandali posts
-  let posts: any[] = [];
-  let comments: any[] = [];
-  let rsvps: any[] = [];
-  if (mandaliId) {
-    const { data } = await supabase
-      .from('posts')
-      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
-      .eq('mandali_id', mandaliId)
-      .order('created_at', { ascending: false })
-      .limit(30);
-    posts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
+  // ── Wave 2: all content in PARALLEL — no more sequential waterfalls ──────
+  // Posts, members, and threads all start at the same time.
+  const [postsResult, membersResult, threadsResult] = await Promise.all([
+    mandaliId
+      ? supabase
+          .from('posts')
+          .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
+          .eq('mandali_id', mandaliId)
+          .order('created_at', { ascending: false })
+          .limit(30)
+      : Promise.resolve({ data: [] }),
+    mandaliId
+      ? supabase
+          .from('profiles')
+          .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, country, seva_score')
+          .eq('mandali_id', mandaliId)
+          .order('seva_score', { ascending: false })
+          .limit(50)
+      : Promise.resolve({ data: [] }),
+    supabase
+      .from('forum_threads')
+      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id), thread_reactions(reaction_type)')
+      .order('is_pinned', { ascending: false })
+      .order('updated_at', { ascending: false })
+      .limit(60),
+  ]);
 
-    const postIds = posts.map((post) => post.id);
-    if (postIds.length > 0) {
-      const [{ data: commentData }, { data: rsvpData }] = await Promise.all([
-        supabase
+  const rawPosts  = postsResult.data  ?? [];
+  const rawMembers = membersResult.data ?? [];
+  const threadsRaw = threadsResult.data ?? [];
+
+  const posts   = filterAuthoredItems(rawPosts,   'mandali_post', safetyState);
+  const members = filterProfileRows(rawMembers, safetyState);
+
+  // ── Wave 3: comments + rsvps + blended posts — all in PARALLEL ───────────
+  const postIds = posts.map((p) => p.id);
+  const needsBlend = mandaliId && members.length < BLEND_THRESHOLD;
+
+  const [commentsResult, rsvpsResult, blendedResult] = await Promise.all([
+    postIds.length > 0
+      ? supabase
           .from('post_comments')
           .select('*, profiles!post_comments_author_id_fkey(full_name, username, avatar_url)')
           .in('post_id', postIds)
-          .order('created_at', { ascending: true }),
-        supabase
-          .from('event_rsvps')
-          .select('*')
-          .in('post_id', postIds),
-      ]);
+          .order('created_at', { ascending: true })
+      : Promise.resolve({ data: [] }),
+    postIds.length > 0
+      ? supabase.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIds)
+      : Promise.resolve({ data: [] }),
+    needsBlend
+      ? supabase
+          .from('posts')
+          .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
+          .neq('mandali_id', mandaliId)
+          .order('created_at', { ascending: false })
+          .limit(15)
+      : Promise.resolve({ data: [] }),
+  ]);
 
-      comments = commentData ?? [];
-      rsvps = rsvpData ?? [];
-    }
-  }
+  const comments    = commentsResult.data ?? [];
+  const rsvps       = rsvpsResult.data    ?? [];
+  const blendedPosts = filterAuthoredItems(blendedResult.data ?? [], 'mandali_post', safetyState);
 
-  // Fetch real mandali members
-  let members: any[] = [];
-  if (mandaliId) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, full_name, username, avatar_url, sampradaya, ishta_devata, spiritual_level, city, seva_score')
-      .eq('mandali_id', mandaliId)
-      .order('seva_score', { ascending: false })
-      .limit(50);
-    members = filterProfileRows(data ?? [], safetyState);
-  }
+  // Shape threads — aggregate reactions
+  const threads = filterAuthoredItems(threadsRaw, 'thread', safetyState).map((t: ThreadRowWithReactions) => {
+    const reactions: Record<string, number> = { pranam: 0, bhakti: 0, prakas: 0 };
+    t.thread_reactions?.forEach((r) => {
+      if (reactions[r.reaction_type] !== undefined) reactions[r.reaction_type]++;
+    });
+    const { thread_reactions, ...rest } = t;
+    return { ...rest, reactions };
+  });
 
-  // "Don't feel alone" — blend in posts from across the Sangam when local Mandali is small
-  let blendedPosts: any[] = [];
-  if (mandaliId && members.length < BLEND_THRESHOLD) {
-    const { data } = await supabase
-      .from('posts')
-      .select('*, profiles!posts_author_id_fkey(full_name, username, avatar_url, sampradaya, spiritual_level)')
-      .neq('mandali_id', mandaliId)   // other Mandalis only
-      .order('created_at', { ascending: false })
-      .limit(15);
-    blendedPosts = filterAuthoredItems(data ?? [], 'mandali_post', safetyState);
-  }
-
-  // Fetch forum threads for the Sabha scope
-  const { data: threadsRaw } = await supabase
-    .from('forum_threads')
-    .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya)')
-    .order('is_pinned', { ascending: false })
-    .order('updated_at', { ascending: false })
-    .limit(60);
-  const threads = filterAuthoredItems(threadsRaw ?? [], 'thread', safetyState);
-  const userTradition: string | null = (profile as any)?.tradition ?? null;
+  const userTradition: string | null = profile?.tradition ?? null;
 
   return (
     <MandaliClient

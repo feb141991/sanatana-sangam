@@ -1,0 +1,2 @@
+{"query": "Generate a Dharam Veer card for Shivaji", "expected_documents": ["dharam_veer_shivaji"]}
+{"query": "Draft a Dharam Veer card about Guru Gobind Singh Ji", "expected_documents": ["dharam_veer_guru_gobind_singh"]}

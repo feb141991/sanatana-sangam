@@ -98,7 +98,7 @@ export async function GET(request: Request) {
         body:             `${prompt} Let scripture meet your mood.`,
         emoji:            '🌙',
         type:             'general' as const,
-        action_url:       '/discover',
+        action_url:       '/discover/mood',
         notification_key: `mood-evening:${localDate}`,
         local_date:       localDate,
         sent_timezone:    tz,
@@ -122,7 +122,7 @@ export async function GET(request: Request) {
     }
 
     const baseUrl    = new URL(request.url).origin;
-    const actionUrl  = new URL('/discover', baseUrl).toString();
+    const actionUrl  = new URL('/discover/mood', baseUrl).toString();
     const pushResult = await sendOneSignalPush({
       userIds: insertedIds,
       title:   'Evening check-in 🌙',

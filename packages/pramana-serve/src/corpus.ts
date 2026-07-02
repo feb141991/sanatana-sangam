@@ -15,7 +15,8 @@ export type PramanaCorpusId =
   | 'shaiva_kashmir'
   | 'jain_kalpa_sutra'
   | 'buddhist_dhamma'
-  | 'jain_dharma';
+  | 'jain_dharma'
+  | 'valmiki_ramayana';
 
 export interface PramanaCorpusMetadata {
   readonly id: PramanaCorpusId;
@@ -162,6 +163,14 @@ export const PRAMANA_CORPUS_REGISTRY: Record<PramanaCorpusId, PramanaCorpusMetad
     tradition: 'Jainism',
     primaryLanguage: 'prakrit',
     description: 'Canonical texts of Jainism including Agamas.'
+  },
+  valmiki_ramayana: {
+    id: 'valmiki_ramayana',
+    name: 'Valmiki Ramayana',
+    type: 'narrative',
+    tradition: 'Sanatana Dharma',
+    primaryLanguage: 'sa',
+    description: 'Source-audit pending explicit-only starter slice for the ancient epic detailing the life of Shri Rama.'
   }
 };
 
@@ -188,6 +197,9 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     if (corpusFilter === 'bhakti_katha') return 'bhakti_katha';
     if (corpusFilter === 'pathshala_upanishads') return 'pathshala_upanishads';
     if (corpusFilter === 'pathshala_gita') return 'pathshala_gita';
+    if (corpusFilter === 'valmiki_ramayana' || text.includes('valmiki ramayana') || text.includes('ramayana') || text.includes('bala kanda') || source.includes('valmiki ramayana') || source.includes('ramayana') || source.includes('bala kanda')) {
+      return 'valmiki_ramayana';
+    }
 
     // 2. Fallback routing rules for approved active live corpora (Gita and Bhakti Katha only)
     if (
@@ -207,4 +219,3 @@ export class SimpleCorpusSelector implements PramanaCorpusSelector {
     return 'pathshala_gita';
   }
 }
-

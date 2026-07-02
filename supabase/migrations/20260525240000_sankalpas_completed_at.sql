@@ -1,0 +1,1 @@
+ALTER TABLE public.sankalpas ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ;

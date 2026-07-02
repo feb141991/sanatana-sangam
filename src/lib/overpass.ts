@@ -1,11 +1,19 @@
-// ─── Overpass API — Free sacred places data from OpenStreetMap ─────────────
-// Covers Hindu mandirs, Sikh gurudwaras, Buddhist viharas, Jain temples
-// All endpoints and timeouts are centralised in @/lib/config.ts
+// ─── Sacred places data from OpenStreetMap via server-side proxy ─────────────
+// fetchNearbyTemples and geocodeCity now call /api/tirtha/* instead of hitting
+// Overpass / Nominatim directly from the browser. Benefits:
+//   • Vercel's 30 s function timeout (vs 15 s client fetch abort)
+//   • 6-hour unstable_cache per location bucket — repeated searches are instant
+//   • 5 Overpass mirrors tried server-side; browser never sees CORS errors
+//   • Geoapify geocoding primary, Nominatim as fallback
 
 import { API } from '@/lib/config';
 
 export interface Temple {
   id:          number;
+  /** Stable string slug for curated temples (e.g. 'uk-neasden-baps').
+   *  When present, tirthaPlaceId() uses this instead of the numeric id
+   *  so curated temples always have a unique, collision-free place_id. */
+  slug?:       string;
   lat:         number;
   lon:         number;
   name:        string;
@@ -16,6 +24,8 @@ export interface Temple {
   phone?:      string;
   opening?:    string;
   sampradaya?: string;
+  /** True for hand-verified diaspora temples from our curated directory */
+  verified?:   boolean;
 }
 
 // ── Tradition config ────────────────────────────────────────────────────────
@@ -98,83 +108,80 @@ export async function fetchNearbyTemples(
   lon: number,
   radiusMetres: number = API.OVERPASS.DEFAULT_RADIUS_M
 ): Promise<Temple[]> {
-  // Fetch all Sanatan traditions in a single query
-  const query = `
-    [out:json][timeout:${API.OVERPASS.QUERY_TIMEOUT_S}];
-    (
-      node["amenity"="place_of_worship"]["religion"="hindu"](around:${radiusMetres},${lat},${lon});
-      way["amenity"="place_of_worship"]["religion"="hindu"](around:${radiusMetres},${lat},${lon});
-      node["amenity"="place_of_worship"]["religion"="sikh"](around:${radiusMetres},${lat},${lon});
-      way["amenity"="place_of_worship"]["religion"="sikh"](around:${radiusMetres},${lat},${lon});
-      node["amenity"="place_of_worship"]["religion"="buddhist"](around:${radiusMetres},${lat},${lon});
-      way["amenity"="place_of_worship"]["religion"="buddhist"](around:${radiusMetres},${lat},${lon});
-      node["amenity"="place_of_worship"]["religion"="jain"](around:${radiusMetres},${lat},${lon});
-      way["amenity"="place_of_worship"]["religion"="jain"](around:${radiusMetres},${lat},${lon});
-      relation["amenity"="place_of_worship"]["religion"~"hindu|sikh|buddhist|jain"](around:${radiusMetres},${lat},${lon});
-    );
-    out center tags;
-  `;
+  const url = `/api/tirtha/places?lat=${lat}&lon=${lon}&radius=${radiusMetres}`;
+  const res = await fetchWithTimeout(url, {}, 25_000);
+  if (!res.ok) throw new Error(`Tirtha places API: HTTP ${res.status}`);
 
-  const options: RequestInit = {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body:    `data=${encodeURIComponent(query)}`,
-  };
+  const json = await res.json() as { elements?: any[]; error?: string };
+  if (!json.elements?.length) return [];
 
-  let lastError: Error = new Error('All Overpass endpoints failed');
-
-  // Try each mirror in sequence until one works
-  for (const endpoint of API.OVERPASS.MIRRORS) {
-    try {
-      const res = await fetchWithTimeout(endpoint, options, API.OVERPASS.FETCH_TIMEOUT_MS);
-      if (!res.ok) {
-        lastError = new Error(`HTTP ${res.status} from ${endpoint}`);
-        continue;
-      }
-      const json = await res.json();
-
-      return (json.elements as any[]).map((el) => {
-        const tradition = inferTradition(el.tags ?? {});
-        const defaultName = TRADITION_DEFAULT_NAMES[tradition];
-
-        return {
-          id:         el.id,
-          lat:        el.lat ?? el.center?.lat ?? 0,
-          lon:        el.lon ?? el.center?.lon ?? 0,
-          tradition,
-          name:       el.tags?.name || el.tags?.['name:en'] || el.tags?.['name:hi'] ||
-                      el.tags?.['name:pa'] || el.tags?.['name:sa'] || defaultName,
-          deity:      el.tags?.['hindu:deity'] || el.tags?.deity,
-          address:    [el.tags?.['addr:housenumber'], el.tags?.['addr:street'], el.tags?.['addr:city']]
-                        .filter(Boolean).join(', ') || undefined,
-          website:    el.tags?.website,
-          phone:      el.tags?.phone,
-          opening:    el.tags?.opening_hours,
-          sampradaya: el.tags?.denomination,
-        };
-      }).filter((t) => t.lat !== 0);
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      continue; // AbortError = timed out — try next mirror
-    }
-  }
-
-  throw lastError;
+  return json.elements.map((el: any) => {
+    const tradition = inferTradition(el.tags ?? {});
+    const defaultName = TRADITION_DEFAULT_NAMES[tradition];
+    return {
+      id:         el.id,
+      lat:        el.lat ?? el.center?.lat ?? 0,
+      lon:        el.lon ?? el.center?.lon ?? 0,
+      tradition,
+      name:       el.tags?.name || el.tags?.['name:en'] || el.tags?.['name:hi'] ||
+                  el.tags?.['name:pa'] || el.tags?.['name:sa'] || defaultName,
+      deity:      el.tags?.['hindu:deity'] || el.tags?.deity,
+      address:    [el.tags?.['addr:housenumber'], el.tags?.['addr:street'], el.tags?.['addr:city']]
+                    .filter(Boolean).join(', ') || undefined,
+      website:    el.tags?.website,
+      phone:      el.tags?.phone,
+      opening:    el.tags?.opening_hours,
+      sampradaya: el.tags?.denomination,
+    };
+  }).filter((t: Temple) => t.lat !== 0);
 }
 
-// Geocode a city name to lat/lon using Nominatim
+/**
+ * Merge curated verified temples with OSM results.
+ *
+ * Rules:
+ *  1. Curated temples always appear first.
+ *  2. If an OSM result is within DEDUP_RADIUS_KM of a curated temple,
+ *     it is considered a duplicate and dropped (the curated record is richer).
+ *  3. Remaining OSM results are appended after curated ones.
+ */
+const DEDUP_RADIUS_KM = 0.25; // 250 m
+
+function _haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+export function mergeCuratedAndOsm(
+  curated: Temple[],
+  osm: Temple[]
+): Temple[] {
+  // Mark OSM entries that are too close to a curated entry
+  const filtered = osm.filter((osmT) =>
+    !curated.some(
+      (curT) => _haversineKm(curT.lat, curT.lon, osmT.lat, osmT.lon) < DEDUP_RADIUS_KM
+    )
+  );
+  return [...curated, ...filtered];
+}
+
+// Geocode a city name → lat/lon via server-side proxy (Geoapify → Nominatim fallback)
 export async function geocodeCity(city: string, country: string): Promise<{ lat: number; lon: number } | null> {
   const q = country ? `${city}, ${country}` : city;
   try {
     const res = await fetchWithTimeout(
-      `${API.NOMINATIM.SEARCH}?q=${encodeURIComponent(q)}&format=json&limit=1`,
-      { headers: { 'User-Agent': API.NOMINATIM.USER_AGENT, 'Accept-Language': 'en' } },
-      API.NOMINATIM.TIMEOUT_MS
+      `/api/tirtha/geocode?q=${encodeURIComponent(q)}`,
+      {},
+      12_000
     );
     if (!res.ok) return null;
-    const data = await res.json();
-    if (!data.length) return null;
-    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+    return await res.json() as { lat: number; lon: number };
   } catch {
     return null;
   }

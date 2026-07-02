@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shoonaya — Find your infinite.</title>
-<meta name="description" content="Ancient wisdom for seekers. Hindu, Sikh, Buddhist, and Jain dharma breathe together — community, scripture, and daily practice.">
-<meta property="og:title" content="Shoonaya — Find your infinite.">
-<meta property="og:description" content="Find your infinite. Ancient wisdom for seekers — join the founding members of Shoonaya, where Hindu, Sikh, Buddhist &amp; Jain dharma breathe together.">
+<title>Shoonaya App | Sanatan, Sikh, Jain &amp; Buddhist Spiritual App</title>
+<meta name="description" content="Shoonaya is a spiritual app for Daily Dharma, Panchang, scripture, japa, festivals, and community across Sanatan, Hindu, Sikh, Jain, and Buddhist traditions.">
+<meta property="og:title" content="Shoonaya App | Find Your Infinity">
+<meta property="og:description" content="Daily Dharma, Panchang, scripture, japa, festivals and community across Sanatan, Sikh, Jain and Buddhist traditions.">
 <meta property="og:type" content="website">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C5A059">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shoonaya">
+<link rel="apple-touch-icon" href="/icons/icon-192x192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif+Devanagari:wght@400;600&family=Noto+Sans+Gurmukhi:wght@400;600&display=swap" rel="stylesheet">
 
@@ -28,7 +34,7 @@
   --border: rgba(200,160,110,0.30);
   /* Fonts */
   --fd: 'Cormorant Garamond', Georgia, serif;
-  --fb: 'Inter', system-ui, sans-serif;
+  --fb: 'Outfit', 'Inter', system-ui, sans-serif;
   --fh: 'Noto Serif Devanagari', serif;
   --fg: 'Noto Sans Gurmukhi', sans-serif;
   /* Tradition palette */
@@ -45,7 +51,7 @@ body { background:var(--cream); color:var(--ink); font-family:var(--fb); font-si
 
 /* ── NAV ──────────────────────────────────────────────────────────────── */
 nav {
-  position:fixed; top:0; left:0; right:0; z-index:100;
+  position:sticky; top:0; z-index:9991;
   padding:0 56px; height:64px;
   display:flex; align-items:center; justify-content:space-between;
   background:rgba(250,246,239,0.90); backdrop-filter:blur(20px);
@@ -53,28 +59,31 @@ nav {
   box-shadow:0 1px 16px rgba(62,42,31,0.06);
   transition:background 0.4s;
 }
-.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.nav-logo-icon { width:32px; height:32px; }
-.nav-logo-text { font-family:var(--fd); font-size:22px; font-weight:600; color:var(--ink); letter-spacing:0.01em; }
-.nav-logo-text span { color:var(--saffron); }
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--ink); }
+.nav-logo-mark { width:36px; height:36px; border-radius:12px; display:block; object-fit:cover; box-shadow:0 8px 22px rgba(15,111,128,0.12); }
+.nav-logo-text { font-family:var(--fd); font-size:24px; font-weight:700; letter-spacing:0.03em; color:var(--ink); line-height:1; }
+@media(max-width:600px){
+  .nav-logo-mark { width:30px; height:30px; border-radius:10px; }
+  .nav-logo-text { font-size:20px; }
+}
 .nav-links { display:flex; gap:28px; list-style:none; }
 .nav-links a { font-size:13px; color:rgba(62,42,31,0.62); text-decoration:none; letter-spacing:0.02em; transition:color 0.2s; }
 .nav-links a:hover { color:var(--ink); }
-.nav-cta { background:var(--saffron); color:#fff; font-size:13px; font-weight:600; padding:9px 22px; border-radius:100px; border:none; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s, transform 0.15s; }
+.nav-cta { background:var(--saffron); color:#fff; font-size:13px; font-weight:600; padding:9px 22px; border-radius:100px; border:none; cursor:pointer; letter-spacing:0.02em; transition:opacity 0.2s, transform 0.15s; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; }
 .nav-cta:hover { opacity:0.9; transform:translateY(-1px); }
 
 /* ── SPLASH ENTRY ─────────────────────────────────────────────────────── */
-#splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#0D0928 0%,#070418 50%,#020108 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; min-height:100svh; }
+#splash { position:fixed;inset:0;z-index:9999;overflow:hidden; background:radial-gradient(ellipse 90% 110% at 50% 60%,#1c140a 0%,#0c0a07 60%,#030201 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; min-height:100svh; }
 #sky-canvas { position:absolute;inset:0;width:100%;height:100%;pointer-events:none; }
 #celebration-layer { position:fixed;inset:0;z-index:10020;pointer-events:none;overflow:hidden; }
-#splash-content { position:relative;z-index:2;text-align:center;padding:0 40px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
-#splash-deva { font-family:var(--fh);font-size:clamp(32px,4.4vw,52px);color:rgba(216,138,28,0.85);letter-spacing:0.25em;margin-bottom:24px; text-shadow: 0 0 40px rgba(216,138,28,0.4); }
-#splash-title { font-family:var(--fd);font-size:clamp(38px,7vw,82px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:12px; }
-#splash-title em { color:#D88A1C;font-style:italic; }
+#splash-content { position:relative;z-index:2;text-align:center;padding:clamp(0px, 4vw, 40px) 20px 100px;pointer-events:auto;width:100%;max-width:1060px;margin:0 auto; }
+#splash-deva { font-family:var(--fh);font-size:clamp(28px,4vw,48px);color:rgba(197,160,89,0.85);letter-spacing:0.25em;margin-bottom:14px; text-shadow: 0 0 40px rgba(197,160,89,0.4); }
+#splash-title { font-family:var(--fd);font-size:clamp(36px, 8vw, 72px);font-weight:300;color:#FFFEF8;line-height:1.04;letter-spacing:-0.02em;margin-bottom:8px; }
+#splash-title em { color:#C5A059;font-style:italic; }
 #splash-sub { font-size:clamp(22px,3.2vw,28px);color:rgba(255,254,248,0.55);letter-spacing:0.12em;margin-bottom:40px;font-weight:400; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
 #splash-trads { display:flex;gap:40px;justify-content:center;align-items:center; }
 .s-trad { font-size:56px; transition: transform 0.3s ease; }
-.s-trad.hindu { font-family:var(--fh);color:#D88A1C; }
+.s-trad.hindu { font-family:var(--fh);color:#C5A059; }
 .s-trad.sikh  { font-family:var(--fg);color:#5BA4D4; }
 .s-trad.bud   { font-family:'Segoe UI Symbol','Apple Symbols',system-ui;color:#E08090; }
 .s-trad.jain  { color:#3D8A60; }
@@ -112,24 +121,27 @@ nav {
 .splash-verse-track span { opacity:0.86; }
 .splash-verse-track .gurmukhi { font-family:var(--fg); }
 .splash-verse-track .roman { font-family:var(--fd); font-style:italic; letter-spacing:0.02em; }
-.splash-verse-track .dot { color:rgba(216,138,28,0.72); font-size:0.78em; }
+.splash-verse-track .dot { color:rgba(197,160,89,0.72); font-size:0.78em; }
 @keyframes splashVerseMarquee {
   from { transform:translateX(0); }
   to   { transform:translateX(-50%); }
 }
 /* audio toggle */
 #audio-btn { position:absolute;top:20px;right:20px;z-index:3;background:rgba(255,255,255,0.04);border:1px solid rgba(255,254,248,0.12);color:rgba(255,254,248,0.38);font-size:15px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;padding:0;line-height:1; }
-#audio-btn:hover { background:rgba(216,138,28,0.12);border-color:rgba(216,138,28,0.32);color:rgba(216,138,28,0.82); }
-#audio-btn.playing { border-color:rgba(216,138,28,0.45);color:rgba(216,138,28,0.92);animation:audioGlow 2.5s ease-in-out infinite; }
-@keyframes audioGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 14px rgba(216,138,28,0.22)} }
-#splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:20px 0 28px; }
+#audio-btn:hover { background:rgba(197,160,89,0.12);border-color:rgba(197,160,89,0.32);color:rgba(197,160,89,0.82); }
+#audio-btn.playing { border-color:rgba(197,160,89,0.45);color:rgba(197,160,89,0.92);animation:audioGlow 2.5s ease-in-out infinite; }
+@keyframes audioGlow { 0%,100%{box-shadow:0 0 0 0 rgba(197,160,89,0)} 50%{box-shadow:0 0 14px rgba(197,160,89,0.22)} }
+#splash-countdown { display:flex;gap:20px;justify-content:center;align-items:flex-start;margin:12px 0 16px; }
 .scd-unit { display:flex;flex-direction:column;align-items:center;gap:4px; }
 .scd-num  { font-family:var(--fd);font-size:clamp(24px,4vw,42px);font-weight:200;color:rgba(255,254,248,0.88);letter-spacing:-0.02em;line-height:1; }
 .scd-lbl  { font-size:10px;color:rgba(255,254,248,0.30);letter-spacing:0.12em;text-transform:uppercase; }
-.scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(216,138,28,0.40);margin-top:4px; }
+.scd-sep  { font-family:var(--fd);font-size:clamp(20px,3vw,36px);font-weight:100;color:rgba(197,160,89,0.40);margin-top:4px; }
 #splash-sub { font-size:clamp(11px,1.6vw,14px);color:rgba(255,254,248,0.30);letter-spacing:0.12em;margin-bottom:4px;font-weight:300;text-transform:uppercase; }
-#explore-btn { position:absolute;bottom:36px;left:50%;transform:translateX(-50%); background:transparent;border:1px solid rgba(216,138,28,0.38);color:rgba(216,138,28,0.80);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:13px 40px;border-radius:100px;cursor:pointer;animation:pulseGlow 3s ease-in-out infinite;transition:all 0.25s;white-space:nowrap; }
-#explore-btn:hover { background:rgba(216,138,28,0.10);border-color:rgba(216,138,28,0.70);color:#E8A030; }
+#splash-bottom { position:absolute;bottom:24px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 24px; }
+#explore-btn { background:rgba(12,10,7,0.80);border:1.5px solid rgba(197,160,89,0.80);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#ede8de;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;padding:14px 44px;border-radius:100px;cursor:pointer;animation:pulseGlow 2.4s ease-in-out infinite;transition:all 0.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(197,160,89,0.15); }
+#explore-btn:hover { background:rgba(197,160,89,0.18);border-color:rgba(197,160,89,0.95);color:#C5A059; }
+@keyframes bounceArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
+.explore-arrow { display: inline-block; animation: bounceArrow 1.4s ease-in-out infinite; color:#C5A059; margin-left:6px; font-weight:700; }
 body.landing-entered #splash {
   position:relative;
   inset:auto;
@@ -140,30 +152,31 @@ body.landing-entered #explore-btn {
   animation:none;
   opacity:0.78;
 }
+.splash-actions { margin:26px auto 0; display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+.splash-primary-link,
+.splash-secondary-link {
+  min-height:46px;
+  border-radius:100px;
+  padding:12px 22px;
+  font-family:var(--fb);
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.03em;
+  cursor:pointer;
+  text-decoration:none;
+}
+.splash-primary-link {
+  border:1px solid rgba(197,160,89,0.38);
+  background:linear-gradient(135deg, #C5A059, #D4784A);
+  color:#0C0A07;
+  box-shadow:0 16px 42px rgba(197,160,89,0.20);
+}
+.splash-secondary-link {
+  border:1px solid rgba(255,254,248,0.16);
+  background:rgba(255,254,248,0.06);
+  color:rgba(255,254,248,0.74);
+}
 
-/* ── Splash Join Form ──────────────────────────────────────────────────── */
-#splash-join { margin:28px auto 0; width:min(100%, 500px); max-width:500px; padding:12px; border:1px solid rgba(216,138,28,0.16); border-radius:999px; background:rgba(255,254,248,0.045); box-shadow:0 18px 80px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,254,248,0.08); backdrop-filter:blur(16px); }
-#sj-form { display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%; }
-#sj-email { flex:1;min-width:200px;background:rgba(255,254,248,0.07);border:1px solid rgba(216,138,28,0.35);border-radius:100px;padding:12px 20px;color:#FAF6EF;font-size:14px;font-family:var(--fb);outline:none;transition:border-color 0.25s; }
-#sj-email::placeholder { color:rgba(255,254,248,0.32); }
-#sj-email:focus { border-color:rgba(216,138,28,0.65); }
-#sj-submit { background:var(--saffron);color:#1C0F06;border:none;border-radius:100px;padding:12px 24px;font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;letter-spacing:0.02em; }
-#sj-submit:hover { opacity:0.88; }
-#sj-note { font-size:11px;color:rgba(255,254,248,0.30);margin-top:10px;letter-spacing:0.03em; }
-/* Stage 2 — tradition pills */
-#sj-trad-wrap { animation:tradIn 0.4s ease; }
-#sj-trad-prompt { font-size:13px;color:rgba(255,254,248,0.60);margin-bottom:12px;letter-spacing:0.04em; }
-#sj-trad-grid { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
-.sj-trad-btn { background:rgba(255,254,248,0.06);border:1px solid rgba(255,254,248,0.14);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 20px;font-size:13px;font-family:var(--fb);cursor:pointer;transition:all 0.22s;letter-spacing:0.03em; }
-.sj-trad-btn span { font-size:15px;margin-right:5px; }
-.sj-trad-btn:hover { background:rgba(216,138,28,0.14);border-color:rgba(216,138,28,0.45);color:#FAF6EF; }
-/* Stage 3 — founding number badge */
-#sj-reveal { animation:tradIn 0.5s ease; }
-#sj-badge { background:rgba(216,138,28,0.10);border:1px solid rgba(216,138,28,0.30);border-radius:16px;padding:24px 32px;margin-bottom:16px;text-align:center; }
-#sj-badge-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,254,248,0.42);margin-bottom:8px; }
-#sj-badge-num { font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1; }
-#sj-badge-sub { font-size:12px;color:rgba(255,254,248,0.52);margin-top:8px;font-style:italic; }
-#sj-share-row { display:flex;gap:8px;flex-wrap:wrap;justify-content:center; }
 .sj-share-btn { border:1px solid rgba(255,254,248,0.16);background:rgba(255,254,248,0.06);color:rgba(255,254,248,0.75);border-radius:100px;padding:9px 18px;font-size:12px;font-family:var(--fb);cursor:pointer;transition:all 0.2s;letter-spacing:0.02em; }
 .sj-share-btn:hover { background:rgba(255,254,248,0.12);color:#FAF6EF; }
 .sj-share-wa:hover  { border-color:rgba(37,211,102,0.45);color:#25d366; }
@@ -173,6 +186,11 @@ body.landing-entered #explore-btn {
 .registration-feedback { margin:10px auto 14px;color:rgba(255,254,248,0.66);font-size:12px;line-height:1.5; }
 .cta-share-copy { background:rgba(255,253,249,0.94);color:rgba(62,42,31,0.72);border-color:rgba(216,138,28,0.24); }
 .cta-registration-feedback { color:rgba(62,42,31,0.62); }
+/* Already-registered warm info box */
+.already-registered-info { display:none; margin:12px auto 16px; max-width:480px; padding:12px 16px; border-radius:14px; background:rgba(216,138,28,0.10); border:1px solid rgba(216,138,28,0.28); color:var(--saffron-dk); font-size:13px; line-height:1.6; text-align:center; }
+.already-registered-info.visible { display:block; }
+/* Splash version (dark bg) */
+#sj-already-info { background:rgba(197,160,89,0.12); border-color:rgba(197,160,89,0.32); color:rgba(255,240,180,0.88); }
 .cta-reveal-card { background:rgba(255,253,249,0.94);border:1px solid rgba(216,138,28,0.32);border-radius:16px;padding:24px 32px;margin-bottom:16px;display:inline-block;box-shadow:0 18px 45px rgba(62,42,31,0.08); }
 .cta-reveal-label { font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(62,42,31,0.45);margin-bottom:8px; }
 .cta-reveal-sub { font-size:12px;color:rgba(62,42,31,0.54);margin-top:8px; }
@@ -182,7 +200,94 @@ body.landing-entered #explore-btn {
 @keyframes celebrationRing { to { opacity:0; transform:scale(9); } }
 @keyframes celebrationSpark { 0% { opacity:0; transform:translate(0,0) scale(0.65); } 12% { opacity:1; } 100% { opacity:0; transform:translate(var(--dx), var(--dy)) scale(0.22); } }
 @keyframes celebrationRay { 0% { opacity:0; transform:rotate(var(--r)) scaleY(0.15); } 22% { opacity:0.85; } 100% { opacity:0; transform:rotate(var(--r)) scaleY(1.9); } }
-@keyframes pulseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(216,138,28,0)} 50%{box-shadow:0 0 24px rgba(216,138,28,0.10)} }
+@keyframes pulseGlow { 0%,100%{box-shadow:0 4px 20px rgba(197,160,89,0.15), 0 0 0 0 rgba(197,160,89,0)} 50%{box-shadow:0 4px 32px rgba(197,160,89,0.35), 0 0 28px 6px rgba(197,160,89,0.18), 0 0 0 8px rgba(197,160,89,0.06)} }
+@keyframes bounceDown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+
+/* ── Global reveal animations ────────────────────────────────────────────── */
+@keyframes fadeUp   { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+@keyframes scaleIn  { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+@keyframes slideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideLeft  { from{opacity:0;transform:translateX(20px)}  to{opacity:1;transform:translateX(0)} }
+
+/* Shimmer on Coming Soon pills */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.anim-shimmer {
+  background: linear-gradient(90deg, rgba(197,160,89,0.55) 25%, rgba(255,240,200,0.90) 50%, rgba(197,160,89,0.55) 75%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2.8s linear infinite;
+}
+
+/* Coming Soon status pill override */
+.phone-status.cs-pill {
+  background: rgba(197,160,89,0.12);
+  border: 1px solid rgba(197,160,89,0.28);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* Reveal: items animate in as they scroll into view */
+.reveal { opacity:0; transform:translateY(20px); transition:opacity 0.65s ease, transform 0.65s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+/* Stagger children inside a reveal parent */
+.reveal-stagger > * { opacity:0; transform:translateY(18px); transition:opacity 0.5s ease, transform 0.5s ease; }
+.reveal-stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0s; }
+.reveal-stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
+.reveal-stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
+.reveal-stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
+.reveal-stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.32s; }
+.reveal-stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.40s; }
+.reveal-stagger.visible > *:nth-child(n+7) { opacity:1; transform:none; transition-delay:0.48s; }
+
+/* s-label: slide down from above */
+.s-label.reveal { transform:translateY(-10px); }
+.s-label.visible { transform:translateY(0); }
+
+/* Section title: slightly bigger entrance */
+.s-title.reveal { transform:translateY(28px); transition-duration:0.75s; }
+.s-title.visible { transform:translateY(0); }
+
+/* Floating orb animation on feature cards */
+@keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.feature-card:hover { animation: floatCard 3s ease-in-out infinite; }
+
+/* Timeline dots pulse in sequence */
+.ft-node .ft-dot { transform:scale(0); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.ft-timeline.visible .ft-node:nth-child(1) .ft-dot { transform:scale(1); transition-delay:0.1s; }
+.ft-timeline.visible .ft-node:nth-child(2) .ft-dot { transform:scale(1); transition-delay:0.25s; }
+.ft-timeline.visible .ft-node:nth-child(3) .ft-dot { transform:scale(1); transition-delay:0.40s; }
+.ft-timeline.visible .ft-node:nth-child(4) .ft-dot { transform:scale(1); transition-delay:0.55s; }
+.ft-timeline.visible .ft-node:nth-child(5) .ft-dot { transform:scale(1); transition-delay:0.70s; }
+.ft-timeline .ft-node .ft-content { opacity:0; transform:translateX(14px); transition:opacity 0.4s ease, transform 0.4s ease; }
+.ft-timeline.visible .ft-node:nth-child(1) .ft-content { opacity:1; transform:none; transition-delay:0.15s; }
+.ft-timeline.visible .ft-node:nth-child(2) .ft-content { opacity:1; transform:none; transition-delay:0.30s; }
+.ft-timeline.visible .ft-node:nth-child(3) .ft-content { opacity:1; transform:none; transition-delay:0.45s; }
+.ft-timeline.visible .ft-node:nth-child(4) .ft-content { opacity:1; transform:none; transition-delay:0.60s; }
+.ft-timeline.visible .ft-node:nth-child(5) .ft-content { opacity:1; transform:none; transition-delay:0.75s; }
+
+/* Kids Zone feature grid stagger */
+.kz-features { } /* grid is already defined */
+.kz-feat { opacity:0; transform:translateY(16px) scale(0.97); transition:opacity 0.45s ease, transform 0.45s ease; }
+.kz-features.visible .kz-feat:nth-child(1) { opacity:1; transform:none; transition-delay:0.00s; }
+.kz-features.visible .kz-feat:nth-child(2) { opacity:1; transform:none; transition-delay:0.08s; }
+.kz-features.visible .kz-feat:nth-child(3) { opacity:1; transform:none; transition-delay:0.16s; }
+.kz-features.visible .kz-feat:nth-child(4) { opacity:1; transform:none; transition-delay:0.24s; }
+.kz-features.visible .kz-feat:nth-child(5) { opacity:1; transform:none; transition-delay:0.32s; }
+.kz-features.visible .kz-feat:nth-child(6) { opacity:1; transform:none; transition-delay:0.40s; }
+
+/* Stats band count-up already exists; add a pop on load */
+.stats-band.visible .stat-item { animation:scaleIn 0.5s cubic-bezier(0.34,1.4,0.64,1) both; }
+.stats-band.visible .stat-item:nth-child(1) { animation-delay:0s; }
+.stats-band.visible .stat-item:nth-child(2) { animation-delay:0.1s; }
+.stats-band.visible .stat-item:nth-child(3) { animation-delay:0.2s; }
+
 #main-page { min-height:100vh; }
 
 /* ── LOGO ANIMATION — Infinity + Bindu ─────────────────────────────────── */
@@ -198,8 +303,6 @@ body.landing-entered #explore-btn {
   55%  { opacity:0.40; }
   100% { opacity:0; transform:scale(1.6) translateY(-2px); }
 }
-/* Nav logo micro-infinity */
-.nav-logo-icon #nl-inf { filter:drop-shadow(0 0 3px rgba(200,146,74,0.6)); }
 
 /* ── HERO ─────────────────────────────────────────────────────────────── */
 .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; overflow:hidden; padding:120px 40px 80px; text-align:center; }
@@ -237,11 +340,11 @@ body.landing-entered #explore-btn {
 
 /* ── COUNTDOWN ─────────────────────────────────────────────────────────── */
 .countdown-wrap { display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:16px; opacity:0; animation:fadeDown 0.8s 0.9s ease forwards; }
-.countdown-tile { background:rgba(255,253,249,0.96); border:1px solid rgba(200,160,110,0.28); border-radius:16px; padding:16px 18px; min-width:82px; text-align:center; backdrop-filter:blur(12px); transition:border-color 0.3s; }
+.countdown-tile { background:rgba(255,253,249,0.96); border:1px solid rgba(200,160,110,0.28); border-radius:16px; padding:10px 14px; min-width:62px; text-align:center; backdrop-filter:blur(12px); transition:border-color 0.3s; }
 .countdown-tile:hover { border-color:rgba(216,138,28,0.40); }
-.countdown-num { font-family:var(--fd); font-size:56px; font-weight:600; color:var(--saffron); line-height:1; display:block; }
+.countdown-num { font-family:var(--fd); font-size:38px; font-weight:600; color:var(--saffron); line-height:1; display:block; }
 .countdown-lbl { font-size:9px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:rgba(62,42,31,0.45); margin-top:6px; display:block; }
-.countdown-sep { font-family:var(--fd); font-size:44px; font-weight:300; color:rgba(216,138,28,0.35); line-height:1; padding-bottom:20px; }
+.countdown-sep { font-family:var(--fd); font-size:30px; font-weight:300; color:rgba(216,138,28,0.35); line-height:1; padding-bottom:14px; }
 .countdown-date { font-size:11px; color:rgba(62,42,31,0.40); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:36px; opacity:0; animation:fadeDown 0.7s 1.0s ease forwards; }
 
 /* Hero signup form */
@@ -358,7 +461,9 @@ body.landing-entered #explore-btn {
 .trad-trad-badge { display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:600; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:24px; }
 .trad-trad-dot { width:6px; height:6px; border-radius:50%; }
 .trad-verse { border-left:2px solid; padding-left:24px; margin-bottom:28px; }
+.trad-verse-date   { font-size:10px; color:rgba(62,42,31,0.38); letter-spacing:0.10em; text-transform:uppercase; margin-bottom:10px; }
 .trad-verse-script { font-size:19px; line-height:1.75; margin-bottom:14px; }
+.trad-verse-divider { height:1px; background:rgba(62,42,31,0.12); margin:12px 0; }
 .trad-verse-trans  { font-family:var(--fd); font-size:21px; font-style:italic; font-weight:300; line-height:1.55; color:rgba(62,42,31,0.75); margin-bottom:8px; }
 .trad-verse-source { font-size:11px; color:rgba(62,42,31,0.45); letter-spacing:0.12em; text-transform:uppercase; }
 .trad-feats { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
@@ -482,22 +587,22 @@ body.landing-entered #explore-btn {
 .shlok-panel.active { display:block; animation:tradIn 0.45s ease forwards; }
 
 /* ── FESTIVALS ───────────────────────────────────────────────────────── */
-.festivals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-.festival-card { border-radius:20px; padding:32px; background:rgba(255,253,249,0.94); border:1px solid rgba(200,160,110,0.18); position:relative; overflow:hidden; transition:transform 0.25s ease, border-color 0.25s; }
+.festivals-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.festival-card { border-radius:20px; padding:14px 16px; background:rgba(255,253,249,0.94); border:1px solid rgba(200,160,110,0.18); position:relative; overflow:hidden; transition:transform 0.25s ease, border-color 0.25s; }
 .festival-card:hover { transform:translateY(-4px); border-color:rgba(216,138,28,0.35); }
 .festival-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
 .fc-1::before { background:linear-gradient(90deg, var(--saffron), var(--gold)); }
 .fc-2::before { background:linear-gradient(90deg, var(--c-buddhist), #7B2D3E); }
 .fc-3::before { background:linear-gradient(90deg, var(--c-jain), #2A5C45); }
-.festival-date-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(200,160,110,0.14); border-radius:100px; padding:5px 12px; font-size:11px; color:rgba(62,42,31,0.65); margin-bottom:20px; }
+.festival-date-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(200,160,110,0.14); border-radius:100px; padding:3px 10px; font-size:11px; color:rgba(62,42,31,0.65); margin-bottom:10px; }
 .festival-date-badge .dot { width:5px; height:5px; border-radius:50%; }
-.festival-name { font-family:var(--fd); font-size:30px; font-weight:600; color:var(--ink); margin-bottom:6px; line-height:1.1; }
-.festival-deva { font-family:var(--fh); font-size:15px; color:rgba(62,42,31,0.50); margin-bottom:16px; }
-.festival-desc { font-size:13px; color:rgba(62,42,31,0.55); line-height:1.6; }
-.festival-countdown { margin-top:20px; padding-top:20px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; justify-content:space-between; }
-.festival-countdown .days { font-family:var(--fd); font-size:36px; font-weight:600; line-height:1; }
+.festival-name { font-family:var(--fd); font-size:14px; font-weight:600; color:var(--ink); margin-bottom:3px; line-height:1.1; }
+.festival-deva { font-family:var(--fh); font-size:12px; color:rgba(62,42,31,0.50); margin-bottom:8px; }
+.festival-desc { font-size:12px; color:rgba(62,42,31,0.55); line-height:1.5; }
+.festival-countdown { margin-top:10px; padding-top:10px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; justify-content:space-between; }
+.festival-countdown .days { font-family:var(--fd); font-size:22px; font-weight:600; line-height:1; }
 .festival-countdown .days-label { font-size:11px; color:rgba(62,42,31,0.50); text-transform:uppercase; letter-spacing:0.12em; }
-.festival-pill { font-size:11px; font-weight:500; padding:5px 12px; border-radius:100px; letter-spacing:0.04em; }
+.festival-pill { font-size:11px; font-weight:500; padding:4px 10px; border-radius:100px; letter-spacing:0.04em; }
 .fp-s  { background:rgba(200,146,74,0.2);   color:var(--saffron); }
 .fp-b  { background:rgba(212,130,122,0.2);  color:var(--c-buddhist); }
 .fp-j  { background:rgba(106,185,154,0.2);  color:var(--c-jain); }
@@ -533,17 +638,17 @@ body.landing-entered #explore-btn {
 
 /* ── FEATURES ────────────────────────────────────────────────────────── */
 .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:rgba(200,160,110,0.15); border:1px solid rgba(200,160,110,0.25); border-radius:24px; overflow:hidden; }
-.feature-card { padding:36px 32px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; }
+.feature-card { padding:14px 16px; background:var(--warm-white); transition:background 0.25s, transform 0.22s; display:block; text-decoration:none; color:inherit; }
 .feature-card:hover { background:#FAF6EF; transform:translateY(-2px); }
 .feature-card-link { text-decoration:none; color:inherit; display:block; }
-.feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+.feature-icon { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
 .fi-ja { background:rgba(155,111,181,0.10); }
 .fi-ai { background:rgba(91,143,185,0.10); }
 .fi-kl { background:rgba(122,81,38,0.10); }
 .fi-vs { background:rgba(107,142,90,0.10); }
 .fi-s{background:rgba(200,160,110,0.24)} .fi-k{background:rgba(212,120,74,0.15)} .fi-p{background:rgba(157,122,80,0.15)} .fi-l{background:rgba(212,130,122,0.15)} .fi-g{background:rgba(200,160,110,0.18)} .fi-w{background:rgba(62,42,31,0.06)}
-.feature-name { font-family:var(--fd); font-size:22px; font-weight:600; color:var(--ink); margin-bottom:10px; line-height:1.2; }
-.feature-desc { font-size:13px; color:rgba(62,42,31,0.58); line-height:1.65; }
+.feature-name { font-family:var(--fd); font-size:18px; font-weight:600; color:var(--ink); margin-bottom:6px; line-height:1.2; }
+.feature-desc { font-size:12px; color:rgba(62,42,31,0.58); line-height:1.55; }
 .feature-coming { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(200,160,110,0.24); color:var(--saffron); border:1px solid rgba(200,146,74,0.2); }
 .feature-live   { display:inline-block; margin-top:14px; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; padding:4px 10px; border-radius:100px; background:rgba(42,107,74,0.12); color:var(--c-jain); border:1px solid rgba(42,107,74,0.25); }
 
@@ -614,22 +719,12 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 @keyframes statusPulse { 0%,100%{ transform:scale(1); opacity:0.55; } 50%{ transform:scale(1.6); opacity:1; } }
 @keyframes screenGlow { 0%,100%{ opacity:0.55; } 50%{ opacity:1; } }
 
-.download-buttons { display:flex; justify-content:center; gap:14px; margin-bottom:24px; position:relative; z-index:1; flex-wrap:wrap; }
-.dl-btn {
-  display:flex; align-items:center; gap:12px;
-  padding:13px 24px; border-radius:14px;
-  border:1.5px solid rgba(200,160,110,0.22); background:rgba(255,253,249,0.94);
-  color:rgba(62,42,31,0.45); cursor:not-allowed;
-  position:relative; overflow:hidden; text-decoration:none;
-  filter:saturate(0.4) brightness(0.8);
-}
-.dl-btn-icon { width:30px; height:30px; flex-shrink:0; }
-.dl-btn-text { text-align:left; }
-.dl-btn-sub  { font-size:10px; display:block; opacity:0.7; }
-.dl-btn-name { font-size:17px; font-weight:600; font-family:var(--fd); display:block; }
-.dl-coming-tag { position:absolute; top:7px; right:-8px; background:rgba(200,146,74,0.85); color:var(--ink); font-size:7px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:3px 20px; transform:rotate(20deg); }
 .download-note { font-size:13px; color:rgba(62,42,31,0.45); position:relative; z-index:1; }
-.download-notify-link { color:var(--saffron); text-decoration:underline; cursor:pointer; }
+.install-guide { position:relative; z-index:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; max-width:860px; margin:28px auto 0; text-align:left; }
+.install-guide-card { background:var(--warm-white); border:1px solid var(--border); border-radius:20px; padding:20px; }
+.install-guide-title { font-family:var(--fd); font-size:18px; font-weight:600; color:var(--ink); margin-bottom:10px; }
+.install-guide-list { margin:0; padding-left:18px; color:var(--ink-soft); font-size:13px; line-height:1.7; }
+@media(max-width:720px){ .install-guide { grid-template-columns:1fr; } }
 
 /* ── CTA SECTION ─────────────────────────────────────────────────────── */
 .cta-section { padding:120px 80px; text-align:center; position:relative; overflow:hidden; }
@@ -659,6 +754,19 @@ a.phone-mockup:focus-visible { outline:2px solid rgba(216,138,28,0.72); outline-
 .cta-trad-pill[data-t="buddhist"].chosen { border-color:var(--c-buddhist); background:var(--c-buddhist-bg); color:var(--c-buddhist); }
 .cta-trad-pill[data-t="jain"].chosen     { border-color:var(--c-jain);     background:var(--c-jain-bg);     color:var(--c-jain); }
 .cta-note { font-size:12px; color:rgba(62,42,31,0.40); margin-top:12px; }
+.cta-direct-actions { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.cta-direct-link { display:inline-flex; align-items:center; justify-content:center; min-width:min(100%, 280px); text-decoration:none; }
+.cta-signin-link { display:inline-flex; text-decoration:none; }
+
+/* CTA Step 1 extended */
+.cta-fields { display:flex; flex-direction:column; gap:10px; max-width:440px; margin:0 auto 12px; }
+.cta-field-row { display:flex; gap:10px; }
+.cta-field { flex:1; padding:14px 18px; border-radius:100px; border:1.5px solid rgba(216,138,28,0.22); background:rgba(255,253,249,0.92); color:var(--ink); font-family:var(--fb); font-size:14px; outline:none; backdrop-filter:blur(10px); transition:border-color 0.2s; min-height:48px; width:100%; appearance:none; -webkit-appearance:none; }
+.cta-field::placeholder { color:rgba(62,42,31,0.40); }
+.cta-field:focus { border-color:rgba(216,138,28,0.50); }
+.cta-field-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238E7868' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 16px center; padding-right:40px; cursor:pointer; }
+.cta-fields-submit { width:100%; padding:15px 30px; border-radius:100px; background:var(--saffron); color:#fff; font-family:var(--fb); font-size:14px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.2s; min-height:48px; }
+.cta-fields-submit:hover { opacity:0.9; }
 
 /* ── FOOTER ──────────────────────────────────────────────────────────── */
 footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
@@ -672,11 +780,25 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 .footer-bottom { display:flex; align-items:center; justify-content:space-between; padding-top:24px; border-top:1px solid rgba(200,160,110,0.14); flex-wrap:wrap; gap:16px; }
 .footer-badges { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
 .made-india { display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(62,42,31,0.58); }
-.india-flag { display:flex; flex-direction:column; width:24px; height:16px; border-radius:2px; overflow:hidden; flex-shrink:0; border:1px solid rgba(200,160,110,0.24); }
-.flag-s { flex:1; }
-.flag-top { background:#FF9933; }
-.flag-mid { background:#FFFFFF; }
-.flag-bot { background:#138808; }
+.india-flag { font-size:18px; line-height:1; flex-shrink:0; }
+/* ── FAQ ──────────────────────────────────────────────────────────── */
+.faq-section { background:var(--cream); padding:100px 80px; }
+.faq-inner { max-width:820px; margin:0 auto; }
+.faq-label { font-size:11px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--saffron); margin-bottom:12px; }
+.faq-heading { font-family:var(--fd); font-size:clamp(32px,4vw,48px); font-weight:300; color:var(--ink); line-height:1.1; margin-bottom:48px; }
+.faq-heading em { font-style:italic; color:var(--saffron); }
+.faq-list { display:flex; flex-direction:column; gap:0; border-top:1px solid rgba(200,160,110,0.22); }
+.faq-item { border-bottom:1px solid rgba(200,160,110,0.22); }
+.faq-q { width:100%; background:none; border:none; cursor:pointer; padding:22px 0; display:flex; align-items:center; justify-content:space-between; gap:16px; text-align:left; }
+.faq-q-text { font-family:var(--fb); font-size:16px; font-weight:600; color:var(--ink); line-height:1.4; }
+.faq-icon { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(200,160,110,0.5); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--saffron); font-size:16px; transition:transform 0.3s, background 0.2s; }
+.faq-item.open .faq-icon { transform:rotate(45deg); background:var(--saffron); color:#fff; border-color:var(--saffron); }
+.faq-a { max-height:0; overflow:hidden; transition:max-height 0.38s cubic-bezier(0.4,0,0.2,1); }
+.faq-a-inner { padding:0 0 20px; font-size:15px; color:var(--ink-mid); line-height:1.75; }
+.faq-a-inner strong { color:var(--ink); }
+.faq-a-inner a { color:var(--saffron); text-decoration:none; }
+.faq-item.open .faq-a { max-height:400px; }
+@media (max-width:760px) { .faq-section { padding:64px 24px; } .faq-q-text { font-size:15px; } }
 .trust-badge { display:flex; align-items:center; gap:6px; font-size:11px; color:rgba(62,42,31,0.40); }
 .trust-dot { width:5px; height:5px; border-radius:50%; }
 .footer-copy { font-size:12px; color:rgba(62,42,31,0.35); }
@@ -707,10 +829,83 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   .footer-top { flex-direction:column; gap:20px; text-align:center; }
   .footer-bottom { flex-direction:column; align-items:flex-start; }
   .tradition-badges { gap:6px; }
-  .countdown-tile { min-width:64px; padding:12px 14px; }
-  .countdown-num { font-size:40px; }
+  .countdown-tile { min-width:48px; padding:8px 10px; }
+  .countdown-num { font-size:28px; }
 }
 </style>
+
+<style>
+</style>
+
+<style id="general-mobile-css">
+@media (max-width: 480px) {
+  /* Nav */
+  .nav-links { display: none !important; }
+  .nav-cta { display: none !important; }
+  
+  /* Splash */
+  #splash-content { padding: 0 20px 120px !important; }
+  
+  /* Sections */
+  .section { padding: 64px 20px !important; }
+  
+  /* Typography */
+  .hero-title { font-size: clamp(32px, 8vw, 52px) !important; }
+  
+  /* Download buttons */
+  .download-phones { 
+    grid-template-columns: 1fr !important; 
+    max-width: 320px !important; 
+  }
+  
+  /* Stats band */
+  .stats-band { 
+    grid-template-columns: 1fr 1fr !important; 
+    gap: 0 !important;
+    padding: 32px 20px !important;
+  }
+  .stat-item { 
+    border-right: none !important;
+    border-bottom: 1px solid rgba(200,160,110,0.18) !important;
+    padding: 16px 12px !important;
+  }
+  .stat-item:nth-child(odd) { border-right: 1px solid rgba(200,160,110,0.18) !important; }
+  .stat-num { font-size: 36px !important; }
+
+  /* SPLASH COUNTDOWN FIX */
+  #splash-countdown {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .sc-unit { min-width: 64px !important; }
+
+}
+
+@media (max-width: 400px) {
+  .s-trad { font-size: clamp(28px, 7vw, 44px) !important; }
+}
+
+@media (max-width: 768px) {
+  #nav-hamburger { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+}
+
+/* FIX 3B: Email + avatar circle misalignment */
+.cta-form {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.cta-input {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+/* In case there is an avatar circle element */
+.avatar-circle, .cta-btn {
+  flex-shrink: 0 !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -720,97 +915,13 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <div id="celebration-layer" aria-hidden="true"></div>
   <div id="splash-content">
 
-    <!-- ── Animated Infinity Logo ──────────────────────────────────────── -->
-    <div id="logo-anim">
-      <!--
-        The lemniscate path crosses at (200,140) with ~35° diagonal tangents —
-        the key that separates a proper ∞ from a figure-8.
-        Departure from centre: direction (33,-38) → upper-right at 49°
-        Arrival back at centre: mirror direction — smooth, continuous crossing.
-        Width 210px (95→305), height 82px (98→180), ratio ≈ 2.56:1.
-      -->
-      <svg id="logo-anim-svg" viewBox="60 80 280 160" width="min(340px,82vw)" height="auto" aria-hidden="true">
-        <defs>
-          <radialGradient id="bindu-grd" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stop-color="#FFF5C0" stop-opacity="1"/>
-            <stop offset="35%"  stop-color="#F0A030" stop-opacity="0.85"/>
-            <stop offset="100%" stop-color="#D88A1C" stop-opacity="0"/>
-          </radialGradient>
-          <!-- Soft outer glow filter for the stroke -->
-          <filter id="inf-glow" x="-40%" y="-80%" width="180%" height="260%">
-            <feGaussianBlur stdDeviation="5"  result="b1"/>
-            <feGaussianBlur stdDeviation="14" result="b2"/>
-            <feColorMatrix in="b1" type="matrix"
-              values="1.2 0.6 0 0 0.05  0.5 0.3 0 0 0  0 0 0 0 0  0 0 0 0.55 0" result="g1"/>
-            <feColorMatrix in="b2" type="matrix"
-              values="1.0 0.5 0 0 0   0.4 0.2 0 0 0  0 0 0 0 0  0 0 0 0.22 0" result="g2"/>
-            <feMerge><feMergeNode in="g2"/><feMergeNode in="g1"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-
-        <!-- ── Infinity lemniscate — 4-segment proper bezier crossing ── -->
-        <g id="inf-g">
-          <!-- Halo / soft depth shadow -->
-          <path
-            d="M 200,140 C 233,102 305,98  305,140
-                        C 305,182 233,178 200,140
-                        C 167,102 95,98   95,140
-                        C 95,182  167,178 200,140"
-            fill="none" stroke="#7A4800" stroke-width="10"
-            stroke-linecap="round" stroke-linejoin="round" opacity="0.14"
-          />
-          <!-- Wide amber glow layer -->
-          <path
-            d="M 200,140 C 233,102 305,98  305,140
-                        C 305,182 233,178 200,140
-                        C 167,102 95,98   95,140
-                        C 95,182  167,178 200,140"
-            fill="none" stroke="#D88A1C" stroke-width="11"
-            stroke-linecap="round" opacity="0.09"
-          />
-          <!-- Main stroke — proper lemniscate with diagonal crossing -->
-          <path id="inf-path"
-            d="M 200,140 C 233,102 305,98  305,140
-                        C 305,182 233,178 200,140
-                        C 167,102 95,98   95,140
-                        C 95,182  167,178 200,140"
-            fill="none"
-            stroke="#D88A1C"
-            stroke-width="4.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            filter="url(#inf-glow)"
-          />
-          <!-- Specular highlight — thin warm-white thread on upper edge -->
-          <path
-            d="M 200,140 C 233,102 305,98  305,140
-                        C 305,182 233,178 200,140
-                        C 167,102 95,98   95,140
-                        C 95,182  167,178 200,140"
-            fill="none" stroke="#FFE090" stroke-width="1.2"
-            stroke-linecap="round" opacity="0.45"
-            id="inf-highlight"
-          />
-        </g>
-
-        <!-- ── Spark lines at bindu collapse ── -->
-        <g id="inf-sparks"/>
-
-        <!-- ── Bindu — the cosmic crossing point ── -->
-        <circle id="inf-bindu-halo" cx="200" cy="140" r="22" fill="url(#bindu-grd)" opacity="0"/>
-        <circle id="inf-bindu"      cx="200" cy="140" r="4"  fill="#F0A030"/>
-
-        <!-- शून्य -->
-        <text x="200" y="228"
-          font-family="'Noto Serif Devanagari', serif"
-          font-size="17" font-weight="400"
-          fill="rgba(216,138,28,0.62)" text-anchor="middle" letter-spacing="5"
-        >शून्य</text>
-      </svg>
+    <!-- Pill Badge -->
+    <div id="countdown-pill" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-6 border"
+      style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 9999px; font-size: 14px; font-weight: 700; margin-bottom: 24px; border: 1px solid rgba(197, 160, 89, 0.3); background: rgba(197, 160, 89, 0.08); color: #C5A059; font-family: var(--fb);">
+      Shoonaya is Live Now
     </div>
-    <!-- ──────────────────────────────────────────────────────────────────── -->
 
-    <h1 id="splash-title">Find your <em>infinite.</em></h1>
+    <h1 id="splash-title">Shoonaya — Find your <em>infinity.</em></h1>
     <div id="splash-trads">
       <span class="s-trad hindu" title="Hindu">ॐ</span>
       <span class="s-trad sikh"  title="Sikh">ੴ</span>
@@ -841,17 +952,6 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
         </svg>
       </span>
     </div>
-    <p id="splash-sub">Launching &nbsp;·&nbsp; June 17, 2026</p>
-    <div id="splash-countdown">
-
-      <div class="scd-unit"><span class="scd-num" id="scd-d">--</span><span class="scd-lbl">Days</span></div>
-      <span class="scd-sep">·</span>
-      <div class="scd-unit"><span class="scd-num" id="scd-h">--</span><span class="scd-lbl">Hours</span></div>
-      <span class="scd-sep">·</span>
-      <div class="scd-unit"><span class="scd-num" id="scd-m">--</span><span class="scd-lbl">Min</span></div>
-      <span class="scd-sep">·</span>
-      <div class="scd-unit"><span class="scd-num" id="scd-s">--</span><span class="scd-lbl">Sec</span></div>
-    </div>
     <div id="splash-verse" aria-label="Dharmic verses across traditions">
       <div class="splash-verse-track" aria-hidden="true">
         <span>सर्वे भवन्तु सुखिनः</span><span class="dot">•</span>
@@ -871,45 +971,64 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
       </div>
     </div>
 
-    <!-- ── Founding Member Join ─────────────────────────────────────── -->
-    <div id="splash-join">
-      <!-- Stage 1: email -->
-      <div id="sj-email-wrap">
-        <form id="sj-form" onsubmit="splashJoin(event)">
-          <input id="sj-email" type="email" placeholder="your@email.com" required autocomplete="email">
-          <button type="submit" id="sj-submit">Join as Sthapaka</button>
-        </form>
-        <p id="sj-note">Be among the founding 1,000. No spam, ever. 🙏</p>
-      </div>
-      <!-- Stage 2: tradition selection -->
-      <div id="sj-trad-wrap" style="display:none">
-        <p id="sj-trad-prompt">🙏 Which tradition do you follow?</p>
-        <div id="sj-trad-grid">
-          <button class="sj-trad-btn" onclick="splashTradSelect('hindu')"><span>ॐ</span> Hindu</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('sikh')"><span>ੴ</span> Sikh</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('buddhist')"><span>☸</span> Buddhist</button>
-          <button class="sj-trad-btn" onclick="splashTradSelect('jain')"><span>☮</span> Jain</button>
-        </div>
-      </div>
-      <!-- Stage 3: founding number reveal -->
-      <div id="sj-reveal" style="display:none">
-        <div id="sj-badge">
-          <div id="sj-badge-label">Sthapaka · स्थापक</div>
-          <div id="sj-badge-num">#<span id="sj-num">—</span></div>
-          <div id="sj-badge-sub">You helped lay the first stone. <em>Jai ho.</em></div>
-        </div>
-        <p id="sj-registration-feedback" class="registration-feedback"></p>
-        <p id="sj-share-copy" class="share-copy-text"></p>
-        <div id="sj-share-row">
-          <button class="sj-share-btn sj-share-wa"  onclick="splashShareWhatsApp()">📲 WhatsApp</button>
-          <button class="sj-share-btn sj-share-tw"  onclick="splashShareTwitter()">🐦 X / Twitter</button>
-          <button class="sj-share-btn sj-share-copy" onclick="splashCopyLink()">🔗 Copy Link</button>
-        </div>
-      </div>
+    <div class="splash-actions" aria-label="Shoonaya entry actions">
+      <button class="splash-primary-link" type="button" onclick="document.getElementById('explore-btn')?.click()">Explore Shoonaya</button>
     </div>
   </div>
   <button id="audio-btn" title="Om ambient drone (108 Hz)">🔇</button>
-  <button id="explore-btn">Enter the Sangam &nbsp;↓</button>
+  <div id="splash-bottom">
+    
+    <button id="explore-btn">Enter the Shoonaya <span class="explore-arrow" style="display:inline-block;animation:bounceDown 1.6s ease-in-out infinite;">↓</span></button>
+  </div>
+</div>
+
+<!-- iOS Install Modal -->
+<div id="pwa-ios-modal" style="display:none;position:fixed;inset:0;z-index:99999;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);">
+  <div style="background:#1a1510;border:1px solid rgba(197,160,89,0.25);border-radius:28px 28px 0 0;padding:32px 28px 48px;width:100%;max-width:520px;text-align:center;">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:100px;margin:0 auto 28px;"></div>
+    <div style="font-size:36px;margin-bottom:12px;">🪔</div>
+    <div style="font-family:var(--fd);font-size:22px;font-weight:400;color:#FAF6EF;margin-bottom:8px;">Add Shoonaya to<br>your Home Screen</div>
+    <div style="font-size:13px;color:rgba(250,246,239,0.45);margin-bottom:32px;line-height:1.6;">Use it like a native app — instant access,<br>no App Store needed.</div>
+    <!-- Step 1 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v10M10 2l-3 3M10 2l3 3" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 13v4a1 1 0 001 1h12a1 1 0 001-1v-4" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap the Share button</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">The box with an arrow pointing up, at the bottom of Safari</div>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:10px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="#C5A059" stroke-width="1.6"/>
+          <path d="M10 7v6M7 10h6" stroke="#C5A059" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap "Add to Home Screen"</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">Scroll down in the Share sheet to find this option</div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.05);border-radius:14px;padding:16px;margin-bottom:28px;text-align:left;">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(197,160,89,0.15);border:1px solid rgba(197,160,89,0.30);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10l4 4 8-8" stroke="#C5A059" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#FAF6EF;margin-bottom:2px;">Tap "Add" — you're done!</div>
+        <div style="font-size:11px;color:rgba(250,246,239,0.45);">Shoonaya appears on your home screen like an app</div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('pwa-ios-modal').style.display='none'" style="width:100%;background:linear-gradient(135deg,#C5A059,#D4784A);color:#0C0A07;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.04em;">Got it 🙏</button>
+  </div>
 </div>
 
 <!-- ══ MAIN PAGE (revealed on Explore click) ═════════════════════ -->
@@ -918,49 +1037,40 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
 
 <!-- ── NAV ──────────────────────────────────────────────────────── -->
 <nav id="nav">
+  
+  <button id="nav-hamburger" aria-label="Menu" aria-controls="mobile-drawer" aria-expanded="false" style="display:none; color:var(--ink); padding:8px; cursor:pointer; background:none; border:none; width:36px; height:36px; border-radius:8px; transition:background 0.2s;">
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
+    <span style="display:block;width:20px;height:2px;background:currentColor;border-radius:2px;transition:transform 0.25s,opacity 0.25s;"></span>
+  </button>
   <a class="nav-logo" href="#">
-    <svg class="nav-logo-icon" viewBox="0 0 32 32" fill="none" style="overflow:visible;">
-      <!-- Chakra rim -->
-      <circle cx="16" cy="16" r="13.5" stroke="#C8924A" stroke-width="1.2" opacity="0.5"/>
-      <!-- 8 main spokes of the chakra -->
-      <g stroke="#C8924A" stroke-width="0.7" opacity="0.35">
-        <line x1="16" y1="5"  x2="16" y2="9.5"/>  <line x1="16" y1="22.5" x2="16" y2="27"/>
-        <line x1="5"  y1="16" x2="9.5" y2="16"/>  <line x1="22.5" y1="16" x2="27" y2="16"/>
-        <line x1="7.8" y1="7.8" x2="11" y2="11"/>  <line x1="21" y1="21" x2="24.2" y2="24.2"/>
-        <line x1="24.2" y1="7.8" x2="21" y2="11"/> <line x1="11" y1="21" x2="7.8" y2="24.2"/>
-      </g>
-      <!-- Infinity mark -->
-      <path id="nl-inf"
-        d="M 16,16 C 16,12.5 20.5,12.5 20.5,16 C 20.5,19.5 16,19.5 16,16 C 16,12.5 11.5,12.5 11.5,16 C 11.5,19.5 16,19.5 16,16"
-        stroke="#C8924A" stroke-width="2" fill="none" stroke-linecap="round"
-        style="filter:drop-shadow(0 0 3px rgba(200,146,74,0.7));"
-      />
-      <!-- Bindu -->
-      <circle cx="16" cy="16" r="1.8" fill="#C8924A"/>
-    </svg>
-    <span class="nav-logo-text">Shoo<span>naya</span></span>
+    <img
+      src="/icons/icon-192x192.png"
+      alt="Shoonaya"
+      class="nav-logo-mark"
+    />
+    <span class="nav-logo-text">Shoonaya</span>
   </a>
   <ul class="nav-links">
     <li><a href="#gyan-chaupar" style="color:var(--saffron);font-weight:600">♟ Play</a></li>
     <li><a href="#traditions">Traditions</a></li>
-    <li><a href="#shloka">Wisdom</a></li>
     <li><a href="#festivals">Festivals</a></li>
     <li><a href="#community">Community</a></li>
     <li><a href="#features">Features</a></li>
-    <li><a href="#download">App</a></li>
+    <li><a href="#download">Web App</a></li>
   </ul>
-  <button class="nav-cta" onclick="scrollToCta()">Get Early Access</button>
+  <a class="nav-cta" href="/signup">Enter Shoonaya</a>
 </nav>
 
-<!-- Hero section removed — signup is now in the splash entry screen -->
+<!-- Hero section removed — signup now lives on /signup -->
 
 <!-- ── STATS ─────────────────────────────────────────────────────── -->
-<div class="stats-band reveal">
-  <div class="stat-item"><div class="stat-num" id="stat-founding-wrap">—</div><div class="stat-label">Founding Members</div></div>
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="38">0</span></div><div class="stat-label">Countries Represented</div></div>
+<div class="stats-band reveal" id="shoonaya-content">
+  <div class="stat-item"><div class="stat-num">Global</div><div class="stat-label">Zeroists · Community</div></div>
   <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="4">0</span></div><div class="stat-label">Dharmic Traditions</div></div>
-  <div class="stat-item"><div class="stat-num"><span class="count-num" data-target="700">0</span><span>+</span></div><div class="stat-label">Sacred Texts Indexed</div></div>
+  <div class="stat-item"><div class="stat-num">Pramana</div><div class="stat-label">Source-Grounded Wisdom</div></div>
 </div>
+
 
 
 
@@ -1098,7 +1208,7 @@ footer { padding:48px 80px; border-top:1px solid rgba(200,160,110,0.18); }
   <!-- Top row -->
   <div class="gc-top-row">
     <div class="gc-top-left">
-      <div class="gc-eyebrow">While you wait for the app</div>
+      <div class="gc-eyebrow">Play sacred wisdom now</div>
       <h2 class="gc-title">Play <em>Gyan Chaupar</em></h2>
       <p class="gc-sub">Ancient Indian game of dharmic progress — roll dice, land on virtues to ascend, conquer vices before they pull you down.</p>
     </div>
@@ -1382,8 +1492,8 @@ function gcRestart(){
 <!-- ── TRADITION TABS ─────────────────────────────────────────────── -->
 <section class="traditions-section" id="traditions">
   <div style="text-align:center; margin-bottom:20px" class="reveal">
-    <div class="s-label" style="margin-bottom:10px">Four Paths · One Sangam</div>
-    <div class="s-title">Built for every dharmic tradition</div>
+    <div class="s-label" style="margin-bottom:10px">Choose Your Tradition</div>
+    <div class="s-title">Four paths, one Sangam</div>
     <p class="s-sub" style="margin:0 auto 40px; text-align:center">Shoonaya honours the full breadth of dharmic wisdom — Hindu, Sikh, Buddhist, and Jain. Each tradition has its own dedicated experience within one shared community.</p>
   </div>
 
@@ -1412,9 +1522,11 @@ function gcRestart(){
           Sanatan Dharma · हिन्दू धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।<br>मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥</div>
-          <div class="trad-verse-trans">"Your right is to perform your duty; never to the fruits thereof."</div>
-          <div class="trad-verse-source">Bhagavad Gita · 2.47</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Vikrama 2083</div>
+          <div class="trad-verse-script">यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"Whenever righteousness declines and unrighteousness rises, I manifest myself anew."</div>
+          <div class="trad-verse-source">Bhagavad Gita · Chapter 4, Verse 7</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Daily Shloka</span>
@@ -1440,9 +1552,11 @@ function gcRestart(){
           Sikhi · ਸਿੱਖ ਧਰਮ
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ ਅਕਾਲ ਮੂਰਤਿ</div>
-          <div class="trad-verse-trans">"God's Name is Truth. He is the Creator, fearless, without hatred, timeless."</div>
-          <div class="trad-verse-source">Mul Mantar · Guru Granth Sahib Ji</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Nanakshahi 558</div>
+          <div class="trad-verse-script">ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"O my mind, you are the very form of Divine Light — recognise your own origin."</div>
+          <div class="trad-verse-source">Guru Granth Sahib Ji · Ang 441</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Nitnem Banis</span>
@@ -1489,9 +1603,11 @@ function gcRestart(){
           Buddhism · बौद्ध धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">Sabbe sattā sukhitā hontu.</div>
-          <div class="trad-verse-trans">"May all beings be happy."</div>
-          <div class="trad-verse-source">Metta Sutta · Pali Canon</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Buddhist Era 2569</div>
+          <div class="trad-verse-script">Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"Mind is the forerunner of all actions — all things arise from mind, fashioned by mind."</div>
+          <div class="trad-verse-source">Dhammapada · Verse 1</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Dhammapada</span>
@@ -1533,9 +1649,11 @@ function gcRestart(){
           Jainism · जैन धर्म
         </div>
         <div class="trad-verse">
-          <div class="trad-verse-script">परस्परोपग्रहो जीवानाम्।</div>
-          <div class="trad-verse-trans">"Living beings render service to one another."</div>
-          <div class="trad-verse-source">Tattvartha Sutra · 5.21</div>
+          <div class="trad-verse-date">Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552</div>
+          <div class="trad-verse-script">परस्परोपग्रहो जीवानाम् ।</div>
+          <div class="trad-verse-divider"></div>
+          <div class="trad-verse-trans">"The function of souls is to serve one another."</div>
+          <div class="trad-verse-source">Tattvartha Sutra · 5.21 · Umasvati</div>
         </div>
         <div class="trad-feats">
           <span class="trad-feat">Agama Texts</span>
@@ -1552,167 +1670,249 @@ function gcRestart(){
   </div><!-- /trad-panels -->
 </section>
 
-<!-- ── SHLOKA OF THE DAY ──────────────────────────────────────────── -->
-<section class="section" id="shloka">
-  <div class="s-label reveal">Daily Wisdom</div>
-  <div class="s-title reveal">Verse of the Day</div>
-  <div class="s-sub reveal">From Gita to Granth, Dhammapada to Tattvartha — one verse each day from every path of dharma.</div>
 
-  <!-- Glassmorphic tradition selector -->
-  <div class="shlok-tabs-wrap reveal">
-    <div class="shlok-tabs-bar">
-      <span id="shlok-indicator"></span>
-      <button class="shlok-tab active" data-s="hindu"    onclick="switchShloka('hindu')">🕉 Hindu</button>
-      <button class="shlok-tab"        data-s="sikh"     onclick="switchShloka('sikh')">ੴ Sikh</button>
-      <button class="shlok-tab"        data-s="buddhist" onclick="switchShloka('buddhist')">☸ Buddhist</button>
-      <button class="shlok-tab"        data-s="jain"     onclick="switchShloka('jain')">☮ Jain</button>
-    </div>
-    <div id="shlok-progress"><div id="shlok-progress-fill"></div></div>
-  </div>
+<!-- ── 5000-YEAR PROMISE ──────────────────────────────────────────── -->
+<section id="five-thousand">
+<style>
+#five-thousand { background:var(--surface-soft); padding:100px 40px; }
+.ft-grid { display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; max-width:1040px; margin:0 auto; }
+/* Left: pitch copy */
+.ft-left { }
+.ft-left .s-label { text-align:left; margin-bottom:14px; }
+.ft-left .s-title { text-align:left; margin-bottom:20px; }
+.ft-left .ft-pitch { font-size:15px; color:rgba(62,42,31,0.58); line-height:1.85; margin-bottom:28px; }
+.ft-stat-row { display:flex; gap:24px; flex-wrap:wrap; }
+.ft-stat { }
+.ft-stat-num { font-family:var(--fd); font-size:36px; font-weight:600; color:var(--saffron-dk); line-height:1; }
+.ft-stat-label { font-size:11px; color:rgba(62,42,31,0.45); letter-spacing:0.10em; text-transform:uppercase; margin-top:4px; }
+/* Right: timeline */
+.ft-timeline { display:flex; flex-direction:column; gap:0; position:relative; }
+.ft-timeline::before { content:''; position:absolute; left:20px; top:0; bottom:0; width:1px; background:linear-gradient(180deg, transparent, rgba(197,160,89,0.35) 8%, rgba(197,160,89,0.35) 92%, transparent); }
+.ft-node { display:grid; grid-template-columns:40px 1fr; align-items:center; gap:16px; padding:16px 0; }
+.ft-dot-col { display:flex; justify-content:center; align-items:center; position:relative; z-index:1; }
+.ft-dot { width:12px; height:12px; border-radius:50%; border:2px solid; flex-shrink:0; }
+.ft-year { font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(62,42,31,0.35); margin-bottom:3px; }
+.ft-text-name { font-family:var(--fd); font-size:clamp(16px,2vw,20px); font-weight:600; color:var(--ink); line-height:1.2; margin-bottom:2px; }
+.ft-text-sub { font-size:11px; color:rgba(62,42,31,0.48); line-height:1.5; }
+.ft-node.is-now .ft-dot { width:18px; height:18px; border-width:2.5px; box-shadow:0 0 0 4px rgba(197,160,89,0.15), 0 0 16px rgba(197,160,89,0.20); }
+.ft-node.is-now .ft-text-name { font-size:clamp(18px,2.4vw,24px); color:var(--saffron); }
+.ft-node.is-now .ft-year { color:var(--saffron); font-weight:600; }
+@media(max-width:760px){
+  #five-thousand { padding:64px 24px; }
+  .ft-grid { grid-template-columns:1fr; gap:48px; }
+  .ft-left .s-label, .ft-left .s-title { text-align:center; }
+  .ft-left .ft-pitch { text-align:center; }
+  .ft-stat-row { justify-content:center; }
+}
+</style>
+  <div class="ft-grid">
 
-  <!-- Hindu — Bhagavad Gita -->
-  <div class="shlok-panel active" data-t="hindu">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-hindu)"></span>
-        Hindu · Bhagavad Gita
+    <!-- LEFT: pitch copy -->
+    <div class="ft-left reveal">
+      <div class="s-label">A 5,000-Year Story</div>
+      <div class="s-title" style="font-size:clamp(28px,4vw,46px)">Four traditions.<br>One home.<br><em style="color:var(--saffron)">For the first time.</em></div>
+      <p class="ft-pitch">
+        The Bhagavad Gita. The Guru Granth Sahib Ji. The Dhammapada. The Agamas.<br><br>
+        Four living traditions — each with thousands of years of wisdom, millions of daily practitioners, and a global diaspora seeking connection with their roots.<br><br>
+        They have always deserved a home worthy of them. Shoonaya is that home.
+      </p>
+      <div class="ft-stat-row">
+        <div class="ft-stat">
+          <div class="ft-stat-num">1.5B+</div>
+          <div class="ft-stat-label">Dharmic souls worldwide</div>
+        </div>
+        <div class="ft-stat">
+          <div class="ft-stat-num">Pramana</div>
+          <div class="ft-stat-label">Source-grounded wisdom</div>
+        </div>
+        <div class="ft-stat">
+          <div class="ft-stat-num">5,000</div>
+          <div class="ft-stat-label">Years of wisdom</div>
+        </div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vikrama 2083</div>
-      <div class="shloka-sanskrit">
-        यदा यदा हि धर्मस्य ग्लानिर्भवति भारत।<br>
-        अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "Whenever righteousness declines and unrighteousness rises,<br>I manifest myself anew."
-      </div>
-      <div class="shloka-source">Bhagavad Gita · Chapter 4, Verse 7</div>
     </div>
-  </div>
 
-  <!-- Sikh — Guru Granth Sahib -->
-  <div class="shlok-panel" data-t="sikh">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-sikh)"></span>
-        Sikh · Guru Granth Sahib Ji
-      </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Nanakshahi 558</div>
-      <div class="shloka-sanskrit">
-        ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "O my mind, you are the very form of Divine Light —<br>recognise your own origin."
-      </div>
-      <div class="shloka-source">Guru Granth Sahib Ji · Ang 441</div>
-    </div>
-  </div>
+    <!-- RIGHT: timeline -->
+    <div class="ft-timeline reveal">
 
-  <!-- Buddhist — Dhammapada -->
-  <div class="shlok-panel" data-t="buddhist">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-buddhist)"></span>
-        Buddhist · Dhammapada
+      <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-hindu);border-color:var(--c-hindu)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">c. 3500 BCE</div>
+          <div class="ft-text-name">Rigveda</div>
+          <div class="ft-text-sub">The oldest known human text. Sanskrit. Oral. Eternal.</div>
+        </div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Buddhist Era 2569</div>
-      <div class="shloka-sanskrit">
-        Manopubbaṅgamā dhammā, manoseṭṭhā manomayā.
-      </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "Mind is the forerunner of all actions —<br>all things arise from mind, fashioned by mind."
-      </div>
-      <div class="shloka-source">Dhammapada · Verse 1</div>
-    </div>
-  </div>
 
-  <!-- Jain — Tattvartha Sutra -->
-  <div class="shlok-panel" data-t="jain">
-    <div class="shloka-card reveal">
-      <div class="shloka-trad-badge">
-        <span class="shloka-trad-dot" style="background:var(--c-jain)"></span>
-        Jain · Tattvartha Sutra
+      <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-buddhist);border-color:var(--c-buddhist)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">c. 500 BCE</div>
+          <div class="ft-text-name">Tripitaka</div>
+          <div class="ft-text-sub">The Buddha's teachings. Pali. Preserved across Asia.</div>
+        </div>
       </div>
-      <div class="shloka-day">Vaishakha, Shukla Tritiya · Vira Nirvana Samvat 2552</div>
-      <div class="shloka-sanskrit">
-        परस्परोपग्रहो जीवानाम् ।
+
+      <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-jain);border-color:var(--c-jain)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">c. 200 CE</div>
+          <div class="ft-text-name">Tattvartha Sutra</div>
+          <div class="ft-text-sub">Jain cosmology and ethics. The science of liberation.</div>
+        </div>
       </div>
-      <div class="shloka-divider"></div>
-      <div class="shloka-english">
-        "The function of souls is to serve one another."
+
+      <div class="ft-node">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:var(--c-sikh);border-color:var(--c-sikh)"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">1604 CE</div>
+          <div class="ft-text-name">Guru Granth Sahib Ji</div>
+          <div class="ft-text-sub">The living Guru. Multi-faith. The ultimate sangam.</div>
+        </div>
       </div>
-      <div class="shloka-source">Tattvartha Sutra · 5.21 · Umasvati</div>
+
+      <div class="ft-node is-now">
+        <div class="ft-dot-col"><div class="ft-dot" style="background:#C5A059;border-color:#C5A059"></div></div>
+        <div class="ft-content">
+          <div class="ft-year">2026 CE</div>
+          <div class="ft-text-name">Shoonaya</div>
+          <div class="ft-text-sub">One home for all four paths. The next chapter begins now.</div>
+        </div>
+      </div>
+
     </div>
+
   </div>
 </section>
 
 <!-- ── FESTIVALS ──────────────────────────────────────────────────── -->
 <section class="section" id="festivals">
+<style>
+.festival-blessing-row { margin-top:20px; padding-top:18px; border-top:1px solid rgba(200,160,110,0.18); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.festival-scripture { font-size:12px; color:rgba(62,42,31,0.55); font-style:italic; flex:1; min-width:0; line-height:1.5; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.festival-share-btn { display:inline-flex; align-items:center; gap:5px; background:rgba(200,160,110,0.12); border:1px solid rgba(200,160,110,0.28); border-radius:100px; padding:6px 14px; font-size:11px; font-weight:600; color:rgba(62,42,31,0.65); cursor:pointer; white-space:nowrap; transition:all 0.2s; text-decoration:none; letter-spacing:0.03em; flex-shrink:0; }
+.festival-share-btn:hover { background:rgba(200,160,110,0.22); border-color:rgba(200,160,110,0.50); color:var(--saffron-dk); }
+.festival-share-wa  { background:rgba(37,211,102,0.08); border-color:rgba(37,211,102,0.22); color:#1a8c44; }
+.festival-share-wa:hover { background:rgba(37,211,102,0.16); }
+/* Today / Tomorrow pill */
+.days-today    { color:#D4784A !important; font-weight:700; }
+.days-tomorrow { color:var(--saffron) !important; font-weight:600; }
+.days-label-today    { color:#D4784A; font-weight:600; }
+.days-label-tomorrow { color:var(--saffron); }
+</style>
   <div class="s-label reveal">Sacred Calendar</div>
   <div class="s-title reveal">Upcoming Across Traditions</div>
   <div class="s-sub reveal">Never miss a sacred day — personalised to your tradition, timezone, and wherever you are in the world.</div>
 
-  <div class="festivals-grid">
-    <div class="festival-card fc-1 reveal">
-      <div class="festival-date-badge">
-        <div class="dot" style="background:var(--saffron)"></div>
-        12 May 2026
-      </div>
-      <div class="festival-name">Buddha Purnima</div>
-      <div class="festival-deva" style="font-family:var(--fb)">बुद्ध पूर्णिमा · Buddhist</div>
-      <div class="festival-desc">Commemorating the birth, enlightenment, and parinirvana of Gautama Buddha. The holiest day in the Buddhist calendar.</div>
-      <div class="festival-countdown">
-        <div>
-          <div class="days" style="color:var(--saffron)" id="days-1">2</div>
-          <div class="days-label">Days Away</div>
-        </div>
-        <span class="festival-pill fp-s">Full Moon</span>
-      </div>
-    </div>
-
-    <div class="festival-card fc-2 reveal" style="transition-delay:0.1s">
-      <div class="festival-date-badge">
-        <div class="dot" style="background:var(--c-buddhist)"></div>
-        10 Jul 2026
-      </div>
-      <div class="festival-name">Guru Purnima</div>
-      <div class="festival-deva">गुरु पूर्णिमा · Hindu</div>
-      <div class="festival-desc">A day of reverence for all spiritual and academic teachers. Full moon of Ashadha, sacred to Veda Vyasa and the guru-shishya tradition.</div>
-      <div class="festival-countdown">
-        <div>
-          <div class="days" style="color:var(--c-buddhist)" id="days-2">61</div>
-          <div class="days-label">Days Away</div>
-        </div>
-        <span class="festival-pill fp-b">Auspicious</span>
-      </div>
-    </div>
-
-    <div class="festival-card fc-3 reveal" style="transition-delay:0.2s">
-      <div class="festival-date-badge">
-        <div class="dot" style="background:var(--c-jain)"></div>
-        22 Aug 2026
-      </div>
-      <div class="festival-name">Paryushana</div>
-      <div class="festival-deva">पर्यूषण · Jain</div>
-      <div class="festival-desc">The holiest period in the Jain calendar — eight days of fasting, meditation, and seeking forgiveness. Culminates in Samvatsari, the day of universal pardon.</div>
-      <div class="festival-countdown">
-        <div>
-          <div class="days" style="color:var(--c-jain)" id="days-3">104</div>
-          <div class="days-label">Days Away</div>
-        </div>
-        <span class="festival-pill fp-j">Jain Parva</span>
-      </div>
-    </div>
+  <div class="festivals-grid" id="festivals-grid">
+    <!-- Populated dynamically — 3 next upcoming festivals, past ones hidden -->
   </div>
 </section>
+<script>
+(function(){
+  /* ── Full 2026 major festival list ─────────────────────────────────────── */
+  var FESTIVALS_2026 = [
+    // Hindu
+    { date:'2026-01-14', name:'Makar Sankranti',       deva:'मकर संक्रांति',    trad:'hindu',    pill:'Harvest',      slug:'',              verse:'"Surya moves into Capricorn — the light returns."', color:'var(--c-hindu)'  },
+    { date:'2026-01-23', name:'Vasant Panchami',        deva:'वसंत पंचमी',      trad:'hindu',    pill:'Spring',       slug:'',              verse:'"Saraswati, goddess of all wisdom, bless this day."', color:'var(--c-hindu)' },
+    { date:'2026-02-17', name:'Maha Shivaratri',        deva:'महा शिवरात्रि',   trad:'hindu',    pill:'Great Night',  slug:'maha-shivaratri', verse:'"ॐ नमः शिवाय — I bow to the auspicious one."', color:'var(--c-hindu)'  },
+    { date:'2026-03-04', name:'Holi',                   deva:'होली',             trad:'hindu',    pill:'Festival',     slug:'holi',          verse:'"Splash with love, sing with joy — बुरा न मानो होली है!"', color:'var(--c-hindu)' },
+    { date:'2026-03-19', name:'Gudi Padwa',             deva:'गुडी पाडवा',      trad:'hindu',    pill:'New Year',     slug:'',              verse:'"A new year begins — may it bring dharma and abundance."', color:'var(--c-hindu)' },
+    { date:'2026-03-27', name:'Ram Navami',             deva:'राम नवमी',         trad:'hindu',    pill:'Auspicious',   slug:'ram-navami',    verse:'"रामो विग्रहवान् धर्मः — Rama is dharma itself."', color:'var(--c-hindu)' },
+    { date:'2026-03-31', name:'Mahavir Jayanti',        deva:'महावीर जयंती',    trad:'jain',     pill:'Jayanti',      slug:'mahavir-jayanti', verse:'"अहिंसा परमो धर्मः — Non-violence is the highest dharma."', color:'var(--c-jain)' },
+    { date:'2026-04-11', name:'Hanuman Jayanti',        deva:'हनुमान जयंती',    trad:'hindu',    pill:'Jayanti',      slug:'',              verse:'"Jai Hanuman gyan gun sagar — ocean of wisdom and virtue."', color:'var(--c-hindu)' },
+    { date:'2026-04-14', name:'Baisakhi',               deva:'ਵਿਸਾਖੀ',          trad:'sikh',     pill:'Harvest',      slug:'baisakhi',      verse:'"Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh ☬"', color:'var(--c-sikh)'   },
+    { date:'2026-04-21', name:'Akshaya Tritiya',        deva:'अक्षय तृतीया',    trad:'hindu',    pill:'Auspicious',   slug:'',              verse:'"The inexhaustible day — every good deed multiplies."', color:'var(--c-hindu)' },
+    { date:'2026-05-01', name:'Vesak · Buddha Purnima',deva:'बुद्ध पूर्णिमा',  trad:'buddhist', pill:'Full Moon',    slug:'vesak-buddha-purnima', verse:'"Sabbe sattā sukhitā hontu — May all beings be happy."', color:'var(--c-buddhist)' },
+    // Sikh
+    { date:'2026-01-05', name:'Guru Gobind Singh Gurpurab', deva:'ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ', trad:'sikh', pill:'Gurpurab', slug:'guru-gobind-singh-gurpurab', verse:'"Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh ☬"', color:'var(--c-sikh)' },
+    { date:'2026-06-18', name:'Guru Arjan Dev Martyrdom', deva:'ਗੁਰੂ ਅਰਜਨ ਦੇਵ', trad:'sikh',  pill:'Shaheedi',   slug:'',              verse:'"Tera kiya meetha laage — Thy will, O Waheguru, is sweet."', color:'var(--c-sikh)'  },
+    { date:'2026-07-16', name:'Jagannath Rath Yatra',  deva:'जगन्नाथ रथ यात्रा', trad:'hindu', pill:'Yatra',       slug:'',              verse:'"Lord of the Universe — the chariot rolls on sacred ground."', color:'var(--c-hindu)' },
+    { date:'2026-07-29', name:'Guru Purnima',          deva:'गुरु पूर्णिमा',    trad:'all',      pill:'All Traditions', slug:'guru-purnima', verse:'"गुरुः साक्षात् परब्रह्म — The Guru is the Supreme itself."', color:'var(--gold)'   },
+    { date:'2026-07-29', name:'Asalha Puja · Dharma Day', deva:'धम्म चक्क',    trad:'buddhist', pill:'Dharma Day',  slug:'asalha-puja',   verse:'"Dhammaṃ saraṇaṃ gacchāmi — I take refuge in the Dharma."', color:'var(--c-buddhist)' },
+    { date:'2026-07-30', name:'Vassa Begins',          deva:'वस्सा',            trad:'buddhist', pill:'Rains Retreat',slug:'',             verse:'"Three months of stillness — the sangha turns inward."', color:'var(--c-buddhist)' },
+    { date:'2026-08-07', name:'Guru Har Krishan Gurpurab', deva:'ਗੁਰੂ ਹਰਕ੍ਰਿਸ਼ਨ', trad:'sikh', pill:'Gurpurab',   slug:'',              verse:'"Dhan dhan raam daas gur — Blessed, blessed is the Guru."', color:'var(--c-sikh)'  },
+    { date:'2026-08-28', name:'Raksha Bandhan',        deva:'रक्षा बंधन',       trad:'hindu',    pill:'Auspicious',  slug:'',              verse:'"The bond of love — stronger than any thread."', color:'var(--c-hindu)'   },
+    { date:'2026-08-30', name:'Paryushana Parva',      deva:'पर्यूषण',           trad:'jain',     pill:'Jain Parva',  slug:'paryushana',    verse:'"Parasparopagraho jīvānām — Souls serve one another."', color:'var(--c-jain)'   },
+    { date:'2026-09-03', name:'Krishna Janmashtami',   deva:'श्री कृष्ण जन्माष्टमी', trad:'hindu', pill:'Midnight', slug:'krishna-janmashtami', verse:'"Whenever dharma declines, I manifest myself anew."', color:'var(--c-hindu)' },
+    { date:'2026-09-06', name:'Samvatsari',            deva:'संवत्सरी',           trad:'jain',     pill:'Forgiveness', slug:'samvatsari',    verse:'"Khamemi savve jīve — I forgive all beings, may all forgive me."', color:'var(--c-jain)' },
+    { date:'2026-09-14', name:'Ganesh Chaturthi',      deva:'गणेश चतुर्थी',     trad:'hindu',    pill:'10-Day',      slug:'ganesh-chaturthi', verse:'"Vakratunda Mahakaya — remove all obstacles, O Lord."', color:'var(--c-hindu)' },
+    { date:'2026-09-23', name:'Ullambana · Ancestor Day', deva:'पितृ दिवस',     trad:'buddhist', pill:'Ancestors',   slug:'',              verse:'"Transfer merit to departed souls — may they be at peace."', color:'var(--c-buddhist)' },
+    { date:'2026-10-11', name:'Navratri Begins',       deva:'नवरात्रि',           trad:'hindu',    pill:'9 Nights',   slug:'navratri',      verse:'"Sarvamangalamangalye — O Devi, auspicious in all things."', color:'var(--c-hindu)' },
+    { date:'2026-10-20', name:'Dussehra',              deva:'दशहरा',              trad:'hindu',    pill:'Victory',     slug:'',              verse:'"Dharma triumphs — the bow of Rama, the end of Ravana."', color:'var(--c-hindu)' },
+    { date:'2026-11-08', name:'Diwali',                deva:'दीपावली',            trad:'all',      pill:'Festival of Light', slug:'diwali', verse:'"तमसो मा ज्योतिर्गमय — Lead me from darkness into light."', color:'var(--gold)'   },
+    { date:'2026-11-08', name:'Bandhi Chhor Divas',   deva:'ਬੰਦੀ ਛੋੜ ਦਿਵਸ',   trad:'sikh',     pill:'Liberation',  slug:'bandhi-chhor-divas', verse:'"Guru Hargobind walked free — and brought 52 kings with him."', color:'var(--c-sikh)' },
+    { date:'2026-11-23', name:'Guru Nanak Gurpurab',  deva:'ਗੁਰੂ ਨਾਨਕ ਜਯੰਤੀ', trad:'sikh',     pill:'Gurpurab',    slug:'guru-nanak-gurpurab', verse:'"Nanak naam chardi kala, tere bhane sarbatt da bhala ☬"', color:'var(--c-sikh)' },
+    { date:'2026-12-03', name:'Gita Jayanti',          deva:'गीता जयंती',        trad:'hindu',    pill:'Scripture',   slug:'gita-jayanti',  verse:'"कर्मण्येवाधिकारस्ते — Your right is to act, never to the fruits."', color:'var(--c-hindu)' },
+    { date:'2026-12-08', name:'Bodhi Day',             deva:'बोधि दिवस',         trad:'buddhist', pill:'Enlightenment', slug:'bodhi-day',   verse:'"Mind is the forerunner of all actions — Dhammapada 1."', color:'var(--c-buddhist)' },
+    { date:'2026-12-26', name:'Sahibzade Shaheedi Diwas', deva:'ਸਾਹਿਬਜ਼ਾਦੇ',  trad:'sikh',     pill:'Remembrance', slug:'',              verse:'"They gave their lives for faith — the youngest martyrs of Sikhism."', color:'var(--c-sikh)' },
+  ];
+
+  var TRAD_COLOR_VAR = { hindu:'var(--c-hindu)', sikh:'var(--c-sikh)', buddhist:'var(--c-buddhist)', jain:'var(--c-jain)', all:'var(--gold)' };
+  var TRAD_LABEL = { hindu:'Hindu', sikh:'Sikh', buddhist:'Buddhist', jain:'Jain', all:'All Traditions' };
+
+  function dayLabel(diff) {
+    if (diff === 0) return { text:'Today',    cssClass:'days-today',    labelClass:'days-label-today' };
+    if (diff === 1) return { text:'Tomorrow', cssClass:'days-tomorrow', labelClass:'days-label-tomorrow' };
+    return { text: diff, cssClass:'', labelClass:'' };
+  }
+
+  function renderFestivals() {
+    var today = new Date(); today.setHours(0,0,0,0);
+    var upcoming = FESTIVALS_2026
+      .map(function(f){ return Object.assign({}, f, { _d: new Date(f.date + 'T00:00:00'), _diff: Math.round((new Date(f.date + 'T00:00:00') - today) / 86400000) }); })
+      .filter(function(f){ return f._diff >= 0; })
+      .sort(function(a,b){ return a._diff - b._diff; })
+      .slice(0, 3);
+
+    var grid = document.getElementById('festivals-grid');
+    if (!grid) return;
+
+    if (!upcoming.length) {
+      grid.innerHTML = '<p style="text-align:center;color:rgba(62,42,31,0.45);font-size:14px;grid-column:1/-1">All 2026 festivals have passed. New calendar coming soon.</p>';
+      return;
+    }
+
+    var delays = ['0s','0.1s','0.2s'];
+    grid.innerHTML = upcoming.map(function(f, i){
+      var dl = dayLabel(f._diff);
+      var blessingSlug = f.slug;
+      var shareText = encodeURIComponent(f.name + ' — ' + f.verse.replace(/"/g,'').slice(0,80) + '\n\nhttps://shoonaya.com' + (blessingSlug ? '/blessing/' + blessingSlug : ''));
+      var waHref = 'https://wa.me/?text=' + shareText;
+      var cardHref = blessingSlug ? 'https://shoonaya.com/blessing/' + blessingSlug : null;
+
+      return '<div class="festival-card reveal" style="transition-delay:' + delays[i] + ';border-top:3px solid ' + TRAD_COLOR_VAR[f.trad] + '">' +
+        '<div class="festival-date-badge"><div class="dot" style="background:' + TRAD_COLOR_VAR[f.trad] + '"></div>' +
+        new Date(f.date + 'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) +
+        '</div>' +
+        '<div class="festival-name">' + f.name + '</div>' +
+        '<div class="festival-deva">' + f.deva + ' · ' + TRAD_LABEL[f.trad] + '</div>' +
+        '<div class="festival-countdown">' +
+          '<div><div class="days ' + dl.cssClass + '" style="color:' + TRAD_COLOR_VAR[f.trad] + '">' + dl.text + '</div>' +
+          '<div class="days-label ' + dl.labelClass + '">' + (f._diff <= 1 ? '' : 'Days Away') + '</div></div>' +
+          '<span class="festival-pill" style="background:rgba(200,160,110,0.14);color:rgba(62,42,31,0.65)">' + f.pill + '</span>' +
+        '</div>' +
+        '<div class="festival-blessing-row">' +
+          '<div class="festival-scripture">' + f.verse + '</div>' +
+          '<a class="festival-share-btn festival-share-wa" href="' + waHref + '" target="_blank" rel="noopener">📲 Share</a>' +
+          (cardHref ? '<a class="festival-share-btn" href="' + cardHref + '" target="_blank" rel="noopener">🪔 Card</a>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Run immediately and re-check at midnight */
+  renderFestivals();
+  var msToMidnight = new Date(new Date().setHours(24,0,0,0)) - new Date();
+  setTimeout(renderFestivals, msToMidnight);
+})();
+</script>
 
 <!-- ── COMMUNITY ──────────────────────────────────────────────────── -->
 <section class="section community-section" id="community">
-  <div class="s-label reveal">Global Sangam</div>
+  <div class="s-label reveal">Global Sangam · The Zeroists</div>
   <div class="s-title reveal" style="color:var(--ink)">Dharma Has No Borders</div>
-  <div class="s-sub reveal">Connect with practitioners in your city and across the world. Find your local sangam. Discover shared traditions.</div>
+  <div class="s-sub reveal">We call ourselves <strong>Zeroists</strong> — seekers who return to zero, to the source, beyond labels. Hindu, Sikh, Buddhist, Jain: one community, one sangam, across every timezone and tradition.</div>
 
   <div class="community-grid reveal">
     <div class="community-map">
@@ -1735,8 +1935,8 @@ function gcRestart(){
         <div class="city-dot" style="left:65%;top:48%;--d:0.3s;background:var(--saffron)"></div>
       </div>
       <div style="position:relative;z-index:2">
-        <div class="map-label">48 Countries</div>
-        <div class="map-sub">and growing every day</div>
+        <div class="map-label">Global Diaspora</div>
+        <div class="map-sub">built for seekers wherever they live</div>
       </div>
     </div>
 
@@ -1745,44 +1945,44 @@ function gcRestart(){
         <div class="member-card reveal">
           <div class="avatar-circle av-1">A</div>
           <div class="member-info">
-            <div class="member-name">Arjun Sharma</div>
-            <div class="member-loc">London, UK · Computer Science Student</div>
+            <div class="member-name">Daily practice circles</div>
+            <div class="member-loc">Japa, scripture, and sacred-time rhythms</div>
           </div>
-          <span class="member-tag mt-h">Vaishnavism</span>
+          <span class="member-tag mt-h">Practice</span>
         </div>
         <div class="connection-line">
           <div class="cl-dot" style="background:var(--saffron)"></div>
-          Connected through Bhagavad Gita study group
+          One home for many dharmic paths
           <div class="cl-dot" style="background:var(--saffron)"></div>
         </div>
         <div class="member-card reveal" style="transition-delay:0.1s">
           <div class="avatar-circle av-2">G</div>
           <div class="member-info">
-            <div class="member-name">Gurpreet Kaur</div>
-            <div class="member-loc">Vancouver, Canada · NHS Nurse</div>
+            <div class="member-name">Local Mandali discovery</div>
+            <div class="member-loc">Find nearby seekers and community spaces</div>
           </div>
-          <span class="member-tag mt-s">Sikhism</span>
+          <span class="member-tag mt-s">Community</span>
         </div>
         <div class="connection-line">
           <div class="cl-dot" style="background:var(--c-buddhist)"></div>
-          Discovered via tradition-matching
+          Tradition-aware, not one-size-fits-all
           <div class="cl-dot" style="background:var(--c-buddhist)"></div>
         </div>
         <div class="member-card reveal" style="transition-delay:0.2s">
           <div class="avatar-circle av-3">T</div>
           <div class="member-info">
-            <div class="member-name">Thida Myo</div>
-            <div class="member-loc">Singapore · Meditation Teacher</div>
+            <div class="member-name">Shared learning paths</div>
+            <div class="member-loc">Gita, Gurbani, Dhamma, Jain wisdom, and more</div>
           </div>
-          <span class="member-tag mt-b">Theravada</span>
+          <span class="member-tag mt-b">Learning</span>
         </div>
         <div class="member-card reveal" style="transition-delay:0.3s">
           <div class="avatar-circle av-4">V</div>
           <div class="member-info">
-            <div class="member-name">Vivek Jain</div>
-            <div class="member-loc">Surat, India · Entrepreneur</div>
+            <div class="member-name">Family and lineage</div>
+            <div class="member-loc">Kul, sanskaras, gotra, and heritage continuity</div>
           </div>
-          <span class="member-tag mt-j">Jainism</span>
+          <span class="member-tag mt-j">Family</span>
         </div>
       </div>
     </div>
@@ -1793,18 +1993,18 @@ function gcRestart(){
 <section class="section" id="features">
   <div class="s-label reveal">The Platform</div>
   <div class="s-title reveal">The Sangam, wherever you are</div>
-  <div class="s-sub reveal">Every feature you need — daily sadhana, community, scripture, sacred calendar. Live now.</div>
+  <div class="s-sub reveal">Daily sadhana, community, scripture, and sacred-time tools are live now, with deeper native experiences planned later.</div>
 
   <div class="features-grid reveal">
-    <a class="feature-card feature-card-link" href="/discover">
+    <a class="feature-card" href="/home">
       <div class="feature-icon fi-s">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8924A" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L13.8 8.2L20 8.2L14.9 11.8L16.7 18L12 14.4L7.3 18L9.1 11.8L4 8.2L10.2 8.2Z"/></svg>
       </div>
       <div class="feature-name">Daily Wisdom Feed</div>
-      <div class="feature-desc">Morning verses from Vedas, Guru Granth Sahib Ji, Dhammapada, and Agamas — curated by tradition, personalised to your mood.</div>
+      <div class="feature-desc">Morning wisdom, practice prompts, and tradition-aware daily context inside your home dashboard.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/japa">
+    <a class="feature-card" href="/japa">
       <div class="feature-icon fi-ja">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B6FB5" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="5" r="1.5" fill="#9B6FB5"/><circle cx="17.2" cy="8" r="1.5" fill="#9B6FB5"/><circle cx="19" cy="13.5" r="1.5" fill="#9B6FB5"/><circle cx="16" cy="18.5" r="1.5" fill="#9B6FB5"/><circle cx="12" cy="20" r="1.5" fill="#9B6FB5"/></svg>
       </div>
@@ -1812,23 +2012,23 @@ function gcRestart(){
       <div class="feature-desc">Mantra counter with 27/54/108-bead malas, ambient sounds, streak tracking, and session insights for your daily practice.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/panchang">
+    <a class="feature-card" href="/panchang/today">
       <div class="feature-icon fi-k">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4784A" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       </div>
       <div class="feature-name">Sacred Calendar</div>
-      <div class="feature-desc">Live Panchang with tithi, nakshatra, rahu kalam — plus Gurpurab, Paryushana, and Buddhist festival reminders by tradition.</div>
+      <div class="feature-desc">Daily Panchang context with tithi, nakshatra, rahu kalam, and sacred observance reminders by tradition.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/pathshala">
+    <a class="feature-card" href="/pathshala">
       <div class="feature-icon fi-l">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0607A" stroke-width="1.5" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       </div>
       <div class="feature-name">Pathshala — Scripture</div>
-      <div class="feature-desc">700+ texts — Vedas, Guru Granth Sahib Ji, Pali Canon, Jain Agamas — with guided learning paths, audio, and reflection prompts.</div>
+      <div class="feature-desc">Guided scripture study paths with readings, audio practice where available, and reflection prompts.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/mandali">
+    <a class="feature-card" href="/mandali">
       <div class="feature-icon fi-p">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9d7a50" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="3" r="1.5"/><circle cx="12" cy="21" r="1.5"/><circle cx="3" cy="12" r="1.5"/><circle cx="21" cy="12" r="1.5"/><circle cx="5.6" cy="5.6" r="1.5"/><circle cx="18.4" cy="18.4" r="1.5"/><circle cx="18.4" cy="5.6" r="1.5"/><circle cx="5.6" cy="18.4" r="1.5"/></svg>
       </div>
@@ -1836,7 +2036,7 @@ function gcRestart(){
       <div class="feature-desc">Find practitioners in your city, join local sangats, post and discuss. London to Lagos, Mumbai to Melbourne — all in one sangam.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/nitya-karma">
+    <a class="feature-card" href="/nitya-karma">
       <div class="feature-icon fi-g">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       </div>
@@ -1844,7 +2044,7 @@ function gcRestart(){
       <div class="feature-desc">Your personalised morning routine — Nitya Karma, Ashrama duties, guided sadhana plans, and dincharya tracker with streaks.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/kul">
+    <a class="feature-card" href="/kul">
       <div class="feature-icon fi-kl">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5126" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
@@ -1852,15 +2052,15 @@ function gcRestart(){
       <div class="feature-desc">Create your family Kul, track Vansh lineage, share Gotra, and celebrate Sanskars together across generations and continents.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/ai-chat">
+    <a class="feature-card" href="/ai-chat">
       <div class="feature-icon fi-ai">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5B8FB9" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
       <div class="feature-name">Dharma AI Guide</div>
-      <div class="feature-desc">Ask anything — from scripture interpretation to daily practice guidance. Tradition-aware AI trained on Vedic, Sikh, Buddhist, and Jain thought.</div>
+      <div class="feature-desc">Ask for practice guidance and scripture context with a tradition-aware AI guide grounded in Shoonaya sources where available.</div>
       <span class="feature-live">✦ Live Now</span>
     </a>
-    <a class="feature-card feature-card-link" href="/vichaar-sabha">
+    <a class="feature-card" href="/vichaar-sabha">
       <div class="feature-icon fi-vs">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6B8E5A" stroke-width="1.5" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
       </div>
@@ -1871,15 +2071,97 @@ function gcRestart(){
   </div>
 </section>
 
-<!-- ── APP DOWNLOAD ───────────────────────────────────────────────── -->
+<!-- ── KIDS ZONE ──────────────────────────────────────────────────── -->
+<section id="kids-zone" style="background:#0C0A07; padding:100px 40px; text-align:center; position:relative; overflow:hidden;">
+<style>
+#kids-zone::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 75% 65% at 50% 40%, rgba(197,160,89,0.07) 0%, transparent 65%); pointer-events:none; }
+.kz-inner { position:relative; z-index:1; max-width:760px; margin:0 auto; }
+.kz-coming-pill { display:inline-flex; align-items:center; gap:8px; background:rgba(197,160,89,0.10); border:1px solid rgba(197,160,89,0.30); border-radius:100px; padding:6px 18px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#C5A059; margin-bottom:28px; }
+.kz-title { font-family:var(--fd); font-size:clamp(32px,5.5vw,62px); font-weight:300; color:#FAF6EF; line-height:1.08; letter-spacing:-0.01em; margin-bottom:16px; }
+.kz-title em { color:#C5A059; font-style:italic; }
+.kz-sub { font-size:15px; color:rgba(250,246,239,0.45); line-height:1.7; max-width:540px; margin:0 auto 48px; }
+.kz-features { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:680px; margin:0 auto 48px; }
+.kz-feat { background:rgba(255,255,255,0.04); border:1px solid rgba(197,160,89,0.14); border-radius:16px; padding:24px 20px; text-align:left; }
+.kz-feat-icon { font-size:26px; margin-bottom:12px; }
+.kz-feat-name { font-family:var(--fd); font-size:16px; font-weight:600; color:#FAF6EF; margin-bottom:6px; }
+.kz-feat-desc { font-size:11px; color:rgba(250,246,239,0.40); line-height:1.55; }
+.kz-beta-box { background:rgba(197,160,89,0.08); border:1px solid rgba(197,160,89,0.25); border-radius:20px; padding:32px 40px; max-width:520px; margin:0 auto; }
+.kz-beta-title { font-family:var(--fd); font-size:22px; font-weight:400; color:#FAF6EF; margin-bottom:8px; }
+.kz-beta-sub { font-size:13px; color:rgba(250,246,239,0.45); margin-bottom:20px; line-height:1.6; }
+.kz-beta-perks { text-align:left; margin-bottom:24px; }
+.kz-perk { display:flex; align-items:flex-start; gap:10px; font-size:12px; color:rgba(250,246,239,0.58); padding:8px 0; border-bottom:1px solid rgba(197,160,89,0.10); line-height:1.5; }
+.kz-perk:last-child { border-bottom:none; }
+.kz-perk-dot { color:#C5A059; font-size:14px; flex-shrink:0; margin-top:1px; }
+.kz-cta-btn { display:inline-block; background:linear-gradient(135deg,#C5A059,#D4784A); color:#0C0A07; font-weight:700; font-size:13px; letter-spacing:0.04em; padding:13px 36px; border-radius:100px; border:none; cursor:pointer; text-decoration:none; transition:opacity 0.2s; }
+.kz-cta-btn:hover { opacity:0.88; }
+@media(max-width:600px){
+  #kids-zone { padding:64px 20px; }
+  .kz-features { grid-template-columns:1fr 1fr; }
+  .kz-beta-box { padding:24px 20px; }
+}
+</style>
+  <div class="kz-inner">
+    <div class="kz-coming-pill reveal">🌱 Coming Soon · Beta Access</div>
+    <div class="kz-title reveal">A dharmic world<br>built for <em>little seekers.</em></div>
+    <p class="kz-sub reveal">The Kids Zone gives every child a living connection to their tradition — through stories, songs, and sacred play. Parents get a child who knows who they are.</p>
+
+    <div class="kz-features reveal" id="kz-features-grid">
+      <div class="kz-feat">
+        <div class="kz-feat-icon">📖</div>
+        <div class="kz-feat-name">Dharma Stories</div>
+        <div class="kz-feat-desc">Ramayana, Jataka Tales, Sikh Saakhis, Jain Panchtantra — narrated and illustrated for ages 4–14.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🎵</div>
+        <div class="kz-feat-name">Kids Mantras</div>
+        <div class="kz-feat-desc">Guided shloka and shabad learning — phonetically broken down for young voices. Parents get notified on completion.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🗓️</div>
+        <div class="kz-feat-name">Festival Explorer</div>
+        <div class="kz-feat-desc">Age-appropriate explanations of every festival — with a "Tell your grandparent" prompt built in.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🌍</div>
+        <div class="kz-feat-name">Dharma Explorers</div>
+        <div class="kz-feat-desc">A gentle discovery game across all 4 traditions — builds cross-tradition literacy from childhood.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">👨‍👩‍👧</div>
+        <div class="kz-feat-name">Parent Dashboard</div>
+        <div class="kz-feat-desc">See what your child learned this week — with conversation starters to bring it home.</div>
+      </div>
+      <div class="kz-feat">
+        <div class="kz-feat-icon">🏆</div>
+        <div class="kz-feat-name">Sharable Milestones</div>
+        <div class="kz-feat-desc">When your child completes a story, they get a shareable card — designed to delight grandparents.</div>
+      </div>
+    </div>
+
+    <div class="kz-beta-box reveal">
+      <div class="kz-beta-title">Kids Zone is coming next.</div>
+      <div class="kz-beta-sub">Kids Zone is in development, with beta access planned when it is ready.</div>
+      <div class="kz-beta-perks">
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>Kids Zone beta access when it is ready</span></div>
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>Parent-friendly learning paths for stories, songs, festivals, and values</span></div>
+        <div class="kz-perk"><span class="kz-perk-dot">✦</span><span>Beta feedback opportunities when the Kids Zone opens</span></div>
+      </div>
+      <button class="kz-cta-btn" onclick="scrollToCta()">Explore Shoonaya →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── APP / WEB ───────────────────────────────────────────────── -->
 <section class="download-section" id="download">
-  <div class="s-label reveal" style="text-align:center">Now Live on Web · Mobile Coming Soon</div>
-  <div class="s-title reveal" style="text-align:center">The Sangam in your pocket</div>
-  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Your daily sadhana, community, and sacred calendar — already live at <strong>shoonaya.app</strong> and arriving on iOS &amp; Android on June 17, 2026.</p>
+  <div class="s-label reveal" style="text-align:center">Web App · Live Now</div>
+  <div class="s-title reveal" style="text-align:center">Your sacred home,<br>on every screen.</div>
+  <p class="s-sub reveal" style="text-align:center;margin:0 auto 56px">Shoonaya is live as a web app. Use it in your browser on any device — phone, tablet, or desktop. Native iOS and Android apps are planned later.</p>
 
   <div class="download-phones reveal">
-    <a class="phone-mockup main" href="https://sanatana-sangam-two.vercel.app/login" aria-label="Log in to Shoonaya web app">
-      <span class="phone-status live"><span class="pulse-dot"></span>Live web</span>
+
+    <!-- Web — primary -->
+    <a class="phone-mockup main" href="https://shoonaya.com" aria-label="Open Shoonaya web app">
+      <span class="phone-status live"><span class="pulse-dot"></span>Web · Jun 17</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <circle cx="16" cy="16" r="11.5" stroke="currentColor" stroke-width="1.4"/>
@@ -1888,8 +2170,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">Use it today</div>
-        <p class="phone-desc">Open the full web app now for sadhana, Pathshala, Panchang, Mandali, and Kul.</p>
+        <div class="phone-label">Web App</div>
+        <p class="phone-desc">Full experience in any browser — sadhana, Panchang, Kul, Mandali, Pathshala, and more. No install needed.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -1897,8 +2179,10 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </a>
+
+    <!-- iOS — coming soon -->
     <div class="phone-mockup sikh">
-      <span class="phone-status"><span class="pulse-dot"></span>iOS soon</span>
+      <span class="phone-status cs-pill anim-shimmer">🌱 Coming Soon</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <path d="M20.5 4.5c.1 2.4-1.6 4.5-3.8 4.8-.3-2.2 1.3-4.3 3.8-4.8Z" fill="currentColor" opacity=".85"/>
@@ -1906,8 +2190,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">iPhone ready</div>
-        <p class="phone-desc">Native reminders, daily practice flow, and calm mobile-first rituals are being prepared.</p>
+        <div class="phone-label">iPhone App</div>
+        <p class="phone-desc">Native iOS experience is planned later. Use the live web app today, including Add to Home Screen on Safari.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -1915,8 +2199,10 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </div>
+
+    <!-- Android — coming soon -->
     <div class="phone-mockup jain">
-      <span class="phone-status"><span class="pulse-dot"></span>Android soon</span>
+      <span class="phone-status cs-pill anim-shimmer">🌱 Coming Soon</span>
       <div class="phone-icon-wrap">
         <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
           <path d="M9 12.5h14v10.8c0 2.3-1.9 4.2-4.2 4.2h-5.6C10.9 27.5 9 25.6 9 23.3V12.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
@@ -1925,8 +2211,8 @@ function gcRestart(){
         </svg>
       </div>
       <div class="phone-copy">
-        <div class="phone-label">Android ready</div>
-        <p class="phone-desc">Built for fast access to mala, sacred calendar, family, and community wherever you are.</p>
+        <div class="phone-label">Android App</div>
+        <p class="phone-desc">Native Android experience is planned later. Use the live web app today, including browser install where supported.</p>
       </div>
       <div class="phone-screen-lines">
         <div class="phone-screen-line accent"></div>
@@ -1934,92 +2220,194 @@ function gcRestart(){
         <div class="phone-screen-line"></div>
       </div>
     </div>
+
   </div>
 
-  <div class="download-buttons reveal">
-    <!-- App Store -->
-    <a class="dl-btn" href="#" onclick="return false;" title="Coming soon">
-      <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.1)"/>
-        <path d="M17.5 8.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM10 22l2.5-4.5L15 21l2.5-4.5L20 22" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M11 13.5l4-6 4 6" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="dl-btn-text">
-        <span class="dl-btn-sub">Download on the</span>
-        <span class="dl-btn-name">App Store</span>
-      </div>
-      <div class="dl-coming-tag">Soon</div>
-    </a>
-    <!-- Google Play -->
-    <a class="dl-btn" href="#" onclick="return false;" title="Coming soon">
-      <svg class="dl-btn-icon" viewBox="0 0 30 30" fill="none">
-        <path d="M15 3C8.373 3 3 8.373 3 15s5.373 12 12 12 12-5.373 12-12S21.627 3 15 3z" fill="rgba(255,255,255,0.1)"/>
-        <path d="M9 8l12 7-12 7V8z" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linejoin="round"/>
-      </svg>
-      <div class="dl-btn-text">
-        <span class="dl-btn-sub">Get it on</span>
-        <span class="dl-btn-name">Google Play</span>
-      </div>
-      <div class="dl-coming-tag">Soon</div>
-    </a>
+  <p class="download-note">Web app live now · Native iOS and Android apps planned later</p>
+  <div class="install-guide reveal" aria-label="Install Shoonaya web app">
+    <div class="install-guide-card">
+      <div class="install-guide-title">Install on iPhone</div>
+      <ol class="install-guide-list">
+        <li>Open Shoonaya in Safari.</li>
+        <li>Tap the Share button.</li>
+        <li>Choose Add to Home Screen, then tap Add.</li>
+      </ol>
+    </div>
+    <div class="install-guide-card">
+      <div class="install-guide-title">Install on Android</div>
+      <ol class="install-guide-list">
+        <li>Open Shoonaya in Chrome.</li>
+        <li>Tap the browser menu.</li>
+        <li>Choose Install app or Add to Home screen.</li>
+      </ol>
+    </div>
   </div>
-
-  <p class="download-note">Mobile apps arriving June 17, 2026 · <span class="download-notify-link" onclick="scrollToCta()">Join as a founding member</span> to be first in line</p>
 </section>
 
 <!-- ── CTA / PRE-REGISTER ─────────────────────────────────────────── -->
 <section class="cta-section" id="cta-section">
   <div class="cta-bg"></div>
   <div class="reveal" style="position:relative">
-    <div class="cta-badge"><div class="hero-pill-dot"></div>Founding Members — Only 1,000 Spots</div>
-    <h2 class="cta-h">Claim your place as<br>a <em>Sthapaka</em>.</h2>
-    <p class="cta-sub">The first 1,000 members receive a permanent Sthapaka badge, your founding number on your profile, and exclusive founding-member perks — forever.</p>
-
-    <!-- CTA Step 1: Email -->
-    <div id="cta-email-wrap">
-      <form class="cta-form" id="cta-form" onsubmit="handleCtaSignup(event)">
-        <input class="cta-input" id="cta-email" type="email" placeholder="your@email.com" required>
-        <button class="cta-btn" id="cta-submit-btn" type="submit">Claim Sthapaka Spot</button>
-      </form>
+    <h2 class="cta-h">Start Your Journey</h2>
+    <p class="cta-sub">Begin your daily sadhana inside Shoonaya.</p>
+    <div class="cta-direct-actions">
+      <a class="cta-fields-submit cta-direct-link" href="/signup">Create your account</a>
+      <a class="cta-note cta-signin-link" href="/login">Already have an account? Sign in</a>
     </div>
+  </div>
+</section>
 
-    <!-- CTA Step 2: Tradition -->
-    <div class="cta-step2" id="cta-step2" style="display:none">
-      <p class="step2-prompt">🙏 Which tradition do you follow?</p>
-      <div class="cta-trad-grid">
-        <div class="cta-trad-pill" data-t="hindu"    onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ॐ</span>Hindu</div>
-        <div class="cta-trad-pill" data-t="sikh"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">ੴ</span>Sikh</div>
-        <div class="cta-trad-pill" data-t="buddhist" onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☸</span>Buddhist</div>
-        <div class="cta-trad-pill" data-t="jain"     onclick="selectCtaTrad(this)"><span class="cta-pill-icon">☮</span>Jain</div>
+<!-- ── FAQ ────────────────────────────────────────────────────────── -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <p class="faq-label reveal">Frequently Asked Questions</p>
+    <h2 class="faq-heading reveal">Everything you want to <em>know.</em></h2>
+
+    <div class="faq-list" itemscope itemtype="https://schema.org/FAQPage">
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">What is Shoonaya?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Shoonaya is a spiritual companion app built for seekers of Sanatan, Sikh, Jain and Buddhist wisdom. It brings Daily Dharma, Panchang, scripture, japa, sacred festivals, and community into one living space — personalised to your tradition, your language, and your timezone. The name comes from <strong>Shoonya</strong> — the Sanskrit word for zero, emptiness, and infinite potential. <a href="/what-is-shoonaya">Learn more →</a>
+          </div>
+        </div>
       </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is Shoonaya only for Hindus?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            No. Shoonaya is built for <strong>four dharmic traditions</strong> — Sanatan (Hindu), Sikh, Jain and Buddhist. The app adapts its content, calendar, scripture and community features based on your tradition. A Sikh user sees Gurbani, Gurpurab reminders and Sikh community content. A Buddhist user sees Dhamma teachings, Pali texts and mindfulness practices. Everyone belongs here.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Does Shoonaya work outside India?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Yes — Shoonaya is built <strong>specifically for the global diaspora</strong>. Whether you are in London, Toronto, Dubai, Singapore, Sydney or New York, the app finds temples and gurduwaras near you, shows your local Panchang timings, and connects you with your local community. The spiritual home travels with you.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is Shoonaya free?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Core features are completely free — Daily Dharma, Panchang, japa counter, scripture library, festival calendar and the Tirtha Map. <strong>The tradition should never be behind a paywall.</strong> Premium features for deeper community spaces, family lineage tools and advanced learning paths are available through Shoonaya Premium.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">How is Shoonaya different from Headspace, Calm or other meditation apps?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Headspace and Calm are Western mindfulness products. Shoonaya is rooted in <strong>living dharmic tradition</strong> — with actual scripture, Panchang, japa, community, family lineage, and sacred calendar built in. It is not generic wellness. It knows what Ekadashi is, who Guru Nanak Dev Ji was, and what the Dhammapada says. It is built by and for people who already have a spiritual home — they just need a digital one.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is my spiritual data private?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Yes. Your japa count, prayers, reflections and check-ins are <strong>private by default</strong>. You choose what to share — with family, your local community (Mandali), or publicly. Your spiritual practice is yours. We do not sell personal data. <a href="/privacy">Read our Privacy Policy →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Who are Zeroists?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            <strong>Zeroists</strong> is the name of our community — seekers who return to zero, to the source, beyond labels and ego.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is Shoonaya live?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Shoonaya is live now as a web app. You can enter from your browser today; native iOS and Android apps are planned later.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">How do I install Shoonaya as a web app?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            On iPhone, open Shoonaya in Safari, tap Share, then Add to Home Screen. On Android, open Shoonaya in Chrome, tap the browser menu, then choose Install app or Add to Home screen.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Are native iOS and Android apps available?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Not yet. Shoonaya is live as a web app today. Native iOS and Android apps are planned later, but the web app already works on phone, tablet, and desktop.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <button class="faq-q" aria-expanded="false">
+          <span class="faq-q-text" itemprop="name">Is Kids Zone live?</span>
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="faq-a" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+          <div class="faq-a-inner" itemprop="text">
+            Kids Zone is not live yet. It is a Coming Next area for stories, songs, festivals, and parent-friendly learning paths.
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- CTA Step 3: Founding number reveal -->
-    <div id="cta-reveal" style="display:none;text-align:center">
-      <div class="cta-reveal-card">
-        <div class="cta-reveal-label">Your Founding Number</div>
-        <div id="cta-found-num" style="font-family:var(--fd);font-size:52px;font-weight:700;color:#D88A1C;line-height:1">#—</div>
-        <div class="cta-reveal-sub">Sthapaka · स्थापक</div>
-      </div>
-      <div id="cta-success" class="success-msg" style="display:block;margin-bottom:12px"></div>
-      <p id="cta-registration-feedback" class="registration-feedback cta-registration-feedback"></p>
-      <p id="cta-share-copy" class="share-copy-text cta-share-copy"></p>
-      <div id="cta-share-row" class="sj-share-row" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button class="sj-share-btn cta-share-copy" onclick="ctaShareWhatsApp()">📲 WhatsApp</button>
-        <button class="sj-share-btn cta-share-copy" onclick="ctaShareTwitter()">🐦 X / Twitter</button>
-        <button class="sj-share-btn cta-share-copy" onclick="ctaCopyLink()">🔗 Copy Link</button>
-      </div>
-      <p style="font-size:12px;color:rgba(62,42,31,0.48);margin-top:12px">A welcome email with your perks is on its way 🪔</p>
-    </div>
-
-    <p class="cta-note" id="cta-note">Founding spots are limited · No spam, ever</p>
   </div>
 </section>
 
 <!-- ── FOOTER ─────────────────────────────────────────────────────── -->
 <footer>
   <div class="footer-top">
-    <div class="footer-brand">Sanatan <span>Sangam</span></div>
+    <div style="display:flex;align-items:center;gap:10px;opacity:0.9;">
+      <img src="/icons/icon-192x192.png" alt="Shoonaya" style="width:32px;height:32px;border-radius:10px;display:block;object-fit:cover;" />
+      <span style="font-family:var(--fd);font-size:22px;font-weight:700;color:var(--ink);letter-spacing:0.03em;line-height:1;">Shoonaya</span>
+    </div>
     <div class="footer-links">
       <a href="/about">About</a>
       <a href="/privacy">Privacy</a>
@@ -2032,11 +2420,7 @@ function gcRestart(){
     <div class="footer-badges">
       <!-- Made in India -->
       <div class="made-india">
-        <div class="india-flag">
-          <div class="flag-s flag-top"></div>
-          <div class="flag-s flag-mid"></div>
-          <div class="flag-s flag-bot"></div>
-        </div>
+        <div class="india-flag">🇮🇳</div>
         <span>Proudly Built in India</span>
       </div>
       <!-- Trust badges -->
@@ -2045,15 +2429,11 @@ function gcRestart(){
         GDPR Friendly
       </div>
       <div class="trust-badge">
-        <div class="trust-dot" style="background:var(--gold)"></div>
-        No Ads · Ever
-      </div>
-      <div class="trust-badge">
         <div class="trust-dot" style="background:var(--saffron)"></div>
         Open to All Dharmic Paths
       </div>
     </div>
-    <div class="footer-copy">© 2026 Shoonaya · Made with 🙏 in Bharat</div>
+    <div class="footer-copy">© 2026 Shoonaya App — Daily Dharma, Panchang, Scripture &amp; Community for Sanatan, Sikh, Jain and Buddhist seekers. Made with 🙏 in Bharat</div>
   </div>
 </footer>
 </div><!-- /#main-page -->
@@ -2214,7 +2594,7 @@ function initMainPage() {
 })();
 
 /* ─── COUNTDOWN ──────────────────────────────────────────────────────────── */
-const LAUNCH = new Date('2026-06-17T00:00:00+05:30'); // IST midnight
+const LAUNCH = null; // Launch countdown disabled: Shoonaya is live.
 
 function updateCountdown() {
   const daysEl = document.getElementById('cd-days');
@@ -2223,7 +2603,7 @@ function updateCountdown() {
   const secEl  = document.getElementById('cd-sec');
   if (!daysEl || !hrsEl || !minEl || !secEl) return;
 
-  const diff = LAUNCH - Date.now();
+  const diff = -1;
   if (diff <= 0) {
     const wrap = document.querySelector('.countdown-wrap');
     if (wrap) wrap.innerHTML = '<div style="font-family:var(--fd);font-size:36px;color:var(--saffron)">🎉 We are live!</div>';
@@ -2243,12 +2623,18 @@ updateCountdown();
 setInterval(updateCountdown, 1000);
 
 /* ─── SCROLL REVEAL ──────────────────────────────────────────────────────── */
-// IntersectionObserver handles below-fold elements as user scrolls
 const revealObs = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
   });
 }, { threshold: 0.06 });
+
+// Additional observer for parent-controlled stagger animations
+const staggerObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); staggerObs.unobserve(e.target); }
+  });
+}, { threshold: 0.08 });
 
 // setTimeout guarantees the browser has fully laid out the newly-visible #main-page
 // before we check which elements are in the viewport (RAF alone is not sufficient
@@ -2258,11 +2644,21 @@ setTimeout(() => {
   document.querySelectorAll('.reveal').forEach(el => {
     const r = el.getBoundingClientRect();
     if (r.bottom > 0 && r.top < vh + 80) {
-      // In or just below initial viewport — show immediately
       el.classList.add('visible');
     } else {
-      // Below fold — let IntersectionObserver handle it on scroll
       revealObs.observe(el);
+    }
+  });
+
+  // Observe stagger-parent elements
+  ['.ft-timeline', '.kz-features', '.stats-band'].forEach(sel => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < vh + 80) {
+      el.classList.add('visible');
+    } else {
+      staggerObs.observe(el);
     }
   });
 }, 80);
@@ -2307,7 +2703,7 @@ const d1 = document.getElementById('days-1');
 const d2 = document.getElementById('days-2');
 const d3 = document.getElementById('days-3');
 if (d1) d1.textContent = daysUntil('2026-05-12');
-if (d2) d2.textContent = daysUntil('2026-07-10');
+if (d2) d2.textContent = daysUntil('2026-07-29');
 if (d3) d3.textContent = daysUntil('2026-08-22');
 
 /* ─── TRADITION TABS — glassmorphic sliding pill + auto-cycle ────────────── */
@@ -2435,139 +2831,9 @@ if (tradBar) {
 }
 
 
-/* ─── CTA SIGNUP — 3-stage flow mirroring splash ─────────────────────────── */
-let ctaEmail = '', ctaTrad = '', ctaFoundingNum = 0, ctaAlreadyRegistered = false;
-
-function landingShareUrl() {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    return window.location.origin;
-  }
-  return 'https://shoonaya.app';
-}
-
-function buildSthapakaShareText(num, trad) {
-  const number = num ? `#${num}` : 'a founding member';
-  const tradLabel = {
-    hindu: 'Hindu',
-    sikh: 'Sikh',
-    buddhist: 'Buddhist',
-    jain: 'Jain',
-  }[trad] || 'dharma';
-  return `I just became Sthapaka ${number} of Shoonaya — a space for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Join the founding members: ${landingShareUrl()}`;
-}
-
-async function postWaitlist(payload) {
-  const res = await fetch('/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.error) {
-    throw new Error(data.error || 'Could not save registration. Please try again.');
-  }
-  return data;
-}
-
-function writeText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-function setShareCopy(prefix, num, trad) {
-  writeText(`${prefix}-share-copy`, buildSthapakaShareText(num, trad));
-}
-
-function setRegistrationFeedback(prefix, alreadyRegistered, num) {
-  const copy = alreadyRegistered
-    ? `This email is already registered. Your Sthapaka number remains #${num || '—'}.`
-    : `Registration saved. Your Sthapaka number is #${num || '—'}.`;
-  writeText(`${prefix}-registration-feedback`, copy);
-}
-
-async function copyShareText(text, buttonSelector, resetText) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    document.body.removeChild(area);
-  }
-  const btn = document.querySelector(buttonSelector);
-  if (btn) {
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = resetText; }, 2000);
-  }
-}
-
-async function handleCtaSignup(e) {
-  e.preventDefault();
-  ctaEmail = document.getElementById('cta-email').value.trim();
-  const btn = document.getElementById('cta-submit-btn');
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, source: 'cta', timezone: tz });
-    ctaFoundingNum = data.foundingNumber ?? 0;
-    ctaAlreadyRegistered = !!data.alreadyRegistered;
-    document.getElementById('cta-email-wrap').style.display = 'none';
-    document.getElementById('cta-step2').style.display      = 'block';
-  } catch (err) {
-    document.getElementById('cta-note').textContent = err.message || 'Could not save registration. Please try again.';
-    btn.textContent = 'Claim Sthapaka Spot'; btn.disabled = false;
-  }
-}
-
-async function selectCtaTrad(pill) {
-  const trad = pill.dataset.t;
-  ctaTrad = trad;
-  document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.classList.remove('chosen'));
-  pill.classList.add('chosen');
-  document.querySelectorAll('#cta-step2 .cta-trad-pill').forEach(p => p.style.pointerEvents = 'none');
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: ctaEmail, tradition: trad, source: 'cta', timezone: tz });
-    if (data.foundingNumber) ctaFoundingNum = data.foundingNumber;
-    ctaAlreadyRegistered = !!data.alreadyRegistered;
-  } catch { /* non-blocking */ }
-  const labels = { hindu:'Hindu Sadhaka', sikh:'Sikh Sevak', buddhist:'Buddhist Practitioner', jain:'Jain Sadhak' };
-  document.getElementById('cta-step2').style.display  = 'none';
-  document.getElementById('cta-reveal').style.display = 'block';
-  document.getElementById('cta-found-num').textContent = ctaFoundingNum ? `#${ctaFoundingNum}` : '#—';
-  document.getElementById('cta-success').textContent  = `Welcome, ${labels[trad] ?? 'Founding Member'}. Jai ho!`;
-  setRegistrationFeedback('cta', ctaAlreadyRegistered, ctaFoundingNum);
-  setShareCopy('cta', ctaFoundingNum, trad);
-  triggerSthapakaCelebration('cta-reveal');
-  document.getElementById('cta-note').style.display   = 'none';
-  _updateFoundingCount(ctaFoundingNum);
-}
-
-function ctaShareWhatsApp() {
-  const text = encodeURIComponent(buildSthapakaShareText(ctaFoundingNum, ctaTrad));
-  window.open(`https://wa.me/?text=${text}`, '_blank');
-}
-
-function ctaShareTwitter() {
-  const text = encodeURIComponent(buildSthapakaShareText(ctaFoundingNum, ctaTrad));
-  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-}
-
-function ctaCopyLink() {
-  copyShareText(buildSthapakaShareText(ctaFoundingNum, ctaTrad), '#cta-share-row .sj-share-btn:last-child', '🔗 Copy Link');
-}
-
 /* ─── SCROLL TO CTA ──────────────────────────────────────────────────────── */
 function scrollToCta() {
-  document.getElementById('cta-section').scrollIntoView({ behavior: 'smooth' });
-  setTimeout(() => {
-    const el = document.getElementById('cta-email');
-    if (el && !document.getElementById('cta-reveal').style.display) el.focus();
-  }, 600);
+  window.location.href = '/signup';
 }
 
 /* ─── VERSE / SHLOKA TABS — independent cycle from tradition tabs ─────── */
@@ -2675,11 +2941,6 @@ startShlokProgress();
 
 /* expose onclick handlers to global scope */
 window.scrollToCta     = scrollToCta;
-window.handleCtaSignup = handleCtaSignup;
-window.selectCtaTrad   = selectCtaTrad;
-window.ctaShareWhatsApp = ctaShareWhatsApp;
-window.ctaShareTwitter  = ctaShareTwitter;
-window.ctaCopyLink      = ctaCopyLink;
 window.switchTrad      = switchTrad;
 window.switchShloka    = switchShloka;
 
@@ -2687,24 +2948,17 @@ window.switchShloka    = switchShloka;
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SKY CANVAS — splash entry animation
-   Nebula wisps · Stars · Shooting stars · 3 bands · Rashi · 27 Nakshatras
-   Dual mandala · Floaters · Mouse parallax · Mobile-aware
+   Nebula wisps · Stars · Shooting stars · Dual mandala · Floaters · Parallax
 ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   const cv  = document.getElementById('sky-canvas');
   if (!cv) return;
   const ctx = cv.getContext('2d');
   let W, H, cx, cy, maxR, mAng = 0, t = 0, lastT = 0;
-  let stars = [], glowStars = [], planets = [], naks = [], floaters = [], meteors = [], orbitMeteors = [], galaxyDust = [];
+  let stars = [], glowStars = [], floaters = [], meteors = [];
   let mx = 0, my = 0, rawMX = 0, rawMY = 0; // parallax
   let nextMeteorIn = 0.35 + Math.random() * 0.9;
 
-  const NAKS = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra',
-    'Punarvasu','Pushya','Ashlesha','Magha','P.Phalguni','U.Phalguni',
-    'Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha',
-    'Mula','P.Ashadha','U.Ashadha','Shravana','Dhanishtha',
-    'Shatabhisha','P.Bhadra','U.Bhadra','Revati'];
-  const RASHI = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
   const GPOOL = [
     { ch:'ॐ',  fam:"'Noto Serif Devanagari',serif",                              col:'#E8A030' },
     { ch:'ੴ',  fam:"'Noto Sans Gurmukhi',sans-serif",                            col:'#5BA4D4' },
@@ -2720,7 +2974,7 @@ window.switchShloka    = switchShloka;
     H = cv.height = window.innerHeight;
     cx = W / 2; cy = H / 2;
     maxR = Math.min(W, H) * 0.43;
-    buildStars(); buildGlowStars(); buildPlanets(); buildNaks(); buildFloaters(); buildOrbitMeteors(); buildGalaxyDust();
+    buildStars(); buildGlowStars(); buildFloaters();
   }
 
   function buildStars() {
@@ -2737,27 +2991,6 @@ window.switchShloka    = switchShloka;
         col: Math.random() < 0.78 ? '#FFFEF8' : (Math.random() < 0.5 ? '#FFD28A' : '#AACEFF'),
         depth: 0.3 + Math.random() * 0.7, // parallax depth layer
       });
-    }
-  }
-
-  function buildNaks() {
-    naks = [];
-    const R = maxR * 0.86;
-    for (let i = 0; i < 27; i++) {
-      const ang = (i / 27) * Math.PI * 2 - Math.PI / 2;
-      const nc  = 2 + Math.floor(sr(i * 5) * 3);
-      const pts = [];
-      for (let j = 0; j < nc; j++) {
-        pts.push({
-          dx:   (sr(i * 11 + j * 3)     - 0.5) * 28,
-          dy:   (sr(i * 11 + j * 3 + 1) - 0.5) * 28,
-          r:    0.8  + sr(i * 11 + j * 3 + 2) * 1.4,
-          base: 0.45 + sr(i * 11 + j * 3 + 3) * 0.45,
-          freq: 0.4  + sr(i * 11 + j * 3 + 4) * 0.9,
-          ph:         sr(i * 11 + j * 3 + 5) * Math.PI * 2,
-        });
-      }
-      naks.push({ ang, R, pts, name: NAKS[i] });
     }
   }
 
@@ -2780,72 +3013,28 @@ window.switchShloka    = switchShloka;
 
   function buildGlowStars() {
     glowStars = [];
-    // 14 large hero stars scattered across the sky
-    for (let i = 0; i < 14; i++) {
-      glowStars.push({
-        x: sr(i * 7 + 1) * W,
-        y: sr(i * 7 + 2) * H,
-        r: 2.5 + sr(i * 7 + 3) * 3.5,          // 2.5–6px
-        glowR: 10 + sr(i * 7 + 4) * 20,         // glow halo radius
-        base: 0.55 + sr(i * 7 + 5) * 0.35,
+    // 6 large hero stars — gradients pre-baked at build time (not recreated each frame)
+    for (let i = 0; i < 6; i++) {
+      const x     = sr(i * 7 + 1) * W;
+      const y     = sr(i * 7 + 2) * H;
+      const r     = 2.5 + sr(i * 7 + 3) * 3.5;
+      const glowR = 12 + sr(i * 7 + 4) * 18;
+      const base  = 0.55 + sr(i * 7 + 5) * 0.35;
+      const col   = i % 4 === 0 ? '#FFD28A' : i % 4 === 1 ? '#AACEFF' : i % 4 === 2 ? '#FFB8C8' : '#FFFEF8';
+      // Bake gradient once; globalAlpha scales it per frame
+      const grd = ctx.createRadialGradient(x, y, 0, x, y, glowR);
+      grd.addColorStop(0,   `rgba(255,254,248,${(base * 0.38).toFixed(3)})`);
+      grd.addColorStop(0.4, `rgba(255,254,248,${(base * 0.13).toFixed(3)})`);
+      grd.addColorStop(1,   'rgba(255,254,248,0)');
+      glowStars.push({ x, y, r, glowR, base, col, grd,
         freq: 0.18 + sr(i * 7 + 6) * 0.55,
-        ph: sr(i * 7 + 7) * Math.PI * 2,
-        col: i % 4 === 0 ? '#FFD28A' : i % 4 === 1 ? '#AACEFF' : i % 4 === 2 ? '#FFB8C8' : '#FFFEF8',
+        ph:   sr(i * 7 + 7) * Math.PI * 2,
       });
     }
-  }
-
-  function buildGalaxyDust() {
-    galaxyDust = [];
-    const n = W < 600 ? 160 : 360;
-    for (let i = 0; i < n; i++) {
-      const along = (Math.random() - 0.5) * W * 1.55;
-      const across = (Math.random() - 0.5) * Math.min(W, H) * 0.28;
-      galaxyDust.push({
-        along,
-        across,
-        r: 0.35 + Math.random() * 1.25,
-        op: 0.05 + Math.random() * 0.18,
-        ph: Math.random() * Math.PI * 2,
-        drift: 0.15 + Math.random() * 0.35,
-        col: Math.random() < 0.10 ? '#FFD28A' : '#FFFEF8',
-      });
-    }
-  }
-
-  function buildOrbitMeteors() {
-    orbitMeteors = [];
-    const count = W < 600 ? 3 : 5;
-    for (let i = 0; i < count; i++) {
-      orbitMeteors.push({
-        a: (i / count) * Math.PI * 2,
-        speed: 0.08 + sr(i + 411) * 0.12,
-        r: maxR * (0.42 + sr(i + 421) * 0.44),
-        len: 34 + sr(i + 431) * 72,
-        op: 0.18 + sr(i + 441) * 0.24,
-      });
-    }
-  }
-
-  function buildPlanets() {
-    planets = [
-      // amber/golden — Jupiter-like, large
-      { x: W * sr(101), y: H * sr(102) * 0.6, r: 11 + sr(103) * 8, col: '#C88830', glow: '#E8A030', op: 0.55, freq: 0.12, ph: 0.0 },
-      // dusty rose — Mars-like
-      { x: W * sr(111), y: H * (0.1 + sr(112) * 0.5), r: 6 + sr(113) * 5, col: '#A0405A', glow: '#C85870', op: 0.45, freq: 0.18, ph: 1.8 },
-      // blue-indigo — Neptune-like, small
-      { x: W * (0.6 + sr(121) * 0.35), y: H * sr(122) * 0.45, r: 4 + sr(123) * 4, col: '#2A5080', glow: '#4080C0', op: 0.38, freq: 0.22, ph: 3.4 },
-    ];
-    // clamp so planets don't overlap the central mandala area
-    planets.forEach(p => {
-      if (Math.hypot(p.x - cx, p.y - cy) < maxR * 0.95) {
-        p.x = p.x < cx ? cx - maxR * 1.1 : cx + maxR * 1.1;
-      }
-    });
   }
 
   function spawnMeteor() {
-    if (meteors.length >= 14) return;
+    if (meteors.length >= 4) return;
     // always start from the right half, near the top — sweep across full width
     const startX = W * (0.45 + Math.random() * 0.55);
     const startY = H * (Math.random() * 0.58);
@@ -2870,25 +3059,21 @@ window.switchShloka    = switchShloka;
     ctx.closePath();
   }
 
-  /* ── Glowing hero stars ──────────────────────────────────────── */
+  /* ── Glowing hero stars — pre-baked gradients, no per-frame alloc ── */
   function drawGlowStars(ts) {
     for (const s of glowStars) {
       const tw = Math.sin(ts * s.freq + s.ph) * 0.35 + 0.65;
-      const op = s.base * tw;
-      // outer soft glow halo
-      const grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.glowR);
-      grd.addColorStop(0,   `rgba(255,254,248,${(op * 0.35).toFixed(3)})`);
-      grd.addColorStop(0.4, `rgba(255,254,248,${(op * 0.12).toFixed(3)})`);
-      grd.addColorStop(1,   'rgba(255,254,248,0)');
-      ctx.globalAlpha = 1; ctx.fillStyle = grd;
+      // Halo: use pre-baked gradient, globalAlpha scales it
+      ctx.globalAlpha = tw;
+      ctx.fillStyle   = s.grd;
       ctx.beginPath(); ctx.arc(s.x, s.y, s.glowR, 0, Math.PI * 2); ctx.fill();
-      // bright core
-      ctx.globalAlpha = op;
-      ctx.fillStyle = s.col;
+      // Bright core
+      ctx.globalAlpha = s.base * tw;
+      ctx.fillStyle   = s.col;
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill();
-      // cross-sparkle lines on bigger stars
+      // Cross-sparkle on bigger stars
       if (s.r > 4) {
-        ctx.globalAlpha = op * 0.55;
+        ctx.globalAlpha = s.base * tw * 0.55;
         ctx.strokeStyle = s.col; ctx.lineWidth = 0.8;
         const sl = s.r * 2.8;
         ctx.beginPath();
@@ -2897,42 +3082,6 @@ window.switchShloka    = switchShloka;
         ctx.stroke();
       }
     }
-  }
-
-  /* ── Planets ─────────────────────────────────────────────────── */
-  function drawPlanets(ts) {
-    for (const p of planets) {
-      const tw = Math.sin(ts * p.freq + p.ph) * 0.18 + 0.82;
-      const op = p.op * tw;
-      // glow aura
-      const aura = ctx.createRadialGradient(p.x, p.y, p.r * 0.4, p.x, p.y, p.r * 3.5);
-      aura.addColorStop(0,   `rgba(${hexToRgb(p.glow)},${(op * 0.30).toFixed(3)})`);
-      aura.addColorStop(0.5, `rgba(${hexToRgb(p.glow)},${(op * 0.08).toFixed(3)})`);
-      aura.addColorStop(1,   `rgba(${hexToRgb(p.glow)},0)`);
-      ctx.globalAlpha = 1; ctx.fillStyle = aura;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3.5, 0, Math.PI * 2); ctx.fill();
-      // planet disc — radial gradient for 3D feel
-      const disc = ctx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
-      disc.addColorStop(0,   lighten(p.col, 0.45));
-      disc.addColorStop(0.5, p.col);
-      disc.addColorStop(1,   darken(p.col, 0.45));
-      ctx.globalAlpha = op;
-      ctx.fillStyle = disc;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-    }
-  }
-
-  function hexToRgb(hex) {
-    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    return `${r},${g},${b}`;
-  }
-  function lighten(hex, amt) {
-    let [r,g,b] = [1,3,5].map(i => Math.min(255, parseInt(hex.slice(i,i+2),16) + Math.round(255*amt)));
-    return `rgba(${r},${g},${b},1)`;
-  }
-  function darken(hex, amt) {
-    let [r,g,b] = [1,3,5].map(i => Math.max(0, parseInt(hex.slice(i,i+2),16) - Math.round(255*amt)));
-    return `rgba(${r},${g},${b},1)`;
   }
 
   /* ── Nebula wisps ─────────────────────────────────────────────── */
@@ -2949,34 +3098,6 @@ window.switchShloka    = switchShloka;
       ctx.globalAlpha = 1; ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
     });
-  }
-
-  function drawMilkyWay(ts) {
-    ctx.save();
-    ctx.translate(cx + mx * 8, cy + my * 5);
-    ctx.rotate(-0.42);
-
-    const bandW = W * 1.55;
-    const bandH = Math.min(W, H) * 0.32;
-    const g = ctx.createLinearGradient(0, -bandH / 2, 0, bandH / 2);
-    g.addColorStop(0, 'rgba(255,254,248,0)');
-    g.addColorStop(0.20, 'rgba(120,95,190,0.035)');
-    g.addColorStop(0.48, 'rgba(255,236,190,0.105)');
-    g.addColorStop(0.62, 'rgba(150,185,255,0.055)');
-    g.addColorStop(1, 'rgba(255,254,248,0)');
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = g;
-    ctx.fillRect(-bandW / 2, -bandH / 2, bandW, bandH);
-
-    for (const d of galaxyDust) {
-      const tw = 0.65 + Math.sin(ts * d.drift + d.ph) * 0.35;
-      ctx.globalAlpha = d.op * tw;
-      ctx.fillStyle = d.col;
-      ctx.beginPath();
-      ctx.arc(d.along, d.across + Math.sin(ts * 0.08 + d.ph) * 2, d.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
   }
 
   /* ── Stars with parallax ─────────────────────────────────────── */
@@ -3036,34 +3157,6 @@ window.switchShloka    = switchShloka;
     ctx.lineCap = 'butt';
   }
 
-  function drawOrbitMeteors(ts) {
-    for (const m of orbitMeteors) {
-      const a = m.a + ts * m.speed;
-      const wobble = Math.sin(ts * 0.34 + m.a) * maxR * 0.025;
-      const r = m.r + wobble;
-      const x = cx + Math.cos(a) * r + mx * 12;
-      const y = cy + Math.sin(a) * r + my * 9;
-      const tailA = a - 0.34;
-      const tx = x - Math.cos(tailA) * m.len;
-      const ty = y - Math.sin(tailA) * m.len;
-
-      const trail = ctx.createLinearGradient(x, y, tx, ty);
-      trail.addColorStop(0, `rgba(255,245,214,${m.op.toFixed(3)})`);
-      trail.addColorStop(0.35, `rgba(250,199,117,${(m.op * 0.45).toFixed(3)})`);
-      trail.addColorStop(1, 'rgba(250,199,117,0)');
-      ctx.globalAlpha = 1;
-      ctx.strokeStyle = trail;
-      ctx.lineWidth = 1.15;
-      ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(tx, ty); ctx.stroke();
-
-      ctx.globalAlpha = m.op * 1.45;
-      ctx.fillStyle = '#FFF6D9';
-      ctx.beginPath(); ctx.arc(x, y, 1.7, 0, Math.PI * 2); ctx.fill();
-    }
-    ctx.lineCap = 'butt';
-  }
-
   function drawBands() {
     [[maxR * 0.32, 0.28], [maxR * 0.62, 0.20], [maxR * 0.88, 0.14]].forEach(([R, op]) => {
       ctx.globalAlpha = op; ctx.strokeStyle = '#D88A1C'; ctx.lineWidth = 0.8;
@@ -3072,58 +3165,6 @@ window.switchShloka    = switchShloka;
       ctx.beginPath(); ctx.arc(cx, cy, R - 7, 0, Math.PI * 2); ctx.stroke();
       ctx.beginPath(); ctx.arc(cx, cy, R + 7, 0, Math.PI * 2); ctx.stroke();
     });
-  }
-
-  function drawRashi() {
-    const R = maxR * 0.62;
-    RASHI.forEach((sym, i) => {
-      const ang = (i / 12) * Math.PI * 2 - Math.PI / 2;
-      const ca  = Math.cos(ang), sa = Math.sin(ang);
-      ctx.globalAlpha = 0.50; ctx.strokeStyle = '#D4A050'; ctx.lineWidth = 1.0;
-      ctx.beginPath();
-      ctx.moveTo(cx + (R - 11) * ca, cy + (R - 11) * sa);
-      ctx.lineTo(cx + (R + 11) * ca, cy + (R + 11) * sa);
-      ctx.stroke();
-      for (let j = 1; j < 3; j++) {
-        const a2 = ang + (j / 3) * (Math.PI * 2 / 12);
-        const c2 = Math.cos(a2), s2 = Math.sin(a2);
-        ctx.globalAlpha = 0.22; ctx.lineWidth = 0.45;
-        ctx.beginPath();
-        ctx.moveTo(cx + (R - 5) * c2, cy + (R - 5) * s2);
-        ctx.lineTo(cx + (R + 5) * c2, cy + (R + 5) * s2);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 0.60; ctx.fillStyle = '#D4A850';
-      ctx.font = '13px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(sym, cx + (R + 24) * ca, cy + (R + 24) * sa);
-    });
-  }
-
-  function drawNakshatras(ts) {
-    ctx.lineWidth = 0.5;
-    for (const n of naks) {
-      const bx = cx + n.R * Math.cos(n.ang);
-      const by = cy + n.R * Math.sin(n.ang);
-      if (n.pts.length >= 2) {
-        ctx.globalAlpha = 0.18; ctx.strokeStyle = '#C8E0FF';
-        ctx.beginPath(); ctx.moveTo(bx + n.pts[0].dx, by + n.pts[0].dy);
-        for (let i = 1; i < n.pts.length; i++) ctx.lineTo(bx + n.pts[i].dx, by + n.pts[i].dy);
-        ctx.stroke();
-      }
-      for (const s of n.pts) {
-        const tw = Math.sin(ts * s.freq + s.ph) * 0.25 + 0.75;
-        ctx.globalAlpha = s.base * tw;
-        ctx.fillStyle   = '#FFFEF8';
-        ctx.beginPath(); ctx.arc(bx + s.dx, by + s.dy, s.r * 1.2, 0, Math.PI * 2); ctx.fill();
-      }
-      // labels hidden on mobile / small radius
-      if (maxR > 160 && W > 520) {
-        const fs = Math.max(7, Math.min(9, maxR / 50));
-        ctx.globalAlpha = 0.24; ctx.fillStyle = '#C8A870';
-        ctx.font = `${fs}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText(n.name, cx + (n.R + 22) * Math.cos(n.ang), cy + (n.R + 22) * Math.sin(n.ang));
-      }
-    }
   }
 
   /* ── Mandala with mild parallax ──────────────────────────────── */
@@ -3192,25 +3233,19 @@ window.switchShloka    = switchShloka;
     mx += (rawMX - mx) * 0.04;
     my += (rawMY - my) * 0.04;
 
-    // meteor spawn timer
+    // meteor spawn timer — one at a time, spaced out (cap is 4)
     nextMeteorIn -= dt;
     if (nextMeteorIn <= 0) {
-      const burst = Math.random() < 0.32 ? 2 + Math.floor(Math.random() * 3) : 1;
-      for (let i = 0; i < burst; i++) spawnMeteor();
-      nextMeteorIn = 0.65 + Math.random() * 1.25;
+      spawnMeteor();
+      nextMeteorIn = 1.8 + Math.random() * 2.2;
     }
 
     ctx.clearRect(0, 0, W, H);
     drawNebula();
-    drawMilkyWay(t);
-    drawPlanets(t);
     drawStars(t);
     drawGlowStars(t);
     drawMeteors(dt);
-    drawOrbitMeteors(t);
     drawBands();
-    drawRashi();
-    drawNakshatras(t);
     drawMandala(maxR * 0.27, mAng);
     drawMandala(maxR * 0.15, -mAng * 1.7);
     drawFloaters(t);
@@ -3344,22 +3379,12 @@ window.switchShloka    = switchShloka;
 
 /* ─── SPLASH COUNTDOWN ──────────────────────────────────────────────────── */
 (function () {
-  const LAUNCH = new Date('2026-06-17T00:00:00+05:30');
-  const fmt = n => String(n).padStart(2, '0');
   function tick() {
-    const diff = LAUNCH - Date.now();
-    if (diff <= 0) { document.getElementById('splash-countdown').innerHTML = '<span style="color:#D88A1C;font-family:var(--fd);font-size:clamp(14px,2vw,20px)">🎉 We are live!</span>'; return; }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000)  / 60000);
-    const s = Math.floor((diff % 60000)    / 1000);
-    const sd = document.getElementById('scd-d'); if (sd) sd.textContent = d;
-    const sh = document.getElementById('scd-h'); if (sh) sh.textContent = fmt(h);
-    const sm = document.getElementById('scd-m'); if (sm) sm.textContent = fmt(m);
-    const ss = document.getElementById('scd-s'); if (ss) ss.textContent = fmt(s);
+    const pill = document.getElementById('countdown-pill');
+    if (!pill) return;
+    pill.innerHTML = 'Shoonaya is Live Now';
   }
   tick();
-  setInterval(tick, 1000);
 })();
 
 /* ─── OM AMBIENT DRONE (108 Hz · Web Audio API) ─────────────────────────── */
@@ -3397,198 +3422,38 @@ window.switchShloka    = switchShloka;
   });
 })();
 
-/* ─── Shared waitlist helpers for splash flow ─────────────────────────────── */
-function landingShareUrl() {
-  if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-    return window.location.origin;
-  }
-  return 'https://shoonaya.app';
-}
-
-function buildSthapakaShareText(num, trad) {
-  const number = num ? `#${num}` : 'a founding member';
-  const tradLabel = {
-    hindu: 'Hindu',
-    sikh: 'Sikh',
-    buddhist: 'Buddhist',
-    jain: 'Jain',
-  }[trad] || 'dharma';
-  return `I just became Sthapaka ${number} of Shoonaya — a space for Hindu, Sikh, Buddhist and Jain dharma. My path: ${tradLabel}. Join the founding members: ${landingShareUrl()}`;
-}
-
-async function postWaitlist(payload) {
-  const res = await fetch('/api/waitlist', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok || data.error) {
-    throw new Error(data.error || 'Could not save registration. Please try again.');
-  }
-  return data;
-}
-
-function writeText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-function setShareCopy(prefix, num, trad) {
-  writeText(`${prefix}-share-copy`, buildSthapakaShareText(num, trad));
-}
-
-function setRegistrationFeedback(prefix, alreadyRegistered, num) {
-  const copy = alreadyRegistered
-    ? `This email is already registered. Your Sthapaka number remains #${num || '—'}.`
-    : `Registration saved. Your Sthapaka number is #${num || '—'}.`;
-  writeText(`${prefix}-registration-feedback`, copy);
-}
-
-async function copyShareText(text, buttonSelector, resetText) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    const area = document.createElement('textarea');
-    area.value = text;
-    area.style.position = 'fixed';
-    area.style.left = '-9999px';
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand('copy');
-    document.body.removeChild(area);
-  }
-  const btn = document.querySelector(buttonSelector);
-  if (btn) {
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = resetText; }, 2000);
-  }
-}
-
-function triggerSthapakaCelebration(targetId = 'sj-badge') {
-  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-
-  const layer = document.getElementById('celebration-layer');
-  const target = document.getElementById(targetId);
-  if (!layer || !target) return;
-
-  const rect = target.getBoundingClientRect();
-  const x = rect.left + rect.width / 2;
-  const y = rect.top + rect.height * 0.42;
-  const colors = ['#FFF6D9', '#FAC775', '#EF9F27', '#D88A1C', '#FFFEF8'];
-  const pieces = [];
-
-  for (let i = 0; i < 3; i++) {
-    const ring = document.createElement('i');
-    ring.className = 'celebration-ring';
-    ring.style.setProperty('--x', `${x}px`);
-    ring.style.setProperty('--y', `${y}px`);
-    ring.style.animationDelay = `${i * 70}ms`;
-    layer.appendChild(ring);
-    pieces.push(ring);
-  }
-
-  for (let i = 0; i < 20; i++) {
-    const ray = document.createElement('i');
-    ray.className = 'celebration-ray';
-    ray.style.setProperty('--x', `${x}px`);
-    ray.style.setProperty('--y', `${y}px`);
-    ray.style.setProperty('--r', `${(360 / 20) * i + Math.random() * 8}deg`);
-    ray.style.setProperty('--h', `${32 + Math.random() * 48}px`);
-    layer.appendChild(ray);
-    pieces.push(ray);
-  }
-
-  for (let i = 0; i < 78; i++) {
-    const spark = document.createElement('i');
-    const angle = Math.random() * Math.PI * 2;
-    const distance = 70 + Math.random() * 240;
-    const lift = 18 + Math.random() * 70;
-    spark.className = 'celebration-spark';
-    spark.style.setProperty('--x', `${x}px`);
-    spark.style.setProperty('--y', `${y}px`);
-    spark.style.setProperty('--dx', `${Math.cos(angle) * distance}px`);
-    spark.style.setProperty('--dy', `${Math.sin(angle) * distance - lift}px`);
-    spark.style.setProperty('--s', `${2 + Math.random() * 4}px`);
-    spark.style.setProperty('--d', `${820 + Math.random() * 780}ms`);
-    spark.style.setProperty('--c', colors[i % colors.length]);
-    spark.style.animationDelay = `${Math.random() * 120}ms`;
-    layer.appendChild(spark);
-    pieces.push(spark);
-  }
-
-  window.setTimeout(() => pieces.forEach(el => el.remove()), 1900);
-}
-
-/* ─── SPLASH JOIN FLOW ────────────────────────────────────────────────────── */
-let _sjEmail = '', _sjTrad = '', _sjFoundingNum = 0, _sjAlreadyRegistered = false;
-
-async function splashJoin(e) {
-  e.preventDefault();
-  _sjEmail = document.getElementById('sj-email').value.trim();
-  const btn = document.getElementById('sj-submit');
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, source: 'splash', timezone: tz });
-    _sjFoundingNum = data.foundingNumber ?? 0;
-    _sjAlreadyRegistered = !!data.alreadyRegistered;
-    // Move to tradition select
-    document.getElementById('sj-email-wrap').style.display = 'none';
-    document.getElementById('sj-trad-wrap').style.display  = 'block';
-  } catch (err) {
-    document.getElementById('sj-note').textContent = err.message || 'Could not save registration. Please try again.';
-    btn.textContent = 'Join as Sthapaka'; btn.disabled = false;
-  }
-}
-
-async function splashTradSelect(trad) {
-  _sjTrad = trad;
-  document.querySelectorAll('.sj-trad-btn').forEach(b => b.disabled = true);
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const data = await postWaitlist({ email: _sjEmail, tradition: trad, source: 'splash', timezone: tz });
-    if (data.foundingNumber) _sjFoundingNum = data.foundingNumber;
-    _sjAlreadyRegistered = !!data.alreadyRegistered;
-  } catch { /* non-blocking */ }
-  // Show reveal
-  document.getElementById('sj-trad-wrap').style.display = 'none';
-  document.getElementById('sj-reveal').style.display    = 'block';
-  document.getElementById('sj-num').textContent = _sjFoundingNum || '—';
-  setRegistrationFeedback('sj', _sjAlreadyRegistered, _sjFoundingNum);
-  setShareCopy('sj', _sjFoundingNum, _sjTrad);
-  triggerSthapakaCelebration('sj-badge');
-  // Update live count in stats band
-  _updateFoundingCount(_sjFoundingNum);
-}
-
-function _updateFoundingCount(n) {
-  const el = document.getElementById('stat-founding-wrap');
-  if (!el || !n) return;
-  el.textContent = n < 500 ? '500+' : n.toLocaleString('en-IN') + '+';
-}
-
-function splashShareWhatsApp() {
-  const text = encodeURIComponent(buildSthapakaShareText(_sjFoundingNum, _sjTrad));
-  window.open(`https://wa.me/?text=${text}`, '_blank');
-}
-function splashShareTwitter() {
-  const text = encodeURIComponent(buildSthapakaShareText(_sjFoundingNum, _sjTrad));
-  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-}
-function splashCopyLink() {
-  copyShareText(buildSthapakaShareText(_sjFoundingNum, _sjTrad), '.sj-share-copy', '🔗 Copy Link');
-}
-
-/* ─── Live waitlist count ─────────────────────────────────────────────────── */
-fetch('/api/waitlist').then(r => r.json()).then(({ count }) => {
-  const el = document.getElementById('stat-founding-wrap');
-  if (!el || !count) return;
-  el.textContent = count < 500 ? '500+' : count.toLocaleString('en-IN') + '+';
-}).catch(() => {});
-
 /* ─── EXPLORE BUTTON — transition from splash to main page ──────────────── */
 let mainPageInitialised = false;
+function triggerExplore() {
+  if (document.body.classList.contains('landing-entered')) return;
+  const btn = document.getElementById('explore-btn');
+  if (btn) btn.click();
+}
+
+// Enable entering the page via mouse wheel / trackpad scroll
+document.getElementById('splash').addEventListener('wheel', function (e) {
+  if (e.deltaY > 12) {
+    triggerExplore();
+  }
+}, { passive: true });
+
+// Enable entering the page via touch swipe up (mobile scroll)
+let touchStartY = 0;
+document.getElementById('splash').addEventListener('touchstart', function (e) {
+  if (e.touches && e.touches[0]) {
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.getElementById('splash').addEventListener('touchend', function (e) {
+  if (e.changedTouches && e.changedTouches[0]) {
+    const touchEndY = e.changedTouches[0].clientY;
+    if (touchStartY - touchEndY > 45) { // Swipe up
+      triggerExplore();
+    }
+  }
+}, { passive: true });
+
 document.getElementById('explore-btn').addEventListener('click', function () {
   const main   = document.getElementById('main-page');
   document.body.classList.add('landing-entered');
@@ -3611,10 +3476,258 @@ document.getElementById('explore-btn').addEventListener('click', function () {
       }
     }
     setTimeout(() => {
-      main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const target = document.getElementById('shoonaya-content');
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }, 120);
   });
 });
 </script>
+
+<!-- ── Drawer functions (global scope for inline onclick handlers) ── -->
+<script>
+function openDrawer() {
+  var panel = document.getElementById('mobile-drawer-panel');
+  var backdrop = document.getElementById('mobile-drawer-backdrop');
+  var drawer = document.getElementById('mobile-drawer');
+  var hamburger = document.getElementById('nav-hamburger');
+  if (!drawer || !panel || !backdrop) return;
+  drawer.style.pointerEvents = 'auto';
+  drawer.setAttribute('aria-hidden', 'false');
+  if (hamburger) hamburger.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = 'hidden';
+  panel.style.transform = 'translateX(0)';
+  backdrop.style.background = 'rgba(0,0,0,0.55)';
+  backdrop.style.pointerEvents = 'auto';
+}
+function closeDrawer() {
+  var panel = document.getElementById('mobile-drawer-panel');
+  var backdrop = document.getElementById('mobile-drawer-backdrop');
+  var drawer = document.getElementById('mobile-drawer');
+  var hamburger = document.getElementById('nav-hamburger');
+  if (!drawer || !panel || !backdrop) return;
+  panel.style.transform = 'translateX(-100%)';
+  backdrop.style.background = 'rgba(0,0,0,0)';
+  backdrop.style.pointerEvents = 'none';
+  if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+  setTimeout(function(){
+    drawer.style.pointerEvents = 'none';
+    drawer.setAttribute('aria-hidden', 'true');
+  }, 280);
+}
+</script>
+
+<!-- ── PWA: Service Worker + Install Prompt ──────────────────────── -->
+<script>
+/* ── PWA: Service Worker + Unified Install Logic ─────────────────────────── */
+(function(){
+
+  var deferredPrompt = null;
+  var isInstalled = window.matchMedia('(display-mode: standalone)').matches
+                 || window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var isDismissed = sessionStorage.getItem('pwa-dismissed');
+
+  
+  /* Register service worker */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
+    });
+  }
+
+  
+  function showPwaNudge() {
+    var nudge = document.getElementById('pwa-nudge');
+    if (!nudge || isInstalled) return;
+    var dismissed = localStorage.getItem('pwa-nudge-dismissed');
+    if (dismissed) {
+      var ts = parseInt(dismissed, 10);
+      // Show again after 3 days
+      if (Date.now() - ts < 3 * 24 * 60 * 60 * 1000) return;
+    }
+    nudge.style.display = 'block';
+    // Animate in
+    nudge.style.transform = 'translateY(100%)';
+    nudge.style.transition = 'transform 0.35s cubic-bezier(0.34,1.4,0.64,1)';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        nudge.style.transform = 'translateY(0)';
+      });
+    });
+  }
+
+  function dismissPwaNudge() {
+    var nudge = document.getElementById('pwa-nudge');
+    if (nudge) {
+      nudge.style.transform = 'translateY(100%)';
+      setTimeout(function(){ nudge.style.display = 'none'; }, 350);
+    }
+    localStorage.setItem('pwa-nudge-dismissed', Date.now().toString());
+  }
+
+  // Show nudge after 3 seconds on page load (mobile only)
+  var isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobileDevice && !isInstalled) {
+    setTimeout(showPwaNudge, 3000);
+  }
+
+  // Also show immediately when beforeinstallprompt fires
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    showPwaNudge();
+  });
+
+  // iOS: show after 3s delay
+  if (isIOS && !isInstalled) {
+    setTimeout(showPwaNudge, 3000);
+  }
+
+  window.pwaInstall = function() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(r){
+        if (r.outcome === 'accepted') {
+          dismissPwaNudge();
+        }
+        deferredPrompt = null;
+      });
+    } else if (isIOS) {
+      var modal = document.getElementById('pwa-ios-modal');
+      if (modal) modal.style.display = 'flex';
+      dismissPwaNudge();
+    }
+  };
+
+
+})();
+</script>
+
+<script>
+/* ── FAQ accordion ───────────────────────────────────────────────── */
+document.querySelectorAll('.faq-q').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var item = btn.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el) {
+      el.classList.remove('open');
+      el.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
+  });
+});
+</script>
+
+   <div id="mobile-drawer" aria-hidden="true" style="
+     position:fixed; inset:0; z-index:9998;
+     display:flex; pointer-events:none;
+   ">
+     <div id="mobile-drawer-panel" style="
+       position:absolute; left:0; top:0; bottom:0; width:240px; z-index:2;
+       background:#1a1208; padding:24px 16px 40px;
+       transform:translateX(-100%); transition:transform 0.28s ease;
+       display:flex; flex-direction:column; gap:4px; overflow-y:auto;
+       box-shadow: 4px 0 32px rgba(0,0,0,0.55);
+       border-right:1px solid rgba(197,160,89,0.18);
+     ">
+       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+         <div style="display:flex;align-items:center;gap:10px;">
+           <img src="/icons/icon-192x192.png" alt="Shoonaya" style="width:32px;height:32px;border-radius:8px;">
+           <span style="font-family:var(--fd);font-size:18px;font-weight:600;color:#C5A059">Shoonaya</span>
+         </div>
+         <button id="drawer-close" onclick="closeDrawer()" style="background:none;border:none;cursor:pointer;font-size:20px;color:rgba(250,246,239,0.45);padding:4px;line-height:1;">✕</button>
+       </div>
+       <style>
+       #mobile-drawer-panel a {
+         display:block; padding:12px 14px; border-radius:10px;
+         font-family:var(--fb); font-size:14px; font-weight:500;
+         color:rgba(250,246,239,0.72); text-decoration:none;
+         transition:background 0.15s;
+       }
+       #mobile-drawer-panel a:hover { background:rgba(197,160,89,0.12); color:#FAF6EF; }
+       #mobile-drawer-panel a.drawer-highlight { color:#C5A059; font-weight:600; }
+       </style>
+       <a href="#gyan-chaupar" class="drawer-highlight" onclick="closeDrawer()">♟ Play</a>
+       <a href="#traditions" onclick="closeDrawer()">Traditions</a>
+       <a href="#festivals" onclick="closeDrawer()">Festivals</a>
+       <a href="#community" onclick="closeDrawer()">Community</a>
+       <a href="#features" onclick="closeDrawer()">Features</a>
+       <a href="#download" onclick="closeDrawer()">Web App</a>
+       <div style="height:1px;background:rgba(197,160,89,0.14);margin:10px 0;"></div>
+       <a href="/signup" class="drawer-highlight" onclick="closeDrawer()">Sign up</a>
+       <a href="/login" onclick="closeDrawer()">Sign in</a>
+       <div style="margin-top:auto;padding-top:24px;">
+         <button onclick="window.location.href='/signup';"
+           style="width:100%;background:linear-gradient(135deg,#C5A059,#D4784A);color:#0C0A07;border:none;border-radius:100px;padding:14px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;">
+           Enter Shoonaya
+         </button>
+       </div>
+     </div>
+     <div id="mobile-drawer-backdrop" style="
+       position:absolute; inset:0; z-index:1; background:rgba(0,0,0,0);
+       transition:background 0.28s;
+     "></div>
+   </div>
+
+<script>
+(function bindMobileDrawer() {
+  var hamburger = document.getElementById('nav-hamburger');
+  var backdrop = document.getElementById('mobile-drawer-backdrop');
+  if (hamburger) {
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.addEventListener('click', openDrawer);
+  }
+  if (backdrop) {
+    backdrop.addEventListener('click', closeDrawer);
+  }
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeDrawer();
+  });
+})();
+</script>
+
+
+<div id="pwa-nudge" style="
+  display:none;
+  position:fixed; bottom:0; left:0; right:0; z-index:9990;
+  padding:12px 16px 16px;
+  background:linear-gradient(135deg, #1a1208, #0c0a07);
+  border-top:1px solid rgba(197,160,89,0.25);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+">
+  <div style="display:flex;align-items:center;gap:12px;max-width:480px;margin:0 auto;">
+    <div style="width:44px;height:44px;border-radius:12px;background:rgba(197,160,89,0.15);
+      border:1px solid rgba(197,160,89,0.3);flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-size:22px;">
+      🪔
+    </div>
+    <div style="flex:1;min-width:0;">
+      <p style="margin:0;font-family:var(--fd);font-size:14px;font-weight:600;
+        color:#FAF6EF;line-height:1.2;">Add to Home Screen</p>
+      <p style="margin:2px 0 0;font-size:12px;color:rgba(250,246,239,0.5);
+        font-family:var(--fb);">Use Shoonaya like a native app</p>
+    </div>
+    <button onclick="pwaInstall()" style="
+      background:linear-gradient(135deg,#C5A059,#D4784A);
+      color:#0C0A07; border:none; border-radius:100px;
+      padding:10px 20px; font-family:var(--fb); font-size:13px;
+      font-weight:700; cursor:pointer; white-space:nowrap; flex-shrink:0;
+    ">Add →</button>
+    <button onclick="dismissPwaNudge()" style="
+      background:none;border:none;cursor:pointer;
+      color:rgba(250,246,239,0.35);font-size:18px;padding:4px;flex-shrink:0;
+    ">✕</button>
+  </div>
+</div>
+
 </body>
 </html>

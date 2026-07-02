@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { runPathshalaExplain } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, canExplain, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
@@ -44,6 +45,26 @@ function buildFallbackExplanation(input: {
 }
 
 export async function POST(req: Request) {
+  // ── Auth + pro gate ─────────────────────────────────────────────────────────
+  // AI explanation is a Zenith (Pro) feature — free users fall back to the
+  // static meaning/translation already rendered in the reader.
+  const supabase = await createServerSupabaseClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  }
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_pro')
+    .eq('id', user.id)
+    .maybeSingle();
+  if (!profile?.is_pro) {
+    return NextResponse.json(
+      { error: 'Upgrade to Zenith to unlock AI verse explanations.', upgrade_required: true },
+      { status: 403 },
+    );
+  }
+
   const {
     sanskrit,
     originalText,
@@ -143,6 +164,7 @@ export async function POST(req: Request) {
         teacher: 'Shoonaya',
         source,
         title,
+        is_fallback: true,
         ai: {
           provider: 'fallback',
           degraded: true,

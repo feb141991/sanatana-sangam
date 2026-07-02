@@ -43,3 +43,5 @@ venv/
 *.py
 *.js.bak
 .idea/
+.env.production
+.env.production

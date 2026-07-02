@@ -1,4 +1,4 @@
-import { checkAdminAuth } from '@/lib/admin-auth';
+import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
@@ -8,7 +8,7 @@ import { getPanchangTimes, getTithiReminder } from '@/lib/panchang';
 // Used by the admin Notifications tab to verify the engine is computing correctly.
 
 export async function GET(request: NextRequest) {
-  const authError = checkAdminAuth(request);
+  const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
   const admin = await requireAdminAccess();

@@ -1,0 +1,20 @@
+{
+  "doc_id": "valmiki_ramayana_aranya",
+  "source_name": "Valmiki Ramayana",
+  "source_class": "curated_lesson",
+  "tradition": "Sanatana Dharma",
+  "rights_status": "restricted_or_pending",
+  "review_status": "needs_source_audit",
+  "is_pramana_grade": false,
+  "content": [],
+  "is_live_in_app": false,
+  "original_text_status": "companion",
+  "translation_status": "unavailable",
+  "audio_status": "unavailable",
+  "source_url": "https://www.gutenberg.org/ebooks/51540",
+  "source_owner": "Ralph T. H. Griffith translation via Project Gutenberg; Sanskrit digital source pending verification",
+  "revision_note": "Metadata-only pending source audit. Prior generated entries were removed because Sanskrit source rights and verse/ref accuracy were not verified.",
+  "removed_unverified_entry_count": 10,
+  "activation_status": "catalog_only",
+  "scale_readiness": "source-audit-pending catalog placeholder"
+}

@@ -1,26 +1,27 @@
-import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import DiscoverClient from './DiscoverClient';
+import DiscoverGatewayClient from './DiscoverGatewayClient';
 
-export const metadata = { title: 'Discover — Mood-Based Guidance' };
+export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Discover Dharma — Shoonaya',
+  description: 'Uncover the scientific and philosophical meanings behind dharmic traditions. Relieve doubts, understand rituals, and connect back to your roots.',
+};
 
 export default async function DiscoverPage() {
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  
+  const { data: pieces, error } = await supabase
+    .from('discover_content')
+    .select('id, slug, title, subtitle, tradition, category, hook_question, body_short, body_full, scripture_line, scripture_source, app_deep_link, og_image_url, published, created_at')
+    .eq('published', true)
+    .order('created_at', { ascending: false });
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('tradition, spiritual_level, transliteration_language')
-    .eq('id', user.id)
-    .maybeSingle();
+  if (error) {
+    console.error('Error fetching discover pieces:', error);
+  }
 
   return (
-    <DiscoverClient
-      tradition={profile?.tradition ?? null}
-      spiritualLevel={profile?.spiritual_level ?? null}
-      transliterationLanguage={(profile as any)?.transliteration_language ?? 'en'}
-    />
+    <DiscoverGatewayClient initialPieces={pieces || []} />
   );
 }

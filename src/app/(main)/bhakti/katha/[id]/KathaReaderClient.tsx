@@ -8,7 +8,9 @@ import {
   Star, ExternalLink, ChevronDown, ChevronUp, Loader2, Volume2, VolumeX, Copy, Check
 } from 'lucide-react';
 import Link from 'next/link';
-import type { Katha } from '@/lib/katha-library';
+import { createClient } from '@/lib/supabase';
+import { localSpiritualDate } from '@/lib/sacred-time';
+import type { Katha } from '@/types/katha';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { trackReaderEvent } from '@/lib/analytics/reader-events';
@@ -109,17 +111,24 @@ export default function KathaReaderClient({
 }: Props) {
   const router = useRouter();
   const hasHindi = (katha.bodyHi?.length ?? 0) > 0;
-  const hasPunjabi = true; // Always true to make Punjabi dynamic script selection fully available
+  const nativePaBody = katha.bodyPa;
+  const nativePaTitle = katha.titlePa;
+  const nativePaPhal = katha.phalPa;
+  const hasPunjabi =
+    (nativePaBody?.length ?? 0) > 0 &&
+    !!nativePaTitle &&
+    !!nativePaPhal;
   const readablePreferences = useMemo(() => resolveReadablePreferences({
     appLanguage,
     meaningLanguage,
   }), [appLanguage, meaningLanguage]);
   const resolvedLanguage = useMemo<AppContentLanguage>(() => {
+    if (appLanguage === 'hi' && hasHindi) return 'hi';
     if (!readablePreferences.preferLocalLanguage) return 'en';
     if (hasHindi) return 'hi';
     if (hasPunjabi) return 'pa';
     return 'en';
-  }, [hasHindi, hasPunjabi, readablePreferences.preferLocalLanguage]);
+  }, [appLanguage, hasHindi, hasPunjabi, readablePreferences.preferLocalLanguage]);
 
   const {
     language: lang,
@@ -138,7 +147,9 @@ export default function KathaReaderClient({
   const [liked, setLiked] = useState(false);
   const [showPhal, setShowPhal] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [ttsRate, setTtsRate] = useState<number>(1.0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const completionMarkedRef = useRef(false);
 
   const isPanchatantra = katha.tags.includes('panchatantra');
   const isHero = katha.tradition !== 'sikh' &&
@@ -184,10 +195,6 @@ export default function KathaReaderClient({
   const readerControls = useReaderControls(kathaReadableContent.capabilities);
 
   // Which body / phal to show based on selected language
-  const nativePaBody = katha.bodyPa;
-  const nativePaTitle = katha.titlePa;
-  const nativePaPhal = katha.phalPa;
-
   const bodyToShow =
     lang === 'hi' && hasHindi ? (katha.bodyHi ?? katha.body) :
     lang === 'pa' ? (
@@ -214,6 +221,33 @@ export default function KathaReaderClient({
         : transliterateDevanagariToGurmukhi(katha.titleHi ?? katha.title)
     ) :
     katha.title;
+
+  const markKathaDone = useCallback(async () => {
+    if (completionMarkedRef.current) return;
+    completionMarkedRef.current = true;
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+      const today = localSpiritualDate(tz, 4);
+      localStorage.setItem(`shoonaya-katha-done-${today}`, 'true');
+      void (async () => {
+        try {
+          await supabase
+            .from('daily_sadhana')
+            .upsert(
+              { user_id: user.id, date: today, katha_done: true },
+              { onConflict: 'user_id,date' }
+            );
+        } catch {
+          // Non-fatal bonus tracking.
+        }
+      })();
+    } catch {
+      // Non-fatal bonus tracking.
+    }
+  }, []);
 
   const hasAnyLocal = hasHindi || hasPunjabi;
 
@@ -282,6 +316,7 @@ export default function KathaReaderClient({
       const audioUrl = await readerControls.handlers.requestTTS(trimmedText, {
         quality: 'pandit',
         speed: katha.tags.includes('panchatantra') ? 0.86 : 0.78,
+        rate: ttsRate,
         pipelineTags: {
           content_type: 'katha',
           audio_mode: katha.tags.includes('panchatantra') ? 'story' : 'meditative'
@@ -293,6 +328,7 @@ export default function KathaReaderClient({
       audio.onended = () => {
         setSpeaking(false);
         audioRef.current = null;
+        void markKathaDone();
       };
       audio.onerror = () => {
         setSpeaking(false);
@@ -315,18 +351,61 @@ export default function KathaReaderClient({
       fontPresets={fontPresets}
       fontStep={fontStep}
       setFontStep={setFontStep}
-      languages={languages.filter(l => l.code === 'en' || (l.code === 'hi' && hasHindi) || (l.code === 'pa' && hasPunjabi))}
+      languages={languages.filter(l => {
+        if (l.code === 'hi') return hasHindi;
+        if (l.code === 'pa') return nativePaBody && nativePaBody.length > 0;
+        return true;
+      })}
       currentLanguage={lang}
       setLanguage={(l) => {
         setLang(l);
         trackReaderEvent('language_toggled', { content_type: 'katha', source: `katha:${katha.id}`, tradition: katha.tradition, language: l });
       }}
       onTTS={speakKatha}
+      ttsRate={ttsRate}
+      onTTSRateChange={setTtsRate}
       isSpeaking={speaking}
       isTTSGenerating={readerControls.state.isGeneratingTTS}
       onCopy={copyToClipboard}
       isCopied={readerControls.state.isCopied}
       onShare={shareKatha}
+      bottomBar={
+        <div className="px-5 py-4 max-w-xl mx-auto flex items-center gap-3">
+          <button
+            onClick={() => setShowPhal(s => !s)}
+            className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press shrink-0"
+            style={{ background: 'rgba(197, 160, 89, 0.08)', border: '1px solid rgba(197, 160, 89, 0.20)' }}
+            aria-label={showPhal ? labels.kathaHidePhal : labels.kathaRevealBlessing}
+          >
+            {showPhal ? <ChevronUp size={18} color={THEME.gold} /> : <Sparkles size={18} color={THEME.gold} />}
+          </button>
+          {katha.relatedJapaMantra ? (
+            <Link
+              href="/japa"
+              className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all motion-press shrink-0"
+              style={{ background: 'rgba(197, 160, 89, 0.08)', border: '1px solid rgba(197, 160, 89, 0.20)' }}
+              title={labels.startJapa}
+              aria-label={labels.startJapa}
+            >
+              <span className="text-xl">📿</span>
+            </Link>
+          ) : null}
+          <button
+            onClick={() => {
+              void markKathaDone();
+              if (window.history.length > 2) {
+                router.back();
+              } else {
+                router.push('/bhakti/katha');
+              }
+            }}
+            className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 font-semibold transition-all motion-press"
+            style={{ background: 'rgba(197, 160, 89, 0.12)', border: '1px solid rgba(197, 160, 89, 0.24)', color: THEME.gold }}
+          >
+            <span>{labels.done}</span>
+          </button>
+        </div>
+      }
       contentClassName="px-6 space-y-6 pt-8 pb-36"
     >
         {bodyToShow.map((para, idx) => (
@@ -352,7 +431,7 @@ export default function KathaReaderClient({
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
+              className="w-[44px] h-[44px] rounded-full flex items-center justify-center bg-[#C5A059]/10 border border-[#C5A059]/30"
             >
               <Star size={16} color={THEME.gold} />
             </div>
@@ -397,7 +476,7 @@ export default function KathaReaderClient({
               className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
             >
               <div className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
+                <div className="w-[44px] h-[44px] rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center text-xl">
                   📿
                 </div>
                 <div>
@@ -416,7 +495,7 @@ export default function KathaReaderClient({
             className="rounded-[2rem] p-5 border border-[var(--divine-border)]/10 bg-[var(--surface-base)]/30 flex items-center justify-between hover:bg-[var(--surface-base)]/50 transition-colors"
           >
             <div className="flex items-center gap-4">
-              <div className="w-9 h-9 rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
+              <div className="w-[44px] h-[44px] rounded-2xl bg-[var(--surface-base)] border border-[var(--divine-border)]/20 flex items-center justify-center text-xl">
                 📚
               </div>
               <div>

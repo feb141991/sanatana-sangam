@@ -7,7 +7,7 @@
  *   1. LUNAR_FESTIVAL_RULES — the tithi rule for each festival (source of truth
  *      for *what to check*, e.g. "Jyeshtha Krishna Amavasya")
  *   2. verifyFestivalDatesWithAI() — sends the rules + stored dates to a
- *      dedicated festival-audit provider policy (Gemini-first, then fallback).
+ *      dedicated festival-audit provider policy (Sarvam-first, then fallback).
  *      The AI cross-checks each date
  *      and flags mismatches with a suggested correction and confidence level.
  *
@@ -472,7 +472,7 @@ export async function verifyFestivalDatesWithAI(
       const prompt = buildVerificationPrompt(year, batch);
       try {
         const response = await generateWithProvider(
-          { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 1200 },
+          { user: prompt, temperature: 0.1, reasoningEffort: 'none', maxOutputTokens: 4096 },
           { responseFormat: 'json', providerOverride: 'sarvam-hosted' },
         );
 

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { GeminiModelAdapter } from '@sangam/pramana-serve';
+import { SarvamProvider } from '@sangam/pramana-serve';
 import { retrievePathshalaContext } from '../src/lib/ai/retrieval';
 import { buildPathshalaExplainPrompt, buildDevotionalStoryExplainPrompt, buildMoralStoryExplainPrompt, buildUpanishadsExplainPrompt } from '../src/lib/ai/context-builder';
 import { pathshalaExplainEvalSuite } from '@sangam/pramana-eval';
@@ -25,9 +25,9 @@ if (fs.existsSync(envLocalPath)) {
   }
 }
 
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.SARVAM_API_KEY;
 if (!apiKey) {
-  console.error('❌ GEMINI_API_KEY is not configured in .env.local');
+  console.error('❌ SARVAM_API_KEY is not configured in .env.local');
   process.exit(1);
 }
 
@@ -138,9 +138,8 @@ async function main() {
   console.log('⚡ Starting Live Pramana Pathshala Explain Evals...');
   
   const cases = pathshalaExplainEvalSuite.cases;
-  const adapter = new GeminiModelAdapter({
+  const adapter = new SarvamProvider({
     apiKey: apiKey!,
-    models: ['gemini-2.0-flash', 'gemini-2.0-flash-lite'],
   });
 
   const results: any[] = [];
@@ -220,11 +219,11 @@ async function main() {
     let usedMock = false;
     
     try {
-      const response = await adapter.generate(built.prompt);
+      const response = await adapter.generate({ prompt: built.prompt });
       responseText = response.text;
     } catch (err: any) {
       if (err.message.includes('429') || err.message.includes('quota') || err.message.includes('No response generated') || err.message.includes('API key not valid')) {
-        console.warn(`⚠️ Gemini API Key rate limited or not valid. Falling back to mock generation for eval validation.`);
+        console.warn(`⚠️ Sarvam API Key rate limited or not valid. Falling back to mock generation for eval validation.`);
         usedMock = true;
         
         if (isUpanishads) {
