@@ -88,6 +88,11 @@ export default function SignupPage() {
       return;
     }
 
+    if (!acceptedPolicies) {
+      toast.error('Please accept the Terms and Privacy Policy to continue.');
+      return;
+    }
+
     setGoogleLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -208,6 +213,26 @@ export default function SignupPage() {
             </p>
           </div>
 
+          <label className="mb-4 flex items-start gap-3 rounded-2xl border border-[var(--premium-border)] bg-[var(--card-bg)] p-4 text-xs leading-5 text-[var(--brand-muted)]">
+            <input
+              type="checkbox"
+              checked={acceptedPolicies}
+              onChange={(event) => setAcceptedPolicies(event.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 accent-[var(--brand-primary)]"
+            />
+            <span>
+              I agree to the{' '}
+              <Link href="/terms" className="font-semibold text-[var(--brand-primary)] hover:underline">
+                Terms
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" className="font-semibold text-[var(--brand-primary)] hover:underline">
+                Privacy Policy
+              </Link>
+              . This applies whether you continue with Google or email.
+            </span>
+          </label>
+
           <button
             type="button"
             onClick={handleGoogleSignup}
@@ -271,28 +296,6 @@ export default function SignupPage() {
                 </button>
               </span>
             </label>
-
-            <div className="flex items-center justify-between gap-3">
-              <label className="flex items-start gap-2 text-xs leading-5 text-[var(--brand-muted)]">
-                <input
-                  type="checkbox"
-                  checked={acceptedPolicies}
-                  onChange={(event) => setAcceptedPolicies(event.target.checked)}
-                  className="mt-1 h-4 w-4 shrink-0 accent-[var(--brand-primary)]"
-                />
-                <span>
-                  I agree to the{' '}
-                  <Link href="/terms" className="font-semibold text-[var(--brand-primary)] hover:underline">
-                    Terms
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="font-semibold text-[var(--brand-primary)] hover:underline">
-                    Privacy Policy
-                  </Link>
-                  .
-                </span>
-              </label>
-            </div>
 
             <div className="flex justify-end">
               <Link href="/forgot-password" className="text-sm font-medium text-[var(--brand-muted)] hover:text-[var(--brand-primary)] hover:underline">
