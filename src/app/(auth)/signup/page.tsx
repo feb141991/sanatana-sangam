@@ -58,6 +58,29 @@ export default function SignupPage() {
   }, []);
 
   const onboardingNext = '/onboarding' + (claimToken ? `?claim_token=${encodeURIComponent(claimToken)}` : '');
+  const signupContext = claimToken
+    ? {
+        iconLabel: 'Claim your profile',
+        headline: 'Complete your sacred profile',
+        description: 'Create your account to save this reading, then choose your path in onboarding.',
+        googleLabel: 'Continue with Google',
+        dividerLabel: 'or create with email',
+      }
+    : inviteCode
+      ? {
+          iconLabel: 'Invitation',
+          headline: 'Join your Sangam',
+          description: 'Create your account to accept the invitation and begin your Shoonaya journey.',
+          googleLabel: 'Join with Google',
+          dividerLabel: 'or join with email',
+        }
+      : {
+          iconLabel: 'New beginning',
+          headline: 'Begin your Shoonaya journey',
+          description: 'Create your account, choose your tradition, and set up your daily practice.',
+          googleLabel: 'Create account with Google',
+          dividerLabel: 'or create with email',
+        };
 
   async function handleGoogleSignup() {
     if (!supabase) {
@@ -175,12 +198,13 @@ export default function SignupPage() {
           <div className="mb-7 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-[var(--premium-border)] bg-[var(--premium-gold-soft)] text-[var(--brand-primary)]">
               <Sparkles size={22} aria-hidden="true" />
+              <span className="sr-only">{signupContext.iconLabel}</span>
             </div>
             <h2 className="font-display text-3xl font-bold tracking-normal text-[var(--text-cream)]">
-              Welcome back
+              {signupContext.headline}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[var(--brand-muted)]">
-              Sign in or create your account to continue.
+              {signupContext.description}
             </p>
           </div>
 
@@ -197,12 +221,12 @@ export default function SignupPage() {
                 G
               </span>
             )}
-            Continue with Google
+            {signupContext.googleLabel}
           </button>
 
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-[var(--premium-border)]" />
-            <span className="text-xs text-[var(--brand-muted)]">or continue with email</span>
+            <span className="text-xs text-[var(--brand-muted)]">{signupContext.dividerLabel}</span>
             <div className="h-px flex-1 bg-[var(--premium-border)]" />
           </div>
 
