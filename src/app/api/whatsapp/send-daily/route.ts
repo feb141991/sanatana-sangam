@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import twilio from 'twilio';
+import { createWhatsAppProvider } from '@/lib/whatsapp/provider';
 
 // ─── Tradition-aware Scripture Verses ──────────────────────────────────────────
 const VERSES: Record<string, { script: string; translit?: string; translation: string; source: string; title: string; symbol: string }[]> = {
@@ -148,18 +148,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ message: 'No users opted-in to WhatsApp reminders', sent: 0 });
     }
 
-    // 3. Twilio Configuration Check
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const whatsappFrom = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886'; // Twilio sandbox default
-
-    let isMock = false;
-    if (!accountSid || !authToken) {
-      console.warn('[whatsapp-send-daily] TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN is missing — running in STUB/MOCK mode');
-      isMock = true;
-    }
-
-    const client = !isMock && accountSid && authToken ? twilio(accountSid, authToken) : null;
+    const whatsappProvider = createWhatsAppProvider();
 
     // Calculate day of the year to cycle through verses deterministically
     const now = new Date();
@@ -170,7 +159,6 @@ export async function GET(request: Request) {
 
     let successCount = 0;
     let failureCount = 0;
-    const sentNumbers: string[] = [];
 
     // 4. Dispatch messages
     for (const user of users) {
@@ -188,19 +176,11 @@ export async function GET(request: Request) {
         `Shared via Shoonaya · shoonaya.com`;
 
       try {
-        if (!isMock && client) {
-          // REAL DISPATCH (TODO: input real Twilio accountSid and authToken in environment variables)
-          await client.messages.create({
-            from: whatsappFrom,
-            to: `whatsapp:${user.whatsapp_number}`,
-            body: messageText,
-          });
-        } else {
-          // STUB DISPATCH (Log to server console)
-          console.log(`[STUB WhatsApp send] To: ${user.whatsapp_number} | Body:\n${messageText}`);
-        }
+        await whatsappProvider.sendText({
+          to: user.whatsapp_number,
+          body: messageText,
+        });
         successCount++;
-        sentNumbers.push(user.whatsapp_number);
       } catch (err) {
         console.error(`Failed to send WhatsApp message to ${user.whatsapp_number}:`, err);
         failureCount++;
@@ -212,8 +192,8 @@ export async function GET(request: Request) {
       total_attempted: users.length,
       successes: successCount,
       failures: failureCount,
-      sent_recipients: sentNumbers,
-      is_mock: isMock,
+      provider: whatsappProvider.name,
+      is_mock: whatsappProvider.isMock,
     });
   } catch (error) {
     console.error('WhatsApp daily bot cron crashed:', error);
