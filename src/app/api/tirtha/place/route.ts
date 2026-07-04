@@ -1,8 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { createAdminClient } from '@/lib/supabase-admin';
+import { createClient } from '@supabase/supabase-js';
+
+import { getApiUser } from '@/lib/api-auth';
 
 export const dynamic = 'force-dynamic';
+
+type TirthaPlaceInsert = {
+  id: string;
+  source: string;
+  source_id: string;
+  name: string;
+  tradition: string;
+  lat: number;
+  lon: number;
+  address: string | null;
+  website: string | null;
+  phone: string | null;
+  opening_hours: string | null;
+  deity: string | null;
+  sampradaya: string | null;
+  source_confidence: string;
+  created_by: string;
+  updated_at: string;
+};
+
+function createTirthaAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+}
+
+function parseString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function parseNumber(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
 
 /**
  * POST /api/tirtha/place
@@ -16,40 +57,49 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(req: NextRequest) {
   try {
-    // Verify the caller is a signed-in user
-    const userClient = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
+    const { user, error: authError } = await getApiUser(req);
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { id, source, source_id, name, tradition, lat, lon } = body;
+    const body: unknown = await req.json();
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
 
-    if (!id || !source || !name || !tradition || lat == null || lon == null) {
+    const payload = body as Record<string, unknown>;
+    const id = parseString(payload.id);
+    const source = parseString(payload.source);
+    const sourceId = parseString(payload.source_id) ?? id;
+    const name = parseString(payload.name);
+    const tradition = parseString(payload.tradition);
+    const lat = parseNumber(payload.lat);
+    const lon = parseNumber(payload.lon);
+
+    if (!id || !source || !sourceId || !name || !tradition || lat == null || lon == null) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const row = {
+    const row: TirthaPlaceInsert = {
       id,
       source,
-      source_id: source_id ?? id,
+      source_id: sourceId,
       name,
       tradition,
       lat,
       lon,
-      address:            body.address            ?? null,
-      website:            body.website            ?? null,
-      phone:              body.phone              ?? null,
-      opening_hours:      body.opening_hours      ?? null,
-      deity:              body.deity              ?? null,
-      sampradaya:         body.sampradaya         ?? null,
-      source_confidence:  'community_import',
-      created_by:         user.id,
-      updated_at:         new Date().toISOString(),
+      address: parseString(payload.address),
+      website: parseString(payload.website),
+      phone: parseString(payload.phone),
+      opening_hours: parseString(payload.opening_hours),
+      deity: parseString(payload.deity),
+      sampradaya: parseString(payload.sampradaya),
+      source_confidence: 'community_import',
+      created_by: user.id,
+      updated_at: new Date().toISOString(),
     };
 
-    const admin = createAdminClient() as unknown as { from: (t: string) => any };
+    const admin = createTirthaAdminClient();
     const { error } = await admin
       .from('tirtha_places')
       .upsert(row, { onConflict: 'id' });
@@ -60,8 +110,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ place_id: id });
-  } catch (err: any) {
+  } catch (err) {
     console.error('[tirtha/place] unexpected error:', err);
-    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 });
   }
 }
