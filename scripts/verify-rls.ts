@@ -30,6 +30,11 @@ function logResult(name: string, passed: boolean, message: string) {
   if (!passed) console.log(`       ${colors.yellow}Reason: ${message}${colors.reset}`);
 }
 
+function logSkip(name: string, message: string) {
+  console.log(`${colors.yellow}[SKIP]${colors.reset} ${name}`);
+  console.log(`       ${colors.yellow}Reason: ${message}${colors.reset}`);
+}
+
 async function runTests() {
   console.log(`${colors.blue}=== Shoonaya Phase 0 RLS Security Test Harness ===${colors.reset}`);
   
@@ -83,6 +88,16 @@ async function runTests() {
     .select('id, mandali_id')
     .eq('id', userBId)
     .single();
+  const { data: existingPost } = await clientA
+    .from('posts')
+    .select('id')
+    .limit(1)
+    .maybeSingle();
+  const { data: existingPlace } = await clientA
+    .from('tirtha_places')
+    .select('id')
+    .limit(1)
+    .maybeSingle();
 
   if (profileAError || profileBError || !profileA || !profileB) {
     console.error(`${colors.red}Failed to load test profiles. Ensure both test users have profile rows.${colors.reset}`);
@@ -109,8 +124,11 @@ async function runTests() {
   }
 
   // Test 3: Update another user's profile
-  const { error: err3 } = await clientA.from('profiles').update({ full_name: 'Hacked' }).eq('id', userBId);
-  if (err3) {
+  const { count: count3, error: err3 } = await clientA
+    .from('profiles')
+    .update({ full_name: 'Hacked' }, { count: 'exact' })
+    .eq('id', userBId);
+  if (err3 || count3 === 0) {
     logResult('3. Standard authenticated user cannot update another user’s profile', true, '');
   } else {
     logResult('3. Standard authenticated user cannot update another user’s profile', false, 'Allowed to update another profile.');
@@ -118,24 +136,36 @@ async function runTests() {
   }
 
   // Test 4: Insert upvote for another user
-  const { error: err4 } = await clientA.from('post_upvotes').insert({ post_id: 'dummy-post', user_id: userBId });
-  if (err4) {
-    logResult('4. User A cannot insert post_upvotes with user_id = User B', true, '');
+  if (!existingPost) {
+    logSkip('4. User A cannot insert post_upvotes with user_id = User B', 'No existing post is available to avoid FK-only failure.');
   } else {
-    logResult('4. User A cannot insert post_upvotes with user_id = User B', false, 'Insert succeeded for another user.');
-    allPassed = false;
+    const { error: err4 } = await clientA.from('post_upvotes').insert({ post_id: existingPost.id, user_id: userBId });
+    if (err4) {
+      logResult('4. User A cannot insert post_upvotes with user_id = User B', true, '');
+    } else {
+      logResult('4. User A cannot insert post_upvotes with user_id = User B', false, 'Insert succeeded for another user.');
+      allPassed = false;
+    }
   }
 
   // Test 5: Delete another user's upvote
-  const { count: count5, error: err5 } = await clientA
+  const { count: visibleBUpvotes } = await clientA
     .from('post_upvotes')
-    .delete({ count: 'exact' })
+    .select('*', { count: 'exact', head: true })
     .eq('user_id', userBId);
-  if (err5 || count5 === 0) {
-    logResult('5. User A cannot delete User B’s post_upvotes', true, '');
+  if (!visibleBUpvotes) {
+    logSkip('5. User A cannot delete User B’s post_upvotes', 'No User B upvote row is visible to User A; delete would only prove zero-row behavior.');
   } else {
-    logResult('5. User A cannot delete User B’s post_upvotes', false, 'Delete operation affected rows belonging to another user.');
-    allPassed = false;
+    const { count: count5, error: err5 } = await clientA
+      .from('post_upvotes')
+      .delete({ count: 'exact' })
+      .eq('user_id', userBId);
+    if (err5 || count5 === 0) {
+      logResult('5. User A cannot delete User B’s post_upvotes', true, '');
+    } else {
+      logResult('5. User A cannot delete User B’s post_upvotes', false, 'Delete operation affected rows belonging to another user.');
+      allPassed = false;
+    }
   }
 
   // Test 6: Insert/update tirtha_places directly
@@ -148,21 +178,31 @@ async function runTests() {
   }
 
   // Test 7: Create tirtha_saves for another user
-  const { error: err7 } = await clientA.from('tirtha_saves').insert({ place_id: 'test', user_id: userBId });
-  if (err7) {
-    logResult('7. User A cannot create tirtha_saves for User B', true, '');
+  if (!existingPlace) {
+    logSkip('7. User A cannot create tirtha_saves for User B', 'No existing Tirtha place is available to avoid FK-only failure.');
   } else {
-    logResult('7. User A cannot create tirtha_saves for User B', false, 'Created save for another user.');
-    allPassed = false;
+    const { error: err7 } = await clientA.from('tirtha_saves').insert({ place_id: existingPlace.id, user_id: userBId });
+    if (err7) {
+      logResult('7. User A cannot create tirtha_saves for User B', true, '');
+    } else {
+      logResult('7. User A cannot create tirtha_saves for User B', false, 'Created save for another user.');
+      allPassed = false;
+    }
   }
 
   // Test 8: Create tirtha_checkins for another user
-  const { error: err8 } = await clientA.from('tirtha_checkins').insert({ place_id: 'test', user_id: userBId, privacy: 'private' });
-  if (err8) {
-    logResult('8. User A cannot create tirtha_checkins for User B', true, '');
+  if (!existingPlace) {
+    logSkip('8. User A cannot create tirtha_checkins for User B', 'No existing Tirtha place is available to avoid FK-only failure.');
   } else {
-    logResult('8. User A cannot create tirtha_checkins for User B', false, 'Created checkin for another user.');
-    allPassed = false;
+    const { error: err8 } = await clientA
+      .from('tirtha_checkins')
+      .insert({ place_id: existingPlace.id, user_id: userBId, privacy: 'private' });
+    if (err8) {
+      logResult('8. User A cannot create tirtha_checkins for User B', true, '');
+    } else {
+      logResult('8. User A cannot create tirtha_checkins for User B', false, 'Created checkin for another user.');
+      allPassed = false;
+    }
   }
 
   if (!WEB_API_BASE) {
