@@ -45,6 +45,10 @@ function parseNumber(value: unknown) {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
+function isValidCoordinate(lat: number, lon: number) {
+  return lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+}
+
 /**
  * POST /api/tirtha/place
  * Upserts a place into tirtha_places using the service role (bypasses RLS).
@@ -80,6 +84,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    if (source !== 'overpass' || id !== `overpass:${sourceId}` || !/^\d+$/.test(sourceId)) {
+      return NextResponse.json({ error: 'Invalid place source' }, { status: 400 });
+    }
+
+    if (!isValidCoordinate(lat, lon)) {
+      return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 });
+    }
+
     const row: TirthaPlaceInsert = {
       id,
       source,
@@ -102,10 +114,10 @@ export async function POST(req: NextRequest) {
     const admin = createTirthaAdminClient();
     const { error } = await admin
       .from('tirtha_places')
-      .upsert(row, { onConflict: 'id' });
+      .upsert(row, { onConflict: 'id', ignoreDuplicates: true });
 
     if (error) {
-      console.error('[tirtha/place] upsert failed:', error.message);
+      console.error('[tirtha/place] insert failed:', error.message);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
