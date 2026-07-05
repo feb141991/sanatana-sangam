@@ -46,7 +46,6 @@ Existing native routes found in `/Users/Business(C)/shoonaya-mobile/app`:
 
 Native local domain files that need contract review before expansion:
 
-- `lib/panchang.ts`
 - `lib/pathshala-lessons.ts`
 - `lib/pathshala-paths.ts`
 - `lib/dharm-veer.ts`
@@ -55,6 +54,10 @@ Native local domain files that need contract review before expansion:
 - `lib/notifications.ts`
 - `lib/api.ts`
 - `lib/supabase.ts`
+
+Already replaced:
+
+- `lib/panchang.ts` was removed from the native repo and replaced with `@sangam/panchang-engine`.
 
 ## Phase 1 Principles
 
@@ -154,6 +157,13 @@ Acceptance:
 - No new native-only sacred-date or lesson-selection logic unless documented as temporary.
 - Replaced local fixture files are deleted or marked with a removal ticket in the same docs.
 - Offline fallbacks are explicit and do not claim freshness when stale.
+
+Pathshala note:
+
+- The native lesson reader currently calls `/api/pathshala/progress`, but that route does not exist in the web/API repo. The code then falls back to direct `guided_path_progress` writes.
+- `guided_path_progress` RLS allows authenticated users to manage their own rows, so moving progress writes behind an API is a governance and side-effect consistency decision rather than an emergency RLS requirement.
+- If `/api/pathshala/progress` is created, decide whether the web Pathshala lesson client should migrate to the same API contract. The web client currently writes `guided_path_progress` directly too.
+- Before migrating browse or lesson UI, audit whether progress completion should also update `daily_sadhana`, karma, badges, streaks, notifications, or Pathshala recommendation state.
 
 ### Slice 5: Community And Location Surfaces
 
