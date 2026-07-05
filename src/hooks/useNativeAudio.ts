@@ -1,12 +1,11 @@
-// ─── useNativeAudio — Capacitor-aware audio recording hook ───────────────────
+// ─── useNativeAudio — browser MediaRecorder audio recording hook ─────────────
 //
-// This is the native-app replacement for the browser MediaRecorder approach
-// used in pathshala-engine's useRecitation hook.
-//
-// How it works:
-//   - On WEB:    Falls back to browser MediaRecorder (same as useRecitation)
-//   - On NATIVE: Uses capacitor-voice-recorder for proper
-//                iOS/Android native recording with correct permissions.
+// This previously branched between a Capacitor native recorder and a browser
+// MediaRecorder fallback. The Capacitor native wrapper has been deprecated
+// (see shoonaya-mobile for the real native app), so this is now just the
+// web/PWA MediaRecorder implementation — same behavior this hook already had
+// on web, kept under the same name/signature so existing call sites don't
+// need to change.
 //
 // Usage (drop-in for any recording screen):
 //
@@ -22,7 +21,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { isNative, getBestAudioMime } from '@/lib/platform'
+import { getBestAudioMime } from '@/lib/platform'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -56,7 +55,6 @@ export function useNativeAudio(): UseNativeAudioReturn {
     error:            null,
   })
 
-  // Web fallback refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef        = useRef<BlobPart[]>([])
   const streamRef        = useRef<MediaStream | null>(null)
@@ -71,26 +69,6 @@ export function useNativeAudio(): UseNativeAudioReturn {
   const requestPermission = useCallback(async (): Promise<boolean> => {
     setState(prev => ({ ...prev, isPreparing: true, error: null }))
 
-    if (isNative()) {
-      // ── Capacitor native permission request (via capacitor-voice-recorder) ──
-      try {
-        const { VoiceRecorder } = await import('capacitor-voice-recorder')
-        const status  = await VoiceRecorder.requestAudioRecordingPermission()
-        const granted = status.value === true
-        setState(prev => ({
-          ...prev,
-          isPreparing:      false,
-          permissionStatus: granted ? 'granted' : 'denied',
-          error: granted ? null : 'Microphone permission denied. Enable it in device Settings.',
-        }))
-        return granted
-      } catch (err) {
-        // Plugin not installed — fall back to web
-        console.warn('[useNativeAudio] capacitor-voice-recorder not available, falling back to web', err)
-      }
-    }
-
-    // ── Web permission request (PWA fallback) ──
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       stream.getTracks().forEach(t => t.stop())   // just checking permission
@@ -110,43 +88,6 @@ export function useNativeAudio(): UseNativeAudioReturn {
   const start = useCallback(async (): Promise<void> => {
     setState(prev => ({ ...prev, isPreparing: true, error: null, durationMs: 0 }))
 
-    if (isNative()) {
-      try {
-        const { VoiceRecorder } = await import('capacitor-voice-recorder')
-
-        // Check/request permission natively
-        const perm = await VoiceRecorder.requestAudioRecordingPermission()
-        if (!perm.value) {
-          setState(prev => ({
-            ...prev, isPreparing: false,
-            error: 'Microphone permission denied.',
-            permissionStatus: 'denied',
-          }))
-          return
-        }
-
-        await VoiceRecorder.startRecording()
-        startTimeRef.current = Date.now()
-
-        // Live duration counter
-        timerRef.current = setInterval(() => {
-          setState(prev => ({ ...prev, durationMs: Date.now() - startTimeRef.current }))
-        }, 100)
-
-        setState(prev => ({
-          ...prev,
-          isRecording:      true,
-          isPreparing:      false,
-          permissionStatus: 'granted',
-        }))
-        return
-      } catch (err) {
-        console.warn('[useNativeAudio] VoiceRecorder not available, falling back to web', err)
-        // Fall through to web fallback
-      }
-    }
-
-    // ── Web fallback ──────────────────────────────────────────────────────────
     let stream: MediaStream
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
@@ -211,25 +152,6 @@ export function useNativeAudio(): UseNativeAudioReturn {
 
     setState(prev => ({ ...prev, isRecording: false, audioLevel: 0 }))
 
-    if (isNative()) {
-      try {
-        const { VoiceRecorder } = await import('capacitor-voice-recorder')
-        const result = await VoiceRecorder.stopRecording()
-
-        // VoiceRecorder returns base64 — convert to Blob
-        const base64 = result.value.recordDataBase64 ?? ''
-        const mime   = result.value.mimeType || 'audio/aac'
-        const binary = atob(base64)
-        const bytes  = new Uint8Array(binary.length)
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-        return new Blob([bytes], { type: mime })
-      } catch (err) {
-        console.warn('[useNativeAudio] VoiceRecorder stop failed', err)
-        return null
-      }
-    }
-
-    // ── Web fallback stop ─────────────────────────────────────────────────────
     return new Promise((resolve) => {
       const recorder = mediaRecorderRef.current
       if (!recorder || recorder.state === 'inactive') { resolve(null); return }
@@ -254,14 +176,7 @@ export function useNativeAudio(): UseNativeAudioReturn {
     audioCtxRef.current = null
     streamRef.current?.getTracks().forEach(t => t.stop())
     streamRef.current = null
-
-    if (isNative()) {
-      import('capacitor-voice-recorder')
-        .then(({ VoiceRecorder }) => VoiceRecorder.stopRecording().catch(() => {}))
-        .catch(() => {})
-    } else {
-      mediaRecorderRef.current?.stop()
-    }
+    mediaRecorderRef.current?.stop()
 
     setState({
       isRecording: false, isPreparing: false,
