@@ -15,6 +15,7 @@
   - Define a generic storage interface in shared packages (`sadhana-engine`).
   - Implement `SadhanaSQLiteAdapter` in the native repo.
   - Ensure `expo-sqlite` is added.
+  - See `docs/native-adrs/007-sadhana-storage-adapter.md` for the adapter contract and sync boundary.
 - **Verification plan:** Write unit tests for the SQLite adapter ensuring it fulfills the `sadhana-engine` storage contract.
 - **Open questions:** 
   - Does the Web implementation require a strictly identical interface to the native SQLite adapter?
