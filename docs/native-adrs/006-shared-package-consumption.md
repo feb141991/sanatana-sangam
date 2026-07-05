@@ -16,6 +16,14 @@
   4. Move the generated `.tgz` into `shoonaya-mobile/vendor/`.
   5. Run `npm install ./vendor/<package-name-version>.tgz` in the native repo.
 - **Versioning/Rollback:** Controlled via `git commit` in the native repo containing both the updated tarball and `package.json` lockfile.
+- **Required update process:** Any PR or agent task that changes a shared package consumed by native must also:
+  1. run the package typecheck/build in the web repo,
+  2. run `npm pack --dry-run` and review the contents,
+  3. run `npm pack`,
+  4. replace the matching tarball under `/Users/Business(C)/shoonaya-mobile/vendor/`,
+  5. run `npm install ./vendor/<package-name-version>.tgz` in the native repo,
+  6. commit the web package change and the native tarball/lockfile change together as linked commits,
+  7. report the tarball integrity change and verification commands.
 - **Expo/Metro Implications:** Functions exactly like a standard remote NPM package, perfectly avoiding any Metro symlink/watchFolder bugs.
 - **Risk of Duplicate Domain Logic:** Eliminates native duplication by fully importing compiled types/functions from the canonical shared package.
 - **Verification plan:** Import a type from the shared package in a dedicated compile-time proof file, run native `npm run typecheck`, run `npx expo-doctor`, and later verify an EAS Build before release.

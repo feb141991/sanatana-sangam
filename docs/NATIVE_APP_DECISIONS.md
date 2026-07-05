@@ -25,13 +25,14 @@ This file records decisions that agents must treat as settled unless the user ex
 | D017 | Native repo is `/Users/Business(C)/shoonaya-mobile`. | Accepted | The actual native repo is present, has Expo SDK 56 / React Native 0.85.3, existing screens, local generated Android files, and a local stabilization commit `707f35f` that passes typecheck and Expo Doctor. | The repo is moved, replaced, or proven unusable by build/runtime verification. |
 | D018 | Salvage the native repo after audit; do not restart from scratch today. | Accepted | Phase 0 found a real Expo app with useful routes and clean typecheck/doctor, but also found P0/P1 gates. The right path is keep/harden/replace per screen, not blind continuation. | A local Android/iOS runtime build proves unrecoverable architecture failure. |
 | D019 | Android release signing is a P0 gate. | Accepted | The generated local Android folder is ignored, so signing must be solved through an explicit tracked-Android decision or EAS/prebuild credentials; release signing still requires verification. | EAS-managed signing or tracked Android release signing is verified with a production Android build. |
+| D020 | Guest mode is deferred from native v1 until a dedicated native guest-scope design exists. | Accepted | The native auth guard now correctly sends signed-out users to login. Keeping a "Continue as guest" shortcut would route into signed-in tabs without a defined guest data model, RLS behavior, or conversion plan. The PWA `/guest` route can remain web-only until native guest mode is explicitly scoped. | Product decides native v1 must include guest preview and defines allowed screens, storage, conversion, and data-access limits. |
+| D021 | Phase 1 shared package consumption uses committed `npm pack` tarballs in the native repo. | Accepted | The web and native apps are separate git repos. Vendored tarballs avoid EAS failures from outside-repo `file:` links and avoid private registry credentials during Phase 1. | A monorepo/workspace or private registry is adopted with CI/build proof. |
 
 ## Open Decisions
 
 | ID | Question | Owner | Needed Before |
 |---|---|---|---|
 | O001 | Whether the 13 local commits ahead of origin in `/Users/Business(C)/shoonaya-mobile` should be pushed, rebased, or squashed. | Engineering | Before collaborative native work |
-| O002 | Whether shared packages are consumed by workspace linking or published internal packages. | Engineering | Phase 1 setup |
 | O003 | Native storage choice for non-sensitive local state: MMKV, SQLite, AsyncStorage, or hybrid. | Engineering | Sadhana/offline work |
 | O004 | Exact bottom-tab shape for native v1 after Kul/Mandali priority is applied. | Product + Design | Phase 1 shell |
 | O005 | Whether Tirtha is native v1, Phase 2, or contextual web-linked. | Product | Phase 1 scope |
