@@ -24,6 +24,7 @@ Current native behavior:
 - Progress writes use `guided_path_progress`.
 - Lesson reader calls `/api/pathshala/progress`, but that route does not exist in the web/API repo. The call fails and the app falls back to direct Supabase `guided_path_progress` writes.
 - TTS calls `/api/tts/generate`.
+- Next progress step: rely on the planned `/api/pathshala/progress` endpoint, defined in `docs/NATIVE_APP_PHASE_1_PATHSHALA_PROGRESS_CONTRACT.md`, once its side effects are implemented and verified.
 
 ## Shared Package Inventory
 
