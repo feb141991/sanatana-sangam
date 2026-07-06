@@ -19,12 +19,12 @@ Native files currently depending on local Pathshala data:
 
 Current native behavior:
 
-- `SEED_PATHS` drives the browse/progress list.
+- Browse/progress list now reads from `/api/pathshala/paths`.
 - `getPathLessons(pathId)` creates lessons from local in-app static pools.
-- Progress writes use `guided_path_progress`.
-- Lesson reader calls `/api/pathshala/progress`, but that route does not exist in the web/API repo. The call fails and the app falls back to direct Supabase `guided_path_progress` writes.
+- Lesson completion writes use `/api/pathshala/progress`.
+- Enrollment still writes directly to `guided_path_progress` from the native browse tab.
 - TTS calls `/api/tts/generate`.
-- Next progress step: rely on the planned `/api/pathshala/progress` endpoint, defined in `docs/NATIVE_APP_PHASE_1_PATHSHALA_PROGRESS_CONTRACT.md`, once its side effects are implemented and verified.
+- Next Pathshala step: migrate lesson detail content away from `getPathLessons(pathId)` after a canonical lesson/chunk contract exists.
 
 ## Shared Package Inventory
 
@@ -76,11 +76,11 @@ Use a staged migration:
    - Option B: create `/api/pathshala/progress` and migrate native, then web, to the shared API contract.
 4. Recommended: use API routes for enrollment/progress writes, and use shared package types/read helpers only where proven portable.
 5. Migrate browse first:
-   - replace `SEED_PATHS` reads only after the engine/API returns the same fields required by `PathCard`.
+   - completed for the native tab via `/api/pathshala/paths`; the API currently exposes canonical web `SEED_PATHS` as the shared read source.
 6. Migrate lesson detail second:
    - replace `getPathLessons(pathId)` after canonical lesson/chunk payloads exist.
 7. Migrate progress writes last:
-   - avoid mixed dead API calls plus direct `guided_path_progress` writes.
+   - completed for lesson completion via `/api/pathshala/progress`; enrollment direct writes remain for a later review.
 8. Delete `lib/pathshala-paths.ts` and `lib/pathshala-lessons.ts` only after all imports are gone.
 
 ## Stop Rules
