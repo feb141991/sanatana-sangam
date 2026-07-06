@@ -12,7 +12,7 @@
 
 ## 2. Contract Decision
 **Create `/api/pathshala/progress` and migrate native first.**
-To prevent data inconsistency and make side effects explicit, progress writes should be centralized behind an API. The next implementation slice should create the API route, migrate native after the route is verified, and migrate web in a follow-up.
+To prevent data inconsistency and make side effects explicit, progress writes should be centralized behind an API. The API route now exists for native; web should migrate in a follow-up.
 
 ## 3. API Contract Definition
 
@@ -52,10 +52,9 @@ To prevent data inconsistency and make side effects explicit, progress writes sh
 3. Upsert `daily_sadhana` setting `pathshala_done = true` for the local spiritual date.
 4. Preserve the existing web `shloka_read` event behavior, either by calling the relevant SadhanaEngine tracker server-side or by documenting why Pathshala lesson completion should not log that event.
 5. Decide whether Pathshala completion should also call the daily streak path (`markDone(userId, 'shloka')`) or whether `pathshala_done` alone is the correct practice signal.
-6. If karma is awarded, use the existing `/api/karma/award` behavior or `award_karma` RPC semantics with reason `pathshala_lesson`; do not imply `trackShlokaRead()` awards karma.
+6. If karma is awarded, use the existing `award_karma` RPC semantics with a per-lesson reason such as `pathshala_lesson:{pathId}:{lessonIndex}` and metadata category `pathshala_lesson`; do not imply `trackShlokaRead()` awards karma.
 7. Return idempotent results so repeated lesson completion does not double-award side effects.
 
 ## 4. Next Steps for Implementation
-1. **API Repo**: Implement `src/app/api/pathshala/progress/route.ts` as defined above.
-2. **Native Repo**: Remove the `try-catch` fallback in `app/pathshala/[pathId]/[lessonId].tsx` only after the API route exists and is verified.
-3. **Web Repo**: Migrate the web lesson client to the same API in a follow-up after native is fixed, preserving current `localStorage` and completion-state behavior where needed.
+1. **Native Repo**: Use `apiFetch('/api/pathshala/progress')` exclusively for lesson completion; do not fall back to direct `guided_path_progress` writes.
+2. **Web Repo**: Migrate the web lesson client to the same API in a follow-up after native is fixed, preserving current `localStorage` and completion-state behavior where needed.
