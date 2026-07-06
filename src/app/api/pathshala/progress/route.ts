@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
+import { getPathLessons } from '@/lib/pathshala-lessons';
+import { SEED_PATHS } from '@/lib/pathshala-paths';
 import { localSpiritualDate } from '@/lib/sacred-time';
+
+export const dynamic = 'force-dynamic';
 
 type PathshalaProgressPayload = {
   pathId: string;
@@ -10,6 +15,19 @@ type PathshalaProgressPayload = {
   completedLessons: number[];
   completed: boolean;
 };
+
+type EnrollmentPayload = {
+  pathId: string;
+  currentLesson: number;
+  completedLessons: number[];
+  status: string | null;
+};
+
+const PATHSHALA_PATH_IDS = new Set(SEED_PATHS.map(path => path.id));
+
+function isPathshalaPathId(pathId: string) {
+  return PATHSHALA_PATH_IDS.has(pathId);
+}
 
 function isNonNegativeInteger(value: unknown): value is number {
   return Number.isInteger(value) && Number(value) >= 0;
@@ -42,10 +60,98 @@ function parsePayload(value: unknown): PathshalaProgressPayload | null {
   };
 }
 
+/**
+ * GET /api/pathshala/progress
+ * GET /api/pathshala/progress?pathId=<id>
+ *
+ * Read-only. Returns the authenticated user's Pathshala guided_path_progress rows.
+ * - With `pathId`: { enrollment: EnrollmentPayload | null }
+ * - Without: { enrollments: EnrollmentPayload[] }
+ *
+ * Uses getApiUser (cookie OR Bearer token) so native callers authenticate
+ * correctly, and reuses the client it returns (RLS-scoped to the caller,
+ * `auth.uid() = user_id`) rather than a service-role admin client — this
+ * table's RLS already permits a user to read/write their own rows, so no
+ * elevated privilege is needed here.
+ */
+export async function GET(req: NextRequest) {
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (authError || !user || !supabase) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
+
+  const pathId = req.nextUrl.searchParams.get('pathId');
+
+  if (pathId) {
+    if (!isPathshalaPathId(pathId)) {
+      return NextResponse.json({ error: 'Path not found' }, { status: 404 });
+    }
+
+    const { data, error } = await supabase
+      .from('guided_path_progress')
+      .select('path_id, current_lesson, completed_lessons, status')
+      .eq('user_id', user.id)
+      .eq('path_id', pathId)
+      .maybeSingle();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    const enrollment: EnrollmentPayload | null = data
+      ? {
+          pathId: data.path_id,
+          currentLesson: data.current_lesson ?? 0,
+          completedLessons: Array.isArray(data.completed_lessons) ? data.completed_lessons : [],
+          status: data.status,
+        }
+      : null;
+
+    return NextResponse.json({ enrollment });
+  }
+
+  const { data, error } = await supabase
+    .from('guided_path_progress')
+    .select('path_id, current_lesson, completed_lessons, status')
+    .eq('user_id', user.id)
+    .in('path_id', Array.from(PATHSHALA_PATH_IDS));
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  const enrollments: EnrollmentPayload[] = (data ?? []).map((row) => ({
+    pathId: row.path_id,
+    currentLesson: row.current_lesson ?? 0,
+    completedLessons: Array.isArray(row.completed_lessons) ? row.completed_lessons : [],
+    status: row.status,
+  }));
+
+  return NextResponse.json({ enrollments });
+}
+
+/**
+ * POST /api/pathshala/progress
+ *
+ * Centralizes lesson-completion side effects (karma award, sadhana_events
+ * log, daily_sadhana upsert) so native does not bypass them with a direct
+ * table write. Auth switched from a cookie-only server client to getApiUser
+ * (cookie OR Bearer) — native requests carry only a Bearer token and were
+ * being rejected with 401 by the previous cookie-only client. Uses the
+ * RLS-scoped client returned by getApiUser rather than a service-role
+ * admin client (see GET handler comment above for why).
+ */
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (authError || !user || !supabase) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   try {
     const payload = parsePayload(await req.json());
@@ -54,6 +160,15 @@ export async function POST(req: NextRequest) {
     }
 
     const { pathId, lessonIndex, currentLesson, completed } = payload;
+
+    if (!isPathshalaPathId(pathId)) {
+      return NextResponse.json({ error: 'Path not found' }, { status: 404 });
+    }
+
+    const lessonCount = getPathLessons(pathId).length;
+    if (lessonCount === 0 || lessonIndex >= lessonCount || currentLesson >= lessonCount) {
+      return NextResponse.json({ error: 'Invalid lesson index' }, { status: 400 });
+    }
 
     const { data: existing, error: existingErr } = await supabase
       .from('guided_path_progress')
