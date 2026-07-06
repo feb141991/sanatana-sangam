@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
 // ─── POST /api/karma/award ───────────────────────────────────────────────────
@@ -36,11 +36,10 @@ const ALLOWED_KARMA_REASONS = new Set([
 ]);
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, error: authError, supabase } = await getApiUser(req);
 
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
   }
 
   const banned = await assertNotBanned(supabase, user.id);
