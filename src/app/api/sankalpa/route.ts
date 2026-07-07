@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 
 export async function GET(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+  }
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   try {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -32,9 +35,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+  }
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   try {
     const body = await req.json();
@@ -88,9 +94,12 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+  }
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   try {
     const body = await req.json();
