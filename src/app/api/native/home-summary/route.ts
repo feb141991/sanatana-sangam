@@ -78,7 +78,7 @@ type ObservanceRow = {
 };
 
 type PracticeRow = {
-  id: 'japa' | 'nitya' | 'pathshala' | 'quiz' | 'dharmveer' | 'panchang';
+  id: 'japa' | 'nitya' | 'pathshala' | 'quiz' | 'dharmveer';
   icon: string;
   label: string;
   detail: string;
@@ -290,7 +290,7 @@ function buildPractices({
       icon: 'circle',
       label: 'Japa Mala',
       detail: malaDone || todaySadhana?.japa_done ? 'Mala completed today' : 'Begin your mala',
-      href: '/(tabs)/bhakti',
+      href: '/bhakti',
       done: Boolean(todaySadhana?.japa_done) || malaDone,
       progress: Boolean(todaySadhana?.japa_done) || malaDone ? 1 : 0,
       color: '#F59E4A',
@@ -337,28 +337,17 @@ function buildPractices({
       progress: todaySadhana?.dharmveer_done ? 1 : 0,
       color: '#FF8A65',
     },
-    {
-      id: 'panchang',
-      icon: 'sunrise',
-      label: 'Panchang',
-      detail: 'Today’s sacred rhythm',
-      href: '/panchang',
-      done: false,
-      progress: 0,
-      color: '#C5A059',
-    },
   ];
 }
 
 function buildNextPractice(practices: PracticeRow[]) {
-  const next = practices.find((practice) => practice.id !== 'panchang' && !practice.done) ?? practices[0];
+  const next = practices.find((practice) => !practice.done) ?? practices[0];
   const actionLabels: Record<PracticeRow['id'], string> = {
     japa: 'Start Japa',
     nitya: 'Open Nitya Karma',
     pathshala: 'Study Now',
     quiz: 'Answer Quiz',
     dharmveer: 'Open Dharm Veer',
-    panchang: 'Open Panchang',
   };
 
   return {
