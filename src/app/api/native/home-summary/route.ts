@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getApiUser } from '@/lib/api-auth';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
+import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
 import { getTodayShloka } from '@/lib/shlokas';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
@@ -214,6 +215,10 @@ function clampProgress(value: number) {
   return Math.max(0, Math.min(1, value));
 }
 
+function isPresentString(value: string | null): value is string {
+  return Boolean(value);
+}
+
 function buildEndDate(startDate: string, targetDays: number) {
   const startMs = new Date(`${startDate}T00:00:00Z`).getTime();
   return new Date(startMs + Math.max(targetDays - 1, 0) * 86_400_000).toISOString().slice(0, 10);
@@ -270,7 +275,7 @@ function buildSacredText(profile: ProfileRow | null, dayIndex: number) {
 function buildPractices({
   todaySadhana,
   malaDone,
-  nityaDone,
+  nityaCompletedCount,
   pathshalaDone,
   pathshalaHref,
   japaStreak,
@@ -278,12 +283,15 @@ function buildPractices({
 }: {
   todaySadhana: DailySadhanaRow | null;
   malaDone: boolean;
-  nityaDone: boolean;
+  nityaCompletedCount: number;
   pathshalaDone: boolean;
   pathshalaHref: string;
   japaStreak: number;
   nityaStreak: number;
 }): PracticeRow[] {
+  const nityaProgress = clampProgress(nityaCompletedCount / NATIVE_NITYA_STEP_ORDER.length);
+  const nityaDone = Boolean(todaySadhana?.nitya_done) || nityaCompletedCount === NATIVE_NITYA_STEP_ORDER.length;
+
   return [
     {
       id: 'japa',
@@ -302,8 +310,8 @@ function buildPractices({
       label: 'Nitya Karma',
       detail: nityaDone || todaySadhana?.nitya_done ? 'Morning practice complete' : 'Open your daily sequence',
       href: '/nitya-karma',
-      done: Boolean(todaySadhana?.nitya_done) || nityaDone,
-      progress: Boolean(todaySadhana?.nitya_done) || nityaDone ? 1 : 0,
+      done: nityaDone,
+      progress: nityaDone ? 1 : nityaProgress,
       color: '#5aaa38',
       streak: nityaStreak,
     },
@@ -413,10 +421,10 @@ export async function GET(request: NextRequest) {
         .lte('date', today),
       DB_TIMEOUT,
     ),
-    withTimeout<Array<{ log_date: string }>>(
+    withTimeout<Array<{ log_date: string; step_id: string | null }>>(
       supabase
         .from('nitya_karma_log')
-        .select('log_date')
+        .select('log_date, step_id')
         .eq('user_id', user.id)
         .gte('log_date', historyFrom)
         .lte('log_date', today),
@@ -502,11 +510,18 @@ export async function GET(request: NextRequest) {
     .filter((row) => row.streak_count != null)
     .sort((a, b) => b.date.localeCompare(a.date))[0] ?? null;
   const japaStreak = todaySadhana?.streak_count ?? latestStreakRow?.streak_count ?? 0;
+  const nityaDoneIdsToday = new Set(
+    nityaRows
+      .filter((row) => row.log_date === today && row.step_id)
+      .map((row) => row.step_id)
+      .filter(isPresentString),
+  );
+  const nityaCompletedCount = countCompletedNativeNityaSteps(nityaDoneIdsToday);
 
   const practices = buildPractices({
     todaySadhana,
     malaDone: malaRows.length > 0,
-    nityaDone: nityaRows.some((row) => row.log_date === today),
+    nityaCompletedCount,
     pathshalaDone: pathshalaDoneToday,
     pathshalaHref,
     japaStreak,

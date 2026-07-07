@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
+async function verifyActiveSankalpa(
+  supabase: NonNullable<Awaited<ReturnType<typeof getApiUser>>['supabase']>,
+  userId: string,
+  sankalpaId: string,
+) {
+  const { data, error } = await supabase
+    .from('sankalpas')
+    .select('id')
+    .eq('id', sankalpaId)
+    .eq('user_id', userId)
+    .eq('status', 'active')
+    .maybeSingle();
+
+  if (error) throw error;
+  return Boolean(data);
+}
+
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
@@ -19,6 +36,10 @@ export async function POST(req: NextRequest) {
     }
 
     const today = new Date().toISOString().slice(0, 10);
+    const sankalpaExists = await verifyActiveSankalpa(supabase, user.id, sankalpa_id);
+    if (!sankalpaExists) {
+      return NextResponse.json({ error: 'Active sankalpa not found' }, { status: 404 });
+    }
 
     const { error } = await supabase
       .from('sankalpa_checkins')
@@ -57,6 +78,11 @@ export async function GET(req: NextRequest) {
 
     if (!sankalpa_id || typeof sankalpa_id !== 'string' || sankalpa_id.trim() === '') {
       return NextResponse.json({ error: 'sankalpa_id is required' }, { status: 400 });
+    }
+
+    const sankalpaExists = await verifyActiveSankalpa(supabase, user.id, sankalpa_id);
+    if (!sankalpaExists) {
+      return NextResponse.json({ error: 'Active sankalpa not found' }, { status: 404 });
     }
 
     const { data: rows, error } = await supabase

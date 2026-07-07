@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
+import {
+  NATIVE_NITYA_STEP_ORDER,
+  countCompletedNativeNityaSteps,
+  isNativeNityaStepId,
+  type NativeNityaStepId,
+} from '@/lib/native-nitya-karma';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTraditionMeta } from '@/lib/tradition-config';
 
@@ -42,24 +48,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 
 export const runtime = 'nodejs';
 
-type StepId =
-  | 'woke_brahma_muhurta'
-  | 'snana_done'
-  | 'tilak_done'
-  | 'japa_done'
-  | 'sandhya_done'
-  | 'aarti_done'
-  | 'shloka_done';
-
-const STEP_ORDER: readonly StepId[] = [
-  'woke_brahma_muhurta',
-  'snana_done',
-  'tilak_done',
-  'japa_done',
-  'sandhya_done',
-  'aarti_done',
-  'shloka_done',
-];
+type StepId = NativeNityaStepId;
 
 type StepContent = { label: string; icon: string; description: string; minutes: number };
 
@@ -122,7 +111,7 @@ type NityaStep = {
 
 function resolveSteps(tradition: string | null, doneIds: ReadonlySet<string>): NityaStep[] {
   const overrides = TRADITION_OVERRIDES[tradition ?? ''] ?? {};
-  return STEP_ORDER.map((id) => {
+  return NATIVE_NITYA_STEP_ORDER.map((id) => {
     const base = BASE_STEPS[id];
     const override = overrides[id];
     return {
@@ -138,6 +127,10 @@ function resolveSteps(tradition: string | null, doneIds: ReadonlySet<string>): N
 
 type NityaLogRow = { step_id: string };
 type NityaStreakRow = { current_streak: number | null; longest_streak: number | null };
+
+function isPresentString(value: string | null): value is string {
+  return Boolean(value);
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -166,8 +159,8 @@ export async function GET(req: NextRequest) {
     const doneIds = new Set<string>((logRows ?? []).map((row) => row.step_id));
 
     const steps = resolveSteps(tradition, doneIds);
-    const completedCount = steps.filter((step) => step.done).length;
-    const allDone = completedCount === steps.length;
+    const completedCount = countCompletedNativeNityaSteps(doneIds);
+    const allDone = completedCount === NATIVE_NITYA_STEP_ORDER.length;
 
     const streakRow = (streakResult.status === 'fulfilled' ? streakResult.value.data : null) as NityaStreakRow | null;
 
@@ -200,7 +193,7 @@ export async function POST(req: NextRequest) {
     const body = (await req.json().catch(() => null)) as { step_id?: unknown } | null;
     const stepId = body?.step_id;
 
-    if (typeof stepId !== 'string' || !(STEP_ORDER as readonly string[]).includes(stepId)) {
+    if (typeof stepId !== 'string' || !isNativeNityaStepId(stepId)) {
       return NextResponse.json({ error: 'Invalid step_id' }, { status: 400 });
     }
 
@@ -224,7 +217,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    const { data: logRows, error: logError } = await supabase
+      .from('nitya_karma_log')
+      .select('step_id')
+      .eq('user_id', user.id)
+      .eq('log_date', today);
+
+    if (logError) {
+      return NextResponse.json({ error: logError.message }, { status: 500 });
+    }
+
+    const doneIds = new Set<string>(
+      (logRows ?? [])
+        .map((row: { step_id: string | null }) => row.step_id)
+        .filter(isPresentString),
+    );
+    doneIds.add(stepId);
+    const completedCount = countCompletedNativeNityaSteps(doneIds);
+    const allDone = completedCount === NATIVE_NITYA_STEP_ORDER.length;
+
+    if (allDone) {
+      const { error: sadhanaError } = await supabase.from('daily_sadhana').upsert(
+        {
+          user_id: user.id,
+          date: today,
+          nitya_done: true,
+        },
+        { onConflict: 'user_id,date' },
+      );
+      if (sadhanaError) {
+        console.warn('[POST /api/native/nitya-karma] daily_sadhana sync failed:', sadhanaError.message);
+      }
+    }
+
+    return NextResponse.json({ success: true, completedCount, total: NATIVE_NITYA_STEP_ORDER.length, allDone });
   } catch (err: unknown) {
     console.error('[POST /api/native/nitya-karma] Server error:', err);
     const message = err instanceof Error ? err.message : 'Server error';

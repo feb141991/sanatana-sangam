@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
+type ProfileKarmaRow = {
+  karma_points: number | null;
+};
+
 export async function POST(req: NextRequest) {
   const { user, error: authError, supabase } = await getApiUser(req);
   if (!user || !supabase) {
@@ -41,46 +45,33 @@ export async function POST(req: NextRequest) {
         completed_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .eq('id', sankalpa_id);
+      .eq('id', sankalpa_id)
+      .eq('user_id', user.id);
 
     if (updateError) throw updateError;
 
-    // Award +50 karma via RPC or direct fallback
+    // Award +50 displayed karma. The existing seva RPCs update seva_score /
+    // weekly_seva / monthly_seva, while Home reads profiles.karma_points.
     try {
-      const { error: rpcError } = await supabase.rpc('increment_period_seva', {
-        p_user_id: user.id,
-        p_points: 50
-      });
+      const { data: profileRow, error: profileError } = await supabase
+        .from('profiles')
+        .select('karma_points')
+        .eq('id', user.id)
+        .single();
 
-      if (rpcError) {
-        // Fallback: update profiles.karma_points directly
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('karma_points')
-          .eq('id', user.id)
-          .single();
+      if (profileError) throw profileError;
 
-        await supabase
-          .from('profiles')
-          .update({ karma_points: ((prof as any)?.karma_points ?? 0) + 50 })
-          .eq('id', user.id);
+      const profile = profileRow as ProfileKarmaRow | null;
+      const { error: karmaError } = await supabase
+        .from('profiles')
+        .update({ karma_points: (profile?.karma_points ?? 0) + 50 })
+        .eq('id', user.id);
+
+      if (karmaError) {
+        console.error('[sankalpa/complete] karma_points update failed:', karmaError.message);
       }
-    } catch (rpcErr) {
-      console.warn('[sankalpa/complete] RPC failed, trying fallback direct update:', rpcErr);
-      try {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('karma_points')
-          .eq('id', user.id)
-          .single();
-
-        await supabase
-          .from('profiles')
-          .update({ karma_points: ((prof as any)?.karma_points ?? 0) + 50 })
-          .eq('id', user.id);
-      } catch (fallbackErr) {
-        console.error('[sankalpa/complete] Fallback update failed:', fallbackErr);
-      }
+    } catch (karmaErr) {
+      console.error('[sankalpa/complete] karma_points award failed:', karmaErr);
     }
 
     return NextResponse.json({ success: true, karmaAwarded: 50 });
