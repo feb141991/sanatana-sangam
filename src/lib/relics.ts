@@ -41,7 +41,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'streak',
     milestoneValue: 7,
-    imageUrl: '/relics/incense.png',
+    imageUrl: '/relics/incense-sandalwood.png',
     lore: 'Incense purifies both outer space and inner awareness. In Indic traditions, its soothing aroma calms the breath and anchors the mind in the present moment.',
     effect: 'Shifts your home accent to soft sandalwood gold.'
   },
@@ -52,7 +52,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'streak',
     milestoneValue: 10,
-    imageUrl: '/relics/camphor.png',
+    imageUrl: '/relics/camphor-flame.png',
     lore: 'The Camphor Flame burns brightly, dissolving completely without leaving a trace of residue. It represents the ultimate offering of the self, where the ego is entirely consumed in the fire of awareness.',
     effect: 'Shifts your home accent to bright camphor yellow.'
   },
@@ -63,7 +63,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'streak',
     milestoneValue: 14,
-    imageUrl: '/relics/bell.png',
+    imageUrl: '/relics/mindful-bell.png',
     lore: 'The ringing of the Ghanta cuts through mental clutter, invoking pure focus. Its sacred vibration dispels heavy energies and alerts the soul to the arrival of the divine.',
     effect: 'Shifts your home accent to shining brass bronze.'
   },
@@ -85,7 +85,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'streak',
     milestoneValue: 50,
-    imageUrl: '/relics/asana.png',
+    imageUrl: '/relics/asana-kusha.png',
     lore: 'The Kusha Grass Asana is the traditional seat of ancient sages. It grounds the meditator, insulating them from earthly distractions and stabilizing their connection to higher realms.',
     effect: 'Shifts your home accent to natural grass gold.'
   },
@@ -107,7 +107,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'score',
     milestoneValue: 250,
-    imageUrl: '/relics/shankha.png',
+    imageUrl: '/relics/shankha-conch.png',
     lore: 'The Shankha carries the primordial sound of creation. Worn or kept close, its sacred resonance purifies the subtle body and protects the seeker\'s spiritual boundaries.',
     effect: 'Adds a pearlescent white border to your avatar and shifts your home accent to soft cream.'
   },
@@ -118,7 +118,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'universal',
     milestoneType: 'score',
     milestoneValue: 500,
-    imageUrl: '/relics/pothi.png',
+    imageUrl: '/relics/prarthana-pothi.png',
     lore: 'The Devotional Pothi holds the words of the wise and the chants of old. It is a light for the dark hours, reminding the practitioner of the eternal truths that guide the path.',
     effect: 'Shifts your home accent to sacred manuscript yellow.'
   },
@@ -142,7 +142,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 5,
-    imageUrl: '/relics/modak.png',
+    imageUrl: '/relics/ganesha-modak.png',
     lore: 'The Modak is Ganesha\'s sweet offering of supreme wisdom and fulfillment. It symbolizes the sweetness of a focused spiritual life and the joy of overcoming all inner obstacles.',
     effect: 'Shifts your home accent to saffron orange.'
   },
@@ -153,7 +153,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 9,
-    imageUrl: '/relics/vibhuti.png',
+    imageUrl: '/relics/vibhuti-ash.png',
     lore: 'The Sacred Vibhuti is the holy ash of Shiva\'s eternal dhuni. Applied with devotion, it reminds the seeker of the impermanence of the body and our final union with the formless divine.',
     effect: 'Shifts your home accent to sacred ash grey-blue.'
   },
@@ -175,7 +175,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 30,
-    imageUrl: '/relics/flute.png',
+    imageUrl: '/relics/krishna-flute.png',
     lore: 'Krishna\'s Flute represents the hollowed self, completely free of ego and expectation. When we empty ourselves, the Divine can play the sweet melody of unconditional love through us.',
     effect: 'Sets your japa mala to deep Yamuna blue and your home accent to sky blue.'
   },
@@ -186,7 +186,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 50,
-    imageUrl: '/relics/bow.png',
+    imageUrl: '/relics/rama-bow.png',
     lore: 'The Bow of Sri Rama represents unswerving righteousness and complete mental focus. It is the symbol of Dharma, reminding the seeker to aim for absolute precision in truth.',
     effect: 'Shifts your home accent to royal deep red.'
   },
@@ -197,7 +197,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 75,
-    imageUrl: '/relics/peacock.png',
+    imageUrl: '/relics/peacock-feather.png',
     lore: 'The Peacock Feather is the crown jewel of divine beauty and playfulness. It represents the joyful lightness of a soul that has dedicated all its colorful qualities to Krishna.',
     effect: 'Shifts your home accent to vibrant peacock teal.'
   },
@@ -208,7 +208,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 108,
-    imageUrl: '/relics/shield.png',
+    imageUrl: '/relics/durga-shield.png',
     lore: 'The Shield of Durga represents the invincible protective energy of the Divine Mother. It safeguards the seeker against spiritual obstacles and inner vulnerabilities.',
     effect: 'Gives your avatar a saffron glow and shifts your home accent to fiery orange.'
   },
@@ -219,7 +219,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'streak',
     milestoneValue: 200,
-    imageUrl: '/relics/shesha.png',
+    imageUrl: '/relics/ananta-shesha.png',
     lore: 'The Ananta Shesha Canopy represents the infinite cosmic serpent providing shelter to Vishnu. It offers absolute protection and stability to the meditator\'s quiet space.',
     effect: 'Shifts your home accent to cosmic purple.'
   },
@@ -230,7 +230,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 108,
-    imageUrl: '/relics/tulsi.png',
+    imageUrl: '/relics/tulsi-leaf.png',
     lore: 'The Tulsi Leaf holds the living energy of devotion and absolute healing. Sacred to Vishnu, it is the highest offering of selfless love and purification.',
     effect: 'Sets your japa mala to basil green and shifts your home accent to vibrant green.'
   },
@@ -241,7 +241,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 300,
-    imageUrl: '/relics/damaru.png',
+    imageUrl: '/relics/shiva-damaru.png',
     lore: 'The Damaru of Shiva beats the primal rhythm from which the cosmos emerges. Its steady sound aligns the practitioner\'s pulse with the cosmic flow of creation and dissolution.',
     effect: 'Shifts your home accent to terracotta red.'
   },
@@ -252,7 +252,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 450,
-    imageUrl: '/relics/nandi.png',
+    imageUrl: '/relics/nandi-devotion.png',
     lore: 'Nandi represents the silent, steady power of waiting and complete dedication. Constantly facing the Shiva Lingam, he is the emblem of absolute focus and deep devotion.',
     effect: 'Shifts your home accent to devout white-cream.'
   },
@@ -263,7 +263,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 600,
-    imageUrl: '/relics/lotus.png',
+    imageUrl: '/relics/brahma-lotus.png',
     lore: 'The Lotus of Brahma represents the immaculate blossom of cosmic creation. It calls the practitioner to unfold the pure lotus of the heart and expand their spiritual vision.',
     effect: 'Sets your japa mala to lotus pink and shifts your home accent to soft pink.'
   },
@@ -274,7 +274,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 800,
-    imageUrl: '/relics/gada.png',
+    imageUrl: '/relics/hanuman-gada.png',
     lore: 'Hanuman\'s Gada represents immense spiritual strength united with absolute humility. It is a reminder that true power lies in the selfless service of the Divine.',
     effect: 'Shifts your home accent to radiant golden orange.'
   },
@@ -296,7 +296,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 1500,
-    imageUrl: '/relics/ganga-urn.png',
+    imageUrl: '/relics/ganga-kalash.png',
     lore: 'The Ganga Kalash contains the holy waters of the Ganges, descending from Shiva\'s locks. It embodies absolute spiritual purification and the continuous flow of divine grace.',
     effect: 'Shifts your home accent to sparkling river gold.'
   },
@@ -307,7 +307,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 2500,
-    imageUrl: '/relics/kamandalu.png',
+    imageUrl: '/relics/rishi-kamandalu.png',
     lore: 'The Rishi Kamandalu is the simple vessel of water carried by wandering ascetics. It represents perfect self-reliance, renunciation of unnecessary luxuries, and ultimate contentment.',
     effect: 'Shifts your home accent to ascetic ochre.'
   },
@@ -318,7 +318,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'hindu',
     milestoneType: 'score',
     milestoneValue: 5000,
-    imageUrl: '/relics/chintamani.png',
+    imageUrl: '/relics/chintamani-gem.png',
     lore: 'The mythical Chintamani Gem represents the wish-fulfilling jewel of self-realization. It holds the supreme light of consciousness, satisfying all spiritual hunger forever.',
     effect: 'Gives your avatar a vivid emerald glow and shifts your home accent to jade.'
   },
@@ -331,7 +331,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'streak',
     milestoneValue: 5,
-    imageUrl: '/relics/kara.png',
+    imageUrl: '/relics/steel-kara.png',
     lore: 'The Steel Kara is the unbroken circle of Waheguru\'s presence, worn as a constant reminder that the Sikh never stands alone. It binds the wearer to righteous deeds and divine restraint.',
     effect: 'Shifts your home accent to steel grey-blue.'
   },
@@ -342,7 +342,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'streak',
     milestoneValue: 11,
-    imageUrl: '/relics/kirpan.png',
+    imageUrl: '/relics/sacred-kirpan.png',
     lore: 'The Kirpan is the sword of active mercy, representing the duty to protect the weak and uphold justice. It calls the seeker to stand firmly against inner and outer oppression.',
     effect: 'Shifts your home accent to bright steel blue.'
   },
@@ -364,7 +364,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'streak',
     milestoneValue: 50,
-    imageUrl: '/relics/chaur.png',
+    imageUrl: '/relics/sikh-chaur.png',
     lore: 'The Chaur Sahib represents royal respect and complete surrender to the eternal word. Waved in service, it reminds the practitioner of the beauty of absolute humility.',
     effect: 'Shifts your home accent to soft teal.'
   },
@@ -375,7 +375,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'streak',
     milestoneValue: 108,
-    imageUrl: '/relics/nishan-kartarpur.png',
+    imageUrl: '/relics/kartarpur-nishan.png',
     lore: 'The Nishan of Kartarpur represents the historical home of Guru Nanak\'s community. It stands as a symbol of honest labor, shared meals, and unwavering devotion to the One.',
     effect: 'Shifts your home accent to royal blue.'
   },
@@ -386,7 +386,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'score',
     milestoneValue: 108,
-    imageUrl: '/relics/kangha.png',
+    imageUrl: '/relics/wooden-kangha.png',
     lore: 'The wooden Kangha is kept in the hair to maintain absolute order and cleanliness. It represents the combing away of untruths and the maintenance of a disciplined, clean mind.',
     effect: 'Shifts your home accent to warm brown-teal.'
   },
@@ -397,7 +397,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'score',
     milestoneValue: 350,
-    imageUrl: '/relics/nishan-banner.png',
+    imageUrl: '/relics/nishan-sahib.png',
     lore: 'The Nishan Sahib is the high banner of Khalsa hope, sovereignty, and shelter. Its presence reminds the practitioner that they are part of a community that shields all who seek refuge.',
     effect: 'Shifts your home accent to deep navy blue.'
   },
@@ -419,7 +419,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'sikh',
     milestoneType: 'score',
     milestoneValue: 1000,
-    imageUrl: '/relics/gurbani-manuscript.png',
+    imageUrl: '/relics/gurbani-pothi.png',
     lore: 'The Gurbani Pothi preserves the holy hymns and daily verses of the Gurus. It serves as the ultimate guiding light, bringing steady wisdom to the seeker\'s daily practice.',
     effect: 'Shifts your home accent to indigo blue.'
   },
@@ -443,7 +443,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'buddhist',
     milestoneType: 'streak',
     milestoneValue: 12,
-    imageUrl: '/relics/bowl.png',
+    imageUrl: '/relics/alms-bowl.png',
     lore: 'The Patra represents the monastic vow of absolute receptivity and letting go of possessions. It teaches the seeker to receive each moment of life with a grateful, unattached heart.',
     effect: 'Shifts your home accent to monks-robe ochre.'
   },
@@ -465,7 +465,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'buddhist',
     milestoneType: 'streak',
     milestoneValue: 50,
-    imageUrl: '/relics/vase.png',
+    imageUrl: '/relics/treasure-vase.png',
     lore: 'The Treasure Vase represents the infinite wealth of spiritual wisdom and compassion. It never empties, providing continuous blessings of peace and health to the practitioner.',
     effect: 'Shifts your home accent to rich golden amber.'
   },
@@ -476,7 +476,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'buddhist',
     milestoneType: 'streak',
     milestoneValue: 108,
-    imageUrl: '/relics/fish.png',
+    imageUrl: '/relics/golden-fish.png',
     lore: 'The Pair of Golden Fish represents fearless movement through the vast ocean of existence. They remind us to glide gracefully through the tides of life without fear of drowning.',
     effect: 'Shifts your home accent to golden yellow-orange.'
   },
@@ -509,7 +509,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'buddhist',
     milestoneType: 'score',
     milestoneValue: 750,
-    imageUrl: '/relics/vajra.png',
+    imageUrl: '/relics/vajra-scepter.png',
     lore: 'The Vajra represents the thunderbolt of diamond-like clarity that shatters all spiritual obstacles. It cuts through the illusions of self, granting unshakeable truth.',
     effect: 'Gives your avatar a sky blue frame and shifts your home accent to royal blue.'
   },
@@ -520,7 +520,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'buddhist',
     milestoneType: 'score',
     milestoneValue: 1200,
-    imageUrl: '/relics/parasol.png',
+    imageUrl: '/relics/parasol-royalty.png',
     lore: 'The Parasol represents protective shelter from the scorching heat of worldly desires and delusions. It guards the practitioner\'s clean awareness and spiritual integrity.',
     effect: 'Shifts your home accent to royal golden-yellow.'
   },
@@ -533,7 +533,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'jain',
     milestoneType: 'streak',
     milestoneValue: 5,
-    imageUrl: '/relics/swastika.png',
+    imageUrl: '/relics/jain-swastika.png',
     lore: 'The Jinendra Swastika represents the four realms of rebirth and the path of the three jewels. It is a map for the soul, guiding it out of the cycles of existence to liberation.',
     effect: 'Shifts your home accent to white-gold.'
   },
@@ -555,7 +555,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'jain',
     milestoneType: 'streak',
     milestoneValue: 30,
-    imageUrl: '/relics/crescent.png',
+    imageUrl: '/relics/siddhashila-moon.png',
     lore: 'The Crescent of Siddhashila represents the supreme peak of the universe where liberated souls rest in pure bliss. It is the ultimate goal of the seeker, signifying infinite knowledge.',
     effect: 'Shifts your home accent to cool silver-white.'
   },
@@ -577,7 +577,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'jain',
     milestoneType: 'score',
     milestoneValue: 108,
-    imageUrl: '/relics/triratna.png',
+    imageUrl: '/relics/three-jewels.png',
     lore: 'The Triratna represents the three pillars of Right Faith, Right Knowledge, and Right Conduct. Together, they form the secure foundation for the soul\'s journey to liberation.',
     effect: 'Adds a sage green border to your avatar and shifts your home accent to emerald green.'
   },
@@ -588,7 +588,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'jain',
     milestoneType: 'score',
     milestoneValue: 500,
-    imageUrl: '/relics/siddhachakra.png',
+    imageUrl: '/relics/siddhachakra-wheel.png',
     lore: 'The Siddhachakra Wheel is the sacred mandala of the five supreme beings. Meditating upon it brings absolute balance and purifies the subtle channels of the mind.',
     effect: 'Adds a silver-blue border to your avatar and shifts your home accent to cool silver.'
   },
@@ -599,7 +599,7 @@ export const SACRED_RELICS: Relic[] = [
     tradition: 'jain',
     milestoneType: 'score',
     milestoneValue: 1000,
-    imageUrl: '/relics/kalasha-gold.png',
+    imageUrl: '/relics/jain-kalasha.png',
     lore: 'The Golden Jain Kalasha represents eternal auspiciousness, purity, and the fullness of wisdom. It is a symbol of welcome, inviting auspicious spiritual currents into the heart.',
     effect: 'Shifts your home accent to polished white-gold.'
   }

@@ -1,6 +1,6 @@
 # Native App Phase 1 Route & Contract Matrix
 
-Last updated: 2026-07-06 (Slice 4D: Pathshala progress/profile API contract cleanup)
+Last updated: 2026-07-07 (Home summary contract added)
 
 ## Matrix
 
@@ -9,7 +9,7 @@ Last updated: 2026-07-06 (Slice 4D: Pathshala progress/profile API contract clea
 | `app/(auth)/login.tsx` | `/login` | Supabase auth | None | Standard auth handled safely | None | Keep | P0 |
 | `app/(auth)/onboarding.tsx` | `/onboarding` | Supabase direct | `profiles` upsert | User-owned profile write; must not expose entitlement/admin columns | None | Keep with column guard or replace with API | P1 |
 | `app/(auth)/otp.tsx` | `/verify-otp` | API (`/api/auth/whatsapp-otp/verify`) | OTP Verify | None | None | Keep | P0 |
-| `app/(tabs)/index.tsx` | `/` (Home) | Mixed (API + Supabase direct) | None | Direct DB reads bypass unified API logic | Home state logic | Replace with API | P1 |
+| `app/(tabs)/index.tsx` | `/` (Home) | API (`/api/native/home-summary`) | None | Resolved for Home: no direct profile/table reads remain in the Home route | Panchang label uses shared native `@sangam/panchang-engine`; rest comes from API | Done (Home summary slice) | Done |
 | `app/(tabs)/bhakti.tsx` | `/bhakti` | Mixed (API + Supabase direct) | `mala_sessions` insert | User-owned write; verify RLS and server validation before expansion | Mala progression | Replace with API or shared package | P1 |
 | `app/(tabs)/tirtha.tsx` | `/tirtha` | Mixed (API + Supabase direct) | `tirtha_saves` upsert/delete, `tirtha_checkins` insert | Canonical place import is API-backed; user-owned save/checkin writes depend on RLS | Checkin rules | Keep only if RLS verified; otherwise replace with API | P1 |
 | `app/(tabs)/profile.tsx` | `/profile` | Supabase direct | `profiles` update | User-owned profile write; must not expose entitlement/admin columns | None | Keep with column guard or replace with API | P1 |
