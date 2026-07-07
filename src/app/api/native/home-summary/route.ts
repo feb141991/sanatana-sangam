@@ -488,10 +488,15 @@ export async function GET(request: NextRequest) {
     (progress) => progress.status === 'active' && PATHSHALA_PATH_IDS.includes(progress.path_id),
   );
   const pathshalaDoneToday = guidedPathProgress.some((progress) => progress.updated_at?.startsWith(today));
+  // Native has no literal "/lesson" resolver route (web's
+  // `/pathshala/[pathId]/lesson/page.tsx` does, native's `[lessonId].tsx`
+  // expects a numeric lesson index and shows "Lesson not found" for the
+  // literal string "lesson"). Native's `app/pathshala/[pathId].tsx` already
+  // reads enrollment progress and highlights the correct next lesson itself,
+  // so the plain path-detail route is the correct, working destination
+  // whether or not today's lesson is already done.
   const pathshalaHref = activePathshala
-    ? pathshalaDoneToday
-      ? `/pathshala/${activePathshala.path_id}`
-      : `/pathshala/${activePathshala.path_id}/lesson`
+    ? `/pathshala/${activePathshala.path_id}`
     : '/pathshala';
   const latestStreakRow = sadhanaRows
     .filter((row) => row.streak_count != null)
