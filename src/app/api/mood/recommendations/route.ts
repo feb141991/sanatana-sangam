@@ -1,8 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { getFullRecommendationsForMood, MoodHistory } from '@/lib/mood/engine';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const mood = searchParams.get('mood');
   const need = searchParams.get('need');
@@ -16,10 +17,12 @@ export async function GET(request: Request) {
   }
 
   let history: MoodHistory[] = [];
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, supabase } = await getApiUser(request);
 
-  if (user) {
+  if (user && supabase) {
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
+
     // Fetch last 50 check-ins to build personalized history
     try {
       const { data: checkins } = await supabase

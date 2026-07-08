@@ -1,10 +1,11 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse, NextRequest } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 
 // POST /api/mood/discover-track
 // Track user interactions within the personalized discovery stack
 // Body: { checkinId: string, action: 'skip' | 'click', itemType: string, targetId?: string }
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const { checkinId, action, itemType, targetId } = await req.json();
 
@@ -12,12 +13,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required tracking fields' }, { status: 400 });
     }
 
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: authError, supabase } = await getApiUser(req);
+    if (!user || !supabase) {
+      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
     }
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
 
     // First fetch the current state
     const { data: current, error: fetchErr } = await supabase

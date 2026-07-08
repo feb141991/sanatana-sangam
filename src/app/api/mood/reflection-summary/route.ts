@@ -1,16 +1,17 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse, NextRequest } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { getMoodInsights } from '@/lib/mood/insights';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: authError, supabase } = await getApiUser(request);
+    if (!user || !supabase) {
+      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
     }
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
 
     // Fetch the last 14 days of check-ins
     const cutoffDate = new Date();
