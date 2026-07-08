@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 import { computeQuizStreak, getStreakMilestone } from '@/lib/quiz-streak';
 import { localSpiritualDate } from '@/lib/sacred-time';
 
@@ -10,9 +10,13 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (authError || !user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+  }
+
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   try {
     const body = await req.json();
@@ -40,15 +44,26 @@ export async function POST(req: NextRequest) {
       todayStr,
       ...(pastResponses || []).map(r => r.date)
     ]));
-    
-    // b. Call computeQuizStreak
+
     const currentStreak = computeQuizStreak(dates);
+
+    // Check if response already exists to prevent point farming.
+    if (pastResponses?.some(r => r.date === todayStr)) {
+      return NextResponse.json({
+        success: true,
+        karma_earned: 0,
+        streak: currentStreak,
+        streak_milestone: null
+      });
+    }
+
+    // b. Call computeQuizStreak
     const streak_milestone = getStreakMilestone(currentStreak);
 
     // Persist quiz response (upsert, so we insert or update)
     const { error: insertError } = await supabase
       .from('quiz_responses')
-      .upsert({
+      .insert({
         user_id: user.id,
         question,
         chosen_index,
@@ -59,9 +74,19 @@ export async function POST(req: NextRequest) {
         date: todayStr,
         daily_quiz_id: daily_quiz_id || null,
         streak_at_answer: currentStreak,
-      }, { onConflict: 'user_id,date', ignoreDuplicates: true });
+      });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      if (insertError.code === '23505') {
+        return NextResponse.json({
+          success: true,
+          karma_earned: 0,
+          streak: currentStreak,
+          streak_milestone: null,
+        });
+      }
+      throw insertError;
+    }
 
     try {
       await supabase
@@ -77,7 +102,7 @@ export async function POST(req: NextRequest) {
     // Compute karma
     let karmaGain = is_correct ? 10 : 2;
     let bonusKarma = 0;
-    
+
     if (streak_milestone === 'three_days') bonusKarma = 5;
     else if (streak_milestone === 'week') bonusKarma = 15;
     else if (streak_milestone === 'month') bonusKarma = 50;
@@ -98,11 +123,11 @@ export async function POST(req: NextRequest) {
       });
     } catch { /* safe */ }
 
-    return NextResponse.json({ 
-      success: true, 
-      karma_earned: totalKarma, 
-      streak: currentStreak, 
-      streak_milestone 
+    return NextResponse.json({
+      success: true,
+      karma_earned: totalKarma,
+      streak: currentStreak,
+      streak_milestone
     });
   } catch (err) {
     console.error('[quiz/save] Failed:', err);

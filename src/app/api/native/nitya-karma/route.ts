@@ -109,9 +109,36 @@ type NityaStep = {
   done: boolean;
 };
 
+function getTraditionStepOrder(tradition: string | null): readonly StepId[] {
+  if (tradition === 'sikh') {
+    return [
+      'woke_brahma_muhurta',
+      'snana_done',
+      'tilak_done',
+      'sandhya_done', // Japji Sahib
+      'japa_done',    // Jaap + Chaupai
+      'aarti_done',   // Ardas
+      'shloka_done',  // Hukamnama
+    ];
+  }
+  if (tradition === 'jain') {
+    return [
+      'woke_brahma_muhurta',
+      'snana_done',
+      'tilak_done',
+      'sandhya_done', // Samayika
+      'aarti_done',   // Puja / Aarti
+      'japa_done',    // Navkar Mantra
+      'shloka_done',  // Agam Path
+    ];
+  }
+  return NATIVE_NITYA_STEP_ORDER;
+}
+
 function resolveSteps(tradition: string | null, doneIds: ReadonlySet<string>): NityaStep[] {
   const overrides = TRADITION_OVERRIDES[tradition ?? ''] ?? {};
-  return NATIVE_NITYA_STEP_ORDER.map((id) => {
+  const order = getTraditionStepOrder(tradition);
+  return order.map((id) => {
     const base = BASE_STEPS[id];
     const override = overrides[id];
     return {
