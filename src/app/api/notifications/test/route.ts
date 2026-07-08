@@ -1,14 +1,17 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { canSendOneSignalPush, sendOneSignalPush } from '@/lib/onesignal-server';
+import { getApiUser } from '@/lib/api-auth';
 
-export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+// Cookie session first, Bearer-token fallback second — see getApiUser's own
+// doc comment. Needed so the native app's notification-inbox empty state
+// ("Send test notification", matching web's HomeDashboard.tsx panel) can
+// call this route with apiFetch's Authorization header instead of a cookie.
+export async function POST(request: NextRequest) {
+  const { user, error } = await getApiUser(request);
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
   }
 
   try {

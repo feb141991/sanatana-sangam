@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { getApiUser } from '@/lib/api-auth';
 
 // ─── Achievement Milestone Notification ───────────────────────────────────────
 // Called by JapaClient after saving a session when streak or total session count
@@ -13,6 +13,10 @@ import { sendOneSignalPush } from '@/lib/onesignal-server';
 // Deduplication: uses notification_key `milestone:<type>:<threshold>` so the
 // same shield is never delivered twice regardless of how many times the client
 // calls this endpoint.
+//
+// Auth: cookie session first, Bearer-token fallback second (getApiUser) — same
+// migration /api/sankalpa/* and /api/notifications/test got, so a native caller
+// can hit this route too if a future native japa-milestone flow calls it.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SHIELD_COPY: Record<string, Record<number, { title: string; body: string; emoji: string }>> = {
@@ -37,10 +41,9 @@ const SHIELD_COPY: Record<string, Record<number, { title: string; body: string; 
 const VALID_STREAK_THRESHOLDS    = [7, 21, 40, 54, 108, 365];
 const VALID_SESSION_THRESHOLDS   = [7, 21, 40, 108, 365, 1000];
 
-export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+export async function POST(request: NextRequest) {
+  const { user, error } = await getApiUser(request);
+  if (!user) return NextResponse.json({ error: error?.message ?? 'Unauthorized' }, { status: 401 });
 
   let body: { type?: string; threshold?: number; shieldName?: string };
   try { body = await request.json(); }
