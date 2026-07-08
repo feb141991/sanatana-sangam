@@ -54,7 +54,9 @@ async function runTests() {
     logResult('9. /api/tirtha/place returns 401 without auth', true, '(Dry-run) Expected to pass based on getApiUser(req) implementation');
     logResult('10. /api/tirtha/place rejects invalid source/id/coordinate payloads', true, '(Dry-run) Expected to pass due to strict type and coordinate checks');
     logResult('11. User A cannot insert a Mandali post into User B’s Mandali', true, '(Dry-run) Expected to pass after 20260704203733_native_phase0_mandali_security.sql validates profiles.mandali_id');
-    
+    logResult('12. Spoofed daily_sadhana booleans cannot claim the perfect-day bonus', true, '(Dry-run) Expected to pass — /api/sadhana/perfect-day re-derives japa/quiz/nitya/pathshala from mala_sessions/quiz_responses/nitya_karma_log/guided_path_progress instead of trusting daily_sadhana.*_done (P0-3 remediation Slice 1)');
+    logResult('13. Genuine completion evidence still unlocks the perfect-day bonus', true, '(Dry-run) Expected to pass — Slice 1 only changes what evidence is checked, not the award amounts or logic once evidence is present');
+
     console.log(`\n${colors.yellow}Skipping live execution due to missing credentials.${colors.reset}`);
     process.exit(0);
   }
@@ -262,6 +264,107 @@ async function runTests() {
     } else {
       logResult('11. User A cannot insert a Mandali post into User B’s Mandali', false, 'Cross-Mandali post insert succeeded.');
       allPassed = false;
+    }
+  }
+
+  // ── Tests 12-13: P0-3 remediation Slice 1 — /api/sadhana/perfect-day must
+  // not trust daily_sadhana.*_done directly (see
+  // docs/NATIVE_DAILY_COMPLETION_P0_REMEDIATION_PLAN.md). Unlike tests 1-11,
+  // these do not assert an RLS write is *rejected* — the daily_sadhana write
+  // in test 12 is expected to *succeed* (P0-3's underlying GRANT/RLS gap on
+  // that table is a separate, larger remediation slice, not yet closed).
+  // What must hold is that the API route itself does not award the bonus
+  // from spoofed flags alone, and still does award it once real evidence
+  // exists in the source-of-truth tables.
+  if (!WEB_API_BASE) {
+    logResult('12. Spoofed daily_sadhana booleans cannot claim the perfect-day bonus', false, 'WEB_API_BASE is required for API route tests.');
+    logResult('13. Genuine completion evidence still unlocks the perfect-day bonus', false, 'WEB_API_BASE is required for API route tests.');
+    allPassed = false;
+  } else {
+    const apiBase = WEB_API_BASE.replace(/\/$/, '');
+    const apiToken = authA.data.session.access_token;
+    const todayIso = new Date().toISOString().slice(0, 10);
+
+    // Test 12: flip all five completion flags directly, with no evidence in
+    // any source table, and confirm the endpoint refuses to award.
+    await clientA.from('daily_sadhana').upsert({
+      user_id: userAId,
+      date: todayIso,
+      japa_done: true,
+      quiz_done: true,
+      nitya_done: true,
+      pathshala_done: true,
+      dharmveer_done: true,
+      perfect_day_bonus_given: false,
+    }, { onConflict: 'user_id,date' });
+
+    try {
+      const res12 = await fetch(`${apiBase}/api/sadhana/perfect-day`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timeZone: 'UTC' }),
+      });
+      const body12 = await res12.json().catch(() => ({}));
+      if (res12.ok && body12.awarded === false) {
+        logResult('12. Spoofed daily_sadhana booleans cannot claim the perfect-day bonus', true, `reason=${body12.reason}`);
+      } else {
+        logResult('12. Spoofed daily_sadhana booleans cannot claim the perfect-day bonus', false, `Bonus was awarded from spoofed flags alone! Response: ${JSON.stringify(body12)}`);
+        allPassed = false;
+      }
+    } catch (e) {
+      logResult('12. Spoofed daily_sadhana booleans cannot claim the perfect-day bonus', false, 'Fetch failed (API offline or inaccessible).');
+      allPassed = false;
+    }
+
+    // Test 13: with real per-feature evidence rows present (japa/quiz/nitya
+    // via their own tables; pathshala via guided_path_progress; dharmveer
+    // still trusted directly from the daily_sadhana row set in test 12 — see
+    // the remediation plan's Open Question on why dharmveer has no
+    // independent source yet), the bonus IS awarded. Proves Slice 1 did not
+    // break a real completion.
+    const nityaSteps = ['woke_brahma_muhurta', 'snana_done', 'tilak_done', 'japa_done', 'sandhya_done', 'aarti_done', 'shloka_done'];
+    await Promise.all([
+      clientA.from('mala_sessions').insert({ user_id: userAId, mantra: 'rls-test', count: 108, rounds: 1, completed_rounds: 1, date: todayIso, spiritual_date: todayIso }),
+      clientA.from('quiz_responses').upsert({ user_id: userAId, date: todayIso, question: 'rls-test', chosen_index: 0, correct_index: 0, is_correct: true }, { onConflict: 'user_id,date' }),
+      clientA.from('nitya_karma_log').insert(nityaSteps.map((step_id) => ({ user_id: userAId, log_date: todayIso, step_id }))),
+      clientA.from('guided_path_progress').upsert({ user_id: userAId, path_id: 'rls-test-path', status: 'active', current_lesson: 0, completed_lessons: [0] }, { onConflict: 'user_id,path_id' }),
+    ]);
+
+    try {
+      const res13 = await fetch(`${apiBase}/api/sadhana/perfect-day`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timeZone: 'UTC' }),
+      });
+      const body13 = await res13.json().catch(() => ({}));
+      if (res13.ok && (body13.awarded === true || body13.reason === 'already_given')) {
+        logResult('13. Genuine completion evidence still unlocks the perfect-day bonus', true, body13.awarded ? 'Bonus awarded correctly.' : 'Already claimed earlier in this run — treated as pass.');
+      } else {
+        logResult('13. Genuine completion evidence still unlocks the perfect-day bonus', false, `Legitimate completion was rejected! Response: ${JSON.stringify(body13)}`);
+        allPassed = false;
+      }
+    } catch (e) {
+      logResult('13. Genuine completion evidence still unlocks the perfect-day bonus', false, 'Fetch failed (API offline or inaccessible).');
+      allPassed = false;
+    } finally {
+      // Cleanup — keep the harness idempotent across repeated runs. Resets
+      // the test account's real seva/karma state is NOT attempted here
+      // (those RPCs are additive and this is a dedicated test project per
+      // this file's own prerequisites, not production).
+      await Promise.all([
+        clientA.from('mala_sessions').delete().eq('user_id', userAId).eq('mantra', 'rls-test'),
+        clientA.from('quiz_responses').delete().eq('user_id', userAId).eq('date', todayIso).eq('question', 'rls-test'),
+        clientA.from('nitya_karma_log').delete().eq('user_id', userAId).eq('log_date', todayIso).in('step_id', nityaSteps),
+        clientA.from('guided_path_progress').delete().eq('user_id', userAId).eq('path_id', 'rls-test-path'),
+        clientA.from('daily_sadhana').update({
+          japa_done: false,
+          quiz_done: false,
+          nitya_done: false,
+          pathshala_done: false,
+          dharmveer_done: false,
+          perfect_day_bonus_given: false,
+        }).eq('user_id', userAId).eq('date', todayIso),
+      ]);
     }
   }
 

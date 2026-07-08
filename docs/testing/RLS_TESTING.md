@@ -52,6 +52,8 @@ DRY_RUN=true npx tsx scripts/verify-rls.ts
 9. `/api/tirtha/place` returns 401 without auth.
 10. `/api/tirtha/place` rejects invalid source/id/coordinate payloads.
 11. User A cannot insert a Mandali post into User B's Mandali.
+12. Spoofed `daily_sadhana` completion booleans (`japa_done`/`quiz_done`/`nitya_done`/`pathshala_done`/`dharmveer_done`) alone cannot claim the `/api/sadhana/perfect-day` bonus — the write itself is expected to *succeed* (P0-3's underlying `daily_sadhana` GRANT/RLS gap is not yet closed; that is a separate, larger remediation slice tracked in `docs/NATIVE_DAILY_COMPLETION_P0_REMEDIATION_PLAN.md`), but the endpoint must still refuse to award karma/seva/streak-freeze from those flags alone.
+13. With genuine completion evidence present in `mala_sessions`/`quiz_responses`/`nitya_karma_log`/`guided_path_progress`, the perfect-day bonus is still awarded — proves the Slice 1 fix (re-deriving completion from source tables) did not break a real completion.
 
 ## Current Status
 
@@ -61,3 +63,4 @@ Dry-run mode reflects the expected protections after:
 
 - `20260704112914_native_phase0_security_rls.sql`
 - `20260704203733_native_phase0_mandali_security.sql`
+- `src/app/api/sadhana/perfect-day/route.ts`'s Slice 1 fix (re-derives completion from source tables instead of trusting `daily_sadhana.*_done` — see `docs/NATIVE_DAILY_COMPLETION_P0_REMEDIATION_PLAN.md`)
