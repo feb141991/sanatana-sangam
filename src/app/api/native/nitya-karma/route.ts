@@ -264,14 +264,13 @@ export async function POST(req: NextRequest) {
     const allDone = completedCount === NATIVE_NITYA_STEP_ORDER.length;
 
     if (allDone) {
-      const { error: sadhanaError } = await supabase.from('daily_sadhana').upsert(
-        {
-          user_id: user.id,
-          date: today,
-          nitya_done: true,
-        },
-        { onConflict: 'user_id,date' },
-      );
+      // P0-3: daily_sadhana.nitya_done is no longer directly writable by
+      // authenticated/anon — the RPC independently re-derives completion
+      // from nitya_karma_log rather than trusting this route's own allDone.
+      const { error: sadhanaError } = await supabase.rpc('sync_nitya_completion', {
+        p_user_id: user.id,
+        p_date: today,
+      });
       if (sadhanaError) {
         console.warn('[POST /api/native/nitya-karma] daily_sadhana sync failed:', sadhanaError.message);
       }

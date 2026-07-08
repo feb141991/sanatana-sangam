@@ -253,10 +253,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { error: sadhanaErr } = await supabase.from('daily_sadhana').upsert(
-      { user_id: user.id, date: today, pathshala_done: true },
-      { onConflict: 'user_id,date' }
-    );
+    // P0-3: daily_sadhana.pathshala_done is no longer directly writable by
+    // authenticated/anon (see supabase/migrations/20260708163000_...).
+    // Route through the ownership-checked RPC instead of a direct upsert.
+    const { error: sadhanaErr } = await supabase.rpc('sync_pathshala_completion', {
+      p_user_id: user.id,
+      p_date: today,
+    });
     dailySadhanaUpdated = !sadhanaErr;
     if (sadhanaErr) {
       console.error('[pathshala/progress] Failed to update daily_sadhana:', sadhanaErr);

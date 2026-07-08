@@ -375,12 +375,9 @@ function StotramReader({ id, stotram: stotramProp, deityMeta: deityMetaProp }: {
       localStorage.setItem(`shoonaya-stotram-done-${today}`, 'true');
       void (async () => {
         try {
-          await supabase
-            .from('daily_sadhana')
-            .upsert(
-              { user_id: user.id, date: today, stotram_done: true },
-              { onConflict: 'user_id,date' }
-            );
+          // P0-3: daily_sadhana.stotram_done is no longer directly writable
+          // by authenticated/anon — routed through the ownership-checked RPC.
+          await supabase.rpc('complete_stotram', { p_user_id: user.id, p_date: today });
         } catch {
           // Non-fatal bonus tracking.
         }

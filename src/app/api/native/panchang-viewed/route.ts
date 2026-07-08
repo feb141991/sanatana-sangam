@@ -77,14 +77,12 @@ export async function POST(req: NextRequest) {
 
     const today = await resolveToday(supabase, user.id);
 
-    const { error } = await supabase.from('daily_sadhana').upsert(
-      {
-        user_id: user.id,
-        date: today,
-        panchang_viewed: true,
-      },
-      { onConflict: 'user_id,date' },
-    );
+    // P0-3: daily_sadhana.panchang_viewed is no longer directly writable by
+    // authenticated/anon — routed through the ownership-checked RPC.
+    const { error } = await supabase.rpc('mark_panchang_viewed', {
+      p_user_id: user.id,
+      p_date: today,
+    });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

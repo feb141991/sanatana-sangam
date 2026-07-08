@@ -1437,12 +1437,12 @@ export default function NityaKarmaClient({
 
       void (async () => {
         try {
-          await supabase
-            .from('daily_sadhana')
-            .upsert(
-              { user_id: userId, date: today, nitya_done: true },
-              { onConflict: 'user_id,date' }
-            );
+          // P0-3: daily_sadhana.nitya_done is no longer directly writable by
+          // authenticated/anon. sync_nitya_completion independently re-derives
+          // completion from nitya_karma_log (all 7 canonical steps), so this
+          // is now safe to call after every single-step tap — it only flips
+          // nitya_done to true once all 7 are genuinely logged.
+          await supabase.rpc('sync_nitya_completion', { p_user_id: userId, p_date: today });
         } catch {
           // Non-fatal: local completion remains the source of truth for this tap.
         }

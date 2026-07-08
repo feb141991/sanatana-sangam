@@ -159,12 +159,12 @@ export default function DharmVeerClient({
           try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
-            await supabase
-              .from('daily_sadhana')
-              .upsert(
-                { user_id: user.id, date: today, dharmveer_done: true },
-                { onConflict: 'user_id,date' }
-              );
+            // P0-3: daily_sadhana.dharmveer_done is no longer directly
+            // writable by authenticated/anon — routed through the
+            // ownership-checked RPC (no independent engagement signal
+            // exists for this practice yet; ownership is enforced, genuine
+            // engagement is not — see the migration's own header comment).
+            await supabase.rpc('complete_dharmveer', { p_user_id: user.id, p_date: today });
           } catch {
             // Non-fatal: keep local completion even if cross-device sync fails.
           }

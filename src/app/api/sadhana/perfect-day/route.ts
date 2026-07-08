@@ -152,22 +152,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ awarded: false, reason: 'incomplete' });
     }
 
-    // Atomically claim the bonus: only succeeds if perfect_day_bonus_given is still false.
-    // .select('id') returns the updated row — if the array is empty, a concurrent request
-    // already set it to true and this request lost the race.
-    const { data: claimedRows, error: updateError } = await supabase
-      .from('daily_sadhana')
-      .update({ perfect_day_bonus_given: true })
-      .eq('id', sadhana.id)
-      .eq('perfect_day_bonus_given', false)
-      .select('id');
+    // Atomically claim the bonus via a SECURITY DEFINER RPC — replaces the
+    // previous direct `.update()`, which any user could bypass by first
+    // resetting perfect_day_bonus_given to false directly (the same blanket
+    // GRANT ALL / ownership-only-RLS gap this whole migration closes) and
+    // then re-calling this route to claim repeat rewards, since the
+    // re-derivation evidence above persists once created for a day.
+    // perfect_day_bonus_given is now revoked from direct client writes, so
+    // this RPC is the only path that can ever flip it to true.
+    const { data: claimed, error: updateError } = await supabase.rpc('claim_perfect_day_bonus', {
+      p_user_id: userId,
+      p_sadhana_id: sadhana.id,
+    });
 
     if (updateError) {
-      throw new Error(`Failed to update daily_sadhana: ${updateError.message}`);
+      throw new Error(`Failed to claim perfect-day bonus: ${updateError.message}`);
     }
 
     // Another concurrent request won the race — bonus was already claimed.
-    if (!claimedRows || claimedRows.length === 0) {
+    if (!claimed) {
       return NextResponse.json({ awarded: false, reason: 'already_given' });
     }
 

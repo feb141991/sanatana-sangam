@@ -89,12 +89,10 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      await supabase
-        .from('daily_sadhana')
-        .upsert(
-          { user_id: user.id, date: todayStr, quiz_done: true },
-          { onConflict: 'user_id,date' }
-        );
+      // P0-3: daily_sadhana.quiz_done is no longer directly writable by
+      // authenticated/anon (see supabase/migrations/20260708163000_...).
+      // Route through the ownership-checked RPC instead of a direct upsert.
+      await supabase.rpc('sync_quiz_completion', { p_user_id: user.id, p_date: todayStr });
     } catch {
       // Non-fatal: quiz save should still succeed.
     }

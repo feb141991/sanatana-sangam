@@ -102,12 +102,9 @@ export default function LessonClient({
 
       void (async () => {
         try {
-          await supabase
-            .from('daily_sadhana')
-            .upsert(
-              { user_id: userId, date: today, pathshala_done: true },
-              { onConflict: 'user_id,date' }
-            );
+          // P0-3: daily_sadhana.pathshala_done is no longer directly writable
+          // by authenticated/anon — routed through the ownership-checked RPC.
+          await supabase.rpc('sync_pathshala_completion', { p_user_id: userId, p_date: today });
         } catch {
           // Non-fatal: lesson completion should still succeed locally and in guided progress.
         }
