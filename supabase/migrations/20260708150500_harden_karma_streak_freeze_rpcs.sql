@@ -48,6 +48,7 @@ CREATE OR REPLACE FUNCTION public.increment_streak_freeze(p_user_id uuid, p_amou
 RETURNS integer
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path TO 'public'
 AS $$
 DECLARE
   v_user_id uuid := auth.uid();
