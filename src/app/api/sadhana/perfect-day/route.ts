@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser } from '@/lib/api-auth';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
 
@@ -60,11 +60,11 @@ import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/n
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    // Always verify JWT server-side — getSession() returns unverified cached data.
-    const { data: { user } } = await supabase.auth.getUser();
-
+    const { user, error: authError, supabase } = await getApiUser(req);
     if (!user) {
+      if (authError) {
+        console.warn('[sadhana/perfect-day] unauthorized:', authError.message);
+      }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
