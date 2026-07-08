@@ -1,22 +1,35 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+import { NextRequest, NextResponse } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 
-export async function GET(request: Request) {
+// Auth: switched from a cookie-only server client (createServerSupabaseClient
+// + requireUserNotBanned) to getApiUser(req), which tries the cookie session
+// first (web callers, zero behavior change) and falls back to a Bearer token
+// (native callers via lib/api.ts's apiFetch, which never sends cookies).
+// Same mechanical fix already applied to /api/native/home-summary,
+// /api/native/nitya-karma, /api/japa/complete, /api/vrat/observe, and
+// /api/pathshala/progress — see docs/NATIVE_MOOD_PARITY_PLAN.md's
+// "Prerequisite: auth layer, not a new feature" section for the full
+// rationale. No schema change, no new table.
+
+export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { user, error: authError } = await requireUserNotBanned(supabase);
-    if (authError) return authError;
+    const { user, error: authError, supabase } = await getApiUser(request);
+    if (!user || !supabase) {
+      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+    }
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
 
     const url = new URL(request.url);
     const historyParam = url.searchParams.get('history');
-    
+
     if (historyParam) {
       const days = parseInt(historyParam, 10) || 7;
       const historyStart = new Date();
       historyStart.setHours(0, 0, 0, 0);
       historyStart.setDate(historyStart.getDate() - (days - 1));
-      
+
       const { data, error } = await supabase
         .from('user_mood_checkins')
         .select('created_at, before_mood, session_status')
@@ -65,7 +78,7 @@ export async function GET(request: Request) {
 
     if (data && data.length > 0) {
       hasDismissedToday = data.some(d => d.dismissed);
-      
+
       const completed = data.filter(d => d.session_status === 'completed');
       if (completed.length > 0) {
         hasCompletedToday = true;
@@ -83,11 +96,26 @@ export async function GET(request: Request) {
       }
     }
 
+    // Additive fields for native's minimal check-in surface (does not change
+    // any field above, all pre-existing PWA behavior is untouched). Native
+    // needs a simple "did the user tell us their mood today" signal — the
+    // existing hasCompletedToday/lastCompletedMood pair only reflects rows
+    // with session_status === 'completed', which nothing in the current
+    // check-in flow (native's minimal card, or PWA's own MoodPulse "Done ✓"
+    // button) actually sets; both leave the row as 'open' or 'dismissed'.
+    // hasLoggedMoodToday/lastMood instead reflect any row with a non-null
+    // before_mood recorded today, regardless of session_status.
+    const loggedToday = (data ?? []).find(d => d.before_mood);
+    const hasLoggedMoodToday = Boolean(loggedToday);
+    const lastMood = loggedToday?.before_mood ?? null;
+
     return NextResponse.json({
       hasCompletedToday,
       hasDismissedToday,
       openSession,
-      lastCompletedMood
+      lastCompletedMood,
+      hasLoggedMoodToday,
+      lastMood,
     });
   } catch (error) {
     console.error('Error in /api/mood/checkin GET:', error);
@@ -95,11 +123,26 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+type MoodCheckinInsert = {
+  user_id: string;
+  source_surface?: string;
+  session_status: 'open' | 'dismissed';
+  closed_at: string | null;
+  before_mood?: string;
+  context_need?: string;
+  context_time?: string;
+  context_type?: string;
+  dismissed?: boolean;
+};
+
+export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { user, error: authError } = await requireUserNotBanned(supabase);
-    if (authError) return authError;
+    const { user, error: authError, supabase } = await getApiUser(request);
+    if (!user || !supabase) {
+      return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+    }
+    const banned = await assertNotBanned(supabase, user.id);
+    if (banned) return banned;
 
     const body = await request.json();
 
@@ -127,7 +170,7 @@ export async function POST(request: Request) {
       console.warn('Failed to clean up old open sessions', err);
     }
 
-    const insertPayload: any = {
+    const insertPayload: MoodCheckinInsert = {
       user_id: user.id,
       source_surface,
       session_status: dismissed ? 'dismissed' : 'open',

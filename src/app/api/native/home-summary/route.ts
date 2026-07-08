@@ -42,6 +42,7 @@ type DailySadhanaRow = {
   nitya_done: boolean | null;
   pathshala_done: boolean | null;
   dharmveer_done: boolean | null;
+  panchang_viewed: boolean | null;
 };
 
 type GuidedPathProgressRow = {
@@ -128,6 +129,7 @@ type HomeSummaryResponse = {
     tithiLabel: string;
     festivalLabel: string | null;
     vratLabel: string | null;
+    viewedToday: boolean;
     observance: {
       name: string;
       emoji: string | null;
@@ -424,7 +426,7 @@ export async function GET(request: NextRequest) {
     withTimeout<DailySadhanaRow[]>(
       supabase
         .from('daily_sadhana')
-        .select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done')
+        .select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done, panchang_viewed')
         .eq('user_id', user.id)
         .gte('date', historyFrom)
         .lte('date', today),
@@ -623,6 +625,7 @@ export async function GET(request: NextRequest) {
       tithiLabel: 'Today’s Panchang',
       festivalLabel,
       vratLabel,
+      viewedToday: Boolean(todaySadhana?.panchang_viewed),
       observance,
     },
     nextPractice: buildNextPractice(practices),
