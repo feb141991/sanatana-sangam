@@ -12,7 +12,12 @@ import { getApiUser } from '@/lib/api-auth';
 //
 // Deduplication: uses notification_key `milestone:<type>:<threshold>` so the
 // same shield is never delivered twice regardless of how many times the client
-// calls this endpoint.
+// calls this endpoint. This relies on the PER-USER unique index
+// (user_id, notification_key) — see
+// supabase/migrations/20260708120230_fix_notification_key_dedupe_and_rls.sql,
+// which also drops a since-removed GLOBAL unique index on notification_key
+// alone that would have made two different users hitting the same milestone
+// (e.g. two users both reaching a 7-day streak) collide with each other.
 //
 // Auth: cookie session first, Bearer-token fallback second (getApiUser) — same
 // migration /api/sankalpa/* and /api/notifications/test got, so a native caller
@@ -69,7 +74,10 @@ export async function POST(request: NextRequest) {
   const serviceSupabase = createServiceRoleSupabaseClient();
   const bodyText = `${copy.body} Fellow Shoonyas celebrate with you!`;
 
-  // Upsert with ignoreDuplicates — idempotent: calling twice does nothing
+  // Upsert with ignoreDuplicates — idempotent: calling twice for the same
+  // user+milestone does nothing (no error). A real upsertError here means an
+  // actual persistence failure (permissions, connectivity, schema), not the
+  // expected "already recorded" case, so it must not be swallowed.
   const { error: upsertError } = await serviceSupabase
     .from('notifications')
     .upsert({
@@ -84,10 +92,13 @@ export async function POST(request: NextRequest) {
 
   if (upsertError) {
     console.error('[milestone] DB upsert error:', upsertError.message);
-    // Don't block — still try the push
   }
 
-  // Fire push (non-blocking, best-effort)
+  // Fire push (non-blocking, best-effort) regardless of the DB outcome — if
+  // we already have the copy ready, a failed persistence shouldn't also
+  // block the push. But the persistence failure is still reported below,
+  // not hidden behind a generic { ok: true }.
+  let pushError: string | null = null;
   try {
     await sendOneSignalPush({
       userIds: [user.id],
@@ -95,9 +106,23 @@ export async function POST(request: NextRequest) {
       body:    bodyText,
       url:     new URL(actionUrl, new URL(request.url).origin).toString(),
     });
-  } catch (pushErr) {
-    console.error('[milestone] Push error:', pushErr);
+  } catch (err) {
+    console.error('[milestone] Push error:', err);
+    pushError = err instanceof Error ? err.message : 'Push failed';
   }
 
-  return NextResponse.json({ ok: true, key: notificationKey });
+  if (upsertError) {
+    return NextResponse.json(
+      {
+        ok: false,
+        key: notificationKey,
+        error: `Failed to save milestone notification: ${upsertError.message}`,
+        pushAttempted: true,
+        pushError,
+      },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ ok: true, key: notificationKey, pushError });
 }
