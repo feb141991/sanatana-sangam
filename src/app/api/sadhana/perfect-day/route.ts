@@ -44,15 +44,14 @@ import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/n
 //                updated_at) — verified by reading the trigger function
 //                before relying on it, rather than assuming the plan's
 //                original proposal was correct as written.
-//   - dharmveer: still trusts daily_sadhana.dharmveer_done directly. No
-//                independent source exists yet — native's own
-//                POST /api/dharm-veer/submit call 404s (the route was never
-//                built) and there is no per-swipe ledger table to check
-//                against. Documented as an open question in the remediation
-//                plan rather than silently left unaddressed; closing it
-//                requires either a new table (blocked by this task's stop
-//                rules without separate sign-off) or moving the write behind
-//                a verified RPC (remediation plan Slice 2).
+//   - dharmveer: now derived from dharm_veer_responses — a real, append-only
+//                evidence row written by POST /api/dharm-veer/submit, which
+//                validates the hero id against the canonical roster and
+//                computes the spiritual date server-side (see
+//                supabase/migrations/20260708170000_dharm_veer_responses.sql
+//                and that route's own file header). daily_sadhana.dharmveer_done
+//                is no longer read here at all — it remains a display-only
+//                cache elsewhere (Home, my-progress, Kul hub, etc.).
 //
 // Reward amounts (30 karma / 15 seva / 1 freeze) are unchanged — this task
 // only changes what evidence is required to reach the award step, not how
@@ -83,12 +82,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch today's sadhana record — only for its id (needed for the atomic
-    // claim below) and dharmveer_done (still trusted — see file header).
-    // japa_done/quiz_done/nitya_done/pathshala_done are deliberately NOT
-    // read from here anymore; they are re-derived below instead.
+    // claim below). japa_done/quiz_done/nitya_done/pathshala_done/
+    // dharmveer_done are deliberately NOT read from here anymore; they are
+    // all re-derived below instead, dharmveer included as of this table.
     const { data: sadhana, error } = await supabase
       .from('daily_sadhana')
-      .select('id, dharmveer_done, perfect_day_bonus_given')
+      .select('id, perfect_day_bonus_given')
       .eq('user_id', userId)
       .eq('date', spiritualDate)
       .single();
@@ -103,7 +102,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Re-derive completion evidence from source tables (see file header) ──
-    const [malaResult, quizResult, nityaLogResult, pathshalaResult] = await Promise.all([
+    const [malaResult, quizResult, nityaLogResult, pathshalaResult, dharmveerResult] = await Promise.all([
       supabase
         .from('mala_sessions')
         .select('user_id')
@@ -126,6 +125,12 @@ export async function POST(req: NextRequest) {
         .from('guided_path_progress')
         .select('updated_at')
         .eq('user_id', userId),
+      supabase
+        .from('dharm_veer_responses')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('spiritual_date', spiritualDate)
+        .limit(1),
     ]);
 
     const japaDone = (malaResult.data?.length ?? 0) > 0;
@@ -143,8 +148,8 @@ export async function POST(req: NextRequest) {
       return localSpiritualDate(timeZone, 4, new Date(row.updated_at)) === spiritualDate;
     });
 
-    // dharmveer: still trusted directly — see file header for why.
-    const dharmveerDone = Boolean(sadhana.dharmveer_done);
+    // dharmveer: derived from dharm_veer_responses — see file header.
+    const dharmveerDone = (dharmveerResult.data?.length ?? 0) > 0;
 
     const allDone = japaDone && quizDone && nityaDone && pathshalaDone && dharmveerDone;
 

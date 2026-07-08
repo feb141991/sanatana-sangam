@@ -1,7 +1,14 @@
 # P0-3 Remediation Plan — daily_sadhana Completion Flag Spoofing
 
 Last updated: 2026-07-08
-Status: Planning doc only. No application code changed by this task except this file. Two RPC migrations from prior tasks remain undeployed (see `docs/NATIVE_DAILY_COMPLETION_MATRIX.md`); this doc does not add new migrations, only proposes them for a future slice.
+Status: Superseded by implementation. Column-grant closure shipped in
+`supabase/migrations/20260708163000_harden_daily_sadhana_completion_writes.sql`,
+and the dharmveer Open Question below shipped separately in
+`supabase/migrations/20260708170000_dharm_veer_responses.sql` +
+`POST /api/dharm-veer/submit`. See "Resolution Update — 2026-07-08" at the
+end of this file for what actually shipped versus what this plan originally
+proposed. The body of this doc is left as-authored (a planning artifact) —
+do not treat its "not yet implemented" language as current.
 
 ## Objective
 
@@ -108,3 +115,73 @@ $ cd "/Users/Business(C)/shoonaya-mobile" && rg -n "daily_sadhana|japa_done|quiz
 ```
 
 Confirmed: **one** native direct write remains (`app/dharm-veer.tsx`), addressed as Slice 2 item 1.
+
+
+---
+
+## Resolution Update — 2026-07-08
+
+Everything this plan deferred has since shipped, across two migrations:
+
+**Column-grant closure** (`supabase/migrations/20260708163000_harden_daily_sadhana_completion_writes.sql`) —
+went further than this plan's original 5-column matrix. A re-audit while
+implementing found the real write surface was 8 columns across 11 call
+sites (this plan's matrix missed `stotram_done`, `katha_done`,
+`panchang_viewed`, and two additional direct browser-side writers of
+`nitya_done`/`pathshala_done` — `NityaKarmaClient.tsx` and
+`LessonClient.tsx` — that were writing directly alongside their
+corresponding API routes). Eight new `SECURITY DEFINER` RPCs
+(`sync_quiz_completion`, `sync_pathshala_completion`, `sync_nitya_completion`,
+`complete_dharmveer`, `complete_stotram`, `complete_katha`,
+`mark_panchang_viewed`, `claim_perfect_day_bonus`) now own every write, and
+`daily_sadhana` had its table-wide `UPDATE`/`INSERT`/`DELETE` grant revoked
+from `authenticated`/`anon`, with only `(user_id, date, japa_done,
+streak_count)` explicitly re-granted — the one column pair this plan's
+"stop rule" also would have deferred (the carried-streak algorithm in
+`/api/japa/complete` was judged too complex to safely port into SQL). A
+second, previously-undocumented bug was found and fixed in the same pass:
+`/api/sadhana/perfect-day`'s atomic claim was a direct conditional
+`UPDATE`, replayable by resetting `perfect_day_bonus_given` to `false`
+directly — closed via the new `claim_perfect_day_bonus` RPC, a one-shot
+atomic claim.
+
+**Dharmveer's Open Question** (`supabase/migrations/20260708170000_dharm_veer_responses.sql`,
+`src/app/api/dharm-veer/submit/route.ts`) — dharmveer now has the
+independent evidence table this plan said didn't exist yet:
+`dharm_veer_responses`, owner-only RLS (`SELECT`/`INSERT` policies,
+deliberately no `UPDATE`/`DELETE` — an immutable log, same convention as
+`nitya_karma_log`/`mala_sessions`), written exclusively by
+`POST /api/dharm-veer/submit`. That route validates the submitted hero id
+against the canonical roster (`getDharmVeerBySlug` — DB `dharm_veers` table
+with the same static `DHARM_VEERS` fallback every other Dharm Veer surface
+already uses) and computes the spiritual date server-side from the user's
+own `profiles.timezone`, never from the request body. `/api/sadhana/perfect-day`
+now derives `dharmveerDone` from this table instead of trusting
+`daily_sadhana.dharmveer_done` — the last of the five perfect-day flags to
+move off a bare trusted boolean. `daily_sadhana.dharmveer_done` itself is
+unchanged and still populated (via the existing `complete_dharmveer` RPC,
+now called server-side from the submit route) purely because it's read for
+display in several unrelated places (Home, my-progress, Kul hub, native
+home/progress-summary, weekly-summary cron, streak-freeze eligibility) —
+none of those reads are reward-bearing, so leaving them on the display
+cache was the minimal-blast-radius choice.
+
+**What is still open, disclosed, not silently dropped:**
+
+- `japa_done`/`streak_count` remain directly writable by `authenticated` —
+  same stop-rule reasoning as this plan's own Slice 4 note.
+- Dharmveer's evidence is now *proof of a swipe/read event*, not proof of
+  genuine reflection — a user can still swipe fast/skip/share without
+  absorbing the story. This is a real ceiling on what's verifiable
+  server-side for a reading-based practice; the fix closes "spoofed with
+  zero engagement," not "engaged shallowly."
+- `dharm_veer_responses` has no `FK` to `dharm_veers.slug` (by design, see
+  the migration's own comment on the static-fallback roster) — validation
+  is application-layer only, in the submit route. A direct-DB attacker who
+  found another way to reach `INSERT` (there is none via current grants)
+  could still write junk `hero_id` values; this is judged an acceptable
+  residual risk given RLS/grants already gate the only real entry point.
+- The schema-wide P0-3 exposure on the *source* tables themselves
+  (`mala_sessions`, `quiz_responses`, `nitya_karma_log`,
+  `guided_path_progress`) — noted in the column-grant closure migration's
+  own header — remains out of scope for both migrations.

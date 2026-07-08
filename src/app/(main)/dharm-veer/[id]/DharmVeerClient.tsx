@@ -159,12 +159,22 @@ export default function DharmVeerClient({
           try {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
-            // P0-3: daily_sadhana.dharmveer_done is no longer directly
-            // writable by authenticated/anon — routed through the
-            // ownership-checked RPC (no independent engagement signal
-            // exists for this practice yet; ownership is enforced, genuine
-            // engagement is not — see the migration's own header comment).
-            await supabase.rpc('complete_dharmveer', { p_user_id: user.id, p_date: today });
+            // Server-backed completion evidence: POST /api/dharm-veer/submit
+            // validates hero.id against the canonical roster, computes the
+            // spiritual date server-side, and records a row in
+            // dharm_veer_responses — the table /api/sadhana/perfect-day now
+            // actually trusts (daily_sadhana.dharmveer_done alone was never
+            // proof anyone read anything; see that route's own file header).
+            // It also keeps dharmveer_done in sync for display via the
+            // existing complete_dharmveer RPC, so no direct RPC call is
+            // needed here anymore. Cookie-auth only, same as the
+            // /api/karma/award fetch just below — getApiUser resolves the
+            // session from the request cookies for same-origin web calls.
+            await fetch('/api/dharm-veer/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ heroId: hero.id, decision: 'inspired', privacy: 'private' }),
+            });
           } catch {
             // Non-fatal: keep local completion even if cross-device sync fails.
           }

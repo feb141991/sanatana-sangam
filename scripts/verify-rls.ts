@@ -60,6 +60,10 @@ async function runTests() {
     logResult('15. claim_perfect_day_bonus cannot double-award (replay-proof atomic claim)', true, '(Dry-run) Expected to pass — UPDATE ... WHERE perfect_day_bonus_given = false is a one-shot claim');
     logResult('16. Directly resetting perfect_day_bonus_given to replay the bonus is now rejected', true, '(Dry-run) Expected to pass — perfect_day_bonus_given has no direct UPDATE grant for authenticated');
     logResult('17. japa_done/streak_count remain directly writable (stop decision was not over-revoked)', true, '(Dry-run) Expected to pass — 20260708163000_... deliberately re-grants UPDATE (japa_done, streak_count) to authenticated');
+    logResult('18. User A cannot insert a dharm_veer_responses row for User B', true, '(Dry-run) Expected to pass — RLS WITH CHECK (auth.uid() = user_id)');
+    logResult('19. User A cannot see User B\u2019s dharm_veer_responses rows', true, '(Dry-run) Expected to pass — RLS USING (auth.uid() = user_id)');
+    logResult('20. POST /api/dharm-veer/submit rejects an unknown heroId', true, '(Dry-run) Expected to pass — getDharmVeerBySlug() returns null for a fabricated slug');
+    logResult('21. POST /api/dharm-veer/submit rejects an invalid decision value', true, '(Dry-run) Expected to pass — decision must be one of inspired/skip/share');
 
     console.log(`\n${colors.yellow}Skipping live execution due to missing credentials.${colors.reset}`);
     process.exit(0);
@@ -314,8 +318,9 @@ async function runTests() {
     // Test 13: populate real evidence via the app's own canonical write
     // paths — mala_sessions/quiz_responses/nitya_karma_log/guided_path_progress
     // rows (unchanged, still read directly by the route's re-derivation
-    // logic) plus complete_dharmveer (the RPC that replaced dharmveer_done's
-    // direct write, since dharmveer has no independent evidence table) —
+    // logic) plus a real dharm_veer_responses row (dharmveer's own evidence
+    // table — see supabase/migrations/20260708170000_dharm_veer_responses.sql;
+    // perfect-day no longer trusts daily_sadhana.dharmveer_done at all) —
     // and confirm the bonus still awards (or was already claimed earlier in
     // this run, which is an equally valid pass: perfect_day_bonus_given is
     // now a one-way ratchet with no reset path, by design).
@@ -325,7 +330,10 @@ async function runTests() {
       clientA.from('quiz_responses').upsert({ user_id: userAId, date: todayIso, question: 'rls-test', chosen_index: 0, correct_index: 0, is_correct: true }, { onConflict: 'user_id,date' }),
       clientA.from('nitya_karma_log').insert(nityaSteps.map((step_id) => ({ user_id: userAId, log_date: todayIso, step_id }))),
       clientA.from('guided_path_progress').upsert({ user_id: userAId, path_id: 'rls-test-path', status: 'active', current_lesson: 0, completed_lessons: [0] }, { onConflict: 'user_id,path_id' }),
-      clientA.rpc('complete_dharmveer', { p_user_id: userAId, p_date: todayIso }),
+      clientA.from('dharm_veer_responses').upsert(
+        { user_id: userAId, hero_id: 'rls-test-hero', spiritual_date: todayIso, decision: 'inspired', privacy: 'private' },
+        { onConflict: 'user_id,spiritual_date,hero_id' },
+      ),
     ]);
 
     try {
@@ -356,6 +364,13 @@ async function runTests() {
         clientA.from('quiz_responses').delete().eq('user_id', userAId).eq('date', todayIso).eq('question', 'rls-test'),
         clientA.from('nitya_karma_log').delete().eq('user_id', userAId).eq('log_date', todayIso).in('step_id', nityaSteps),
         clientA.from('guided_path_progress').delete().eq('user_id', userAId).eq('path_id', 'rls-test-path'),
+        // dharm_veer_responses has no DELETE policy at all (immutable
+        // evidence log, by design — see the migration's own comment), so
+        // this row is deliberately NOT cleaned up. hero_id='rls-test-hero'
+        // makes it obviously test data if ever inspected, and the
+        // (user_id, spiritual_date, hero_id) unique constraint means
+        // reruns on the same day upsert onto the same row rather than
+        // accumulating duplicates.
       ]);
     }
   }
@@ -436,6 +451,97 @@ async function runTests() {
       logResult('17. japa_done/streak_count remain directly writable (stop decision was not over-revoked)', true, '');
     } else {
       logResult('17. japa_done/streak_count remain directly writable (stop decision was not over-revoked)', false, `Expected write to succeed but got: ${err17.message}`);
+      allPassed = false;
+    }
+  }
+
+  // ── Tests 18-21: dharm_veer_responses — the new server-backed Dharm Veer
+  // completion evidence table (see
+  // supabase/migrations/20260708170000_dharm_veer_responses.sql and
+  // POST /api/dharm-veer/submit). Proves the same two independent layers
+  // as the rest of this suite: RLS ownership at the table, and input
+  // validation (roster + decision) at the route.
+
+  // Test 18: User A cannot insert a dharm_veer_responses row for User B.
+  {
+    const { error: err18 } = await clientA.from('dharm_veer_responses').insert({
+      user_id: userBId,
+      hero_id: 'rls-test-hero-impersonation',
+      spiritual_date: todayIso,
+      decision: 'inspired',
+      privacy: 'private',
+    });
+    if (err18) {
+      logResult('18. User A cannot insert a dharm_veer_responses row for User B', true, '');
+    } else {
+      logResult('18. User A cannot insert a dharm_veer_responses row for User B', false, 'Insert succeeded for another user — RLS WITH CHECK is not enforcing ownership.');
+      allPassed = false;
+      await clientB.from('dharm_veer_responses').delete().eq('hero_id', 'rls-test-hero-impersonation').eq('user_id', userBId);
+    }
+  }
+
+  // Test 19: User A cannot see User B's dharm_veer_responses rows.
+  {
+    const { data: visibleToA } = await clientA
+      .from('dharm_veer_responses')
+      .select('id')
+      .eq('user_id', userBId);
+    if (!visibleToA || visibleToA.length === 0) {
+      logResult('19. User A cannot see User B’s dharm_veer_responses rows', true, '');
+    } else {
+      logResult('19. User A cannot see User B’s dharm_veer_responses rows', false, `${visibleToA.length} row(s) from User B were visible to User A.`);
+      allPassed = false;
+    }
+  }
+
+  if (!WEB_API_BASE) {
+    logResult('20. POST /api/dharm-veer/submit rejects an unknown heroId', false, 'WEB_API_BASE is required for API route tests.');
+    logResult('21. POST /api/dharm-veer/submit rejects an invalid decision value', false, 'WEB_API_BASE is required for API route tests.');
+    allPassed = false;
+  } else {
+    const apiBase = WEB_API_BASE.replace(/\/$/, '');
+    const apiToken = authA.data.session.access_token;
+
+    // Test 20: a fabricated heroId that doesn't exist in the canonical
+    // roster (DB dharm_veers or the static DHARM_VEERS fallback) must be
+    // rejected with 400 — this is what stops an attacker from farming
+    // dharm_veer_responses rows (and therefore perfect-day eligibility)
+    // with junk hero ids, since the table itself has no FK to enforce this
+    // (see the migration's own comment on why).
+    try {
+      const res20 = await fetch(`${apiBase}/api/dharm-veer/submit`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heroId: 'not-a-real-hero-slug-xyz', decision: 'inspired' }),
+      });
+      if (res20.status === 400) {
+        logResult('20. POST /api/dharm-veer/submit rejects an unknown heroId', true, '');
+      } else {
+        const body20 = await res20.json().catch(() => ({}));
+        logResult('20. POST /api/dharm-veer/submit rejects an unknown heroId', false, `Expected 400, got ${res20.status}. Response: ${JSON.stringify(body20)}`);
+        allPassed = false;
+      }
+    } catch (e) {
+      logResult('20. POST /api/dharm-veer/submit rejects an unknown heroId', false, 'Fetch failed (API offline or inaccessible).');
+      allPassed = false;
+    }
+
+    // Test 21: an out-of-enum decision value must be rejected with 400.
+    try {
+      const res21 = await fetch(`${apiBase}/api/dharm-veer/submit`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ heroId: 'not-a-real-hero-slug-xyz', decision: 'spoofed-decision' }),
+      });
+      if (res21.status === 400) {
+        logResult('21. POST /api/dharm-veer/submit rejects an invalid decision value', true, '');
+      } else {
+        const body21 = await res21.json().catch(() => ({}));
+        logResult('21. POST /api/dharm-veer/submit rejects an invalid decision value', false, `Expected 400, got ${res21.status}. Response: ${JSON.stringify(body21)}`);
+        allPassed = false;
+      }
+    } catch (e) {
+      logResult('21. POST /api/dharm-veer/submit rejects an invalid decision value', false, 'Fetch failed (API offline or inaccessible).');
       allPassed = false;
     }
   }
