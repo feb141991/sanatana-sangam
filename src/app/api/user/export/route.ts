@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextResponse, NextRequest } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
@@ -11,9 +11,13 @@ function isoDaysAgo(days: number) {
   return date.toISOString();
 }
 
-export async function GET() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+// Auth via getApiUser (cookie first, Bearer token fallback) — not the
+// previous cookie-only createServerSupabaseClient(), which always returned
+// 401 for native callers (native has no cookie jar; apiFetch sends a Bearer
+// token instead). This is the same gap found and fixed in
+// /api/mood/insights/{weekly,monthly} — see that commit for the pattern.
+export async function GET(request: NextRequest) {
+  const { user, error: authError } = await getApiUser(request);
 
   if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

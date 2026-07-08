@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const insightSnapshot = await getMoodInsights(14).catch(() => null);
+    const insightSnapshot = await getMoodInsights(14, supabase, user.id).catch(() => null);
 
     // Try to get AI summary
     try {
