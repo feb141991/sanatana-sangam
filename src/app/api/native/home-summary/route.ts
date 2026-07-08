@@ -128,6 +128,15 @@ type HomeSummaryResponse = {
     tithiLabel: string;
     festivalLabel: string | null;
     vratLabel: string | null;
+    observance: {
+      name: string;
+      emoji: string | null;
+      daysLeft: number;
+      routeKind: string;
+      routeSlug: string;
+      href: string;
+      label: string;
+    } | null;
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -537,6 +546,31 @@ export async function GET(request: NextRequest) {
     : null;
   const vratLabel = firstDefinition?.kind === 'vrat' ? festivalLabel : null;
 
+  let observance = null;
+  if (firstDefinition && firstObservance) {
+    const dLeft = Math.round((new Date(firstObservance.row.date).getTime() - new Date(today).getTime()) / 86400000);
+    const name = firstDefinition.display_name;
+    const label = dLeft === 0
+      ? `Today is ${name}`
+      : dLeft === 1
+        ? `Tomorrow is ${name}`
+        : `${name} in ${dLeft} days`;
+
+    const routeKind = firstDefinition.route_kind || 'festival';
+    const routeSlug = firstDefinition.route_slug || firstDefinition.slug;
+    const href = routeKind === 'vrat' ? '/vrat' : '/panchang';
+
+    observance = {
+      name,
+      emoji: firstDefinition.emoji ?? '🪔',
+      daysLeft: dLeft,
+      routeKind,
+      routeSlug,
+      href,
+      label
+    };
+  }
+
   const dbHeroThemes = heroAssetRows
     .map(mapHeroAssetToTheme)
     .filter((theme): theme is HomeHeroTheme => Boolean(theme));
@@ -589,6 +623,7 @@ export async function GET(request: NextRequest) {
       tithiLabel: 'Today’s Panchang',
       festivalLabel,
       vratLabel,
+      observance,
     },
     nextPractice: buildNextPractice(practices),
     practices,
