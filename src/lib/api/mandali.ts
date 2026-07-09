@@ -107,8 +107,8 @@ export async function joinMandaliForLocation(userId: string, city: string, count
   const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
     p_city: city.trim(),
     p_country: country.trim(),
-    p_lat: lat,
-    p_lon: lon,
+    p_lat: lat ?? null,
+    p_lon: lon ?? null,
   });
 
   if (rpcError) throw rpcError;

@@ -1,0 +1,42 @@
+-- ══════════════════════════════════════════════════════════════════
+--  FIX — Ambiguous find_or_create_mandali overload
+--
+--  Migration 20260611100000 created:
+--    find_or_create_mandali(p_city TEXT, p_country TEXT)
+--
+--  Migration 20260612000000 intended to extend it with lat/lon radius
+--  fallback, but used CREATE OR REPLACE with a LONGER parameter list:
+--    find_or_create_mandali(p_city TEXT, p_country TEXT,
+--                            p_lat DOUBLE PRECISION DEFAULT NULL,
+--                            p_lon DOUBLE PRECISION DEFAULT NULL)
+--
+--  CREATE OR REPLACE only replaces a function with an IDENTICAL
+--  parameter list. A different (longer) list creates a SECOND,
+--  distinct overload instead of replacing the first — both now
+--  coexist in the schema.
+--
+--  Any 2-argument call is now ambiguous, because it matches both:
+--    - the 2-arg function exactly, and
+--    - the 4-arg function via its p_lat/p_lon defaults.
+--  Postgres cannot pick one, and raises:
+--    "function public.find_or_create_mandali(text) is not unique"
+--
+--  This fires from TWO real call paths:
+--    1. The city_country_before_upsert trigger body in
+--       20260611100000 (line ~255/270), which calls
+--       find_or_create_mandali(NEW.city, NEW.country) — 2 positional
+--       args.
+--    2. Client RPC calls (src/lib/api/mandali.ts,
+--       shoonaya-mobile/lib/mandali.ts) — when lat/lon are
+--       `undefined` (no geolocation available), JSON.stringify drops
+--       those keys entirely, so the RPC payload collapses to just
+--       {p_city, p_country} — 2 named args. Reproduced live during
+--       onboarding's Personal Details / Kul-Vansh edit flow.
+--
+--  Fix: drop the stale 2-arg overload. The 4-arg version already
+--  defaults p_lat/p_lon to NULL and already has correct grants
+--  (authenticated, service_role), so a 2-arg call behaves identically
+--  to before — it just resolves unambiguously now.
+-- ══════════════════════════════════════════════════════════════════
+
+DROP FUNCTION IF EXISTS public.find_or_create_mandali(TEXT, TEXT);
