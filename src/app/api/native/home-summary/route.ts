@@ -32,6 +32,8 @@ type ProfileRow = {
   active_symbol_id: string | null;
   karma_points: number | null;
   nitya_rhythm_mode: string | null;
+  shloka_streak: number | null;
+  last_shloka_date: string | null;
 };
 
 type DailySadhanaRow = {
@@ -168,6 +170,12 @@ type HomeSummaryResponse = {
     tagline: string;
     href: string;
   };
+  // True when the user has no shloka-reading streak, no last-shloka-read
+  // date, and no guided-path progress rows — identical to the PWA's own
+  // showFirstTimeGuidance formula (src/app/(main)/home/page.tsx), so native
+  // and web agree on who counts as "new" without inventing a second
+  // definition.
+  firstWeek: boolean;
 };
 
 function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
@@ -392,7 +400,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -494,6 +502,7 @@ export async function GET(request: NextRequest) {
   ]);
 
   const guidedPathProgress = guidedResult.data ?? [];
+  const firstWeek = (profile?.shloka_streak ?? 0) === 0 && !profile?.last_shloka_date && guidedPathProgress.length === 0;
   const sadhanaRows = sadhanaResult.data ?? [];
   const nityaRows = nityaResult.data ?? [];
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
@@ -649,6 +658,7 @@ export async function GET(request: NextRequest) {
       tagline: dharmVeer.tagline,
       href: `/dharm-veer/${dharmVeer.id}`,
     },
+    firstWeek,
   };
 
   return NextResponse.json(response, {
