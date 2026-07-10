@@ -29,8 +29,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateAstroChart, BirthInput } from '@/lib/jyotish/astro-engine';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -74,27 +73,10 @@ export async function POST(req: NextRequest) {
 
   // ── Resolve authenticated user ────────────────────────────────────────────────
   let owner_id: string | null = null;
-  try {
-    const cookieStore = await cookies();
-    const supabaseUser = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(cookiesToSet: any) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }: any) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch { /* server component - ignore */ }
-          },
-        },
-      }
-    );
-    const { data: { user } } = await supabaseUser.auth.getUser();
-    owner_id = user?.id ?? null;
-  } catch { /* unauthenticated */ }
+  const { user } = await getApiUser(req);
+  if (user) {
+    owner_id = user.id;
+  }
 
   // Guest must supply session_token
   if (!owner_id && !session_token) {

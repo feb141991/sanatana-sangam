@@ -9,8 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -21,38 +20,14 @@ function getServiceClient() {
   );
 }
 
-async function getAuthUserId(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(cookiesToSet: any) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }: any) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch { /* server component */ }
-          },
-        },
-      }
-    );
-    const { data: { user } } = await supabase.auth.getUser();
-    return user?.id ?? null;
-  } catch {
-    return null;
-  }
-}
+
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // ── GET — single profile with full chart_data ─────────────────────────────────
 export async function GET(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const userId = await getAuthUserId();
+  const { user } = await getApiUser(req);
 
   const db = getServiceClient();
 
@@ -61,8 +36,8 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
 
   let query = db.from('birth_profiles').select('*').eq('id', id);
 
-  if (userId) {
-    query = query.eq('owner_id', userId);
+  if (user) {
+    query = query.eq('owner_id', user.id);
   } else if (sessionToken) {
     query = query.eq('session_token', sessionToken).is('owner_id', null);
   } else {
@@ -80,8 +55,8 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
 // ── PATCH — update label / relation / is_primary ──────────────────────────────
 export async function PATCH(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const userId = await getAuthUserId();
-  if (!userId) {
+  const { user } = await getApiUser(req);
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -105,7 +80,7 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
     .from('birth_profiles')
     .select('id')
     .eq('id', id)
-    .eq('owner_id', userId)
+    .eq('owner_id', user.id)
     .single();
 
   if (!existing) {
@@ -117,7 +92,7 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
     await db
       .from('birth_profiles')
       .update({ is_primary: false })
-      .eq('owner_id', userId)
+      .eq('owner_id', user.id)
       .eq('is_primary', true)
       .neq('id', id);
   }
@@ -126,7 +101,7 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
     .from('birth_profiles')
     .update(updates)
     .eq('id', id)
-    .eq('owner_id', userId)
+    .eq('owner_id', user.id)
     .select()
     .single();
 
@@ -138,10 +113,10 @@ export async function PATCH(req: NextRequest, ctx: RouteContext) {
 }
 
 // ── DELETE — remove profile ───────────────────────────────────────────────────
-export async function DELETE(_req: NextRequest, ctx: RouteContext) {
+export async function DELETE(req: NextRequest, ctx: RouteContext) {
   const { id } = await ctx.params;
-  const userId = await getAuthUserId();
-  if (!userId) {
+  const { user } = await getApiUser(req);
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -151,7 +126,7 @@ export async function DELETE(_req: NextRequest, ctx: RouteContext) {
     .from('birth_profiles')
     .delete()
     .eq('id', id)
-    .eq('owner_id', userId);
+    .eq('owner_id', user.id);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

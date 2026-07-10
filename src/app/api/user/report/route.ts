@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+import { NextResponse, NextRequest } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 import {
   malaSessionBeads,
   malaSessionDate,
@@ -13,10 +13,14 @@ import {
 // The response JSON is used by ProfileClient to render + download a report.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function GET() {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+export async function GET(request: NextRequest) {
+  const { user, error: authError, supabase } = await getApiUser(request);
+  if (authError || !user || !supabase) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  
+  const bannedError = await assertNotBanned(supabase, user.id);
+  if (bannedError) return bannedError;
 
   const userId = user.id;
   const now    = new Date();

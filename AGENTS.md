@@ -22,3 +22,12 @@ If full TypeScript is blocked by the known `ProfileClient.tsx` issue, say that d
 ## Reporting
 
 Final responses must include what changed, checks run, and remaining risk. Do not claim a clean build unless it was actually verified.
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)

@@ -5,8 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
 
@@ -17,36 +16,12 @@ function getServiceClient() {
   );
 }
 
-async function getAuthUserId(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll(); },
-          setAll(cookiesToSet: any) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }: any) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch { /* server component */ }
-          },
-        },
-      }
-    );
-    const { data: { user } } = await supabase.auth.getUser();
-    return user?.id ?? null;
-  } catch {
-    return null;
-  }
-}
+
 
 // ── GET — list user's birth profiles ─────────────────────────────────────────
-export async function GET() {
-  const userId = await getAuthUserId();
-  if (!userId) {
+export async function GET(req: NextRequest) {
+  const { user } = await getApiUser(req);
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -63,7 +38,7 @@ export async function GET() {
       is_primary, is_public,
       created_at, updated_at
     `)
-    .eq('owner_id', userId)
+    .eq('owner_id', user.id)
     .order('is_primary', { ascending: false })
     .order('created_at', { ascending: true });
 
@@ -77,8 +52,8 @@ export async function GET() {
 // ── POST — claim guest profiles on signup ─────────────────────────────────────
 // Body: { session_token: string }
 export async function POST(req: NextRequest) {
-  const userId = await getAuthUserId();
-  if (!userId) {
+  const { user } = await getApiUser(req);
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -95,7 +70,7 @@ export async function POST(req: NextRequest) {
   // Claim all guest profiles with this session token
   const { data, error } = await db
     .from('birth_profiles')
-    .update({ owner_id: userId, session_token: null })
+    .update({ owner_id: user.id, session_token: null })
     .eq('session_token', session_token)
     .is('owner_id', null)
     .select('id, label');
