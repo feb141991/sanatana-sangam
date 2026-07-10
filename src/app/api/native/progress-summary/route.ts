@@ -13,6 +13,8 @@ type ProfileRow = {
   id: string;
   full_name: string | null;
   tradition: string | null;
+  sampradaya: string | null;
+  ishta_devata: string | null;
   city: string | null;
   app_language: string | null;
   active_symbol_id: string | null;
@@ -76,7 +78,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('id, full_name, tradition, city, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone')
+    .select('id, full_name, tradition, sampradaya, ishta_devata, city, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -191,6 +193,8 @@ export async function GET(request: NextRequest) {
       id: profile?.id,
       fullName: profile?.full_name ?? '',
       tradition: profile?.tradition ?? 'hindu',
+      sampradaya: profile?.sampradaya ?? '',
+      ishtaDevata: profile?.ishta_devata ?? '',
       appLanguage: profile?.app_language ?? 'en',
       activeSymbolId: profile?.active_symbol_id,
       sevaScore: profile?.seva_score ?? 0,
