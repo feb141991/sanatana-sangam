@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser } from '@/lib/api-auth';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 import {
@@ -255,10 +255,9 @@ export async function POST(req: NextRequest) {
   if (rateRejection) return rateRejection;
 
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { user, error: authError, supabase } = await getApiUser(req);
 
-    if (!user) {
+    if (authError || !user || !supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
