@@ -96,7 +96,7 @@ export default function DeleteAccountClient({
     if (confirmText !== 'DELETE' || submitting) return;
     setSubmitting(true);
     try {
-      const res = await fetch('/api/user/delete', {
+      const res = await fetch('/api/user/delete/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -107,13 +107,14 @@ export default function DeleteAccountClient({
 
       const data = await res.json().catch(() => ({ success: false }));
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || 'Deletion failed');
+        throw new Error(data?.error || 'Deletion request failed');
       }
 
-      router.replace('/?accountDeleted=1');
+      toast.success('Deletion scheduled. You can cancel anytime in the next 30 days from your Profile.');
+      router.replace('/profile');
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Deletion failed');
+      toast.error(error instanceof Error ? error.message : 'Deletion request failed');
     } finally {
       setSubmitting(false);
     }
@@ -213,7 +214,7 @@ export default function DeleteAccountClient({
 
                 <div className="mt-5 rounded-2xl border p-4" style={{ borderColor: 'rgba(197,160,89,0.14)', background: 'rgba(197,160,89,0.06)' }}>
                   <p className="text-sm leading-relaxed">
-                    Your {streak}-day streak will be lost forever. This action also removes your karma, seva history, and unlocked relics.
+                    Deleting starts a 30-day cancellable cool-off. After that, your {streak}-day streak, karma, seva history, and unlocked relics are permanently removed. You can cancel anytime before then from your Profile page.
                   </p>
                 </div>
 
@@ -222,7 +223,7 @@ export default function DeleteAccountClient({
                     <div className="flex gap-2.5">
                       <AlertTriangle size={18} color="#d46a6a" className="mt-0.5 shrink-0" />
                       <p className="text-sm leading-relaxed" style={{ color: '#e58b8b' }}>
-                        You have {journalCount} journal entries spanning {journalDaysSpanned} days. These cannot be recovered.
+                        You have {journalCount} journal entries spanning {journalDaysSpanned} days. These are permanently removed once the cool-off period ends.
                       </p>
                     </div>
                   </div>
@@ -395,10 +396,10 @@ export default function DeleteAccountClient({
                   <AlertTriangle size={18} color="#d46a6a" className="mt-1 shrink-0" />
                   <div>
                     <h1 className="text-3xl font-medium" style={{ fontFamily: 'var(--font-serif)' }}>
-                      Confirm deletion
+                      Schedule deletion
                     </h1>
                     <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--brand-muted)' }}>
-                      This action cannot be undone. All data, progress, karma, and relics will be permanently removed.
+                      Your account enters a 30-day cancellable cool-off. After 30 days, it, along with all your data, is permanently removed. You can cancel anytime before then from your Profile page.
                     </p>
                   </div>
                 </div>
@@ -426,7 +427,7 @@ export default function DeleteAccountClient({
                   className="mt-6 w-full rounded-full py-3.5 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-40"
                   style={{ background: '#b04343', color: 'white' }}
                 >
-                  {submitting ? 'Deleting account...' : 'Delete account permanently'}
+                  {submitting ? 'Scheduling deletion...' : 'Schedule account deletion'}
                 </button>
               </div>
             )}

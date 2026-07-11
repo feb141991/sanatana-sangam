@@ -311,8 +311,8 @@ export default function ProfileClient({
   const [mutedProfiles, setMutedProfiles] = useState(initialMutedProfiles);
   const [hiddenItems, setHiddenItems] = useState(initialHiddenItems);
   const [showSadhanaHighlights, setShowSadhanaHighlights] = useState(initialShowSadhanaHighlights);
-  const [isDeleting, setIsDeleting] = useState((liveProfile as any)?.is_deleting ?? false);
-  const [deletionDate, setDeletionDate] = useState((liveProfile as any)?.deletion_requested_at ?? null);
+  const [isDeleting, setIsDeleting] = useState(liveProfile?.is_deleting ?? false);
+  const [deletionDate, setDeletionDate] = useState(liveProfile?.deletion_requested_at ?? null);
   const [newRelicIds, setNewRelicIds] = useState<string[]>([]);
 
   const [reminderEnabled, setReminderEnabled] = useState<boolean>(
@@ -838,37 +838,27 @@ export default function ProfileClient({
     toast.success('Content restored to your feed.');
   }
 
+  // Calls the single canonical deletion API (src/app/api/user/delete/request/route.ts)
+  // instead of writing profiles.is_deleting / deletion_requested_at directly --
+  // those columns are server-managed (see SERVER_MANAGED_COLUMNS in
+  // src/lib/api/profile.ts) and the admin-review breadcrumb insert now
+  // happens server-side inside that route.
   async function requestAccountDeletion() {
     if (!confirm('Are you sure? Your account will be hidden and scheduled for permanent deletion in 30 days.')) return;
-    
+
     setSaving(true);
     try {
-      const now = new Date().toISOString();
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          is_deleting: true, 
-          deletion_requested_at: now 
-        })
-        .eq('id', userId);
-
-      if (error) throw error;
-
-      // Create admin task
-      await supabase.from('content_reports').insert({
-        reported_by: userId,
-        content_author_id: userId,
-        content_type: 'account_deletion',
-        content_id: userId,
-        reason: 'User requested account deletion. Cool-off period started.',
-        status: 'pending'
-      });
+      const res = await fetch('/api/user/delete/request', { method: 'POST' });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Request failed');
+      }
 
       setIsDeleting(true);
-      setDeletionDate(now);
+      setDeletionDate(data.deletionRequestedAt);
       toast.success('Deletion scheduled. You have 30 days to cancel.');
-    } catch (err: any) {
-      toast.error(err.message || 'Request failed');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Request failed');
     } finally {
       setSaving(false);
     }
@@ -877,21 +867,17 @@ export default function ProfileClient({
   async function cancelAccountDeletion() {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ 
-          is_deleting: false, 
-          deletion_requested_at: null 
-        })
-        .eq('id', userId);
-
-      if (error) throw error;
+      const res = await fetch('/api/user/delete/cancel', { method: 'POST' });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Cancellation failed');
+      }
 
       setIsDeleting(false);
       setDeletionDate(null);
       toast.success('Welcome back! Your account deletion has been cancelled 🙏');
-    } catch (err: any) {
-      toast.error(err.message || 'Cancellation failed');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Cancellation failed');
     } finally {
       setSaving(false);
     }

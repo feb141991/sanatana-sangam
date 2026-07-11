@@ -17,27 +17,31 @@ const COOL_OFF_DAYS = 30;
 /**
  * Daily purge of accounts whose 30-day cancellable deletion cool-off has
  * elapsed. Counterpart to the request/cancel flow in
- * src/app/(main)/profile/ProfileClient.tsx (requestAccountDeletion /
- * cancelAccountDeletion), which sets/clears profiles.is_deleting +
- * profiles.deletion_requested_at. That flow only ever scheduled a deletion --
- * nothing previously existed to actually complete it, so a user who
- * requested deletion and never returned to cancel would have stayed
- * "scheduled" forever with their data intact. This cron closes that gap by
- * mirroring the same hard-delete used by /api/user/delete/route.ts (the
- * immediate-delete path used by the Settings wizard and the native app):
+ * src/app/api/user/delete/request/route.ts and
+ * src/app/api/user/delete/cancel/route.ts, which set/clear
+ * profiles.is_deleting + profiles.deletion_requested_at. That flow only
+ * ever schedules a deletion -- this cron is what actually completes it,
+ * mirroring the same hard-delete /api/user/delete/route.ts performs:
  * auth.admin.deleteUser() followed by a profiles row delete.
  *
- * Supports ?dryRun=true to preview the target list without deleting anything,
- * matching the dry-run convention used by the other safety-conscious crons
- * in this repo (see src/lib/notification-safety.ts).
+ * Auth is mandatory, not best-effort: this route requires CRON_SECRET to be
+ * configured at all (missing config -> 500, never silently open) and every
+ * request -- including ?dryRun=true -- must present it as
+ * `Authorization: Bearer <CRON_SECRET>` (mismatch or missing -> 401).
+ * dryRun still returns the target user IDs, but only after that same auth
+ * check passes, so target IDs are never exposed to an unauthenticated
+ * caller.
  */
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (!cronSecret) {
+    console.error('purge-deleted-accounts: CRON_SECRET is not configured');
+    return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  }
+
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

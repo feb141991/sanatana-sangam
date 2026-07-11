@@ -66,6 +66,8 @@ const baseProfile: MandaliProfile = {
   is_admin: false,
   is_banned: false,
   ban_reason: null,
+  is_deleting: false,
+  deletion_requested_at: null,
   is_pro: false,
   subscription_status: 'free',
   subscription_expires_at: null,

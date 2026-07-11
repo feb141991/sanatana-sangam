@@ -73,6 +73,12 @@ export interface Database {
           quiz_reminder_time?: string;
           nitya_reminder_enabled?: boolean;
           nitya_reminder_time?: string;
+          // Account-deletion cool-off (supabase/migrations/20260711000000_account_deletion_cooloff.sql).
+          // Server-managed: only written by src/app/api/user/delete/{request,cancel}/route.ts
+          // via getApiUser's RLS-scoped client -- never by a direct client-side
+          // profiles.update() (see SERVER_MANAGED_COLUMNS in src/lib/api/profile.ts).
+          is_deleting: boolean;
+          deletion_requested_at: string | null;
         };
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
