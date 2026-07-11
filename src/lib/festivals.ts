@@ -95,7 +95,7 @@ export const FESTIVALS_2026: Festival[] = [
   { name: 'Vat Savitri Purnima', date: '2026-05-31', emoji: '🌳', description: 'Vrat observed by married women for the well-being of their husbands (Jyeshtha Purnima — Maharashtra, Gujarat, Karnataka)', type: 'vrat', tradition: 'hindu' },
   { name: 'Jagannath Rath Yatra', date: '2026-07-16', emoji: '🛕', description: 'Grand chariot procession of Lord Jagannath at Puri',                 type: 'major',    tradition: 'hindu' },
   { name: 'Guru Purnima',         date: '2026-07-29', emoji: '🙏', description: 'Day to honour spiritual teachers and gurus — observed by all traditions', type: 'major', tradition: 'all' },
-  { name: 'Nag Panchami',         date: '2026-07-28', emoji: '🐍', description: 'Worship of serpent deities for protection',                          type: 'regional', tradition: 'hindu' },
+  { name: 'Nag Panchami',         date: '2026-08-17', emoji: '🐍', description: 'Worship of serpent deities for protection',                          type: 'regional', tradition: 'hindu' },
   { name: 'Raksha Bandhan',       date: '2026-08-28', emoji: '🧿', description: 'Festival celebrating the bond between brothers and sisters',          type: 'major',    tradition: 'hindu' },
   { name: 'Krishna Janmashtami',  date: '2026-09-03', emoji: '🦚', description: 'Celebration of the birth of Lord Krishna at midnight',               type: 'major',    tradition: 'hindu' },
   { name: 'Ganesh Chaturthi',     date: '2026-09-14', emoji: '🐘', description: '10-day festival celebrating the birth of Lord Ganesha',              type: 'major',    tradition: 'hindu' },

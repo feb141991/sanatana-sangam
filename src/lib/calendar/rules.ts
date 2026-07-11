@@ -291,6 +291,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Shukla Panchami
     lunar_tithi_index: 5,
+    prefer_last_match: true,
   },
   {
     slug: 'raksha-bandhan',

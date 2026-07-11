@@ -6,7 +6,7 @@ export const UJJAIN_LAT = 23.1765;
 export const UJJAIN_LON = 75.7885;
 
 // Versioning the calculation engine
-export const RULE_ENGINE_VERSION = '1.2.1'; // fixes Navratri-relative Dussehra offset after weekday-recurring rules
+export const RULE_ENGINE_VERSION = '1.2.2'; // fixes Nag Panchami duplicate Shravana Panchami selection in 2026
 
 export interface CalculatedOccurrence {
   slug: string;
