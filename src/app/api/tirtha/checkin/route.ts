@@ -1,71 +1,85 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { createAdminClient } from '@/lib/supabase-admin';
 
+import { getApiUser } from '@/lib/api-auth';
+
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/**
- * POST /api/tirtha/checkin
- * Inserts a visit into tirtha_checkins using the service role (bypasses RLS).
- * Also upserts into tirtha_saves so the place is always bookmarked after a visit.
- *
- * Requires the user to be authenticated — verified via the user Supabase client
- * before writing with the admin client.
- *
- * Body: { place_id, visited_at?, privacy, darshan_mood, intention?,
- *         reflection?, companions?, pradakshina_count? }
- */
+const VALID_PRIVACY = new Set(['private', 'family', 'mandali', 'public']);
+const VALID_MOODS = new Set(['gratitude', 'devotion', 'peace', 'clarity']);
+
+function parseString(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function clampText(value: unknown, maxLength: number) {
+  const text = parseString(value);
+  return text ? text.slice(0, maxLength) : null;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    // Verify the caller is a signed-in user
-    const userClient = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { user, error: authError, supabase } = await getApiUser(req);
+    if (!user || !supabase) {
+      return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const { place_id, privacy, darshan_mood } = body;
-
-    if (!place_id || !privacy || !darshan_mood) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
-    const admin = createAdminClient() as unknown as { from: (t: string) => any };
+    const payload = body as Record<string, unknown>;
+    const placeId = parseString(payload.place_id);
+    const privacy = parseString(payload.privacy) ?? 'private';
+    const mood = parseString(payload.darshan_mood) ?? 'gratitude';
 
-    // Insert the check-in
-    const checkinRow = {
-      user_id:          user.id,
-      place_id,
-      visited_at:       body.visited_at ?? new Date().toISOString(),
-      privacy,
-      darshan_mood,
-      intention:        body.intention        ?? null,
-      reflection:       body.reflection       ?? null,
-      companions:       body.companions       ?? null,
-      pradakshina_count: body.pradakshina_count ?? 0,
-      seva_note:        body.seva_note        ?? null,
-    };
+    if (!placeId) {
+      return NextResponse.json({ error: 'place_id is required' }, { status: 400 });
+    }
 
-    const { data: inserted, error: checkinError } = await admin
+    if (!VALID_PRIVACY.has(privacy)) {
+      return NextResponse.json({ error: 'Invalid privacy value' }, { status: 400 });
+    }
+
+    if (!VALID_MOODS.has(mood)) {
+      return NextResponse.json({ error: 'Invalid darshan_mood value' }, { status: 400 });
+    }
+
+    const { data: inserted, error: checkinError } = await supabase
       .from('tirtha_checkins')
-      .insert(checkinRow)
+      .insert({
+        user_id: user.id,
+        place_id: placeId,
+        privacy,
+        darshan_mood: mood,
+        intention: clampText(payload.intention, 500),
+        reflection: clampText(payload.reflection, 1200),
+        companions: clampText(payload.companions, 300),
+        seva_note: clampText(payload.seva_note, 500),
+        pradakshina_count: typeof payload.pradakshina_count === 'number'
+          ? Math.max(0, Math.floor(payload.pradakshina_count))
+          : 0,
+      })
       .select('id')
       .single();
 
     if (checkinError) {
-      console.error('[tirtha/checkin] insert failed:', checkinError.message);
       return NextResponse.json({ error: checkinError.message }, { status: 500 });
     }
 
-    // Also upsert tirtha_saves so the place is automatically bookmarked after visit
-    await admin
+    const { error: saveError } = await supabase
       .from('tirtha_saves')
-      .upsert({ user_id: user.id, place_id }, { onConflict: 'user_id,place_id' });
+      .upsert({ user_id: user.id, place_id: placeId }, { onConflict: 'user_id,place_id' });
 
-    return NextResponse.json({ checkin_id: inserted?.id ?? null });
-  } catch (err: any) {
-    console.error('[tirtha/checkin] unexpected error:', err);
-    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
+    if (saveError) {
+      return NextResponse.json({ error: saveError.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ checkin_id: inserted?.id ?? null, place_id: placeId });
+  } catch (err: unknown) {
+    console.error('[POST /api/tirtha/checkin] Server error:', err);
+    const message = err instanceof Error ? err.message : 'Server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
