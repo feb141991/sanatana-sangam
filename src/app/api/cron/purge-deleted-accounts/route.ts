@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+import { ACCOUNT_DELETION_COOL_OFF_DAYS } from '@/lib/account-deletion';
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-const COOL_OFF_DAYS = 30;
 
 // Deliberately untyped createClient() (no `<Database>` generic) -- matching
 // reset-leaderboard/route.ts and the documented reason in
@@ -55,7 +55,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const dryRun = searchParams.get('dryRun') === 'true';
 
-  const cutoff = new Date(Date.now() - COOL_OFF_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  const cutoff = new Date(Date.now() - ACCOUNT_DELETION_COOL_OFF_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
   const { data: pending, error: queryError } = await admin
     .from('profiles')

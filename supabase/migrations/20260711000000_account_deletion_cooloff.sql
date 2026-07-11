@@ -23,7 +23,7 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS deletion_requested_at timestamptz NULL;
 
 COMMENT ON COLUMN public.profiles.is_deleting IS
-  'True while a user-initiated account deletion is in its 30-day cancellable cool-off window. Set/cleared client-side from the Profile page Danger Zone. Purged by the daily purge-deleted-accounts cron once deletion_requested_at is 30+ days old.';
+  'True while a user-initiated account deletion is in its 30-day cancellable cool-off window. Set/cleared through /api/user/delete/request and /api/user/delete/cancel. Purged by the daily purge-deleted-accounts cron once deletion_requested_at is 30+ days old.';
 COMMENT ON COLUMN public.profiles.deletion_requested_at IS
   'Timestamp the user requested account deletion. NULL when not pending deletion (default, or after cancellation). The account is hard-deleted 30 days after this timestamp by the purge-deleted-accounts cron unless the user cancels first.';
 
