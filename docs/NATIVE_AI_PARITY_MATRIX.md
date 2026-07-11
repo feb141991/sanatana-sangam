@@ -13,7 +13,7 @@ This matrix tracks PWA AI-assisted surfaces against the native app. Native shoul
 | Mood recommendations | `/api/mood/recommendations`, `/api/mood/reflection-summary` | Wired in `app/mood.tsx` and `app/my-progress/mood.tsx`. |
 | Jyotish chart | `/api/jyotish/chart` | Wired in `app/kundali.tsx`. |
 | TTS generation | `/api/tts/generate` | Wired in Japa and Pathshala lesson reader. |
-| Pathshala AI explain links | `/api/ai/chat` through web deep links | Partially represented by native Dharma Mitra chat; per-verse prompt handoff still pending because native chat does not yet accept initial prompt params. |
+| Pathshala AI explain links | `/api/ai/chat` through web deep links | Wired in `app/pathshala/[pathId]/[lessonId].tsx` linking to `app/ai-chat.tsx` with initial verse prompts. |
 | Sadhana Journal AI reflection | `/api/journal/reflect` | Deferred with Sadhana Journal native route; no native journal screen exists yet. |
 | Kul Sanskara AI nudge | `/api/sanskar/suggest` | Deferred with Kul native route; no native Kul/Sanskara screen exists yet. |
 | Quiz AI generation/practice | `/api/quiz/daily`, `/api/quiz/practice` | Daily quiz is wired; AI practice route is not yet a native screen. |
