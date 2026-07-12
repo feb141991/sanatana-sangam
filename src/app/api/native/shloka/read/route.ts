@@ -1,22 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { getApiUser } from '@/lib/api-auth';
-import { localSpiritualDate } from '@/lib/sacred-time';
 
 export const runtime = 'nodejs';
 
 type ProfileRow = {
   timezone: string | null;
-  shloka_streak: number | null;
-  last_shloka_date: string | null;
 };
 
-function previousSpiritualDate(today: string) {
-  const yesterdayObj = new Date(`${today}T12:00:00Z`);
-  yesterdayObj.setUTCDate(yesterdayObj.getUTCDate() - 1);
-  return yesterdayObj.toISOString().slice(0, 10);
-}
+type MarkShlokaReadRow = {
+  streak: number;
+  read_date: string;
+  already_read: boolean;
+  seva_awarded: number;
+  milestone: boolean;
+};
 
+// Was two independent, non-atomic writes (profiles.update() for the streak,
+// then a separate increment_period_seva RPC call for +5 seva) — if the
+// second call failed, the whole route returned 500 and the native client
+// reverted its UI even though the streak half may have already committed.
+// Now a single call into mark_shloka_read(), which does the idempotency
+// check, streak update, and seva award in one locked transaction (see
+// supabase/migrations/20260712120000_atomic_mark_shloka_read.sql for the
+// full rationale). The "spiritual day" boundary (rolls over at local 4am,
+// not midnight) is now computed inside that function instead of here, so
+// there's one authoritative implementation instead of three
+// (web/native/route each carrying their own copy).
 export async function POST(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
@@ -24,61 +34,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
     }
 
-    const { data: profileData, error: profileError } = await supabase
+    const { data: profileData } = await supabase
       .from('profiles')
-      .select('timezone, shloka_streak, last_shloka_date')
+      .select('timezone')
       .eq('id', user.id)
       .maybeSingle();
 
-    if (profileError) {
-      return NextResponse.json({ error: profileError.message }, { status: 500 });
-    }
-
     const profile = profileData as ProfileRow | null;
-    const today = localSpiritualDate(profile?.timezone ?? 'UTC', 4);
-    const lastReadDate = profile?.last_shloka_date ?? null;
 
-    if (lastReadDate === today) {
-      return NextResponse.json({
-        success: true,
-        alreadyRead: true,
-        date: today,
-        streak: profile?.shloka_streak ?? 0,
-        sevaAwarded: 0,
-      });
+    const { data, error } = await supabase
+      .rpc('mark_shloka_read', { p_timezone: profile?.timezone ?? 'UTC' })
+      .single();
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const yesterday = previousSpiritualDate(today);
-    const newStreak = lastReadDate === yesterday ? (profile?.shloka_streak ?? 0) + 1 : 1;
-
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        shloka_streak: newStreak,
-        last_shloka_date: today,
-      })
-      .eq('id', user.id);
-
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
-    }
-
-    const { error: sevaError } = await supabase.rpc('increment_period_seva', {
-      p_user_id: user.id,
-      p_points: 5,
-    });
-
-    if (sevaError) {
-      return NextResponse.json({ error: sevaError.message }, { status: 500 });
-    }
+    const result = data as MarkShlokaReadRow;
 
     return NextResponse.json({
       success: true,
-      alreadyRead: false,
-      date: today,
-      streak: newStreak,
-      sevaAwarded: 5,
-      milestone: newStreak % 7 === 0,
+      alreadyRead: result.already_read,
+      date: result.read_date,
+      streak: result.streak,
+      sevaAwarded: result.seva_awarded,
+      milestone: result.milestone,
     });
   } catch (err: unknown) {
     console.error('[POST /api/native/shloka/read] Server error:', err);

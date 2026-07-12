@@ -520,40 +520,32 @@ export function HeroSection({
 
   async function markShlokaRead() {
     if (readToday || !userId) return;
-    const tz        = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
-    const today     = localSpiritualDate(tz, 4);
-    const yestObj   = new Date(today + 'T12:00:00Z');
-    yestObj.setUTCDate(yestObj.getUTCDate() - 1);
-    const yesterday = yestObj.toISOString().slice(0, 10);
+    const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
 
-    const newStreak = lastShlokaDate === yesterday ? streak + 1 : 1;
+    // Single atomic RPC (streak update + idempotency check + seva award,
+    // one locked transaction) instead of the old two-step
+    // profiles.update() + increment_period_seva() pair with a client-side
+    // read-then-add fallback if the RPC failed. That fallback was itself
+    // race-prone (two concurrent taps could both read the same starting
+    // score and both add 5) and masked the same non-atomic-write bug that
+    // showed up harder on native (see
+    // supabase/migrations/20260712120000_atomic_mark_shloka_read.sql).
+    const { data, error } = await supabase
+      .rpc('mark_shloka_read', { p_timezone: tz })
+      .single();
+
+    if (error || !data) {
+      return;
+    }
+
+    // mark_shloka_read isn't in the hand-maintained Database type (same
+    // pre-existing gap as other RPCs added outside codegen — see
+    // api-auth.ts's own comment on this), so the untyped RPC result needs
+    // an explicit shape here rather than silently widening to `{}`.
+    const newStreak = (data as { streak: number }).streak;
 
     setReadToday(true);
     setStreak(newStreak);
-
-    await supabase
-      .from('profiles')
-      .update({
-        shloka_streak:    newStreak,
-        last_shloka_date: today,
-      })
-      .eq('id', userId);
-
-    try {
-      const { error: rpcError } = await supabase.rpc('increment_period_seva', { p_user_id: userId, p_points: 5 });
-      if (rpcError) throw rpcError;
-    } catch {
-      const { data } = await supabase.from('profiles').select('seva_score, weekly_seva, monthly_seva').eq('id', userId).single();
-      if (data) {
-        await supabase.from('profiles')
-          .update({ 
-            seva_score: (data.seva_score ?? 0) + 5,
-            weekly_seva: (data.weekly_seva ?? 0) + 5,
-            monthly_seva: (data.monthly_seva ?? 0) + 5
-          })
-          .eq('id', userId);
-      }
-    }
 
     onShowConfetti();
     setShlokaModalOpen(false);
