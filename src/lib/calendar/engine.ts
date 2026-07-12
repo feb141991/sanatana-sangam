@@ -17,6 +17,17 @@ export interface CalculatedOccurrence {
   recurring?: boolean;
 }
 
+export interface ObservanceCandidateDiagnostic {
+  slug: string;
+  year: number;
+  ruleFamily: ObservanceRule['rule_family'];
+  candidateDates: string[];
+  candidateCount: number;
+  selectedDate: string | null;
+  selectionPolicy: 'all_recurring' | 'first_match' | 'last_match' | 'none';
+  recurring: boolean;
+}
+
 /**
  * Formats a Date object to YYYY-MM-DD in UTC timezone to prevent local timezone shifts.
  */
@@ -271,11 +282,7 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
 
-/**
- * Calculates all occurrences of observances for a target Gregorian year.
- * Keeps calculation output deterministic and versionable.
- */
-export function calculateObservancesForYear(year: number): CalculatedOccurrence[] {
+function buildOccurrencesMap(year: number): Record<string, string[]> {
   const days = precomputePanchangForYear(year);
   const occurrencesMap: Record<string, string[]> = {};
 
@@ -321,6 +328,16 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
     }
   }
 
+  return occurrencesMap;
+}
+
+/**
+ * Calculates all occurrences of observances for a target Gregorian year.
+ * Keeps calculation output deterministic and versionable.
+ */
+export function calculateObservancesForYear(year: number): CalculatedOccurrence[] {
+  const occurrencesMap = buildOccurrencesMap(year);
+
   // 3. Assemble results — one occurrence per rule per year.
   // When multiple dates match (e.g. a dark-half tithi that spans two lunar months within
   // the same solar-rashi window), pick the first match by default, or the last match when
@@ -345,4 +362,38 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
   }
 
   return results;
+}
+
+export function calculateObservanceCandidateDiagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
+  const occurrencesMap = buildOccurrencesMap(year);
+
+  return CANONICAL_RULES.map((rule) => {
+    const candidateDates = (occurrencesMap[rule.slug] || []).filter(
+      d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+    );
+    const recurring = rule.rule_family === 'lunar_tithi_recurring' || rule.rule_family === 'weekday_recurring';
+    const selectionPolicy: ObservanceCandidateDiagnostic['selectionPolicy'] = candidateDates.length === 0
+      ? 'none'
+      : recurring
+        ? 'all_recurring'
+        : rule.prefer_last_match
+          ? 'last_match'
+          : 'first_match';
+    const selectedDate = candidateDates.length === 0
+      ? null
+      : rule.prefer_last_match
+        ? candidateDates[candidateDates.length - 1]
+        : candidateDates[0];
+
+    return {
+      slug: rule.slug,
+      year,
+      ruleFamily: rule.rule_family,
+      candidateDates,
+      candidateCount: candidateDates.length,
+      selectedDate,
+      selectionPolicy,
+      recurring,
+    };
+  });
 }

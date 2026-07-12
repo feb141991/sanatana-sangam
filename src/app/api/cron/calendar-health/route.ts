@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sendOneSignalPush } from '@/lib/onesignal-server';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
+import { buildCalendarIntegrityReport, type CalendarIntegrityRow } from '@/lib/calendar/integrity';
 
 function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -10,7 +11,7 @@ function isMissingObservanceModel(error: unknown): boolean {
 }
 
 // ─── Calendar Health Cron ─────────────────────────────────────────────────────
-// Schedule: 0 9 1 11 * (9 AM UTC, 1st November every year)
+// Schedule: monthly (see vercel.json)
 //
 // Fires once a year as an early warning that the festival calendar needs to be
 // refreshed for the coming year. It:
@@ -48,12 +49,14 @@ export async function GET(request: Request) {
   const currentYear = new Date().getFullYear();
 
   let festivals = FESTIVALS_2026;
+  let rawOccurrenceRows: CalendarIntegrityRow[] = [];
   const occRows = await supabase
     .from('observance_occurrences')
     .select('*, observance_definitions(*)')
     .order('date', { ascending: true });
 
   if (!occRows.error) {
+    rawOccurrenceRows = (occRows.data ?? []) as CalendarIntegrityRow[];
     const festivalsFromDb = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
     festivals = festivalsFromDb.length > 0 ? festivalsFromDb : FESTIVALS_2026;
   } else if (!isMissingObservanceModel(occRows.error)) {
@@ -82,6 +85,12 @@ export async function GET(request: Request) {
     .map((festival) => festival.verification_run_at)
     .filter((value): value is string => Boolean(value))
     .sort((a, b) => b.localeCompare(a));
+  const integrityYears = [currentYear, nextYear];
+  const integrity = rawOccurrenceRows.length > 0
+    ? buildCalendarIntegrityReport(rawOccurrenceRows, integrityYears)
+    : null;
+  const hasIntegrityIssues = Boolean(integrity?.issueCount);
+  const needsAttention = needsRefresh || hasIntegrityIssues;
 
   // Always log to the response
   const report = {
@@ -98,9 +107,10 @@ export async function GET(request: Request) {
     suggested_date_pending: suggestedDatePending,
     unsafe_observance_routes: unsafeObservanceRoutes,
     last_verification_run_at: verificationRuns[0] ?? null,
+    deterministic_integrity: integrity,
   };
 
-  if (!needsRefresh) {
+  if (!needsAttention) {
     return NextResponse.json({ ok: true, message: 'Calendar is healthy', ...report });
   }
 
@@ -119,8 +129,12 @@ export async function GET(request: Request) {
     adminId = match?.id ?? null;
   }
 
-  const title = `📅 Festival Calendar needs refresh for ${nextYear}`;
-  const body  = `Only ${remaining} festivals remain in the DB. Add ${nextYear} entries via Admin → Festivals so reminders and countdowns keep working.`;
+  const title = hasIntegrityIssues
+    ? '📅 Festival Calendar integrity needs review'
+    : `📅 Festival Calendar needs refresh for ${nextYear}`;
+  const body = hasIntegrityIssues
+    ? `Calendar audit found ${integrity?.issueCount ?? 0} issue(s): ${integrity?.engineCuratedMismatch.length ?? 0} engine mismatch, ${integrity?.missingExternalSource.length ?? 0} missing source, ${integrity?.multipleCandidatesNeedsReview.length ?? 0} ambiguous candidate.`
+    : `Only ${remaining} festivals remain in the DB. Add ${nextYear} entries via Admin → Festivals so reminders and countdowns keep working.`;
 
   // Insert into notifications table (shows in the admin's bell)
   if (adminId) {
@@ -149,7 +163,9 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    message: `Calendar low — admin notified (${remaining} upcoming festivals)`,
+    message: hasIntegrityIssues
+      ? `Calendar integrity issue(s) found — admin notified (${integrity?.issueCount ?? 0})`
+      : `Calendar low — admin notified (${remaining} upcoming festivals)`,
     admin_notified: Boolean(adminId),
     ...report,
   });
