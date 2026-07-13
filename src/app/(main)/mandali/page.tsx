@@ -1,14 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { filterAuthoredItems, filterProfileRows, getUserSafetyState } from '@/lib/user-safety';
-import type { ThreadWithAuthor } from '@/types/database';
 import MandaliClient from './MandaliClient';
-
-/** Thread row as selected below — reactions come embedded and are
-    aggregated into counts before reaching the client. */
-type ThreadRowWithReactions = ThreadWithAuthor & {
-  thread_reactions?: { reaction_type: string }[] | null;
-};
 
 // If the local Mandali has fewer than this many members, blend in Sangam-wide posts
 const BLEND_THRESHOLD = 5;
@@ -32,9 +25,8 @@ export default async function MandaliPage() {
 
   const mandaliId = profile?.mandali_id;
 
-  // ── Wave 2: all content in PARALLEL — no more sequential waterfalls ──────
-  // Posts, members, and threads all start at the same time.
-  const [postsResult, membersResult, threadsResult] = await Promise.all([
+  // ── Wave 2: all Mandali content in PARALLEL — no more sequential waterfalls ──────
+  const [postsResult, membersResult] = await Promise.all([
     mandaliId
       ? supabase
           .from('posts')
@@ -51,17 +43,10 @@ export default async function MandaliPage() {
           .order('seva_score', { ascending: false })
           .limit(50)
       : Promise.resolve({ data: [] }),
-    supabase
-      .from('forum_threads')
-      .select('*, profiles!forum_threads_author_id_fkey(full_name, username, avatar_url, sampradaya, active_symbol_id), thread_reactions(reaction_type)')
-      .order('is_pinned', { ascending: false })
-      .order('updated_at', { ascending: false })
-      .limit(60),
   ]);
 
   const rawPosts  = postsResult.data  ?? [];
   const rawMembers = membersResult.data ?? [];
-  const threadsRaw = threadsResult.data ?? [];
 
   const posts   = filterAuthoredItems(rawPosts,   'mandali_post', safetyState);
   const members = filterProfileRows(rawMembers, safetyState);
@@ -95,16 +80,6 @@ export default async function MandaliPage() {
   const rsvps       = rsvpsResult.data    ?? [];
   const blendedPosts = filterAuthoredItems(blendedResult.data ?? [], 'mandali_post', safetyState);
 
-  // Shape threads — aggregate reactions
-  const threads = filterAuthoredItems(threadsRaw, 'thread', safetyState).map((t: ThreadRowWithReactions) => {
-    const reactions: Record<string, number> = { pranam: 0, bhakti: 0, prakas: 0 };
-    t.thread_reactions?.forEach((r) => {
-      if (reactions[r.reaction_type] !== undefined) reactions[r.reaction_type]++;
-    });
-    const { thread_reactions, ...rest } = t;
-    return { ...rest, reactions };
-  });
-
   const userTradition: string | null = profile?.tradition ?? null;
 
   return (
@@ -116,7 +91,6 @@ export default async function MandaliPage() {
       members={members}
       userId={user.id}
       blendedPosts={blendedPosts}
-      threads={threads}
       userTradition={userTradition}
     />
   );

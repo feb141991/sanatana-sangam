@@ -14,20 +14,7 @@ import { queryKeys } from '@/lib/query-keys';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
-import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp, ThreadWithAuthor } from '@/types/database';
-// VichaarClient is 955 lines — lazy-load it so it doesn't block initial parse/hydration.
-// Only users who switch to "Sabha" scope will trigger the download.
-const VichaarClient = dynamic(() => import('../vichaar-sabha/VichaarClient'), {
-  ssr: false,
-  loading: () => (
-    <div className="space-y-3 animate-pulse pt-2">
-      <div className="h-10 rounded-2xl bg-[var(--surface-soft)]" />
-      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
-      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
-      <div className="h-24 rounded-2xl bg-[var(--surface-soft)]" />
-    </div>
-  ),
-});
+import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
 import type { MandaliProfile } from '@/lib/api/mandali';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
@@ -46,13 +33,9 @@ type Props = {
   userId:       string;
   /** Posts from other Mandalis shown when local Mandali has < 5 members */
   blendedPosts?: PostWithAuthor[];
-  /** Forum threads for the Sabha scope */
-  threads?:     ThreadWithAuthor[];
-  /** User's tradition for Sabha smart-tab default */
   userTradition?: string | null;
 };
 
-type Scope = 'nearby' | 'sabha';
 type NearbyTab = 'feed' | 'events' | 'members';
 
 /** Pre-filled compose state used by the welcome card and event bootstrapping */
@@ -712,14 +695,12 @@ function NoMandaliPrompt({ userId }: { userId: string }) {
 }
 
 // ─── Living Empty State (small/new Mandalis) ─────────────────────
-// Every action is real: two open the composer pre-filled, one switches
-// to the Global Sabha. No placeholder CTAs.
-function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGathering, onBrowseSabha }: {
+// Every action is real: open the composer pre-filled for local Mandali activity.
+function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGathering }: {
   isFirstMember: boolean;
   cityLabel: string;
   onIntroduce: () => void;
   onStartGathering: () => void;
-  onBrowseSabha: () => void;
 }) {
   const actions = [
     {
@@ -733,12 +714,6 @@ function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGatherin
       label: 'Start the first local gathering',
       hint: 'A simple satsang, japa circle, or temple visit',
       onClick: onStartGathering,
-    },
-    {
-      icon: <Globe size={16} className="theme-muted" />,
-      label: 'Read the wider Sangam',
-      hint: 'Global Sabha conversations while your city grows',
-      onClick: onBrowseSabha,
     },
   ];
 
@@ -1196,7 +1171,7 @@ function PostCard({ post, userId, comments, onAddComment, upvoted, onUpvote, onH
 }
 
 // ─── Main Component ──────────────────────────────────────────────
-export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [], threads = [], userTradition }: Props) {
+export default function MandaliClient({ profile, posts: initialPosts, comments: initialComments, rsvps: initialRsvps, members, userId, blendedPosts = [], userTradition }: Props) {
   const isPro = usePremium();
   const router = useRouter();
   const { playHaptic } = useZenithSensory();
@@ -1220,14 +1195,11 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
   const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
 
-  // ── Scope + sub-tab state ──────────────────────────────────────
-  const [scope,      setScope]      = useState<Scope>('nearby');
   // Empty mandalis land on the feed so the living empty state (welcome
   // card) is the first thing a new member sees — not their own member row.
   const [nearbyTab,  setNearbyTab]  = useState<NearbyTab>(
     initialVichaarCount === 0 && initialEventCount > 0 ? 'events' : 'feed'
   );
-  const switchScope = (s: Scope) => { setScope(s); playHaptic('light'); };
   const switchNearbyTab = (t: NearbyTab) => { setNearbyTab(t); playHaptic('light'); };
 
   const [showSearch,      setShowSearch]      = useState(false);
@@ -1269,7 +1241,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
   const rsvps = data.rsvps.filter((item) => !hiddenContentIds.has(item.post_id) && !hiddenAuthorIds.has(item.user_id));
   const visibleMembers = data.members.filter((member) => !hiddenAuthorIds.has(member.id));
 
-  // No local Mandali yet — show a rich onboarding hero + the join flow + global Sabha.
+  // No local Mandali yet — show a rich onboarding hero + the join flow.
   if (!liveProfile?.city || !liveProfile?.mandali_id) {
     return (
       <div className="space-y-5 fade-in">
@@ -1319,25 +1291,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         {/* ── Join flow — always visible ──────────────────────────── */}
         <NoMandaliPrompt userId={userId} />
 
-        {/* ── Global Sabha divider ────────────────────────────────── */}
-        <div className="flex items-center gap-2 pt-2">
-          <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
-          <span className="text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5"
-            style={{ background: 'var(--surface-soft)', color: 'var(--text-dim)', border: '1px solid var(--card-border)' }}>
-            <Globe size={11} /> Global Sabha
-          </span>
-          <div className="flex-1 h-px" style={{ background: 'var(--card-border)' }} />
-        </div>
-        <p className="text-[11px] text-center -mt-2" style={{ color: 'var(--text-dim)' }}>
-          Read from the wider Sanatani community while your local Mandali is set up
-        </p>
-
-        <VichaarClient
-          threads={threads}
-          userId={userId}
-          userTradition={userTradition}
-          embedded
-        />
       </div>
     );
   }
@@ -1357,27 +1310,27 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
       ? {
           label: 'See upcoming events',
           hint: `${eventCount} local event${eventCount === 1 ? '' : 's'} waiting`,
-          onClick: () => { setScope('nearby'); setNearbyTab('events'); },
+          onClick: () => { switchNearbyTab('events'); },
           icon: <Calendar size={16} className="text-[color:var(--brand-muted)]" />,
         }
       : vichaarCount > 0
         ? {
             label: "Join today's Reflections",
             hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
-            onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
+            onClick: () => { switchNearbyTab('feed'); },
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
         : visibleMembers.length > 1
           ? {
               label: 'Meet your Mandali',
               hint: `${visibleMembers.length} members nearby`,
-              onClick: () => { setScope('nearby'); setNearbyTab('members'); },
+              onClick: () => { switchNearbyTab('members'); },
               icon: <Users size={16} className="text-[color:var(--brand-muted)]" />,
             }
           : {
               label: 'Say the first hello',
               hint: 'Be the first voice in your Mandali',
-              onClick: () => { setScope('nearby'); setNearbyTab('feed'); },
+              onClick: () => { switchNearbyTab('feed'); },
               icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
             };
 
@@ -1690,34 +1643,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
         portalTarget
       )}
 
-      {/* ── Scope Toggle: Nearby | Sabha ── */}
-      <div className="relative flex rounded-2xl p-1 gap-1"
-        style={{ background: 'var(--surface-soft)', border: '1px solid rgba(197, 160, 89,0.12)' }}>
-        {([
-          { key: 'nearby' as Scope, label: 'Nearby',  icon: <MapPin size={13} strokeWidth={2.2} /> },
-          { key: 'sabha'  as Scope, label: 'Sabha',   icon: <Globe  size={13} strokeWidth={2.2} /> },
-        ] as const).map(({ key, label, icon }) => (
-          <button
-            key={key}
-            onClick={() => switchScope(key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-sm font-semibold transition-all ${
-              scope === key ? 'text-white' : 'text-[color:var(--text-dim)]'
-            }`}
-            style={scope === key ? {
-              background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))',
-              boxShadow: '0 2px 10px rgba(197, 160, 89,0.25)',
-            } : undefined}
-          >
-            {icon}
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Nearby scope ── */}
-      {scope === 'nearby' && (
-        <>
-          {/* Nearby sub-tabs */}
+      {/* Nearby sub-tabs */}
           <div className="surface-tabbar flex rounded-2xl p-1 gap-0.5">
             {nearbyTabs.map(({ key, label, icon, count }) => (
               <button
@@ -1759,7 +1685,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                   cityLabel={mandali?.city ?? 'your city'}
                   onIntroduce={startIntroPost}
                   onStartGathering={startFirstGathering}
-                  onBrowseSabha={() => switchScope('sabha')}
                 />
               )}
               <VichaarTab
@@ -1813,18 +1738,6 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
               )}
             </>
           )}
-        </>
-      )}
-
-      {/* ── Sabha scope — embeds full VichaarClient ── */}
-      {scope === 'sabha' && (
-        <VichaarClient
-          threads={threads}
-          userId={userId}
-          userTradition={userTradition}
-          embedded
-        />
-      )}
     </div>
   );
 }
