@@ -10,6 +10,7 @@ import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
 import { SACRED_RELICS } from '@/lib/relics';
 import { getSacredTextLabel, getTraditionMeta } from '@/lib/tradition-config';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
+import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 
 export const runtime = 'nodejs';
 
@@ -389,6 +390,17 @@ function buildNextPractice(practices: PracticeRow[]) {
   };
 }
 
+function getPulseRouteSlug(label: string) {
+  const normalized = label.toLowerCase();
+  if (normalized.includes('shivaratri')) return 'shivaratri';
+  if (normalized.includes('ekadashi')) return 'ekadashi';
+  if (normalized.includes('pradosh')) return 'pradosh';
+  if (normalized.includes('chaturthi')) return 'chaturthi';
+  if (normalized.includes('purnima')) return 'purnima';
+  if (normalized.includes('amavasya')) return 'amavasya';
+  return 'vrat';
+}
+
 export async function GET(request: NextRequest) {
   const { user, error, supabase } = await getApiUser(request);
 
@@ -552,13 +564,38 @@ export async function GET(request: NextRequest) {
     .map((row) => ({ row, definition: getDefinition(row) }))
     .find((entry) => entry.definition?.active !== false) ?? null;
   const firstDefinition = firstObservance?.definition ?? null;
+  const firstIsToday = firstObservance?.row.date === today;
+
+  const tithiPulse = (() => {
+    try {
+      const panchang = calculatePanchang(new Date(`${today}T12:00:00`), latitude, longitude, timezone);
+      return getTodaySpiritualPulses(panchang.tithiIndex, tradition, new Date(`${today}T12:00:00`))[0] ?? null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const fallbackPulse = !firstIsToday && tithiPulse ? tithiPulse : null;
   const festivalLabel = firstDefinition
     ? `${firstDefinition.emoji ?? '🪔'} ${firstDefinition.display_name}`
+    : fallbackPulse
+      ? `${fallbackPulse.emoji} ${fallbackPulse.label}`
     : null;
   const vratLabel = firstDefinition?.kind === 'vrat' ? festivalLabel : null;
 
   let observance = null;
-  if (firstDefinition && firstObservance) {
+  if (fallbackPulse) {
+    const routeSlug = getPulseRouteSlug(fallbackPulse.label);
+    observance = {
+      name: fallbackPulse.label,
+      emoji: fallbackPulse.emoji,
+      daysLeft: 0,
+      routeKind: 'vrat',
+      routeSlug,
+      href: '/vrat',
+      label: `${fallbackPulse.label} Today`,
+    };
+  } else if (firstDefinition && firstObservance) {
     const dLeft = Math.round((new Date(firstObservance.row.date).getTime() - new Date(today).getTime()) / 86400000);
     const name = firstDefinition.display_name;
     const label = dLeft === 0

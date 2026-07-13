@@ -12,10 +12,14 @@ export const runtime = 'nodejs';
 type ProfileRow = {
   id: string;
   full_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
   tradition: string | null;
   sampradaya: string | null;
   ishta_devata: string | null;
   city: string | null;
+  country: string | null;
+  life_stage: string | null;
   app_language: string | null;
   active_symbol_id: string | null;
   seva_score: number | null;
@@ -48,6 +52,22 @@ type GuidedPathProgressRow = {
   completed_lessons: number[] | null;
 };
 
+type MalaSessionRow = {
+  mantra: string | null;
+  count: number | null;
+  bead_count: number | null;
+  completed_beads: number | null;
+  rounds: number | null;
+  completed_rounds: number | null;
+  duration_seconds: number | null;
+  duration_secs: number | null;
+};
+
+type PathshalaStateRow = {
+  bookmarked_at: string | null;
+  last_opened_at: string | null;
+};
+
 function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
   return Promise.race([
     Promise.resolve(promise),
@@ -78,7 +98,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('id, full_name, tradition, sampradaya, ishta_devata, city, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone')
+    .select('id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -92,6 +112,8 @@ export async function GET(request: NextRequest) {
     nityaResult,
     nityaStreakResult,
     malaResult,
+    malaHistoryResult,
+    pathshalaStateResult,
   ] = await Promise.all([
     withTimeout<GuidedPathProgressRow[]>(
       supabase
@@ -135,6 +157,22 @@ export async function GET(request: NextRequest) {
         .limit(1),
       DB_TIMEOUT,
     ),
+    withTimeout<MalaSessionRow[]>(
+      supabase
+        .from('mala_sessions')
+        .select('mantra, count, bead_count, completed_beads, rounds, completed_rounds, duration_seconds, duration_secs')
+        .eq('user_id', user.id)
+        .order('completed_at', { ascending: false })
+        .limit(1000),
+      DB_TIMEOUT,
+    ),
+    withTimeout<PathshalaStateRow[]>(
+      supabase
+        .from('pathshala_user_state')
+        .select('bookmarked_at, last_opened_at')
+        .eq('user_id', user.id),
+      DB_TIMEOUT,
+    ),
   ]);
 
   const guidedPathProgress = guidedResult.data ?? [];
@@ -143,6 +181,8 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const nityaBestStreak = nityaStreakResult.data?.longest_streak ?? 0;
   const malaRows = malaResult.data ?? [];
+  const malaHistory = malaHistoryResult.data ?? [];
+  const pathshalaStateRows = pathshalaStateResult.data ?? [];
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
   const latestStreakRow = sadhanaRows
@@ -187,14 +227,36 @@ export async function GET(request: NextRequest) {
   ];
   const practicesCompleted = practices.filter(Boolean).length;
   const totalPractices = practices.length;
+  const mantraCounts = new Map<string, number>();
+  let totalBeads = 0;
+  let totalRounds = 0;
+  let totalSeconds = 0;
+  for (const session of malaHistory) {
+    const beads = session.completed_beads ?? session.bead_count ?? session.count ?? 0;
+    const rounds = session.completed_rounds ?? session.rounds ?? Math.floor(beads / 108);
+    totalBeads += beads;
+    totalRounds += rounds;
+    totalSeconds += session.duration_seconds ?? session.duration_secs ?? 0;
+    const mantra = session.mantra?.trim();
+    if (mantra) mantraCounts.set(mantra, (mantraCounts.get(mantra) ?? 0) + 1);
+  }
+  const topMantra = [...mantraCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+  const nityaDays = sadhanaRows.filter((row) => row.nitya_done).length;
+  const bookmarkedVerses = pathshalaStateRows.filter((row) => row.bookmarked_at).length;
+  const pathshalaEntriesOpened = pathshalaStateRows.filter((row) => row.last_opened_at).length;
 
   const response = {
     profile: {
       id: profile?.id,
       fullName: profile?.full_name ?? '',
+      username: profile?.username ?? '',
+      avatarUrl: profile?.avatar_url ?? null,
       tradition: profile?.tradition ?? 'hindu',
       sampradaya: profile?.sampradaya ?? '',
       ishtaDevata: profile?.ishta_devata ?? '',
+      city: profile?.city ?? '',
+      country: profile?.country ?? '',
+      lifeStage: profile?.life_stage ?? '',
       appLanguage: profile?.app_language ?? 'en',
       activeSymbolId: profile?.active_symbol_id,
       sevaScore: profile?.seva_score ?? 0,
@@ -230,7 +292,17 @@ export async function GET(request: NextRequest) {
       },
       quiz: {
         doneToday: Boolean(todaySadhana?.quiz_done),
-      }
+      },
+      highlights: {
+        totalBeads,
+        totalRounds,
+        totalMinutes: Math.round(totalSeconds / 60),
+        totalSessions: malaHistory.length,
+        topMantra,
+        nityaDays,
+        pathshalaEntriesOpened,
+        bookmarkedVerses,
+      },
     }
   };
 

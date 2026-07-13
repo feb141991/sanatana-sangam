@@ -27,6 +27,23 @@ function sanitizeText(value: unknown, maxLength: number) {
   return trimmed.length > 0 ? trimmed.slice(0, maxLength) : null;
 }
 
+function sanitizeAvatarUrl(value: unknown) {
+  if (value === null) return null;
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.length > 1000) return undefined;
+
+  try {
+    const url = new URL(trimmed);
+    if (!/^https?:$/.test(url.protocol)) return undefined;
+    if (!url.pathname.includes('/storage/v1/object/public/avatars/')) return undefined;
+    return trimmed;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
     const { user, error: authError, supabase } = await getApiUser(req);
@@ -49,6 +66,14 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: `${field} must be a string or null` }, { status: 400 });
       }
       updates[field] = value;
+    }
+
+    if ('avatar_url' in rawBody) {
+      const value = sanitizeAvatarUrl(rawBody.avatar_url);
+      if (value === undefined) {
+        return NextResponse.json({ error: 'avatar_url must be a public avatars storage URL or null' }, { status: 400 });
+      }
+      updates.avatar_url = value;
     }
 
     for (const field of EDITABLE_LANGUAGE_FIELDS) {
