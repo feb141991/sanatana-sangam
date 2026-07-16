@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { resolveTimeZone } from '@/lib/sacred-time';
 
 export const dynamic = 'force-dynamic';
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
       const yearWord = target.years === 1 ? 'One year' : `${target.years} years`;
       const bodyText = `${yearWord} of your spiritual journey is recorded in your Shoonaya journal. [View your year in review →]`;
 
-      const pushResult = await sendOneSignalPush({
+      const pushResult = await sendPushNotification({
         userIds: [target.id],
         title: '✨ Journal Anniversary',
         body: bodyText,

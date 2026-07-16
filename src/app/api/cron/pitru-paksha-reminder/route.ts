@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
@@ -122,7 +122,7 @@ export async function GET(request: Request) {
 
     const baseUrl   = new URL(request.url).origin;
     const actionUrl = new URL('/home', baseUrl).toString();
-    const pushResult = await sendOneSignalPush({
+    const pushResult = await sendPushNotification({
       userIds: insertedIds,
       title:   pitruInfo.isMahalaya ? '🪔 Mahalaya Amavasya — today' : `☽ ${copy.title}`,
       body:    copy.subtitle,

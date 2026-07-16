@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
 import { fetchReviewedObservancesForNotifications, filterWomenFocusedVrats } from '@/lib/observance-notification-source';
@@ -187,7 +187,7 @@ export async function GET(request: Request) {
     let totalPushSent = 0;
     for (const group of pushGroups.values()) {
       if (group.userIds.length === 0) continue;
-      const result = await sendOneSignalPush({
+      const result = await sendPushNotification({
         userIds: group.userIds,
         title:   group.title,
         body:    group.body,

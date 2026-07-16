@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 
 export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (targetUserIds.length > 0) {
-    await sendOneSignalPush({
+    await sendPushNotification({
       userIds: targetUserIds,
       title: "Sandhya Diya",
       body: "The sun is setting. Light the diya and close the day with intention."

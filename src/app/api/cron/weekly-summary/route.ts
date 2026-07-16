@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { sendShoonayaEmail } from '@/lib/email';
 import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 
@@ -180,7 +180,7 @@ export async function GET(request: Request) {
             throw new Error('Empty weekly summary');
           }
 
-          const pushResult = await sendOneSignalPush({
+          const pushResult = await sendPushNotification({
             userIds: [user.id],
             title: TITLE,
             body,

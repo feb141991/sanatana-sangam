@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { isInWindow, getPanchangTimes } from '@/lib/panchang';
 
@@ -122,7 +122,7 @@ export async function GET(request: Request) {
     let totalPushTargets = 0;
     for (const [tradition, userIds] of byTradition.entries()) {
       const nudge = SANDHYA_NUDGE[tradition] ?? SANDHYA_NUDGE.hindu;
-      const result = await sendOneSignalPush({ userIds, title: nudge.title, body: nudge.body, url: actionUrl, data: { type: 'nitya', subtype: 'sattvic-evening' } });
+      const result = await sendPushNotification({ userIds, title: nudge.title, body: nudge.body, url: actionUrl, data: { type: 'nitya', subtype: 'sattvic-evening' } });
       totalPushTargets += result.sent;
     }
 

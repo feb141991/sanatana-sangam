@@ -1,11 +1,11 @@
 import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 
 // ─── POST /api/admin/broadcast ────────────────────────────────────────────────
 // Sends a broadcast notification to all users — inserts into the notifications
-// table and fires a OneSignal push. Admin-only (cookie-gated by middleware).
+// table and fires an Expo push. Admin-only (cookie-gated by middleware).
 
 export async function POST(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
     if (!error) inserted += rows?.length ?? 0;
   }
 
-  // OneSignal push
-  const pushResult = await sendOneSignalPush({
+  // Expo push
+  const pushResult = await sendPushNotification({
     userIds,
     title,
     body:  msg,

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Nitya Karma Sandhya Reminder Cron ──────────────────────────────────────
@@ -215,7 +215,7 @@ export async function GET(request: Request) {
 
     let totalPushTargets = 0;
     for (const { userIds, nudge } of byTradition.values()) {
-      const pushResult = await sendOneSignalPush({
+      const pushResult = await sendPushNotification({
         userIds,
         title: nudge.title,
         body:  nudge.body,

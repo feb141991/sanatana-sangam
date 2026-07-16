@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getTierFromScore } from '@/lib/seva-tiers';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       const title = `${newTier.emoji} Tier Promotion — ${newTier.label}!`;
       const body = `You have risen to ${newTier.label} (${newTier.sanskrit}). Your sadhana is bearing fruit. 🙏`;
       
-      await sendOneSignalPush({
+      await sendPushNotification({
         userIds: [user.id],
         title,
         body

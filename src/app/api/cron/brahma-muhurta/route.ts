@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, isInWindow } from '@/lib/panchang';
 
@@ -170,7 +170,7 @@ export async function GET(request: Request) {
 
     let totalPushTargets = 0;
     for (const { userIds, copy } of byTradition.values()) {
-      const pushResult = await sendOneSignalPush({
+      const pushResult = await sendPushNotification({
         userIds,
         title: copy.title,
         body:  copy.body,

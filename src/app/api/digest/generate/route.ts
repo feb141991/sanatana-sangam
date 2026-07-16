@@ -4,7 +4,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTodayPanchang } from '@/lib/panchang';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -298,12 +298,12 @@ export async function GET(request: Request) {
     if (usersToPush.length > 0) {
       // Group users by same tithi/digest snippet if possible?
       // For simplicity and since content could differ per tradition/level, send individually
-      // However, sendOneSignalPush takes an array of userIds and sends same payload.
+      // However, sendPushNotification takes an array of userIds and sends same payload.
       // We will loop to send customized pushes, or abstract it.
       
       const pushPromises = usersToPush.map(async (u) => {
         try {
-          const res = await sendOneSignalPush({
+          const res = await sendPushNotification({
             userIds: [u.id],
             title: `Dharmic Digest · ${u.tithiName}`,
             body: u.digestBody.slice(0, 80),

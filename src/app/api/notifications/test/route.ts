@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { canSendOneSignalPush, sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { getApiUser } from '@/lib/api-auth';
 
 // Cookie session first, Bearer-token fallback second — see getApiUser's own
@@ -43,8 +43,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const pushConfigured = canSendOneSignalPush();
-    const pushResult = await sendOneSignalPush({
+    
+    const pushResult = await sendPushNotification({
       userIds: [user.id],
       title,
       body,
@@ -59,10 +59,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({
-      message: pushConfigured
-        ? 'Test notification created. Check your bell and browser push.'
-        : 'Test notification created in-app. Add OneSignal server keys to enable browser push.',
-      push_configured: pushConfigured,
+      message: pushResult.sent > 0
+        ? 'Test notification created. Check your bell — push should follow shortly.'
+        : 'Test notification created in-app, but no push channel reached this account (no native device token registered and/or PWA browser push not configured).',
+      push_configured: pushResult.sent > 0,
       push_targets: pushResult.sent,
     });
   } catch (error) {

@@ -1,6 +1,7 @@
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 
 export type NotificationDeliveryStatus = 'sent' | 'dry_run' | 'disabled' | 'failed' | 'unconfigured' | 'skipped';
+export type NotificationDeliveryProvider = 'expo' | 'onesignal';
 
 export interface AuditRecordPayload {
   userId?: string;
@@ -8,6 +9,7 @@ export interface AuditRecordPayload {
   notificationKey?: string;
   type: string;
   status: NotificationDeliveryStatus;
+  provider?: NotificationDeliveryProvider;
   providerMessageId?: string;
   dryRun?: boolean;
   disabled?: boolean;
@@ -16,13 +18,23 @@ export interface AuditRecordPayload {
   metadata?: Record<string, unknown>;
 }
 
+// NOTE: prior to this fix, buildAuditRow read camelCase fields
+// (payload.userId, payload.notificationKey, etc.) while every caller
+// (onesignal-server.ts, now push-server.ts) was constructing snake_case
+// row objects (user_id, notification_key, ...) and passing them straight
+// through. TypeScript never caught this because none of those fields were
+// *required* on AuditRecordPayload, so the mismatched objects satisfied
+// the type structurally while every field except `type`/`status` silently
+// fell back to its default (user_id: null, dry_run: false, etc.) on every
+// insert. Fixed by having callers build proper camelCase payloads that
+// actually match this interface.
 function buildAuditRow(payload: AuditRecordPayload) {
   return {
     user_id: payload.userId || null,
     notification_id: payload.notificationId || null,
     notification_key: payload.notificationKey || null,
     channel: 'push',
-    provider: 'onesignal',
+    provider: payload.provider ?? 'expo',
     provider_message_id: payload.providerMessageId || null,
     type: payload.type,
     status: payload.status,

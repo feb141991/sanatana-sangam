@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 
 // ─── Sanskar Milestone Cron ───────────────────────────────────────────────────
 // Schedule: 0 6 * * * (daily at 06:00 UTC — catches early-morning windows globally)
@@ -78,7 +78,7 @@ export async function GET(request: Request) {
       });
 
       // ── 3. Send OneSignal push ─────────────────────────────────────────────
-      await sendOneSignalPush({
+      await sendPushNotification({
         userIds: [row.user_id],
         title:   row.title,
         body:    row.body,

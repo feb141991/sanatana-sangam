@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 
 export const dynamic = 'force-dynamic';
@@ -95,7 +95,7 @@ export async function GET(request: Request) {
 
         if (message) {
           // 6. Send push
-          await sendOneSignalPush({
+          await sendPushNotification({
             userIds: [sankalpa.user_id],
             title: '⚡ Sankalpa Shakti — Halfway There!',
             body: message,

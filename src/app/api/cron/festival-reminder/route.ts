@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
 import { fetchReviewedObservancesForNotifications } from '@/lib/observance-notification-source';
@@ -226,7 +226,7 @@ export async function GET(request: Request) {
       }
 
       for (const pushBatch of pushBatches.values()) {
-        const pushResult = await sendOneSignalPush({
+        const pushResult = await sendPushNotification({
           userIds: pushBatch.userIds,
           title: pushBatch.title,
           body: pushBatch.body,

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Evening Mood Check-In Reminder ──────────────────────────────────────────
@@ -123,7 +123,7 @@ export async function GET(request: Request) {
 
     const baseUrl    = new URL(request.url).origin;
     const actionUrl  = new URL('/discover/mood', baseUrl).toString();
-    const pushResult = await sendOneSignalPush({
+    const pushResult = await sendPushNotification({
       userIds: insertedIds,
       title:   'Evening check-in 🌙',
       body:    'How has your inner journey been today? Let scripture meet your mood.',

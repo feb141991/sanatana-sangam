@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
@@ -118,7 +118,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const pushResult = await sendOneSignalPush({
+    const pushResult = await sendPushNotification({
       userIds: insertedIds,
       title: '🔔 Time for Japa',
       body: "Your daily Japa practice awaits. Keep your streak alive 🙏",

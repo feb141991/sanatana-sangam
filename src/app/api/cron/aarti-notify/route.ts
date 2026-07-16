@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { AARTI_TIMES, resolveActiveLiveStreams } from '@/lib/live-streams';
 
 /**
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
         : `Evening darshan at ${stream.title} — close your day with blessings.`;
     }
 
-    const { sent } = await sendOneSignalPush({
+    const { sent } = await sendPushNotification({
       userIds,
       title,
       body,

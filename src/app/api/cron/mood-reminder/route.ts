@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Mood Check-In Reminder Cron ─────────────────────────────────────────────
@@ -110,7 +110,7 @@ export async function GET(request: Request) {
       insertedIds.push(...((rows ?? []).map((r: { user_id: string }) => r.user_id)));
     }
 
-    const pushResult = await sendOneSignalPush({
+    const pushResult = await sendPushNotification({
       userIds: insertedIds,
       title:   'Midday check-in 🌿',
       body:    'How are you feeling? Let scripture meet your mood.',

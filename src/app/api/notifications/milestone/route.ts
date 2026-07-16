@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { getApiUser } from '@/lib/api-auth';
 
 // ─── Achievement Milestone Notification ───────────────────────────────────────
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
   // not hidden behind a generic { ok: true }.
   let pushError: string | null = null;
   try {
-    await sendOneSignalPush({
+    await sendPushNotification({
       userIds: [user.id],
       title:   `${copy.emoji} ${copy.title}`,
       body:    bodyText,

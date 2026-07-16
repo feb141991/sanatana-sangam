@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendOneSignalPush } from '@/lib/onesignal-server';
+import { sendPushNotification } from '@/lib/push-server';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 import { getTraditionMeta } from '@/lib/tradition-config';
@@ -153,7 +153,7 @@ export async function GET(request: Request) {
       insertedUserIds.push(...((insertedRows ?? []).map((row: { user_id: string }) => row.user_id)));
     }
 
-    const pushResult = await sendOneSignalPush({
+    const pushResult = await sendPushNotification({
       userIds: insertedUserIds,
       title: 'Your sadhana awaits, Shoonya 🙏',
       body: 'Take a quiet moment for today\'s sacred text and keep your practice flowing.',
