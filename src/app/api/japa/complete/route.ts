@@ -219,14 +219,28 @@ export async function POST(req: NextRequest) {
       ? todayRow.streak_count
       : (carriedStreak > 0 ? carriedStreak + 1 : 1);
 
-    const { error: sadhanaError } = await supabase.from('daily_sadhana').upsert({
-      user_id: user.id,
-      date: today,
-      japa_done: true,
-      streak_count: newStreak,
-    }, { onConflict: 'user_id,date' });
-    if (sadhanaError) {
-      return NextResponse.json({ error: sadhanaError.message }, { status: 500 });
+    if (todayRow) {
+      const { error: sadhanaUpdateError } = await supabase
+        .from('daily_sadhana')
+        .update({
+          japa_done: true,
+          streak_count: newStreak,
+        })
+        .eq('user_id', user.id)
+        .eq('date', today);
+      if (sadhanaUpdateError) {
+        return NextResponse.json({ error: sadhanaUpdateError.message }, { status: 500 });
+      }
+    } else {
+      const { error: sadhanaInsertError } = await supabase.from('daily_sadhana').insert({
+        user_id: user.id,
+        date: today,
+        japa_done: true,
+        streak_count: newStreak,
+      });
+      if (sadhanaInsertError) {
+        return NextResponse.json({ error: sadhanaInsertError.message }, { status: 500 });
+      }
     }
 
     // ── 3. Streak-freeze award at 7-day milestones (increment_streak_freeze
