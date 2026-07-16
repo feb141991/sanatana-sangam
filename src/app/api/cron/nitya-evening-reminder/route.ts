@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendPushNotification } from '@/lib/push-server';
 
+type ReminderProfile = {
+  id: string;
+  timezone: string | null;
+};
+
 export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret || req.headers.get('authorization') !== `Bearer ${cronSecret}`) {
@@ -11,9 +16,8 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceRoleSupabaseClient();
   const { data: profiles, error } = await supabase
     .from('profiles')
-    .select('id, timezone, onesignal_player_id')
-    .eq('nitya_sections_enabled->>evening', 'true')
-    .not('onesignal_player_id', 'is', null);
+    .select('id, timezone')
+    .eq('nitya_sections_enabled->>evening', 'true');
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -22,10 +26,10 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const targetUserIds: string[] = [];
 
-  const rows = (profiles ?? []) as any[];
+  const rows = (profiles ?? []) as ReminderProfile[];
 
   for (const p of rows) {
-    if (!p.timezone || !p.onesignal_player_id) continue;
+    if (!p.timezone) continue;
     try {
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: p.timezone,
@@ -44,7 +48,6 @@ export async function GET(req: NextRequest) {
       
       // 18:15 (1095) to 18:45 (1125)
       if (mins >= 1095 && mins <= 1125) {
-        // We push the profile ID because OneSignal server code uses external_id
         targetUserIds.push(p.id);
       }
     } catch (err) {

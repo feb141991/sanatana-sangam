@@ -9,7 +9,7 @@ import { createServiceRoleSupabaseClient } from '@/lib/admin';
 //    OneSignal's native SDK integration (react-native-onesignal). Expo push
 //    has no device registry of its own, so we look up each target user's
 //    tokens from our own `push_tokens` table (migration
-//    20260716120000_push_tokens.sql, populated via POST
+//    20260716124259_push_tokens.sql, populated via POST
 //    /api/notifications/register-token from the native app).
 //
 // 2. OneSignal -- reaches PWA browser push subscribers. This is a *separate*

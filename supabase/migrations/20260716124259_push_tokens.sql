@@ -1,4 +1,3 @@
--- ============================================================
 -- Push tokens for Expo push notifications (replaces OneSignal's
 -- external_id-based targeting, which relied on OneSignal's own device
 -- registry and needed no local table).
@@ -9,19 +8,15 @@
 -- to the new user rather than accumulating duplicates.
 --
 -- Note: an older, unrelated `device_tokens` table already exists in this
--- schema (see packages/sadhana-engine/supabase/migrations/004_device_tokens.sql),
--- built for a `player_id`-based OneSignal integration used only by the
--- ai-nudge / ai-kul-nudge edge functions. Nothing in src/ ever writes to
--- that table, so it looks orphaned/dead -- left untouched here since it's
--- out of scope for the native app's push migration. See migration
--- summary notes for the follow-up recommendation.
--- ============================================================
+-- schema, built for a player_id-based OneSignal integration used only by
+-- the ai-nudge / ai-kul-nudge edge functions. Nothing in src/ writes to
+-- that table, so it looks orphaned/dead -- left untouched, out of scope.
 
 CREATE TABLE IF NOT EXISTS push_tokens (
   id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  token         text NOT NULL,                    -- Expo push token, e.g. "ExponentPushToken[...]"
-  platform      text NOT NULL DEFAULT 'unknown',  -- 'ios' | 'android'
+  token         text NOT NULL,
+  platform      text NOT NULL DEFAULT 'unknown',
   created_at    timestamptz NOT NULL DEFAULT now(),
   updated_at    timestamptz NOT NULL DEFAULT now(),
   last_seen_at  timestamptz NOT NULL DEFAULT now()
@@ -32,8 +27,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_push_tokens_token
 
 CREATE INDEX IF NOT EXISTS idx_push_tokens_user
   ON push_tokens (user_id);
-
--- Auto-update timestamp trigger
 
 CREATE OR REPLACE FUNCTION update_push_token_timestamp()
 RETURNS TRIGGER
@@ -51,8 +44,6 @@ CREATE TRIGGER trg_push_tokens_updated
   BEFORE UPDATE ON push_tokens
   FOR EACH ROW EXECUTE FUNCTION update_push_token_timestamp();
 
--- Row Level Security
-
 ALTER TABLE push_tokens ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN
@@ -69,11 +60,6 @@ DO $$ BEGIN
       WITH CHECK (auth.uid() = user_id);
   END IF;
 END $$;
-
--- Service role bypasses RLS automatically (BYPASSRLS privilege) -- crons
--- read this table with the service-role key, same as every other cron.
-
--- Upsert helper -- handles re-registration after reinstall/re-login
 
 CREATE OR REPLACE FUNCTION upsert_push_token(
   p_user_id  uuid,
@@ -95,10 +81,6 @@ BEGIN
 END;
 $$;
 
--- Remove-on-logout helper -- deletes a specific device's token, not all of
--- a user's tokens, so signing out on one device doesn't unregister push
--- for their other devices.
-
 CREATE OR REPLACE FUNCTION delete_push_token(
   p_user_id uuid,
   p_token   text
@@ -112,15 +94,6 @@ BEGIN
 END;
 $$;
 
--- ============================================================
--- Ephemeral table for Expo push receipt polling. Expo returns a ticket id
--- per token at send time; the real delivery outcome (including
--- DeviceNotRegistered, which means the token should be pruned) is only
--- known ~15+ minutes later via a separate receipts call. This table is the
--- queue between "sent" and "receipt checked" -- rows are deleted once
--- processed, so it should stay small.
--- ============================================================
-
 CREATE TABLE IF NOT EXISTS push_receipts_pending (
   ticket_id  text PRIMARY KEY,
   token      text NOT NULL,
@@ -131,9 +104,7 @@ CREATE TABLE IF NOT EXISTS push_receipts_pending (
 CREATE INDEX IF NOT EXISTS idx_push_receipts_pending_created
   ON push_receipts_pending (created_at);
 
--- No RLS-permitted access needed -- this table is only ever touched by
--- service-role server code (send path inserts, receipt-check cron
--- reads/deletes), never by a user session.
 ALTER TABLE push_receipts_pending ENABLE ROW LEVEL SECURITY;
 -- Deliberately no policies: RLS enabled with zero policies denies all
--- non-service-role access by default, which is exactly what we want here.
+-- non-service-role access by default.
+;

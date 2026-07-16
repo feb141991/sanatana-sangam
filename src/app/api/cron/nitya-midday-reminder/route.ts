@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendPushNotification } from '@/lib/push-server';
 
+type ReminderProfile = {
+  id: string;
+  timezone: string | null;
+};
+
 export async function GET(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret || req.headers.get('authorization') !== `Bearer ${cronSecret}`) {
@@ -9,14 +14,14 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceRoleSupabaseClient();
-  // Filter by JSONB key for midday being true, mode IN ('full_day', 'advanced')
-  // and having onesignal_player_id not null.
+  // Filter by JSONB key for midday being true, mode IN ('full_day', 'advanced').
+  // Do not gate on onesignal_player_id: native Expo recipients now live in
+  // push_tokens, and sendPushNotification records no-token skips itself.
   const { data: profiles, error } = await supabase
     .from('profiles')
-    .select('id, timezone, onesignal_player_id')
+    .select('id, timezone')
     .eq('nitya_sections_enabled->>midday', 'true')
-    .in('nitya_rhythm_mode', ['full_day', 'advanced'])
-    .not('onesignal_player_id', 'is', null);
+    .in('nitya_rhythm_mode', ['full_day', 'advanced']);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -25,10 +30,10 @@ export async function GET(req: NextRequest) {
   const now = new Date();
   const targetUserIds: string[] = [];
 
-  const rows = (profiles ?? []) as any[];
+  const rows = (profiles ?? []) as ReminderProfile[];
 
   for (const p of rows) {
-    if (!p.timezone || !p.onesignal_player_id) continue;
+    if (!p.timezone) continue;
     try {
       const parts = new Intl.DateTimeFormat('en-US', {
         timeZone: p.timezone,
@@ -47,7 +52,6 @@ export async function GET(req: NextRequest) {
       
       // 11:45 (705) to 12:15 (735)
       if (mins >= 705 && mins <= 735) {
-        // We push the profile ID because OneSignal server code uses external_id
         targetUserIds.push(p.id);
       }
     } catch (err) {

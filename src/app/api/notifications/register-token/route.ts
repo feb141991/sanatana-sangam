@@ -7,7 +7,7 @@ import { getApiUser } from '@/lib/api-auth';
 // device with a user so server-side sends know where to deliver. Since we
 // now call Expo's push API ourselves (see src/lib/push-server.ts), we own
 // this mapping in our own `push_tokens` table (migration
-// 20260716120000_push_tokens.sql).
+// 20260716124259_push_tokens.sql).
 //
 // POST registers/refreshes a token for the signed-in user (idempotent --
 // upsert_push_token is keyed on the token itself, so re-registering the

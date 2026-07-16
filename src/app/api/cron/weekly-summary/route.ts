@@ -14,7 +14,9 @@ type ProfileRow = {
   id: string;
   tradition: string | null;
   timezone: string | null;
-  onesignal_player_id: string | null;
+  email: string | null;
+  email_newsletter: boolean | null;
+  unsubscribe_token: string | null;
 };
 
 type DailySadhanaRow = {
@@ -100,8 +102,7 @@ export async function GET(request: Request) {
   try {
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone, onesignal_player_id, email, email_newsletter, unsubscribe_token')
-      .not('onesignal_player_id', 'is', null);
+      .select('id, tradition, timezone, email, email_newsletter, unsubscribe_token');
 
     if (profilesError) {
       return NextResponse.json({ error: profilesError.message }, { status: 500 });
@@ -193,10 +194,10 @@ export async function GET(request: Request) {
           }
 
           // Send email digest — only to users who opted in and have an email
-          if ((user as any).email_newsletter && (user as any).email) {
-            const unsubUrl = `${APP_BASE}/api/unsubscribe?token=${(user as any).unsubscribe_token}`;
+          if (user.email_newsletter && user.email) {
+            const unsubUrl = `${APP_BASE}/api/unsubscribe?token=${user.unsubscribe_token ?? ''}`;
             await sendShoonayaEmail({
-              to: (user as any).email,
+              to: user.email,
               subject: TITLE,
               shloka: '',
               meaning: '',
