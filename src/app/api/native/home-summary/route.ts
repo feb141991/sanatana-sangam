@@ -82,6 +82,16 @@ type ObservanceRow = {
   observance_definitions: ObservanceDefinitionJoin | ObservanceDefinitionJoin[] | null;
 };
 
+type ObservanceEntry = {
+  name: string;
+  emoji: string | null;
+  daysLeft: number;
+  routeKind: string;
+  routeSlug: string;
+  href: string;
+  label: string;
+};
+
 type PracticeRow = {
   id: 'japa' | 'nitya' | 'pathshala' | 'quiz' | 'dharmveer';
   icon: string;
@@ -142,6 +152,7 @@ type HomeSummaryResponse = {
       href: string;
       label: string;
     } | null;
+    upcomingObservances: ObservanceEntry[];
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -229,6 +240,29 @@ function getDefinition(row: ObservanceRow): ObservanceDefinitionJoin | null {
     return row.observance_definitions[0] ?? null;
   }
   return row.observance_definitions;
+}
+
+function buildObservanceEntry(row: ObservanceRow, definition: ObservanceDefinitionJoin, today: string): ObservanceEntry {
+  const daysLeft = Math.round((new Date(row.date).getTime() - new Date(today).getTime()) / 86_400_000);
+  const name = definition.display_name;
+  const routeKind = definition.route_kind || 'festival';
+  const routeSlug = definition.route_slug || definition.slug;
+  const href = routeKind === 'vrat' ? '/vrat' : '/panchang';
+  const label = daysLeft === 0
+    ? `Today is ${name}`
+    : daysLeft === 1
+      ? `Tomorrow is ${name}`
+      : `${name} in ${daysLeft} days`;
+
+  return {
+    name,
+    emoji: definition.emoji ?? '🪔',
+    daysLeft,
+    routeKind,
+    routeSlug,
+    href,
+    label,
+  };
 }
 
 function clampProgress(value: number) {
@@ -583,7 +617,7 @@ export async function GET(request: NextRequest) {
     : null;
   const vratLabel = firstDefinition?.kind === 'vrat' ? festivalLabel : null;
 
-  let observance = null;
+  let observance: ObservanceEntry | null = null;
   if (fallbackPulse) {
     const routeSlug = getPulseRouteSlug(fallbackPulse.label);
     observance = {
@@ -596,28 +630,27 @@ export async function GET(request: NextRequest) {
       label: `${fallbackPulse.label} Today`,
     };
   } else if (firstDefinition && firstObservance) {
-    const dLeft = Math.round((new Date(firstObservance.row.date).getTime() - new Date(today).getTime()) / 86400000);
-    const name = firstDefinition.display_name;
-    const label = dLeft === 0
-      ? `Today is ${name}`
-      : dLeft === 1
-        ? `Tomorrow is ${name}`
-        : `${name} in ${dLeft} days`;
-
-    const routeKind = firstDefinition.route_kind || 'festival';
-    const routeSlug = firstDefinition.route_slug || firstDefinition.slug;
-    const href = routeKind === 'vrat' ? '/vrat' : '/panchang';
-
-    observance = {
-      name,
-      emoji: firstDefinition.emoji ?? '🪔',
-      daysLeft: dLeft,
-      routeKind,
-      routeSlug,
-      href,
-      label
-    };
+    observance = buildObservanceEntry(firstObservance.row, firstDefinition, today);
   }
+
+  const upcomingObservances = (() => {
+    const used = new Set<string>();
+    if (!fallbackPulse && firstDefinition && firstObservance) {
+      used.add(`${firstDefinition.slug}:${firstObservance.row.date}`);
+    }
+
+    return observanceRows
+      .map((row) => ({ row, definition: getDefinition(row) }))
+      .filter((entry): entry is { row: ObservanceRow; definition: ObservanceDefinitionJoin } => Boolean(entry.definition?.active !== false && entry.definition))
+      .filter(({ row, definition }) => {
+        const key = `${definition.slug}:${row.date}`;
+        if (used.has(key)) return false;
+        used.add(key);
+        return true;
+      })
+      .slice(0, 4)
+      .map(({ row, definition }) => buildObservanceEntry(row, definition, today));
+  })();
 
   const dbHeroThemes = heroAssetRows
     .map(mapHeroAssetToTheme)
@@ -673,6 +706,7 @@ export async function GET(request: NextRequest) {
       vratLabel,
       viewedToday: Boolean(todaySadhana?.panchang_viewed),
       observance,
+      upcomingObservances,
     },
     nextPractice: buildNextPractice(practices),
     practices,
