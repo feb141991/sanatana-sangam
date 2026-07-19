@@ -134,6 +134,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? 'G-8FB4L3C44Y';
 
   return (
     <html lang="en" className={fontVars}>
@@ -155,6 +156,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://cdn.onesignal.com" />
         <link rel="dns-prefetch" href="https://cdn.onesignal.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <style dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }} />
         <script
           type="application/ld+json"
@@ -331,6 +334,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
             <Script id="onesignal-init" strategy="afterInteractive">
               {`window.OneSignalDeferred=window.OneSignalDeferred||[];OneSignalDeferred.push(async function(OneSignal){await OneSignal.init({appId:"${oneSignalAppId}",notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true,serviceWorkerPath:"/OneSignalSDKWorker.js",serviceWorkerUpdaterPath:"/OneSignalSDKUpdaterWorker.js",serviceWorkerParam:{scope:"/"}});});`}
+            </Script>
+          </>
+        )}
+        {/* ── Google Analytics 4 — aggregate web analytics only ─────────────── */}
+        {gaMeasurementId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaMeasurementId}',{send_page_view:true,allow_google_signals:false,allow_ad_personalization_signals:false});`}
             </Script>
           </>
         )}
