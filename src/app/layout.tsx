@@ -134,7 +134,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? 'G-8FB4L3C44Y';
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? 'G-548KZ0TBHD';
 
   return (
     <html lang="en" className={fontVars}>
