@@ -70,6 +70,7 @@ export function buildNotificationSafetyResponse(
     skippedCount?: number;
     wouldInsertCount?: number;
     wouldSendCount?: number;
+    preview?: unknown[];
   } = {},
 ) {
   return {
@@ -81,5 +82,6 @@ export function buildNotificationSafetyResponse(
     dryRun: state.isDryRun,
     disabled: state.isDisabled,
     disabledReason: state.disabledReason,
+    preview: counts.preview ?? [],
   };
 }

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { OCCURRENCE_BACKED_TITHI_INDICES } from '@/lib/observance-notification-source';
 import { getPanchangTimes, getTithiReminder, isInWindow } from '@/lib/panchang';
 
 // ─── Tithi Reminder Cron ──────────────────────────────────────────────────────
@@ -97,6 +98,11 @@ export async function GET(request: Request) {
       } catch {
         continue; // skip user if panchang calculation fails
       }
+
+      // Ekadashi/Pradosh/Purnima/Amavasya/Chaturthi are now sent from the
+      // reviewed observance_occurrences-backed vrat cron. Do not emit them here:
+      // tithi:* and observance:* keys cannot dedupe each other.
+      if (OCCURRENCE_BACKED_TITHI_INDICES.has(times.tithiIndex)) continue;
 
       // Only send on special tithis
       const reminder = getTithiReminder(times.tithiIndex, tradition);

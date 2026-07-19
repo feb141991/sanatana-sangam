@@ -8,6 +8,30 @@ export type ReviewedObservance = Festival & {
   sourceEligible: true;
 };
 
+export type ObservanceNotificationAudience = 'general' | 'female';
+
+export type ObservanceNotificationPreview = {
+  date: string;
+  slug: string;
+  name: string;
+  kind: Festival['type'];
+  audience: ObservanceNotificationAudience;
+  daysAway: number;
+  route: string;
+  notificationKey: string;
+};
+
+const OCCURRENCE_BACKED_TITHI_SLUGS = new Set([
+  'ekadashi',
+  'pradosh-vrat',
+  'purnima-vrat',
+  'amavasya-vrat',
+  'vinayaka-chaturthi',
+  'sankashti-chaturthi',
+]);
+
+export const OCCURRENCE_BACKED_TITHI_INDICES = new Set([4, 11, 13, 15, 19, 26, 28, 30]);
+
 const WOMEN_VRAT_SLUGS = new Set([
   'vat-savitri',
   'vat-savitri-amavasya',
@@ -75,4 +99,64 @@ export function filterWomenFocusedVrats(observances: ReviewedObservance[]) {
     const name = normalizeName(observance.name);
     return WOMEN_VRAT_SLUGS.has(slug) || WOMEN_VRAT_NAMES.has(name);
   });
+}
+
+export function isWomenFocusedVrat(observance: ReviewedObservance) {
+  const slug = normalizeName(observance.slug);
+  const name = normalizeName(observance.name);
+  return WOMEN_VRAT_SLUGS.has(slug) || WOMEN_VRAT_NAMES.has(name);
+}
+
+export function filterGeneralOccurrenceBackedVrats(observances: ReviewedObservance[]) {
+  return observances.filter((observance) => {
+    const slug = normalizeName(observance.slug);
+    return OCCURRENCE_BACKED_TITHI_SLUGS.has(slug) || !isWomenFocusedVrat(observance);
+  });
+}
+
+export function buildObservanceActionPath(observance: Pick<ReviewedObservance, 'route_kind' | 'route_slug' | 'slug' | 'type'>) {
+  const routeKind = observance.route_kind ?? null;
+  const routeSlug = observance.route_slug ?? observance.slug ?? null;
+
+  if (routeKind === 'vrat') {
+    return routeSlug ? `/vrat/${routeSlug}` : '/vrat';
+  }
+
+  if (routeKind === 'festival') {
+    return routeSlug ? `/festivals/${routeSlug}` : '/panchang';
+  }
+
+  if (routeKind === 'panchang') return '/panchang';
+  if (routeKind === 'home') return '/home';
+
+  return observance.type === 'vrat' ? '/vrat' : '/panchang';
+}
+
+export function buildOccurrenceNotificationKey(
+  observance: Pick<ReviewedObservance, 'id' | 'slug' | 'name'>,
+  audience: ObservanceNotificationAudience,
+  daysAway: number,
+  localDate: string,
+) {
+  const sourceId = observance.id ?? observance.slug ?? observance.name;
+  return `observance:${audience}:${sourceId}:${daysAway}:${localDate}`;
+}
+
+export function buildObservancePreviewRow(
+  observance: ReviewedObservance,
+  audience: ObservanceNotificationAudience,
+  daysAway: number,
+  localDate: string,
+  notificationKey = buildOccurrenceNotificationKey(observance, audience, daysAway, localDate),
+): ObservanceNotificationPreview {
+  return {
+    date: observance.date,
+    slug: observance.slug ?? String(observance.id ?? observance.name),
+    name: observance.name,
+    kind: observance.type,
+    audience,
+    daysAway,
+    route: buildObservanceActionPath(observance),
+    notificationKey,
+  };
 }

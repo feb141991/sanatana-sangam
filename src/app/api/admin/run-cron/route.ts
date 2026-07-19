@@ -11,6 +11,7 @@ const ALLOWED_CRONS = [
   '/api/cron/shloka-reminder',
   '/api/cron/festival-reminder',
   '/api/cron/tithi-reminder',
+  '/api/cron/vrat-reminder',
   '/api/cron/brahma-muhurta',
 ] as const;
 

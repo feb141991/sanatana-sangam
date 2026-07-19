@@ -3,7 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, isoDateDiff, resolveTimeZone } from '@/lib/sacred-time';
-import { fetchReviewedObservancesForNotifications } from '@/lib/observance-notification-source';
+import {
+  buildObservanceActionPath,
+  buildObservancePreviewRow,
+  fetchReviewedObservancesForNotifications,
+  type ObservanceNotificationPreview,
+} from '@/lib/observance-notification-source';
 
 function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -60,8 +65,7 @@ export async function GET(request: Request) {
 
   try {
     const baseUrl = new URL(request.url).origin;
-    const actionPath = '/home?focus=festivals';
-    const actionUrl = new URL(actionPath, baseUrl).toString();
+    const previewDays = Math.max(0, Math.min(30, Number(new URL(request.url).searchParams.get('previewDays') ?? 0) || 0));
     const now = new Date();
     const targetLocalHour = 9;
 
@@ -88,6 +92,23 @@ export async function GET(request: Request) {
 
     if (festivals.length === 0) {
       return NextResponse.json({ message: 'No reviewed festivals eligible for reminder', sent: 0 });
+    }
+
+    if (isDryRun && previewDays > 0) {
+      const localDate = getLocalDateIso(now, 'UTC');
+      const previewRows = festivals
+        .map((festival) => {
+          const daysAway = isoDateDiff(festival.date, localDate);
+          if (daysAway < 0 || daysAway > previewDays) return null;
+          const notificationKey = `festival:${festival.id}:${daysAway}:${localDate}`;
+          return buildObservancePreviewRow(festival, 'general', daysAway, localDate, notificationKey);
+        })
+        .filter((row): row is ObservanceNotificationPreview => Boolean(row));
+
+      return NextResponse.json(buildNotificationSafetyResponse('festival', { isDryRun, isDisabled: false, skipDelivery: true }, {
+        wouldSendCount: previewRows.length,
+        preview: previewRows.slice(0, 100),
+      }));
     }
 
     // Fetch all user IDs
@@ -134,7 +155,9 @@ export async function GET(request: Request) {
       local_date: string;
       sent_timezone: string;
       festival_id: string;
+      _action_url: string;
     }> = [];
+    const previewRows: ObservanceNotificationPreview[] = [];
 
     for (const user of eligibleUsers) {
       const timeZone = resolveTimeZone((user as any).timezone);
@@ -152,6 +175,10 @@ export async function GET(request: Request) {
         const daysAway = isoDateDiff(festival.date, localDate);
         if (daysAway !== 1 && daysAway !== 7) continue;
 
+        const actionPath = buildObservanceActionPath(festival);
+        const notificationKey = `festival:${festival.id}:${daysAway}:${localDate}`;
+        previewRows.push(buildObservancePreviewRow(festival, 'general', daysAway, localDate, notificationKey));
+
         notifications.push({
           user_id: user.id,
           title: daysAway === 1
@@ -161,10 +188,11 @@ export async function GET(request: Request) {
           emoji: festival.emoji,
           type: 'festival',
           action_url: actionPath,
-          notification_key: `festival:${festival.id}:${daysAway}:${localDate}`,
+          notification_key: notificationKey,
           local_date: localDate,
           sent_timezone: timeZone,
           festival_id: String(festival.id ?? ''),
+          _action_url: new URL(actionPath, baseUrl).toString(),
         });
       }
     }
@@ -178,6 +206,7 @@ export async function GET(request: Request) {
         eligibleCount: eligibleUsers.length,
         skippedCount: users.length - eligibleUsers.length,
         wouldSendCount: notifications.length,
+        preview: previewRows.slice(0, 100),
       }));
     }
 
@@ -188,7 +217,7 @@ export async function GET(request: Request) {
       const batch = notifications.slice(i, i + 100);
       const { data: insertedRows, error: insertError } = await supabase
         .from('notifications')
-        .upsert(batch.map(({ festival_id: _festivalId, ...notification }) => notification), {
+        .upsert(batch.map(({ festival_id: _festivalId, _action_url: _actionUrl, ...notification }) => notification), {
           onConflict: 'user_id,notification_key',
           ignoreDuplicates: true,
         })
@@ -204,15 +233,16 @@ export async function GET(request: Request) {
 
       totalInserted += insertedRows?.length ?? 0;
 
-      const pushBatches = new Map<string, { title: string; body: string; userIds: string[]; festivalId: string; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
+      const pushBatches = new Map<string, { title: string; body: string; url: string; userIds: string[]; festivalId: string; notificationKeysByUserId: Record<string, string>; notificationIdsByUserId: Record<string, string> }>();
       for (const row of insertedRows ?? []) {
         const source = batch.find((notification) => notification.notification_key === row.notification_key && notification.user_id === row.user_id);
         if (!source) continue;
-        const key = `${source.title}::${source.body}::${source.festival_id}`;
+        const key = `${source.title}::${source.body}::${source.festival_id}::${source._action_url}`;
         if (!pushBatches.has(key)) {
           pushBatches.set(key, {
             title: source.title,
             body: source.body,
+            url: source._action_url,
             userIds: [],
             festivalId: source.festival_id,
             notificationKeysByUserId: {},
@@ -230,7 +260,7 @@ export async function GET(request: Request) {
           userIds: pushBatch.userIds,
           title: pushBatch.title,
           body: pushBatch.body,
-          url: actionUrl,
+          url: pushBatch.url,
           data: {
             type: 'festival',
             festival_id: pushBatch.festivalId,
