@@ -43,11 +43,14 @@ export default function DataDeletionPage() {
           </p>
           <ul className="grid gap-3 text-sm font-medium mt-2">
             {[
+              'Profile details and profile photo',
               'Mandali posts and community content',
               'Tirtha check-ins and saved places',
               'Japa session history',
               'Quiz response history',
-              'Location data from profile'
+              'Mood, sankalpa, Pathshala, and other practice history',
+              'Location data from profile',
+              'Notification tokens and preferences'
             ].map((item, idx) => (
               <li key={idx} className="flex items-start gap-3">
                 <span className="text-[#7B1A1A] text-lg select-none leading-none">•</span>
@@ -87,7 +90,7 @@ export default function DataDeletionPage() {
             Full Account Deletion
           </h2>
           <p className="text-sm leading-relaxed text-[#1A0F00]/80">
-            If you wish to delete your entire Shoonaya account, including your profile, credentials, and all associated practices, you can initiate this instantly.
+            If you wish to delete your entire Shoonaya account, including your profile, credentials, and associated practice history, you can start a 30-day cancellable cool-off request from Account Settings.
           </p>
           <div className="pt-2">
             <Link 
@@ -97,7 +100,7 @@ export default function DataDeletionPage() {
               Go to Account Settings
             </Link>
             <p className="text-xs text-[#1A0F00]/50 mt-2">
-              Note: Account deletion requires you to log in to verify your identity.
+              Account deletion requires you to log in to verify your identity. You may cancel during the 30-day window; after that period, the account may be permanently removed.
             </p>
           </div>
         </section>

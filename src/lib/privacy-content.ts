@@ -18,8 +18,12 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       title: 'Data Collection',
       summary: 'We collect only what we need for your spiritual journey.',
       content: [
-        'Shoonaya collects account information (email, name), profile details (tradition, language), and community activity (posts, reflections).',
-        'We also store family lineage data and sacred practice history if you choose to use those features.',
+        'Shoonaya collects account information such as your email address, authentication identifier, display name, username, profile photo, and language preferences.',
+        'Your profile may include sensitive spiritual or personal context you choose to provide, including tradition, sampradaya or path preferences, date of birth, gender context, life stage, rashi, nakshatra, onboarding goals, notification preferences, city, country, and timezone.',
+        'We store practice and progress data needed to run the product, such as japa sessions, mala counts, shloka reads, quiz responses, nitya karma steps, vrat or panchang observations, sankalpa progress, Pathshala lessons, Dharm Veer responses, mood check-ins, karma, seva, streaks, relics, and saved verses.',
+        'Community features may store posts, comments, replies, reactions, RSVPs, reports, blocks, Mandali membership, invite links, and public profile visibility settings.',
+        'If you grant permission, Shoonaya may use foreground location to find nearby temples, local Mandali circles, Panchang context, Tirtha check-ins, and nearby seekers. We do not request background location access.',
+        'If you enable notifications, we store notification preferences and device push tokens so reminders can be delivered. If you upload a profile picture or share a generated card, the image or generated file is processed only to provide that feature.',
       ]
     },
     {
@@ -27,15 +31,21 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       summary: 'Personalizing your sacred experience.',
       content: [
         'We use your data to personalize the Sacred Library, provide tradition-specific reminders, and facilitate Mandali (community) connections.',
-        'Location data is used to find nearby temples and local community circles, but only if you explicitly grant permission.',
+        'We use practice history to calculate progress, streaks, seva, karma, completion cards, insights, and recommendations inside Shoonaya.',
+        'Location data is used to find nearby temples, local community circles, observance timing, and check-ins, but only if you explicitly grant permission or enter a location yourself.',
+        'Mood and reflection data is used to save your check-ins, show personal insights, and recommend relevant practices.',
+        'AI-supported features may process the prompts, messages, names, or reflection text you submit so we can generate responses, explanations, recommendations, or name-story content. Please avoid entering information you do not want processed for these features.',
+        'Analytics and diagnostics are used to understand aggregate usage, improve reliability, measure performance, and fix errors. We design analytics events to avoid names, emails, precise locations, and other directly identifying content.',
       ]
     },
     {
       title: 'Data Sharing',
-      summary: 'Your soul is not for sale.',
+      summary: 'We do not sell your personal data.',
       content: [
         'Shoonaya does not sell your personal data to third-party advertisers.',
-        'We may share data with service providers (like Supabase for database hosting or Vercel for app delivery) solely to operate the platform.',
+        'We may share data with service providers solely to operate the platform, including hosting, database, authentication, storage, analytics, diagnostics, notifications, email delivery, maps or geocoding, media links, and AI processing providers.',
+        'Current service providers may include Supabase, Vercel, Expo, Firebase or Google Analytics, Google or Apple authentication services, YouTube for external live-darshan links, and AI infrastructure used by Shoonaya features.',
+        'Community content you choose to post may be visible to other users according to the feature and privacy setting used. Profile photos, names, usernames, Mandali posts, comments, and public share links may be shown to others when you choose those surfaces.',
       ]
     },
     {
@@ -44,6 +54,24 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       content: [
         'We use industry-standard encryption and security protocols to protect your personal information.',
         'All data is stored in secure, audited cloud environments.',
+      ]
+    },
+    {
+      title: 'Your Choices and Controls',
+      summary: 'You can access, export, update, or delete your data.',
+      content: [
+        'You can update profile details, notification preferences, language preferences, theme settings, and profile photo choices from within the app.',
+        'You can download an export of your account data from Settings. You can also request deletion of specific data types by contacting support.',
+        'Full account deletion uses a 30-day cancellable cool-off period. During that window, your account is marked for deletion and you may cancel the request. After the period ends, Shoonaya may permanently delete the account and associated data according to the deletion workflow.',
+        'Some records may be retained where required for security, legal compliance, fraud prevention, abuse reporting, audit logs, or backup integrity, and then removed or anonymized when no longer needed.',
+      ]
+    },
+    {
+      title: 'Children and Sensitive Data',
+      summary: 'Shoonaya is intended for mature spiritual use.',
+      content: [
+        'Shoonaya is not directed to children under 13. If you believe a child has provided personal data without appropriate consent, contact us so we can review and remove it.',
+        'Religious, spiritual, astrological, and mood-related data can be sensitive. You control whether to provide optional profile details such as date of birth, rashi, nakshatra, goals, and reflections. Some core personalization requires tradition and language settings.',
       ]
     }
   ],
