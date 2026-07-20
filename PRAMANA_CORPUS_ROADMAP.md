@@ -70,7 +70,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 | Corpus | Current | Target | Why |
 |---|---|---|---|
 | Yoga Sutras | Missing | New indexed corpus with eval suite | High demand, compact source shape, good RAG fit |
-| Ramayana | Source-audit pending starter slice built (15 passages), active only for explicit routing | Clear sources/rights, then expand verified Kanda/Sarga coverage | High devotional and family-learning value |
+| Ramayana | Source-audit pending metadata starter only; no live-approved canonical text | Rebuild a verified Griffith/Gutenberg English starter, keep Sanskrit companion-only until digital-source rights clear, then expand Kanda/Sarga coverage | High devotional and family-learning value |
 | Mahabharata starter | Shanti Parva scaffold only | Optional curated study passages | Useful after Ramayana/Yoga Sutras |
 
 ## P4 - Expansion Backlog
@@ -110,7 +110,7 @@ This roadmap does not claim full dharmic canon parity. It defines a practical, s
 | `gurbani_index.json` | Sikh Gurbani | 34 | Sample-scale |
 | `buddhist_dhamma_index.json` | Buddhist Dhamma | 109 | Production-scale index, still needs stronger activation |
 | `jain_dharma_index.json` | Jain Dharma | 107 | Production-scale index, still needs stronger activation |
-| `valmiki_ramayana_index.json` | Valmiki Ramayana | 15 | Source-audit pending curated starter; explicit routing only |
+| `valmiki_ramayana_index.json` | Valmiki Ramayana | 15 | Source-audit pending metadata starter; not live-approved canonical text |
 
 ## Claiming Rules
 
@@ -147,7 +147,7 @@ Before any corpus moves beyond scaffold/sample status, confirm:
 | `sikh_gurbani` | Explicit-target only | Tradition-aware Sikh routing after rights/data expansion |
 | `buddhist_dhamma` | Explicit-target only | Tradition-aware Buddhist routing |
 | `jain_dharma` | Explicit-target only | Tradition-aware Jain routing |
-| `valmiki_ramayana` | Explicit-target only | Keep explicit until verified coverage expands across Kandas |
+| `valmiki_ramayana` | Source-gated / blocked | Do not route until a verified Griffith/Gutenberg starter exists |
 
 ## Eval Coverage Matrix
 

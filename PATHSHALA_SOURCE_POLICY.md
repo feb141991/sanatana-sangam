@@ -206,13 +206,14 @@ Launch truth:
 
 State:
 
-- `explicit-only` local Valmiki Ramayana text (source-audit pending curated starter slice)
+- `source-audit pending`; no local Valmiki Ramayana text is approved as canonical/live
+- GitHub datasets reviewed in `docs/VALMIKI_RAMAYANA_GITHUB_SOURCE_AUDIT.md` are reference/QA only, not ingestion sources
 - `companion_only` for wider canonical study until source rights and exact references are verified
 
 Launch truth:
 
-- Pathshala has a source-audit pending Valmiki Ramayana starter slice active for explicit queries only
-- a future live batch must use verified Kanda/Sarga/Shloka references and rights-safe translation text
+- existing generated/local Ramayana material must not be called canonical, source-cleared, or production-ready
+- a future live batch should use verified Kanda/Sarga/Shloka references and the Griffith/Gutenberg public-domain English layer defined in `docs/RAMAYANA_CANONICAL_SOURCE_PLAN.md`
 - Sanskrit original text remains companion-only until the specific digital source rights are verified
 
 ### Principal Upanishads

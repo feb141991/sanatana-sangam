@@ -25,10 +25,10 @@ This document records the current integration, routing, and evaluation status fo
 | **`jain_kalpa_sutra`** | 🟡 Scaffolded | ❌ No | ❌ No | ❌ No | `python/ai_pipeline/corpus/manifests/jain_kalpa_sutra.json` |
 | **`buddhist_dhamma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/buddhist_dhamma.json` |
 | **`jain_dharma`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/jain_dharma.json` |
-| **`valmiki_ramayana`** | ✅ Yes | ✅ Yes | ❌ No | ✅ Yes | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_bala.json` |
+| **`valmiki_ramayana`** | 🟡 Metadata only | ❌ No | ❌ No | 🟡 Source-gated | `python/ai_pipeline/corpus/manifests/valmiki_ramayana_bala.json` |
 
 ### Column Definitions:
-* **Ingested**: Manifest JSON files containing Sanskrit text, transliterations, and translations exist in the `manifests/` directory.
+* **Ingested**: Manifest JSON files containing source-cleared text, transliterations, and translations exist in the `manifests/` directory. `Metadata only` means a file exists but must not be treated as live-approved content.
 * **Explicitly Targetable**: Supported by the selector routing logic when requested explicitly via filters or response modes.
 * **Auto-Routed**: Automatically matched by the query text analyzer fallback in the absence of explicit corpus filters.
 * **Eval-Covered**: Part of the evaluation dataset (`jsonl`) and scoring test harness.
@@ -71,8 +71,8 @@ This document records the current integration, routing, and evaluation status fo
    - Themes: Foundational Jain Dharma Agamas and ethical verses (Three Jewels, Ahimsa, Anekantavada, Mahavratas, Samata, Navkar Mantra).
 
 8. **Valmiki Ramayana (`valmiki_ramayana`)**
-   - Active texts: 1 (`valmiki_ramayana_bala.json`)
-   - Scale: **Source-audit pending curated starter slice** (15 passages with Kanda/Sarga/Shloka references; not full-canon coverage).
-   - Translation Basis: Shoonaya literal study renderings cross-checked against Ralph T. H. Griffith; not Griffith verbatim.
-   - Note: This is an explicit-only Pramana Ramayana starter lane, distinct from Shoonaya curated Ramayana lessons, and must not be called verified/canonical until source audit clears.
-   - Next steps: clear source/rights audit, expand verified passage count, strengthen Kanda coverage, improve eval suite, decide Uttara Kanda policy if unresolved.
+   - Metadata files: 1 (`valmiki_ramayana_bala.json`)
+   - Scale: **Source-audit pending / not live-approved** (15 metadata-starter passages; not full-canon coverage).
+   - Translation Basis: no live-approved local translation layer yet. Future live English should be rebuilt from Ralph T. H. Griffith via Project Gutenberg/Wikisource per `docs/RAMAYANA_CANONICAL_SOURCE_PLAN.md`.
+   - Note: Reviewed GitHub datasets are reference/QA only per `docs/VALMIKI_RAMAYANA_GITHUB_SOURCE_AUDIT.md`; do not treat them as ingestion-cleared sources.
+   - Next steps: rebuild a verified Griffith/Gutenberg starter batch, keep Sanskrit companion-only until digital-source rights clear, expand verified passage count, strengthen Kanda coverage, improve eval suite, decide Uttara Kanda policy if unresolved.
