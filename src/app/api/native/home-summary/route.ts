@@ -352,7 +352,13 @@ function buildPractices({
       icon: 'circle',
       label: 'Japa Mala',
       detail: malaDone || todaySadhana?.japa_done ? 'Mala completed today' : 'Begin your mala',
-      href: '/bhakti',
+      // Must be '/bhakti/mala', not bare '/bhakti' — native's
+      // resolveNativeRoute (lib/routes.ts) treats these as two distinct
+      // screens (japa mala counter vs. the broader bhakti hub) and only
+      // sends '/bhakti/mala' to the actual mala counter. This previously
+      // sent every japa CTA (Home hero card + practices list row) to the
+      // bhakti hub instead of the mala screen.
+      href: '/bhakti/mala',
       done: Boolean(todaySadhana?.japa_done) || malaDone,
       progress: Boolean(todaySadhana?.japa_done) || malaDone ? 1 : 0,
       color: '#F59E4A',
