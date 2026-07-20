@@ -101,7 +101,7 @@ export default function TermsClient() {
       </div>
 
       <div className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">
-        Last Updated: May 14, 2026 • Shoonaya Global Governance
+        Last Updated: July 20, 2026 • Shoonaya Global Governance
       </div>
     </div>
   );
