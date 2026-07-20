@@ -240,6 +240,19 @@ Not acceptable yet:
 | Text quality | Usable reference, but awkward grammar and formatting samples found | Known merged/OCR issues affect 3,076 entries |
 | Live ingestion readiness | No | No |
 
+## Digital Rights Verification Addendum
+
+Rights were checked at the source layer, not only at the GitHub repository layer.
+
+| Source layer | Verification result | Shoonaya decision |
+|---|---|---|
+| Project Gutenberg Griffith translation | Verified usable for Shoonaya's intended live English layer, subject to Project Gutenberg trademark/license handling. Project Gutenberg states that if its license and trademark references are stripped from unrestricted texts, the remaining text is unrestricted by U.S. intellectual property law. | Preferred live English source remains Griffith/Gutenberg, as already defined in `docs/RAMAYANA_CANONICAL_SOURCE_PLAN.md`. |
+| `imradhe/ramayanam` repository license | The repo license file is standard MIT. | Repo code/data packaging can be referenced under MIT, but this does not prove the maintainer had rights to relicense upstream IITK-derived verse text, translation, meaning, or commentary. |
+| IITK Valmiki/Gita source layer | Not verified for copying. The Valmiki host failed normal TLS verification during audit, and no explicit content reuse/license grant was found in the accessible source material. | Treat as reference/companion only until IITK/source-owner terms or written permission are obtained. Do not copy live text from this layer. |
+| `Ashutosh-Vijay/Valmiki_Ramayan_Dataset` repository license | `LICENSE.txt` is standard MIT, but README wording says "non-commercial projects," which conflicts with MIT. | Rights ambiguity remains. Require maintainer clarification or removal/clarification of the conflicting README wording before commercial/product use. |
+| M. N. Dutt translation basis | Potentially public-domain based on publication date, but the dataset does not mark which JSON fields are Dutt-derived versus sourced from IITK/Gyaandweep/other references. | Do not treat the whole dataset as public-domain. Only use Dutt-derived text after field-level provenance is proven. |
+| Sanskrit/transliteration fields in either GitHub repo | Ancient Sanskrit verses are public-domain in principle, but exact digital editions/transcriptions can carry source terms. Neither candidate provides sufficient field-level rights metadata for the copied digital Sanskrit layer. | Keep Sanskrit companion-only or source from a separately verified digital edition. |
+
 ## Recommended Workflow
 
 1. Keep both repos out of live app content.
