@@ -451,7 +451,14 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   const profile = profileData as ProfileRow | null;
-  const timezone = profile?.timezone ?? 'Asia/Kolkata';
+  // Fallback must match every write route this reads from (nitya-karma,
+  // japa/complete, pathshala/progress, quiz/save, dharm-veer/submit,
+  // panchang-viewed all fall back to 'UTC' when profiles.timezone is null).
+  // This previously fell back to 'Asia/Kolkata' — a user with no stored
+  // timezone could log a practice as done under a UTC "today" and this
+  // route would look for it under an IST "today" up to ~5.5h ahead, so a
+  // just-completed practice would appear not done on the Home card.
+  const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
   const calendarTo = shiftIsoDate(today, 14);
