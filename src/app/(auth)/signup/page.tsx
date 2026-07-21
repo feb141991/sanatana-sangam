@@ -45,6 +45,7 @@ export default function SignupPage() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [claimToken, setClaimToken] = useState('');
@@ -64,6 +65,7 @@ export default function SignupPage() {
         headline: 'Complete your sacred profile',
         description: 'Create your account to save this reading, then choose your path in onboarding.',
         googleLabel: 'Continue with Google',
+        appleLabel: 'Continue with Apple',
         dividerLabel: 'or create with email',
       }
     : inviteCode
@@ -72,6 +74,7 @@ export default function SignupPage() {
           headline: 'Join your Sangam',
           description: 'Create your account to accept the invitation and begin your Shoonaya journey.',
           googleLabel: 'Join with Google',
+          appleLabel: 'Join with Apple',
           dividerLabel: 'or join with email',
         }
       : {
@@ -79,6 +82,7 @@ export default function SignupPage() {
           headline: 'Begin your Shoonaya journey',
           description: 'Create your account, choose your tradition, and set up your daily practice.',
           googleLabel: 'Create account with Google',
+          appleLabel: 'Create account with Apple',
           dividerLabel: 'or create with email',
         };
 
@@ -103,6 +107,31 @@ export default function SignupPage() {
 
     if (error) {
       setGoogleLoading(false);
+      toast.error(error.message);
+    }
+  }
+
+  async function handleAppleSignup() {
+    if (!supabase) {
+      toast.error('Auth is still initializing. Please try again.');
+      return;
+    }
+
+    if (!acceptedPolicies) {
+      toast.error('Please accept the Terms and Privacy Policy to continue.');
+      return;
+    }
+
+    setAppleLoading(true);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'apple',
+      options: {
+        redirectTo: getAuthCallbackUrl(onboardingNext),
+      },
+    });
+
+    if (error) {
+      setAppleLoading(false);
       toast.error(error.message);
     }
   }
@@ -229,25 +258,41 @@ export default function SignupPage() {
               <Link href="/privacy" className="font-semibold text-[var(--brand-primary)] hover:underline">
                 Privacy Policy
               </Link>
-              . This applies whether you continue with Google or email.
+              . This applies whether you continue with Google, Apple, or email.
             </span>
           </label>
 
-          <button
-            type="button"
-            onClick={handleGoogleSignup}
-            disabled={googleLoading}
-            className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-bold text-[var(--text-cream)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-cream)_14%,transparent)] transition hover:border-[var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {googleLoading ? (
-              <Loader2 className="animate-spin" size={18} aria-hidden="true" />
-            ) : (
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--text-cream)] text-sm font-black text-[var(--divine-bg)]">
-                G
-              </span>
-            )}
-            {signupContext.googleLabel}
-          </button>
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={handleGoogleSignup}
+              disabled={googleLoading || appleLoading}
+              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-bold text-[var(--text-cream)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-cream)_14%,transparent)] transition hover:border-[var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {googleLoading ? (
+                <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+              ) : (
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--text-cream)] text-sm font-black text-[var(--divine-bg)]">
+                  G
+                </span>
+              )}
+              {signupContext.googleLabel}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAppleSignup}
+              disabled={googleLoading || appleLoading}
+              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--text-cream)_24%,transparent)] bg-[var(--text-cream)] px-5 text-sm font-bold text-[var(--divine-bg)] shadow-[0_14px_32px_color-mix(in_srgb,var(--text-cream)_10%,transparent),inset_0_1px_0_color-mix(in_srgb,white_36%,transparent)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {appleLoading ? (
+                <Loader2 className="animate-spin" size={18} aria-hidden="true" />
+              ) : (
+                <span className="text-base" aria-hidden="true"></span>
+              )}
+              {signupContext.appleLabel}
+            </button>
+          </div>
 
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-[var(--premium-border)]" />
