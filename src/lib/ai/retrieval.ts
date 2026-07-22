@@ -23,6 +23,8 @@ type DharamVeerIndexDocument = {
   vector: SparseVector;
   tradition?: string;
   source_name?: string;
+  source_class?: string;
+  rights_status?: string;
 };
 
 type DharamVeerIndexData = {
@@ -1136,7 +1138,10 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
   maxChapters: 0,
   fileNames: [
     'dharam_veer_guru_gobind_singh.json',
-    'dharam_veer_shivaji.json'
+    'dharam_veer_shivaji.json',
+    'dharam_veer_bhishma.json',
+    'dharam_veer_arjuna.json',
+    'dharam_veer_lord_mahavira.json'
   ]
 });
 
@@ -1196,8 +1201,12 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
       }
     }
 
-    // fallback to normal query if no reqTitle match
-    if (docsWithScores.length === 0 && queryText) {
+    // fallback to normal keyword-similarity query ONLY when no specific figure was requested.
+    // If a figure_id (reqTitle) WAS requested but matched no document, we must return empty here
+    // rather than silently searching across every other hero's content by keyword overlap - that
+    // would leak an unrelated hero's material under a different figure's name and defeat the
+    // "not enough approved source material" safe-fallback contract in src/app/api/ai/chat/route.ts.
+    if (docsWithScores.length === 0 && queryText && !reqTitle) {
         const tokens = this.tokenize(queryText);
         if (tokens.length > 0) {
             const tf: Record<string, number> = {};
@@ -1258,8 +1267,8 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
           docId: doc.doc_id,
           tradition: doc.tradition || 'Dharmic',
           sourceName: doc.source_name || 'Dharam Veer',
-          sourceClass: 'narrative',
-          rightsStatus: 'public_domain' // assume verified
+          sourceClass: doc.source_class || 'narrative',
+          rightsStatus: doc.rights_status || 'restricted_or_pending' // do not assume public_domain unverified
         }
       };
     });

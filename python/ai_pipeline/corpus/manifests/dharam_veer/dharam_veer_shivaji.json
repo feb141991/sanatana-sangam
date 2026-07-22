@@ -1,5 +1,5 @@
 {
-  "doc_id": "dharam_veer_shivaji",
+  "doc_id": "dharam_veer_chhatrapati-shivaji",
   "source_name": "Shivaji The Great",
   "source_class": "narrative",
   "tradition": "Hindu",
@@ -17,5 +17,6 @@
       "ref": "1.3",
       "text": "He founded the Maratha Empire. His vision was to establish Hindavi Swarajya, a self-rule of Hindu people."
     }
-  ]
+  ],
+  "revision_note": "doc_id corrected 2026-07-22: previously 'dharam_veer_shivaji', which never matched the app's actual figure_id ('chhatrapati-shivaji', from src/lib/data/dharm-veers/hindu.ts). This hero's AI reflection feature was unreachable in production prior to this fix. Content itself (source_name 'Shivaji The Great') was not re-verified in this batch and should be re-sourced to a named, rights-checked edition before being treated as fully policy-compliant."
 }
