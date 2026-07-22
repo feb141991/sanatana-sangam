@@ -216,7 +216,8 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
           v.text || '',
           v.sanskrit || '',
           v.original || '',
-          v.transliteration || ''
+          v.transliteration || '',
+          v.curated_lesson || ''
         ].join(' ').toLowerCase();
 
         const terms = queryText.toLowerCase().split(/\s+/).filter(t => t.length > 2);
@@ -245,10 +246,19 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         if (totalScore > 0) {
           const manifestTradition = manifest.tradition || this.tradition;
           const origLabel = manifest.source_class === 'scripture' && manifestTradition !== 'Sikhi' ? 'Sanskrit' : 'Original';
+          // Per-item source metadata overrides the manifest-level default. This lets a single
+          // manifest mix a verified translation excerpt (source_class: 'translation',
+          // rights_status: 'public_domain') with a separately-labeled Shoonaya retelling
+          // (source_class: 'curated_lesson', rights_status: 'rights_cleared') without either
+          // one inheriting the other's rights claim. See PATHSHALA_SOURCE_POLICY.md.
+          const itemSourceClass = v.source_class || manifestSourceClass;
+          const itemRightsStatus = v.rights_status || manifest.rights_status || 'public_domain';
+          const itemSourceName = v.source_name || manifest.source_name || this.sourceName;
           const textContent = [
             v.sanskrit ? `Sanskrit: ${v.sanskrit}` : v.original ? `${origLabel}: ${v.original}` : '',
             v.transliteration ? `Transliteration: ${v.transliteration}` : '',
-            v.text ? `Translation: ${v.text}` : ''
+            v.text ? `Translation (${itemSourceName}): ${v.text}` : '',
+            v.curated_lesson ? `Shoonaya retelling (curated, not a translation): ${v.curated_lesson}` : ''
           ].filter(Boolean).join('\n');
 
           candidates.push({
@@ -260,9 +270,9 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
                 chunkId: v.ref,
                 docId: manifest.doc_id,
                 tradition: manifestTradition,
-                sourceName: manifest.source_name || this.sourceName,
-                sourceClass: manifestSourceClass,
-                rightsStatus: manifest.rights_status || 'public_domain',
+                sourceName: itemSourceName,
+                sourceClass: itemSourceClass,
+                rightsStatus: itemRightsStatus,
               }
             },
             baseScore: totalScore

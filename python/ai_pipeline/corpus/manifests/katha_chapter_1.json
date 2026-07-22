@@ -4,29 +4,62 @@
   "tradition": "Bhakti",
   "scripture_family": "puranas",
   "section_id": "chapter_1",
-  "source_name": "Srimad Bhagavatam",
-  "source_class": "narrative",
+  "source_name": "Srimad Bhagavatam / Vishnu Purana",
+  "source_class": "translation",
   "rights_status": "public_domain",
   "language": "en",
   "is_live_in_app": true,
+  "revision_note": "First verified ingestion batch (2026-07-22), partial: Prahlada and Dhruva now carry a verbatim public-domain translation excerpt (H. H. Wilson, The Vishnu Purana, 1840, sacred-texts.com) alongside a separately-labeled Shoonaya curated_lesson retelling. Sudama Vipra and Gajendra Moksha are Bhagavata Purana (Skandha 10 and 8) episodes for which no verbatim rights-cleared translation excerpt was located and verified in this batch (M. N. Dutt's 1895-96 Bhagavatam is public domain but was not accessible in machine-readable form for these specific chapters within this session); their 'text' field is intentionally left blank and only the pre-existing Shoonaya curated_lesson is kept, correctly tagged rights_cleared/curated_lesson rather than public_domain/translation. See docs/BHAKTI_KATHA_CANONICAL_SOURCE_PLAN.md section 8 for the outstanding sourcing task. Sanskrit/transliteration intentionally omitted pending edition-rights verification.",
   "content": [
     {
       "ref": "1.1",
-      "sanskrit": "नमो भगवते वासुदेवाय",
-      "transliteration": "namo bhagavate vasudevaya",
-      "text": "The story of Bhakta Prahlada. Prahlada, the son of the demon king Hiranyakashipu, was a supreme devotee of Lord Vishnu. Despite his father's fierce attempts to kill him and torture him, Prahlada's faith remained unshaken. Lord Vishnu emerged as Narasimha (the half-man half-lion avatar) to protect Prahlada, destroy the tyrant demon king, and prove that true devotion is always protected by the Supreme Lord."
+      "story_title": "Bhakta Prahlada",
+      "canonical_reference": "Vishnu Purana, Book I, Chapter XIX (Wilson, 1840)",
+      "text": "WHEN Hiranyakasipu heard that the powerful incantations of his priests had been defeated, he sent for his son, and demanded of him the secret of his extraordinary might. \"Prahlada,\" he said, \"thou art possessed of marvellous powers; whence are they derived? are they the result of magic rites? or have they accompanied thee from birth?\" Prahlada, thus interrogated, bowed down to his father's feet, and replied, \"Whatever power I possess, father, is neither the result of magic rites, nor is it inseparable from my nature; it is no more than that which is possessed by all in whose hearts Achyuta abides... I behold Kesava in all beings, as in my own soul.\" When he had thus spoken, the Daitya monarch, his face darkened with fury, commanded his attendants to cast his son from the summit of the palace... down upon the tops of the mountains, where his body should be dashed to pieces against the rocks. Accordingly the Daityas hurled the boy down, and he fell cherishing Hari in his heart, and Earth, the nurse of all creatures, received him gently on her lap... Beholding him uninjured by the fall, and sound in every bone, Hiranyakasipu addressed himself to Samvara, the mightiest of enchanters... \"This perverse boy is not to be destroyed by us: do you, who art potent in the arts of delusion, contrive some device for his destruction.\" ... but he, with a tranquil heart, and void of malice towards Samvara, directed his thoughts uninterruptedly to the destroyer of Madhu; by whom the excellent discus, the flaming Sudarsana, was dispatched to defend the youth... On hearing this, Hiranyakasipu started up from his throne in a fury, and spurned his son on the breast with his foot. Burning with rage, he wrung his hands, and exclaimed, \"Ho Viprachitti! ho Rahu! ho Bali! bind him with strong bands, and cast him into the ocean... Death is the just retribution of the disobedient.\" The Daityas accordingly bound the prince with strong bands, as their lord had commanded, and threw him into the sea... he commanded the Daityas to hurl rocks into the sea, and pile them closely on one another, burying beneath their incumbent mass him whom fire would not burn, nor weapons pierce, nor serpents bite... Accordingly the Daityas and Danavas hurled upon Prahlada, whilst in the great ocean, ponderous rocks, and piled them over him for many thousand miles: but he, still with mind undisturbed, thus offered daily praise to Vishnu, lying at the bottom of the sea, under the mountain heap. \"Glory to thee, god of the lotus eye: glory to thee, most excellent of spiritual things: glory to thee, soul of all worlds... I am all things: all things are in me, who am everlasting. I am undecayable, ever enduring, the receptacle of the spirit of the supreme.\"",
+      "curated_lesson": "Prahlada, the son of the demon king Hiranyakashipu, was a supreme devotee of Lord Vishnu. Despite his father's fierce attempts to kill him and torture him, Prahlada's faith remained unshaken. Lord Vishnu emerged as Narasimha (the half-man half-lion avatar) to protect Prahlada, destroy the tyrant demon king, and prove that true devotion is always protected by the Supreme Lord.",
+      "source_class": "translation",
+      "rights_status": "public_domain",
+      "source_name": "The Vishnu Purana, translated by H. H. Wilson (1840)",
+      "source_url": "https://sacred-texts.com/hin/vp/vp054.htm",
+      "language": "en"
     },
     {
       "ref": "1.2",
-      "text": "The story of Bhakta Dhruva. The young prince Dhruva, rejected by his stepmother, set out into the forest at the age of five to seek Lord Vishnu. Guided by Sage Narada, he performed intense penance (tapasya) meditating on 'Om Namo Bhagavaty Vasudevaya'. Impressed by his unwavering focus and purity, Lord Vishnu appeared before him, granting him eternal peace and the honor of becoming the pole star (Dhruva Tara)."
+      "story_title": "Bhakta Dhruva",
+      "canonical_reference": "Vishnu Purana, Book I, Chapter XI (Wilson, 1840)",
+      "text": "PARASARA continued.--I mentioned to you, that the Manu Swayambhuva had two heroic and pious sons, Priyavrata and Uttanapada. Of these two, the latter had a son whom he dearly loved, Uttama, by his favourite wife Suruchi. By his queen, named Suniti, to whom he was less attached, he also had a son, called Dhruva. Observing his brother Uttama on the lap of his father, as he was seated upon his throne, Dhruva was desirous of ascending to the same place; but as Suruchi was present, the Raja did not gratify the desire of his son... Suruchi thus addressed the boy: \"Why, child, do you vainly indulge in such presumptuous hopes? You are born from a different mother, and are no son of mine... This regal throne... is suited to my son only.\" The boy, having heard the speech of his step-mother, quitted his father, and repaired in a passion to the apartment of his own mother... Deeply distressed by the narrative of the boy, the humble Suniti, her eyes dimmed with tears, sighed, and said, \"Suruchi has rightly spoken; thine, child, is an unhappy fate... but if you continue to feel hurt at the words of Suruchi, endeavour to augment that religious merit which bestows all good; be amiable, be pious, be friendly, be assiduous in benevolence to all living creatures; for prosperity descends upon modest worth as water flows towards low ground.\" Dhruva answered; \"Mother, the words that you have addressed to me for my consolation find no place in a heart that contumely has broken. I will exert myself to obtain such elevated rank, that it shall be revered by the whole world.\" Having thus spoken, Dhruva went forth from his mother's dwelling: he quitted the city, and entered an adjoining thicket, where he beheld seven Munis sitting upon hides of the black antelope... Saluting them reverentially, and bowing humbly before them, the prince said, \"Behold in me, venerable men, the son of Uttanapada, born of Suniti. Dissatisfied with the world, I appear before you.\" ... Dhruva said; \"Excellent sages, I wish not for riches, neither do I want dominion: I aspire to such a station as no one before me has attained. Tell me what I must do to effect this object.\" The Rishis severally thus replied.--Marichi said; \"The best of stations is not within the reach of men who fail to propitiate Govinda. Do thou, prince, worship the undecaying (Achyuta).\" ... The Rishis answered; \"...the prayer that we shall repeat to thee is to be inaudibly recited: 'Om! glory to Vasudeva, whose essence is divine wisdom; whose form is inscrutable, or is manifest as Brahma, Vishnu, and Siva.' This prayer, which was formerly uttered by your grandsire, the Manu Swayambhuva, and propitiated by which, Vishnu conferred upon him the prosperity he desired... Do thou constantly repeat this prayer, for the gratification of Govinda.\"",
+      "curated_lesson": "The young prince Dhruva, rejected by his stepmother, set out into the forest at the age of five to seek Lord Vishnu. Guided by Sage Narada, he performed intense penance (tapasya) meditating on 'Om Namo Bhagavaty Vasudevaya'. Impressed by his unwavering focus and purity, Lord Vishnu appeared before him, granting him eternal peace and the honor of becoming the pole star (Dhruva Tara).",
+      "source_class": "translation",
+      "rights_status": "public_domain",
+      "source_name": "The Vishnu Purana, translated by H. H. Wilson (1840)",
+      "source_url": "https://sacred-texts.com/hin/vp/vp046.htm",
+      "language": "en"
     },
     {
       "ref": "1.3",
-      "text": "The story of Sudama Vipra. Sudama, a poor brahmana, was a childhood friend of Lord Krishna. Living in extreme poverty, his wife urged him to visit Krishna in Dwaraka for help. Sudama went empty-handed except for a handful of flattened rice (poha) wrapped in a torn cloth. Krishna welcomed Sudama with royal honors, washed his feet, and ate the rice with great delight. Sudama asked for nothing out of devotion, but upon returning home, found his humble hut transformed into a magnificent golden palace."
+      "story_title": "Sudama Vipra",
+      "canonical_reference": "Srimad Bhagavatam, Skandha 10 (translation not yet sourced)",
+      "text": "",
+      "curated_lesson": "Sudama, a poor brahmana, was a childhood friend of Lord Krishna. Living in extreme poverty, his wife urged him to visit Krishna in Dwaraka for help. Sudama went empty-handed except for a handful of flattened rice (poha) wrapped in a torn cloth. Krishna welcomed Sudama with royal honors, washed his feet, and ate the rice with great delight. Sudama asked for nothing out of devotion, but upon returning home, found his humble hut transformed into a magnificent golden palace.",
+      "source_class": "curated_lesson",
+      "rights_status": "rights_cleared",
+      "source_name": "Shoonaya",
+      "source_url": "",
+      "language": "en",
+      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Do not mark public_domain until one is verified per docs/BHAKTI_KATHA_CANONICAL_SOURCE_PLAN.md."
     },
     {
       "ref": "1.4",
-      "text": "The story of Gajendra Moksha. Gajendra, the king of elephants, was caught by a mighty crocodile in a lake. They fought for a thousand years, and as Gajendra grew weak and realized his own strength was failing, he surrendered completely to the Lord. Offering a single lotus flower to Lord Vishnu, Gajendra prayed for liberation. Lord Vishnu arrived on Garuda, severed the crocodile's head with his Sudarshana Chakra, and granted Gajendra Moksha (liberation)."
+      "story_title": "Gajendra Moksha",
+      "canonical_reference": "Srimad Bhagavatam, Skandha 8 (translation not yet sourced)",
+      "text": "",
+      "curated_lesson": "Gajendra, the king of elephants, was caught by a mighty crocodile in a lake. They fought for a thousand years, and as Gajendra grew weak and realized his own strength was failing, he surrendered completely to the Lord. Offering a single lotus flower to Lord Vishnu, Gajendra prayed for liberation. Lord Vishnu arrived on Garuda, severed the crocodile's head with his Sudarshana Chakra, and granted Gajendra Moksha (liberation).",
+      "source_class": "curated_lesson",
+      "rights_status": "rights_cleared",
+      "source_name": "Shoonaya",
+      "source_url": "",
+      "language": "en",
+      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Do not mark public_domain until one is verified per docs/BHAKTI_KATHA_CANONICAL_SOURCE_PLAN.md."
     }
   ]
 }
