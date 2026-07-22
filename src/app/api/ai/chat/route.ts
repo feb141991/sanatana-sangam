@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { getApiUser } from '@/lib/api-auth';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { localSpiritualDate } from '@/lib/sacred-time';
@@ -30,7 +31,7 @@ type UpcomingVrat = {
 
 // ─── Rate-limit helpers ────────────────────────────────────────────────────
 async function checkAndIncrementAiUsage(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  supabase: SupabaseClient,
   userId: string,
   limit: number
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
@@ -66,7 +67,7 @@ function sanitiseHistory(history: unknown): ChatHistoryMessage[] {
 }
 
 async function recordAiChatEvent(
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  supabase: SupabaseClient,
   userId: string
 ): Promise<void> {
   try {
@@ -225,7 +226,7 @@ function formatUpcomingVratsResponse(input: {
 }
 
 async function getUpcomingVrats(input: {
-  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>;
+  supabase: SupabaseClient;
   from: string;
   tradition: string | null;
 }): Promise<{ vrats: UpcomingVrat[]; to: string; source: 'calendar' | 'fallback' }> {
@@ -308,10 +309,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
   }
 
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
+  // Bearer-aware: tries cookie session (web) first, falls back to
+  // Authorization: Bearer <token> (native's apiFetch). Cookie-only auth here
+  // previously made this route unreachable from the native app entirely.
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorised' }, { status: 401 });
   }
 
   const { data: profile } = await supabase

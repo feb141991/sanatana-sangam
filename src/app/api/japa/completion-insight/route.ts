@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
+import { rateLimitByIp } from '@/lib/api-security';
+
+// No per-user auth here on purpose — Japa is usable by guests, so this stays
+// reachable without an account (see docs/NATIVE_AI_RAG_PARITY_AUDIT.md §3.4/§4
+// for why auth was intentionally NOT added as part of that audit). The IP
+// rate limit below is the cost guard this route was missing entirely.
+const COMPLETION_INSIGHT_RATE_LIMIT = { keyPrefix: 'japa-completion-insight', limit: 10, windowMs: 60_000 };
 
 // ── Spiritual time-window labels ───────────────────────────────────────────────
 const TIME_WINDOW_LABEL: Record<string, string> = {
@@ -67,6 +74,9 @@ Tone: like a beloved elder witnessing your practice from across a quiet ashram c
 }
 
 export async function POST(req: NextRequest) {
+  const rateRejection = rateLimitByIp(req, COMPLETION_INSIGHT_RATE_LIMIT);
+  if (rateRejection) return rateRejection;
+
   try {
     const body = await req.json() as {
       tradition?: string;

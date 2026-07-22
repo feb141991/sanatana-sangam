@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
 import { runPathshalaExplain } from '@/lib/ai/router';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { validatePipelineTags, getDefaultTags, mergeTags, canExplain, logValidationResult } from '@/lib/ai/validate-pipeline-tags';
@@ -44,14 +44,16 @@ function buildFallbackExplanation(input: {
   };
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   // ── Auth + pro gate ─────────────────────────────────────────────────────────
   // AI explanation is a Zenith (Pro) feature — free users fall back to the
   // static meaning/translation already rendered in the reader.
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  // Bearer-aware (see /api/ai/chat/route.ts) — this was cookie-only, which
+  // made it unreachable from native; native's "explain this verse" now calls
+  // this route directly instead of faking it through the generic chat screen.
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthenticated' }, { status: 401 });
   }
   const { data: profile } = await supabase
     .from('profiles')

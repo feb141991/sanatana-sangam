@@ -1,12 +1,20 @@
-import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { requireUserNotBanned } from '@/lib/api-guards';
+import { NextRequest, NextResponse } from 'next/server';
+import { getApiUser } from '@/lib/api-auth';
+import { assertNotBanned } from '@/lib/api-guards';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 
-export async function GET(req: Request) {
-  const supabase = await createServerSupabaseClient();
-  const { user, error: authError } = await requireUserNotBanned(supabase);
-  if (authError) return authError;
+export async function GET(req: NextRequest) {
+  // Bearer-aware (see /api/ai/chat/route.ts) — this previously used
+  // requireUserNotBanned(supabase) against a cookie-only client, which made
+  // it unreachable from native. getApiUser(req) tries the cookie session
+  // first, then falls back to the Authorization: Bearer header.
+  const { user, error: authError, supabase } = await getApiUser(req);
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
+  }
+
+  const banned = await assertNotBanned(supabase, user.id);
+  if (banned) return banned;
 
   // Fetch Pro status
   const { data: profile } = await supabase
