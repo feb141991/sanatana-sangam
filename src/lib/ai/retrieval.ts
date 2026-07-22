@@ -149,26 +149,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
     }
 
     if (!filesExist) {
-      const chunkRef = refSegments ? refSegments.join('.') : '1.1';
-      const parsedCh = refSegments ? refSegments[0] : '1';
-      const parsedVer = refSegments && refSegments.length > 1 ? refSegments[1] : '1';
-
-      const mockDocs: RetrievalChunk[] = [
-        {
-          id: `${this.prefix}_${chunkRef}`,
-          content: `Sanskrit: mock sanskrit for ${this.sourceName} ${chunkRef}\nTransliteration: mock transliteration for ${this.sourceName} ${chunkRef}\nTranslation: Wisdom of ${this.sourceName} chapter ${parsedCh} verse ${parsedVer} on the nature of reality.`,
-          score: 1.0,
-          metadata: {
-            chunkId: chunkRef,
-            docId: `${this.prefix}_chapter_1`,
-            tradition: this.tradition,
-            sourceName: this.sourceName,
-            sourceClass: this.sourceClass,
-            rightsStatus: 'public_domain'
-          }
-        }
-      ];
-      return { documents: mockDocs };
+      throw new Error(`Corpus files for ${this.sourceName} (prefix: ${this.prefix}) are missing from deployment.`);
     }
 
     const candidates: Array<{ chunk: RetrievalChunk; baseScore: number }> = [];
@@ -893,11 +874,16 @@ export class PramanaGurbaniEmbeddingRetriever implements PramanaRetriever<Retrie
 }
 
 const gurbaniManifestRetriever = new PramanaManifestRetriever({
-  prefix: 'sikh_gurbani_japji',
+  prefix: 'sikh_gurbani',
   sourceName: 'Sri Guru Granth Sahib Ji',
   sourceClass: 'scripture',
   tradition: 'Sikhi',
-  maxChapters: 1
+  maxChapters: 0,
+  fileNames: [
+    'sikh_gurbani_japji.json',
+    'sikh_gurbani_anand_sahib.json',
+    'sikh_gurbani_rehras_sahib.json'
+  ]
 });
 
 PramanaRetrieverSelector.register('sikh_gurbani', new PramanaGurbaniEmbeddingRetriever(gurbaniManifestRetriever));
@@ -1061,7 +1047,12 @@ const jainManifestRetriever = new PramanaManifestRetriever({
   sourceName: 'Jain Dharma Agamas',
   sourceClass: 'scripture',
   tradition: 'Jainism',
-  maxChapters: 1
+  maxChapters: 0,
+  fileNames: [
+    'jain_dharma.json',
+    'jain_kalpa_sutra.json',
+    'jain_tattvartha_sutra.json'
+  ]
 });
 PramanaRetrieverSelector.register('jain_dharma', new PramanaGenericEmbeddingRetriever(
   jainManifestRetriever,
@@ -1075,7 +1066,15 @@ const ramayanaManifestRetriever = new PramanaManifestRetriever({
   sourceName: 'Valmiki Ramayana',
   sourceClass: 'curated_lesson',
   tradition: 'Sanatana Dharma',
-  maxChapters: 7
+  maxChapters: 0,
+  fileNames: [
+    'valmiki_ramayana_bala.json',
+    'valmiki_ramayana_ayodhya.json',
+    'valmiki_ramayana_aranya.json',
+    'valmiki_ramayana_kishkindha.json',
+    'valmiki_ramayana_sundara.json',
+    'valmiki_ramayana_yuddha.json'
+  ]
 });
 PramanaRetrieverSelector.register('valmiki_ramayana', new PramanaGenericEmbeddingRetriever(
   ramayanaManifestRetriever,
@@ -1120,10 +1119,15 @@ export async function retrievePathshalaContext(input: {
 
 const dharamVeerManifestRetriever = new PramanaManifestRetriever({
   prefix: 'dharam_veer',
+  manifestsDir: path.join(process.cwd(), 'python/ai_pipeline/corpus/manifests/dharam_veer'),
   sourceName: 'Dharam Veer',
   sourceClass: 'narrative',
   tradition: 'Dharmic',
-  maxChapters: 10
+  maxChapters: 0,
+  fileNames: [
+    'dharam_veer_guru_gobind_singh.json',
+    'dharam_veer_shivaji.json'
+  ]
 });
 
 export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
