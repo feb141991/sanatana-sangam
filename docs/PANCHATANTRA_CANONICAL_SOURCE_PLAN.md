@@ -118,3 +118,30 @@ Wikisource or Internet Archive, replacing the current unattributed paraphrase in
 companion-only** until the Hertel edition's rights are verified. Do **not** ingest until the §7 checklist
 passes per batch, and do not wire this into `retrieval.ts` or build an embedding index until content is
 actually ingested under this plan.
+
+---
+
+## 9. Ingestion log
+
+- **Batch 1 (2026-07-22):** `panchatantra_chapter_1.json` — 4 stories (Monkey and the Crocodile, Shell-Neck/Slim/Grim,
+  Numskull and the Rabbit, The Blue Jackal). Verbatim Ryder (1925) text sourced from theoceanofstories.blogspot.com
+  and mythfolklore.blogspot.com (both explicitly attribute Ryder 1925, public domain).
+- **Batch 2 (2026-07-23):** `panchatantra_chapter_2.json` — 10 stories (The Brahman's Goat; How the Crow-Hen Killed
+  the Black Snake; The Sensible Enemy and the Foolish Friend; The Bharunda Birds; Forethought, Ready-Wit, and
+  Fatalist; The Donkey in the Tiger-Skin; The Mice That Set Elephants Free; Crows and Owls [Book 3 frametale,
+  trimmed excerpt]; The Potter Militant; The Cat's Judgement). Each matched against the existing reader story in
+  `src/lib/katha-library.ts` at plot level, not title alone, before ingestion. Two candidates were evaluated and
+  **skipped** per the "do not invent ordering if uncertain" rule:
+  - `panchatantra-dove-king-and-net` ("The Dove King and the Net") — plot (flock of doves lift a net together,
+    freed by a mouse ally) does not match Ryder's "The Self-Sacrificing Dove" or any other titled story in the
+    captured Ryder table of contents; likely Hitopadesha or another collection. Not ingested.
+  - `panchatantra-mongoose-and-child` ("The Loyal Mongoose") — confident title/plot match to Ryder Book 5 "The
+    Loyal Mungoose," but no verbatim Ryder Book 5 text could be located at the Batch 1/2 source
+    (theoceanofstories.blogspot.com only transcribed Books 1-4). Sourcing Book 5 (sacred-texts.com, archive.org,
+    or shreevatsa.net) is deferred to a future batch.
+  - Remaining un-ingested reader stories (e.g. `panchatantra-fox-and-grapes`, `panchatantra-king-and-minister`,
+    `panchatantra-heron-and-fish`, `panchatantra-crane-and-crab`, `panchatantra-snake-and-frogs`,
+    `panchatantra-moon-lake-rabbits` / `panchatantra-clever-hare-and-elephant`, `panchatantra-golden-dropping-bird`,
+    `panchatantra-sparrow-and-elephant`, `panchatantra-donkey-and-jackal`, `panchatantra-camel-bell`,
+    `panchatantra-greedy-jackal`, `panchatantra-weaver-as-vishnu`, `panchatantra-two-fish-and-frog`) were not
+    reviewed in depth this batch and remain candidates for a future batch, not confirmed matches.
