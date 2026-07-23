@@ -1181,7 +1181,9 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_gautama_swami.json',
     'dharam_veer_mahapajapati_gotami.json',
     'dharam_veer_sariputta.json',
-    'dharam_veer_moggallana.json'
+    'dharam_veer_moggallana.json',
+    'dharam_veer_savitri.json',
+    'dharam_veer_sanghamitra.json'
   ]
 });
 

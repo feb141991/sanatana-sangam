@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 10)
+Last updated: 2026-07-23 (Batch 11)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -587,3 +587,29 @@ public-domain (pre-1923) translations hosted on sacred-texts.com.
   - Fail-closed check: `nagarjuna`, `thich-nhat-hanh`, and a nonexistent figure_id each return 0
     documents.
 - `npx eslint src/lib/ai/retrieval.ts` clean.
+
+## 14. Scope note — Batch 11 expansion: Savitri and Sanghamitra (quick-win sourcing)
+
+Two heroes previously left unsourced (each already flagged in the coverage docs as a
+"future batch" candidate with a known likely source) were sourced this batch.
+
+| Hero | Source | Notes |
+|---|---|---|
+| Savitri | K.M. Ganguli's translation of the Mahabharata, Vana Parva, Pativrata-mahatmya Parva, sacred-texts.com (same translation/site already used for Bhishma and Arjuna) | Sections 291 ('birth of Savitri'), 293 (marriage to Satyavan), 295 (Satyavan's death and Savitri's dialogue with Yama), and 297 (resolution) were fetched. Section 292 (Narada's original prophecy) returned empty on repeated fetch attempts; its content is referenced only indirectly via later sections' own callbacks to it, not quoted directly. |
+| Sanghamitra | Wilhelm Geiger's 1912 translation of the Mahavamsa (via Mabel Haynes Bode, Pali Text Society), chapters XVIII-XIX, hosted per-chapter at budsas.org | This site serves the Mahavamsa chapter-by-chapter, which avoided the archive.org djvu.txt truncation problem that blocked several large 19th/early-20th-century scans earlier this session (see section 10). Covers her role as Asoka's daughter, the Bodhi-tree branch's self-severance, her sea voyage escorting both the tree and eleven bhikkhunis, the naga episode, founding the Sri Lankan bhikkhuni order via Queen Anula's ordination, and her later monastic legacy. |
+
+### 14a. Verification performed
+
+- Both new manifest files validated programmatically (8 chunks each, hyphenated/plain `doc_id`
+  matching the production `figure_id` in `src/lib/data/dharm-veers/hindu.ts` and `buddhist.ts`
+  exactly, `figure_id` present on every chunk, correct top-level schema).
+- New filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array.
+- `dharam_veer_index.json` regenerated: now indexes **37 heroes, 296 chunks** (up from 35 heroes,
+  280 chunks).
+- Live retrieval smoke test via `npx tsx`, querying with `filters: { title: figure_id }`:
+  - Both new heroes (`savitri`, `sanghamitra`) return only their own chunks with the correct
+    `docId`.
+  - Fail-closed check: `adi-shankaracharya` and a nonexistent figure_id each return 0 documents.
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+Dharm Veer roster after this batch: **37/70 heroes source-backed**.

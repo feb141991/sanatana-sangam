@@ -1,0 +1,90 @@
+{
+  "doc_id": "dharam_veer_sanghamitra",
+  "source_name": "The Mahavamsa (The Great Chronicle of Lanka), translated from Pali by Wilhelm Geiger (Pali Text Society, 1912), chapters XVIII-XIX",
+  "source_class": "translation",
+  "tradition": "Buddhist",
+  "rights_status": "public_domain",
+  "revision_note": "Newly added with 8 verified chunks under public domain (2026-07-23, Batch 11). Source: Wilhelm Geiger's 1912 English translation (via Mabel Haynes Bode) of the Mahavamsa, chapters XVIII ('The Receiving of the Great Bodhi-tree') and XIX ('The Coming of the Bodhi-tree'), fetched directly from the per-chapter HTML edition hosted at budsas.org, which avoids the archive.org djvu.txt truncation problem encountered with other large 19th/early-20th-century scans this session.",
+  "content": [
+    {
+      "ref": "1.1",
+      "figure_id": "sanghamitra",
+      "chunk_type": "life_context",
+      "text": "Sanghamitta was the daughter of Emperor Asoka and, like her brother the thera Mahinda, entered the Buddhist Sangha. When King Devanampiyatissa of Lanka sent word asking that Sanghamitta come to ordain his sister-in-law Queen Anula (who, with five hundred women of the royal household, had been waiting in stern discipline for the pabbajja), Asoka grieved: \"How shall I, when I no longer behold thee, dear one, master the grief aroused by the parting with son and grandson?\" Sanghamitta answered him: \"Weighty is the word of my brother, O great king; many are they that must receive the pabbajja, therefore must I depart thither.\"",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XVIII \"The Receiving of the Great Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap018.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.2",
+      "figure_id": "sanghamitra",
+      "chunk_type": "trial_sacrifice",
+      "text": "Along with Sanghamitta herself, Devanampiyatissa's message asked for a branch of the great Bodhi-tree under which the Buddha had attained enlightenment. Asoka despaired: \"The great Bodhi-trees must not be injured with a knife, how then can I have a branch!\" But when he consulted the community of monks and vowed to send the tree if it could be done without violence, the south bough of the Bodhi-tree severed itself of its own accord at the very place he had marked, and floated into a golden vase -- resolving what had seemed an impossible demand.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XVIII \"The Receiving of the Great Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap018.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.3",
+      "figure_id": "sanghamitra",
+      "chunk_type": "core_dharmic_act",
+      "text": "Sanghamitta set out from the Ganges with eleven bhikkhunis, escorting the sacred Bodhi-tree branch by ship across the ocean to Lanka -- undertaking the long and hazardous sea voyage that would carry both the relic and the formal ordination lineage for women out of India for the first time.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XIX \"The Coming of the Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.4",
+      "figure_id": "sanghamitra",
+      "chunk_type": "core_dharmic_act",
+      "text": "During the voyage, nagas (serpent spirits) sought to seize the Bodhi-tree by their magic. The text records that Sanghamitta, \"who had reached the last goal of supernormal powers,\" took the form of a griffin to terrify the great snakes; the frightened nagas instead escorted the tree in reverence to their own realm for a week of worship before returning it safely to the ship, which then arrived at Jambukola in Lanka.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XIX \"The Coming of the Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.5",
+      "figure_id": "sanghamitra",
+      "chunk_type": "core_dharmic_act",
+      "text": "On arrival, Sanghamitta gave Queen Anula and her following the pabbajja (ordination), and they attained arahantship -- founding the bhikkhuni (nuns') order in Lanka. She settled with her company of nuns in the Upasikavihara, the nunnery King Devanampiyatissa had built for Anula's household, becoming known there as the \"great theri\" (senior female elder) of the Sri Lankan Sangha.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XIX \"The Coming of the Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.6",
+      "figure_id": "sanghamitra",
+      "chunk_type": "legacy",
+      "text": "At the Upasikavihara, Sanghamitta caused twelve buildings to be erected for the nuns' community; three of the most important were built using timbers salvaged from the very ship that had carried the Bodhi-tree -- one raised over the mast, one over the rudder, and one over the helm, and named for these parts in her memory.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XIX \"The Coming of the Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.7",
+      "figure_id": "sanghamitra",
+      "chunk_type": "legacy",
+      "text": "When the Upasikavihara grew too crowded, Sanghamitta -- \"mindful for the progress of the doctrine and the good of the bhikkhunis\" -- sought out a quieter dwelling place near a cetiya-house. King Devanampiyatissa, learning of her wish, had a new convent built for her there, the Hatthalhaka-vihara, where the text calls her \"the well-beloved, the great theri Sanghamitta of lofty wisdom.\"",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912), ch. XIX \"The Coming of the Bodhi-tree\"",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.8",
+      "figure_id": "sanghamitra",
+      "chunk_type": "citation_provenance",
+      "text": "This entry compiles verified passages from Wilhelm Geiger's 1912 English translation of the Mahavamsa (via Mabel Haynes Bode, published for the Ceylon Government by the Pali Text Society -- pre-1923, public domain), chapters XVIII and XIX, fetched directly from the per-chapter HTML edition hosted at budsas.org/ebud/mahavamsa/. This site was used specifically because it serves the Mahavamsa chapter-by-chapter, avoiding the truncation problem that affects fetches of the same book's large archive.org djvu.txt scan. Later chapters of the Mahavamsa (XX onward) contain further material on Sanghamitta's death and enshrinement, not fetched in this session.",
+      "source_name": "The Mahavamsa, tr. Wilhelm Geiger (1912)",
+      "source_url": "https://www.budsas.org/ebud/mahavamsa/chap019.html",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    }
+  ]
+}
