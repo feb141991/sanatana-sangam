@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 8)
+Last updated: 2026-07-23 (Batch 9)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -485,4 +485,51 @@ Dharm Veer corpus to **30 heroes, 240 chunks**.
     the correct `docId`.
   - Fail-closed check: `adi-shankaracharya`, `ramanujacharya`, `mirabai`, `samarth-ramdas`, and
     `ramana-maharshi` (all deliberately left unsupported this batch) each return 0 documents.
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+
+## 12. Scope note — Batch 9 expansion: Jain figures (2026-07-23)
+
+This batch adds **2 new heroes** -- Rishabhanatha and Gautama Swami -- bringing the Dharm
+Veer corpus to **32 heroes, 256 chunks**. Jain remains the tradition with the fewest supported
+heroes (2 of ~12 unsupported roster Jain figures), consistent with prior notes that it is the
+weakest-covered tradition.
+
+| Hero | Source | Notes |
+|---|---|---|
+| Rishabhanatha | Hermann Jacobi, *Jaina Sutras Part I* (SBE 22), 'Kalpa Sutra: Life of Rishabha' (1884), sacred-texts.com | The Kalpa Sutra narrates Rishabha's life using the same formulaic scriptural template it applies to Mahavira; this manifest preserves that formal register rather than paraphrasing into modern narrative prose. |
+| Gautama Swami | Same source, 'Life of Mahavira' (Lecture 5) and 'List of the Sthaviras' | The text refers to him throughout by his personal name, Indrabhuti, of the Gautama gotra. Draws on the well-attested episode of his attaining Kevala only on the night Mahavira died, having been held back until then by his own attachment to his teacher. |
+
+### 12a. Heroes investigated but not sourced this batch
+
+- **Bhadrabahu** and **Sthulabhadra**: Jacobi's Kalpa Sutra 'List of the Sthaviras' names both
+  (6th and 7th patriarchs after Mahavira respectively) with their gotras and lists of disciples,
+  but this is bare genealogy -- no narrative content exists in this source to build chunks with
+  real life_context/trial_sacrifice/core_dharmic_act distinctions. Their famous legendary
+  material (Bhadrabahu's connection to the 12-year famine and the Chedasutras; Sthulabhadra's
+  renunciation and four months spent with a courtesan without breaking his vows) was not located
+  in a verified public-domain source this batch.
+- **Chandanbala**: her well-known story (the first laywoman to give Mahavira alms after his
+  enlightenment, later head of his order of nuns) does not appear in Jacobi's Kalpa Sutra
+  translation. A different Jain hagiographic source (e.g. a translation of Hemachandra's
+  *Trishashtishalakapurushacharita*) would be needed and was not located this batch.
+- **Hemachandra, Lonka Saha, Shrimad Rajchandra, Kundakunda, Haribhadra, Yashovijaya, Kumarpal**:
+  not investigated this batch; candidates for a future pass, most plausibly via later volumes of
+  the Sacred Books of the East Jaina Sutras (Part II, SBE 45) or dedicated PD translations of
+  their individual works if any exist.
+
+### 12b. Verification performed
+
+- Both new manifest files validated programmatically (8 chunks each, hyphenated `doc_id` matching
+  the production `figure_id` in `src/lib/data/dharm-veers/jain.ts` exactly, `figure_id` present on
+  every chunk).
+- New filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array.
+- `dharam_veer_index.json` regenerated: now indexes **32 heroes, 256 chunks** (up from 30 heroes,
+  240 chunks).
+- Live retrieval smoke test via `npx tsx` (same pattern as batch 8, importing `PramanaRetrieverSelector`
+  from `@sangam/pramana-serve` directly and `retrieval.ts` for its registration side effects):
+  - Both new heroes (`rishabhanatha`, `gautama-swami`) return their own chunks with the correct
+    `docId`.
+  - Fail-closed check: `bhadrabahu`, `sthulabhadra`, `chandanbala`, and `bahubali` (all deliberately
+    left unsupported) each return 0 documents.
 - `npx eslint src/lib/ai/retrieval.ts` clean.

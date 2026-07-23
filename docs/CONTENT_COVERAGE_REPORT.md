@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script ex
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 240 | 240 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 256 | 256 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script ex
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 30
-- **Curated-Only / Unsupported Heroes:** 40
+- **Source-Backed (Supported) Heroes:** 32
+- **Curated-Only / Unsupported Heroes:** 38
 
 ### Supported Heroes:
 - `ananda`
@@ -53,6 +53,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script ex
 - `tukaram`
 - `ramakrishna`
 - `kabir`
+- `rishabhanatha`
+- `gautama-swami`
 
 ### Unsupported Roster Heroes:
 - `adi-shankaracharya` (degrades to safe fallback explanation -- investigated in batch 8; George Thibaut's PD translations of the Vedanta-Sutras (SBE 34) are dense philosophical commentary with no accessible biographical narrative; no verified PD biography located this batch)
@@ -72,16 +74,14 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script ex
 - `akali-phula-singh` (degrades to safe fallback explanation)
 - `maharaja-ranjit-singh` (degrades to safe fallback explanation)
 - `nawab-jassa-singh` (degrades to safe fallback explanation)
-- `rishabhanatha` (degrades to safe fallback explanation)
 - `bahubali` (degrades to safe fallback explanation -- investigated and explicitly skipped in batch 3; see docs/DHARAM_VEER_COVERAGE_AUDIT.md section 5b, no verified public-domain English translation located)
-- `bhadrabahu` (degrades to safe fallback explanation)
+- `bhadrabahu` (degrades to safe fallback explanation -- investigated in batch 9; Jacobi's Kalpa Sutra 'List of the Sthaviras' names him as the 6th patriarch after Mahavira with his gotra and disciples, but only as bare genealogy, no narrative content to build a real manifest from)
+- `sthulabhadra` (degrades to safe fallback explanation -- investigated in batch 9; same genealogy-only source problem as Bhadrabahu; his famous legend (renunciation, four months with a courtesan, the 12-year famine) was not found in a verified PD source this batch)
+- `chandanbala` (degrades to safe fallback explanation -- investigated in batch 9; her well-known story (first laywoman to give Mahavira alms) does not appear in Jacobi's Kalpa Sutra translation; a different Jain hagiographic source would be needed)
 - `kundakunda` (degrades to safe fallback explanation)
 - `hemachandra` (degrades to safe fallback explanation)
 - `lonka-saha` (degrades to safe fallback explanation)
 - `shrimad-rajchandra` (degrades to safe fallback explanation)
-- `gautama-swami` (degrades to safe fallback explanation)
-- `chandanbala` (degrades to safe fallback explanation)
-- `sthulabhadra` (degrades to safe fallback explanation)
 - `haribhadra` (degrades to safe fallback explanation)
 - `yashovijaya` (degrades to safe fallback explanation)
 - `kumarpal` (degrades to safe fallback explanation)

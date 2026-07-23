@@ -1176,7 +1176,9 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_tulsidas.json',
     'dharam_veer_tukaram.json',
     'dharam_veer_ramakrishna.json',
-    'dharam_veer_kabir.json'
+    'dharam_veer_kabir.json',
+    'dharam_veer_rishabhanatha.json',
+    'dharam_veer_gautama_swami.json'
   ]
 });
 
