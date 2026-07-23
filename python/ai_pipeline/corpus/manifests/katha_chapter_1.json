@@ -38,7 +38,7 @@
     {
       "ref": "1.3",
       "story_title": "Sudama Vipra",
-      "canonical_reference": "Srimad Bhagavatam, Skandha 10 (translation not yet sourced)",
+      "canonical_reference": "Srimad Bhagavatam, Skandha 10, Adhyaya 80-81 (Shoonaya retelling)",
       "text": "",
       "curated_lesson": "Sudama, a poor brahmana, was a childhood friend of Lord Krishna. Living in extreme poverty, his wife urged him to visit Krishna in Dwaraka for help. Sudama went empty-handed except for a handful of flattened rice (poha) wrapped in a torn cloth. Krishna welcomed Sudama with royal honors, washed his feet, and ate the rice with great delight. Sudama asked for nothing out of devotion, but upon returning home, found his humble hut transformed into a magnificent golden palace.",
       "source_class": "curated_lesson",
@@ -46,12 +46,12 @@
       "source_name": "Shoonaya",
       "source_url": "",
       "language": "en",
-      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Do not mark public_domain until one is verified per docs/BHAKTI_KATHA_CANONICAL_SOURCE_PLAN.md."
+      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Leave as curated_lesson. Sourcing blocker: M. N. Dutt's 1895-96 Bhagavata Purana translation (Volume III/IV, Canto 10) is in the public domain but could not be obtained in verified, machine-readable format during this session. Gita Press and Bhaktivedanta translations are active under copyright and must not be used per PATHSHALA_SOURCE_POLICY.md."
     },
     {
       "ref": "1.4",
       "story_title": "Gajendra Moksha",
-      "canonical_reference": "Srimad Bhagavatam, Skandha 8 (translation not yet sourced)",
+      "canonical_reference": "Srimad Bhagavatam, Skandha 8, Adhyaya 2-4 (Shoonaya retelling)",
       "text": "",
       "curated_lesson": "Gajendra, the king of elephants, was caught by a mighty crocodile in a lake. They fought for a thousand years, and as Gajendra grew weak and realized his own strength was failing, he surrendered completely to the Lord. Offering a single lotus flower to Lord Vishnu, Gajendra prayed for liberation. Lord Vishnu arrived on Garuda, severed the crocodile's head with his Sudarshana Chakra, and granted Gajendra Moksha (liberation).",
       "source_class": "curated_lesson",
@@ -59,7 +59,7 @@
       "source_name": "Shoonaya",
       "source_url": "",
       "language": "en",
-      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Do not mark public_domain until one is verified per docs/BHAKTI_KATHA_CANONICAL_SOURCE_PLAN.md."
+      "revision_note": "Pending: no verbatim public-domain translation excerpt sourced yet for this episode. Leave as curated_lesson. Sourcing blocker: M. N. Dutt's 1895-96 Bhagavata Purana translation (Volume II, Canto 8) is in the public domain but could not be obtained in verified, machine-readable format during this session. Gita Press and Bhaktivedanta translations are active under copyright and must not be used per PATHSHALA_SOURCE_POLICY.md."
     }
   ]
 }
