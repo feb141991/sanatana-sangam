@@ -1,5 +1,5 @@
 {
-  "doc_id": "dharam_veer_guru_arjan_dev",
+  "doc_id": "dharam_veer_guru-arjan-dev",
   "source_name": "Max Arthur Macauliffe, The Sikh Religion: Its Gurus, Sacred Writings and Authors, Vol. III (Oxford: Clarendon Press, 1909)",
   "source_class": "translation",
   "tradition": "Sikh",
@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "life_context",
       "text": "Bibi Bhani, wife of Guru Ram Das, gave birth to Arjan at Goindwal on Tuesday the 7th day of the dark half of Baisakh, Sambat 1620 (A.D. 1563). His grandfather Guru Amar Das foretold of the child, \"this grandson of mine shall be a boat to take mankind across the ocean of the world.\"",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "trial_sacrifice",
       "text": "After Guru Ram Das's death, Arjan's elder brother Prithia contested the succession and complained to Mughal officials and to the chaudhris of Amritsar that he had been left without maintenance. Rather than contest it, Guru Arjan granted certain taxes and house rents to Prithia and the customs duties of a ward of Amritsar to his second brother Mahadev, reserving for himself only the voluntary offerings of the faithful.",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "core_dharmic_act",
       "text": "Guru Arjan applied himself to completing the tanks of Santokhsar and Amritsar begun under his father, and projected the Har Mandar, the temple of God at their centre. He appointed his most trustworthy Sikhs -- Bhais Budha, Salo, Bhagtu, Paira, Bahlo, Kaliana and others -- to superintend the work and procure lime, bricks, and all other necessary materials.",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "teaching",
       "text": "When a Jogi found beneath the site of the Santokhsar tank asked who now reigned and how the world had changed, Guru Arjan answered with a hymn on impermanence: \"A player playeth his part, and representeth many characters; but when he taketh off his disguises the play is brought to an end, and he assumeth his original appearance... Man goeth astray through the sins of covetousness and worldly love; but, when he is freed from his error, he assumeth the likeness of God, who is imperishable and perisheth not.\"",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "trial_sacrifice",
       "text": "Sent to the hill state of Mandi to raise funds, the Sikh Bhai Kaliana alone refused the Raja's order that all fast and worship the salagram stone on Krishna's birth anniversary. Confronted by the angered Raja, he declared, \"My God is a living Being who speaketh and conferreth great happiness on His worshippers. Vain is the worship of a lifeless stone which neither eateth, nor speaketh, nor conferreth favours,\" and recited Guru Arjan's hymn: \"God is not subject to birth and death... Nanak's God is everywhere; He is not born, nor doth He die; He cometh not and goeth not.\"",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "core_dharmic_act",
       "text": "To further the completion of the Amritsar tank and the collection of sacred texts, Guru Arjan sent his Sikh Paira on a difficult journey to the King of Ceylon to obtain the Pransangali, a religious text, for the Guru's library -- an episode the tradition preserves as an example of the Guru's determination to gather every genuine source of scripture and knowledge available to his Sikhs.",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "core_dharmic_act",
       "text": "Guru Arjan resolved to compile the exact words of the Gurus into one grand volume, both to give his followers consistent guidance and to counter his brother Prithia, who was composing his own hymns and passing them off as the compositions of Guru Nanak and his successors to an ignorant populace unable to tell the difference. He sent Gur Das and then Bhai Budha to Goindwal to obtain the volumes of the Gurus' compositions kept by Mohan, the elder son of the third Guru -- the opening act of what would become the compilation of the Adi Granth.",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "guru-arjan-dev",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles verified passages from Max Arthur Macauliffe's The Sikh Religion, Vol. III (Oxford: Clarendon Press, 1909), a public-domain work, as fetched directly from the archive.org full-text scan of the Digital Library of India copy (identifier in.ernet.dli.2015.69684, dc.rights: Out_of_copyright). It covers the Guru's birth, succession, the founding of the Harmandir Sahib (Golden Temple), and the beginning of the Adi Granth's compilation (Chapters I and VII, pp. 1-56). The Guru's 1606 martyrdom, recounted later in the same volume, is not yet represented in this corpus pending direct source verification.",
       "source_name": "Max Arthur Macauliffe, The Sikh Religion, Vol. III (1909)",

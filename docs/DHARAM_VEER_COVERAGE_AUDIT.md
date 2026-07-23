@@ -65,20 +65,35 @@ Each hero's chunks are tagged with standard `chunk_type` values (`life_context`,
    public-domain translations/histories (see table in section 2 and per-manifest `revision_note` /
    per-chunk `source_url` fields for full provenance).
 2. **Skipped Bahubali** (`bahubali`) after investigation -- see section 5b.
-3. **Fixed a real data-contract bug** in `src/lib/ai/retrieval.ts`: production `figure_id` values in
-   `src/lib/data/dharm-veers/*.ts` are hyphenated (e.g. `guru-arjan-dev`), but manifest `doc_id` /
-   filenames use underscores (e.g. `dharam_veer_guru_arjan_dev`) per the existing corpus convention. The
-   exact-match comparison in `PramanaDharamVeerEmbeddingRetriever.retrieve()` (and the equivalent
-   fallback path in `PramanaManifestRetriever.retrieve()`) never normalized between the two, so **any
-   hyphenated multi-word figure_id silently failed to match its own manifest** and fell through to the
-   "unsupported hero" safe fallback. This affected 7 of the 13 previously-supported heroes:
-   `chhatrapati-shivaji`, `emperor-ashoka`, `guru-gobind-singh`, `guru-nanak-dev`, `guru-tegh-bahadur`,
-   `lord-mahavira`, and `siddhartha-gautama`. Fixed by normalizing hyphens to underscores before
-   comparison in both retrieval paths. Verified via smoke test (section 4) that all previously-broken
-   heroes, plus all 3 newly-added heroes, now correctly retrieve their own chunks. This is the kind of
-   "real route/data contract bug" this project's standing policy explicitly permits fixing without
-   otherwise touching the visible roster.
-4. **Registered new manifest files** in the `fileNames` array of `dharamVeerManifestRetriever` inside
+3. **Added a `figure_id` field to every chunk** in the 3 new manifests, matching the original task
+   specification (`figure_id`, `source_name`, `source_url`, `source_class`, `rights_status`, `chunk_type`,
+   citation/provenance). This field was missing from this batch's first draft and is also absent from all
+   13 pre-existing hero manifests (a pre-existing schema gap outside this batch's scope, noted here for a
+   future cleanup pass -- it does not affect retrieval, since `doc_id` alone is what's matched against
+   `figure_id` at query time).
+4. **Corrected an internal `doc_id` naming inconsistency introduced by this batch, found during an
+   independent aggressive re-review after the initial commit.** The established convention in this
+   corpus -- confirmed by inspecting the actual `doc_id` field (not just the filename) of all 13
+   pre-existing manifests -- is that multi-word `doc_id` values are **hyphenated to match `figure_id`
+   exactly** (e.g. `dharam_veer_guru_gobind_singh.json` has `doc_id: "dharam_veer_guru-gobind-singh"`,
+   even though its *filename* uses underscores). This batch's first draft instead gave the 3 new
+   manifests **underscored** `doc_id` values (e.g. `dharam_veer_guru_arjan_dev`), which do not match
+   production `figure_id` (`guru-arjan-dev`) under exact comparison. The initial commit "fixed" this by
+   adding hyphen/underscore normalization to the retrieval matching logic in
+   `src/lib/ai/retrieval.ts` -- but that fix was based on an **incorrect diagnosis**: the commit message
+   and this doc originally (and wrongly) claimed the normalization also fixed a pre-existing bug
+   affecting 7 of the 13 previously-supported heroes. Direct inspection of those 7 manifests' `doc_id`
+   fields during this review showed they were **already hyphenated and already matching correctly**
+   before this batch -- there was no such pre-existing bug. The real, narrower issue was only that this
+   batch's own 3 new manifests didn't follow the established convention. **Fix applied in this review**:
+   changed the 3 new manifests' `doc_id` values to the hyphenated convention
+   (`dharam_veer_guru-arjan-dev`, `dharam_veer_maharana-pratap`, `dharam_veer_rani-lakshmibai`), matching
+   the other 13 heroes exactly. The hyphen/underscore normalization in `retrieval.ts` was **kept** as
+   defensive robustness (it's harmless and now correctly documented as such, not as a historical bug
+   fix) rather than reverted, since it protects against the same mistake recurring in a future manifest
+   addition without adding any risk (see section 4 for the exhaustive check that no other corpus is
+   affected, since `filters.title` is only ever populated for Dharam Veer's retriever).
+5. **Registered new manifest files** in the `fileNames` array of `dharamVeerManifestRetriever` inside
    `src/lib/ai/retrieval.ts` (the fallback path; the primary embedding-index path auto-discovers via glob
    in the Python index builder and needed no registration).
 
@@ -88,6 +103,43 @@ Each hero's chunks are tagged with standard `chunk_type` values (`life_context`,
 - **Retriever Smoke Tests (batch 2)**: Verified that querying for any of the 13 supported `figure_id`s returns their own correctly-attributed chunks, and querying for currently unsupported ones returns zero documents (triggering clean fallback).
 - **Retriever Smoke Tests (batch 3)**: Re-ran smoke tests via `npx tsx` against the live `dharamVeerRetriever` export for all 16 supported heroes (13 previous + 3 new) plus 2 unsupported ones (`bahubali`, an unknown id). Confirmed: (a) each of the 3 new figure_ids returns exactly its own 8 chunks and no other hero's `doc_id`; (b) all 7 previously-broken hyphenated multi-word heroes now correctly return their own 8 chunks after the bug fix in section 3b; (c) `bahubali` and an unknown figure_id both correctly return 0 documents with no cross-hero leakage.
 - **TypeScript & Lint**: `eslint src/lib/ai/retrieval.ts` passes cleanly. Full-repo `npx tsc --noEmit` exceeds this environment's command timeout (large monorepo); scoped `tsc --noEmit --skipLibCheck` against the changed file plus a live `npx tsx` execution of the retrieval module (which itself requires valid TypeScript) surfaced no errors in the changed code.
+
+## 4b. Independent aggressive re-review (2026-07-23, same day)
+
+Following a request to re-review this batch adversarially as a source-integrity and RAG-safety check,
+before any further work the following was independently re-verified from scratch (not just re-reading
+prior notes):
+
+- **Source re-verification**: re-fetched all 3 source URLs live (archive.org item page for Guru Arjan
+  Dev; both ibiblio.org chapter pages for Maharana Pratap and Rani Lakshmibai) and spot-checked that the
+  quoted/paraphrased manifest text matches the live source content and that the `dc.rights: Out_of_copyright`
+  / public-domain claims still hold.
+- **doc_id convention audit**: read the actual `doc_id` field (not filename) of all 16 manifests directly,
+  which surfaced the naming-convention bug described in section 3b (item 4) -- fixed in this review.
+- **Cross-corpus side-effect check**: grepped the entire `src/` tree for every call site that populates
+  `filters.title` on any retriever. Found exactly one call site in the whole codebase
+  (`src/app/api/ai/chat/route.ts`, the `dharam_veer_reflection` mode), confirming the hyphen/underscore
+  normalization added to the shared `PramanaManifestRetriever.retrieve()` fallback path is dead code for
+  every other corpus (gita, upanishads, gurbani, buddhist, jain, ramayana, panchatantra, bhakti_katha all
+  leave `filters.title` unset) and therefore carries zero risk of unintended cross-corpus matching.
+- **Adversarial retrieval test** (fresh `npx tsx` script, not reused from the original batch): for all 16
+  supported heroes, confirmed exactly 8 own-doc_id chunks returned and no others. For 14 adversarial
+  near-miss `figure_id` probes textually similar to a real hero (`arjan`, `guru-arjan`, `pratap`,
+  `maharana`, `lakshmibai`, `rani`, `jhansi`, `shivaji`, etc.) confirmed all return zero documents rather
+  than partial-matching and leaking that hero's content. For 6 unsupported heroes (`bahubali`,
+  `sri-krishna`, `sri-rama`, `hanuman`, `mirabai`, and a nonexistent id) confirmed all fail closed with
+  zero documents. For content-level leakage, confirmed each new hero's retrieved chunk text contains a
+  hero-specific term (`goindwal` for Guru Arjan Dev, `haldighat` for Maharana Pratap, `gwaliar` for Rani
+  Lakshmibai) rather than another hero's material. Two initial test flags (`GURU-ARJAN-DEV`,
+  `Maharana-Pratap` returning 8 docs) were investigated and confirmed to be correct, intentional
+  case-insensitive matching of the *same* hero -- not cross-hero leakage -- since both retrieval paths
+  lowercase `reqTitle` and `doc_id` before comparing, and production always sends canonical lowercase
+  `figure_id` values from `src/lib/data/dharm-veers/*.ts` regardless.
+- **Index regenerated again** after the `doc_id` fix (still 128 chunks / 16 heroes; `doc_id` values in the
+  index metadata now confirmed all-hyphenated for multi-word heroes).
+
+No further issues found after the `doc_id` fix. All findings and fixes from this re-review are captured
+in section 3b.
 
 ## 5. Batch 3 outcome for the heroes queued in batch 2
 

@@ -194,9 +194,9 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         let titleSourceScore = 0.0;
         const lowercaseSource = (manifest.source_name || this.sourceName).toLowerCase();
         const lowercaseDocId = (manifest.doc_id || '').toLowerCase();
-        // Normalize hyphenated figure_id (production id convention) against
-        // underscored doc_id (manifest convention) -- see matching fix in
-        // PramanaDharamVeerEmbeddingRetriever.retrieve() for the same issue.
+        // Defensive normalization mirroring PramanaDharamVeerEmbeddingRetriever.retrieve():
+        // manifest doc_id should be hyphenated to match figure_id exactly, but accept an
+        // underscored doc_id too in case a manifest author deviates from that convention.
         const reqTitleLower = reqTitle.toLowerCase();
         const reqTitleLowerNormalized = reqTitleLower.replace(/-/g, '_');
 
@@ -1203,16 +1203,18 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
     const queryText = query.text.trim();
     const reqTitle = (query.filters?.title as string || '').toLowerCase(); // expected figure_id
     // Production figure_id values (src/lib/data/dharm-veers/*.ts) are hyphenated
-    // (e.g. "guru-arjan-dev"), but manifest doc_id/filenames use underscores
-    // (e.g. "dharam_veer_guru_arjan_dev") per the existing corpus convention.
-    // Without normalizing, every multi-word figure_id fails this exact-match
-    // check and silently falls through to the "unsupported hero" safe fallback.
-    // (Data-contract bug found during the 2026-07-23 batch: this affected 7 of the
-    // 13 previously-supported heroes -- chhatrapati-shivaji, emperor-ashoka,
-    // guru-gobind-singh, guru-nanak-dev, guru-tegh-bahadur, lord-mahavira,
-    // siddhartha-gautama -- whose hyphenated figure_id never matched their
-    // underscored doc_id, so "Ask AI more" silently fell back to the unsupported
-    // fallback for them despite manifests existing. Fixed here by normalizing.)
+    // (e.g. "guru-arjan-dev"), and the established convention in this corpus's
+    // manifest `doc_id` field is to mirror that exactly with hyphens (see e.g.
+    // dharam_veer_guru_gobind_singh.json, whose doc_id is "dharam_veer_guru-gobind-singh"
+    // despite its underscored *filename*). Manifest filenames are always
+    // underscored for filesystem-friendliness and are unrelated to this match.
+    // This normalization is defensive: it also accepts an underscored doc_id
+    // (dharam_veer_${reqTitle_with_underscores}) so a manifest author who
+    // mistakenly uses underscores in doc_id (as an earlier draft of the
+    // 2026-07-23 batch's guru-arjan-dev/maharana-pratap/rani-lakshmibai
+    // manifests briefly did, before being corrected to match convention) still
+    // resolves correctly rather than silently falling through to the
+    // "unsupported hero" fallback.
     const reqTitleNormalized = reqTitle.replace(/-/g, '_');
 
     const docsWithScores: Array<{ doc: DharamVeerIndexDocument; score: number }> = [];
