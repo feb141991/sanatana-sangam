@@ -194,10 +194,15 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         let titleSourceScore = 0.0;
         const lowercaseSource = (manifest.source_name || this.sourceName).toLowerCase();
         const lowercaseDocId = (manifest.doc_id || '').toLowerCase();
+        // Normalize hyphenated figure_id (production id convention) against
+        // underscored doc_id (manifest convention) -- see matching fix in
+        // PramanaDharamVeerEmbeddingRetriever.retrieve() for the same issue.
+        const reqTitleLower = reqTitle.toLowerCase();
+        const reqTitleLowerNormalized = reqTitleLower.replace(/-/g, '_');
 
-        if (reqTitle && reqTitle.toLowerCase() === lowercaseDocId) {
+        if (reqTitle && (reqTitleLower === lowercaseDocId || reqTitleLowerNormalized === lowercaseDocId)) {
           titleSourceScore += 1.0;
-        } else if (reqTitle && (lowercaseDocId.includes(reqTitle.toLowerCase()) || reqTitle.toLowerCase().includes(lowercaseDocId))) {
+        } else if (reqTitle && (lowercaseDocId.includes(reqTitleLower) || reqTitleLower.includes(lowercaseDocId) || lowercaseDocId.includes(reqTitleLowerNormalized) || reqTitleLowerNormalized.includes(lowercaseDocId))) {
           titleSourceScore += 0.3;
         }
 
@@ -1152,7 +1157,12 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_emperor_ashoka.json',
     'dharam_veer_parshvanatha.json',
     'dharam_veer_harishchandra.json',
-    'dharam_veer_chanakya.json'
+    'dharam_veer_chanakya.json',
+    // Batch (2026-07-23): verified public-domain sources added, see
+    // docs/DHARAM_VEER_COVERAGE_AUDIT.md for source/rights table.
+    'dharam_veer_guru_arjan_dev.json',
+    'dharam_veer_maharana_pratap.json',
+    'dharam_veer_rani_lakshmibai.json'
   ]
 });
 
@@ -1192,6 +1202,18 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
 
     const queryText = query.text.trim();
     const reqTitle = (query.filters?.title as string || '').toLowerCase(); // expected figure_id
+    // Production figure_id values (src/lib/data/dharm-veers/*.ts) are hyphenated
+    // (e.g. "guru-arjan-dev"), but manifest doc_id/filenames use underscores
+    // (e.g. "dharam_veer_guru_arjan_dev") per the existing corpus convention.
+    // Without normalizing, every multi-word figure_id fails this exact-match
+    // check and silently falls through to the "unsupported hero" safe fallback.
+    // (Data-contract bug found during the 2026-07-23 batch: this affected 7 of the
+    // 13 previously-supported heroes -- chhatrapati-shivaji, emperor-ashoka,
+    // guru-gobind-singh, guru-nanak-dev, guru-tegh-bahadur, lord-mahavira,
+    // siddhartha-gautama -- whose hyphenated figure_id never matched their
+    // underscored doc_id, so "Ask AI more" silently fell back to the unsupported
+    // fallback for them despite manifests existing. Fixed here by normalizing.)
+    const reqTitleNormalized = reqTitle.replace(/-/g, '_');
 
     const docsWithScores: Array<{ doc: DharamVeerIndexDocument; score: number }> = [];
 
@@ -1202,7 +1224,12 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
 
       const docId = (doc.doc_id || '').toLowerCase();
       if (reqTitle) {
-          if (docId === reqTitle || docId === `dharam_veer_${reqTitle}`) {
+          if (
+            docId === reqTitle ||
+            docId === `dharam_veer_${reqTitle}` ||
+            docId === reqTitleNormalized ||
+            docId === `dharam_veer_${reqTitleNormalized}`
+          ) {
               score += 2.0; // high boost for exact figure match
           }
       }

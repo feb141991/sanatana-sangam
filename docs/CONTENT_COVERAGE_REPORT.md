@@ -1,6 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
+Updated by hand: 2026-07-23 (Dharm Veer batch 3) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -8,7 +9,7 @@ Generated: 2026-07-23
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 104 | 104 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 128 | 128 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -18,8 +19,8 @@ Generated: 2026-07-23
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 13
-- **Curated-Only / Unsupported Heroes:** 57
+- **Source-Backed (Supported) Heroes:** 16
+- **Curated-Only / Unsupported Heroes:** 54
 
 ### Supported Heroes:
 - `ananda`
@@ -35,13 +36,14 @@ Generated: 2026-07-23
 - `parshvanatha`
 - `chhatrapati-shivaji`
 - `siddhartha-gautama`
+- `guru-arjan-dev`
+- `maharana-pratap`
+- `rani-lakshmibai`
 
 ### Unsupported Roster Heroes:
 - `sri-krishna` (degrades to safe fallback explanation)
 - `sri-rama` (degrades to safe fallback explanation)
 - `adi-shankaracharya` (degrades to safe fallback explanation)
-- `maharana-pratap` (degrades to safe fallback explanation)
-- `rani-lakshmibai` (degrades to safe fallback explanation)
 - `swami-vivekananda` (degrades to safe fallback explanation)
 - `prahlad` (degrades to safe fallback explanation)
 - `dhruv` (degrades to safe fallback explanation)
@@ -58,7 +60,6 @@ Generated: 2026-07-23
 - `tulsidas` (degrades to safe fallback explanation)
 - `samarth-ramdas` (degrades to safe fallback explanation)
 - `banda-singh-bahadur` (degrades to safe fallback explanation)
-- `guru-arjan-dev` (degrades to safe fallback explanation)
 - `baba-deep-singh` (degrades to safe fallback explanation)
 - `mai-bhago` (degrades to safe fallback explanation)
 - `mata-gujri` (degrades to safe fallback explanation)
@@ -70,7 +71,7 @@ Generated: 2026-07-23
 - `maharaja-ranjit-singh` (degrades to safe fallback explanation)
 - `nawab-jassa-singh` (degrades to safe fallback explanation)
 - `rishabhanatha` (degrades to safe fallback explanation)
-- `bahubali` (degrades to safe fallback explanation)
+- `bahubali` (degrades to safe fallback explanation -- investigated and explicitly skipped in batch 3; see docs/DHARAM_VEER_COVERAGE_AUDIT.md section 5b, no verified public-domain English translation located)
 - `bhadrabahu` (degrades to safe fallback explanation)
 - `kundakunda` (degrades to safe fallback explanation)
 - `hemachandra` (degrades to safe fallback explanation)
