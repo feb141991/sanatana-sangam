@@ -145,3 +145,29 @@ actually ingested under this plan.
     `panchatantra-sparrow-and-elephant`, `panchatantra-donkey-and-jackal`, `panchatantra-camel-bell`,
     `panchatantra-greedy-jackal`, `panchatantra-weaver-as-vishnu`, `panchatantra-two-fish-and-frog`) were not
     reviewed in depth this batch and remain candidates for a future batch, not confirmed matches.
+- **Batch 3 (2026-07-23):** `panchatantra_chapter_3.json` -- 12 stories, covering all remaining reader candidates
+  the user asked to review: The Heron That Liked Crab-Meat, The Mice That Ate Iron, The Duel between Elephant
+  and Sparrow, How the Rabbit Fooled the Elephant, The Jackal and the War-Drum, The Bird with Golden Dung,
+  The Weaver Who Loved a Princess, The Frogs That Rode Snakeback, Right-Mind and Wrong-Mind (all Books 1-3),
+  plus the **first Book 5 stories**: The Loyal Mungoose, The Lion-Makers, The Brahman's Dream. Books 1-3 text
+  from theoceanofstories.blogspot.com (same source as Batches 1-2). Book 5 text from a **new source**,
+  shreevatsa.net (Ryder-1925/Hertel-recension HTML export), since theoceanofstories.blogspot.com never
+  transcribed Book 5 (confirmed by reviewing its complete post archive). shreevatsa.net's own copyright
+  analysis: Ryder's 1925 US copyright, renewed in 1953, would have expired "at least" by 2020 under the
+  applicable term extensions; that date has passed. Ryder (d. 1938) has also been public domain for decades
+  in life+70 countries including India. Treated as `public_domain` on this basis, documented per-item.
+  Total now ingested across Batches 1-3: **26 Panchatantra stories** (4 + 10 + 12).
+  Twelve additional candidates were evaluated and explicitly **skipped**, not ingested, because their reader
+  plot did not confidently match the cited Ryder story: `panchatantra-sage-and-mouse` (plot doesn't match
+  Ryder's "Mouse-Maid Made Mouse," which is a different, marriage-suitor story), `panchatantra-donkey-and-jackal`
+  (doesn't match Ryder's "Flop-Ear and Dusty"), `panchatantra-greedy-jackal` (doesn't match Ryder's "Gold's
+  Gloom"), `panchatantra-heron-and-fish` and `panchatantra-clever-hare-and-elephant` (near-duplicate retellings
+  of stories already ingested this batch under a different reader id -- not double-sourced),
+  `panchatantra-lion-and-bull` (confidently identified as Ryder's Book 1 frametale "The Loss of Friends," but
+  the frametale is extremely long with dozens of embedded sub-tales and its central betrayal scene was not
+  fully verified verbatim this session), `panchatantra-lion-mouse-and-cat` and `panchatantra-four-friends`
+  (likely not genuine Ryder Panchatantra material -- the latter is the signature Hitopadesha frame tale, a
+  different source text), and `panchatantra-camel-bell` (no confident Ryder match located). The five stories
+  flagged skipped in Batch 2 (`dove-king-and-net`, `fox-and-grapes`, `king-and-minister`, `monk-and-jackal`,
+  `hunter-and-pigeons`, `raven-and-swan`) remain skipped, plus `panchatantra-two-fish-and-frog` (likely variant
+  of "Forethought, Ready-Wit, and Fatalist," already ingested in Batch 2 as `three-fish`).
