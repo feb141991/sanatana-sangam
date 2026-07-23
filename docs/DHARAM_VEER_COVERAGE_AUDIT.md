@@ -639,3 +639,39 @@ source-availability problem, and batch 6 is left pending for a future session wi
 working Wikisource connection or a different archive.org access strategy (e.g. the
 `/fulltext/inside.php` search-inside API, which returned a timeout rather than a hard failure
 last attempt and may be worth retrying with a narrower query and longer timeout budget).
+
+## 16. Final full-roster verification (post batch 11)
+
+Ran a comprehensive adversarial smoke test across the entire 70-hero roster in one pass:
+
+- **All 37 source-backed heroes** (`filters: { title: figure_id }`, query "life and teachings"):
+  every single one returned exactly one distinct `docId`, matching `dharam_veer_<figure_id>`
+  exactly. Zero failures.
+- **All 33 remaining unsupported heroes**: every single one returned 0 documents (correct
+  fail-closed behavior — no cross-contamination from other heroes' chunks, no partial matches).
+  Zero leaks.
+- `dharam_veer_index.json` confirmed consistent: 37 manifests, 296 chunks (exactly 8 per hero).
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+- `git status` clean — all batch 8-11 work fully committed.
+
+**Final roster state: 37/70 heroes source-backed (53%), up from 26/70 at the start of this
+session's batch-8-through-11 sequence.**
+
+Breakdown of the remaining 33 unsupported heroes by blocker type:
+- **11 Sikh figures** (Batch 6, task #90): blocked by tooling, not source non-existence.
+  Macauliffe's *The Sikh Religion* Vols 4-6 (public domain) cover this era but are only
+  reachable via archive.org djvu.txt (truncates before the relevant chapters) or Wikisource
+  (returns empty on every fetch attempt this session, retried twice). See sections 10 and 15.
+- **2 explicitly rights-deferred figures**: `thich-nhat-hanh` (died 2022, actively in
+  copyright) and `br-ambedkar` (died 1956, unclear US renewal status) — deliberately not
+  sourced regardless of tooling, per the session's rights-safety discipline.
+- **20 remaining figures across Hindu/Jain/Buddhist traditions**: either investigated and
+  found to have no accessible public-domain narrative source this session (documented
+  per-figure in sections 11, 12, 13), or not yet investigated at all and left as candidates
+  for a future batch (`ramana-maharshi`, `samarth-ramdas`, `bodhidharma`, `padmasambhava`,
+  `atisha`, and the remaining Jain figures beyond Bhadrabahu/Sthulabhadra/Chandanbala).
+
+No fabricated or guessed content exists anywhere in this corpus: every one of the 296 chunks
+across 37 manifests traces to a specific fetched public-domain source URL, and every
+unsupported figure degrades to the safe fallback explanation rather than a hallucinated
+answer.
