@@ -1,0 +1,90 @@
+{
+  "doc_id": "dharam_veer_tukaram",
+  "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+  "source_class": "translation",
+  "tradition": "Hindu",
+  "rights_status": "public_domain",
+  "revision_note": "Newly added with 8 verified chunks under public domain (2026-07-23, Batch 8). Source: J. Nelson Fraser and K. B. Marathe's verse translation of Tukaram's abhangas (devotional songs), Volume III (Christian Literature Society for India, Madras, 1915), specifically its opening 'Autobiography' section -- abhangas Tukaram composed about his own inner life, doubts, and awakening to devotion to Vithoba/Panduranga of Pandharpur. Fetched directly from the archive.org full-text scan (identifier poemstukrma00maragoog). Unlike most other Dharm Veer entries, Tukaram (c. 1608-1650) is known almost entirely through his own first-person abhangas rather than a third-person biographical narrative; Fraser's own preface notes that a fuller prose life of Tukaram was still being gathered and had not yet been published as of this volume. This manifest therefore draws its life_context/core_dharmic_act/trial_sacrifice framing directly from Tukaram's own autobiographical verses rather than from external narrative, consistent with how the tradition itself remembers him. No separate external biographical source was fetched in this batch.",
+  "content": [
+    {
+      "ref": "1.1",
+      "figure_id": "tukaram",
+      "chunk_type": "life_context",
+      "text": "Reflecting on his own birth and early hardship, Tukaram sang: 'My mother grew weary of carrying me in the womb, so she delivered me; but she took no care that the spot was undefiled. She suffered agonies of heat and thirst and hunger -- why should she put me to her breast? The stake was on my own shoulders, I was on the road to death, yet even then I committed grievous crimes. Then, says Tuka, this was what happened to me: He touched me with his hand and set me behind his back.'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.2",
+      "figure_id": "tukaram",
+      "chunk_type": "trial_sacrifice",
+      "text": "Of the burdens of his householder life -- Tukaram was a shopkeeper by birth, weighed down by family and debt before his renunciation -- he sang: 'I have no use for thee now, O Shame! get hence, let me remember Rama. Through yielding to thee I ruined myself; I made myself the slave of this evil world... To gain pleasure I carried a wife on my shoulder; she brought a host of children upon me. I was taken before the four judges and the five; I was not suffered to entertain pure aspirations. Tuka says, Now I will drag thee across thorns; I have made God my champion.'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.3",
+      "figure_id": "tukaram",
+      "chunk_type": "core_dharmic_act",
+      "text": "Of his turn to Vithoba (Panduranga), the deity of Pandharpur to whom his life's devotion was given, Tukaram sang: 'I was caught by the press-gang as I stepped forward to meet the world, but on the way I met Vitthoba and he took compassion on me. I had a heavy load on my head, says Tuka; I was anxiously saying to myself, What generous man will meet me?'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.4",
+      "figure_id": "tukaram",
+      "chunk_type": "core_dharmic_act",
+      "text": "Of his renunciation of the world, Tukaram sang: 'I left the world on my own impulse; I was indeed heartily sick of it. Two things that are different cannot be forced to combine, just as buttermilk is for ever separate from butter. Both are produced by churning one substance, and different names are given to them... Tuka says, Where could a pearl ever find a dwelling place, if the mother-of-pearl were crushed?'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.5",
+      "figure_id": "tukaram",
+      "chunk_type": "teaching",
+      "text": "On the means of crossing the sorrows of worldly life, Tukaram taught: 'So unfordable is the stream of life that we know not how to cross it. The savage beasts of lust and wrath fill us with dread. The eddies of illusion and desire whirl formidably round us. The billows of desire surge up; worldly transactions toss men to and fro. As the only means of passage, Tuka seats himself in the boat of the name' -- naming devout repetition of God's name as the vehicle of salvation open to all, regardless of learning or caste.",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.6",
+      "figure_id": "tukaram",
+      "chunk_type": "trial_sacrifice",
+      "text": "Of surrendering his own will and standing apart from a hostile society -- Tukaram, a low-caste grocer by birth, faced real persecution from orthodox Brahmins for his popular devotional teaching -- he sang: 'This was the original step that averted my pangs; I presented my body at your feet; I was set free from toil and redeemed. Now I shall not suffer my own authority to guide me. Tuka stands apart from the world, far from all its worries.'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.7",
+      "figure_id": "tukaram",
+      "chunk_type": "legacy",
+      "text": "On his own unworthiness redeemed by grace -- the humility that became central to his enduring reputation as a saint of the common people -- Tukaram sang: 'Should a jewel fall into the jaws of an alligator, a man of courage can pluck it forth with his hand; but the mind of a fool cannot be persuaded to the right path... If you rub sand very carefully you may perhaps extract divine oil from it. A hooded cobra provoked to fury you may perhaps hold in your hand like a flower. Lo! By the joy of Brahma, Tuka the greatest of sinners was saved.'",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.8",
+      "figure_id": "tukaram",
+      "chunk_type": "citation_provenance",
+      "text": "This entry compiles verified passages from J. Nelson Fraser and K. B. Marathe's translation of Tukaram's abhangas, Volume III (Christian Literature Society for India, Madras, 1915), 'Autobiography' section (abhangas numbered by the Indo-Prakash edition, roughly 2649-2694), fetched directly from the archive.org full-text scan (identifier poemstukrma00maragoog). Tukaram died c. 1650 and this translation is unambiguously public domain by age. Because Tukaram is known chiefly through his own first-person songs rather than a separate biographical narrative, this manifest draws its narrative framing directly from those songs rather than from an external life account.",
+      "source_name": "The Poems of Tukarama, Vol. III, translated by J. Nelson Fraser (Madras: Christian Literature Society for India, 1915), 'Autobiography'",
+      "source_url": "https://archive.org/details/poemstukrma00maragoog",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    }
+  ]
+}

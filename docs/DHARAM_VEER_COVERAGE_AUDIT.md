@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 5)
+Last updated: 2026-07-23 (Batch 8)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -419,3 +419,70 @@ are tracked in the project's task list and remain consistent with the original s
 of ~15-20 more heroes being realistically sourceable before the technique needs to shift to
 case-by-case specialized research for the hardest remaining candidates.
 
+
+
+## 10. Scope note — Batch 6 (Sikh figures) blocked on source access, not source existence (2026-07-23)
+
+Before Batch 8, an attempt was made to source the 11 remaining Sikh figures (Banda Singh Bahadur,
+Baba Deep Singh, Mai Bhago, Mata Gujri, Hari Singh Nalwa, Bhai Taru Singh, Bhai Mani Singh, Bhai
+Gurdas, Akali Phula Singh, Maharaja Ranjit Singh, Nawab Jassa Singh). The known primary sources for
+these figures exist (Macauliffe's *The Sikh Religion* Vol. 5-6, Cunningham's *History of the
+Sikhs*, Lepel Griffin's *Ranjit Singh*), but every candidate is a large multi-hundred-page 19th
+century scan on archive.org, and the fetch tooling used this session truncates `_djvu.txt` full-text
+downloads at roughly 100-110K characters from the start of the file. For all three sources tried,
+the target figures' biographical chapters fall well past that truncation point (confirmed via
+Macauliffe Vol. 5's table of contents, visible within the truncated portion, showing "Interview
+with Banda" and "Banda's Career" are much later in the 610KB file; and via Griffin's *Ranjit Singh*,
+where the truncated portion only reaches the introductory "Sikh Theocracy" chapter on Guru history,
+not Ranjit Singh's own biography). Wikisource, which would sidestep this problem via per-chapter
+pages, was unreachable via the fetch tool this session (5 different URL/API patterns all returned
+empty content, likely a transient host-level issue rather than the content not existing). This
+batch was therefore deferred rather than forced through with weaker sourcing, and the task list
+entry (`Batch 6`) was updated to record this as a tooling blocker to retry, not a dead end.
+
+## 11. Scope note — Batch 8 expansion: Hindu bhakti saints (2026-07-23)
+
+This batch adds **4 new heroes** -- Tulsidas, Tukaram, Ramakrishna, and Kabir -- bringing the
+Dharm Veer corpus to **30 heroes, 240 chunks**.
+
+| Hero | Source | Notes |
+|---|---|---|
+| Tulsidas | F. S. Growse, *The Ramayana of Tulsi Das*, Introduction (1883), archive.org `rmyanaoftuls00tulauoft` | Growse's scholarly Introduction quotes and translates the Bhakt-Mala (with Priya Das's 1713 gloss) and H. H. Wilson's 1828 essay; only the biographical Introduction was used, not the translated epic itself. |
+| Tukaram | J. Nelson Fraser & K. B. Marathe, *The Poems of Tukarama*, Vol. III (Christian Literature Society for India, 1915), "Autobiography" section, archive.org `poemstukrma00maragoog` | Unlike other entries, Tukaram is known almost entirely through his own first-person abhangas rather than a third-person narrative; this manifest draws its framing directly from those songs, consistent with how the tradition remembers him. |
+| Ramakrishna | F. Max Muller, *Ramakrishna, His Life and Sayings*, "Ramakrishna's Life" chapter (1898), sacred-texts.com | Rich, detailed third-person biographical chapter; Muller died 1900, unambiguously public domain. |
+| Kabir | Evelyn Underhill's biographical Introduction to Rabindranath Tagore's *Songs of Kabir* (1915), sacred-texts.com | sacred-texts.com states explicitly the etext "is in the public domain in the US because it was published prior to 1923." Underhill herself flags Kabir's traditional biography as legendary and not reliably attested; that framing is preserved in the manifest. |
+
+### 11a. Heroes investigated but not sourced this batch
+
+- **Adi Shankaracharya** and **Ramanujacharya**: the available PD translations (George Thibaut's
+  Sacred Books of the East volumes on the Vedanta-Sutras, SBE 34 and SBE 48) are dense philosophical
+  commentary with no accessible biographical narrative in their introductions -- unlike Growse's
+  Tulsidas introduction, Thibaut's focus is comparative doctrine, not the commentators' lives. No
+  substitute PD biography was located this batch.
+- **Mirabai**: the only candidate English translation found (A. J. Alston, 1980, Motilal
+  Banarsidass) is a modern copyrighted work. An archive.org Digital-Library-of-India copy is
+  mislabeled `Out_of_copyright` in its metadata, but DLI rights metadata is known to be unreliable
+  and a 1980 translation cannot plausibly be PD; it was not used. No pre-1929 English translation of
+  her bhajans was located.
+- **Ramana Maharshi**: not investigated in depth (died 1950; most English biographical material is
+  likely still under copyright and would need careful pre-1930 sourcing or an explicit rights
+  determination).
+- **Samarth Ramdas**: not investigated this batch; Justin Abbott's "Poet-Saints of Maharashtra"
+  series is a plausible candidate for a future batch if a pre-1929 volume can be confirmed.
+
+### 11b. Verification performed
+
+- All 4 new manifest files validated programmatically (8 chunks each, hyphenated `doc_id` matching
+  the production `figure_id` in `src/lib/data/dharm-veers/hindu.ts` exactly, `figure_id` present on
+  every chunk).
+- New filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array.
+- `dharam_veer_index.json` regenerated: now indexes **30 heroes, 240 chunks** (up from 26 heroes,
+  208 chunks).
+- Live retrieval smoke test via `npx tsx` against the rebuilt index and running retriever code
+  (importing `PramanaRetrieverSelector` from `@sangam/pramana-serve` directly, with `retrieval.ts`
+  imported for its module-level `.register()` side effects):
+  - All 4 new heroes (`tulsidas`, `tukaram`, `ramakrishna`, `kabir`) return their own chunks with
+    the correct `docId`.
+  - Fail-closed check: `adi-shankaracharya`, `ramanujacharya`, `mirabai`, `samarth-ramdas`, and
+    `ramana-maharshi` (all deliberately left unsupported this batch) each return 0 documents.
+- `npx eslint src/lib/ai/retrieval.ts` clean.

@@ -1,0 +1,90 @@
+{
+  "doc_id": "dharam_veer_tulsidas",
+  "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+  "source_class": "translation",
+  "tradition": "Hindu",
+  "rights_status": "public_domain",
+  "revision_note": "Newly added with 8 verified chunks under public domain (2026-07-23, Batch 8). Source: F. S. Growse's 1883 English translation of the Ramcharitmanas, 'The Ramayana of Tulsi Das,' specifically its scholarly Introduction, which quotes and translates the earliest biographical accounts of Tulsidas from the Bhakt-Mala (with Priya Das's 1713 gloss) and from H. H. Wilson's 'Essay on the Religious Sects of the Hindus.' Fetched directly from the archive.org full-text scan (identifier rmyanaoftuls00tulauoft). Growse explicitly flags the miracle legends (the ghost who introduced him to Hanuman, the Shah Jahan imprisonment, the widow's husband restored to life) as traditional/legendary rather than verified history, while treating the wife's rebuke and the basic biographical facts (birth traditions, study at Soron, composition begun at Ayodhya in 1575 AD, life mostly spent at Benares, death in 1624 AD) as more reliably attested; this manifest preserves that distinction by drawing the trial_sacrifice/core_dharmic_act chunks from the legend material explicitly as legend, consistent with how the app's other epic/hagiographic Dharm Veer entries handle traditional narrative. The translated Ramcharitmanas text itself (the epic poem's actual verses) was not fetched in this batch; only Growse's introductory biographical/critical material was used.",
+  "content": [
+    {
+      "ref": "1.1",
+      "figure_id": "tulsidas",
+      "chunk_type": "life_context",
+      "text": "Growse records that Tulsi Das was by descent a Brahman of the Kanaujiya clan. Tradition places his birth variously at Hastinapur or at Rajapur near Chitrakut. He studied for some length of time at Soron, and, as he himself records in the prologue to his Ramayana, commenced its composition at Ayodhya in the Sambat year 1631, corresponding to 1575 A.D. The greater part of his life was spent at Benares, though he also passed years in visits to Soron, Ayodhya, Chitrakut, Allahabad, and Brindaban. He died in the Sambat year 1680 (1624 A.D.).",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.2",
+      "figure_id": "tulsidas",
+      "chunk_type": "trial_sacrifice",
+      "text": "Tradition holds that Tulsi Das had great love for his wife; when she once went home to her father's without asking his leave, he forgot himself and hastened after her. Ashamed, she rebuked him in anger: 'Have you no love for Rama? My body is but a framework of skin and bone.' On hearing these words, Growse writes, 'it was, as it were, the daybreak; he felt compunction and left her and sped to the city of Kasi. There he made his abode, worshipping the lord publicly, making a rigid vow, and thirsting exceedingly for a vision.' Growse notes that, of all the traditional legends of the poet's life, this account of his wife first turning him from earthly to divine love 'may well be accepted as a fact.'",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.3",
+      "figure_id": "tulsidas",
+      "chunk_type": "core_dharmic_act",
+      "text": "According to the Bhakt-Mala's traditional account, a grateful spirit told Tulsi Das that a disguised Hanuman was always the first to arrive and the last to leave wherever the Ramayana was recited. Recognizing him as he left, Tulsi Das followed him into the wood and, knowing him to be the god, 'ran and embraced his feet, crying with a shout of joy: \"You shall not escape me.\"' Perceiving his intense devotion, Hanuman assumed his famous form and asked what he wished; Tulsi Das answered, 'I am ever craving to behold with my very eyes the incomparable beauty of King Rama.' Hanuman told him where to meet him, and in time Rama and Lakshman appeared before him, mounted on horseback in green raiment like huntsmen.",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.4",
+      "figure_id": "tulsidas",
+      "chunk_type": "trial_sacrifice",
+      "text": "H. H. Wilson's account, drawn from the Bhakt-Mala, records that Tulsi Das's fame reached Delhi, where Shah Jahan was emperor. 'The monarch sent for him to produce the person of Rama, which Tulsi Das refusing to do, the king threw him into confinement.' Growse's fuller version has Tulsi Das answer the emperor's demand for a miracle plainly: 'It is false; know that Rama is all in all.' Thrown into prison for his refusal, 'thousands upon thousands of sturdy monkeys spread all over the place,' besieging the fort until the emperor, overwhelmed, ordered him freed and abandoned the site -- founding, in Wilson's telling, the new city of Shahjahanabad in its place.",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.5",
+      "figure_id": "tulsidas",
+      "chunk_type": "teaching",
+      "text": "When a Brahman who had committed murder came on pilgrimage crying, 'For the love of Rama give an alms even to me, a murderer,' Tulsi Das received him, fed him from the god's own offerings, and 'purified him and sang the praises of his Beloved.' Challenged by other Brahmans for eating with a murderer, he answered, 'Read your books; their real meaning has not penetrated your heart; therefore your faith is dead and your blindness has not been removed' -- teaching that the repetition of the holy name of Rama redeems even the gravest sin, regardless of birth or caste.",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.6",
+      "figure_id": "tulsidas",
+      "chunk_type": "core_dharmic_act",
+      "text": "Growse records that Tulsi Das himself founded the temple of Sita-Ram at Benares, where an autograph manuscript of his minor work the Ram Agya was preserved until it was lost in the Mutiny. In addition to his great Ramayana, he composed at least six other poems -- the Ramgitavali, the Dohavali, the Kabit-sambandh, the Binay Patrika, the Satsai, and the Ram Agya -- 'all of them having the one object of popularizing the cultus of his tutelary divinity.'",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.7",
+      "figure_id": "tulsidas",
+      "chunk_type": "legacy",
+      "text": "The Bhakt-Mala of Nabha Ji, one of the earliest notices of Tulsi Das, declares in Growse's translation: 'For the redemption of mankind in this perverse Kali Yug, Valmiki has been born again as Tulsi... Now again, as a blessing to the faithful, has he taken birth and published the sportive actions of the god. Intoxicated with his passion for Rama's feet, he perseveres day and night in the accomplishment of his vow, and has supplied, as it were, a boat for the easy passage of the boundless ocean of existence.'",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.8",
+      "figure_id": "tulsidas",
+      "chunk_type": "citation_provenance",
+      "text": "This entry compiles verified passages from F. S. Growse's Introduction to his 1883 English translation of the Ramcharitmanas, 'The Ramayana of Tulsi Das,' fetched directly from the archive.org full-text scan (identifier rmyanaoftuls00tulauoft). The Introduction itself quotes and translates the Bhakt-Mala (with Priya Das's 1713 Hindi gloss) and H. H. Wilson's 1828 'Essay on the Religious Sects of the Hindus.' Growse explicitly distinguishes the more reliably attested biographical facts (birth traditions, dates, works) from the traditional miracle legends, a distinction preserved in this manifest's framing. The translated epic text of the Ramcharitmanas itself was not fetched in this batch; only the biographical Introduction was used.",
+      "source_name": "The Ramayana of Tulsi Das, translated by F. S. Growse, 'Introduction' (Allahabad, 1883)",
+      "source_url": "https://archive.org/details/rmyanaoftuls00tulauoft",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    }
+  ]
+}

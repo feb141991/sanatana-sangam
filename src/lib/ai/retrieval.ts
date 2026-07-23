@@ -1172,7 +1172,11 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_hanuman.json',
     'dharam_veer_shabari.json',
     'dharam_veer_valmiki.json',
-    'dharam_veer_sri_krishna.json'
+    'dharam_veer_sri_krishna.json',
+    'dharam_veer_tulsidas.json',
+    'dharam_veer_tukaram.json',
+    'dharam_veer_ramakrishna.json',
+    'dharam_veer_kabir.json'
   ]
 });
 

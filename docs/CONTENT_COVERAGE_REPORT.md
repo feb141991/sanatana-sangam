@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-23 (Dharm Veer batch 5) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-23 (Dharm Veer batch 8) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 5) -- no auto-generation script ex
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 208 | 208 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 240 | 240 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 5) -- no auto-generation script ex
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 26
-- **Curated-Only / Unsupported Heroes:** 44
+- **Source-Backed (Supported) Heroes:** 30
+- **Curated-Only / Unsupported Heroes:** 40
 
 ### Supported Heroes:
 - `ananda`
@@ -49,18 +49,18 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 5) -- no auto-generation script ex
 - `shabari`
 - `valmiki`
 - `sri-krishna`
+- `tulsidas`
+- `tukaram`
+- `ramakrishna`
+- `kabir`
 
 ### Unsupported Roster Heroes:
-- `adi-shankaracharya` (degrades to safe fallback explanation)
+- `adi-shankaracharya` (degrades to safe fallback explanation -- investigated in batch 8; George Thibaut's PD translations of the Vedanta-Sutras (SBE 34) are dense philosophical commentary with no accessible biographical narrative; no verified PD biography located this batch)
 - `savitri` (degrades to safe fallback explanation -- candidate for a future batch; not sourced in batch 5, which prioritized Rama/Hanuman/Krishna/Valmiki/Shabari instead. Likely source: Ganguli's Mahabharata Vana Parva, already proven for Bhishma/Arjuna)
-- `mirabai` (degrades to safe fallback explanation)
-- `tukaram` (degrades to safe fallback explanation)
-- `kabir` (degrades to safe fallback explanation)
-- `ramanujacharya` (degrades to safe fallback explanation)
-- `ramakrishna` (degrades to safe fallback explanation)
-- `ramana-maharshi` (degrades to safe fallback explanation)
-- `tulsidas` (degrades to safe fallback explanation)
-- `samarth-ramdas` (degrades to safe fallback explanation)
+- `mirabai` (degrades to safe fallback explanation -- investigated in batch 8; only candidate English translation found (A. J. Alston, 1980, Motilal Banarsidass) is a modern copyrighted work, not public domain, despite an archive.org DLI copy mislabeled 'Out_of_copyright'; no pre-1929 English translation of her bhajans was located. Skipped rather than risk a rights violation.)
+- `ramanujacharya` (degrades to safe fallback explanation -- investigated in batch 8; George Thibaut's PD translation of Ramanuja's Sribhashya (SBE 48) is dense philosophical commentary with no accessible biographical narrative; the only biographical item found on archive.org was a modern video with a Wikipedia (CC-BY-SA, not PD) description, not usable)
+- `ramana-maharshi` (degrades to safe fallback explanation -- not investigated in depth this batch; died 1950, so most English-language biographical sources are likely still in copyright and would need careful pre-1930 sourcing or an explicit rights check)
+- `samarth-ramdas` (degrades to safe fallback explanation -- not investigated this batch; candidate for a future batch, likely via Justin Abbott's 'Poet-Saints of Maharashtra' series if a pre-1929 volume can be confirmed)
 - `banda-singh-bahadur` (degrades to safe fallback explanation -- candidate for batch 4; a suitable clean per-chapter public-domain source (Cunningham's History of the Sikhs, 1849) was not located/fetched within the session's time budget and was skipped rather than guessed, per policy; good candidate for a future batch)
 - `baba-deep-singh` (degrades to safe fallback explanation)
 - `mai-bhago` (degrades to safe fallback explanation)
