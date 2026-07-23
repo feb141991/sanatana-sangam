@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 3 + schema cleanup)
+Last updated: 2026-07-23 (Batch 4)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -191,3 +191,146 @@ in section 3b.
   ourselves would not be "verbatim public domain source text" and risks inaccuracy -- exactly what the
   "skip rather than guess" policy exists to prevent. Bahubali therefore remains unsupported; the
   `bahubali` figure_id correctly returns the safe fallback (verified in section 4).
+
+## 0d. Scope note — batch 4 expansion (2026-07-23)
+
+This batch adds **5 new verified heroes** (Milinda, Prahlad, Dhruv, Xuanzang, Swami Vivekananda),
+bringing the total to **21 heroes, 168 chunks**. This is the largest single batch to date (previous
+batches added 8, then 3, heroes). One additional requested candidate, **Banda Singh Bahadur**, was
+investigated but not completed in this batch -- see section 6c for the reasoning -- and remains a
+strong candidate for a future batch.
+
+### Batch 4 coverage
+
+| Hero | figure_id | Tradition | Chunks | Source | Rights |
+|---|---|---|---|---|---|
+| King Milinda (Menander I) | `milinda` | Buddhist | 8 | *The Questions of King Milinda*, trans. T. W. Rhys Davids, Sacred Books of the East Vol. 35 (1890) | `public_domain` |
+| Bhakta Prahlad | `prahlad` | Hindu | 8 | *The Vishnu Purana*, Book I Ch. XVII & XX, trans. H. H. Wilson (1840) | `public_domain` |
+| Bhakta Dhruv | `dhruv` | Hindu | 8 | *The Vishnu Purana*, Book I Ch. XI & XII, trans. H. H. Wilson (1840) | `public_domain` |
+| Xuanzang (Hiuen Tsang) | `xuanzang` | Buddhist | 8 | *Si-Yu-Ki: Buddhist Records of the Western World*, Introduction (d), trans. Samuel Beal (1884) | `public_domain` |
+| Swami Vivekananda | `swami-vivekananda` | Hindu | 8 | *Speeches and Writings of Swami Vivekananda: A Comprehensive Collection*, 3rd ed. (G. A. Natesan & Co., Madras) | `public_domain` |
+
+### 6a. Sourcing notes and technique
+
+All five heroes were sourced from clean, directly-fetched, per-chapter public-domain hosts, extending
+the technique proven in batch 3 (ibiblio.org's "British Raj" collection for large 19th-century English
+histories) to two additional hosts that solve the same archive.org large-file-truncation problem for
+different genres of source text:
+
+- **sacred-texts.com** -- hosts Wilson's 1840 Vishnu Purana and Rhys Davids' Milinda translation as
+  small, clean per-chapter HTML pages (e.g. `vp052.htm` = Book I Chapter XVII). Used for Prahlad and
+  Dhruv (Vishnu Purana) directly.
+- **wisdomlib.org** -- hosts numerous public-domain Sacred-Books-of-the-East-era translations
+  (Rhys Davids' Milindapanha, Beal's Si-Yu-Ki) as clean per-chapter pages with a navigable book index.
+  Used for Milinda (Book II Chapter 1, the "chariot" dialogue) and Xuanzang (the biographical
+  Introduction section, distinct from -- and better suited to a hero-narrative than -- the
+  travelogue's country-by-country chapters).
+- **archive.org full-text (`_djvu.txt`) scans** -- used for Swami Vivekananda, an early (public-domain)
+  compiled edition, *Speeches and Writings of Swami Vivekananda: A Comprehensive Collection*
+  (G. A. Natesan & Co., Madras; archive.org identifier `speecheswritings00viveuoft`). This source is a
+  large scanned volume and the fetch truncated before reaching some sections (notably the famous 1893
+  Chicago "Sisters and Brothers of America" address), but the truncated portion that *was* returned
+  contained two complete, directly quotable, citable sections: the "My Master" lecture (Vivekananda's
+  own account of meeting Ramakrishna) and a "Reply to Address of Welcome" tour speech. Only these
+  directly-fetched sections are quoted in the manifest; the Chicago address is explicitly *not*
+  represented and is noted as such in the manifest's `revision_note`, per the "skip rather than guess"
+  policy -- it was not fabricated or paraphrased from secondary summaries. `wikisource.org`, which
+  hosts a clean per-speech transcription of the Chicago address, was attempted first but consistently
+  returned empty content in this session (possibly a fetch-tool restriction on that domain); this is
+  flagged as a good starting point for a future batch that wants to add the Chicago address.
+
+For Xuanzang and Milinda specifically, care was taken to source from the *biographical/dialogue*
+portions of their respective works (Xuanzang's own life story; the opening philosophical exchange
+between Milinda and Nagasena) rather than the bulk of each work (a country-by-country travelogue for
+Xuanzang; hundreds of pages of further philosophical dialogues for Milinda), since a Dharm Veer entry
+needs narrative/trial content about the person, not an encyclopedic excerpt of the work they authored
+or inspired.
+
+### 6b. Verification performed
+
+- All 5 new manifest files validated programmatically: exactly 8 chunks each, `doc_id` hyphenated and
+  matching the production `figure_id` in `src/lib/data/dharm-veers/{hindu,buddhist}.ts` exactly, every
+  chunk carries `figure_id` matching the manifest's own hero, and every chunk has all 8 required fields
+  (`ref`, `figure_id`, `chunk_type`, `text`, `source_name`, `source_url`, `rights_status`,
+  `source_class`).
+- New manifest filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array in
+  `src/lib/ai/retrieval.ts` (fallback path only; the primary index-based path auto-discovers new
+  `dharam_veer_*.json` files via glob and needed no registration).
+- `dharam_veer_index.json` regenerated via `build_dharam_veer_index.py`; now indexes **21 heroes,
+  168 chunks** (up from 16 heroes, 128 chunks).
+- Live retrieval smoke test run against the rebuilt index and running `PramanaDharamVeerEmbeddingRetriever`
+  code (via `npx tsx`, not just static inspection):
+  - All 5 new heroes return exactly 8 chunks each, and every returned chunk's `docId` belongs to that
+    same hero (no cross-hero leakage).
+  - Fail-closed check: 4 unsupported heroes (`akali-phula-singh`, `hanuman`, `bahubali`,
+    `banda-singh-bahadur`) each return **0** chunks, confirming the safe-fallback path still holds for
+    heroes without a manifest.
+  - Near-miss / cross-leak probes (`millind`, `xuan-zang`, `dhruva`, `prahlada` -- deliberately close
+    misspellings of the 4 new hero ids) each return **0** chunks, confirming the exact-match retrieval
+    logic does not fuzzy-match or leak content to adjacent spellings.
+  - Full-roster sanity check: all 21 supported heroes (16 pre-existing + 5 new) return non-empty
+    results in a single run, with 0 failures.
+- `npx eslint src/lib/ai/retrieval.ts` run clean (no errors, no warnings) on the registration change.
+  Full-repo `npx tsc --noEmit` was not run to completion in this session (exceeds the environment's
+  45-second command timeout on this monorepo, as noted in prior batches); the live `npx tsx` execution
+  of the retriever module is used as the practical substitute, since it requires the module to be valid,
+  loadable TypeScript to run at all.
+
+### 6c. Banda Singh Bahadur — investigated, not completed this batch
+
+Banda Singh Bahadur was one of six candidates selected for this batch (from the 54-hero unsupported
+roster) alongside the five heroes above. A strong public-domain source was identified --
+J. D. Cunningham's *History of the Sikhs* (1849; Cunningham died 1851, so the work is unambiguously
+public domain) -- but no clean per-chapter host (equivalent to ibiblio's "British Raj" collection or
+sacred-texts.com/wisdomlib.org's chapter pages) could be located for this specific title within the
+session's time budget, and a direct archive.org `_djvu.txt` fetch of the full volume would have hit the
+same large-file truncation problem seen with Milinda's front matter earlier in this session, requiring
+extensive manual page-hunting to locate the relevant chapter. Rather than guess at or paraphrase the
+relevant passages from search-result summaries, this hero was skipped and left for a future batch, per
+the project's standing "skip rather than guess" policy. `docs/CONTENT_COVERAGE_REPORT.md` reflects this
+with an updated skip-reason note.
+
+## 7. Corpus runway assessment — how much longer can Dharm Veer keep expanding?
+
+The user asked, after this batch, for an honest assessment of how long the Dharm Veer corpus can keep
+growing with genuinely unique, properly public-domain-sourced content before hitting diminishing
+returns. Based on four batches of hands-on sourcing work (23 heroes now investigated in depth: 21
+supported + bahubali + banda-singh-bahadur skipped), the honest picture is:
+
+**Remaining runway is real but no longer "easy" -- roughly 15-20 more heroes look sourceable with the
+current technique before the pool of clean, single-hero, single-chapter public-domain sources runs
+low.** Concretely, of the 49 heroes still unsupported:
+
+- **Good near-term candidates (~10-12 heroes), likely sourceable in 1-2 more batches with the same
+  technique:** `sri-krishna` and `sri-rama` (Wilson's Vishnu Purana / Griffith's Ramayana translation,
+  both already proven sources this session), `hanuman` and `valmiki` (Griffith's Ramayana), `mirabai`
+  and `kabir` (early PD English verse-translation anthologies exist, e.g. Tagore's 1915 "Songs of
+  Kabir" -- though as noted in this session, Kabir's *biography* is legendary/contested and would need
+  care to avoid inventing narrative), `br-ambedkar` (his own writings, e.g. speeches and *Annihilation
+  of Caste*, are early-20th-century and may already be PD or nearing it -- needs a fresh rights check
+  since he died 1956), `hari-singh-nalwa` and `maharaja-ranjit-singh` (covered in the same Cunningham
+  *History of the Sikhs* and other 19th-century British Punjab histories already identified for Banda
+  Singh Bahadur), `nagarjuna` and `bodhidharma` (covered in translated Chinese Buddhist biographical
+  collections, e.g. Beal's other works).
+- **Harder candidates (~8-10 heroes) requiring more specialized sourcing effort:** the remaining Sikh
+  martyrs (`baba-deep-singh`, `mai-bhago`, `bhai-taru-singh`, `bhai-mani-singh`, `akali-phula-singh`,
+  `nawab-jassa-singh`) are covered in Macauliffe's *Sikh Religion* (already a proven source for 4
+  existing heroes) but in later volumes not yet directly fetched/verified; the remaining Jain acharyas
+  (`bhadrabahu`, `kundakunda`, `hemachandra`, `sthulabhadra`, `haribhadra`) require Jain-specific SBE-era
+  translations that exist but are less centrally indexed on sacred-texts.com/wisdomlib.org than the
+  Hindu/Buddhist material has been.
+- **Genuinely hard or likely-unsourceable in the near term (~15-20 heroes):** modern or 20th-century
+  figures whose primary writings are not yet public domain by age and for whom no early-compiled PD
+  edition exists (e.g. `thich-nhat-hanh`, d. 2022; `shrimad-rajchandra`, d. 1901 but whose PD status
+  needs verification per-work), or figures like `bahubali` already investigated and confirmed to lack a
+  documentary (non-fiction, non-modern) PD English source in this session's search.
+
+**Bottom line:** this session roughly tripled the supported roster from 5 -> 21 heroes across four
+batches, at an average pace of ~5-8 verified heroes per batch once the sourcing technique matured. At a
+similar pace, the "good candidate" tier alone supports **2-3 more solid batches** (roughly reaching
+30-33 supported heroes) before the corpus shifts from "actively expandable with the current technique"
+to "requires case-by-case specialized sourcing" for the harder tier. Beyond that point, further growth
+is still possible but batch sizes will likely shrink and require more research time per hero, since the
+remaining candidates skew toward either contested/legendary biographies (risk of inventing narrative)
+or modern figures without settled public-domain status.
+

@@ -1162,7 +1162,12 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     // docs/DHARAM_VEER_COVERAGE_AUDIT.md for source/rights table.
     'dharam_veer_guru_arjan_dev.json',
     'dharam_veer_maharana_pratap.json',
-    'dharam_veer_rani_lakshmibai.json'
+    'dharam_veer_rani_lakshmibai.json',
+    'dharam_veer_milinda.json',
+    'dharam_veer_prahlad.json',
+    'dharam_veer_dhruv.json',
+    'dharam_veer_xuanzang.json',
+    'dharam_veer_swami_vivekananda.json'
   ]
 });
 
