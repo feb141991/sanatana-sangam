@@ -243,3 +243,55 @@ retrofitted onto the mismatched existing entries.
   Book I's 12/33, Book II's 9/9 (complete), Book III's 5/17, Book IV's 12/12 (complete), Book V's 11/11
   (complete) -- 49 of the canonical 82, plus 1 extra (Book III's "Crows and Owls" frametale). Remaining
   work: Book I (~21 stories), Book III (~12 stories).
+
+- **Batch 7 (2026-07-23): Book III (Crows and Owls) completion.** `panchatantra_chapter_7.json` --
+  12 stories (refs 3.9-3.20): How the Birds Picked a King, The Snake and the Ants, The Snake Who
+  Paid Cash, The Unsocial Swans, The Self-Sacrificing Dove, The Old Man with the Young Wife, The
+  Brahman the Thief and the Ghost, The Snake in the Prince's Belly, The Gullible Carpenter,
+  Mouse-Maid Made Mouse, The Cave That Talked, The Butter-Blinded Brahman. Sourced verbatim from
+  theoceanofstories.blogspot.com via the Panchatantra Index page. Book III now complete at 17/17
+  (5 previously ingested in chapter_3.json + these 12). Confirms the non-retrofit precedent flagged
+  in Batch 3: "Mouse-Maid Made Mouse" is a fresh entry (`panchatantra-mouse-maid-made-mouse`),
+  leaving the previously-flagged non-matching `panchatantra-sage-and-mouse` untouched. Two nested
+  tales included ("The Cave That Talked" nested in the frame narrative; "The Butter-Blinded
+  Brahman" explicitly nested inside "The Frogs That Rode Snakeback", already ingested as 3.8).
+  Mature-content handling (discreet, non-graphic curated_lesson; verbatim preserved only in `text`)
+  applied to "The Gullible Carpenter" and "The Butter-Blinded Brahman" (infidelity themes), and a
+  careful non-instructional retelling applied to "The Self-Sacrificing Dove" (self-immolation /
+  devotional sacrifice theme), consistent with app content-sensitivity guidance.
+
+- **Batch 8 (2026-07-23): Book I (The Loss of Friends) near-completion.** `panchatantra_chapter_8.json`
+  -- 20 stories (refs 8.1-8.20): The Wedge-Pulling Monkey, Merchant Strong-Tooth, Godly and June,
+  The Jackal at the Ram-Fight, The Weaver's Wife, The Ungrateful Man, Leap and Creep, Passion and
+  the Owl, Ugly's Trust Abused, The Lion and the Carpenter, The Plover Who Fought the Ocean, The
+  Shrewd Old Gander, The Lion and the Ram, Smart the Jackal, The Monk Who Left His Body Behind,
+  The Girl Who Married a Snake, Poor Blossom, The Unteachable Monkey, A Remedy Worse Than the
+  Disease, The Results of Education. Sourced verbatim from theoceanofstories.blogspot.com via the
+  Panchatantra Index page. Combined with the 12 previously-ingested Book I tales (Batches 1-3),
+  Book I now stands at **32 of the user-confirmed 33 canonical inserted tales**. The 33rd could not
+  be confidently identified as a distinct, separately-titled entry in the captured Ryder table of
+  contents (the Panchatantra Index page lists 30 linked entries for Book I, one of which --
+  "Godly and June" -- bundles three separately-titled embedded tales for 32 total identifiable
+  titles); per policy, this last story is left unticked rather than invented or guessed at. Two
+  items (8.4 "The Jackal at the Ram-Fight", 8.5 "The Weaver's Wife") are nested tales told within
+  "Godly and June" (8.3), following the established nested-tale precedent used throughout this
+  project. "The Weaver's Wife" involves an infidelity/mistaken-mutilation theme, handled with the
+  same discreet, non-graphic curated_lesson treatment used in prior batches.
+
+- **Batch 7/8 bugfix:** during retrieval smoke-testing, discovered that `panchatantra_chapter_7.json`
+  and `panchatantra_chapter_8.json` were initially built with entries under an `"items"` key,
+  copying the shape used internally during authoring -- but `PramanaManifestRetriever.retrieve()`
+  in `src/lib/ai/retrieval.ts` only ever reads `manifest.content`, the key used by
+  `panchatantra_chapter_1.json` through `_6.json`. This meant chapters 7 and 8 would have been
+  silently unretrievable (loaded but produced zero matching candidates) despite passing JSON
+  validation. Fixed by renaming `items` -> `content` in both files before commit; chapters 1-6 were
+  independently re-verified to already use the correct `content` key (no bug there). Re-ran the
+  retrieval smoke test after the fix and confirmed all 32 new Batch 7/8 items are correctly
+  retrievable with story-specific queries.
+
+- **Running total after Batch 8:** Book I 32/33 (near-complete, one story genuinely unlocatable and
+  not fabricated), Book II 9/9 (complete), Book III 17/17 (complete), Book IV 12/12 (complete),
+  Book V 11/11 (complete) -- **81 of the canonical 82 inserted tales**, plus 1 extra (Book III's
+  "Crows and Owls" frametale, ingested in Batch 2, not one of the 82). The single remaining gap is
+  Book I's unidentified 33rd tale, which this project deliberately leaves un-ingested rather than
+  guess at, per the "skip rather than invent" policy governing this entire effort.
