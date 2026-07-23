@@ -218,5 +218,28 @@ retrofitted onto the mismatched existing entries.
   Brahman's Dream) + 8 from this batch = 11/11.
   Total now ingested across Batches 1-5: **41 Panchatantra stories** (4 + 10 + 12 + 7 + 8), covering
   Book I's 12, Book II's 9/9 (complete), Book III's 5/17, Book IV's 3/12, and Book V's 11/11 (complete)
-  -- 40 of the canonical 82, plus 1 extra (Book III's "Crows and Owls" frametale). Remaining work: Books
-  I, III, IV.
+  -- 40 of the canonical 82, plus 1 extra (Book III's "Crows and Owls" frametale). Remaining work: Books I, III.
+
+- **Batch 6 (2026-07-23):** Completes Book IV (Loss Of Gains) to 12/12 inserted tales. Added 9 new
+  `Katha` reader entries (none existed before this batch) -- Handsome and Theodore, Flop-Ear and Dusty,
+  The Jackal Who Killed No Elephants, The Ungrateful Wife, King Joy and Secretary Splendour, The
+  Farmer's Wife, The Pert Hen-Sparrow, How Supersmart Ate the Elephant, The Dog Who Went Abroad -- plus
+  `panchatantra_chapter_6.json` (refs 6.1-6.9) with verbatim Ryder text for each, sourced via the
+  theoceanofstories.blogspot.com Panchatantra Index page. Book IV is now fully covered: 3 stories from
+  earlier batches (Monkey and the Crocodile [frame], Potter Militant, Donkey in the Tiger-Skin) + 9 from
+  this batch = 12/12.
+  **Confirmed non-match reaffirmed:** "Flop-Ear and Dusty" is the correct Ryder story for the
+  donkey-lured-by-jackal plot; the existing (mismatched) reader entry `panchatantra-donkey-and-jackal`
+  remains un-ingested as decided in Batch 3 -- this batch adds a fresh, correctly-titled entry
+  (`panchatantra-flop-ear-and-dusty`) instead of retrofitting the mismatched one.
+  **Content note:** "The Farmer's Wife" and "The Ungrateful Wife" involve infidelity/deception by a wife
+  against a husband in Ryder's original; reader entries and curated_lesson paraphrases describe this as
+  betrayal/deception without explicit romantic detail (general-audience tone), while the verbatim `text`
+  field preserves Ryder's actual translation.
+  **Code change:** `maxChapters` for the `bhakti_panchatantra` retriever in `src/lib/ai/retrieval.ts`
+  was bumped from 5 to 10, since chapter_6.json exceeded the original 5-file cap. Books I and III
+  (remaining) will likely need 2 more files each.
+  Total now ingested across Batches 1-6: **50 Panchatantra stories** (4 + 10 + 12 + 7 + 8 + 9), covering
+  Book I's 12/33, Book II's 9/9 (complete), Book III's 5/17, Book IV's 12/12 (complete), Book V's 11/11
+  (complete) -- 49 of the canonical 82, plus 1 extra (Book III's "Crows and Owls" frametale). Remaining
+  work: Book I (~21 stories), Book III (~12 stories).

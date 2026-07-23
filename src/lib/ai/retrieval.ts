@@ -724,7 +724,10 @@ PramanaRetrieverSelector.register('bhakti_panchatantra', new PramanaManifestRetr
   sourceName: 'Panchatantra',
   sourceClass: 'narrative',
   tradition: 'Moral',
-  maxChapters: 5
+  // Bumped from 5 to 10 during the full-82-story canonical coverage expansion (2026-07-23):
+  // chapter_6.json (Book IV completion) pushed the corpus past the original 5-file cap.
+  // Books III and I remain to be added and will likely need 2 more files each given their size.
+  maxChapters: 10
 }));
 
 export class PramanaGurbaniEmbeddingRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
