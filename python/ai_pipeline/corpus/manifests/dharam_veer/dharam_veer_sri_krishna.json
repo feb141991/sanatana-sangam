@@ -1,0 +1,90 @@
+{
+  "doc_id": "dharam_veer_sri-krishna",
+  "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+  "source_class": "translation",
+  "tradition": "Hindu",
+  "rights_status": "public_domain",
+  "revision_note": "Newly added with 8 verified chunks under public domain (2026-07-23, Batch 5). Source: H. H. Wilson's 1840 translation of the Vishnu Purana (translator died 1860, translation unambiguously public domain), Book V, Chapters I and III, fetched directly from sacred-texts.com. Covers the divine decision to incarnate and the birth-night exchange with Yashoda's daughter; Krishna's childhood at Gokula, youth, and the Bhagavad Gita episode were not directly fetched/verified in this batch and are not represented, per skip-rather-than-guess policy. A future batch may extend this hero with the Gokula childhood chapters (Book V continues in the same source) or the Gita itself (already partially used in the Pathshala Gita corpus).",
+  "content": [
+    {
+      "ref": "1.1",
+      "figure_id": "sri-krishna",
+      "chunk_type": "life_context",
+      "text": "Earth herself, overburdened by the tyranny of demon-kings including Kansa of Mathura (a revival of the great Asura Kalanemi), went to the assembly of the gods on Mount Meru and pleaded for relief: 'Illustrious deities, do you so act that I may be relieved from my burden, lest helpless I sink into the nethermost abyss.'",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp118.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.2",
+      "figure_id": "sri-krishna",
+      "chunk_type": "core_dharmic_act",
+      "text": "Brahma led the gods to Vishnu on the milky sea and praised him at length before asking for aid. Vishnu answered by plucking two hairs, one white and one black, and declaring: 'This my (black) hair shall be impersonated in the eighth conception of the wife of Vasudeva, Devaki... and shall slay Kansa, who is the demon Kalanemi.'",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp118.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.3",
+      "figure_id": "sri-krishna",
+      "chunk_type": "trial_sacrifice",
+      "text": "Kansa, warned that Devaki's eighth child would be his death, had already imprisoned Vasudeva and Devaki and killed six of their infants as each was born, per Vasudeva's own promise made years earlier to spare Devaki's life at their wedding: 'Kill not Devaki, great warrior; spare her life, and I will deliver to you every child that she may bring forth.'",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp118.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.4",
+      "figure_id": "sri-krishna",
+      "chunk_type": "core_dharmic_act",
+      "text": "At Krishna's birth at midnight, 'the strong winds were hushed, and the rivers glided tranquilly... the gods, walking the sky, showered down flowers upon the earth.' Vasudeva, seeing his son's four-armed celestial form and the mark of Srivatsa on his breast, begged him to 'withhold this thy celestial form,' fearing Kansa would kill him the moment the child's nature was known.",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp120.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.5",
+      "figure_id": "sri-krishna",
+      "chunk_type": "trial_sacrifice",
+      "text": "That same night, with the guards charmed into sleep by Yoganidra, Vasudeva carried the infant out through a raging storm to exchange him for the newborn daughter of Yashoda in Gokula. Crossing the flooded Yamuna river with the child in his arms, 'the waters were stilled, and rose not above his knee,' while the great serpent Shesha spread his hoods overhead to shield them from the rain.",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp120.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.6",
+      "figure_id": "sri-krishna",
+      "chunk_type": "trial_sacrifice",
+      "text": "When Kansa learned of the birth and seized what he believed was Devaki's eighth child, he 'threw it ruthlessly against a stone' — but the infant (in truth Yashoda's daughter, the goddess Yoganidra) rose into the sky in gigantic eight-armed form and warned him: 'What avails it thee, Kansa, to have hurled me to the ground? he is born who shall kill thee... Now quickly secure him, and provide for thine own welfare.'",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp120.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.7",
+      "figure_id": "sri-krishna",
+      "chunk_type": "legacy",
+      "text": "This exchange — Krishna smuggled to safety in Gokula while a goddess took his place to warn and torment Kansa — begins the entire cycle of Krishna's hidden childhood among the cowherds, his eventual return to Mathura, and Kansa's downfall, all framed by the Purana as Vishnu's direct incarnation 'for the sole object of maintaining piety in the world.'",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp118.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    },
+    {
+      "ref": "1.8",
+      "figure_id": "sri-krishna",
+      "chunk_type": "citation_provenance",
+      "text": "This entry compiles verified passages from Horace Hayman Wilson's 1840 translation of the Vishnu Purana (Wilson died 1860; translation unambiguously public domain), Book V, Chapters I ('The death of Kansa announced') and III ('Birth of Krishna'), fetched directly from sacred-texts.com's hosting of this public-domain translation. This batch covers only the birth and infant exchange; Krishna's childhood at Gokula (the butter-theft tales, Kaliya, Govardhana), his youth, and the Bhagavad Gita episode were not directly fetched/verified in this batch and are not represented.",
+      "source_name": "H. H. Wilson (trans.), The Vishnu Purana (1840), Book V Chapters I & III",
+      "source_url": "https://sacred-texts.com/hin/vp/vp120.htm",
+      "rights_status": "public_domain",
+      "source_class": "translation"
+    }
+  ]
+}

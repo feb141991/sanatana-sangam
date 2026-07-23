@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 4)
+Last updated: 2026-07-23 (Batch 5)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -333,4 +333,89 @@ to "requires case-by-case specialized sourcing" for the harder tier. Beyond that
 is still possible but batch sizes will likely shrink and require more research time per hero, since the
 remaining candidates skew toward either contested/legendary biographies (risk of inventing narrative)
 or modern figures without settled public-domain status.
+
+## 0e. Scope note — batch 5 expansion (2026-07-23): the Ramayana/epic cluster
+
+This batch adds **5 new verified heroes** (Sri Rama, Hanuman, Shabari, Valmiki, Sri Krishna),
+bringing the total to **26 heroes, 208 chunks**. This batch was explicitly prioritized by user
+request to close the single biggest user-facing gap in the corpus: the three most iconic,
+highest-traffic Hindu figures (Krishna, Rama, Hanuman) were, until this batch, all unsupported
+despite being the names most users would try first.
+
+### Batch 5 coverage
+
+| Hero | figure_id | Tradition | Chunks | Source | Rights |
+|---|---|---|---|---|---|
+| Sri Rama | `sri-rama` | Hindu | 8 | *The Ramayana of Valmiki*, Book II Ch. XVIII-XIX, trans. Ralph T. H. Griffith (1870-1889) | `public_domain` |
+| Hanuman | `hanuman` | Hindu | 8 | *The Ramayana of Valmiki*, Book V Ch. I & XIV, trans. Ralph T. H. Griffith (1870-1889) | `public_domain` |
+| Shabari | `shabari` | Hindu | 8 | *The Ramayana of Valmiki*, Book III Ch. LXXV, trans. Ralph T. H. Griffith (1870-1889) | `public_domain` |
+| Valmiki | `valmiki` | Hindu | 8 | *The Ramayana of Valmiki*, Book I Ch. II, trans. Ralph T. H. Griffith (1870-1889) | `public_domain` |
+| Sri Krishna | `sri-krishna` | Hindu | 8 | *The Vishnu Purana*, Book V Ch. I & III, trans. H. H. Wilson (1840) | `public_domain` |
+
+### 8a. Sourcing notes
+
+All five heroes were sourced from Griffith's 1870-1889 verse translation of Valmiki's Ramayana
+(Griffith died 1906, unambiguously public domain) via wisdomlib.org's clean per-canto hosting
+(`ramayana-of-valmiki-griffith`, sequential `docNNNNNNN.html` IDs discoverable from the book's
+own table-of-contents page), plus Wilson's 1840 Vishnu Purana Book V (already a proven source
+this session for Prahlad and Dhruv) for Krishna's birth narrative.
+
+A note on scope discipline: each of these five heroes has a vast, multi-book canonical narrative
+(the Ramayana alone runs to 6-7 books; Krishna's life fills the entirety of Vishnu Purana Book V
+plus the Bhagavata Purana). Rather than attempt shallow coverage of an entire epic in 8 chunks,
+each manifest was deliberately scoped to a **single, complete, well-defined episode**:
+
+- **Sri Rama**: only the acceptance of exile (Book II, Ch. XVIII-XIX) -- not the war in Lanka or
+  the return, which would need their own future batch.
+- **Hanuman**: only the ocean-crossing leap and discovery of Sita (Book V, Ch. I & XIV) -- not the
+  meeting with Sita itself, the burning of Lanka, or his role in the war.
+- **Sri Krishna**: only the divine decision to incarnate and the birth-night exchange (Book V,
+  Ch. I & III) -- not the Gokula childhood (butter-theft, Kaliya, Govardhana), youth, or the
+  Bhagavad Gita (the Gita is already separately represented in the Pathshala Gita corpus, a
+  different part of the app).
+- **Shabari** and **Valmiki** are each complete, self-contained single-chapter episodes and did
+  not need this scoping decision.
+
+This mirrors the same discipline already established for Guru Arjan Dev and Milinda in earlier
+batches: each manifest's `revision_note` explicitly states which portion of the source was
+fetched/verified and which large remaining portions were *not* included, so a future batch can
+extend any of these heroes with additional chunks from later chapters of the same proven sources
+without re-doing the sourcing work.
+
+**Savitri** was originally scoped into this batch alongside the other five but was not completed
+in the time available; her likely source (Kisari Mohan Ganguli's translation of the Mahabharata,
+Vana Parva -- already proven this session for Bhishma and Arjuna) was not fetched/verified. She
+remains a strong, low-effort candidate for the very next batch, documented in
+`docs/CONTENT_COVERAGE_REPORT.md`.
+
+### 8b. Verification performed
+
+- All 5 new manifest files validated programmatically (8 chunks each, hyphenated `doc_id` matching
+  the production `figure_id` in `src/lib/data/dharm-veers/hindu.ts` exactly, `figure_id` present
+  and correct on every chunk, all 8 required fields on every chunk).
+- New filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array (fallback path).
+- `dharam_veer_index.json` regenerated: now indexes **26 heroes, 208 chunks** (up from 21 heroes,
+  168 chunks).
+- Live retrieval smoke test via `npx tsx` against the rebuilt index and running retriever code:
+  - All 5 new heroes return exactly 8 own chunks each, with zero cross-hero leakage.
+  - Fail-closed check: `savitri` (deliberately left unsupported this batch), plus
+    `adi-shankaracharya`, `banda-singh-bahadur`, and `bahubali`, each return 0 chunks.
+  - Near-miss probes (`rama`, `shri-rama`, `hanuma`, `krishna`, `valmeeki` -- plausible alternate
+    spellings/shortenings a manifest author or future normalization change might introduce) all
+    return 0 chunks, confirming exact-match retrieval still holds with no fuzzy leakage.
+  - Full-roster sanity check: all 26 supported heroes return non-empty results, 0 failures.
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+## 9. Corpus runway assessment (updated after batch 5)
+
+The batch-4 runway assessment (section 7) estimated the corpus could sustain roughly 2-3 more
+solid batches before diminishing returns. Batch 5 confirms that estimate is holding: the Ramayana
+alone (via Griffith's clean per-canto wisdomlib.org hosting) is proven to comfortably support
+several more heroes across future batches without new sourcing research -- Savitri (Mahabharata,
+different source, already proven), and later Ramayana books can extend Rama/Hanuman/Krishna with
+additional episodes rather than needing wholly new heroes. The next planned batches (Sikh Guru
+completion, remaining Sikh martyrs, Hindu bhakti saints, Jain figures, remaining Buddhist figures)
+are tracked in the project's task list and remain consistent with the original section 7 estimate
+of ~15-20 more heroes being realistically sourceable before the technique needs to shift to
+case-by-case specialized research for the hardest remaining candidates.
 

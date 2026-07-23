@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-23 (Dharm Veer batch 4) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-23 (Dharm Veer batch 5) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 4) -- no auto-generation script ex
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 168 | 168 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 208 | 208 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 4) -- no auto-generation script ex
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 21
-- **Curated-Only / Unsupported Heroes:** 49
+- **Source-Backed (Supported) Heroes:** 26
+- **Curated-Only / Unsupported Heroes:** 44
 
 ### Supported Heroes:
 - `ananda`
@@ -44,21 +44,21 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 4) -- no auto-generation script ex
 - `swami-vivekananda`
 - `prahlad`
 - `dhruv`
+- `sri-rama`
+- `hanuman`
+- `shabari`
+- `valmiki`
+- `sri-krishna`
 
 ### Unsupported Roster Heroes:
-- `sri-krishna` (degrades to safe fallback explanation)
-- `sri-rama` (degrades to safe fallback explanation)
 - `adi-shankaracharya` (degrades to safe fallback explanation)
-- `savitri` (degrades to safe fallback explanation)
+- `savitri` (degrades to safe fallback explanation -- candidate for a future batch; not sourced in batch 5, which prioritized Rama/Hanuman/Krishna/Valmiki/Shabari instead. Likely source: Ganguli's Mahabharata Vana Parva, already proven for Bhishma/Arjuna)
 - `mirabai` (degrades to safe fallback explanation)
 - `tukaram` (degrades to safe fallback explanation)
 - `kabir` (degrades to safe fallback explanation)
 - `ramanujacharya` (degrades to safe fallback explanation)
 - `ramakrishna` (degrades to safe fallback explanation)
 - `ramana-maharshi` (degrades to safe fallback explanation)
-- `hanuman` (degrades to safe fallback explanation)
-- `shabari` (degrades to safe fallback explanation)
-- `valmiki` (degrades to safe fallback explanation)
 - `tulsidas` (degrades to safe fallback explanation)
 - `samarth-ramdas` (degrades to safe fallback explanation)
 - `banda-singh-bahadur` (degrades to safe fallback explanation -- candidate for batch 4; a suitable clean per-chapter public-domain source (Cunningham's History of the Sikhs, 1849) was not located/fetched within the session's time budget and was skipped rather than guessed, per policy; good candidate for a future batch)
