@@ -203,4 +203,20 @@ retrofitted onto the mismatched existing entries.
   Total now ingested across Batches 1-4: **33 Panchatantra stories** (4 + 10 + 12 + 7), covering all of
   Book I's previously-matched 12, all 9 of Book II, 5 of Book III's 17, 3 of Book IV's 12, and 3 of Book
   V's 11 -- 32 of the canonical 82 (plus 1 extra: the Book III frametale "Crows and Owls" itself, ingested
-  in Batch 2, which is not counted among the 82 inserted tales). Remaining work: Books I, III, IV, V.
+  in Batch 2, which is not counted among the 82 inserted tales). Remaining work: Books I, III, IV.
+
+- **Batch 5 (2026-07-23):** Completes Book V (Ill-Considered Action) to 11/11 inserted tales. Added 8 new
+  `Katha` reader entries (none existed before this batch) -- The Four Treasure-Seekers, Hundred-Wit/
+  Thousand-Wit/Single-Wit, The Musical Donkey, Slow the Weaver, The Unforgiving Monkey, The Credulous
+  Fiend, The Three-Breasted Princess, The Fiend Who Washed His Feet -- plus `panchatantra_chapter_5.json`
+  (refs 5.1-5.8) with verbatim Ryder text for each, sourced from shreevatsa.net (same Book 5 source and
+  public-domain rights basis established in Batch 3). Note: "The Three-Breasted Princess" contains a plot
+  point involving an extramarital relationship and attempted murder-by-poisoning in Ryder's original; the
+  reader entry and curated_lesson describe this as a conspiracy/betrayal without explicit detail
+  (general-audience tone), while the verbatim `text` field preserves Ryder's actual translation for
+  source-fidelity. Book V is now fully covered: 3 stories from Batch 3 (Loyal Mungoose, Lion-Makers,
+  Brahman's Dream) + 8 from this batch = 11/11.
+  Total now ingested across Batches 1-5: **41 Panchatantra stories** (4 + 10 + 12 + 7 + 8), covering
+  Book I's 12, Book II's 9/9 (complete), Book III's 5/17, Book IV's 3/12, and Book V's 11/11 (complete)
+  -- 40 of the canonical 82, plus 1 extra (Book III's "Crows and Owls" frametale). Remaining work: Books
+  I, III, IV.
