@@ -613,3 +613,29 @@ Two heroes previously left unsourced (each already flagged in the coverage docs 
 - `npx eslint src/lib/ai/retrieval.ts` clean.
 
 Dharm Veer roster after this batch: **37/70 heroes source-backed**.
+
+## 15. Scope note — Batch 6 retry (Sikh figures), still blocked
+
+Retried this session before moving to batch 11. Checked two additional angles:
+
+- **Wikisource** (`en.wikisource.org/wiki/The_Sikh_Religion/Volume_5`, which per web search
+  covers the Guru Gobind Singh era and would include several of the 11 target figures):
+  fetch returned empty content again, consistent with every other Wikisource attempt this
+  session (section 10). Still treated as a tooling-level block, not a sourcing dead end.
+- **sacred-texts.com Sikhism collection**: confirmed it hosts only Macauliffe's *The Sikh
+  Religion* **Volume 1** (Guru Nanak's life only — none of the 11 target figures, who all
+  postdate Guru Nanak) and Dorothy Field's *The Religion of the Sikhs* (1914), a short
+  general-history volume. Chapter I of Field's book was fetched and read in full: it covers
+  all ten Gurus but does not name or narrate any of the 11 target companions/martyrs
+  (Banda Singh Bahadur, Baba Deep Singh, Mai Bhago, Mata Gujri, Hari Singh Nalwa, Bhai Taru
+  Singh, Bhai Mani Singh, Bhai Gurdas, Akali Phula Singh, Maharaja Ranjit Singh, Nawab Jassa
+  Singh) even in passing. Not usable as a source for this batch.
+
+Conclusion unchanged from section 10: Macauliffe's *The Sikh Religion* Volumes 4-6 (which do
+cover this era) exist and are public domain, but are only reachable via archive.org djvu.txt
+(which truncates before reaching the relevant chapters) or Wikisource (currently returning
+empty on every fetch attempt this session). This remains a tooling blocker rather than a
+source-availability problem, and batch 6 is left pending for a future session with either a
+working Wikisource connection or a different archive.org access strategy (e.g. the
+`/fulltext/inside.php` search-inside API, which returned a timeout rather than a hard failure
+last attempt and may be worth retrying with a narrower query and longer timeout budget).
