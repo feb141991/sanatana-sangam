@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-23 (Dharm Veer batch 10) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script ex
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 256 | 256 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 280 | 280 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script ex
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 32
-- **Curated-Only / Unsupported Heroes:** 38
+- **Source-Backed (Supported) Heroes:** 35
+- **Curated-Only / Unsupported Heroes:** 35
 
 ### Supported Heroes:
 - `ananda`
@@ -55,6 +55,9 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script ex
 - `kabir`
 - `rishabhanatha`
 - `gautama-swami`
+- `sariputta`
+- `moggallana`
+- `mahapajapati-gotami`
 
 ### Unsupported Roster Heroes:
 - `adi-shankaracharya` (degrades to safe fallback explanation -- investigated in batch 8; George Thibaut's PD translations of the Vedanta-Sutras (SBE 34) are dense philosophical commentary with no accessible biographical narrative; no verified PD biography located this batch)
@@ -85,16 +88,13 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 9) -- no auto-generation script ex
 - `haribhadra` (degrades to safe fallback explanation)
 - `yashovijaya` (degrades to safe fallback explanation)
 - `kumarpal` (degrades to safe fallback explanation)
-- `sariputta` (degrades to safe fallback explanation)
-- `moggallana` (degrades to safe fallback explanation)
-- `mahapajapati-gotami` (degrades to safe fallback explanation)
-- `nagarjuna` (degrades to safe fallback explanation)
-- `bodhidharma` (degrades to safe fallback explanation)
-- `padmasambhava` (degrades to safe fallback explanation)
-- `atisha` (degrades to safe fallback explanation)
-- `thich-nhat-hanh` (degrades to safe fallback explanation)
-- `br-ambedkar` (degrades to safe fallback explanation)
-- `sanghamitra` (degrades to safe fallback explanation)
+- `nagarjuna` (degrades to safe fallback explanation -- investigated in batch 10; sacred-texts.com's 'She-rab Dong-bu' (Tree of Wisdom) is Nagarjuna's own PD-translated verse text, not a biography; no verified PD biographical narrative located this batch)
+- `bodhidharma` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
+- `padmasambhava` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
+- `atisha` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
+- `thich-nhat-hanh` (degrades to safe fallback explanation -- explicitly deferred in batch 10; died 2022, all English-language writings and biographies are actively in copyright; not a public-domain sourcing candidate)
+- `br-ambedkar` (degrades to safe fallback explanation -- explicitly deferred in batch 10; died 1956, unclear US copyright renewal status on his English-language writings; rights-risky, deferred rather than guessed)
+- `sanghamitra` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch, likely via the Mahavamsa if a clean per-chapter PD translation can be located)
 
 ## 3. Other / Restricted / Pending Corpora
 

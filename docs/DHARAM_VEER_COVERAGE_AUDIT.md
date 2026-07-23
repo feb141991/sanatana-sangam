@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 9)
+Last updated: 2026-07-23 (Batch 10)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -532,4 +532,58 @@ weakest-covered tradition.
     `docId`.
   - Fail-closed check: `bhadrabahu`, `sthulabhadra`, `chandanbala`, and `bahubali` (all deliberately
     left unsupported) each return 0 documents.
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+## 13. Scope note — Batch 10 expansion: Buddhist figures
+
+This batch adds 3 Buddhist heroes previously in the unsupported roster, all sourced from
+public-domain (pre-1923) translations hosted on sacred-texts.com.
+
+| Hero | Source | Notes |
+|---|---|---|
+| Mahapajapati Gotami | C.A.F. Rhys Davids, *Psalms of the Sisters* (Therigatha translation, 1909), canto 'LV. Maha-Pajapati the Gotamid', sacred-texts.com | Covers her raising the infant Buddha after Queen Maya's death, her march to Vesali and ordination via Ananda's intercession (founding the Bhikkhuni Order), her Arahantship, and both her own psalm verses and the Buddha's declaration of her seniority. |
+| Sariputta | Paul Carus, *The Gospel of Buddha* (1894), ch. 'Sariputta and Moggallana' and ch. 'Sariputta's Faith', sacred-texts.com | Covers his conversion via the ascetic Assaji's stanza, his and Moggallana's joint ordination, the Buddha's praise of him as chief follower, and his dialogue on faith with the Buddha at Nalanda (the parable of the city gatekeeper). |
+| Moggallana | Same 'Sariputta and Moggallana' chapter, plus Henry Clarke Warren (trans.), *Buddhism in Translations* (Harvard Oriental Series, 1896), section 41 'The Death of Moggallana' (translated from the Dhammapada and Buddhaghosa's commentary), sacred-texts.com | Covers his joint conversion/ordination with Sariputta, his declared foremost status in psychic power, his death at the hands of hired highwaymen despite repeatedly evading them by supernatural means, his final visit to the Buddha before passing into Nirvana, and the Buddha's teaching that even a perfected disciple was not exempt from the fruit of past karma. |
+
+### 13a. Heroes investigated but not sourced this batch
+
+- **Nagarjuna**: sacred-texts.com hosts his own PD-translated verse work ('She-rab Dong-bu', the
+  Tree of Wisdom), but this is his own teaching text, not a biographical narrative. No verified
+  public-domain biography of Nagarjuna was located this batch.
+- **Bodhidharma, Padmasambhava, Atisha, Sanghamitra**: not investigated in depth this batch;
+  candidates for a future pass. Sanghamitra in particular is likely reachable via a clean
+  per-chapter public-domain translation of the Mahavamsa if one can be located.
+- **Thich Nhat Hanh**: explicitly deferred, not merely unsourced. He died in 2022; his writings
+  and any biographical accounts of him are actively under copyright. Not a public-domain
+  sourcing candidate at all, now or in any near-future batch.
+- **B.R. Ambedkar**: explicitly deferred on a rights-risk basis. He died in 1956; US copyright
+  renewal status on his English-language writings (including *The Buddha and His Dhamma*) is
+  unclear and was not resolved this batch. Treated as rights-risky per the same caution standard
+  applied to other mid-20th-century figures (e.g. Alston's 1980 Mirabai translation), and
+  deliberately not sourced rather than guessed.
+
+### 13b. Verification performed
+
+- All three new manifest files validated programmatically (8 chunks each, hyphenated `doc_id`
+  matching the production `figure_id` in `src/lib/data/dharm-veers/buddhist.ts` exactly,
+  `figure_id` present on every chunk, top-level schema — `doc_id`/`source_name`/`source_class`/
+  `tradition`/`rights_status`/`revision_note`/`content` — matching the established convention).
+- A schema bug was caught and fixed during this batch: the first draft of all three manifests used
+  a top-level `chunks` key instead of the correct `content` key expected by
+  `build_dharam_veer_index.py`, which silently produced 0 indexed documents for these heroes. This
+  was caught by the retrieval smoke test (queries for the new heroes returned other heroes' chunks
+  instead of their own), root-caused by inspecting the build script and an existing correct
+  manifest (`dharam_veer_gautama_swami.json`), and fixed by rebuilding all three files with the
+  correct schema.
+- New filenames registered in `dharamVeerManifestRetriever`'s `fileNames` array.
+- `dharam_veer_index.json` regenerated: now indexes **35 heroes, 280 chunks** (up from 32 heroes,
+  256 chunks).
+- Live retrieval smoke test via `npx tsx` (same pattern as batches 8-9, importing
+  `PramanaRetrieverSelector` from `@sangam/pramana-serve` directly and `retrieval.ts` for its
+  registration side effects), querying with `filters: { title: figure_id }` to match production
+  usage:
+  - All three new heroes (`mahapajapati-gotami`, `sariputta`, `moggallana`) return only their own
+    chunks with the correct `docId`.
+  - Fail-closed check: `nagarjuna`, `thich-nhat-hanh`, and a nonexistent figure_id each return 0
+    documents.
 - `npx eslint src/lib/ai/retrieval.ts` clean.
