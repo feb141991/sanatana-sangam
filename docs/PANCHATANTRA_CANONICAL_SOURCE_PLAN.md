@@ -171,3 +171,36 @@ actually ingested under this plan.
   flagged skipped in Batch 2 (`dove-king-and-net`, `fox-and-grapes`, `king-and-minister`, `monk-and-jackal`,
   `hunter-and-pigeons`, `raven-and-swan`) remain skipped, plus `panchatantra-two-fish-and-frog` (likely variant
   of "Forethought, Ready-Wit, and Fatalist," already ingested in Batch 2 as `three-fish`).
+
+### Scope change: full canonical 82-story coverage (started Batch 4)
+
+The user confirmed the canonical Ryder (1925) Panchatantra count as **82 inserted tales**, excluding the 5
+frametales: Book I "The Loss of Friends" (33), Book II "The Winning of Friends" (9), Book III "Crows and
+Owls" (17), Book IV "Loss of Gains" (12), Book V "Ill-Considered Action" (11). Batches 1-3 above only ever
+matched stories that already existed in the app's reader library (`src/lib/katha-library.ts`), covering
+roughly 25 of the 82. Starting with Batch 4, the project expands to full coverage: this requires writing
+brand-new `Katha` reader entries (English + Shoonaya-curated Hindi paraphrase, following the existing house
+convention -- no published Hindi translation is used as a source, consistent with all prior Panchatantra
+entries) for every canonical Ryder story that has no reader entry at all, in addition to the AI-manifest
+ingestion work. A master URL index for Books 1-4 was located at
+`theoceanofstories.blogspot.com/2015/01/panchatantra-index.html` ("Panchatantra Index"), which links directly
+to every individual story post -- this is now the primary lookup tool for sourcing remaining Books 1-4 text,
+replacing story-by-story search. Book 5 continues to use shreevatsa.net (see Batch 3 rights-basis note above),
+since theoceanofstories.blogspot.com never covered Book 5.
+
+Two previously-skipped reader entries remain skipped as originally decided: `panchatantra-greedy-jackal` does
+not match Ryder's "Gold's Gloom," and `panchatantra-donkey-and-jackal` does not match "Flop-Ear and Dusty" --
+those mismatches are unaffected by the scope change. Where the new expansion needs those *correct* Ryder
+titles, brand-new, separately-id'd reader entries are created instead (e.g. `panchatantra-golds-gloom`), never
+retrofitted onto the mismatched existing entries.
+
+- **Batch 4 (2026-07-23):** Completes Book II (The Winning of Friends) to 9/9 inserted tales. Added 7 new
+  `Katha` reader entries (none existed before this batch) -- Gold's Gloom, Mother Shandilee's Bargain,
+  Self-Defeating Forethought, Mister Duly, Soft the Weaver, Hang-Ball and Greedy, Spot's Captivity -- plus
+  `panchatantra_chapter_4.json` (refs 4.1-4.7) with verbatim Ryder text for each, sourced via the
+  Panchatantra Index page above. Book II is now fully covered: 2 stories from earlier batches (Bharunda
+  Birds, Mice That Set Elephants Free) + 7 from this batch = 9/9.
+  Total now ingested across Batches 1-4: **33 Panchatantra stories** (4 + 10 + 12 + 7), covering all of
+  Book I's previously-matched 12, all 9 of Book II, 5 of Book III's 17, 3 of Book IV's 12, and 3 of Book
+  V's 11 -- 32 of the canonical 82 (plus 1 extra: the Book III frametale "Crows and Owls" itself, ingested
+  in Batch 2, which is not counted among the 82 inserted tales). Remaining work: Books I, III, IV, V.
