@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "arjuna",
       "chunk_type": "life_context",
       "text": "Arjuna appears in this passage of the Mahabharata under several epithets used by the narrator: \"the diadem-decked (Arjuna)\", \"the ape-bannered Arjuna\" (from the emblem of Hanuman on his banner), \"Phalguni\", \"Dhananjaya the son of Pandu\", \"Vibhatsu\", and \"the wielder of Gandiva\" (his bow), \"that chastiser of foes...who was capable of drawing the bow with even his left hand.\"",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "arjuna",
       "chunk_type": "core_dharmic_act",
       "text": "Krishna, \"cheerfully addressing Dhananjaya,\" told Arjuna: \"There, Bhishma, the son of Santanu, stayeth between the two armies. Slaying him by putting forth thy might, thou mayst win victory. There, at that spot, whence he breaketh our ranks, check him, putting forth thy strength.\" \"Thus urged, the ape-bannered Arjuna at that moment made Bhishma with his car, steeds, and standard, invisible by means of his arrows.\"",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "arjuna",
       "chunk_type": "trial_sacrifice",
       "text": "Because Bhishma had vowed not to raise weapons against a warrior who had formerly been born a woman, Arjuna fought from behind Sikhandin: \"Sikhandin, however, that foremost of car-warriors, protected in the battle by the diadem-decked (Arjuna)...\" and again, \"the diadem-decked (Arjuna), excited with rage and placing Sikhandin to the fore, approached Bhishma (nearer).\" The text presents this as a considered battlefield tactic against a vow, not an act the narrator condemns or praises outright — later Mahabharata tradition treats it as morally difficult.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "arjuna",
       "chunk_type": "teaching",
       "text": "\"Then Vibhatsu, drawing his bow Gandiva with a laugh, pierced the son of Ganga with five and twenty arrows. And once more, Dhananjaya, with great speed and excited with wrath struck him in every vital part with hundreds of arrows...the son of Pandu cut off in that battle even all the bows of Bhishma\" — cutting three successive bows from Bhishma's hands with precisely aimed arrows rather than killing him outright.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "arjuna",
       "chunk_type": "trial_sacrifice",
       "text": "Bhishma himself testifies to Arjuna's unmatched skill even while dying from his wounds: \"He is incapable of being vanquished in battle by the wielder of the thunder-bolt himself. As regards myself also, O hero, the very gods, Danavas and Rakshasas united together, are incapable of vanquishing me. What I shall say then of mighty car-warriors among men?\" — acknowledging Arjuna as the one warrior capable of doing what was done.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "arjuna",
       "chunk_type": "legacy",
       "text": "This same Book of the Mahabharata (the Bhishma Parva) also contains the Bhagavad Gita, Krishna's counsel to a hesitant Arjuna just before this battle begins, on duty, grief, and right action. The Gita is treated as a separate, already-sourced corpus in this app (the Annie Besant public domain translation) and is not reproduced here; this entry covers only Arjuna's role in the battle narrative that follows it.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "arjuna",
       "chunk_type": "legacy",
       "text": "After Bhishma fell, \"the heroic Pandavas possessed of massive arms that looked like spiked maces, having obtained the victory and won a highly blessed state in the other world, all blew their great conches.\" The text records mixed reactions across both armies — grief, shouting, and reflection — rather than simple celebration; Bhishma himself continued to be honored by both sides even after his fall.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "arjuna",
       "chunk_type": "citation_provenance",
       "text": "Arjuna (Dhananjaya, Phalguni, Vibhatsu), third of the Pandava brothers, is a central figure of the Mahabharata's Bhishma Parva (Book 6). This entry draws only on Sections CXIX-CXX of the Ganguli translation (1883-1896), public domain, digitized jointly by sacred-texts.com and Project Gutenberg. It does not cover the Bhagavad Gita itself, which is a separate already-sourced corpus, nor other Parvas of the epic.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",

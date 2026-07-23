@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 3)
+Last updated: 2026-07-23 (Batch 3 + schema cleanup)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -71,6 +71,24 @@ Each hero's chunks are tagged with standard `chunk_type` values (`life_context`,
    13 pre-existing hero manifests (a pre-existing schema gap outside this batch's scope, noted here for a
    future cleanup pass -- it does not affect retrieval, since `doc_id` alone is what's matched against
    `figure_id` at query time).
+
+## 3c. Schema cleanup (2026-07-23, same day): figure_id backfilled to all 13 pre-existing manifests
+
+The gap noted in item 3 above -- missing `figure_id` per chunk -- has now been closed for the remaining
+13 pre-existing hero manifests too (`ananda`, `arjuna`, `bhishma`, `chanakya`, `emperor-ashoka`,
+`guru-gobind-singh`, `guru-nanak-dev`, `guru-tegh-bahadur`, `harishchandra`, `lord-mahavira`,
+`parshvanatha`, `chhatrapati-shivaji`, `siddhartha-gautama`). All 16 manifests (128 chunks total) now
+carry `figure_id` on every chunk, matching the original task specification exactly.
+
+`figure_id` was derived directly from each manifest's `doc_id` (stripping the `dharam_veer_` prefix) and
+cross-checked against the production `id` values in `src/lib/data/dharm-veers/{hindu,sikh,jain,buddhist}.ts`
+to confirm an exact match for all 13 before writing. This field is purely additive metadata -- the Python
+index builder (`build_dharam_veer_index.py`) does not read or propagate `figure_id` into
+`dharam_veer_index.json`, so the index is byte-identical before and after this change and did not need
+regenerating (verified via `git diff --exit-code`). Retrieval matching continues to run on `doc_id`, not
+`figure_id`, so this change carries no retrieval-behavior risk. Re-ran the full adversarial smoke test
+(all 16 heroes return exactly 8 own-doc_id chunks; `bahubali`, `sri-krishna`, and a nonexistent id all
+fail closed) after the change -- all pass.
 4. **Corrected an internal `doc_id` naming inconsistency introduced by this batch, found during an
    independent aggressive re-review after the initial commit.** The established convention in this
    corpus -- confirmed by inspecting the actual `doc_id` field (not just the filename) of all 13

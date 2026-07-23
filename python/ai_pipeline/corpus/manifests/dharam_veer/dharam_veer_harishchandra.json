@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "harishchandra",
       "chunk_type": "life_context",
       "text": "Harishchandra ruled Ayodhya with justice and piety, having vowed that he would never speak a lie under any circumstances, gaining reknown for his truthfulness.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "harishchandra",
       "chunk_type": "core_dharmic_act",
       "text": "To fulfill a promise made in a dream and tested by Sage Vishvamitra, Harishchandra gladly gave away his kingdom, wealth, and empire, walking out as a pauper to preserve his integrity.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "harishchandra",
       "chunk_type": "trial_sacrifice",
       "text": "To pay the ritual fee (dakshina) demanded by the sage, Harishchandra sold his wife Shaivya and young son Rohitashva into slavery to a brahmin, bearing the pain of separation.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "harishchandra",
       "chunk_type": "trial_sacrifice",
       "text": "To pay the remaining fee, the King sold himself to an outcaste who managed the cremation grounds, performing the menial duty of collecting shroud-fees from the dead.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "harishchandra",
       "chunk_type": "trial_sacrifice",
       "text": "When his son died of a snakebite and Shaivya brought the body for cremation, Harishchandra refused to burn the body without the standard fee, prioritizing his duty and truth over personal grief.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "harishchandra",
       "chunk_type": "teaching",
       "text": "Harishchandra taught that Dharma is rooted in Truth. A kingdom may fall and life may perish, but Truth must never be abandoned under any pressure or trial.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "harishchandra",
       "chunk_type": "legacy",
       "text": "Impressed by his absolute integrity, the gods appeared, restored his son to life, and invited Harishchandra and his loyal subjects to ascend to the heavens in glory.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "harishchandra",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the translation from F. Eden Pargiter's \"The Markandeya Purana\" (1904), published by the Asiatic Society of Bengal, which is in the public domain.",
       "source_name": "The Markandeya Purana, translated by F. Eden Pargiter (1904)",

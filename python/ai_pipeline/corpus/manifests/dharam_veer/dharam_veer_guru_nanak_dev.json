@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "life_context",
       "text": "Born in Talwandi, Guru Nanak from his childhood was of a contemplative mind, preferring spiritual discussions to trade or agriculture, and refusing to wear the ritual thread, seeking instead the inner thread of love and truth.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "core_dharmic_act",
       "text": "After emerging from three days in the Bein River, Guru Nanak declared: \"There is no Hindu, and there is no Musalman,\" asserting the unity of humanity under one Creator and initiating his mission.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "trial_sacrifice",
       "text": "Guru Nanak walked thousands of miles across India, Mecca, and Tibet (in journeys known as Udasis), facing hostile crowds, wild beasts, and imprisonment to spread the message of truth and devotion.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "trial_sacrifice",
       "text": "Confronting the robber Sajjan, who murdered travelers, the Guru sang a hymn about deceitful lives, causing Sajjan to repent, give up his wealth, and build the first dharamsala (house of worship).",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "trial_sacrifice",
       "text": "Imprisoned by Babur's invading army, Guru Nanak's spiritual poise impressed the Emperor, who released the prisoners and sought the Guru's blessing, recognizing his divine authority.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "teaching",
       "text": "Guru Nanak established the three pillars of Sikh life: earn an honest living (Kirat Karo), remember the Divine Name (Naam Japna), and share your earnings with the needy (Vand Chhako).",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "legacy",
       "text": "Establishing a community of farmers at Kartarpur where all dined together in a common kitchen (Langar), the Guru chose his devoted disciple Bhai Lehna (Guru Angad) as his successor, passing his light to him.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "guru-nanak-dev",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the historical accounts and translations from Max Arthur Macauliffe's \"The Sikh Religion\", Vol. 1 (1909), which is in the public domain and hosted on sacred-texts.com.",
       "source_name": "The Sikh Religion, Vol. 1, translated by Max Arthur Macauliffe (1909)",

@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "bhishma",
       "chunk_type": "life_context",
       "text": "\"...thy sire Bhishma, influenced by wrath, began to fight with the Srinjayas...the old Kuru grandsire Bhishma, day after day, slew ten thousand warriors of the Ratha. On the tenth day, however...Bhishma, single-handed, slew ten thousand elephants...none of the kings, O monarch, could even look at him, for he then resembled the hot mid-day Sun in the summer sky.\"",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "bhishma",
       "chunk_type": "core_dharmic_act",
       "text": "Krishna, seeing Bhishma break the Pandava ranks, said to Arjuna: \"There, Bhishma, the son of Santanu, stayeth between the two armies. Slaying him by putting forth thy might, thou mayst win victory.\" Bhishma fought on the Kaurava side out of a prior vow of loyalty to the throne of Hastinapura, not from personal enmity toward the Pandavas, whom the text elsewhere calls his own kin.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "bhishma",
       "chunk_type": "trial_sacrifice",
       "text": "\"...he continued...'With only a single bow I could slay all the Pandavas, if the mighty Vishnu himself had not been their protector. For two reasons, however, I will not fight with the Pandavas, viz., their unslayableness, and the femininity of Sikhandin... I should now wish my own death, this being the proper hour.'\" Bhishma restrained his own full strength against the Pandavas by choice, even while continuing to fight for the Kaurava army.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "bhishma",
       "chunk_type": "trial_sacrifice",
       "text": "\"...he fell down from his car with his head to the east, a little before sunset...That foremost of all bowmen, that mighty-armed hero, fell down, like an uprooted standard of Indra, making the earth tremble the while. Pierced all over with arrows, his body touched not the ground. At that moment...a divine nature took possession of that great bowman lying on a bed of arrows.\"",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "bhishma",
       "chunk_type": "trial_sacrifice",
       "text": "\"The boon that was granted to me by my illustrious sire, to the effect that my death would depend on my own wish O, let that boon become true. I will hold my life, since I have control in the matter of laying it down... I will never pass out (of the world) as long as the Sun is in the southern solstice... I will proceed to my own ancient abode when the Sun reacheth the northern solstice.\" Bhishma lay on his bed of arrows for many weeks, by his own account, until the turning of the season, so as to die at an auspicious time.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "bhishma",
       "chunk_type": "teaching",
       "text": "Of the arrows piercing him, Bhishma told Dussasana: \"These arrows coursing towards me in one continuous line, whose touch resembleth that of heaven's bolt, have been shot by Arjuna. These are not Sikhandin's... Save the heroic wielder of Gandiva, viz., the ape-bannered Jishnu, even all other kings united together cannot cause me pain.\" Even mortally wounded, Bhishma names and honors the skill of the warrior who defeated him rather than complaining of his fate.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "bhishma",
       "chunk_type": "legacy",
       "text": "\"When the grandsire of the Bharatas who was endued with great might was overthrown, thy son...knew not what to do. And all the Kurus were entirely deprived of their senses... And the Rishis and the Pitris all applauded Bhishma of high vows. And the deceased ancestors of the Bharatas also praised Bhishma.\" Bhishma, endued with great ascetic merit, \"having recourse to that Yoga which is taught in the great Upanishads and engaged in mental prayers, remained quiet, expectant of his hour\" even after his fall.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "bhishma",
       "chunk_type": "citation_provenance",
       "text": "Bhishma (Devavrata, son of Ganga and Santanu) is a central figure of the Mahabharata's Bhishma Parva (Book 6), which also contains the Bhagavad Gita (a separate, already-sourced corpus in this app). This entry draws only on Sections CXIX-CXX of the Ganguli translation (1883-1896), public domain, digitized jointly by sacred-texts.com and Project Gutenberg. It does not cover Bhishma's earlier vow of lifelong celibacy (Adi Parva, Book 1), which is not yet sourced for this app.",
       "source_name": "The Mahabharata, Book 6 (Bhishma Parva), translated by Kisari Mohan Ganguli (1883-1896)",

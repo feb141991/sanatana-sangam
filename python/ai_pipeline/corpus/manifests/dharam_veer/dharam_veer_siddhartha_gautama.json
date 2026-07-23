@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "life_context",
       "text": "Siddhartha Gautama left his palace, wife, and child to seek the end of suffering, wandering as an ascetic before achieving Enlightenment under the Bodhi tree and becoming the Buddha.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "core_dharmic_act",
       "text": "Setting in motion the Wheel of Dharma (Dhammacakkappavattana Sutta) in his first sermon, the Buddha taught the Middle Way between self-indulgence and self-mortification, and the Four Noble Truths.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "trial_sacrifice",
       "text": "Before his enlightenment, the Buddha practiced extreme fasting, eating only a single grain of rice a day, until he realized that physical torture does not lead to spiritual clarity.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "trial_sacrifice",
       "text": "The Buddha calmly faced multiple attempts on his life by his cousin Devadatta, including a runaway wild elephant, which he tamed with loving-kindness.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "trial_sacrifice",
       "text": "Even when mortally ill from his last meal, the Buddha walked long distances to Kusinara, instructing his disciples to not blame the donor of the food.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "teaching",
       "text": "\"Therefore, O Ananda, be ye lamps unto yourselves. Be ye a refuge to yourselves. Betake yourselves to no external refuge. Hold fast to the truth as a lamp.\" The Buddha emphasized personal realization.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "legacy",
       "text": "\"Decay is inherent in all component things! Work out your salvation with diligence!\" These were the last words of the Tathagata before he entered Parinirvana.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "siddhartha-gautama",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the historical accounts and translations from T. W. Rhys Davids' \"Buddhist Suttas\" (Sacred Books of the East, Vol. 11, 1881), which is in the public domain and hosted on sacred-texts.com.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",

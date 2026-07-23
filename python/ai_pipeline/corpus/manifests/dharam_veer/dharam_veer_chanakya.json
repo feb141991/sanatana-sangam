@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "chanakya",
       "chunk_type": "life_context",
       "text": "Chanakya (Kautilya) was a teacher at Taxila and counselor to Chandragupta Maurya, seeking to unite the divided kingdoms of India under a single righteous administration.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "chanakya",
       "chunk_type": "core_dharmic_act",
       "text": "After being insulted by the Nanda king, Chanakya untied his topknot (shikha), vowing to keep it untied until he had destroyed the corrupt dynasty and established a just rule under Chandragupta.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "chanakya",
       "chunk_type": "trial_sacrifice",
       "text": "Chanakya selected the young Chandragupta, trained him in martial arts and statecraft, and navigated immense political intrigues to guide him to the Maurya throne.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "chanakya",
       "chunk_type": "trial_sacrifice",
       "text": "Though serving as the prime minister of a vast empire, Chanakya lived in a humble mud hut, stating that a ruler's wealth lies in the prosperity of his subjects, not in personal luxury.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "chanakya",
       "chunk_type": "trial_sacrifice",
       "text": "\"In the happiness of his subjects lies the king's happiness; in their welfare his welfare. What pleases himself he shall not consider as good, but whatever pleases his subjects he shall consider as good.\" (Rajadharma, Book I, Chapter XIX).",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "chanakya",
       "chunk_type": "teaching",
       "text": "\"Just as it is impossible not to taste honey or poison that finds itself on the tongue, so it is impossible for a government servant not to eat up at least a bit of the king's revenue,\" advising strict accountability.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "chanakya",
       "chunk_type": "legacy",
       "text": "Chanakya's guidance led to the creation of the Maurya Empire, which brought peace, unity, and prosperity across the subcontinent, and his writings remain a classic on ethical governance.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "chanakya",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the translation from R. Shamasastry's \"Kautilya's Arthashastra\" (1915), which is in the public domain.",
       "source_name": "Kautilya's Arthashastra, translated by R. Shamasastry (1915)",

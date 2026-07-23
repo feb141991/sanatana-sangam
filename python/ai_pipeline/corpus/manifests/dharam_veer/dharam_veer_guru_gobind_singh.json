@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "life_context",
       "text": "\"The Guru, on seeing his son, felt his end was near, and having placed the coconut and five paisa before him, bowed to him in token of his succession.\" Born in Patna, Gobind Rai succeeded his father Guru Tegh Bahadur at a young age to lead the Sikhs.",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "core_dharmic_act",
       "text": "\"The Guru arose and said: 'Is there any Sikh of mine who will offer his head to my sword?' ... When five Sikhs had thus offered their lives, he baptized them with Amrit (holy nectar) and declared them the Panj Pyare (the Five Beloved Ones), initiating the Khalsa in 1699.\"",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "trial_sacrifice",
       "text": "The Guru's family and disciples faced extreme hunger and cold during the prolonged siege of Anandpur. Yet the Guru refused to surrender, reminding them that the path of Dharma requires enduring all trials.",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "trial_sacrifice",
       "text": "Ajit Singh and Jujhar Singh, the Guru's eldest sons, fell fighting bravely against overwhelming forces at Chamkaur. The Guru watched them go to battle with joy, stating: \"O God, it is You who gave them to me, and I return them to You in battle for Dharma.\"",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "trial_sacrifice",
       "text": "The two youngest sons, Zorawar Singh and Fateh Singh, were bricked up alive at Sirhind for refusing to renounce their faith. They stated: \"Our grandfather Guru Tegh Bahadur gave his life but not his faith; we shall follow his path.\"",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "teaching",
       "text": "\"When all other means have failed, it is righteous to draw the sword.\" In his letter (Zafarnama) to Aurangzeb, the Guru declared that he did not fear imperial armies, for his trust was in the Lord of the universe.",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "legacy",
       "text": "Before passing, the Guru placed the coconut and five paisa before the Adi Granth, bowed, and said: \"Let him who desires to behold me look into the Granth Sahib. Obey the Granth Sahib as the visible body of the Gurus.\"",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "guru-gobind-singh",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the historical accounts and translations from Max Arthur Macauliffe's \"The Sikh Religion\", Vol. 5 (1909), which is in the public domain and hosted on sacred-texts.com.",
       "source_name": "The Sikh Religion, Vol. 5, translated by Max Arthur Macauliffe (1909)",

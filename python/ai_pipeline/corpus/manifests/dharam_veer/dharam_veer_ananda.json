@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "ananda",
       "chunk_type": "life_context",
       "text": "For twenty-five years, Ananda served as the Buddha's personal attendant, memorizing all his discourses and attending to his every daily need with unmatched devotion.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "ananda",
       "chunk_type": "core_dharmic_act",
       "text": "Ananda pleaded with the Buddha to allow women to enter the Sangha, leading to the ordination of Mahapajapati Gotami and the establishment of the Bhikkhuni order.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "ananda",
       "chunk_type": "trial_sacrifice",
       "text": "When Nalagiri, a wild elephant, was set loose to kill the Buddha, Ananda stepped in front of the Buddha to protect him with his own body, ignoring personal safety.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "ananda",
       "chunk_type": "trial_sacrifice",
       "text": "Ananda went into the monastery, and stood leaning against the lintel of the door, weeping at the thought: \"Alas! I remain still but a learner, one who has yet to work out his own perfection. And the Master is about to pass away!\"",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "ananda",
       "chunk_type": "trial_sacrifice",
       "text": "The Blessed One comforted his disciple: \"Enough, Ananda! Do not let yourself be troubled; do not weep! Have I not told you that it is in the very nature of things that we must divide ourselves from all things near and dear?\"",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "ananda",
       "chunk_type": "teaching",
       "text": "At the First Council, Ananda began every discourse with \"Thus have I heard\" (Evam me sutam), reciting the Suttas from memory to preserve them for future generations.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "ananda",
       "chunk_type": "legacy",
       "text": "Ananda achieved complete enlightenment (Arhatship) just before the First Buddhist Council opened, earning the praise of all senior monks for his humility, service, and wisdom.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "ananda",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the historical accounts and translations from T. W. Rhys Davids' \"Buddhist Suttas\" (Sacred Books of the East, Vol. 11, 1881), which is in the public domain.",
       "source_name": "Buddhist Suttas (Sacred Books of the East, Vol. 11), translated by T. W. Rhys Davids (1881)",

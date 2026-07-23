@@ -8,6 +8,7 @@
   "content": [
     {
       "ref": "1.1",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "life_context",
       "text": "Shivaji's character was shaped by his mother Jijabai, who taught him stories of ancient heroes, and Dadoji Kondadev, who trained him in administration and military tactics in the rugged valleys of Maval.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -17,6 +18,7 @@
     },
     {
       "ref": "1.2",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "core_dharmic_act",
       "text": "Shivaji's goal was not merely personal kingdom but the establishment of a self-governing state where all people could practice their faith without fear of oppression, known as Hindavi Swarajya (self-rule).",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -26,6 +28,7 @@
     },
     {
       "ref": "1.3",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "trial_sacrifice",
       "text": "When Adil Shahi general Afzal Khan marched with a massive army to crush the Marathas, Shivaji met him in a personal interview under Pratapgad, successfully defending himself and defeating the larger force through strategic foresight.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -35,6 +38,7 @@
     },
     {
       "ref": "1.4",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "trial_sacrifice",
       "text": "Imprisoned by Aurangzeb in Agra, Shivaji maintained his composure and escaped by concealing himself in large sweetmeat baskets, returning safely to Maharashtra to resume his struggle for independence.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -44,6 +48,7 @@
     },
     {
       "ref": "1.5",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "trial_sacrifice",
       "text": "Baji Prabhu Deshpande and a handful of soldiers held the pass of Ghodkhind (Pavankhind) to allow Shivaji to escape to Vishalgad, sacrificing their lives so their leader could survive to lead the Maratha cause.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -53,6 +58,7 @@
     },
     {
       "ref": "1.6",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "teaching",
       "text": "Shivaji ordered his soldiers never to damage mosques, to treat women and children of all communities with respect, and to hand over any copy of the Quran found in battle to Muslim officers, instituting a model of religious tolerance.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -62,6 +68,7 @@
     },
     {
       "ref": "1.7",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "legacy",
       "text": "Shivaji was crowned Chhatrapati at Raigad in 1674, establishing a sovereign Hindu kingdom that could challenge imperial hegemony and preserve local culture, language, and traditions.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
@@ -71,6 +78,7 @@
     },
     {
       "ref": "1.8",
+      "figure_id": "chhatrapati-shivaji",
       "chunk_type": "citation_provenance",
       "text": "This entry compiles the historical records and translations from Jadunath Sarkar's \"Shivaji and His Times\" (1919), which is in the public domain.",
       "source_name": "Shivaji and His Times, by Jadunath Sarkar (1919)",
