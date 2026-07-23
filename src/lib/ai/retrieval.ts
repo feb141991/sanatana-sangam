@@ -132,7 +132,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
 
     const refSegments = this.parseReferenceSegments(queryText) || this.parseReferenceSegments(reqSource) || this.parseReferenceSegments(reqTitle);
 
-    // Check if we have files matching this prefix. If not, generate high-quality mock data dynamically
+    // Fail closed if required corpus manifests are absent; never fabricate retrieval content.
     let filesExist = false;
     if (this.fileNames && this.fileNames.length > 0) {
       for (const fn of this.fileNames) {

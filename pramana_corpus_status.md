@@ -3,6 +3,8 @@
 This document records the current integration, routing, and evaluation status for each Pramana corpus in the repository.
 
 > **Status source of truth:** For current corpus maturity and prioritization, see `PRAMANA_CORPUS_ROADMAP.md`. This document is retained for its per-corpus integration/eval detail.
+>
+> **Cleanup review 2026-07-23:** Bhakti Katha and Panchatantra are not mock-only. Their current chapter manifests contain real source-backed or explicitly curated lesson content with per-item metadata. Retrieval must fail closed when approved corpus files are missing; do not use synthetic fallback text as product content.
 
 ## 1. Corpus Registry & Status Matrix
 
@@ -44,10 +46,12 @@ This document records the current integration, routing, and evaluation status fo
 2. **Bhakti Katha (`bhakti_katha`)**
    - Active chapters: 1 (`katha_chapter_1.json`)
    - Themes: Narrative accounts (Bhakta Prahlada, Bhakta Dhruva, Sudama Vipra, Gajendra Moksha).
+   - Source status: mixed approved content. Prahlada/Dhruva use verified public-domain Purana material; Sudama/Gajendra are Shoonaya curated lessons and must remain labeled as `curated_lesson` / rights-cleared, not as verbatim public-domain translation excerpts.
 
 3. **Panchatantra (`bhakti_panchatantra`)**
    - Active chapters: 1 (`panchatantra_chapter_1.json`)
    - Themes: Moral fables (Monkey and Crocodile, Talkative Tortoise, Lion and Rabbit, Blue Jackal).
+   - Source status: source-backed from Arthur W. Ryder's public-domain Panchatantra translation layer where present. Keep Sanskrit companion-only unless a separate digital-rights pass clears the Sanskrit source.
 
 4. **Upanishads (`pathshala_upanishads`)**
    - Active texts: 11 (`upanishad_*.json`)

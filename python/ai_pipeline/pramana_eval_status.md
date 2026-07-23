@@ -2,6 +2,8 @@
 
 This report documents the status of the local and live-ish evaluations across the active Pramana corpora.
 
+> **Cleanup review 2026-07-23:** This file is a historical eval snapshot. Labels such as `(0 live, 6 mock)` describe the eval harness mode at the time of that run, not the current product content state. Since this snapshot, Bhakti Katha/Panchatantra source metadata was normalized, Dharam Veer coverage was expanded, and retrieval was hardened to fail closed when corpus files are missing. Regenerate this report before using it for launch/content decisions.
+
 ## Suite Pass/Fail Status
 
 | Suite Name | Dataset | Cases | Pass Rate | Case Scores (Passed / Total) | Status |

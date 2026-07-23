@@ -3,7 +3,11 @@
 This dashboard provides a weekly status snapshot of all Pramana study lanes, corpus sizes, retrieval integration levels, evaluation coverage, and provider connectivity to guide rollout decisions.
 
 **Generated at**: `2026-05-20T10:29:00Z` (UTC)  
-**Status**: 🟢 STAGING-READY — Self-hosted confirmed live + routes smoke-tested  
+**Last cleanup review**: `2026-07-23` (UTC)  
+**Status**: 🟡 HISTORICAL DASHBOARD — retained for eval/provider history; corpus rows below were normalized where they had drifted from current source-ingestion work.
+
+> [!IMPORTANT]
+> This dashboard is no longer the only source of truth for corpus maturity. It predates the July 2026 content-ingestion cleanup that replaced unsafe Bhakti/Panchatantra assumptions, expanded Dharam Veer source coverage, and made retrieval fail closed when corpus files are absent. Use `pramana_corpus_status.md` and the corpus manifests/indexes for current content state.
 
 ---
 
@@ -35,8 +39,8 @@ The matrix below shows the status of each tradition's study lane.
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- | :--- |
 | **`pathshala_gita`** | Sanatana Dharma | ✅ Built (🟢 Production) | 701 | 6 | ✅ | `live-ish` | active (default fallback) | `scripture_verse_explain` |
 | **`pathshala_upanishads`** | Sanatana Dharma | ✅ Built (🟡 Sample) | 43 | 16 | ✅ | `mock-only` | explicit-target-only | `scripture_passage_explain` |
-| **`bhakti_katha`** | Bhakti | ❌ Missing (⚪ Not-indexed) | 0 | 6 | ✅ | `mock-only` | active (source-key match) | `devotional_story_explain` |
-| **`bhakti_panchatantra`** | Niti Shastra | ❌ Missing (⚪ Not-indexed) | 0 | 6 | ✅ | `mock-only` | explicit-target-only | `moral_story_explain` |
+| **`bhakti_katha`** | Bhakti | 🟡 Manifest-backed | 4 stories | 6 | ✅ | `source-backed/curated` | active (source-key match) | `devotional_story_explain` |
+| **`bhakti_panchatantra`** | Niti Shastra | 🟡 Manifest-backed | 4 stories | 6 | ✅ | `source-backed` | explicit-target-only | `moral_story_explain` |
 | **`sikh_gurbani`** | Sikhi | ✅ Built (🟡 Sample) | 34 | 6 | ✅ | `mock-only` | explicit-target-only | `gurbani_shabad_explain` |
 | **`buddhist_dhamma`** | Buddhism | ✅ Built (🟢 Production) | 109 | 6 | ✅ | `mock-only` | explicit-target-only | `buddhist_sutra_explain` |
 | **`jain_dharma`** | Jainism | ✅ Built (🟢 Production) | 107 | 6 | ✅ | `mock-only` | explicit-target-only | `jain_sutra_explain` |
@@ -59,7 +63,7 @@ Status of inference backends for hosted cloud models and local self-hosted deplo
 
 | Provider | Status | Environment Checks | Configured Role / Detail |
 | :--- | :--- | :--- | :--- |
-| **`gemini-hosted`** | 🔴 UNAVAILABLE | `Inactive` | `GEMINI_API_KEY` not set — mock fallback only |
+| **`gemini-hosted`** | ⚪ ENV-DEPENDENT | `Check deployment env` | Historical run lacked `GEMINI_API_KEY`; current production config must be checked in Vercel, not inferred from this file. |
 | **`self-hosted`** | 🟢 LIVE + SMOKE-TESTED | `Active` | Ollama `qwen2.5:0.5b` at `localhost:11434` — 3/3 routes HTTP 200 |
 
 ---
@@ -214,7 +218,7 @@ Run against **Ollama `qwen2.5:0.5b`** at `http://localhost:11434`.
   ```
 
 ### 2. Hosted API Key Missing
-* `GEMINI_API_KEY` is not configured. All hosted eval runs are mocked.
+* Historical local run did not have `GEMINI_API_KEY` configured. Re-check current Vercel/local env before treating hosted eval as blocked.
 * **Action**: Set `GEMINI_API_KEY` in `.env.local` and re-run `npm run eval:compare -- --modes hosted`.
 
 ### 3. Corpus Scale Limitations
@@ -222,8 +226,8 @@ Run against **Ollama `qwen2.5:0.5b`** at `http://localhost:11434`.
 * **Action**: Expand manifests to 100+ documents to reach Production-scale auto-routing threshold.
 
 ### 4. Missing Retrieval Indexes
-* **`bhakti_katha`** and **`bhakti_panchatantra`** have no TF-IDF indexes — retrieval falls back to manifest scanning.
-* **Action**: Ingest source texts and run `npm run corpus:build-indexes`.
+* **`bhakti_katha`** and **`bhakti_panchatantra`** are manifest-backed with verified/curated source metadata after the July 2026 ingestion cleanup. TF-IDF indexes are still optional future optimization work; they are no longer mock-only content gaps.
+* **Action**: Build TF-IDF indexes only when search quality/latency needs it; do not reintroduce synthetic filler.
 
 ### 5. Eval Gaps (10 lanes)
 * The following registered lanes completely lack eval case coverage:
