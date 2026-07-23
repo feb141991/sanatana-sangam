@@ -1141,7 +1141,15 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_shivaji.json',
     'dharam_veer_bhishma.json',
     'dharam_veer_arjuna.json',
-    'dharam_veer_lord_mahavira.json'
+    'dharam_veer_lord_mahavira.json',
+    'dharam_veer_guru_nanak_dev.json',
+    'dharam_veer_guru_tegh_bahadur.json',
+    'dharam_veer_siddhartha_gautama.json',
+    'dharam_veer_ananda.json',
+    'dharam_veer_emperor_ashoka.json',
+    'dharam_veer_parshvanatha.json',
+    'dharam_veer_harishchandra.json',
+    'dharam_veer_chanakya.json'
   ]
 });
 
