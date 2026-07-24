@@ -25,6 +25,8 @@ export interface SourceCitation {
   sourceName: string;
   sourceUrl: string;
   rightsStatus: string;
+  /** The exact excerpt text the model was grounded on, for reviewer verification. */
+  excerpt: string;
 }
 
 /**
@@ -49,37 +51,15 @@ function extractJsonObject(raw: string): string {
   return raw.slice(start, end + 1);
 }
 
-export async function generateDharmVeerContent(seed: DharmVeerSeed): Promise<GeneratedDharmVeerContent> {
-  const result = await generateWithProvider(
-    {
-      system: 'You are a scholar of Indic traditions. Write with depth and reverence. All prose fields under 200 words.',
-      user: `Generate Dharm Veer content for ${seed.name} (${seed.tradition}, ${seed.era} era).
-Return a JSON object with exactly these keys:
-{
-  "tagline": "one powerful sentence capturing their essence",
-  "journey": "their life path in 150 words — who they were, what shaped them",
-  "journey_local": "same in Hindi (Devanagari script), natural not translated",
-  "trial": "their defining test, sacrifice or spiritual crisis in 150 words",
-  "trial_local": "same in Hindi",
-  "teaching": "their core contribution to dharma in 120 words",
-  "teaching_local": "same in Hindi",
-  "moral": "what a modern seeker takes from their life in 100 words",
-  "moral_local": "same in Hindi",
-  "legacy": "how their life shaped the tradition, lineage, or society — lasting impact in 100 words",
-  "legacy_local": "same in Hindi",
-  "quote": "one authentic or attributed quote in English",
-  "quote_local": "the quote in their original language/script if known",
-  "quote_source": "source text or tradition",
-  "illustration_prompt": "a vivid scene description (80–120 words) suitable for a digital illustration: their most iconic moment, setting, attire, symbolic objects, mood, lighting style — written for an image generation model"
-}
-Tags for context: ${seed.tags.join(', ')}.${seed.name_local ? ` Local name: ${seed.name_local}.` : ''}`,
-    },
-    { responseFormat: 'json' },
-  );
-
-  const parsed = JSON.parse(extractJsonObject(result.text)) as GeneratedDharmVeerContent;
-  return parsed;
-}
+// NOTE: the old freeform/ungrounded generateDharmVeerContent() was removed
+// here (2026-07-24 review pass). It let the model invent an entire biography
+// from its own training knowledge with no source passages at all, and its
+// only caller -- scripts/generate-dharm-veers.ts, a standalone batch script
+// not wired into package.json or any cron -- has been deleted for the same
+// reason: it inserted rows with review_status defaulting to 'approved',
+// bypassing the manifest-first/auto-source/review pipeline entirely. Every
+// insert into dharm_veers now goes through generateGroundedDharmVeerContent
+// below, which requires at least one real source passage.
 
 /**
  * Source-grounded variant of generateDharmVeerContent, used by the auto-sourcing
@@ -150,6 +130,7 @@ export function citationsFromSources(
     sourceName: s.sourceName,
     sourceUrl: s.sourceUrl,
     rightsStatus: s.rightsStatus,
+    excerpt: s.excerpt,
   }));
 }
 
@@ -177,6 +158,9 @@ export async function insertGeneratedDharmVeer(
     sourceCitations?: SourceCitation[];
   },
 ) {
+  // Defaulting to 'pending_review' (rather than 'approved') means a future
+  // caller that forgets to pass options explicitly fails safe -- the row
+  // just sits in the review queue instead of silently going live unreviewed.
   const { error } = await supabase.from('dharm_veers').insert({
     slug: seed.slug,
     name: seed.name,
@@ -202,7 +186,7 @@ export async function insertGeneratedDharmVeer(
     day_index: dayIndex,
     generated_by: generatedBy,
     source_backed: options?.sourceBacked ?? false,
-    review_status: options?.reviewStatus ?? 'approved',
+    review_status: options?.reviewStatus ?? 'pending_review',
     source_citations: options?.sourceCitations ?? [],
   });
 

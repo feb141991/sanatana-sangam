@@ -8,6 +8,7 @@ type SourceCitation = {
   sourceName: string;
   sourceUrl: string;
   rightsStatus: string;
+  excerpt: string;
 };
 
 type PendingDharmVeer = {
@@ -146,17 +147,23 @@ export default function DharmVeerReviewPage() {
               </div>
 
               {Array.isArray(r.source_citations) && r.source_citations.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="space-y-3">
                   {r.source_citations.map((c, i) => (
-                    <a
-                      key={i}
-                      href={c.sourceUrl || undefined}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 text-[10px] font-bold text-[var(--brand-muted)] hover:bg-black/10 transition-all"
-                    >
-                      <LinkIcon size={10} /> {c.sourceName} ({c.rightsStatus})
-                    </a>
+                    <div key={i} className="rounded-2xl bg-black/[0.03] border border-black/5 p-3 space-y-2">
+                      <a
+                        href={c.sourceUrl || undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/5 text-[10px] font-bold text-[var(--brand-muted)] hover:bg-black/10 transition-all w-fit"
+                      >
+                        <LinkIcon size={10} /> {c.sourceName} ({c.rightsStatus})
+                      </a>
+                      {c.excerpt && (
+                        <p className="text-xs leading-relaxed text-[var(--brand-muted)] whitespace-pre-line max-h-40 overflow-y-auto">
+                          {c.excerpt}
+                        </p>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}

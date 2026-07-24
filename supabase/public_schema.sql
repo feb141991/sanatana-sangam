@@ -3976,11 +3976,32 @@ CREATE TABLE public.dharm_veers (
     legacy text,
     legacy_local text,
     illustration_prompt text,
-    CONSTRAINT dharm_veers_tradition_check CHECK ((tradition = ANY (ARRAY['hindu'::text, 'sikh'::text, 'buddhist'::text, 'jain'::text, 'sufi'::text, 'tribal'::text])))
+    source_backed boolean DEFAULT false NOT NULL,
+    review_status text DEFAULT 'approved'::text NOT NULL,
+    source_citations jsonb DEFAULT '[]'::jsonb NOT NULL,
+    reviewed_by uuid,
+    reviewed_at timestamp with time zone,
+    CONSTRAINT dharm_veers_tradition_check CHECK ((tradition = ANY (ARRAY['hindu'::text, 'sikh'::text, 'buddhist'::text, 'jain'::text, 'sufi'::text, 'tribal'::text]))),
+    CONSTRAINT dharm_veers_review_status_check CHECK ((review_status = ANY (ARRAY['approved'::text, 'pending_review'::text, 'rejected'::text])))
 );
 
 
 ALTER TABLE public.dharm_veers OWNER TO postgres;
+
+--
+-- Name: dharm_veer_generation_log; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.dharm_veer_generation_log (
+    slug text NOT NULL,
+    status text NOT NULL,
+    attempted_at timestamp with time zone DEFAULT now() NOT NULL,
+    notes text,
+    CONSTRAINT dharm_veer_generation_log_status_check CHECK ((status = ANY (ARRAY['no_source_found'::text, 'generated_pending_review'::text, 'generated_approved'::text])))
+);
+
+
+ALTER TABLE public.dharm_veer_generation_log OWNER TO postgres;
 
 --
 -- Name: event_rsvps; Type: TABLE; Schema: public; Owner: postgres
@@ -7021,6 +7042,14 @@ ALTER TABLE ONLY public.dharm_veers
 
 
 --
+-- Name: dharm_veer_generation_log dharm_veer_generation_log_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.dharm_veer_generation_log
+    ADD CONSTRAINT dharm_veer_generation_log_pkey PRIMARY KEY (slug);
+
+
+--
 -- Name: event_rsvps event_rsvps_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -8609,6 +8638,13 @@ CREATE INDEX dharm_veers_day_index_idx ON public.dharm_veers USING btree (day_in
 --
 
 CREATE INDEX dharm_veers_tradition_idx ON public.dharm_veers USING btree (tradition);
+
+
+--
+-- Name: dharm_veers_review_status_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX dharm_veers_review_status_idx ON public.dharm_veers USING btree (review_status);
 
 
 --
@@ -12281,7 +12317,13 @@ ALTER TABLE public.dharm_veers ENABLE ROW LEVEL SECURITY;
 -- Name: dharm_veers dharm_veers_public_read; Type: POLICY; Schema: public; Owner: postgres
 --
 
-CREATE POLICY dharm_veers_public_read ON public.dharm_veers FOR SELECT USING (true);
+CREATE POLICY dharm_veers_public_read ON public.dharm_veers FOR SELECT USING ((review_status = 'approved'::text));
+
+--
+-- Name: dharm_veer_generation_log; Type: ROW SECURITY; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.dharm_veer_generation_log ENABLE ROW LEVEL SECURITY;
 
 
 --
