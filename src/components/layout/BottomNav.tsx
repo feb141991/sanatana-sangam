@@ -47,7 +47,7 @@ export default function BottomNav({ isGuest = false }: Props) {
   const activeProfile   = pathname === '/profile' || pathname === '/my-progress' || pathname.startsWith('/my-progress/');
   const activePanchang  = pathname === '/panchang' || pathname.startsWith('/vrat/');
   const activeTirtha    = pathname === '/tirtha-map' || pathname === '/live-darshan';
-  const activeMessages  = pathname === '/messages' || pathname.startsWith('/vichaar-sabha/');
+  const activeMessages  = pathname === '/messages';
 
   useEffect(() => {
     setCollapsed(!(pathname === '/home' || pathname === '/guest'));

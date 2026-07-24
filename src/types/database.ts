@@ -583,7 +583,7 @@ export interface Database {
           review_status?: 'approved' | 'pending_review' | 'rejected';
           source_citations?: Json;
         };
-        Update: Partial<Database['public']['Tables']['dharm_veers']['Insert']>;
+        Update: Partial<Database['public']['Tables']['dharm_veers']['Row']>;
       };
       dharm_veer_generation_log: {
         Row: {
@@ -595,7 +595,7 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['dharm_veer_generation_log']['Row'], 'attempted_at'> & {
           attempted_at?: string;
         };
-        Update: Partial<Database['public']['Tables']['dharm_veer_generation_log']['Insert']>;
+        Update: Partial<Database['public']['Tables']['dharm_veer_generation_log']['Row']>;
       };
     };
     Views: Record<string, never>;

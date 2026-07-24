@@ -237,7 +237,6 @@ function generateInviteCode(userId: string): string {
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ProfileClient({
   profile,
-  threadCount,
   postCount,
   userId,
   userEmail,
@@ -257,7 +256,6 @@ export default function ProfileClient({
   isOwnProfile,
 }: {
   profile:     Profile | null;
-  threadCount: number;
   postCount:   number;
   userId:      string;
   userEmail:   string;

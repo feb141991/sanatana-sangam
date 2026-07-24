@@ -35,11 +35,11 @@ export type TranslationKey =
   | 'liveDarshan' | 'sadhanaPulse' | 'mandali' | 'tirtha'
   | 'liveDarshanDesc' | 'panchangDesc' | 'sadhanaPulseDesc' | 'bhaktiDesc'
   | 'pathshalaDesc' | 'mandaliDesc' | 'kulDesc' | 'tirthaDesc'
-  | 'japaDesc' | 'morningRoutineDesc' | 'sevaHubDesc' | 'quizMasteryDesc' | 'joinDesc' | 'exploreDesc' | 'vichaarDesc'
+  | 'japaDesc' | 'morningRoutineDesc' | 'sevaHubDesc' | 'quizMasteryDesc' | 'joinDesc' | 'exploreDesc'
   // Notifications & UI
   | 'notifications' | 'markAllRead' | 'allQuiet' | 'allCaughtUp' | 'unread'
   | 'join' | 'signIn' | 'joinFree' | 'welcome' | 'study' | 'circle' | 'mirror'
-  | 'sevaHub' | 'quizMastery' | 'vichaar'
+  | 'sevaHub' | 'quizMastery'
   | 'journeyLabel' | 'testOfDharma' | 'wisdom' | 'essence' | 'shareReflection'
   // General
   | 'today' | 'yesterday' | 'thisWeek' | 'loading' | 'errorTryAgain' | 'ritualComplete'
@@ -205,14 +205,14 @@ const en: TranslationMap = {
   quizMasteryDesc: 'Test your dharmic knowledge',
   joinDesc: 'Create your profile',
   exploreDesc: 'Explore the dashboard',
-  vichaarDesc: 'Read local discussions',
+
   // Notifications & UI
   notifications: 'Notifications', markAllRead: 'Mark all read',
   allQuiet: 'All quiet for now', allCaughtUp: 'All caught up',
   unread: 'unread', join: 'Join', signIn: 'Sign in',
   joinFree: 'Join Free', welcome: 'Welcome', study: 'Study',
   circle: 'Circle', mirror: 'Mirror', sevaHub: 'Seva Hub',
-  quizMastery: 'Quiz Mastery', vichaar: 'Vichaar',
+  quizMastery: 'Quiz Mastery',
   journeyLabel: 'The Journey', testOfDharma: 'The Test of Dharma',
   wisdom: 'Wisdom', essence: 'Essence', shareReflection: 'Share this Reflection',
   // General
@@ -670,14 +670,14 @@ const hi: TranslationMap = {
   quizMasteryDesc: 'अपने धार्मिक ज्ञान का परीक्षण करें',
   joinDesc: 'अपनी प्रोफ़ाइल बनाएं',
   exploreDesc: 'डैशबोर्ड खोजें',
-  vichaarDesc: 'स्थानीय चर्चाएं पढ़ें',
+
   // Notifications & UI
   notifications: 'सूचनाएं', markAllRead: 'सब पढ़ लिया गया',
   allQuiet: 'अभी कोई सूचना नहीं है', allCaughtUp: 'सब अपडेट है',
   unread: 'बिना पढ़े', join: 'जुड़ें', signIn: 'साइन इन',
   joinFree: 'मुफ्त जुड़ें', welcome: 'स्वागत है', study: 'अध्ययन',
   circle: 'मंडली', mirror: 'दर्पण', sevaHub: 'सेवा केंद्र',
-  quizMastery: 'प्रश्नोत्तरी', vichaar: 'विचार',
+  quizMastery: 'प्रश्नोत्तरी',
   journeyLabel: 'जीवन यात्रा', testOfDharma: 'धर्म की परीक्षा',
   wisdom: 'ज्ञान', essence: 'सार', shareReflection: 'इस विचार को साझा करें',
   // General
@@ -1133,14 +1133,14 @@ const pa: TranslationMap = {
   quizMasteryDesc: 'ਆਪਣੇ ਧਾਰਮਿਕ ਗਿਆਨ ਦੀ ਪਰਖ ਕਰੋ',
   joinDesc: 'ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਬਣਾਓ',
   exploreDesc: 'ਡੈਸ਼ਬੋਰਡ ਦੀ ਪੜਚੋਲ ਕਰੋ',
-  vichaarDesc: 'ਸਥਾਨਕ ਚਰਚਾਵਾਂ ਪੜ੍ਹੋ',
+
   // Notifications & UI
   notifications: 'ਸੂਚਨਾਵਾਂ', markAllRead: 'ਸਾਰੇ ਪੜ੍ਹੋ',
   allQuiet: 'ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ ਹੈ', allCaughtUp: 'ਸਭ ਅਪਡੇਟ ਹੈ',
   unread: 'ਅਣਪੜ੍ਹੇ', join: 'ਸ਼ਾਮਲ ਹੋਵੋ', signIn: 'ਸਾਈਨ ਇਨ',
   joinFree: 'ਮੁਫ਼ਤ ਸ਼ਾਮਲ ਹੋਵੋ', welcome: 'ਜੀ ਆਇਆਂ ਨੂੰ', study: 'ਅਧਿਐਨ',
   circle: 'ਮੰਡਲੀ', mirror: 'ਦਰਪਣ', sevaHub: 'ਸੇਵਾ ਕੇਂਦਰ',
-  quizMastery: 'ਕੁਇਜ਼', vichaar: 'ਵਿਚਾਰ',
+  quizMastery: 'ਕੁਇਜ਼',
   journeyLabel: 'ਜੀਵਨ ਯਾਤਰਾ', testOfDharma: 'ਧਰਮ ਦੀ ਪ੍ਰੀਖਿਆ',
   wisdom: 'ਗਿਆਨ', essence: 'ਸਾਰ', shareReflection: 'ਇਸ ਵਿਚਾਰ ਨੂੰ ਸਾਂਝਾ ਕਰੋ',
   // General

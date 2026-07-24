@@ -39,7 +39,6 @@ export default async function ProfilePage() {
   thirtyAgo.setDate(thirtyAgo.getDate() - 30);
 
   const [
-    threadCountResult,
     postCountResult,
     safetyDashboard,
     malaSessionsResult,
@@ -48,10 +47,6 @@ export default async function ProfilePage() {
     pathshalaEntriesResult,
     bookmarkedVersesResult,
   ] = await Promise.all([
-    supabase
-      .from('forum_threads')
-      .select('id', { count: 'exact', head: true })
-      .eq('author_id', user.id),
     supabase
       .from('posts')
       .select('id', { count: 'exact', head: true })
@@ -108,7 +103,6 @@ export default async function ProfilePage() {
   return (
     <ProfileClient
       profile={profile}
-      threadCount={threadCountResult.count ?? 0}
       postCount={postCountResult.count ?? 0}
       userId={user.id}
       userEmail={user.email ?? ''}

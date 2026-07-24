@@ -752,7 +752,7 @@ function MandaliWelcome({ isFirstMember, cityLabel, onIntroduce, onStartGatherin
 }
 
 // ─── Reflections Tab (Neighborhood Shared Contemplation) ─────────
-function VichaarTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false, composePreset = null, hideEmpty = false }: {
+function PostsTab({ posts, userId, comments, onAddComment, onToggleUpvote, upvoted, onCompose, showCompose, setShowCompose, onHideContent, onHideAuthor, allowCompose = true, isPro = false, composePreset = null, hideEmpty = false }: {
   posts: PostWithAuthor[];
   userId: string;
   comments: PostCommentWithAuthor[];
@@ -1193,12 +1193,12 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
     blendedPosts,
   };
   const initialEventCount = initialPosts.filter((post) => post.type === 'event').length;
-  const initialVichaarCount = initialPosts.filter((post) => post.type !== 'event').length;
+  const initialPostsCount = initialPosts.filter((post) => post.type !== 'event').length;
 
   // Empty mandalis land on the feed so the living empty state (welcome
   // card) is the first thing a new member sees — not their own member row.
   const [nearbyTab,  setNearbyTab]  = useState<NearbyTab>(
-    initialVichaarCount === 0 && initialEventCount > 0 ? 'events' : 'feed'
+    initialPostsCount === 0 && initialEventCount > 0 ? 'events' : 'feed'
   );
   const switchNearbyTab = (t: NearbyTab) => { setNearbyTab(t); playHaptic('light'); };
 
@@ -1297,7 +1297,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
 
   const mandali    = liveProfile?.mandalis;
   const eventCount = posts.filter((p) => p.type === 'event').length;
-  const vichaarCount = posts.filter((p) => p.type !== 'event').length;
+  const postsCount = posts.filter((p) => p.type !== 'event').length;
   // Community identity comes from the mandali (canonical city). The user's
   // profile may legitimately keep a different suburb/city — alias merging
   // (Slice 0) routes e.g. Salford members into Manchester Mandali.
@@ -1313,10 +1313,10 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
           onClick: () => { switchNearbyTab('events'); },
           icon: <Calendar size={16} className="text-[color:var(--brand-muted)]" />,
         }
-      : vichaarCount > 0
+      : postsCount > 0
         ? {
             label: "Join today's Reflections",
-            hint: `${vichaarCount} local conversation${vichaarCount === 1 ? '' : 's'}`,
+            hint: `${postsCount} local conversation${postsCount === 1 ? '' : 's'}`,
             onClick: () => { switchNearbyTab('feed'); },
             icon: <MessageSquare size={16} className="text-[color:var(--brand-muted)]" />,
           }
@@ -1567,7 +1567,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
             {[
               { label: 'Members', value: visibleMembers.length },
               { label: 'Events', value: eventCount },
-              { label: 'Vichaar', value: vichaarCount },
+              { label: 'Posts', value: postsCount },
             ].map((item) => (
               <div key={item.label} className="rounded-[1.1rem] bg-[var(--surface-soft)] border px-3 py-3 text-center" style={{ borderColor: 'var(--card-border)' }}>
                 <p className="type-metric">{item.value}</p>
@@ -1687,7 +1687,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                   onStartGathering={startFirstGathering}
                 />
               )}
-              <VichaarTab
+              <PostsTab
                 posts={posts}
                 userId={userId}
                 comments={comments}
@@ -1719,7 +1719,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                   <p className="text-[11px] theme-dim text-center -mt-1">
                     Your Mandali is growing — voices from our broader community
                   </p>
-                  <VichaarTab
+                  <PostsTab
                     posts={widerPosts}
                     userId={userId}
                     comments={comments}

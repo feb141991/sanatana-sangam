@@ -10,8 +10,6 @@ export const REPORT_REASON_OPTIONS = [
 
 export const SAFETY_CONTENT_LABELS = {
   mandali_post: 'Mandali post',
-  thread: 'Vichaar thread',
-  reply: 'Vichaar reply',
   ai_chat_response: 'AI response',
 } as const;
 
@@ -149,18 +147,10 @@ export async function getUserSafetyDashboardData(
   const hiddenPostIds = resolvedState.hiddenRows
     .filter((row) => row.content_type === 'mandali_post')
     .map((row) => row.content_id);
-  const hiddenThreadIds = resolvedState.hiddenRows
-    .filter((row) => row.content_type === 'thread')
-    .map((row) => row.content_id);
-  const hiddenReplyIds = resolvedState.hiddenRows
-    .filter((row) => row.content_type === 'reply')
-    .map((row) => row.content_id);
 
   const [
     { data: safetyProfiles },
     { data: hiddenPosts },
-    { data: hiddenThreads },
-    { data: hiddenReplies },
   ] = await Promise.all([
     profileIds.length
       ? supabase
@@ -174,18 +164,6 @@ export async function getUserSafetyDashboardData(
           .select('id, content')
           .in('id', hiddenPostIds)
       : Promise.resolve({ data: [] }),
-    hiddenThreadIds.length
-      ? supabase
-          .from('forum_threads')
-          .select('id, title')
-          .in('id', hiddenThreadIds)
-      : Promise.resolve({ data: [] }),
-    hiddenReplyIds.length
-      ? supabase
-          .from('forum_replies')
-          .select('id, body')
-          .in('id', hiddenReplyIds)
-      : Promise.resolve({ data: [] }),
   ]);
 
   const profileMap = new Map(
@@ -198,20 +176,6 @@ export async function getUserSafetyDashboardData(
     hiddenPreviewMap.set(getHiddenContentKey('mandali_post', post.id), {
       title: trimPreview(post.content, 'Hidden Mandali post'),
       subtitle: SAFETY_CONTENT_LABELS.mandali_post,
-    });
-  });
-
-  safeRows(hiddenThreads).forEach((thread: any) => {
-    hiddenPreviewMap.set(getHiddenContentKey('thread', thread.id), {
-      title: trimPreview(thread.title, 'Hidden Vichaar thread'),
-      subtitle: SAFETY_CONTENT_LABELS.thread,
-    });
-  });
-
-  safeRows(hiddenReplies).forEach((reply: any) => {
-    hiddenPreviewMap.set(getHiddenContentKey('reply', reply.id), {
-      title: trimPreview(reply.body, 'Hidden Vichaar reply'),
-      subtitle: SAFETY_CONTENT_LABELS.reply,
     });
   });
 

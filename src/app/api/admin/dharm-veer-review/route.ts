@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
 import { ADMIN_COOKIE, verifyAdminCookieAuth, verifyAdminToken } from '@/lib/admin-auth';
-import { createAdminClient } from '@/lib/supabase-admin';
 
-// createAdminClient() is now typed against dharm_veers / dharm_veer_generation_log
-// (src/types/database.ts was updated 2026-07-24 to include both tables).
+// Keep this route untyped for now. This repo's hand-written generated Database
+// type still intersects some ad-hoc/admin-only table writes into `never`, while
+// the service-role route itself is protected by verifyAdminCookieAuth().
 function adminSupabase() {
-  return createAdminClient();
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 }
 
 // Admin auth here is a standalone HMAC-signed cookie (src/lib/admin-auth.ts),

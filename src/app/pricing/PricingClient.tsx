@@ -173,7 +173,7 @@ export default function PricingClient() {
         'Aarti, Stotram & basic Katha',
         'Vrat tracker',
         'Daily Quiz (1 round)',
-        'Vichaar Sabha community',
+
         'Live Darshan & Tirtha map',
         'AI Dharma chat (5/day)',
       ],

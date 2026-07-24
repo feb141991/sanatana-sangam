@@ -75,9 +75,6 @@ export default function PublicPageShell({
                 <Link href="/signup" className="glass-button-primary rounded-2xl px-4 py-3 text-white text-sm font-semibold text-center">
                   Create Your Account
                 </Link>
-                <Link href="/vichaar-sabha" className="glass-button-secondary rounded-2xl px-4 py-3 text-[#7B1A1A] text-sm font-semibold text-center">
-                  Explore as Guest
-                </Link>
                 <Link href="/contact" className="glass-button-secondary rounded-2xl px-4 py-3 text-[#7B1A1A] text-sm font-semibold text-center">
                   Contact Support
                 </Link>

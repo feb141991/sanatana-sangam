@@ -43,8 +43,6 @@ export default function ModerationClient({ initialReports }: { initialReports: R
       if (action === 'delete') {
         let table = '';
         switch (report.content_type) {
-          case 'thread': table = 'forum_threads'; break;
-          case 'reply':  table = 'forum_replies'; break;
           case 'mandali_post': table = 'posts'; break;
         }
 

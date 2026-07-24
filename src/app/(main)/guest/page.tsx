@@ -5,13 +5,6 @@ import { getAuthUser } from '@/lib/auth-cache';
 
 const guestPaths = [
   {
-    href: '/vichaar-sabha',
-    title: 'Browse Vichaar Sabha',
-    description: 'Read real questions, practical answers, and community conversations before you join.',
-    icon: MessageSquare,
-    badge: 'Read-only',
-  },
-  {
     href: '/tirtha-map',
     title: 'Open Tirtha Map',
     description: 'Find mandirs, gurudwaras, viharas, and Jain temples near you or in any city you search.',
@@ -61,7 +54,7 @@ export default async function GuestPage() {
             Explore Shoonaya before you join
           </h1>
           <p className="text-sm sm:text-base text-[color:var(--brand-muted)] leading-relaxed max-w-xl">
-            Start with Vichaar Sabha and Tirtha Map. Join when you want to post, reply, build your Kul, or get reminders.
+            Start with the Tirtha Map. Join when you want to post, reply, build your Kul, or get reminders.
           </p>
         </div>
 
