@@ -710,3 +710,24 @@ Retried all 5 remaining unsupported Hindu figures this session. None were source
   circa Jan 1, 2028). Not usable. No earlier PD translation of a Ramdas biography was located.
 
 All 5 remain in the unsupported roster, correctly degrading to the safe fallback explanation.
+
+## 18. Scope note — Batch 13: remaining Jain figures, still blocked
+
+Confirmed sacred-texts.com's entire Jainism collection is limited to two books: Jacobi's
+Jaina Sutras Part I (SBE22, already used for Rishabhanatha and Gautama Swami) and Part II
+(SBE45). Fetched SBE45's full 72-chapter table of contents this batch: it comprises the
+Uttaradhyayana Sutra and Sutrakritanga, both canonical scripture consisting of doctrinal
+lectures and a handful of ancient parable-figures (Nami, Kapila, Harikesa, Citta and
+Sambhuta, etc.) -- none of which correspond to any of the 11 remaining unsupported Jain
+figures. Bahubali, Bhadrabahu, Sthulabhadra, and Chandanbala do not appear in either SBE22 or
+SBE45 beyond the bare genealogical mentions already noted in sections 9 and 12a. Kundakunda,
+Hemachandra, Lonka Saha, Shrimad Rajchandra, Haribhadra, Yashovijaya, and Kumarpal are all
+post-canonical historical figures (centuries after the Kalpa Sutra/Uttaradhyayana material)
+and have no presence in either book at all.
+
+sacred-texts.com's Jain collection is now confirmed exhausted for this corpus. Sourcing any of
+these 11 figures would require either a different translated primary source (e.g. a PD
+translation of Hemachandra's own Trishashtishalakapurushacharita, which would independently
+cover Bahubali/Bharata material, or the Bhaktamara/Kalyanamandira stotras) or a working
+Wikisource/archive.org access path, neither of which was available this session. All 11 remain
+unsupported, correctly degrading to the safe fallback explanation.
