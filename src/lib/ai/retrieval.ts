@@ -1184,7 +1184,8 @@ const dharamVeerManifestRetriever = new PramanaManifestRetriever({
     'dharam_veer_moggallana.json',
     'dharam_veer_savitri.json',
     'dharam_veer_sanghamitra.json',
-    'dharam_veer_bodhidharma.json'
+    'dharam_veer_bodhidharma.json',
+    'dharam_veer_ramanujacharya.json'
   ]
 });
 

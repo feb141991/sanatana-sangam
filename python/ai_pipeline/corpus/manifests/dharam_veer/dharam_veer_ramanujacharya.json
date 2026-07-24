@@ -1,0 +1,90 @@
+{
+  "doc_id": "dharam_veer_ramanujacharya",
+  "source_name": "Alkondaville Govindacharya, The Life of Ramanujacharya, the Exponent of the Visishtadvaita Philosophy (Madras: S. Murthy & Co., 1906)",
+  "source_class": "biography",
+  "tradition": "Hindu",
+  "rights_status": "public_domain",
+  "revision_note": "Newly added with 8 verified chunks under public domain (2026-07-24, Batch 15). Source: Alkondaville Govindacharya's 1906 biography of Ramanujacharya, written from within the Sri Vaishnava tradition, fetched from the Internet Archive's Digital Library of India scan (item in.ernet.dli.2015.1224). Covers Chapters V-VII: his birth and naming at Sriperumbudur, his early theological disputes with his first teacher Yadava Prakasha, Yadava's jealous plot on his life during a pilgrimage to Kashi, his miraculous escape through the Vindhya wilderness, and the sage Yamunacharya's prayer naming him successor to the Vishishtadvaita tradition. The archive.org OCR scan contains scattered scanning errors in personal names and diacritics (e.g. long vowels rendered as digits); these were silently corrected for readability without altering the substance or wording of any quoted passage. The fetch was cut off by tooling limits partway into Chapter VII (a princess's exorcism/miracle episode), so this manifest ends at the close of Chapter VI, before that later material.",
+  "content": [
+    {
+      "ref": "1.1",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "life_context",
+      "text": "Govindacharya's 1906 biography records that Ramanuja was born at Sriperumbudur (called Bhutapuri) to Bhu-devi, wife of Asuri Kesavap-perumal. When Tirumalai-Nambi, a disciple of the sage Yamunacharya, came to see the newborn, he told the father: 'I see the blessed child. He is above his kind... Name him therefore Lakshmana, as he will be to God as Lakshmana was to Rama.' The child was raised through the Brahminical sacraments, married at the customary age, and then left home in search of a teacher of Vedanta, finding one in Yadava Prakasha at Tirup-putkuzhi near Kanchipuram.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.2",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "teaching",
+      "text": "Studying under Yadava Prakasha, Ramanuja openly challenged his teacher's reading of the Upanishadic declaration that Brahman is Truth, Knowledge, and Infinity. Yadava argued the three attributes could no more coexist in Brahman than a cow could be at once horned and hornless. Ramanuja countered that they were no more contradictory than redness, softness, and perfume coexisting in a single flower, and that an attributeless Brahman would be reduced to 'a non-entity.' Yadava, unable to answer, only replied in disdain: 'Thou to argue with me?' and fell silent.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.3",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "teaching",
+      "text": "On another occasion, while anointing his guru's head with oil, Ramanuja heard Yadava misread a verse of the Chandogya Upanishad as meaning that God's eyes were 'red like the posteriors of the monkey.' So grieved was he at hearing sacred verses abused that a tear fell from his eye onto Yadava's lap. Challenged to give his own reading, Ramanuja explained that the same syllables meant God's eyes were 'like the lotus which blooms under the balmy beams of the sun' -- an interpretation Yadava could not refute, but which so enraged him that he cried, 'Haughty youth! If thou canst not abide by my instruction, thou must leave me.'",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.4",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "trial_sacrifice",
+      "text": "Ramanuja's growing brilliance convinced Yadava Prakasha that his own pupil would one day surpass him and undo his standing as the foremost teacher in the land. The biography records that Yadava and his loyal disciples conspired 'to invite Ramanuja back into their fold, treat him as their best friend... and then... drown Ramanuja in the Ganga' during a planned pilgrimage to Kashi, reasoning that a death in the holy river would pass as an accident of merit rather than a murder.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.5",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "trial_sacrifice",
+      "text": "Warned quietly by his cousin Govinda-bhatta as the pilgrims crossed the Vindhya hills, Ramanuja slipped away into the wilderness alone, wandering for hours footsore and bleeding until a Fowler and his wife appeared and let him travel with them through the night. By morning they had vanished -- and Ramanuja found himself standing before the temple gopuram of Lord Varadaraja at Kanchipuram, nearly a thousand miles from where he had entered the forest. He understood then that the Fowler had been God himself, come to guide him to safety.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.6",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "core_dharmic_act",
+      "text": "When Yadava Prakasha reached Kanchipuram and found Ramanuja alive and safe, 'he could not therefore but turn his hate into love for him,' the biography records, and invited him to return to his school. Word of the young scholar's steadfastness under his teacher's harsh discipline, and of his escape, reached Srirangam, where two visiting Sri Vaishnavas described the whole episode to the aged sage Yamunacharya, who exclaimed on hearing it: 'The bad are legion, like fire-sparks in a furnace. But the good, if found in the fire, are like lotuses therein.'",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.7",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "legacy",
+      "text": "Moved by what he had heard, Yamunacharya set out at once from Srirangam for Kanchipuram to meet Ramanuja in person. On the way, he climbed to the shrine of Lord Varada at Hastigiri and prayed: 'Grant me then, that this Ramanuja shall become the bearer of the Torch of our Faith.' An urgent summons back to Srirangam kept the two from meeting face to face on this journey -- but Yamunacharya had already, in that prayer, named the young philosopher as heir to the Vishishtadvaita tradition he himself had led.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    },
+    {
+      "ref": "1.8",
+      "figure_id": "ramanujacharya",
+      "chunk_type": "citation_provenance",
+      "text": "This entry draws on Alkondaville Govindacharya's The Life of Ramanujacharya (Madras: S. Murthy & Co., 1906), a public-domain biography written from within the Sri Vaishnava tradition, covering the philosopher's birth, education, and early trials under his first teacher Yadava Prakasha, through the sage Yamunacharya's prayer naming him as successor. Fetched from the Internet Archive's Digital Library of India scan (item in.ernet.dli.2015.1224). Scattered OCR scanning errors in personal names and diacritics were silently corrected for readability without altering the substance or wording of any quoted passage.",
+      "source_name": "The Life of Ramanujacharya (Govindacharya, 1906)",
+      "source_url": "https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt",
+      "rights_status": "public_domain",
+      "source_class": "biography"
+    }
+  ]
+}

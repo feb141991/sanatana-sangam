@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-24 (Dharm Veer batch 14) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-24 (Dharm Veer batch 15) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-24 (Dharm Veer batch 14) -- no auto-generation script e
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 304 | 304 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 312 | 312 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-24 (Dharm Veer batch 14) -- no auto-generation script e
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 38
-- **Curated-Only / Unsupported Heroes:** 32
+- **Source-Backed (Supported) Heroes:** 39
+- **Curated-Only / Unsupported Heroes:** 31
 
 ### Supported Heroes:
 - `ananda`
@@ -61,11 +61,11 @@ Updated by hand: 2026-07-24 (Dharm Veer batch 14) -- no auto-generation script e
 - `mahapajapati-gotami`
 - `savitri`
 - `sanghamitra`
+- `ramanujacharya`
 
 ### Unsupported Roster Heroes:
 - `adi-shankaracharya` (degrades to safe fallback explanation -- investigated in batches 8 and 12; Thibaut's SBE34 commentary has no bio; the PD 1911 Britannica "Sankara Acharya" entry exists but both hosts checked (Wikisource, theodora.com) returned empty on fetch; Barnett's Brahma-Knowledge (1911) confirmed to have no biographical chapter)
 - `mirabai` (degrades to safe fallback explanation -- investigated in batch 8; only candidate English translation found (A. J. Alston, 1980, Motilal Banarsidass) is a modern copyrighted work, not public domain, despite an archive.org DLI copy mislabeled 'Out_of_copyright'; no pre-1929 English translation of her bhajans was located. Skipped rather than risk a rights violation.)
-- `ramanujacharya` (degrades to safe fallback explanation -- investigated in batches 8 and 12; Thibaut's SBE48 commentary has no bio; a candidate general-history source (Bhandarkar's 1913 Vaisnavism, Saivism and Minor Religious Systems, PD) was identified but only reachable via an archive.org DLI scan subject to the known djvu.txt truncation problem -- candidate for a future batch)
 - `ramana-maharshi` (degrades to safe fallback explanation -- investigated in batch 12; died 1950, all substantial biographical writing about him postdates his death and is presumptively still under copyright; treated as rights-risky like Thich Nhat Hanh and B.R. Ambedkar)
 - `samarth-ramdas` (degrades to safe fallback explanation -- investigated in batch 12; Abbott's translation of Mahipati's Santavijaya (the standard English hagiography) was published in 1932, which as of this session's date is still 2 years short of the rolling US public-domain cutoff (currently 1930); no earlier PD translation located)
 - `banda-singh-bahadur` (degrades to safe fallback explanation -- candidate for batch 4; a suitable clean per-chapter public-domain source (Cunningham's History of the Sikhs, 1849) was not located/fetched within the session's time budget and was skipped rather than guessed, per policy; good candidate for a future batch)

@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-24 (Batch 14)
+Last updated: 2026-07-24 (Batch 15)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -780,3 +780,93 @@ Sourced 1 of 4 remaining unsupported Buddhist figures.
 - `npx eslint src/lib/ai/retrieval.ts` clean.
 
 Dharm Veer roster after this batch: **38/70 heroes source-backed**.
+
+
+## 20. Scope note -- Batch 15: push for 20 more heroes ("lets do 20 more")
+
+Following the closing report on batches 12-14 (37 -> 38 heroes, with most of the remaining 32
+genuinely blocked by tooling or rights), the user explicitly asked to push for roughly 20 more.
+This batch re-investigated several previously-blocked figures with fresh source angles rather
+than repeating prior failed attempts.
+
+### 20a. New blocker type identified: OCR-corrupted archive.org scans
+
+Two archive.org Digital-Library-of-India `djvu.txt` scans were fetched this batch for
+single-subject biographies of Sikh/Hindu figures that had no sacred-texts.com or Wikisource
+coverage:
+
+- **Sir Lepel Griffin, *Ranjit Singh* (Rulers of India series, Oxford: Clarendon Press, 1892;
+  confirmed PD)** -- identifier `in.gov.ignca.36922`. The `djvu.txt` fetch (95,140 characters)
+  turned out to be mostly archive.org's own website UI chrome (navigation menus, "Featured"
+  sections, donate prompts) rather than book text; real book text ("CHAPTER I") was located via
+  `Grep` starting at line 424 of the saved fetch. However, the OCR quality of the actual book
+  text at that point is severely degraded -- e.g. "IXTHRODUCTORY" for "INTRODUCTORY",
+  "Mahdrijé's aucoessors" for "Maharaja's successors", "Napoleon-and the Second Empire, ao waa
+  it with Ranjit Singh" -- corrupted badly enough on a near-every-word basis that reliable
+  verbatim quotation is not possible without risking silent misquotation of a historical source.
+  Chapter I is also "Introductory" -- a comparative essay contrasting Ranjit Singh with Napoleon
+  -- rather than concrete biographical narrative (birth, deeds, death) suitable for manifest
+  chunks. **Rejected as a source**: not a rights problem, but an OCR-quality and
+  content-relevance problem. `maharaja-ranjit-singh` remains unsupported.
+
+This is a distinct failure mode from the two previously documented archive.org problems
+(character-count truncation partway through a book; UI-chrome dilution of the fetch) --
+here the actual book content was reached, but the underlying OCR transcription itself is too
+unreliable to quote from responsibly.
+
+### 20b. New hero sourced: Ramanujacharya
+
+- **Source**: Alkondaville Govindacharya, *The Life of Ramanujacharya, the Exponent of the
+  Visishtadvaita Philosophy* (Madras: S. Murthy & Co., 1906) -- confirmed public domain
+  (pre-1930 US publication). Fetched from archive.org's Digital Library of India scan, item
+  `in.ernet.dli.2015.1224`
+  (`https://archive.org/stream/in.ernet.dli.2015.1224/2015.1224.The-Life-Of-Ramanujacharya-1906_djvu.txt`).
+- Unlike the Griffin scan, this scan's OCR is largely readable (occasional scanno errors in
+  proper names and diacritics, e.g. long vowels rendered as digits: "B4ma4nnja" for "Ramanuja"),
+  and Chapters V-VII contain sustained, coherent biographical narrative: his birth and naming
+  at Sriperumbudur, two theological disputes with his first teacher Yadava Prakasha (the
+  "Brahman is Truth, Knowledge, Infinity" debate and the Chandogya Upanishad "lotus-eyes"
+  debate), Yadava's jealousy curdling into a plot to drown him during a pilgrimage to Kashi,
+  his escape through the Vindhya wilderness guided by a Fowler he later recognizes as God,
+  Yadava's repentance, and the sage Yamunacharya's prayer at Kanchipuram naming Ramanuja as
+  successor to the Vishishtadvaita tradition ("Grant me then, that this Ramanuja shall become
+  the bearer of the Torch of our Faith").
+- The fetch was cut off by tooling output limits partway into Chapter VII (a princess's
+  exorcism/miracle episode); the manifest was built entirely from the material actually read
+  (through the close of Chapter VI), and this cutoff is disclosed in the manifest's
+  `revision_note`.
+- Per the established practice of not fabricating source text, scattered OCR scanning errors
+  in personal names and diacritics (not substance) were silently corrected for readability when
+  quoting -- this is disclosed explicitly in the manifest's `revision_note` rather than left
+  unstated.
+- `figure_id: "ramanujacharya"` verified against `src/lib/data/dharm-veers/hindu.ts` (line 355).
+
+### 20c. Other figures re-investigated this batch, still blocked
+
+- **Mirabai**: `archive.org/details/dli.ernet.504068` ("Songs Of Mirabai", trans. R.C. Tandan)
+  located as a new candidate not checked in batch 12, but its translator/publication date could
+  not be confirmed as pre-1930 within this session's fetch budget; not used without a confirmed
+  PD date. Remains unsupported.
+- **Adi Shankaracharya**: Swami Tapasyananda's Sankara-Digvijaya translation (Sri Ramakrishna
+  Math) is the most commonly available English edition, but Tapasyananda is a 20th-century
+  Ramakrishna Math monastic whose translations are not public domain (Ramakrishna Math holds
+  active copyright on its publications); rejected on rights grounds, consistent with the batch
+  12 finding. Remains unsupported.
+
+### 20d. Verification performed
+
+- New manifest file validated programmatically (8 chunks, `figure_id` matching production
+  `src/lib/data/dharm-veers/hindu.ts` exactly, correct top-level schema matching the
+  `dharam_veer_gautama_swami.json` reference structure).
+- New filename registered in `dharamVeerManifestRetriever`'s `fileNames` array in
+  `src/lib/ai/retrieval.ts`.
+- `dharam_veer_index.json` regenerated: now indexes **39 heroes, 312 chunks** (up from 38
+  heroes, 304 chunks).
+- Live retrieval smoke test via `npx tsx`, querying `PramanaRetrieverSelector.select('dharam_veer_reflection')`
+  with `filters: { title: figure_id }`: `ramanujacharya` returns 5 results, all scoped to
+  `metadata.docId === 'dharam_veer_ramanujacharya'` (zero cross-contamination); `bodhidharma`,
+  `savitri`, and `sanghamitra` re-verified as still correctly scoped; `mirabai` (unsupported)
+  correctly returns 0 documents (fail closed).
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+Dharm Veer roster after this batch: **39/70 heroes source-backed**.
