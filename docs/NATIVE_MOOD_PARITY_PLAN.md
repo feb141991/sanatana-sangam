@@ -67,7 +67,7 @@ Mood is not proposed as a primary tab — it does not warrant one at native's cu
 
 ## Proposed route
 
-`/mood` — bare route, single screen, no dynamic segment needed for v1 (no per-checkin detail view proposed). Confirmed no conflict: `app/mood.tsx` and `app/mood/` do not currently exist in the native repo (verified via direct file/dir check), and `/mood` does not collide with any existing top-level route (`(auth)`, `(tabs)`, `ai-chat`, `dharm-veer`, `dharm-veer/[id]`, `kosh`, `nitya-karma`, `notifications`, `panchang`, `pathshala/*`, `quiz`, `sankalpa`, `settings`, `shloka`, `vichaar-sabha`, `vichaar-sabha/[id]`, `vrat`). `lib/routes.ts`'s `resolveNativeRoute()` already has a comment explicitly naming `mood` as one of the "no native screen at all" paths that falls back to a caller-supplied default — this plan is what closes that gap; the route resolver would need one new line (`if (pathname.startsWith('/discover/mood') || pathname.startsWith('/mood')) return '/mood';`) alongside the existing dispatch table, not a redesign of it.
+`/mood` — bare route, single screen, no dynamic segment needed for v1 (no per-checkin detail view proposed). Confirmed no conflict: `app/mood.tsx` and `app/mood/` do not currently exist in the native repo (verified via direct file/dir check), and `/mood` does not collide with any existing top-level route (`(auth)`, `(tabs)`, `ai-chat`, `dharm-veer`, `dharm-veer/[id]`, `kosh`, `nitya-karma`, `notifications`, `panchang`, `pathshala/*`, `quiz`, `sankalpa`, `settings`, `shloka`, `vrat`). `lib/routes.ts`'s `resolveNativeRoute()` already has a comment explicitly naming `mood` as one of the "no native screen at all" paths that falls back to a caller-supplied default — this plan is what closes that gap; the route resolver would need one new line (`if (pathname.startsWith('/discover/mood') || pathname.startsWith('/mood')) return '/mood';`) alongside the existing dispatch table, not a redesign of it.
 
 ## Screen sketch (v1, `app/mood.tsx` — three internal steps, one screen)
 
@@ -130,7 +130,7 @@ type MoodScreenState = {
 
 Native (`/Users/Business(C)/shoonaya-mobile`):
 - `app/mood.tsx` — the screen itself.
-- `lib/mood.ts` — data layer: `fetchMoodStatus()`, `startMoodCheckin()`, `fetchRecommendations()`, `trackDiscoverAction()`, `completeMoodSession()` (thin wrappers around the five routes via `apiFetch`, mirroring `lib/mandali.ts`'s and `lib/vichaar.ts`'s established shape).
+- `lib/mood.ts` — data layer: `fetchMoodStatus()`, `startMoodCheckin()`, `fetchRecommendations()`, `trackDiscoverAction()`, `completeMoodSession()` (thin wrappers around the five routes via `apiFetch`, mirroring `lib/mandali.ts`'s established shape).
 - `lib/mood-registry.ts` — ports `MOODS_CONFIG` (10 moods × dark/light colour pairs) verbatim; single source of truth shared by the grid and the summary state.
 - `components/mood/MoodGlyph.tsx` — ports the 10 SVG glyphs to `react-native-svg`.
 - One-line edit to `lib/routes.ts`'s `resolveNativeRoute()` (see Proposed route above) and a manual patch to `.expo/types/router.d.ts` for `/mood` (same established pattern as every other new route this session).

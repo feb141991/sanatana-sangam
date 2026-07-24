@@ -44,7 +44,6 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     accentClass: 'clay-card-knowledge',
     actions: [
       { label: 'Open Pathshala', href: '/pathshala', icon: 'book' },
-      { label: 'Enter Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
     ],
   },
   events: {
@@ -63,7 +62,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     description: 'Start with thoughtful questions, trusted reading, and community wisdom before looking for deeper mentorship.',
     accentClass: 'clay-card-mentorship',
     actions: [
-      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Find wisdom in Mandali', href: '/mandali', icon: 'mandali' },
       { label: 'Read in Pathshala', href: '/pathshala', icon: 'book' },
     ],
   },
@@ -74,7 +73,7 @@ const PATH_DEFINITIONS: Record<SeekingKey, Omit<PersonalizedPath, 'id' | 'badges
     accentClass: 'clay-card-youth',
     actions: [
       { label: 'Start beginner Pathshala', href: '/pathshala', icon: 'book' },
-      { label: 'Explore community questions', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Find local events', href: '/tirtha-map', icon: 'landmark' },
     ],
   },
 };
@@ -88,7 +87,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     accentClass: 'clay-card-knowledge',
     actions: [
       { label: 'Start a study path', href: '/pathshala', icon: 'book' },
-      { label: 'Ask in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Start daily practice', href: '/home?focus=shloka', icon: 'flower' },
     ],
   },
   grihastha: {
@@ -107,7 +106,7 @@ const ASHRAMA_CARDS: Record<string, Omit<PersonalizedPath, 'id' | 'badges'>> = {
     description: 'Shift from doing to guiding. Mentorship, wisdom exchange, and deeper study are your path now.',
     accentClass: 'clay-card-mentorship',
     actions: [
-      { label: 'Answer in Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+      { label: 'Share in Mandali', href: '/mandali', icon: 'mandali' },
       { label: 'Explore Pathshala', href: '/pathshala', icon: 'book' },
     ],
   },
@@ -213,7 +212,7 @@ export function buildPersonalizedPaths({
       accentClass: 'clay-card-guided',
       actions: [
         { label: 'Read today\'s sacred text', href: '/home?focus=shloka', icon: 'flower' },
-        { label: 'Browse Vichaar Sabha', href: '/vichaar-sabha', icon: 'mandali' },
+        { label: 'Explore Mandali', href: '/mandali', icon: 'mandali' },
       ],
     });
   }

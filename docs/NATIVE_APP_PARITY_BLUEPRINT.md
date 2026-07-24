@@ -99,7 +99,7 @@ Every PWA feature must be explicitly classified before implementation:
 | My Progress | unified ledger, mood, shields, streaks, cross-pillar progress | Native v1/Phase 2 because it ties daily app surfaces together |
 | Kul | family hub, members, tasks, events, vansh, sanskara | Primary destination per product consolidation; Phase 2 core family |
 | Mandali | join, city resolution, feed, events, members, comments, invites | Contextual/community destination; Phase 2/3 after Kul priority is confirmed |
-| Vichaar Sabha | feed/detail/react/report/block/moderation surfaces | Phase 3 |
+| Vichaar Sabha | (Vichaar Sabha removed/deferred) | Phase 3 |
 | Bhakti | mala, aarti, katha, stotram, zen, browse, insights | Phase 2/3 |
 | Dharma Veer | daily hero, detail, archive/content rotation | Existing native screen must be audited in Phase 0; likely Phase 2 data hardening |
 | Vrat/Ekadashi | vrat detail, observe, reminders, stats | Existing native screen must be audited in Phase 0; likely Phase 2/3 hardening |
@@ -401,7 +401,7 @@ Build:
 
 - Kul family hub, tasks, events, vansh, sanskara.
 - Mandali feed/events/members/comments after Kul priority is validated.
-- Vichaar Sabha.
+- Vichaar Sabha (removed/deferred).
 - Tirtha map/check-in/place detail.
 - Invite/referral flows.
 - Basic moderation/report/block surfaces.

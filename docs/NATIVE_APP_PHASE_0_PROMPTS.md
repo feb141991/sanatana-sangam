@@ -77,7 +77,7 @@ Audit the web/PWA repo and produce a complete feature inventory for native parit
 
 Audit:
 1. Enumerate user-facing routes under src/app, excluding admin-only routes unless they affect user entitlement or support.
-2. Map routes to product pillars: Home, Auth, Onboarding, Japa, Nitya, Pathshala, Panchang, AI Chat, Quiz, Sadhana, My Progress, Bhakti, Kul, Mandali, Vichaar, Dharma Veer, Vrat/Ekadashi, Kosh, Tirtha, Kundali/Rashiphala, Live Darshan, Seva, Scoreboard, Messages, Sthapaka, Founding, Blessing/name-story, Invite/waitlist/referral, Premium, Legal/support.
+2. Map routes to product pillars: Home, Auth, Onboarding, Japa, Nitya, Pathshala, Panchang, AI Chat, Quiz, Sadhana, My Progress, Bhakti, Kul, Mandali, Vichaar (removed/deferred), Dharma Veer, Vrat/Ekadashi, Kosh, Tirtha, Kundali/Rashiphala, Live Darshan, Seva, Scoreboard, Messages, Sthapaka, Founding, Blessing/name-story, Invite/waitlist/referral, Premium, Legal/support.
 3. Identify surfaces missing from docs/NATIVE_APP_PARITY_BLUEPRINT.md.
 4. Identify web-only surfaces that should stay web-only.
 5. Identify which routes depend on Supabase tables, API routes, localStorage, browser-only APIs, or third-party services.
