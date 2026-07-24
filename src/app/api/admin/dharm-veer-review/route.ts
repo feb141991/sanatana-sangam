@@ -1,20 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
-import { verifyAdminCookieAuth } from '@/lib/admin-auth';
+import { ADMIN_COOKIE, verifyAdminCookieAuth, verifyAdminToken } from '@/lib/admin-auth';
+import { createAdminClient } from '@/lib/supabase-admin';
 
-// Not using createAdminClient() from '@/lib/supabase-admin' here because that
-// helper is typed against src/types/database.ts, which does not yet include
-// the dharm_veers / dharm_veer_generation_log tables or their new
-// review_status / source_backed / source_citations columns (a pre-existing
-// gap noted elsewhere in this project). A plain untyped client avoids fighting
-// stale generated types for a table that already tolerates this pattern
-// elsewhere in the codebase (see check-live-darshans/route.ts).
+// createAdminClient() is now typed against dharm_veers / dharm_veer_generation_log
+// (src/types/database.ts was updated 2026-07-24 to include both tables).
 function adminSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  return createAdminClient();
+}
+
+// Admin auth here is a standalone HMAC-signed cookie (src/lib/admin-auth.ts),
+// deliberately independent from Supabase auth -- there is no Supabase
+// auth.users row for the admin, so `reviewed_by` (a uuid FK to auth.users)
+// genuinely cannot be populated from this session. This at least records
+// *which* admin username approved/rejected in the generation_log notes,
+// which is more auditable than nothing. verifyAdminCookieAuth() already
+// validated this same cookie moments earlier, so this is a cheap re-verify,
+// not a second trust decision.
+async function getAdminUsername(request: NextRequest): Promise<string | null> {
+  const token = request.cookies.get(ADMIN_COOKIE)?.value ?? '';
+  const result = await verifyAdminToken(token);
+  return result?.username ?? null;
 }
 
 export async function GET(request: NextRequest) {
@@ -64,9 +70,13 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase.from('dharm_veers').delete().eq('slug', slug).eq('review_status', 'pending_review');
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+    const rejectedBy = await getAdminUsername(request);
     await supabase
       .from('dharm_veer_generation_log')
-      .update({ status: 'no_source_found', notes: 'Rejected by admin review; treated as unsourceable.' })
+      .update({
+        status: 'no_source_found',
+        notes: `Rejected by admin review (${rejectedBy ?? 'unknown admin'}); treated as unsourceable.`,
+      })
       .eq('slug', slug);
 
     return NextResponse.json({ ok: true, slug, action: 'reject' });
@@ -80,9 +90,13 @@ export async function POST(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const approvedBy = await getAdminUsername(request);
   await supabase
     .from('dharm_veer_generation_log')
-    .update({ status: 'generated_approved', notes: 'Approved by admin review.' })
+    .update({
+      status: 'generated_approved',
+      notes: `Approved by admin review (${approvedBy ?? 'unknown admin'}).`,
+    })
     .eq('slug', slug);
 
   return NextResponse.json({ ok: true, slug, action: 'approve' });

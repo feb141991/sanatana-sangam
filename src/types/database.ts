@@ -541,6 +541,62 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['user_mood_checkins']['Insert']>;
       };
+      dharm_veers: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          name_local: string | null;
+          tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'sufi' | 'tribal';
+          era: string | null;
+          tagline: string;
+          journey: string;
+          journey_local: string | null;
+          trial: string;
+          trial_local: string | null;
+          teaching: string;
+          teaching_local: string | null;
+          moral: string;
+          moral_local: string | null;
+          quote: string | null;
+          quote_local: string | null;
+          quote_source: string | null;
+          tags: string[] | null;
+          day_index: number | null;
+          generated_by: string | null;
+          created_at: string | null;
+          legacy: string | null;
+          legacy_local: string | null;
+          illustration_prompt: string | null;
+          // Added by supabase/migrations/20260724163000_dharm_veer_source_backed_review.sql
+          // for the auto-sourcing agent -- see src/lib/dharm-veer-generation.ts,
+          // src/lib/dharm-veer-db.ts, src/app/api/cron/generate-dharm-veer,
+          // src/app/api/admin/dharm-veer-review.
+          source_backed: boolean;
+          review_status: 'approved' | 'pending_review' | 'rejected';
+          source_citations: Json;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['dharm_veers']['Row'], 'id' | 'created_at' | 'source_backed' | 'review_status' | 'source_citations' | 'reviewed_by' | 'reviewed_at'> & {
+          source_backed?: boolean;
+          review_status?: 'approved' | 'pending_review' | 'rejected';
+          source_citations?: Json;
+        };
+        Update: Partial<Database['public']['Tables']['dharm_veers']['Insert']>;
+      };
+      dharm_veer_generation_log: {
+        Row: {
+          slug: string;
+          status: 'no_source_found' | 'generated_pending_review' | 'generated_approved';
+          attempted_at: string;
+          notes: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['dharm_veer_generation_log']['Row'], 'attempted_at'> & {
+          attempted_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['dharm_veer_generation_log']['Insert']>;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -570,4 +626,6 @@ export type ThreadWithAuthor = ForumThread & {
 export type PostCommentWithAuthor = PostComment & { profiles: Pick<Profile, 'full_name' | 'username' | 'avatar_url'> };
 
 export type ObservanceDefinition = Database['public']['Tables']['observance_definitions']['Row'];
+export type DharmVeerRow = Database['public']['Tables']['dharm_veers']['Row'];
+export type DharmVeerGenerationLogRow = Database['public']['Tables']['dharm_veer_generation_log']['Row'];
 export type ObservanceOccurrence = Database['public']['Tables']['observance_occurrences']['Row'];
