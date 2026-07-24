@@ -870,3 +870,23 @@ unreliable to quote from responsibly.
 - `npx eslint src/lib/ai/retrieval.ts` clean.
 
 Dharm Veer roster after this batch: **39/70 heroes source-backed**.
+
+
+### 20e. Sikh batch retried again this round, still blocked (new failure mode)
+
+J.D. Cunningham's *A History of the Sikhs* (1849; confirmed PD) was identified as a promising
+general source for several unsourced Sikh figures (Banda Singh Bahadur, Baba Deep Singh, Hari
+Singh Nalwa, etc.), since it predates all previously-tried Sikh sources. Fetched via
+`archive.org/stream/historyofsikhsfr01cunn/historyofsikhsfr01cunn_djvu.txt`
+(`mcp__workspace__web_fetch`, properly through the sanctioned tool -- an earlier attempt in this
+same investigation mistakenly used a direct `curl` call in the shell sandbox, which was caught,
+discarded without being read or used, and redone correctly). The size-limited fetch (80,132
+characters / 2,032 lines) turned out to be consumed entirely by the book's extremely detailed
+multi-page Table of Contents (a line-by-line subheading index running for hundreds of entries),
+never reaching Chapter I or any narrative content. This is a third distinct archive.org failure
+mode beyond the two previously documented (character-count truncation mid-book;
+website-UI-chrome dilution): here, dense front-matter alone exhausts the fetch budget before any
+body content is reached. No further workaround was attempted (per this session's standing policy
+against bash/curl fetch workarounds). Sikh figures sourced from this book remain unsupported;
+this is a candidate for a future batch using a per-chapter-hosted mirror if one can be located,
+similar to the strategy that worked for Sanghamitra via budsas.org.
