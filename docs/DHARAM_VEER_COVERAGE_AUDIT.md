@@ -675,3 +675,38 @@ No fabricated or guessed content exists anywhere in this corpus: every one of th
 across 37 manifests traces to a specific fetched public-domain source URL, and every
 unsupported figure degrades to the safe fallback explanation rather than a hallucinated
 answer.
+
+## 17. Scope note — Batch 12: remaining Hindu figures, still blocked
+
+Retried all 5 remaining unsupported Hindu figures this session. None were sourced.
+
+- **adi-shankaracharya**: retried with two fresh angles beyond the SBE34 Vedanta-Sutras
+  commentary already ruled out in batch 8. (1) The 1911 Encyclopaedia Britannica's "Sankara
+  Acharya" entry, a short but genuine biographical sketch, exists and is public domain, but
+  both hosts checked (Wikisource, theodora.com) returned empty content on fetch — consistent
+  with the Wikisource blocker documented in sections 10 and 15, and apparently affecting
+  theodora.com too (a control fetch to sacred-texts.com in the same turn succeeded, so this is
+  host-specific, not a general tool failure). (2) Checked L.D. Barnett's *Brahma-Knowledge*
+  (1911, sacred-texts.com) and confirmed via its full table of contents that it is pure
+  philosophical exposition with no biographical chapter on Shankara. No PD biography located.
+- **mirabai**: unchanged from batch 8 (Alston's 1980 translation is the only candidate found
+  and is not public domain).
+- **ramanujacharya**: unchanged from batch 8 (Thibaut's SBE48 commentary has no biographical
+  narrative). A candidate general-history source, R.G. Bhandarkar's *Vaisnavism, Saivism and
+  Minor Religious Systems* (1913, public domain), was identified but not fetched -- it is only
+  reachable via an archive.org DLI scan, which would face the same djvu.txt truncation problem
+  documented in section 10, and as a general survey (not a per-figure biography) the page
+  location of any Ramanuja material is unknown in advance. Candidate for a future batch with a
+  working search-inside capability.
+- **ramana-maharshi**: not sourced. He died in 1950; essentially all substantial biographical
+  writing about him postdates that death and is presumptively still under copyright. No attempt
+  made to find a workaround this batch — treated as rights-risky by the same standard applied
+  to Thich Nhat Hanh and B.R. Ambedkar.
+- **samarth-ramdas**: investigated. Justin Abbott's translation of Mahipati's *Santavijaya*
+  (the standard English-language hagiography of Ramdas, Poet-Saints of Maharashtra series)
+  was published in **1932** -- confirmed via web search. As of this session's date (July 2026),
+  the rolling US public-domain cutoff has advanced to works published in 1930 (95 years plus
+  the following Jan 1), so 1932 remains two years short of entering the public domain (expected
+  circa Jan 1, 2028). Not usable. No earlier PD translation of a Ramdas biography was located.
+
+All 5 remain in the unsupported roster, correctly degrading to the safe fallback explanation.
