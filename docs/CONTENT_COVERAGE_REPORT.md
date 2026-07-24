@@ -1,14 +1,13 @@
 # Content QA Coverage & Compliance Report
 
-Generated: 2026-07-23
-Updated by hand: 2026-07-24 (Dharm Veer batch 15) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Generated: 2026-07-24
 
 ## 1. Executive Summary Table
 
 | Corpus | Total Reader Stories (Library) | Manifest Items | Source-Backed (Pramana) | Curated-Only | Restricted / Pending | Status |
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
-| **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
+| **Panchatantra** | 98 | 82 | 82 | 0 | 0 | ✅ Active |
 | **Dharm Veer** | 8 | 312 | 312 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
@@ -26,70 +25,70 @@ Updated by hand: 2026-07-24 (Dharm Veer batch 15) -- no auto-generation script e
 - `ananda`
 - `arjuna`
 - `bhishma`
+- `bodhidharma`
 - `chanakya`
+- `dhruv`
 - `emperor-ashoka`
+- `gautama-swami`
+- `guru-arjan-dev`
 - `guru-gobind-singh`
 - `guru-nanak-dev`
 - `guru-tegh-bahadur`
+- `hanuman`
 - `harishchandra`
+- `kabir`
 - `lord-mahavira`
+- `mahapajapati-gotami`
+- `maharana-pratap`
+- `milinda`
+- `moggallana`
 - `parshvanatha`
+- `prahlad`
+- `ramakrishna`
+- `ramanujacharya`
+- `rani-lakshmibai`
+- `rishabhanatha`
+- `sanghamitra`
+- `sariputta`
+- `savitri`
+- `shabari`
 - `chhatrapati-shivaji`
 - `siddhartha-gautama`
-- `guru-arjan-dev`
-- `maharana-pratap`
-- `rani-lakshmibai`
-- `milinda`
-- `xuanzang`
-- `bodhidharma`
-- `swami-vivekananda`
-- `prahlad`
-- `dhruv`
-- `sri-rama`
-- `hanuman`
-- `shabari`
-- `valmiki`
 - `sri-krishna`
-- `tulsidas`
+- `sri-rama`
+- `swami-vivekananda`
 - `tukaram`
-- `ramakrishna`
-- `kabir`
-- `rishabhanatha`
-- `gautama-swami`
-- `sariputta`
-- `moggallana`
-- `mahapajapati-gotami`
-- `savitri`
-- `sanghamitra`
-- `ramanujacharya`
+- `tulsidas`
+- `valmiki`
+- `xuanzang`
 
 ### Unsupported Roster Heroes:
 - `adi-shankaracharya` (degrades to safe fallback explanation -- investigated in batches 8 and 12; Thibaut's SBE34 commentary has no bio; the PD 1911 Britannica "Sankara Acharya" entry exists but both hosts checked (Wikisource, theodora.com) returned empty on fetch; Barnett's Brahma-Knowledge (1911) confirmed to have no biographical chapter)
-- `mirabai` (degrades to safe fallback explanation -- investigated in batch 8; only candidate English translation found (A. J. Alston, 1980, Motilal Banarsidass) is a modern copyrighted work, not public domain, despite an archive.org DLI copy mislabeled 'Out_of_copyright'; no pre-1929 English translation of her bhajans was located. Skipped rather than risk a rights violation.)
+- `mirabai` (degrades to safe fallback explanation -- investigated in batches 8 and 15; only candidate English translation found (A. J. Alston, 1980, Motilal Banarsidass) is a modern copyrighted work, not public domain, despite an archive.org DLI copy mislabeled 'Out_of_copyright'; a second candidate (R. C. Tandan's "Songs of Mirabai", archive.org dli.ernet.504068) was found in batch 15 but its translation/publication date could not be confirmed as pre-1930 within the session's time budget; no confirmed pre-1930 English translation of her bhajans has been located)
 - `ramana-maharshi` (degrades to safe fallback explanation -- investigated in batch 12; died 1950, all substantial biographical writing about him postdates his death and is presumptively still under copyright; treated as rights-risky like Thich Nhat Hanh and B.R. Ambedkar)
-- `samarth-ramdas` (degrades to safe fallback explanation -- investigated in batch 12; Abbott's translation of Mahipati's Santavijaya (the standard English hagiography) was published in 1932, which as of this session's date is still 2 years short of the rolling US public-domain cutoff (currently 1930); no earlier PD translation located)
-- `banda-singh-bahadur` (degrades to safe fallback explanation -- candidate for batch 4; a suitable clean per-chapter public-domain source (Cunningham's History of the Sikhs, 1849) was not located/fetched within the session's time budget and was skipped rather than guessed, per policy; good candidate for a future batch)
-- `baba-deep-singh` (degrades to safe fallback explanation)
-- `mai-bhago` (degrades to safe fallback explanation)
-- `mata-gujri` (degrades to safe fallback explanation)
-- `hari-singh-nalwa` (degrades to safe fallback explanation)
-- `bhai-taru-singh` (degrades to safe fallback explanation)
-- `bhai-mani-singh` (degrades to safe fallback explanation)
-- `bhai-gurdas` (degrades to safe fallback explanation)
-- `akali-phula-singh` (degrades to safe fallback explanation)
-- `maharaja-ranjit-singh` (degrades to safe fallback explanation)
-- `nawab-jassa-singh` (degrades to safe fallback explanation)
-- `bahubali` (degrades to safe fallback explanation -- investigated and explicitly skipped in batch 3; see docs/DHARAM_VEER_COVERAGE_AUDIT.md section 5b, no verified public-domain English translation located)
+- `samarth-ramdas` (degrades to safe fallback explanation -- investigated in batch 12; Abbott's translation of Mahipati's Santavijaya (the standard English hagiography) was published in 1932, which as of this session's date is still short of the rolling US public-domain cutoff (currently 1930); no earlier PD translation located)
+- `banda-singh-bahadur` (degrades to safe fallback explanation -- candidate for batch 4; a suitable clean per-chapter public-domain source (Cunningham's History of the Sikhs, 1849) was not located/fetched within the session's time budget and was skipped rather than guessed, per policy; retried in batch 15 -- Cunningham's book fetch was consumed entirely by its own table of contents before reaching Chapter I, a new tooling blocker; still a good candidate for a future batch with a per-chapter-hosted mirror)
+- `baba-deep-singh` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `mai-bhago` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `mata-gujri` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `hari-singh-nalwa` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `bhai-taru-singh` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `bhai-mani-singh` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `bhai-gurdas` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `akali-phula-singh` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `maharaja-ranjit-singh` (degrades to safe fallback explanation -- investigated in batch 15; Sir Lepel Griffin's 1892 "Ranjit Singh" (confirmed PD) was located and its Chapter I was reached, but the OCR transcription is too corrupted for reliable verbatim quotation, and that chapter is a comparative essay rather than biographical narrative; rejected on quality grounds, not rights)
+- `nawab-jassa-singh` (degrades to safe fallback explanation -- same Cunningham/Sikh sourcing blocker as banda-singh-bahadur)
+- `bahubali` (degrades to safe fallback explanation -- investigated and explicitly skipped in batch 3 and retried in batch 15 ("The Heart of Jainism" archive.org fetch truncated before reaching any Bahubali content); see docs/DHARAM_VEER_COVERAGE_AUDIT.md section 5b, no verified public-domain English translation located)
 - `bhadrabahu` (degrades to safe fallback explanation -- investigated in batch 9; Jacobi's Kalpa Sutra 'List of the Sthaviras' names him as the 6th patriarch after Mahavira with his gotra and disciples, but only as bare genealogy, no narrative content to build a real manifest from)
-- `sthulabhadra` (degrades to safe fallback explanation -- investigated in batch 9; same genealogy-only source problem as Bhadrabahu; his famous legend (renunciation, four months with a courtesan, the 12-year famine) was not found in a verified PD source this batch)
+- `kundakunda` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
+- `hemachandra` (degrades to safe fallback explanation -- investigated in batches 13 and 15; Helen M. Johnson's translation of his Trishashtishalakapurushacharita was published in 1931, one year short of the rolling US public-domain cutoff (currently 1930); correctly rejected despite being exactly on-topic)
+- `lonka-saha` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
+- `shrimad-rajchandra` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
 - `chandanbala` (degrades to safe fallback explanation -- investigated in batch 9; her well-known story (first laywoman to give Mahavira alms) does not appear in Jacobi's Kalpa Sutra translation; a different Jain hagiographic source would be needed)
-- `kundakunda` (degrades to safe fallback explanation)
-- `hemachandra` (degrades to safe fallback explanation)
-- `lonka-saha` (degrades to safe fallback explanation)
-- `shrimad-rajchandra` (degrades to safe fallback explanation)
-- `haribhadra` (degrades to safe fallback explanation)
-- `yashovijaya` (degrades to safe fallback explanation)
-- `kumarpal` (degrades to safe fallback explanation)
+- `sthulabhadra` (degrades to safe fallback explanation -- investigated in batch 9; same genealogy-only source problem as Bhadrabahu; his famous legend (renunciation, four months with a courtesan, the 12-year famine) was not found in a verified PD source this batch)
+- `haribhadra` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
+- `yashovijaya` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
+- `kumarpal` (degrades to safe fallback explanation -- investigated in batch 13, still blocked; sacred-texts.com's Jain collection (SBE22/SBE45) confirmed exhausted for this figure)
 - `nagarjuna` (degrades to safe fallback explanation -- investigated in batches 10 and 14; sacred-texts.com's 'She-rab Dong-bu' is his own verse text, not a biography; the classical 'Life of Nagarjuna' translated by Kumarajiva has no public-domain English translation -- only a 2017 Numata Center translation, which is copyrighted)
 - `padmasambhava` (degrades to safe fallback explanation -- investigated in batch 14; a PD 1918 source (Arthur Avalon's Shakti and Shakta, ch. 28, translated by Kazi Dawasamdup from Yeshe Tsogyal's Padma Thangyig Serteng) exists and mentions him, but its content is a tangential demon-taming myth about a reincarnation figure, not a clean biographical narrative centered on Padmasambhava himself -- judged too poor a fit for this corpus's hero-biography format and not used)
 - `atisha` (degrades to safe fallback explanation -- investigated in batch 14; no accessible PD biographical source located)
@@ -122,7 +121,6 @@ The following additional files exist in the ingestion manifests directory but ar
 | [gita_chapter_8.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/gita_chapter_8.json) | 28 | 28 | 0 |
 | [gita_chapter_9.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/gita_chapter_9.json) | 34 | 34 | 0 |
 | [mahabharata_shanti.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/mahabharata_shanti.json) | 1 | 0 | 1 |
-| [panchatantra_chapter_3.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/panchatantra_chapter_3.json) | 12 | 12 | 0 |
 | [sant_kabir.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/sant_kabir.json) | 1 | 0 | 1 |
 | [shaiva_kashmir.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/shaiva_kashmir.json) | 1 | 0 | 1 |
 | [tamil_prabandham.json](file:///Users/Business(C)/Sanatan Sangam/Shoonaya/python/ai_pipeline/corpus/manifests/tamil_prabandham.json) | 1 | 0 | 1 |

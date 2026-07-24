@@ -34,6 +34,15 @@ function runContentQAReport() {
   // Read all manifest files
   const manifestFiles = fs.readdirSync(manifestsDir).filter(f => f.endsWith('.json'));
   const dharamVeerFiles = fs.readdirSync(dharamVeerDir).filter(f => f.endsWith('.json'));
+  // Glob rather than hardcode, since new chapter files get added over time (caught this
+  // script hardcoded only chapters 1-2 while chapters 3-8 already existed on disk).
+  const panchatantraFiles = manifestFiles
+    .filter(f => /^panchatantra_chapter_\d+\.json$/.test(f))
+    .sort((a, b) => {
+      const na = parseInt(a.match(/\d+/)![0], 10);
+      const nb = parseInt(b.match(/\d+/)![0], 10);
+      return na - nb;
+    });
 
   const flags: ItemFlag[] = [];
   const restrictedCorpora: string[] = [];
@@ -45,7 +54,7 @@ function runContentQAReport() {
       readerCount: HINDU_KATHAS.length
     },
     'Panchatantra': {
-      files: ['panchatantra_chapter_1.json', 'panchatantra_chapter_2.json'],
+      files: panchatantraFiles,
       readerCount: PANCHATANTRA_STORIES.length + MORE_PANCHATANTRA_STORIES.length
     },
     'Dharm Veer': {
@@ -149,8 +158,12 @@ function runContentQAReport() {
     for (const field of fieldsToSearch) {
       const lower = field.toLowerCase();
       for (const kw of mockKeywords) {
-        // Exclude valid occurrences in revision notes where we explicitly state we do NOT use mocks or document blocker
-        if (lower.includes(kw)) {
+        // "mock" as a bare substring false-positives on ordinary narrative prose ("mocked him",
+        // "mocking the other's secret") -- Panchatantra fables use this word constantly for
+        // animals taunting each other. Require a real word boundary so "mock" only matches the
+        // standalone word, not "mocked"/"mocking"/"mockery".
+        const pattern = kw === 'mock' ? /\bmock\b/ : new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+        if (pattern.test(lower)) {
           // Allow explaining blockers or missing files
           if (lower.includes('blocker') || lower.includes('prevent') || lower.includes('no mock') || lower.includes('safeguard')) {
             continue;
