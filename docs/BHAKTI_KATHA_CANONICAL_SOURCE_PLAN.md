@@ -1,6 +1,6 @@
 # Bhakti Katha Canonical Source Plan — P1 Starter
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 Owner: Pramana source-integrity review
 Status: **Source-audit only. Not ingested into live retrieval. No files wired.**
 
@@ -131,3 +131,47 @@ rights are verified. Any broader "Bhakti Katha" scope (other Puranas, saint live
 source-verification pass — none is proposed here. Do **not** ingest until the §7 checklist passes per batch,
 and do not wire this into `retrieval.ts` or build an embedding index until content is actually ingested under
 this plan.
+
+
+---
+
+## 9. Sourcing attempt log — 2026-07-24 (content-integrity pass)
+
+Attempted to locate and fetch the specific Skandha 8 (Gajendra Moksha) and Skandha 10 (Sudama Vipra)
+passages from Dutt's translation, per the §8 recommendation. Findings:
+
+- The only archive.org item previously referenced by identifier (`proseenglishtran12dutt`) was checked
+  directly and turns out to be a **150-page fragment covering only Book I** (Skandha 1, Chapters I-XIX) —
+  it does not reach Skandha 8 or 10 at all, despite its "Volume 1, 2" metadata field. **Not usable for
+  either target story.**
+- A separate, complete scan was located and confirmed: **`in.ernet.dli.2015.272582`, "Shrimad Bhagwatam"
+  (Manmatha Nath Dutt, H.C. Dass, Calcutta, 1896), 744 pages** — this is the correct full edition and should
+  contain both target episodes. Confirmed public domain (pre-1930, translator died 1912).
+- However, this item's plain-text (`djvu.txt`) file is ~1.5 MB, far beyond what a single fetch can return
+  (this session's fetch tool caps around 80-95K characters per call, and does not support byte-range/offset
+  requests against a remote URL — each fetch of the same URL returns the same leading portion of the file,
+  not a new chunk). Reaching Skandha 8/10 content directly would require dozens of sequential fetches with
+  no mechanism to skip ahead.
+- Attempted archive.org's "search inside the book" API (`fulltext/inside.php` on the item's assigned server,
+  and the older `api.archivelab.org/books/{id}/searchinside` endpoint) to pinpoint the exact page number for
+  "Sudama" and "Gajendra" before fetching just those pages. **Both endpoints timed out (180s) on every
+  attempt** and returned no result.
+- Searched archive.org's advancedsearch API for a smaller, single-canto edition (e.g. "Skandha 10" or
+  "Book VIII" as a standalone volume, by Dutt or another period translator) that would sidestep the
+  large-file problem the way `budsas.org`'s per-chapter Mahavamsa hosting did for the Dharm Veer corpus.
+  No matching single-canto item was found.
+- Confirmed via targeted search that **sacred-texts.com does not host any Bhagavata Purana content** (its
+  Hindu collection covers Vishnu Purana, Markandeya Purana, Mahabharata, etc., but not the Bhagavata
+  Purana specifically) — ruling out the site used successfully for Prahlada/Dhruva as a source for these
+  two episodes.
+- J. M. Sanyal's 1929 English translation (also plausibly PD as of this session's date) was identified as
+  a possible alternate translator, but only Volume 1 (371 pages, early Skandhas) was located; the volume(s)
+  covering Skandha 8/10 were not found in this pass.
+
+**Conclusion: still blocked, but now for a concrete, well-defined reason** — the correct source is
+identified and rights-confirmed, but the specific passages are not reachable with the tools available in
+this session (large-file fetch cap + unresponsive "search inside" API). This is a tooling blocker, not a
+source-non-existence or rights problem, and should not be treated as license to substitute a lower-quality
+or non-PD source. `katha_chapter_1.json`'s Sudama and Gajendra entries remain correctly tagged
+`curated_lesson` / `rights_cleared` (not `public_domain`) pending a session with either working
+byte-range/paginated fetch access or a working "search inside" capability.
