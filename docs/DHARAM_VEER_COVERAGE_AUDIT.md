@@ -1,6 +1,6 @@
 # Dharam Veer AI Coverage Audit
 
-Last updated: 2026-07-23 (Batch 11)
+Last updated: 2026-07-24 (Batch 14)
 Owner: Pramana source-integrity review
 
 ## 0. Scope note — batch 2 expansion
@@ -731,3 +731,52 @@ translation of Hemachandra's own Trishashtishalakapurushacharita, which would in
 cover Bahubali/Bharata material, or the Bhaktamara/Kalyanamandira stotras) or a working
 Wikisource/archive.org access path, neither of which was available this session. All 11 remain
 unsupported, correctly degrading to the safe fallback explanation.
+
+## 19. Scope note — Batch 14: remaining Buddhist figures
+
+Sourced 1 of 4 remaining unsupported Buddhist figures.
+
+| Hero | Source | Notes |
+|---|---|---|
+| Bodhidharma | Kaiten Nukariya, The Religion of the Samurai (1913), Chapter I "History of Zen in China", sections 2-5 | Rich narrative: arrival in China c. AD 520, the "No merit at all" exchange with Emperor Wu, nine years wall-gazing at Shaolin ("the wall-gazing Brahmin"), poisoning attempts, Hui-ke's (Shang Kwang's) arm-cutting and the "pacify my mind" dialogue, the skin/flesh/bone/marrow transmission episode, and handing over the Kachaya robe as Second Patriarch. Independently confirmed on Project Gutenberg (ebook #5173) as public domain. The sacred-texts.com hosted copy of this chapter exceeded this session's single-page fetch size limit; the same public-domain text was fetched from a full-text mirror (terebess.hu) instead, and cross-checked against the fragment already visible from the sacred-texts.com copy before the size limit was hit -- both matched. |
+
+### 19a. Heroes investigated but not sourced this batch
+
+- **Nagarjuna**: unchanged from batch 10. Confirmed this batch that the classical "Life of
+  Nagarjuna Bodhisattva" (traditionally attributed to a translation by Kumarajiva, AD 401-409,
+  referenced in Nukariya's footnotes) has no public-domain English translation available online
+  -- only a 2017 Numata Center for Buddhist Translation and Research edition, which is under
+  copyright.
+- **Padmasambhava**: investigated for the first time this batch. sacred-texts.com's `bud/tib/`
+  Tibetan Buddhism collection was explicitly ruled out as a source -- its own index page states
+  "Some of these articles are under copyright but redistributable non-commercially," a mixed and
+  non-PD rights regime inconsistent with this corpus's `public_domain`-only convention. A
+  genuinely PD 1918 source was found instead: Arthur Avalon (Sir John Woodroffe)'s *Shakti and
+  Shâkta*, Chapter 28 "Matam Rutra," which translates (via Kazi Dawasamdup, the same scholar who
+  later translated Evans-Wentz's *Tibetan Book of the Dead*) a chapter of Yeshe Tsogyal's *Padma
+  Thangyig Serteng* ("Golden Rosary"), the traditional biography of Padmasambhava. However, the
+  actual narrative content is a lengthy, elaborate demon-taming myth centered on a figure named
+  "Black Salvation"/a Rutra-demon and the Bodhisattva Vajrapani, only tangentially framed as part
+  of Padmasambhava's teaching lineage -- it is not a life-narrative centered on Padmasambhava
+  himself in the way this corpus's other hero manifests are. Judged too poor a thematic fit to
+  build a coherent 8-chunk life_context/trial_sacrifice/core_dharmic_act manifest from, and not
+  used. A more direct PD source (e.g. Evans-Wentz's own *Tibetan Book of the Dead* introduction,
+  not found hosted anywhere fetchable this session) would be needed.
+- **Atisha**: investigated for the first time this batch; no accessible public-domain
+  biographical source was located on sacred-texts.com or via web search. Candidate for a future
+  batch with a different source strategy (e.g. a translated excerpt of his *Bodhipathapradipa*
+  with biographical introduction, if a PD edition can be located).
+
+### 19b. Verification performed
+
+- New manifest file validated programmatically (8 chunks, `figure_id` matching production
+  `src/lib/data/dharm-veers/buddhist.ts` exactly, correct top-level schema).
+- New filename registered in `dharamVeerManifestRetriever`'s `fileNames` array.
+- `dharam_veer_index.json` regenerated: now indexes **38 heroes, 304 chunks** (up from 37
+  heroes, 296 chunks).
+- Live retrieval smoke test via `npx tsx`, querying with `filters: { title: figure_id }`:
+  Bodhidharma returns only his own chunks with the correct `docId`; `nagarjuna`, `padmasambhava`,
+  and `atisha` all correctly return 0 documents (fail closed).
+- `npx eslint src/lib/ai/retrieval.ts` clean.
+
+Dharm Veer roster after this batch: **38/70 heroes source-backed**.

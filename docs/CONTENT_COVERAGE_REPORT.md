@@ -1,7 +1,7 @@
 # Content QA Coverage & Compliance Report
 
 Generated: 2026-07-23
-Updated by hand: 2026-07-23 (Dharm Veer batch 11) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
+Updated by hand: 2026-07-24 (Dharm Veer batch 14) -- no auto-generation script exists for this report in the repo, so this update was applied manually to reflect the new Dharm Veer totals. A future session should verify these numbers against an automated coverage script if/when one is added.
 
 ## 1. Executive Summary Table
 
@@ -9,7 +9,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 11) -- no auto-generation script e
 |---|---|---|---|---|---|---|
 | **Bhakti Katha** | 43 | 4 | 2 | 2 | 0 | ✅ Active |
 | **Panchatantra** | 42 | 14 | 14 | 0 | 0 | ✅ Active |
-| **Dharm Veer** | 8 | 296 | 296 | 0 | 0 | ✅ Active |
+| **Dharm Veer** | 8 | 304 | 304 | 0 | 0 | ✅ Active |
 | **Ramayana** | 0 | 15 | 0 | 0 | 15 | ⚠️ Pending / Restricted |
 | **Sikh** | 30 | 35 | 34 | 0 | 1 | ⚠️ Pending / Restricted |
 | **Jain** | 27 | 107 | 0 | 0 | 107 | ⚠️ Pending / Restricted |
@@ -19,8 +19,8 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 11) -- no auto-generation script e
 ## 2. Dharm Veer Hero Coverage Details
 
 - **Total Visible Roster Heroes:** 70
-- **Source-Backed (Supported) Heroes:** 37
-- **Curated-Only / Unsupported Heroes:** 33
+- **Source-Backed (Supported) Heroes:** 38
+- **Curated-Only / Unsupported Heroes:** 32
 
 ### Supported Heroes:
 - `ananda`
@@ -41,6 +41,7 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 11) -- no auto-generation script e
 - `rani-lakshmibai`
 - `milinda`
 - `xuanzang`
+- `bodhidharma`
 - `swami-vivekananda`
 - `prahlad`
 - `dhruv`
@@ -89,10 +90,9 @@ Updated by hand: 2026-07-23 (Dharm Veer batch 11) -- no auto-generation script e
 - `haribhadra` (degrades to safe fallback explanation)
 - `yashovijaya` (degrades to safe fallback explanation)
 - `kumarpal` (degrades to safe fallback explanation)
-- `nagarjuna` (degrades to safe fallback explanation -- investigated in batch 10; sacred-texts.com's 'She-rab Dong-bu' (Tree of Wisdom) is Nagarjuna's own PD-translated verse text, not a biography; no verified PD biographical narrative located this batch)
-- `bodhidharma` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
-- `padmasambhava` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
-- `atisha` (degrades to safe fallback explanation -- not investigated in depth in batch 10; candidate for a future batch)
+- `nagarjuna` (degrades to safe fallback explanation -- investigated in batches 10 and 14; sacred-texts.com's 'She-rab Dong-bu' is his own verse text, not a biography; the classical 'Life of Nagarjuna' translated by Kumarajiva has no public-domain English translation -- only a 2017 Numata Center translation, which is copyrighted)
+- `padmasambhava` (degrades to safe fallback explanation -- investigated in batch 14; a PD 1918 source (Arthur Avalon's Shakti and Shakta, ch. 28, translated by Kazi Dawasamdup from Yeshe Tsogyal's Padma Thangyig Serteng) exists and mentions him, but its content is a tangential demon-taming myth about a reincarnation figure, not a clean biographical narrative centered on Padmasambhava himself -- judged too poor a fit for this corpus's hero-biography format and not used)
+- `atisha` (degrades to safe fallback explanation -- investigated in batch 14; no accessible PD biographical source located)
 - `thich-nhat-hanh` (degrades to safe fallback explanation -- explicitly deferred in batch 10; died 2022, all English-language writings and biographies are actively in copyright; not a public-domain sourcing candidate)
 - `br-ambedkar` (degrades to safe fallback explanation -- explicitly deferred in batch 10; died 1956, unclear US copyright renewal status on his English-language writings; rights-risky, deferred rather than guessed)
 
