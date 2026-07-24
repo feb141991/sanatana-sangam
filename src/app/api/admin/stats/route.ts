@@ -1,6 +1,7 @@
 import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { createClient } from '@supabase/supabase-js';
 
 export async function GET(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
@@ -9,20 +10,30 @@ export async function GET(request: NextRequest) {
   const supabase = createAdminClient();
 
   try {
+    // Untyped client -- dharm_veers isn't in the generated Database type yet
+    // (pre-existing gap; see src/lib/dharm-veer-db.ts comments), so this one
+    // query uses a plain client rather than fighting stale generated types.
+    const rawSupabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+
     const [
       usersCount, 
       onboardedCount,
       activeCount, 
       reportsCount, 
       mandaliCount,
-      traditionsData
+      traditionsData,
+      dharmVeerReviewCount,
     ] = await Promise.all([
       supabase.from('profiles').select('id', { count: 'exact', head: true }),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('onboarding_completed', true),
       supabase.from('profiles').select('id', { count: 'exact', head: true }).gt('shloka_streak', 0),
       supabase.from('content_reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('mandalis').select('id', { count: 'exact', head: true }),
-      supabase.from('profiles').select('tradition')
+      supabase.from('profiles').select('tradition'),
+      rawSupabase.from('dharm_veers').select('slug', { count: 'exact', head: true }).eq('review_status', 'pending_review'),
     ]);
 
     // Calculate tradition distribution
@@ -42,6 +53,7 @@ export async function GET(request: NextRequest) {
       onboardedSeekers: onboarded,
       activeNow: active,
       pendingReports: reportsCount.count || 0,
+      pendingDharmVeerReview: dharmVeerReviewCount.count || 0,
       globalReach: mandaliCount.count || 0,
       intelligence: {
         retentionRate: `${retention}%`,

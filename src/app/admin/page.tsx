@@ -6,7 +6,7 @@ import {
   ArrowUpRight, BarChart3, AlertTriangle, 
   UserCheck, ShieldCheck, LogOut, ArrowLeft,
   FileText, Megaphone, MapPin, Calendar,
-  RefreshCw, Heart
+  RefreshCw, Heart, BookOpen
 } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
@@ -155,6 +155,13 @@ export default function AdminDashboard() {
                   title="Mandali Hub" 
                   desc="Manage local spiritual community chapters." 
                 />
+                <CommandLink 
+                  href="/admin/dharm-veer-review"
+                  icon={BookOpen} 
+                  title="Dharm Veer Review Queue" 
+                  desc="Approve or reject auto-sourced biographies before they go live." 
+                  count={stats.pendingDharmVeerReview}
+                />
               </div>
             </section>
 
@@ -204,7 +211,7 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl bg-white border border-rose-500/20 shadow-sm">
                   <p className="text-xs font-bold theme-ink">Database Latency Spike</p>
-                  <p className="text-[10px] text-[var(--brand-muted)] mt-1">Detected +200ms increase in query resolution for `vichaar_sabha` table.</p>
+                  <p className="text-[10px] text-[var(--brand-muted)] mt-1">Detected +200ms increase in query resolution for `posts` table.</p>
                 </div>
                 <div className="p-4 rounded-2xl bg-white border border-rose-500/20 shadow-sm">
                   <p className="text-xs font-bold theme-ink">Abnormal Login Attempts</p>

@@ -94,9 +94,14 @@ export function selectDharmVeerOfTheDayFromRoster(
 }
 
 export async function getDharmVeerRoster(supabase: SupabaseClient): Promise<DharmVeer[]> {
+  // review_status defaults to 'approved' for all pre-existing rows; this filter
+  // exists so AI-auto-sourced rows written with review_status = 'pending_review'
+  // (see src/lib/dharm-veer-generation.ts) never reach public users before a
+  // human approves them. Rejected rows are excluded permanently.
   const { data, error } = await supabase
     .from('dharm_veers')
     .select(DHARM_VEER_COLS)
+    .eq('review_status', 'approved')
     .order('day_index', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: true });
 
@@ -133,11 +138,13 @@ export async function getDharmVeerBySlug(
   supabase: SupabaseClient,
   slug: string,
 ): Promise<DharmVeer | null> {
-  // Canonical generated/static-backed table.
+  // Canonical generated/static-backed table. Excludes pending_review/rejected
+  // rows -- same rationale as getDharmVeerRoster above.
   const { data } = await supabase
     .from('dharm_veers')
     .select(DHARM_VEER_COLS)
     .eq('slug', slug)
+    .eq('review_status', 'approved')
     .maybeSingle();
 
   if (data) return rowToDharmVeer(data as DailyRow);
