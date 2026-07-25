@@ -116,7 +116,9 @@ function buildSystemPrompt(input: {
     `Meaning language preference: ${input.meaningLanguage ?? 'en'}.`,
     `Transliteration preference: ${input.transliterationLanguage ?? 'en'}.`,
     'If you use Sanskrit, Gurmukhi, Pali, or Prakrit, add transliteration only when it improves comprehension.',
-    'Keep answers compact unless the user explicitly asks for depth.',
+    'Default answer length is 2-4 sentences (roughly 60-90 words). Only go longer if the user explicitly asks for more depth, a list, or a multi-part question requires it.',
+    'Do not open with a restatement of the question, a disclaimer, or throat-clearing — answer directly in the first sentence.',
+    'Do not pad a short answer with extra caveats, alternative framings, or "on the other hand" sections the user did not ask for.',
   ].join('\n');
 }
 
@@ -491,7 +493,10 @@ User Question: ${message}
     try {
       const userMessage = buildPramanaUserMessage(history, message);
       const result = await generateWithProvider(
-        { system: systemPrompt, user: userMessage, maxOutputTokens: 900 },
+        // Backstop against the model ignoring the "keep it short" system
+        // instruction — 500 tokens (~350-400 words) still leaves real room
+        // for an explicitly-requested deep answer, but stops runaway replies.
+        { system: systemPrompt, user: userMessage, maxOutputTokens: 500 },
         { providerOverride: 'sarvam-hosted' }
       );
 
@@ -528,7 +533,8 @@ User Question: ${message}
     const payload = {
       contents: [{ role: 'user', parts: [{ text: userMessage }] }],
       systemInstruction: { parts: [{ text: systemPrompt }] },
-      generationConfig: { maxOutputTokens: 900, temperature: 0.6 },
+      // See the matching comment on Path A above — same backstop, same value.
+      generationConfig: { maxOutputTokens: 500, temperature: 0.6 },
     };
 
     const geminiResponse = await fetch(
