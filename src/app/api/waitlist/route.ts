@@ -22,7 +22,7 @@ function db() {
   ));
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 const DOMAIN = BASE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
 const CORS_HEADERS = {

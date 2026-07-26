@@ -15,17 +15,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const stotram = getStotramById(decodedId);
   
   if (!stotram) return { title: 'Stotram | Shoonaya' };
+
+  const description = `${stotram.description} Read the original ${stotram.language}, transliteration and verse-by-verse meaning.`.slice(0, 160);
   
   return {
-    title: `${stotram.title} | Shoonaya`,
-    description: stotram.description.slice(0, 160),
+    title: `${stotram.title}: Lyrics, Transliteration & Meaning | Shoonaya`,
+    description,
     openGraph: {
-      title: stotram.title,
-      description: stotram.description.slice(0, 160),
-      type: 'article'
+      title: `${stotram.title}: Lyrics & Meaning`,
+      description,
+      type: 'article',
+      url: `https://www.shoonaya.com/bhakti/stotram/${decodedId}`,
     },
     alternates: {
-      canonical: `https://shoonaya.com/bhakti/stotram/${decodedId}`
+      canonical: `https://www.shoonaya.com/bhakti/stotram/${decodedId}`
     }
   };
 }
@@ -40,16 +43,16 @@ export default async function StotramPage({ params }: Props) {
   }
   
   const geo = extractStotramGeo(stotram);
-  const canonicalUrl = `https://shoonaya.com/bhakti/stotram/${decodedId}`;
+  const canonicalUrl = `https://www.shoonaya.com/bhakti/stotram/${decodedId}`;
   const deityMeta = stotram.deity ? (DEITY_META[stotram.deity] ?? DEITY_META.universal) : (DEITY_META.universal ?? null);
 
   return (
     <>
       <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
       <BreadcrumbJsonLd items={[
-        { name: 'Home', url: 'https://shoonaya.com' },
-        { name: 'Bhakti', url: 'https://shoonaya.com/bhakti' },
-        { name: 'Stotrams', url: 'https://shoonaya.com/bhakti/browse' },
+        { name: 'Home', url: 'https://www.shoonaya.com' },
+        { name: 'Bhakti', url: 'https://www.shoonaya.com/bhakti' },
+        { name: 'Stotrams', url: 'https://www.shoonaya.com/bhakti/browse' },
         { name: stotram.title, url: canonicalUrl }
       ]} />
       <StotramClient params={params} stotram={stotram} deityMeta={deityMeta} />

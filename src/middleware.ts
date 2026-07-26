@@ -8,7 +8,7 @@ import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 // APP_OPEN unset/true      → launched/live app. Gate removed.
 //
 // Grant testing access by sharing:
-//   https://shoonaya.com/?preview=<PREVIEW_KEY>
+//   https://www.shoonaya.com/?preview=<PREVIEW_KEY>
 //   (set PREVIEW_KEY in Vercel environment variables)
 //
 // Cookie lasts 30 days. Recipient can use the app normally once set.

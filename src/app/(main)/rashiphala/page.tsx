@@ -5,8 +5,17 @@ import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import RashiphalClient from './RashiphalClient';
 
 export const metadata: Metadata = {
-  title: 'Daily Rashiphala — Personalised Vedic Horoscope | Shoonaya',
-  description: 'Read your daily Vedic horoscope (Rashiphala) with direct sadhana and karma guidance based on your moon sign.',
+  title: 'Rashiphala Today: Daily Vedic Horoscope by Rashi | Shoonaya',
+  description: 'Read today’s Rashiphala and personalised Vedic horoscope by moon sign, with daily guidance for love, work, wellbeing, karma and sadhana.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/rashiphala',
+  },
+  openGraph: {
+    title: 'Rashiphala Today: Daily Vedic Horoscope',
+    description: 'Daily Vedic horoscope guidance based on your moon sign.',
+    url: 'https://www.shoonaya.com/rashiphala',
+    type: 'website',
+  },
 };
 
 export default async function RashiphalaPage() {
@@ -30,9 +39,9 @@ export default async function RashiphalaPage() {
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: 'Home', url: 'https://shoonaya.com' },
-          { name: 'Panchang', url: 'https://shoonaya.com/panchang' },
-          { name: 'Rashiphala', url: 'https://shoonaya.com/rashiphala' },
+          { name: 'Home', url: 'https://www.shoonaya.com' },
+          { name: 'Panchang', url: 'https://www.shoonaya.com/panchang' },
+          { name: 'Rashiphala', url: 'https://www.shoonaya.com/rashiphala' },
         ]}
       />
       <RashiphalClient userRashi={userRashi} timezone={timezone} />

@@ -811,9 +811,9 @@ function StotramReader({ id, stotram: stotramProp, deityMeta: deityMetaProp }: {
           <div className="flex items-center gap-3 mb-4">
             <span className="text-4xl">{stotram.deityEmoji || deityMeta?.emoji || '🕉️'}</span>
             <div>
-              <h2 className="font-bold text-lg leading-tight" style={{ fontFamily: 'var(--font-serif)', color: textH }}>
+              <h1 className="font-bold text-lg leading-tight" style={{ fontFamily: 'var(--font-serif)', color: textH }}>
                 {stotram.title}
-              </h2>
+              </h1>
               <p className="text-sm mt-0.5" style={{ color: accentColor }}>{stotram.titleDevanagari}</p>
             </div>
           </div>

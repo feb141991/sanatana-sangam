@@ -32,7 +32,7 @@ interface SocialShareDrawerProps {
 const BASE =
   typeof window !== 'undefined'
     ? window.location.origin
-    : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+    : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com');
 
 type CopyState = 'idle' | 'copied';
 

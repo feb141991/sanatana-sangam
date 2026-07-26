@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
-const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

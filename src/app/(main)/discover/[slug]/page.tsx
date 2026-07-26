@@ -13,6 +13,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
+  const canonicalUrl = `https://www.shoonaya.com/discover/${resolvedParams.slug}`;
   const supabase = await createServerSupabaseClient();
   const { data: piece } = await supabase
     .from('discover_content')
@@ -33,8 +34,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: piece.hook_question,
       description: piece.body_short,
+      url: canonicalUrl,
       images: piece.og_image_url ? [{ url: piece.og_image_url }] : [],
       type: 'article',
+    },
+    alternates: {
+      canonical: canonicalUrl,
     },
     twitter: {
       card: 'summary_large_image',

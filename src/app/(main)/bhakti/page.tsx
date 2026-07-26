@@ -1,7 +1,21 @@
+import type { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getStotramsByTradition, STOTRAMS } from '@/lib/stotrams';
 import BhaktiClient from './BhaktiClient';
 
+export const metadata: Metadata = {
+  title: 'Bhakti: Mantras, Stotrams, Kathas & Japa | Shoonaya',
+  description: 'Explore Bhakti through mantras, stotrams with meanings, sacred kathas, Japa Mala, Naam Simran and devotional practice across Hindu, Sikh, Buddhist and Jain traditions.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/bhakti',
+  },
+  openGraph: {
+    title: 'Bhakti: Mantras, Stotrams, Kathas & Japa',
+    description: 'Sacred chants, devotional stories and daily Bhakti practice across Hindu, Sikh, Buddhist and Jain traditions.',
+    url: 'https://www.shoonaya.com/bhakti',
+    type: 'website',
+  },
+};
 
 export default async function BhaktiPage() {
   // Attempt to load user data — gracefully falls back for guests

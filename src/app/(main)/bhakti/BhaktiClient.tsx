@@ -224,10 +224,10 @@ export default function BhaktiClient({
         <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: accent }}>
           {hero.sub}
         </p>
-        <h1 className="text-[32px] font-bold premium-serif theme-ink leading-none mb-1">
-          Bhakti
+        <h1 className="text-[32px] font-bold premium-serif theme-ink leading-tight mb-1">
+          Bhakti: Mantras, Stotrams &amp; Kathas
         </h1>
-        <p className="text-sm theme-muted">{hero.greeting}</p>
+        <p className="text-sm theme-muted">{hero.greeting} · Sacred chants and daily devotional practice</p>
 
         {/* Stat pills */}
         <div className="flex items-center gap-2 mt-4">

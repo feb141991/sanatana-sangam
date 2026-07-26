@@ -20,4 +20,8 @@ export interface GeoModel {
   facts: GeoFact[];
   qa: GeoQA[];
   relatedLinks: GeoLink[];
+  canonicalUrl?: string;
+  reviewedBy?: string;
+  datePublished?: string;
+  dateModified?: string;
 }

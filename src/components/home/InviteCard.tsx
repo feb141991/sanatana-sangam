@@ -7,7 +7,7 @@
  * This card gives them a frictionless one-tap share with tradition-aware copy.
  *
  * Uses Web Share API where available (mobile), falls back to clipboard copy.
- * Deep link format: https://shoonaya.com?ref=<userId>
+ * Deep link format: https://www.shoonaya.com?ref=<userId>
  * (The ref param can be picked up during signup to track referrals later.)
  */
 
@@ -30,7 +30,7 @@ const SHARE_COPY: Record<string, string> = {
 
 const BASE_URL = typeof window !== 'undefined'
   ? window.location.origin
-  : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+  : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com');
 
 // Same deterministic code as HomeDashboard → InviteModal
 function generateInviteCode(userId: string): string {

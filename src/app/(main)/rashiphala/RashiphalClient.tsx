@@ -39,7 +39,7 @@ export default function RashiphalClient({ userRashi, timezone = 'Asia/Kolkata' }
   }, [selectedRashi, today, timezone]);
 
   async function share() {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shoonaya.com';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.shoonaya.com';
     const link = `${origin}/rashiphala`;
     const text = `Read & check your daily rashiphala following this link: ${link}\n\n` +
       `🐏 Daily Rashiphala for ${h.rashiSanskrit} (${h.rashi}) — ${dateLabel}\n\n` +

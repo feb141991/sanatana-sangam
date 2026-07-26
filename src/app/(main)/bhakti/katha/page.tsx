@@ -1,7 +1,21 @@
+import type { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaClient from './KathaClient';
 import { ALL_KATHAS, getKathasByTradition } from '@/lib/katha-library';
 
+export const metadata: Metadata = {
+  title: 'Sacred Kathas & Spiritual Stories with Meaning | Shoonaya',
+  description: 'Read Hindu kathas, Sikh sakhis, Buddhist Dhamma stories and Jain wisdom tales with their meaning, tradition, occasion and spiritual significance.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/bhakti/katha',
+  },
+  openGraph: {
+    title: 'Sacred Kathas & Spiritual Stories with Meaning',
+    description: 'Explore sacred stories across Hindu, Sikh, Buddhist and Jain traditions.',
+    url: 'https://www.shoonaya.com/bhakti/katha',
+    type: 'website',
+  },
+};
 
 export default async function KathaPage() {
   const supabase = await createServerSupabaseClient();

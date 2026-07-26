@@ -5,7 +5,7 @@ import { sendPushNotification } from '@/lib/push-server';
 import { sendShoonayaEmail } from '@/lib/email';
 import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
 
-const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com';
+const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

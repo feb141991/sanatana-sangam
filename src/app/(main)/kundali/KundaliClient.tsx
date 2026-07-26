@@ -303,7 +303,7 @@ export default function KundaliClient({ lat, lon, city, timezone }: Props) {
 
   async function share() {
     if (!kundaliResult) return;
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shoonaya.com';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.shoonaya.com';
     const link = `${origin}/kundali`;
     const text = `Vedic Kundali Chart for ${kundaliResult.input.name}\n\n` +
       `🌟 Lagna Ascendant: ${kundaliResult.lagnaSign} (${kundaliResult.lagnaEnglish})\n` +

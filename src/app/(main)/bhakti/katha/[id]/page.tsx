@@ -13,17 +13,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const katha = getKathaById(id);
   
   if (!katha) return { title: 'Katha | Shoonaya' };
+
+  const description = `${katha.preview} Read the complete story, meaning and spiritual significance.`.slice(0, 160);
   
   return {
-    title: `${katha.title} | Shoonaya`,
-    description: katha.preview.slice(0, 160),
+    title: `${katha.title}: Story, Meaning & Significance | Shoonaya`,
+    description,
     openGraph: {
-      title: katha.title,
-      description: katha.preview.slice(0, 160),
-      type: 'article'
+      title: `${katha.title}: Story & Meaning`,
+      description,
+      type: 'article',
+      url: `https://www.shoonaya.com/bhakti/katha/${id}`,
     },
     alternates: {
-      canonical: `https://shoonaya.com/bhakti/katha/${id}`
+      canonical: `https://www.shoonaya.com/bhakti/katha/${id}`
     }
   };
 }
@@ -53,15 +56,15 @@ export default async function KathaReaderPage({ params }: Props) {
   }
 
   const geo = extractKathaGeo(katha);
-  const canonicalUrl = `https://shoonaya.com/bhakti/katha/${id}`;
+  const canonicalUrl = `https://www.shoonaya.com/bhakti/katha/${id}`;
 
   return (
     <>
       <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
       <BreadcrumbJsonLd items={[
-        { name: 'Home', url: 'https://shoonaya.com' },
-        { name: 'Bhakti', url: 'https://shoonaya.com/bhakti' },
-        { name: 'Katha', url: 'https://shoonaya.com/bhakti/katha' },
+        { name: 'Home', url: 'https://www.shoonaya.com' },
+        { name: 'Bhakti', url: 'https://www.shoonaya.com/bhakti' },
+        { name: 'Katha', url: 'https://www.shoonaya.com/bhakti/katha' },
         { name: katha.title, url: canonicalUrl }
       ]} />
       <KathaReaderClient
