@@ -9,6 +9,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
+import Image from 'next/image';
 import { X, Send, RotateCcw, BookOpen, ChevronDown } from 'lucide-react';
 import AiReportButton from '@/components/ai/AiReportButton';
 
@@ -28,47 +29,23 @@ async function readStreamedChatResponse(
   }
 }
 
-// ── Dharma Mitra — Sacred Eye of Wisdom icon ──────────────────────────────────
-// An almond-shaped wisdom eye (inner sight, divine perception) with a small
-// flame above — the Ajna / third eye motif, universal across dharmic traditions.
-// Reads clearly at 15 px–24 px on both dark and light backgrounds.
-function ZenithMitraLogo({ size = 22, color = 'currentColor' }: { size?: number; color?: string }) {
+// ── Dharma Mitra — scroll icon ────────────────────────────────────────────────
+// Matches the native app's floating AI-guide icon (shoonaya-mobile's
+// assets/icons/ai-guide-scroll.png, used by components/home/
+// FloatingDharmaScroll.tsx) so the brand mark is the same illustrated scroll
+// on both platforms instead of two divergent icons. It's a full-color
+// illustration (not a recolorable glyph), so — unlike the previous inline
+// SVG — there is no `color` prop; only `size` is configurable.
+function ZenithMitraLogo({ size = 22 }: { size?: number }) {
   return (
-    <svg
+    <Image
+      src="/icons/dharma-mitra-scroll.png"
+      alt=""
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
-    >
-      {/* Flame above the eye — divine light / Ajna chakra */}
-      <path
-        d="M12 6 Q13.1 3.2 12 1.5 Q10.9 3.2 12 6Z"
-        fill={color}
-        opacity="0.70"
-      />
-
-      {/* Eye almond — outer shape */}
-      <path
-        d="M2.5 12 C5.5 7 8.5 6 12 6 C15.5 6 18.5 7 21.5 12 C18.5 17 15.5 18 12 18 C8.5 18 5.5 17 2.5 12 Z"
-        fill={color}
-        fillOpacity="0.10"
-        stroke={color}
-        strokeWidth="1.55"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Iris — filled circle, the seat of inner sight */}
-      <circle cx="12" cy="12" r="3.2" fill={color} />
-
-      {/* Pupil — small void, the mystery within */}
-      <circle cx="12" cy="12" r="1.4" fill={color} opacity="0.18" />
-
-      {/* Specular highlight — gives it life */}
-      <circle cx="13.1" cy="10.9" r="0.75" fill={color} opacity="0.45" />
-    </svg>
+      style={{ width: size, height: size, objectFit: 'contain' }}
+    />
   );
 }
 
@@ -162,7 +139,7 @@ function MessageBubble({ msg, userId, prevUserText }: { msg: Message; userId: st
         style={isUser
           ? { background: 'var(--brand-primary-soft)', color: 'var(--divine-text)' }
           : { background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
-        {isUser ? '🙏' : <ZenithMitraLogo size={16} color="#1c1c1a" />}
+        {isUser ? '🙏' : <ZenithMitraLogo size={16} />}
       </div>
       <div className={`max-w-[82%] ${isUser ? 'items-end' : 'items-start'} flex flex-col gap-0.5`}>
         <div
@@ -206,7 +183,7 @@ function TypingIndicator() {
     <div className="flex gap-2 mb-3">
       <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg, #c8920a 0%, #d4a818 100%)' }}>
-        <ZenithMitraLogo size={15} color="#1c1c1a" />
+        <ZenithMitraLogo size={15} />
       </div>
       <div className="border rounded-2xl rounded-tl-sm px-3 py-2.5" style={{ background: 'var(--surface-raised)', borderColor: 'rgba(197, 160, 89,0.16)' }}>
         <div className="flex gap-1.5 items-center h-4">
@@ -448,7 +425,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-2xl flex items-center justify-center"
                     style={{ background: 'linear-gradient(135deg, #c8920a22, #d4a81822)', border: '1px solid rgba(197, 160, 89,0.22)' }}>
-                    <ZenithMitraLogo size={20} color="rgba(197, 160, 89,0.90)" />
+                    <ZenithMitraLogo size={20} />
                   </div>
                   <div>
                     <h2 className="font-display font-bold text-[color:var(--text-cream)] text-base leading-tight">Dharma Mitra</h2>
@@ -661,7 +638,7 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
             animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <ZenithMitraLogo size={22} color="#C5A059" />
+          <ZenithMitraLogo size={22} />
         </motion.div>
       </motion.div>
 
