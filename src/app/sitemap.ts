@@ -12,7 +12,7 @@ const BASE_URL = 'https://www.shoonaya.com';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     // Core landing
-    { url: `${BASE_URL}`,                        changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${BASE_URL}/`,                       changeFrequency: 'weekly',  priority: 1.0 },
     { url: `${BASE_URL}/what-is-shoonaya`,       changeFrequency: 'monthly', priority: 0.9 },
     { url: `${BASE_URL}/pricing`,                changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/about`,                  changeFrequency: 'monthly', priority: 0.6 },
