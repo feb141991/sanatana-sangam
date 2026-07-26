@@ -27,7 +27,8 @@
     "diagnostics:warn": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.pramana_status --fail-on-warn",
     "diagnostics:dashboard": "PYTHONPATH=python/ai_pipeline/src python3 -m ai_pipeline.diagnostics.generate_markdown_dashboard",
     "generate:splash": "npx tsx scripts/generate-splash.ts",
-    "minify:static-html": "node scripts/minify-static-html.mjs"
+    "minify:static-html": "node scripts/minify-static-html.mjs",
+    "test:indexnow": "node --test scripts/submit-indexnow.test.mjs"
   },
   "dependencies": {
     "@sangam/pathshala-engine": "*",
