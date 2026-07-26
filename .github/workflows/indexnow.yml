@@ -1,0 +1,66 @@
+name: IndexNow
+
+on:
+  deployment_status:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      submit_all:
+        description: Submit every canonical sitemap URL
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: indexnow-production
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: >-
+      github.event_name != 'deployment_status' ||
+      (github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out deployed revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha || 'main' }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore previous sitemap snapshot
+        id: indexnow-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .indexnow/sitemap.json
+          key: indexnow-sitemap-${{ github.event.deployment.sha || github.sha }}-${{ github.run_id }}
+          restore-keys: |
+            indexnow-sitemap-
+
+      - name: Test IndexNow URL selection
+        run: node --test scripts/submit-indexnow.test.mjs
+
+      - name: Submit changed canonical URLs
+        env:
+          DEPLOYMENT_SHA: ${{ github.event.deployment.sha || github.sha }}
+          INDEXNOW_FORCE_SUBMIT: ${{ inputs.submit_all || 'false' }}
+        run: node scripts/submit-indexnow.mjs
+
+      - name: Save sitemap snapshot
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: .indexnow/sitemap.json
+          key: indexnow-sitemap-${{ github.event.deployment.sha || github.sha }}-${{ github.run_id }}
