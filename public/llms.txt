@@ -22,7 +22,7 @@ Shoonaya welcomes AI assistants, search engines, and answer engines to crawl pub
 
 ## Festival calendar
 
-The festival dates are calculated using an astronomy-backed rule engine (`src/lib/calendar/engine.ts`, version `1.0.0`). Dates are calculated for the current Gregorian year using Ujjain as the reference meridian (23.1765°N, 75.7885°E).
+The festival dates are calculated using an astronomy-backed rule engine. Dates are calculated for the current Gregorian year using Ujjain as the reference meridian (23.1765°N, 75.7885°E).
 
 ## Key URLs
 

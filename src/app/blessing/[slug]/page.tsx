@@ -28,12 +28,12 @@ export async function generateMetadata({
     openGraph: {
       title: `${b.emoji} ${b.shareTitle}`,
       description: b.shareBody,
-      url: `https://shoonaya.com/blessing/${slug}`,
+      url: `https://www.shoonaya.com/blessing/${slug}`,
       siteName: 'Shoonaya',
       type: 'website',
       images: [
         {
-          url: `https://shoonaya.com/api/blessing-og?slug=${slug}`,
+          url: `https://www.shoonaya.com/api/blessing-og?slug=${slug}`,
           width: 1200,
           height: 630,
           alt: `${b.name} blessing from Shoonaya`,
@@ -44,7 +44,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title: `${b.emoji} ${b.shareTitle}`,
       description: b.shareBody,
-      images: [`https://shoonaya.com/api/blessing-og?slug=${slug}`],
+      images: [`https://www.shoonaya.com/api/blessing-og?slug=${slug}`],
     },
   };
 }
@@ -94,7 +94,7 @@ export default async function BlessingPage({
   const dateStr  = festDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
   // Share URLs
-  const pageUrl   = `https://shoonaya.com/blessing/${slug}`;
+  const pageUrl   = `https://www.shoonaya.com/blessing/${slug}`;
   const waText    = encodeURIComponent(`${b.shareTitle}\n\n${b.shareBody}\n\n${pageUrl}`);
   const twText    = encodeURIComponent(`${b.shareTitle}\n\n${b.shareBody}`);
   const twUrl     = encodeURIComponent(pageUrl);

@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       return NextResponse.redirect(
-        new URL('/home', process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com')
+        new URL('/home', process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com')
       );
     }
   } catch {

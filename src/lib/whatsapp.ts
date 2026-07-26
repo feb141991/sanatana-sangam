@@ -4,7 +4,7 @@
 
 const APP_URL = typeof window !== 'undefined'
   ? window.location.origin
-  : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+  : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com');
 
 export function getWhatsAppShareLink(text: string) {
   return `https://wa.me/?text=${encodeURIComponent(text)}`;

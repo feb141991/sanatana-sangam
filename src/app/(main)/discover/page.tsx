@@ -4,8 +4,17 @@ import DiscoverGatewayClient from './DiscoverGatewayClient';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Discover Dharma — Shoonaya',
-  description: 'Uncover the scientific and philosophical meanings behind dharmic traditions. Relieve doubts, understand rituals, and connect back to your roots.',
+  title: 'Discover Dharma: Ritual Meanings & Spiritual Questions | Shoonaya',
+  description: 'Understand the meaning behind dharmic rituals, symbols and traditions through concise, source-aware answers across Hindu, Sikh, Buddhist and Jain paths.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/discover',
+  },
+  openGraph: {
+    title: 'Discover Dharma: Ritual Meanings & Spiritual Questions',
+    description: 'Source-aware answers about dharmic rituals, symbols and traditions.',
+    url: 'https://www.shoonaya.com/discover',
+    type: 'website',
+  },
 };
 
 export default async function DiscoverPage() {

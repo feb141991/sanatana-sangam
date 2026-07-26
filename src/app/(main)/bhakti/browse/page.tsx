@@ -89,12 +89,12 @@ function BrowseInner() {
           <ChevronLeft size={18} style={{ color: amber }} />
         </button>
         <div>
-          <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: textH }}>Sacred Library</h1>
+          <h1 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-serif)', color: textH }}>Mantras &amp; Stotrams</h1>
           <p className="text-[11px]" style={{ color: textS }}>{
             tradition === 'sikh'     ? 'Banis, kirtans & simran'      :
             tradition === 'buddhist' ? 'Sutras, chants & dhamma'       :
             tradition === 'jain'     ? 'Stotrams, mantras & bhajans'   :
-            'Mantras, stotrams & bhajans'
+            'Sacred chants, meanings & recitations'
           }</p>
         </div>
       </div>

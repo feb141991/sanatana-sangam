@@ -12,17 +12,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const path = SEED_PATHS.find(p => p.id === pathId);
   
   if (!path) return { title: 'Pathshala | Shoonaya' };
+
+  const description = `${path.description} Follow a ${path.total_lessons}-lesson guided scripture course for ${path.difficulty} learners.`.slice(0, 160);
   
   return {
-    title: `${path.title} | Shoonaya`,
-    description: path.description.slice(0, 160),
+    title: `${path.title}: Guided Scripture Course | Shoonaya`,
+    description,
     openGraph: {
-      title: path.title,
-      description: path.description.slice(0, 160),
-      type: 'article'
+      title: `${path.title}: Guided Scripture Course`,
+      description,
+      type: 'article',
+      url: `https://www.shoonaya.com/pathshala/${pathId}`,
     },
     alternates: {
-      canonical: `https://shoonaya.com/pathshala/${pathId}`
+      canonical: `https://www.shoonaya.com/pathshala/${pathId}`
     }
   };
 }
@@ -34,14 +37,14 @@ export default async function PathshalaPathPage({ params }: Props) {
   if (!path) notFound();
 
   const geo = extractPathshalaGeo(path);
-  const canonicalUrl = `https://shoonaya.com/pathshala/${pathId}`;
+  const canonicalUrl = `https://www.shoonaya.com/pathshala/${pathId}`;
 
   return (
     <>
       <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
       <BreadcrumbJsonLd items={[
-        { name: 'Home', url: 'https://shoonaya.com' },
-        { name: 'Pathshala', url: 'https://shoonaya.com/pathshala' },
+        { name: 'Home', url: 'https://www.shoonaya.com' },
+        { name: 'Pathshala', url: 'https://www.shoonaya.com/pathshala' },
         { name: path.title, url: canonicalUrl }
       ]} />
       <meta httpEquiv="refresh" content={`0; url=/pathshala/${pathId}/lesson`} />

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 import { calculatePanchang } from '@/lib/panchang';
 import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
-import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
 import PanchangHub from './PanchangHub';
 
 // Panchang is fully static — no auth, no cookies, pure computation.
@@ -35,10 +35,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Daily Panchang & Astrology — ${panchang.tithi}`,
       description: `Explore today's Panchang, daily horoscope, and generate birth charts. Sunrise: ${panchang.sunrise} · Tithi: ${panchang.tithi}`,
       type: 'website',
-      url: 'https://shoonaya.com/panchang',
+      url: 'https://www.shoonaya.com/panchang',
     },
     alternates: {
-      canonical: 'https://shoonaya.com/panchang',
+      canonical: 'https://www.shoonaya.com/panchang',
     },
   };
 }
@@ -46,33 +46,20 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function PanchangHubPage() {
   const panchang = getPanchang();
 
-  const panchangSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": `Hindu Panchang and Astrology Hub for ${panchang.date}`,
-    "description": "Daily Hindu almanac including tithi, nakshatra, daily horoscope, and online Vedic Kundali birth chart generation.",
-    "url": "https://shoonaya.com/panchang",
-    "keywords": ["panchang", "tithi", "horoscope", "kundali", "rashiphala", panchang.tithi, panchang.nakshatra],
-    "creator": { "@type": "Organization", "name": "Shoonaya" },
-    "temporalCoverage": panchang.date,
-    "variableMeasured": [
-      { "@type": "PropertyValue", "name": "Tithi", "value": `${panchang.tithi} (${panchang.paksha})` },
-      { "@type": "PropertyValue", "name": "Nakshatra", "value": panchang.nakshatra },
-      { "@type": "PropertyValue", "name": "Yoga", "value": panchang.yoga },
-      { "@type": "PropertyValue", "name": "Vara", "value": panchang.vara },
-      { "@type": "PropertyValue", "name": "Masa", "value": panchang.masaName },
-    ],
-  };
-
   return (
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: 'Home', url: 'https://shoonaya.com' },
-          { name: 'Panchang Hub', url: 'https://shoonaya.com/panchang' },
+          { name: 'Home', url: 'https://www.shoonaya.com' },
+          { name: 'Panchang Hub', url: 'https://www.shoonaya.com/panchang' },
         ]}
       />
-      <JsonLd data={panchangSchema} />
+      <PanchangJsonLd
+        panchang={panchang}
+        url="https://www.shoonaya.com/panchang"
+        name={`Hindu Panchang and Astrology Hub for ${panchang.date}`}
+        description="Daily Hindu almanac including tithi, nakshatra, daily horoscope, and online Vedic Kundali birth chart generation."
+      />
       {/* userRashi and tradition are fetched client-side in PanchangHub
           so this page can be fully cached at the edge. */}
       <PanchangHub panchang={panchang as any} />

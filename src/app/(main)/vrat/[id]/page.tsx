@@ -17,17 +17,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const vrat = lookupVratData(decodedId);
   
   if (!vrat) return { title: 'Vrat | Shoonaya' };
+
+  const description = `${vrat.tagline}. Learn its meaning, fasting rules, puja practice, parana guidance and mantra.`.slice(0, 160);
   
   return {
-    title: `${vrat.name} | Shoonaya`,
-    description: vrat.tagline.slice(0, 160),
+    title: `${vrat.name}: Meaning, Fasting Rules, Puja & Mantra | Shoonaya`,
+    description,
     openGraph: {
-      title: vrat.name,
-      description: vrat.tagline.slice(0, 160),
-      type: 'article'
+      title: `${vrat.name}: Meaning, Rules & Puja`,
+      description,
+      type: 'article',
+      url: `https://www.shoonaya.com/vrat/${decodedId}`,
     },
     alternates: {
-      canonical: `https://shoonaya.com/vrat/${decodedId}`
+      canonical: `https://www.shoonaya.com/vrat/${decodedId}`
     }
   };
 }
@@ -52,14 +55,14 @@ export default async function VratPage({ params }: Props) {
     : null;
 
   const geo = extractVratGeo(vratData);
-  const canonicalUrl = `https://shoonaya.com/vrat/${decodedId}`;
+  const canonicalUrl = `https://www.shoonaya.com/vrat/${decodedId}`;
 
   return (
     <>
       <GeoArticleJsonLd geo={geo} url={canonicalUrl} />
       <BreadcrumbJsonLd items={[
-        { name: 'Home', url: 'https://shoonaya.com' },
-        { name: 'Vrat', url: 'https://shoonaya.com/vrat' },
+        { name: 'Home', url: 'https://www.shoonaya.com' },
+        { name: 'Vrat', url: 'https://www.shoonaya.com/vrat' },
         { name: vratData.name, url: canonicalUrl }
       ]} />
       <VratClient

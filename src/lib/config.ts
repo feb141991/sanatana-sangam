@@ -115,10 +115,10 @@ export const APP = {
   /**
    * Public base URL for share links and invite deep-links.
    * Set NEXT_PUBLIC_APP_URL in .env.local to override (e.g. your Vercel domain).
-   * Falls back to shoonaya.com — but at runtime in client components
+   * Falls back to www.shoonaya.com — but at runtime in client components
    * prefer window.location.origin so any deployment domain works automatically.
    */
-  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com',
+  BASE_URL: process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com',
 } as const;
 
 

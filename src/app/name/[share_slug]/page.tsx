@@ -33,12 +33,12 @@ export async function generateMetadata({
     openGraph: {
       title,
       description: desc,
-      url: `https://shoonaya.com/name/${share_slug}`,
+      url: `https://www.shoonaya.com/name/${share_slug}`,
       siteName: 'Shoonaya',
       type: 'website',
       images: [
         {
-          url: `https://shoonaya.com/api/name-story-og?slug=${share_slug}`,
+          url: `https://www.shoonaya.com/api/name-story-og?slug=${share_slug}`,
           width: 1200,
           height: 630,
           alt: `Spiritual Name Story of ${name} on Shoonaya`,
@@ -49,7 +49,7 @@ export async function generateMetadata({
       card: 'summary_large_image',
       title,
       description: desc,
-      images: [`https://shoonaya.com/api/name-story-og?slug=${share_slug}`],
+      images: [`https://www.shoonaya.com/api/name-story-og?slug=${share_slug}`],
     },
   };
 }
@@ -135,7 +135,7 @@ export default async function NameStorySharePage({
   ].filter(Boolean).join('\n\n') || story.scripture_line || '';
 
   // Share URLs
-  const pageUrl = `https://shoonaya.com/name/${share_slug}`;
+  const pageUrl = `https://www.shoonaya.com/name/${share_slug}`;
   const shareTitle = `Discover the Spiritual Name Story of ${displayName}`;
   const shareBody = `Meaning: ${meaning}\n\nExplore the first-name story and scripture connection on Shoonaya:`;
   const waText = encodeURIComponent(`${shareTitle}\n${shareBody}\n${pageUrl}`);

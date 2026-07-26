@@ -47,7 +47,7 @@ export default function FoundingKitClient({
   const [copiedScheduleIndex, setCopiedScheduleIndex] = useState<number | null>(null);
 
   const foundingNumber = profile?.founding_number ?? 0;
-  const referralLink = `https://shoonaya.com/join?ref=${foundingNumber}`;
+  const referralLink = `https://www.shoonaya.com/join?ref=${foundingNumber}`;
 
   // 7-day WhatsApp schedule copy content
   const schedule = [
@@ -283,7 +283,7 @@ export default function FoundingKitClient({
 
         <div className="grid sm:grid-cols-2 gap-4">
           {FESTIVAL_BLESSINGS.slice(0, 4).map((b) => {
-            const blessingPageUrl = `https://shoonaya.com/blessing/${b.slug}?ref=${foundingNumber}`;
+            const blessingPageUrl = `https://www.shoonaya.com/blessing/${b.slug}?ref=${foundingNumber}`;
             const waText = `${b.shareTitle}\n\n${b.shareBody}\n\n👉 Accept invitation: ${blessingPageUrl}`;
             const waHref = `https://wa.me/?text=${encodeURIComponent(waText)}`;
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
+import type { PanchangData } from '@/lib/panchang';
 
 export function JsonLd({ data }: { data: any }) {
   return (
@@ -44,23 +45,34 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
   };
 
   if (geo.provenance) {
-    articleSchema.author = {
-      "@type": "Organization",
+    articleSchema.isBasedOn = {
+      "@type": "CreativeWork",
       "name": geo.provenance
     };
-    articleSchema.publisher = {
-      "@type": "Organization",
-      "name": "Shoonaya",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://shoonaya.com/icons/icon-512x512.png"
-      }
+  }
+
+  articleSchema.publisher = {
+    "@type": "Organization",
+    "name": "Shoonaya",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://www.shoonaya.com/icons/icon-512x512.png"
+    }
+  };
+
+  if (geo.reviewedBy) {
+    articleSchema.reviewedBy = {
+      "@type": "Person",
+      "name": geo.reviewedBy
     };
-  } else {
-    articleSchema.publisher = {
-      "@type": "Organization",
-      "name": "Shoonaya"
-    };
+  }
+
+  if (geo.datePublished) {
+    articleSchema.datePublished = geo.datePublished;
+  }
+
+  if (geo.dateModified) {
+    articleSchema.dateModified = geo.dateModified;
   }
 
   graph.push(articleSchema);
@@ -86,4 +98,53 @@ export function GeoArticleJsonLd({ geo, url }: { geo: GeoModel; url: string }) {
   };
 
   return <JsonLd data={schema} />;
+}
+
+export function PanchangJsonLd({
+  panchang,
+  url,
+  name,
+  description,
+}: {
+  panchang: PanchangData;
+  url: string;
+  name: string;
+  description: string;
+}) {
+  const panchangSchema = {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": name,
+    "description": description,
+    "url": url,
+    "keywords": ["panchang", "tithi", "nakshatra", "muhurta", "horoscope", "kundali", panchang.tithi, panchang.nakshatra, panchang.masaName],
+    "creator": { "@type": "Organization", "name": "Shoonaya" },
+    "temporalCoverage": panchang.date,
+    "variableMeasured": [
+      { "@type": "PropertyValue", "name": "Tithi", "value": `${panchang.tithi} (${panchang.paksha})` },
+      { "@type": "PropertyValue", "name": "Nakshatra", "value": panchang.nakshatra },
+      { "@type": "PropertyValue", "name": "Yoga", "value": panchang.yoga },
+      { "@type": "PropertyValue", "name": "Vara", "value": panchang.vara },
+      { "@type": "PropertyValue", "name": "Masa", "value": panchang.masaName },
+    ],
+  };
+
+  if (panchang.sunrise && panchang.sunset) {
+    panchangSchema.variableMeasured.push({ "@type": "PropertyValue", "name": "Sunrise", "value": panchang.sunrise });
+    panchangSchema.variableMeasured.push({ "@type": "PropertyValue", "name": "Sunset", "value": panchang.sunset });
+  }
+
+  if (panchang.rahuKaal) {
+    panchangSchema.variableMeasured.push({ "@type": "PropertyValue", "name": "Rahu Kaal", "value": panchang.rahuKaal });
+  }
+
+  if (panchang.brahmaMuhurta) {
+    panchangSchema.variableMeasured.push({ "@type": "PropertyValue", "name": "Brahma Muhurta", "value": panchang.brahmaMuhurta });
+  }
+
+  if (panchang.abhijitMuhurat) {
+    panchangSchema.variableMeasured.push({ "@type": "PropertyValue", "name": "Abhijit Muhurat", "value": panchang.abhijitMuhurat });
+  }
+
+  return <JsonLd data={panchangSchema} />;
 }

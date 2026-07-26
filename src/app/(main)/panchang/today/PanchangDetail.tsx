@@ -279,7 +279,7 @@ export default function PanchangDetail({ lat, lon, city, tradition = 'hindu', ti
   const orb      = SKY_ORB[skyPhase];
 
   async function share() {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://shoonaya.com';
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.shoonaya.com';
     const link = `${origin}/panchang/today`;
     const text = `🪔 Panchang — ${dateLabel}\n\n` +
       `📅 Tithi: ${p.tithi} (${p.paksha} Paksha)\n` +

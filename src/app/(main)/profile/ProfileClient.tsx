@@ -2323,7 +2323,7 @@ export default function ProfileClient({
                     onClick={() => {
                       const base = typeof window !== 'undefined'
                         ? window.location.origin
-                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com');
                       const link = `${base}/kul/join?code=${kulData.code}`;
                       navigator.clipboard.writeText(link);
                       toast.success('Join link copied 🙏');
@@ -2340,7 +2340,7 @@ export default function ProfileClient({
                     onClick={() => {
                       const base = typeof window !== 'undefined'
                         ? window.location.origin
-                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://shoonaya.com');
+                        : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com');
                       const text = `🙏 Namaste! Join my Kul "${kulData.name}" on Shoonaya. \n\nJoin link: ${base}/kul/join?code=${kulData.code}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}

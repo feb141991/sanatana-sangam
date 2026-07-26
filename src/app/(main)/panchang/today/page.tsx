@@ -3,7 +3,7 @@ import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { calculatePanchang } from '@/lib/panchang';
 import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
-import { JsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
+import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
 import PanchangDetail from './PanchangDetail';
 
 // Memoised per-request: generateMetadata and the page share one calculation.
@@ -27,10 +27,10 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Daily Panchang — ${panchang.tithi} ${panchang.paksha}`,
       description: `Nakshatra: ${panchang.nakshatra} · Yoga: ${panchang.yoga} · Sunrise: ${panchang.sunrise}`,
       type: 'website',
-      url: 'https://shoonaya.com/panchang/today',
+      url: 'https://www.shoonaya.com/panchang/today',
     },
     alternates: {
-      canonical: 'https://shoonaya.com/panchang/today',
+      canonical: 'https://www.shoonaya.com/panchang/today',
     },
   };
 }
@@ -80,39 +80,21 @@ export default async function PanchangDetailPage() {
     ? getDefaultPanchang()
     : calculatePanchang(new Date(), lat, lon, timezone);
 
-  const panchangSchema = {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": `Hindu Panchang for ${panchang.date}`,
-    "description": "Daily Hindu almanac including tithi, nakshatra, yoga, karana, vara, muhurta and auspicious timings.",
-    "url": "https://shoonaya.com/panchang/today",
-    "keywords": ["panchang", "tithi", "nakshatra", "muhurta", panchang.tithi, panchang.nakshatra, panchang.masaName],
-    "creator": { "@type": "Organization", "name": "Shoonaya" },
-    "temporalCoverage": panchang.date,
-    "variableMeasured": [
-      { "@type": "PropertyValue", "name": "Tithi",         "value": `${panchang.tithi} (${panchang.paksha})` },
-      { "@type": "PropertyValue", "name": "Nakshatra",     "value": panchang.nakshatra },
-      { "@type": "PropertyValue", "name": "Yoga",          "value": panchang.yoga },
-      { "@type": "PropertyValue", "name": "Vara",          "value": panchang.vara },
-      { "@type": "PropertyValue", "name": "Masa",          "value": panchang.masaName },
-      { "@type": "PropertyValue", "name": "Sunrise",       "value": panchang.sunrise },
-      { "@type": "PropertyValue", "name": "Sunset",        "value": panchang.sunset },
-      { "@type": "PropertyValue", "name": "Rahu Kaal",     "value": panchang.rahuKaal },
-      { "@type": "PropertyValue", "name": "Brahma Muhurta","value": panchang.brahmaMuhurta },
-      { "@type": "PropertyValue", "name": "Abhijit Muhurat","value": panchang.abhijitMuhurat },
-    ],
-  };
-
   return (
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: 'Home',    url: 'https://shoonaya.com' },
-          { name: 'Panchang', url: 'https://shoonaya.com/panchang' },
-          { name: 'Today',   url: 'https://shoonaya.com/panchang/today' },
+          { name: 'Home', url: 'https://www.shoonaya.com' },
+          { name: 'Panchang Hub', url: 'https://www.shoonaya.com/panchang' },
+          { name: 'Today', url: 'https://www.shoonaya.com/panchang/today' },
         ]}
       />
-      <JsonLd data={panchangSchema} />
+      <PanchangJsonLd
+        panchang={panchang}
+        url="https://www.shoonaya.com/panchang/today"
+        name={`Hindu Panchang for ${panchang.date}`}
+        description="Daily Hindu almanac including tithi, nakshatra, yoga, karana, vara, muhurta and auspicious timings."
+      />
       <PanchangDetail lat={lat} lon={lon} city={city} tradition={tradition} timezone={timezone} />
     </>
   );

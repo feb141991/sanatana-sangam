@@ -4,8 +4,17 @@ import { BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import KundaliClient from './KundaliClient';
 
 export const metadata: Metadata = {
-  title: 'Vedic Kundali Chart — Generate Birth Chart Online | Shoonaya',
-  description: 'Generate your free Vedic Kundali birth chart, check your planet placements, shadbala strengths, dasha periods, and Sade Sati status.',
+  title: 'Free Vedic Kundali: Generate Birth Chart Online | Shoonaya',
+  description: 'Generate a free Vedic Kundali birth chart online with Lagna, planetary placements, Shadbala strengths, Dasha periods and Sade Sati status.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/kundali',
+  },
+  openGraph: {
+    title: 'Free Vedic Kundali: Generate Birth Chart Online',
+    description: 'Create your Vedic birth chart with Lagna, planets, Dasha and Shadbala.',
+    url: 'https://www.shoonaya.com/kundali',
+    type: 'website',
+  },
 };
 
 export default async function KundaliPage() {
@@ -33,9 +42,9 @@ export default async function KundaliPage() {
     <>
       <BreadcrumbJsonLd
         items={[
-          { name: 'Home', url: 'https://shoonaya.com' },
-          { name: 'Panchang', url: 'https://shoonaya.com/panchang' },
-          { name: 'Kundali', url: 'https://shoonaya.com/kundali' },
+          { name: 'Home', url: 'https://www.shoonaya.com' },
+          { name: 'Panchang', url: 'https://www.shoonaya.com/panchang' },
+          { name: 'Kundali', url: 'https://www.shoonaya.com/kundali' },
         ]}
       />
       <KundaliClient lat={lat} lon={lon} city={city} timezone={timezone} />

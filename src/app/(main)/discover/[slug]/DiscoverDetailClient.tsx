@@ -38,7 +38,7 @@ export default function DiscoverDetailClient({ piece, relatedPieces }: DiscoverD
 
   const shareUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/discover/${piece.slug}` 
-    : `https://shoonaya.com/discover/${piece.slug}`;
+    : `https://www.shoonaya.com/discover/${piece.slug}`;
 
   // Wisdom-based share copies
   const shareText = `✨ I finally understood this today: "${piece.hook_question}"\n\nRead the meaning and connect back to your roots:\n${shareUrl}`;
