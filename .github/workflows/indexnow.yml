@@ -13,6 +13,7 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
   deployments: read
 
@@ -41,13 +42,20 @@ jobs:
           node-version: 20
 
       - name: Restore previous sitemap snapshot
-        id: indexnow-cache
-        uses: actions/cache/restore@v4
-        with:
-          path: .indexnow/sitemap.json
-          key: indexnow-sitemap-${{ github.event.deployment.sha || github.sha }}-${{ github.run_id }}
-          restore-keys: |
-            indexnow-sitemap-
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p .indexnow
+          artifact_id="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=indexnow-sitemap-snapshot&per_page=100" \
+            --jq '.artifacts | map(select(.expired == false)) | sort_by(.created_at) | reverse | .[0].id // empty')"
+          if [ -n "$artifact_id" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}/zip" > /tmp/indexnow-snapshot.zip
+            unzip -oq /tmp/indexnow-snapshot.zip -d .indexnow
+            echo "Restored sitemap snapshot artifact ${artifact_id}."
+          else
+            echo "No prior sitemap snapshot was found; this run will submit the full sitemap."
+          fi
 
       - name: Test IndexNow URL selection
         run: node --test scripts/submit-indexnow.test.mjs
@@ -60,7 +68,9 @@ jobs:
 
       - name: Save sitemap snapshot
         if: success()
-        uses: actions/cache/save@v4
+        uses: actions/upload-artifact@v4
         with:
           path: .indexnow/sitemap.json
-          key: indexnow-sitemap-${{ github.event.deployment.sha || github.sha }}-${{ github.run_id }}
+          name: indexnow-sitemap-snapshot
+          include-hidden-files: true
+          retention-days: 30
