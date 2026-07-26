@@ -611,11 +611,16 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
         title="Dharma Mitra — AI Guide (drag to move)"
       >
         <motion.div
-          className="w-full h-full rounded-full flex items-center justify-center shadow-lg select-none relative overflow-hidden"
+          className="w-full h-full rounded-full flex items-center justify-center select-none relative overflow-hidden"
           style={{
-            background:  'linear-gradient(135deg, #2A1B0A 0%, #1c1c1a 100%)',
-            border:      '1px solid rgba(197, 160, 89,0.22)',
-            boxShadow:   '0 8px 32px rgba(0,0,0,0.4)',
+            // Soft translucent gold-glass wash, matching the native app's
+            // FloatingDharmaScroll icon (theme.soft / theme.border there) —
+            // replaces the previous solid near-black gradient + shimmer +
+            // animated glow ring, which made the icon read as a dark badge
+            // rather than the scroll illustration itself being the focus.
+            background:  'var(--brand-primary-soft)',
+            border:      '1px solid var(--card-border-soft)',
+            boxShadow:   '0 2px 10px rgba(0,0,0,0.12)',
           }}
           animate={!fabHidden ? {
             y: [0, -6, 0],
@@ -625,19 +630,6 @@ export default function AIChatFAB({ userId, tradition, userName, isGuest = false
           }}
           whileTap={{ scale: 0.9 }}
         >
-          {/* Shimmering effect */}
-          <motion.span
-            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
-            animate={{ x: ['-100%', '100%'] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'linear', delay: 1 }}
-          />
-          {/* Animated glow ring */}
-          <motion.span
-            className="absolute inset-0 rounded-full"
-            style={{ border: '1.5px solid rgba(197, 160, 89,0.45)' }}
-            animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-          />
           <ZenithMitraLogo size={22} />
         </motion.div>
       </motion.div>
