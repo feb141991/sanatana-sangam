@@ -1,0 +1,11 @@
+-- Tracks whether a given notification row has already been pushed via the
+-- native app's Expo push bridge (src/app/api/native/mandali/notify-push in
+-- the PWA repo). Nullable, no default -- existing/historical rows stay
+-- unpushed (we don't want to retroactively push old notifications), and
+-- new rows only get a value once the bridge route atomically claims them
+-- (UPDATE ... WHERE pushed_at IS NULL). That claim is what makes repeated
+-- calls with the same notification_key a no-op instead of resending push
+-- every time -- without it, an authenticated caller who can compute a
+-- deterministic key (e.g. post_reaction:<post_id>:<their_own_user_id>)
+-- could spam another user's device by hitting the bridge repeatedly.
+ALTER TABLE public.notifications ADD COLUMN pushed_at timestamptz;
