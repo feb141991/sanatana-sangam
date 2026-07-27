@@ -5,11 +5,12 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, UserMinus, UserCheck, Shield, 
-  MapPin, Flame, Mail, Calendar, 
+import {
+  Search, UserMinus, UserCheck, Shield,
+  MapPin, Flame, Mail, Calendar,
   ChevronRight, Filter, MoreVertical,
-  AlertCircle, Users
+  AlertCircle, Users, History, UserPlus, Heart,
+  Lightbulb, HandMetal, Flag, Ban
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -28,11 +29,76 @@ interface UserProfile {
   created_at: string;
 }
 
+interface ActivityProfileRef {
+  id: string;
+  username: string;
+  full_name: string | null;
+}
+
+interface ActivityLogEntry {
+  id: string;
+  action: string;
+  entity_type: string | null;
+  entity_id: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  actor_id: string | null;
+  target_id: string | null;
+  actor: ActivityProfileRef | null;
+  target: ActivityProfileRef | null;
+}
+
+const ACTIVITY_META: Record<string, { label: string; icon: typeof History; color: string }> = {
+  connection_request_sent: { label: 'Sent connection request', icon: UserPlus, color: 'text-blue-500' },
+  connection_accepted: { label: 'Accepted connection', icon: UserCheck, color: 'text-green-500' },
+  connection_rejected: { label: 'Declined connection', icon: UserMinus, color: 'text-amber-500' },
+  connection_cancelled: { label: 'Cancelled connection request', icon: UserMinus, color: 'text-[var(--brand-muted)]' },
+  user_blocked: { label: 'Blocked a user', icon: Ban, color: 'text-red-500' },
+  content_reported: { label: 'Reported content', icon: Flag, color: 'text-red-500' },
+  post_reaction_added: { label: 'Reacted to a post', icon: Heart, color: 'text-pink-500' },
+  post_reaction_removed: { label: 'Removed a reaction', icon: Heart, color: 'text-[var(--brand-muted)]' },
+};
+
+function activityMeta(action: string) {
+  return ACTIVITY_META[action] ?? { label: action, icon: History, color: 'text-[var(--brand-muted)]' };
+}
+
+function reactionEmoji(reactionType: unknown) {
+  if (reactionType === 'pranam') return <HandMetal size={12} className="inline" />;
+  if (reactionType === 'insightful') return <Lightbulb size={12} className="inline" />;
+  return <Heart size={12} className="inline" />;
+}
+
 export default function UserManagement() {
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+  const [activity, setActivity] = useState<ActivityLogEntry[]>([]);
+  const [loadingActivity, setLoadingActivity] = useState(false);
+
+  useEffect(() => {
+    if (!selectedUser) {
+      setActivity([]);
+      return;
+    }
+    let cancelled = false;
+    setLoadingActivity(true);
+    fetch(`/api/admin/users/${selectedUser.id}/activity`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setActivity(data.activity ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) toast.error('Failed to load activity log');
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingActivity(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedUser?.id]);
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
@@ -228,8 +294,54 @@ export default function UserManagement() {
                     </div>
                   </div>
 
-                  <div className="pt-8 border-t border-black/5 space-y-4">
-                    <button 
+                  <div className="pt-6 border-t border-black/5 space-y-3">
+                    <div className="flex items-center gap-2 text-[10px] text-[var(--brand-muted)] font-bold uppercase tracking-widest">
+                      <History size={14} /> Activity Log
+                    </div>
+
+                    {loadingActivity ? (
+                      <div className="py-8 text-center">
+                        <div className="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full mx-auto" />
+                      </div>
+                    ) : activity.length === 0 ? (
+                      <p className="text-xs text-[var(--brand-muted)] py-4 text-center">No recorded activity yet.</p>
+                    ) : (
+                      <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                        {activity.map((entry) => {
+                          const meta = activityMeta(entry.action);
+                          const Icon = meta.icon;
+                          const isActor = entry.actor_id === selectedUser.id;
+                          const other = isActor ? entry.target : entry.actor;
+                          const otherName = other?.full_name || (other?.username ? `@${other.username}` : null);
+                          return (
+                            <div
+                              key={entry.id}
+                              title={`Tracker ID: ${entry.id}`}
+                              className="flex items-start gap-3 p-3 rounded-xl bg-black/[0.03] border border-black/5 text-xs"
+                            >
+                              <Icon size={14} className={`mt-0.5 shrink-0 ${meta.color}`} />
+                              <div className="flex-1 min-w-0">
+                                <p className="font-bold theme-ink">
+                                  {meta.label}
+                                  {entry.action.startsWith('post_reaction') && entry.metadata?.reaction_type ? (
+                                    <> &middot; {reactionEmoji(entry.metadata.reaction_type)}</>
+                                  ) : null}
+                                </p>
+                                <p className="text-[var(--brand-muted)] truncate">
+                                  {otherName ? (isActor ? `To ${otherName}` : `From ${otherName}`) : 'System'}
+                                  {' · '}
+                                  {new Date(entry.created_at).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-6 border-t border-black/5 space-y-4">
+                    <button
                       onClick={() => toggleBan(selectedUser)}
                       className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${
                         selectedUser.is_banned 
