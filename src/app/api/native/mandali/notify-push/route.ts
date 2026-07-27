@@ -4,6 +4,8 @@ import { getApiUser } from '@/lib/api-auth';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { sendPushNotification } from '@/lib/push-server';
 
+export const runtime = 'nodejs';
+
 // Bridges the Postgres-trigger-driven in-app notifications (public.notifications,
 // written by handle_mandali_connection_change / handle_user_block_cascade /
 // log_content_report / log_post_reaction -- see supabase/migrations/
