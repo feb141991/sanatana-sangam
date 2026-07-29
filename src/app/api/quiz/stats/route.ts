@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getApiUser } from '@/lib/api-auth';
 import { computeQuizStreak } from '@/lib/quiz-streak';
 
+// Auth: switched from a cookie-only server client to getApiUser(req), which
+// tries the cookie session first (web callers, zero behavior change) and
+// falls back to a Bearer token (native callers via lib/api.ts's apiFetch,
+// which never sends cookies). Same mechanical fix already applied to
+// /api/native/home-summary, /api/mood/checkin, and others -- this route was
+// never migrated, so it 401'd for every logged-in native user, every time.
 export async function GET(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, error: authError, supabase } = await getApiUser(req);
 
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !supabase) {
+    return NextResponse.json({ error: authError?.message ?? 'Unauthorized' }, { status: 401 });
   }
 
   try {
