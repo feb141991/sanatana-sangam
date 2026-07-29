@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
 // ─── Mood Check-In Reminder Cron ─────────────────────────────────────────────
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const safetyState = getNotificationSafetyState('general', request);
 
   try {
     const baseUrl   = new URL(request.url).origin;
@@ -93,6 +95,19 @@ export async function GET(request: Request) {
         sent_timezone:    tz,
       };
     });
+
+    if (safetyState.isDryRun || safetyState.skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('general', safetyState, {
+        eligibleCount: eligibleUsers.length,
+        wouldInsertCount: notifications.length,
+        wouldSendCount: notifications.length,
+        preview: notifications.slice(0, 10).map((notification) => ({
+          user_id: notification.user_id,
+          title: notification.title,
+          notification_key: notification.notification_key,
+        })),
+      }));
+    }
 
     let totalInserted  = 0;
     const insertedIds: string[] = [];

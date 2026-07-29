@@ -25,7 +25,9 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
-    // 2. Query all active sankalpas joined with profiles
+    // 2. Query all active sankalpas joined with profiles. Push delivery is
+    // resolved through push_tokens inside sendPushNotification; profiles no
+    // longer has the old OneSignal-era push_token column.
     const { data: sankalpas, error } = await supabase
       .from('sankalpas')
       .select(`
@@ -35,12 +37,10 @@ export async function GET(request: Request) {
         target_days,
         start_date,
         profiles!inner(
-          push_token,
           tradition
         )
       `)
-      .eq('status', 'active')
-      .not('profiles.push_token', 'is', null);
+      .eq('status', 'active');
 
     if (error) {
       throw error;
@@ -75,9 +75,6 @@ export async function GET(request: Request) {
     // 5. Generate message and send push
     const promises = halfwaySankalpas.map(async (sankalpa) => {
       const tradition = (sankalpa.profiles as any)?.tradition ?? 'hindu';
-      const pushToken = (sankalpa.profiles as any)?.push_token;
-      
-      if (!pushToken) return;
 
       const systemPrompt = `You are Dharma Mitra. Write a 2-sentence mid-journey encouragement for a ${tradition} practitioner who is halfway through their ${sankalpa.target_days}-day sankalpa: '${sankalpa.text}'. Be warm, tradition-specific, use one Sanskrit word. Under 150 chars.`;
       const userPrompt = `Generate mid-point message.`;

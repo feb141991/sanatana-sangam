@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { sendPushNotification } from '@/lib/push-server';
-import { sendShoonayaEmail } from '@/lib/email';
 import { buildSpiritualDateRange, localSpiritualDate, resolveTimeZone } from '@/lib/sacred-time';
-
-const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -14,9 +11,6 @@ type ProfileRow = {
   id: string;
   tradition: string | null;
   timezone: string | null;
-  email: string | null;
-  email_newsletter: boolean | null;
-  unsubscribe_token: string | null;
 };
 
 type DailySadhanaRow = {
@@ -102,7 +96,7 @@ export async function GET(request: Request) {
   try {
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, tradition, timezone, email, email_newsletter, unsubscribe_token');
+      .select('id, tradition, timezone');
 
     if (profilesError) {
       return NextResponse.json({ error: profilesError.message }, { status: 500 });
@@ -193,21 +187,6 @@ export async function GET(request: Request) {
             throw new Error('Push not sent');
           }
 
-          // Send email digest — only to users who opted in and have an email
-          if (user.email_newsletter && user.email) {
-            const unsubUrl = `${APP_BASE}/api/unsubscribe?token=${user.unsubscribe_token ?? ''}`;
-            await sendShoonayaEmail({
-              to: user.email,
-              subject: TITLE,
-              shloka: '',
-              meaning: '',
-              title: TITLE,
-              body,
-              ctaText: 'Open App',
-              ctaUrl: `${APP_BASE}/home`,
-              unsubUrl,
-            });
-          }
           return { userId: user.id, sent: true };
         } catch (error) {
           console.error('[weekly-summary] user failed', user.id, error);

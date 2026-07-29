@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 import { getPlanById } from '@/lib/guided-paths';
 
@@ -29,6 +30,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
+  const safetyState = getNotificationSafetyState('guided-plan', request);
   const now      = new Date();
   const actionUrl = new URL('/nitya-karma/plans', new URL(request.url).origin).toString();
 
@@ -102,6 +104,19 @@ export async function GET(request: Request) {
 
     if (notifications.length === 0) {
       return NextResponse.json({ message: 'No notifications to send', sent: 0 });
+    }
+
+    if (safetyState.isDryRun || safetyState.skipDelivery) {
+      return NextResponse.json(buildNotificationSafetyResponse('guided-plan', safetyState, {
+        eligibleCount: windowPlans.length,
+        wouldInsertCount: notifications.length,
+        wouldSendCount: notifications.length,
+        preview: notifications.slice(0, 10).map((notification) => ({
+          user_id: notification.user_id,
+          title: notification.title,
+          notification_key: notification.notification_key,
+        })),
+      }));
     }
 
     // 4. Insert with deduplication

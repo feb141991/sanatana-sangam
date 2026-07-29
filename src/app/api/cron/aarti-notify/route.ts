@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
+import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { AARTI_TIMES, resolveActiveLiveStreams } from '@/lib/live-streams';
 
 /**
@@ -36,6 +37,7 @@ export async function GET(request: Request) {
   }
 
   const supabase   = createClient(supabaseUrl, serviceRoleKey);
+  const safetyState = getNotificationSafetyState('aarti', request);
   const notifyCol  = slot === 'morning' ? 'notify_morning' : 'notify_evening';
   const baseUrl    = new URL(request.url).origin;
   const actionUrl  = `${baseUrl}/live-darshan`;
@@ -73,6 +75,7 @@ export async function GET(request: Request) {
 
   // ── Build & send notifications per stream ────────────────────────────────
   const results: { streamId: string; userCount: number; sent: number }[] = [];
+  const planned: { streamId: string; userIds: string[]; title: string; body: string }[] = [];
 
   for (const [streamId, userIds] of Object.entries(byStream)) {
     const stream    = streamMap[streamId];
@@ -98,6 +101,13 @@ export async function GET(request: Request) {
         : `Evening darshan at ${stream.title} — close your day with blessings.`;
     }
 
+    planned.push({ streamId, userIds, title, body });
+
+    if (safetyState.isDryRun || safetyState.skipDelivery) {
+      results.push({ streamId, userCount: userIds.length, sent: 0 });
+      continue;
+    }
+
     const { sent } = await sendPushNotification({
       userIds,
       title,
@@ -110,5 +120,16 @@ export async function GET(request: Request) {
   }
 
   const totalSent = results.reduce((sum, r) => sum + r.sent, 0);
+  if (safetyState.isDryRun || safetyState.skipDelivery) {
+    return NextResponse.json(buildNotificationSafetyResponse('aarti', safetyState, {
+      eligibleCount: planned.reduce((sum, item) => sum + item.userIds.length, 0),
+      wouldSendCount: planned.reduce((sum, item) => sum + item.userIds.length, 0),
+      preview: planned.slice(0, 10).map((item) => ({
+        streamId: item.streamId,
+        userCount: item.userIds.length,
+        title: item.title,
+      })),
+    }));
+  }
   return NextResponse.json({ slot, totalSent, streams: results.length, details: results });
 }
