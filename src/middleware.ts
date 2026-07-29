@@ -254,6 +254,6 @@ export const config = {
   matcher: [
     // Match everything except static files — .html excluded to prevent
     // the beforeFiles rewrite (/→/landing.html) from re-triggering middleware
-    '/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|html)).*)',
+    '/((?!.well-known/workflow/|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|otf|html)).*)',
   ],
 };

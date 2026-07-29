@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
-import { ACCOUNT_DELETION_COOL_OFF_DAYS } from '@/lib/account-deletion';
+import { purgeDueDeletedAccounts } from '@/lib/account-deletion';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -44,74 +43,16 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceRoleKey) {
-    return NextResponse.json({ error: 'Missing Supabase env vars' }, { status: 500 });
-  }
-
-  const admin = createClient(supabaseUrl, serviceRoleKey);
-
   const { searchParams } = new URL(request.url);
   const dryRun = searchParams.get('dryRun') === 'true';
 
-  const cutoff = new Date(Date.now() - ACCOUNT_DELETION_COOL_OFF_DAYS * 24 * 60 * 60 * 1000).toISOString();
-
-  const { data: pending, error: queryError } = await admin
-    .from('profiles')
-    .select('id, deletion_requested_at')
-    .eq('is_deleting', true)
-    .lt('deletion_requested_at', cutoff);
-
-  if (queryError) {
-    console.error('purge-deleted-accounts: query failed:', queryError);
-    return NextResponse.json({ error: queryError.message }, { status: 500 });
+  try {
+    return NextResponse.json(await purgeDueDeletedAccounts({ dryRun }));
+  } catch (error) {
+    console.error('purge-deleted-accounts: purge failed:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Account deletion purge failed' },
+      { status: 500 }
+    );
   }
-
-  const targets = (pending ?? []) as { id: string; deletion_requested_at: string }[];
-
-  if (dryRun) {
-    return NextResponse.json({
-      dryRun: true,
-      cutoff,
-      targetCount: targets.length,
-      targetIds: targets.map((row) => row.id),
-    });
-  }
-
-  const results: { id: string; success: boolean; error?: string }[] = [];
-
-  for (const row of targets) {
-    const { error: authDeleteError } = await admin.auth.admin.deleteUser(row.id);
-    if (authDeleteError) {
-      // Row already gone from auth (e.g. a retry after a partial prior
-      // failure) shouldn't block cleaning up the leftover profile row.
-      const alreadyGone = /user not found/i.test(authDeleteError.message);
-      if (!alreadyGone) {
-        console.error(`purge-deleted-accounts: auth delete failed for ${row.id}:`, authDeleteError);
-        results.push({ id: row.id, success: false, error: authDeleteError.message });
-        continue;
-      }
-    }
-
-    const { error: profileDeleteError } = await admin.from('profiles').delete().eq('id', row.id);
-    if (profileDeleteError) {
-      console.error(`purge-deleted-accounts: profile delete failed for ${row.id}:`, profileDeleteError);
-      results.push({ id: row.id, success: false, error: profileDeleteError.message });
-      continue;
-    }
-
-    results.push({ id: row.id, success: true });
-  }
-
-  const purged = results.filter((result) => result.success).length;
-  const failed = results.filter((result) => !result.success);
-
-  return NextResponse.json({
-    dryRun: false,
-    cutoff,
-    targetCount: targets.length,
-    purged,
-    failed,
-  });
 }

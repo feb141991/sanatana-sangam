@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { start } from 'workflow/api';
 
 import { getApiUser } from '@/lib/api-auth';
 import { purgeAfterFromRequestedAt } from '@/lib/account-deletion';
+import { shouldUseVercelWorkflowRuntime } from '@/lib/workflow-runtime';
+import { accountDeletionCooloffWorkflow } from '@/workflows/account-deletion';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -76,10 +79,26 @@ export async function POST(req: NextRequest) {
   });
 
   const deletionRequestedAt = data.deletion_requested_at as string;
+  let workflowRunId: string | null = null;
+  if (shouldUseVercelWorkflowRuntime()) {
+    try {
+      const run = await start(accountDeletionCooloffWorkflow, [{
+        userId: user.id,
+        deletionRequestedAt,
+      }]);
+      workflowRunId = run.runId;
+    } catch (workflowError) {
+      // Do not block the user-facing deletion request: the existing
+      // purge-deleted-accounts cron remains as a safety net for this release.
+      console.error('account deletion workflow start failed:', workflowError);
+    }
+  }
+
   return NextResponse.json({
     success: true,
     isDeleting: true,
     deletionRequestedAt,
     purgeAfter: purgeAfterFromRequestedAt(deletionRequestedAt),
+    workflowRunId,
   });
 }

@@ -74,6 +74,14 @@ const nextConfig = {
       '@sangam/sadhana-engine': path.resolve(__dirname, 'packages/sadhana-engine/src/index.ts'),
       '@sangam/pathshala-engine': path.resolve(__dirname, 'packages/pathshala-engine/src/index.ts'),
     };
+    if (!workflowEnabled) {
+      const workflowStub = path.resolve(__dirname, 'src/workflows/local-stubs.ts');
+      config.resolve.alias['workflow/api$'] = workflowStub;
+      config.resolve.alias['@/workflows/account-deletion$'] = workflowStub;
+      config.resolve.alias['@/workflows/push-notifications$'] = workflowStub;
+      config.resolve.alias[path.resolve(__dirname, 'src/workflows/account-deletion.ts')] = workflowStub;
+      config.resolve.alias[path.resolve(__dirname, 'src/workflows/push-notifications.ts')] = workflowStub;
+    }
     return config;
   },
   experimental: {
@@ -85,4 +93,14 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Enable Workflow transforms only in an actual Vercel build/runtime, where
+// Vercel World is available. Some local env files define VERCEL=1, so do not
+// use that flag as the gate.
+const workflowEnabled = Boolean(
+  process.env.VERCEL_URL ||
+    process.env.VERCEL_DEPLOYMENT_ID ||
+    process.env.ENABLE_VERCEL_WORKFLOWS === 'true' ||
+    process.env.ENABLE_WORKFLOW_LOCAL === 'true'
+);
+
+module.exports = workflowEnabled ? require('workflow/next').withWorkflow(nextConfig) : nextConfig;

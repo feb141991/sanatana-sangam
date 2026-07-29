@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { start } from 'workflow/api';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { sendPushNotification } from '@/lib/push-server';
 import { getApiUser } from '@/lib/api-auth';
+import { shouldUseVercelWorkflowRuntime } from '@/lib/workflow-runtime';
+import { testNotificationWorkflow } from '@/workflows/push-notifications';
 
 // Cookie session first, Bearer-token fallback second — see getApiUser's own
 // doc comment. Needed so the native app's notification-inbox empty state
@@ -43,7 +45,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    
+    if (shouldUseVercelWorkflowRuntime()) {
+      const run = await start(testNotificationWorkflow, [{
+        userId: user.id,
+        title,
+        body,
+        actionUrl,
+        notificationId: data?.id,
+        createdAt: createdAt.toISOString(),
+      }]);
+
+      return NextResponse.json({
+        message: 'Test notification created. Push delivery workflow queued.',
+        push_configured: false,
+        push_targets: 0,
+        push_queued: true,
+        workflowRunId: run.runId,
+      });
+    }
+
+    const { sendPushNotification } = await import('@/lib/push-server');
     const pushResult = await sendPushNotification({
       userIds: [user.id],
       title,
@@ -60,10 +81,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: pushResult.sent > 0
-        ? 'Test notification created. Check your bell — push should follow shortly.'
-        : 'Test notification created in-app, but no push channel reached this account (no native device token registered and/or PWA browser push not configured).',
+        ? 'Test notification created. Check your bell and push notification.'
+        : 'Test notification created in-app, but no push channel reached this account.',
       push_configured: pushResult.sent > 0,
       push_targets: pushResult.sent,
+      push_queued: false,
     });
   } catch (error) {
     console.error('Notification test route crashed:', error);

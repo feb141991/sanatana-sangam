@@ -755,7 +755,9 @@ export default function ProfileClient({
       }
 
       toast.success(
-        data.push_targets > 0
+        data.push_queued
+          ? 'Test notification created. Push delivery workflow queued.'
+          : data.push_targets > 0
           ? 'Test notification sent. Check your bell and browser.'
           : 'Test notification created. Check your bell first.'
       );
