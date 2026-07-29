@@ -93,13 +93,12 @@ const nextConfig = {
   },
 };
 
-// Enable Workflow transforms only in an actual Vercel build/runtime, where
-// Vercel World is available. Some local env files define VERCEL=1, so do not
-// use that flag as the gate.
+// Enable Workflow transforms only by explicit opt-in. Vercel sets VERCEL_URL
+// for every build, but the Workflow package also expects its own runtime
+// path/config; enabling transforms just because a build runs on Vercel causes
+// /.well-known/workflow page-data collection to fail.
 const workflowEnabled = Boolean(
-  process.env.VERCEL_URL ||
-    process.env.VERCEL_DEPLOYMENT_ID ||
-    process.env.ENABLE_VERCEL_WORKFLOWS === 'true' ||
+  process.env.ENABLE_VERCEL_WORKFLOWS === 'true' ||
     process.env.ENABLE_WORKFLOW_LOCAL === 'true'
 );
 

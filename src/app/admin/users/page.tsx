@@ -76,15 +76,16 @@ export default function UserManagement() {
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [activity, setActivity] = useState<ActivityLogEntry[]>([]);
   const [loadingActivity, setLoadingActivity] = useState(false);
+  const selectedUserId = selectedUser?.id;
 
   useEffect(() => {
-    if (!selectedUser) {
+    if (!selectedUserId) {
       setActivity([]);
       return;
     }
     let cancelled = false;
     setLoadingActivity(true);
-    fetch(`/api/admin/users/${selectedUser.id}/activity`)
+    fetch(`/api/admin/users/${selectedUserId}/activity`)
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled) setActivity(data.activity ?? []);
@@ -98,7 +99,7 @@ export default function UserManagement() {
     return () => {
       cancelled = true;
     };
-  }, [selectedUser?.id]);
+  }, [selectedUserId]);
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;

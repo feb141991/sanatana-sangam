@@ -1626,7 +1626,7 @@ export default function NityaKarmaClient({
       stepsCompletedToday: coreMorningCompletedCount, // core 7 only, never inflated by custom Pro steps
       streak: displayStreak,
     };
-  }, [completedCount, dayRecords, displayStreak, spiritualToday, streak?.longest_streak, tradition]);
+  }, [coreMorningCompletedCount, dayRecords, displayStreak, spiritualToday, streak?.longest_streak, tradition]);
   const [eveningNudgeDismissed, setEveningNudgeDismissed] = useState(false);
   const showEveningNudge = useMemo(() => {
     if (rhythmMode !== 'morning') return false;
