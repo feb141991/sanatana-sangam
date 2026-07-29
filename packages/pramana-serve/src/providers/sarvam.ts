@@ -18,7 +18,7 @@ import {
 export interface SarvamProviderConfig {
   /** API key / bearer token for the Sarvam API. */
   apiKey?: string;
-  /** Sarvam model name override (default: sarvam-30b). */
+  /** Sarvam model name override (default: sarvam-105b). */
   model?: string;
   /** Request timeout in milliseconds. Default: 30000. */
   timeoutMs?: number;
@@ -261,7 +261,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
       : resolveMaxTokens(request.prompt.maxOutputTokens, effort);
 
     const payload: Record<string, unknown> = {
-      model: this.config!.model ?? 'sarvam-30b',
+      model: this.config!.model ?? 'sarvam-105b',
       messages,
       temperature: request.prompt.temperature ?? 0.3,
       max_tokens: maxTokens,
@@ -336,7 +336,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
 
     return {
       text: generatedText,
-      modelUsed: data.model ?? this.config!.model ?? 'sarvam-30b',
+      modelUsed: data.model ?? this.config!.model ?? 'sarvam-105b',
       provider: this.info.id,
       providerClass: 'hosted',
       finishReason: choice?.finish_reason,

@@ -1,6 +1,6 @@
 /**
  * Deno-compatible Pramana inference client for Supabase Edge Functions.
- * Sarvam (sarvam-30b) is the sole provider.
+ * Sarvam (sarvam-105b) is the sole provider.
  *
  * Usage:
  *   import { generateText } from '../_shared/pramana-client.ts';
@@ -35,7 +35,7 @@ export async function generateText(
       'api-subscription-key': sarvamKey,
     },
     body: JSON.stringify({
-      model: 'sarvam-30b',
+      model: 'sarvam-105b',
       messages,
       temperature: options.temperature ?? 0.5,
       max_tokens: options.maxTokens ?? 800,
