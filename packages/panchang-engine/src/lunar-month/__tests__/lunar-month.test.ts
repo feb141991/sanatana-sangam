@@ -65,9 +65,13 @@ describe('Lunar Month Module — Pure Classification Helper', () => {
   });
 });
 
-describe('Lunar Month Module — Integration Probes & Invariants', () => {
-  // ── May-June 2026 Adhika Jyeshtha Fix Probe ────────────────────────────────
-  it('correctly returns Adhika Jyeshtha (not Adhika Ashadha) for 2026-05-22', () => {
+describe('Lunar Month Module — Non-Authoritative Real-Date Behavior Probes', () => {
+  // ── NON-AUTHORITATIVE BEHAVIOR PROBES (Source Governance) ─────────────────
+  // NOTE: The following tests assert engine mathematical consistency for real dates.
+  // Per docs/source-governance.md §1 & §6, these are non-authoritative behavior probes
+  // and do NOT constitute approved Tier 1–4 calendrical correctness claims.
+
+  it('[BEHAVIOR PROBE] produces Adhika Jyeshtha for 2026-05-22T12:00:00Z', () => {
     const d = new Date('2026-05-22T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
 
@@ -81,8 +85,7 @@ describe('Lunar Month Module — Integration Probes & Invariants', () => {
     }
   });
 
-  // ── Regression Probes for 2026-01-15 and 2026-07-30 ────────────────────────
-  it('preserves Pausha month classification for 2026-01-15T12:00:00Z', () => {
+  it('[BEHAVIOR PROBE] produces Pausha month classification for 2026-01-15T12:00:00Z', () => {
     const d = new Date('2026-01-15T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
 
@@ -98,7 +101,7 @@ describe('Lunar Month Module — Integration Probes & Invariants', () => {
     }
   });
 
-  it('preserves Ashadha month classification for 2026-07-30T12:00:00Z', () => {
+  it('[BEHAVIOR PROBE] produces Ashadha month classification for 2026-07-30T12:00:00Z', () => {
     const d = new Date('2026-07-30T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
 
@@ -195,7 +198,6 @@ describe('Lunar Month Module — Integration Probes & Invariants', () => {
   // ── Explicit Solver Failure Discriminated Result Test ──────────────────────
   it('returns ok: false with null values and explicit solver_failure diagnostic when boundary solver fails', () => {
     const d = new Date('2026-01-15T12:00:00Z');
-    // Force solver failure by setting maxSearchHours to 1 hour (amavasya is ~3 days away)
     const res = getLunarMonth(d, 'amanta', 1);
 
     expect(res.ok).toBe(false);
