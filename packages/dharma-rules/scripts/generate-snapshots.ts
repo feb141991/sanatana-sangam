@@ -9,9 +9,10 @@
  *
  * OUTPUT: __fixtures__/snapshot/<caseId>.json
  *
- * IMPORTANT: This script captures CURRENT BEHAVIOUR.
- * Snapshot fixtures are NOT a correctness claim.
- * They assert only "the output has not changed unexpectedly."
+ * IMPORTANT: This script captures CURRENT LEGACY ENGINE BEHAVIOUR.
+ * Snapshot fixtures are NOT a correctness claim and do not validate adhika,
+ * kshaya, profiles, or locations. Those require dedicated lunar unit tests
+ * and approved golden fixtures. They assert only "the output has not changed unexpectedly."
  * Do NOT populate golden/ files from this script.
  *
  * Per source-governance.md §6 and AGENTS.md rule 10:
@@ -74,9 +75,10 @@ const PHASE2_SLUGS: string[] = [
 
 /**
  * 3 consecutive years: 2026, 2027, 2028.
- * One of these contains an adhika-masa year (satisfies §7 requirement).
- * NOTE: adhika masa detection is a Layer A concern — these snapshots capture
- * the current engine behaviour regardless of that distinction.
+ * NOTE: These snapshots capture current legacy engine behavior only. They are
+ * not sourced correctness evidence and do not validate adhika, kshaya,
+ * profiles, or locations. Those require dedicated lunar unit tests and approved
+ * golden fixtures.
  */
 const YEARS = [2026, 2027, 2028];
 
