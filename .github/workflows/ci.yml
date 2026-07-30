@@ -26,7 +26,10 @@ jobs:
       - name: Run lint
         run: npm run lint
 
-      - name: Run calendar verification
+      - name: Run calendar lunar month tests
+        run: npm run verify:calendar:lunar
+
+      - name: Run calendar fixture verification
         run: npm run verify:calendar
 
       - name: Run build
