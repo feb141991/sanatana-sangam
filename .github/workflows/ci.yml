@@ -27,7 +27,7 @@ jobs:
         run: npm run lint
 
       - name: Run calendar lunar month tests
-        run: npm run verify:calendar:lunar
+        run: npm test --workspace=@sangam/panchang-engine
 
       - name: Run calendar fixture verification
         run: npm run verify:calendar
