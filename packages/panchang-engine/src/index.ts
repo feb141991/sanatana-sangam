@@ -4,6 +4,16 @@ import moonposition from 'astronomia/moonposition';
 import nutation from 'astronomia/nutation';
 import { Sunrise } from 'astronomia/sunrise';
 
+export type { MonthSystem, Paksha, LunarMonthResult } from './lunar-month/index.js';
+export {
+  getLunarMonth,
+  findNewMoonBefore,
+  findNewMoonAfter,
+  findFullMoonBefore,
+  findFullMoonAfter,
+  findSankrantisBetween,
+} from './lunar-month/index.js';
+
 export interface PanchangData {
   tithi: string;
   tithiIndex: number;

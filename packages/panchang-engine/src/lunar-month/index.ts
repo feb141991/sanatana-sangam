@@ -1,0 +1,392 @@
+/**
+ * packages/panchang-engine/src/lunar-month/index.ts
+ *
+ * Layer B — Correct lunar-month determination.
+ *
+ * This is a NEW, ADDITIVE module. It does NOT modify calculatePanchang,
+ * masaName, masaIndex, or rules.ts. Those remain byte-identical.
+ * (See calendar-profiles.md §1.5 and the task specification for why.)
+ *
+ * Public API
+ * ----------
+ * export type MonthSystem = 'amanta' | 'purnimanta'
+ * export type Paksha = 'shukla' | 'krishna'
+ *
+ * export interface LunarMonthResult { … }
+ *
+ * export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthResult
+ * export function findNewMoonBefore(instant: Date): Date | null
+ * export function findNewMoonAfter(instant: Date): Date | null
+ * export function findFullMoonBefore(instant: Date): Date | null
+ * export function findFullMoonAfter(instant: Date): Date | null
+ * export function findSankrantisBetween(start: Date, end: Date): Array<{ rashi: number; at: Date }>
+ *
+ * Algorithm
+ * ---------
+ * Follows calendar-profiles.md §1 exactly:
+ *
+ * 1. Amanta month = [amavasya at/before T, next amavasya).
+ *    Amavasya = elongation (moon_tropical - sun_tropical) ≡ 0° (mod 360°).
+ *    Bisection to ≤ 60 s per astronomy-conventions.md §1.2.
+ *
+ * 2. Count Sankrantis (30° sidereal-solar boundaries) in [start, end).
+ *      0  → adhika; takes name of the following month. isAdhika = true.
+ *      1  → normal; name from Sun's rashi at the start amavasya.
+ *      2  → kshaya; isKshaya = true; diagnostic pushed; name assigned per §1.4.
+ *
+ * 3. Paksha from elongation: < 180° → shukla; ≥ 180° → krishna.
+ *
+ * 4. Purnimanta conversion:
+ *      shukla  → purnimanta name = amanta name  (identical)
+ *      krishna → purnimanta name = amanta name + 1 (next month name)
+ *
+ * 5. Same Lahiri ayanamsha polynomial as index.ts (do not introduce another).
+ */
+
+import {
+  computeAstronomy,
+  solveBoundary,
+  solveBoundaryBefore,
+  DEFAULT_LUNATION_SEARCH_HOURS,
+} from './astronomy.js';
+import {
+  MONTH_NAMES,
+  monthIndexFromSunSidereal,
+  nextMonthIndex,
+} from './names.js';
+
+// ---------------------------------------------------------------------------
+// Public types
+// ---------------------------------------------------------------------------
+
+export type MonthSystem = 'amanta' | 'purnimanta';
+export type Paksha = 'shukla' | 'krishna';
+
+export interface LunarMonthResult {
+  /** Full English month name: 'Chaitra' … 'Phalguna' (possibly with 'Adhika ' prefix) */
+  monthName: string;
+  /** Amanta month index: Chaitra = 0, Vaishakha = 1, …, Phalguna = 11 */
+  monthIndex: number;
+  monthSystem: MonthSystem;
+  paksha: Paksha;
+  /** True when no Sankranti occurs in the lunar month (intercalary month). */
+  isAdhika: boolean;
+  /**
+   * True when two Sankrantis occur in the lunar month (decayed month).
+   * This is very rare (multi-decade intervals). The engine does not throw;
+   * it surfaces a diagnostic and assigns a name per the documented convention.
+   */
+  isKshaya: boolean;
+  /** Amanta month name, always populated for cross-reference. */
+  amantaMonthName: string;
+  /** ISO-8601 Z timestamp of the month's starting boundary (amavasya). */
+  monthStartUtc: string;
+  /** ISO-8601 Z timestamp of the month's ending boundary (next amavasya). */
+  monthEndUtc: string;
+  /** Number of Sankrantis within [monthStart, monthEnd): always 0, 1, or 2. */
+  sankrantiCount: number;
+  /**
+   * Non-fatal diagnostic messages. Populated for edge cases:
+   * kshaya months, solver failures, etc.
+   */
+  diagnostics: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Exported primitive: findNewMoonBefore
+// ---------------------------------------------------------------------------
+
+/**
+ * Return the most recent amavasya (new moon) at or before `instant`.
+ * Elongation = 0° (mod 360°).
+ * Returns null if the solver fails to converge within maxSearchHours.
+ */
+export function findNewMoonBefore(
+  instant: Date,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): Date | null {
+  const snap = computeAstronomy(instant);
+  const elong = snap.elongation; // in [0, 360)
+
+  // If elongation is currently within 60s of 0 boundary, return instant itself
+  if (elong < 0.005 || elong > 359.995) {
+    return instant;
+  }
+
+  return solveBoundaryBefore(instant, elong, 360, (d) => computeAstronomy(d).elongation, maxSearchHours);
+}
+
+// ---------------------------------------------------------------------------
+// Exported primitive: findNewMoonAfter
+// ---------------------------------------------------------------------------
+
+/**
+ * Return the next amavasya (new moon) strictly after `instant`.
+ * Elongation = 0° (mod 360°).
+ * Returns null if the solver fails to converge within maxSearchHours.
+ */
+export function findNewMoonAfter(
+  instant: Date,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): Date | null {
+  const snap = computeAstronomy(instant);
+  let searchFrom = instant;
+  let searchElong = snap.elongation;
+
+  // If elongation is currently at amavasya boundary, advance 12h to find the NEXT amavasya
+  if (snap.elongation < 0.005 || snap.elongation > 359.995) {
+    searchFrom = new Date(instant.getTime() + 12 * 60 * 60 * 1000);
+    searchElong = computeAstronomy(searchFrom).elongation;
+  }
+
+  return solveBoundary(searchFrom, searchElong, 360, (d) => computeAstronomy(d).elongation, maxSearchHours);
+}
+
+// ---------------------------------------------------------------------------
+// Exported primitive: findFullMoonBefore
+// ---------------------------------------------------------------------------
+
+/**
+ * Return the most recent purnima (full moon) at or before `instant`.
+ * Elongation = 180°.
+ * Returns null if the solver fails to converge within maxSearchHours.
+ */
+export function findFullMoonBefore(
+  instant: Date,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): Date | null {
+  const snap = computeAstronomy(instant);
+  const shifted = (snap.elongation + 180) % 360;
+
+  if (shifted < 0.005 || shifted > 359.995) {
+    return instant;
+  }
+
+  return solveBoundaryBefore(
+    instant,
+    shifted,
+    360,
+    (d) => (computeAstronomy(d).elongation + 180) % 360,
+    maxSearchHours,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Exported primitive: findFullMoonAfter
+// ---------------------------------------------------------------------------
+
+/**
+ * Return the next purnima (full moon) strictly after `instant`.
+ * Elongation = 180°.
+ * Returns null if the solver fails to converge within maxSearchHours.
+ */
+export function findFullMoonAfter(
+  instant: Date,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): Date | null {
+  const snap = computeAstronomy(instant);
+  let searchFrom = instant;
+  let searchShifted = (snap.elongation + 180) % 360;
+
+  if (searchShifted < 0.005 || searchShifted > 359.995) {
+    searchFrom = new Date(instant.getTime() + 12 * 60 * 60 * 1000);
+    searchShifted = (computeAstronomy(searchFrom).elongation + 180) % 360;
+  }
+
+  return solveBoundary(
+    searchFrom,
+    searchShifted,
+    360,
+    (d) => (computeAstronomy(d).elongation + 180) % 360,
+    maxSearchHours,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Exported primitive: findSankrantisBetween
+// ---------------------------------------------------------------------------
+
+/**
+ * Find all Sankrantis (solar ingresses into a new sidereal rashi, i.e.,
+ * crossings of 30° multiples of sidereal solar longitude) in [start, end).
+ *
+ * Returns an array of { rashi: 0–11, at: Date } sorted ascending.
+ * rashi 0 = Mesha (Aries), 1 = Vrishabha (Taurus), …, 11 = Meena (Pisces).
+ */
+export function findSankrantisBetween(
+  start: Date,
+  end: Date,
+): Array<{ rashi: number; at: Date }> {
+  const results: Array<{ rashi: number; at: Date }> = [];
+
+  const startSnap = computeAstronomy(start);
+  let cursor      = start;
+  let cursorValue = startSnap.sunSidereal;
+
+  const endMs = end.getTime();
+
+  while (cursor.getTime() < endMs) {
+    const boundary = solveBoundary(
+      cursor,
+      cursorValue,
+      30,
+      (d) => computeAstronomy(d).sunSidereal,
+      40 * 24,
+    );
+
+    if (!boundary || boundary.getTime() >= endMs) break;
+
+    const rashiSnap = computeAstronomy(new Date(boundary.getTime() + 30_000));
+    const rashi = Math.floor(rashiSnap.sunSidereal / 30) % 12;
+
+    results.push({ rashi, at: boundary });
+
+    cursor      = new Date(boundary.getTime() + 60_000);
+    cursorValue = computeAstronomy(cursor).sunSidereal;
+  }
+
+  return results;
+}
+
+// ---------------------------------------------------------------------------
+// Internal helper: find the amanta month boundaries containing `instant`
+// ---------------------------------------------------------------------------
+
+export function findAmantaMonth(instant: Date): {
+  start: Date;
+  end: Date;
+} | null {
+  const start = findNewMoonBefore(instant);
+  if (!start) return null;
+
+  const searchFrom = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+  const end = findNewMoonAfter(searchFrom);
+  if (!end) return null;
+
+  return { start, end };
+}
+
+// ---------------------------------------------------------------------------
+// Main export: getLunarMonth
+// ---------------------------------------------------------------------------
+
+/**
+ * Determine the lunar month containing `instant` under the given `system`.
+ * Follows calendar-profiles.md §1 algorithm exactly.
+ */
+export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthResult {
+  const diagnostics: string[] = [];
+
+  // ── Step 1: find amanta boundaries ──────────────────────────────────────
+  const amanta = findAmantaMonth(instant);
+  if (!amanta) {
+    diagnostics.push(`solver_failure: boundary solver failed to find amavasya boundary for ${instant.toISOString()}`);
+    return {
+      monthName: 'Unknown',
+      monthIndex: -1,
+      monthSystem: system,
+      paksha: 'shukla',
+      isAdhika: false,
+      isKshaya: false,
+      amantaMonthName: 'Unknown',
+      monthStartUtc: '',
+      monthEndUtc: '',
+      sankrantiCount: 0,
+      diagnostics,
+    };
+  }
+
+  const { start, end } = amanta;
+
+  // ── Step 2: count Sankrantis in [start, end) ────────────────────────────
+  const sankrantis = findSankrantisBetween(start, end);
+  const sankrantiCount = sankrantis.length;
+
+  // ── Step 3: determine amanta month name ─────────────────────────────────
+  const startSnap = computeAstronomy(start);
+  const sunAtStart = startSnap.sunSidereal;
+
+  let amantaIndex: number;
+  let isAdhika = false;
+  let isKshaya = false;
+  let amantaMonthName: string;
+  let displayMonthName: string;
+
+  if (sankrantiCount === 0) {
+    // ADHIKA (intercalary) month
+    let nijaIndex: number;
+    const nextSankrantis = findSankrantisBetween(end, new Date(end.getTime() + 35 * 24 * 60 * 60 * 1000));
+    if (nextSankrantis.length > 0) {
+      nijaIndex = (nextSankrantis[0].rashi + 1) % 12;
+    } else {
+      const postSnap = computeAstronomy(new Date(end.getTime() + 24 * 60 * 60 * 1000));
+      nijaIndex = monthIndexFromSunSidereal(postSnap.sunSidereal);
+      diagnostics.push('adhika: could not find next Sankranti; used day-after-end Sun position');
+    }
+
+    amantaIndex     = nijaIndex;
+    isAdhika        = true;
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = `Adhika ${amantaMonthName}`;
+
+  } else if (sankrantiCount === 1) {
+    // NORMAL month
+    amantaIndex     = monthIndexFromSunSidereal(sunAtStart);
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = amantaMonthName;
+
+  } else {
+    // KSHAYA (decayed) month
+    isKshaya = true;
+    amantaIndex     = monthIndexFromSunSidereal(sunAtStart);
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = amantaMonthName;
+
+    diagnostics.push(
+      `kshaya_masa: two Sankrantis (rashi ${sankrantis[0]?.rashi ?? '?'} and ` +
+      `${sankrantis[1]?.rashi ?? '?'}) in [${start.toISOString()}, ` +
+      `${end.toISOString()}). Month name "${amantaMonthName}" is kshaya — ` +
+      `the skipped name convention must be applied at Layer C.`,
+    );
+  }
+
+  // ── Step 4: paksha ───────────────────────────────────────────────────────
+  const snap    = computeAstronomy(instant);
+  const paksha: Paksha = snap.elongation < 180 ? 'shukla' : 'krishna';
+
+  // ── Step 5: purnimanta conversion ───────────────────────────────────────
+  let finalMonthName: string;
+  let finalMonthIndex: number;
+
+  if (system === 'amanta') {
+    finalMonthName  = displayMonthName;
+    finalMonthIndex = amantaIndex;
+  } else {
+    // purnimanta
+    if (paksha === 'shukla') {
+      finalMonthName  = displayMonthName;
+      finalMonthIndex = amantaIndex;
+    } else {
+      // krishna: next month name
+      const nextIdx   = nextMonthIndex(amantaIndex);
+      finalMonthIndex = nextIdx;
+      finalMonthName  = isAdhika
+        ? (MONTH_NAMES[nextIdx] ?? 'Unknown')
+        : (MONTH_NAMES[nextIdx] ?? 'Unknown');
+    }
+  }
+
+  return {
+    monthName:      finalMonthName,
+    monthIndex:     finalMonthIndex,
+    monthSystem:    system,
+    paksha,
+    isAdhika,
+    isKshaya,
+    amantaMonthName,
+    monthStartUtc:  start.toISOString(),
+    monthEndUtc:    end.toISOString(),
+    sankrantiCount,
+    diagnostics,
+  };
+}
