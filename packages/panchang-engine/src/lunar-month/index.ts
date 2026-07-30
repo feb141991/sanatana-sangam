@@ -11,17 +11,14 @@
  * ----------
  * export type MonthSystem = 'amanta' | 'purnimanta'
  * export type Paksha = 'shukla' | 'krishna'
- *
- * export interface LunarMonthResult { … }
- * export interface MonthClassificationInput { … }
- * export interface MonthClassificationResult { … }
+ * export type LunarMonthResult = LunarMonthSuccess | LunarMonthFailure
  *
  * export function classifyLunarMonth(input: MonthClassificationInput): MonthClassificationResult
- * export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthResult
- * export function findNewMoonBefore(instant: Date): Date | null
- * export function findNewMoonAfter(instant: Date): Date | null
- * export function findFullMoonBefore(instant: Date): Date | null
- * export function findFullMoonAfter(instant: Date): Date | null
+ * export function getLunarMonth(instant: Date, system: MonthSystem, maxSearchHours?: number): LunarMonthResult
+ * export function findNewMoonBefore(instant: Date, maxSearchHours?: number): Date | null
+ * export function findNewMoonAfter(instant: Date, maxSearchHours?: number): Date | null
+ * export function findFullMoonBefore(instant: Date, maxSearchHours?: number): Date | null
+ * export function findFullMoonAfter(instant: Date, maxSearchHours?: number): Date | null
  * export function findSankrantisBetween(start: Date, end: Date): Array<{ rashi: number; at: Date }>
  *
  * Algorithm
@@ -43,7 +40,7 @@
  *      shukla  → purnimanta name = amanta name  (identical)
  *      krishna → purnimanta name = amanta name + 1 (next month name)
  *
- * 5. Same Lahiri ayanamsha polynomial as index.ts (do not introduce another).
+ * 5. Discriminated union result: ok: true for valid lunar month, ok: false on solver failure.
  */
 
 import {
@@ -65,7 +62,10 @@ import {
 export type MonthSystem = 'amanta' | 'purnimanta';
 export type Paksha = 'shukla' | 'krishna';
 
-export interface LunarMonthResult {
+export type LunarMonthResult = LunarMonthSuccess | LunarMonthFailure;
+
+export interface LunarMonthSuccess {
+  ok: true;
   /** Full English month name: 'Chaitra' … 'Phalguna' (possibly with 'Adhika ' prefix) */
   monthName: string;
   /** Amanta month index: Chaitra = 0, Vaishakha = 1, …, Phalguna = 11 */
@@ -88,10 +88,23 @@ export interface LunarMonthResult {
   monthEndUtc: string;
   /** Number of Sankrantis within [monthStart, monthEnd): always 0, 1, or 2. */
   sankrantiCount: number;
-  /**
-   * Non-fatal diagnostic messages. Populated for edge cases:
-   * kshaya months, solver failures, etc.
-   */
+  /** Non-fatal diagnostic messages. */
+  diagnostics: string[];
+}
+
+export interface LunarMonthFailure {
+  ok: false;
+  monthName: null;
+  monthIndex: null;
+  monthSystem: MonthSystem;
+  paksha: null;
+  isAdhika: null;
+  isKshaya: null;
+  amantaMonthName: null;
+  monthStartUtc: null;
+  monthEndUtc: null;
+  sankrantiCount: null;
+  /** Diagnostic messages explaining the solver failure. */
   diagnostics: string[];
 }
 
@@ -136,9 +149,6 @@ export function classifyLunarMonth(input: MonthClassificationInput): MonthClassi
 
   if (sankrantiCount === 0) {
     // ── ADHIKA (intercalary) month ─────────────────────────────────────────
-    // Takes the name of the FOLLOWING normal month, prefixed Adhika (§1.3).
-    // The next normal month contains nextSankrantiAfterEnd.
-    // The entered rashi at a Sankranti is ALREADY the amanta month index!
     let nijaIndex: number;
     if (input.nextSankrantiAfterEnd) {
       nijaIndex = (input.nextSankrantiAfterEnd.rashi % 12 + 12) % 12;
@@ -344,15 +354,18 @@ export function findSankrantisBetween(
 // Internal helper: find the amanta month boundaries containing `instant`
 // ---------------------------------------------------------------------------
 
-export function findAmantaMonth(instant: Date): {
+export function findAmantaMonth(
+  instant: Date,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): {
   start: Date;
   end: Date;
 } | null {
-  const start = findNewMoonBefore(instant);
+  const start = findNewMoonBefore(instant, maxSearchHours);
   if (!start) return null;
 
   const searchFrom = new Date(start.getTime() + 12 * 60 * 60 * 1000);
-  const end = findNewMoonAfter(searchFrom);
+  const end = findNewMoonAfter(searchFrom, maxSearchHours);
   if (!end) return null;
 
   return { start, end };
@@ -365,25 +378,31 @@ export function findAmantaMonth(instant: Date): {
 /**
  * Determine the lunar month containing `instant` under the given `system`.
  * Follows calendar-profiles.md §1 algorithm exactly.
+ * Returns a discriminated result: ok: true on success, ok: false on solver failure.
  */
-export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthResult {
+export function getLunarMonth(
+  instant: Date,
+  system: MonthSystem,
+  maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): LunarMonthResult {
   const diagnostics: string[] = [];
 
   // ── Step 1: find amanta boundaries ──────────────────────────────────────
-  const amanta = findAmantaMonth(instant);
+  const amanta = findAmantaMonth(instant, maxSearchHours);
   if (!amanta) {
     diagnostics.push(`solver_failure: boundary solver failed to find amavasya boundary for ${instant.toISOString()}`);
     return {
-      monthName: 'Unknown',
-      monthIndex: -1,
+      ok: false,
+      monthName: null,
+      monthIndex: null,
       monthSystem: system,
-      paksha: 'shukla',
-      isAdhika: false,
-      isKshaya: false,
-      amantaMonthName: 'Unknown',
-      monthStartUtc: '',
-      monthEndUtc: '',
-      sankrantiCount: 0,
+      paksha: null,
+      isAdhika: null,
+      isKshaya: null,
+      amantaMonthName: null,
+      monthStartUtc: null,
+      monthEndUtc: null,
+      sankrantiCount: null,
       diagnostics,
     };
   }
@@ -446,6 +465,7 @@ export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthRes
   }
 
   return {
+    ok: true,
     monthName:      finalMonthName,
     monthIndex:     finalMonthIndex,
     monthSystem:    system,
