@@ -22,7 +22,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { calculateObservancesForYear } from '../../../src/lib/calendar/engine.js';
+import { calculateObservancesForYear, RULE_ENGINE_VERSION } from '../../../src/lib/calendar/engine.js';
 
 // Resolve repo root: packages/dharma-rules/scripts/ → go up 3 levels
 const REPO_ROOT    = path.resolve(__dirname, '..', '..', '..');
