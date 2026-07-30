@@ -1,0 +1,18 @@
+{
+  "name": "@sangam/dharma-rules",
+  "version": "0.1.0",
+  "description": "Golden-fixture harness and calendar correctness tests for the Shoonaya calendar engine",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify:calendar": "vitest run --reporter=verbose",
+    "generate:snapshots": "npx tsx scripts/generate-snapshots.ts"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "typescript": "^5.4.0",
+    "vitest": "^4.1.4"
+  }
+}

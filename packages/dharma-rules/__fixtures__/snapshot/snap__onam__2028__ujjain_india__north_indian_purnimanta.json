@@ -1,0 +1,26 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/snapshot/v1",
+  "caseId": "snap__onam__2028__ujjain_india__north_indian_purnimanta",
+  "festivalId": "onam",
+  "year": 2028,
+  "location": {
+    "label": "Ujjain, India",
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "profile": {
+    "calendar": "north_indian_purnimanta",
+    "tradition": "smarta"
+  },
+  "capturedAt": "2026-07-30T11:53:40.536Z",
+  "engineVersion": "0.1.0",
+  "ruleEngineVersion": "1.2.2",
+  "captured": {
+    "civilDate": "2028-09-01",
+    "slug": "onam",
+    "recurring": null
+  },
+  "approved": false,
+  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-07-30T11:53:40.536Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
+}

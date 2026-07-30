@@ -1,0 +1,29 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
+  "caseId": "ram-navami__2026__bedford_uk__gujarati_amanta",
+  "festivalId": "ram-navami",
+  "year": 2026,
+  "location": {
+    "label": "Bedford, UK",
+    "lat": 52.1356,
+    "lon": -0.4685,
+    "tz": "Europe/London"
+  },
+  "profile": {
+    "calendar": "gujarati_amanta",
+    "tradition": "smarta"
+  },
+  "expected": null,
+  "tolerance": {
+    "windowMinutes": 2
+  },
+  "source": {
+    "tier": 1,
+    "ref": "TODO_ram-navami_2026",
+    "citation": "TODO: Cite Tier 1-4 source for ram-navami 2026",
+    "verifiedBy": "TODO: council_identifier",
+    "verifiedOn": "2000-01-01"
+  },
+  "reasoning": "TODO: Explain why the engine produces the expected date for ram-navami 2026 at Bedford, UK under gujarati_amanta.",
+  "approved": false
+}

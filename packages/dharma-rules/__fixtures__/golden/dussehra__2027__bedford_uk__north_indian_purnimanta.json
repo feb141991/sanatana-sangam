@@ -1,0 +1,29 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
+  "caseId": "dussehra__2027__bedford_uk__north_indian_purnimanta",
+  "festivalId": "dussehra",
+  "year": 2027,
+  "location": {
+    "label": "Bedford, UK",
+    "lat": 52.1356,
+    "lon": -0.4685,
+    "tz": "Europe/London"
+  },
+  "profile": {
+    "calendar": "north_indian_purnimanta",
+    "tradition": "smarta"
+  },
+  "expected": null,
+  "tolerance": {
+    "windowMinutes": 2
+  },
+  "source": {
+    "tier": 1,
+    "ref": "TODO_dussehra_2027",
+    "citation": "TODO: Cite Tier 1-4 source for dussehra 2027",
+    "verifiedBy": "TODO: council_identifier",
+    "verifiedOn": "2000-01-01"
+  },
+  "reasoning": "TODO: Explain why the engine produces the expected date for dussehra 2027 at Bedford, UK under north_indian_purnimanta.",
+  "approved": false
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
+  "caseId": "guru-purnima__2028__ujjain_india__north_indian_purnimanta",
+  "festivalId": "guru-purnima",
+  "year": 2028,
+  "location": {
+    "label": "Ujjain, India",
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "profile": {
+    "calendar": "north_indian_purnimanta",
+    "tradition": "smarta"
+  },
+  "expected": null,
+  "tolerance": {
+    "windowMinutes": 2
+  },
+  "source": {
+    "tier": 1,
+    "ref": "TODO_guru-purnima_2028",
+    "citation": "TODO: Cite Tier 1-4 source for guru-purnima 2028",
+    "verifiedBy": "TODO: council_identifier",
+    "verifiedOn": "2000-01-01"
+  },
+  "reasoning": "TODO: Explain why the engine produces the expected date for guru-purnima 2028 at Ujjain, India under north_indian_purnimanta.",
+  "approved": false
+}

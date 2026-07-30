@@ -1,0 +1,26 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/snapshot/v1",
+  "caseId": "snap__chaitra-navratri-begins__2027__sydney_australia__gujarati_amanta",
+  "festivalId": "chaitra-navratri-begins",
+  "year": 2027,
+  "location": {
+    "label": "Sydney, Australia",
+    "lat": -33.8688,
+    "lon": 151.2093,
+    "tz": "Australia/Sydney"
+  },
+  "profile": {
+    "calendar": "gujarati_amanta",
+    "tradition": "smarta"
+  },
+  "capturedAt": "2026-07-30T11:53:40.536Z",
+  "engineVersion": "0.1.0",
+  "ruleEngineVersion": "1.2.2",
+  "captured": {
+    "civilDate": "2027-04-07",
+    "slug": "chaitra-navratri-begins",
+    "recurring": null
+  },
+  "approved": false,
+  "_comment": "Snapshot of current engine behaviour. NOT a correctness assertion. | Captured: 2026-07-30T11:53:40.536Z | D5 note: engine currently computes all locations at Ujjain. | Dates will diverge across locations after D5 (per-location evaluation) is fixed. | Delete this file and regenerate after D5 is shipped."
+}

@@ -57,6 +57,11 @@ defects are load-bearing (D1/D2 below) and must be fixed together.
 | External-source automated validation | **none** |
 | Panchāṅga engine LOC | 923 |
 
+> **Erratum / Current-State Note (2026-07-30):**
+> - Direct import of `CANONICAL_RULES` from `src/lib/calendar/rules.ts` currently yields **79 canonical rule objects** in code.
+> - The `observance_definitions` table in Supabase contains **87 definition rows** (a separate denominator representing database entities, some of which map to shared rules or historical seeds).
+> - Do not merge or silently rewrite these distinct counts.
+
 ### 2.2 What exists and works
 
 | Capability | Evidence |
@@ -128,8 +133,8 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 2.3 | Tolerance-based boundary solver (≤60 s) | ⬜ | | |
 | 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | |
 | 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | |
-| 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | ⬜ | **everything** | |
-| 2.7 | Adhika / Kṣaya māsa | ⬜ | | |
+| 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | 🟡 | **everything** | `packages/panchang-engine/src/lunar-month/` (additive module; in progress pending sourced golden validation) |
+| 2.7 | Adhika / Kṣaya māsa | 🟡 | | `packages/panchang-engine/src/lunar-month/` (additive module; in progress pending sourced golden validation) |
 | 2.8 | Solar months + regional day-assignment (P1) | ⏸ 🔬 | Tamil/Malayalam profiles | |
 | 2.9 | Era systems + true new-year roll-over (D8) | ⬜ | | |
 | 2.10 | Vedic-day boundary rule | ⬜ | Layer C | |
@@ -154,7 +159,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Evidence |
 |---|---|---|---|
-| 4.1 | Golden fixture harness (D17) | ⬜ | |
+| 4.1 | Golden fixture harness (D17) | 🟡 | `packages/dharma-rules/` (harness & snapshot regression live; sourced golden coverage remains 0) |
 | 4.2 | Minimum launch coverage (`calculation-examples.md` §7) | ⬜ | |
 | 4.3 | Astronomical validation vs Tier-1 sources, 12 cities | ⬜ | |
 | 4.4 | Edge-case fixtures E1–E13 | ⬜ | |

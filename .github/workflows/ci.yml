@@ -26,6 +26,9 @@ jobs:
       - name: Run lint
         run: npm run lint
 
+      - name: Run calendar verification
+        run: npm run verify:calendar
+
       - name: Run build
         run: npm run build
 
