@@ -14,20 +14,16 @@
  *     (18 slugs × 3 years; locations/profiles are tripwires for D3/D5 per-location evaluation).
  */
 
-import { GoldenFixture, SnapshotFixture } from './fixture-loader.js';
+import {
+  GoldenFixture,
+  SnapshotFixture,
+  isApprovedGolden,
+  analyzeLogicalFixtureIdentity,
+} from './fixture-loader.js';
 
 export type CoverageLevel = 'golden' | 'pending_golden' | 'snapshot_only' | 'none';
 
-export function isApprovedGoldenFixture(f: GoldenFixture): boolean {
-  return (
-    f.approved === true &&
-    typeof f.expected?.civilDate === 'string' &&
-    f.expected.civilDate.length > 0 &&
-    f.source != null &&
-    f.source.tier >= 1 &&
-    f.source.tier <= 4
-  );
-}
+export const isApprovedGoldenFixture = isApprovedGolden;
 
 export interface ObservanceCoverage {
   slug: string;
@@ -52,6 +48,8 @@ export interface CoverageReport {
   pendingGoldenCases: number;
   snapshotCases: number;
   independentEngineValuesCount: number;
+  pendingIntakeSnapshotOverlapCount: number;
+  approvedGoldenSnapshotOverlapCount: number;
   rows: ObservanceCoverage[];
 }
 
@@ -118,8 +116,9 @@ export function buildCoverageReport(
   const pendingGoldenCases  = goldenFixtures.length - approvedGoldenCases;
   const snapshotCases       = snapshotFixtures.length;
 
-  // Compute distinct (slug, year) combinations in snapshot fixtures
   const independentValues = new Set(snapshotFixtures.map(f => `${f.festivalId}__${f.year}`)).size;
+
+  const identityAnalysis = analyzeLogicalFixtureIdentity(goldenFixtures, snapshotFixtures);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -132,6 +131,8 @@ export function buildCoverageReport(
     pendingGoldenCases,
     snapshotCases,
     independentEngineValuesCount: independentValues,
+    pendingIntakeSnapshotOverlapCount: identityAnalysis.pendingIntakeSnapshotOverlapKeys.length,
+    approvedGoldenSnapshotOverlapCount: identityAnalysis.approvedGoldenSnapshotOverlapKeys.length,
     rows,
   };
 }
@@ -164,6 +165,8 @@ export function printCoverageReport(report: CoverageReport): void {
   console.log(`  Pending intake placeholders      : ${report.pendingGoldenCases}`);
   console.log(`  Snapshot assertion files         : ${report.snapshotCases}`);
   console.log(`  Independent engine values        : ${report.independentEngineValuesCount} (18 slugs × 3 years; locs/profiles are D3/D5 tripwires)`);
+  console.log(`  Pending intake & snapshot overlap: ${report.pendingIntakeSnapshotOverlapCount} (intake placeholders awaiting Tier 1-4 source verification)`);
+  console.log(`  Approved golden & snapshot overlap: ${report.approvedGoldenSnapshotOverlapCount} (must remain 0)`);
   console.log('─'.repeat(105));
 
   hr();

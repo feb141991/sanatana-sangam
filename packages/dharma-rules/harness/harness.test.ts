@@ -9,23 +9,23 @@
  *  1. SCHEMA SELF-VALIDATION
  *     The schema validator demonstrably rejects malformed fixtures.
  *
- *  2. GOLDEN FIXTURES
+ *  2. LOGICAL FIXTURE IDENTITY & GOVERNANCE INVARIANTS
+ *     Enforces canonical logical keys (festivalId + year + location + profile + tradition).
+ *     Rejects duplicate keys within roles and co-existence of approved-golden and snapshots.
+ *
+ *  3. GOLDEN FIXTURES
  *     For every approved golden fixture (approved: true + valid source + non-null expected),
  *     assert that the engine produces the expected civilDate EXACTLY.
- *     Unapproved intake placeholders are skipped with a note.
  *
- *  3. SNAPSHOT REGRESSION
+ *  4. SNAPSHOT REGRESSION
  *     For every snapshot fixture, assert that the engine produces the same civilDate as captured.
  *
- *  4. ENGINE EVALUATION CACHING
+ *  5. ENGINE EVALUATION CACHING
  *     Proves calculateObservancesForYear runs exactly once per distinct year, not per fixture.
  *
- *  5. COVERAGE REPORT
- *     Print the coverage matrix at the end of the run.
- *     STRICT=1 will fail if approved golden fixtures are missing.
- *
- * Engine access:
- *   The harness imports calculateObservancesForYear from TypeScript source.
+ *  6. SYNTHETIC LOGICAL IDENTITY TESTS
+ *     Proves snap__ prefix cannot hide overlap, approved golden overlap is rejected,
+ *     and pending intake overlap is reported honestly.
  */
 
 import { describe, it, expect, afterAll } from 'vitest';
@@ -36,6 +36,9 @@ import {
   validateAgainstGoldenSchema,
   GoldenFixture,
   SnapshotFixture,
+  getCanonicalFixtureKey,
+  analyzeLogicalFixtureIdentity,
+  isApprovedGolden,
 } from './fixture-loader';
 
 import {
@@ -85,8 +88,6 @@ try {
 }
 
 // ── Engine Evaluation Cache ──────────────────────────────────────────────────
-// Requirement: calculateObservancesForYear(year) must execute only once per distinct year.
-// All fixture assertions read from this cache.
 
 let engineEvaluationCount = 0;
 const engineYearCache = new Map<number, Map<string, string>>();
@@ -192,18 +193,34 @@ describe('Schema validator — self test', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. SEPARATION INVARIANT
+// 2. LOGICAL FIXTURE IDENTITY & GOVERNANCE INVARIANTS
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('Fixture directory separation invariant', () => {
-  it('no caseId appears in both golden/ and snapshot/', () => {
-    const goldenIds  = new Set(goldenFixtures.map(f => f.caseId));
-    const snapshotIds = snapshotFixtures.map(f => f.caseId);
-    const overlaps = snapshotIds.filter(id => goldenIds.has(id));
-    expect(overlaps, `caseIds in both directories: ${overlaps.join(', ')}`).toHaveLength(0);
+describe('Logical fixture identity & governance invariants', () => {
+  const analysis = analyzeLogicalFixtureIdentity(goldenFixtures, snapshotFixtures);
+
+  it('no duplicate canonical logical keys exist within golden fixtures', () => {
+    expect(
+      analysis.duplicateGoldenKeys,
+      `Duplicate canonical keys found in golden/: ${analysis.duplicateGoldenKeys.join(', ')}`,
+    ).toHaveLength(0);
   });
 
-  it('all loaded golden/ files passed schema validation', () => {
+  it('no duplicate canonical logical keys exist within snapshot fixtures', () => {
+    expect(
+      analysis.duplicateSnapshotKeys,
+      `Duplicate canonical keys found in snapshot/: ${analysis.duplicateSnapshotKeys.join(', ')}`,
+    ).toHaveLength(0);
+  });
+
+  it('no approved golden fixture coexists with a snapshot fixture for the same canonical logical key', () => {
+    expect(
+      analysis.approvedGoldenSnapshotOverlapKeys,
+      `Approved golden fixtures overlap with snapshots for keys: ${analysis.approvedGoldenSnapshotOverlapKeys.join(', ')}`,
+    ).toHaveLength(0);
+  });
+
+  it('all loaded golden/ files passed structural source verification', () => {
     expect(goldenFixtures.every(f => f.source != null)).toBe(true);
   });
 
@@ -221,7 +238,123 @@ describe('Fixture directory separation invariant', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. ENGINE EVALUATION CACHING INVARIANT
+// 3. SYNTHETIC LOGICAL IDENTITY UNIT TESTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe('Logical Fixture Identity — Synthetic Unit Tests', () => {
+  const baseLoc = { label: 'Bedford, UK', lat: 52.1356, lon: -0.4685, tz: 'Europe/London' };
+  const baseProf = { calendar: 'north_indian_purnimanta', tradition: 'smarta' };
+
+  it('proves snap__ prefix cannot hide logical overlap between golden and snapshot fixtures', () => {
+    const golden: GoldenFixture = {
+      caseId: 'makar-sankranti__2026__bedford_uk__north_indian_purnimanta',
+      festivalId: 'makar-sankranti',
+      year: 2026,
+      location: baseLoc,
+      profile: baseProf,
+      expected: { civilDate: '2026-01-14' },
+      tolerance: { windowMinutes: 2 },
+      source: { tier: 1, ref: 'RP2026', citation: 'Rashtriya Panchang 2026', verifiedBy: 'council', verifiedOn: '2026-01-01' },
+      reasoning: 'Test',
+      approved: true,
+      _filePath: '/golden/makar-sankranti__2026.json',
+    };
+
+    const snapshot: SnapshotFixture = {
+      caseId: 'snap__makar-sankranti__2026__bedford_uk__north_indian_purnimanta',
+      festivalId: 'makar-sankranti',
+      year: 2026,
+      location: baseLoc,
+      profile: baseProf,
+      capturedAt: '2026-07-30T00:00:00Z',
+      engineVersion: '0.1.0',
+      ruleEngineVersion: '1.0.0',
+      captured: { civilDate: '2026-01-14', slug: 'makar-sankranti' },
+      approved: false,
+      _filePath: '/snapshot/snap__makar-sankranti__2026.json',
+    };
+
+    const keyGolden   = getCanonicalFixtureKey(golden);
+    const keySnapshot = getCanonicalFixtureKey(snapshot);
+
+    expect(keyGolden).toBe(keySnapshot);
+
+    const result = analyzeLogicalFixtureIdentity([golden], [snapshot]);
+    expect(result.approvedGoldenSnapshotOverlapKeys).toHaveLength(1);
+    expect(result.approvedGoldenSnapshotOverlapKeys[0]).toBe(keyGolden);
+  });
+
+  it('rejects approved-golden/snapshot overlap for the same canonical key', () => {
+    const approvedGolden: GoldenFixture = {
+      caseId: 'ram-navami__2027__ujjain_india__global_sanatan',
+      festivalId: 'ram-navami',
+      year: 2027,
+      location: { label: 'Ujjain, India', lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
+      profile: { calendar: 'global_sanatan', tradition: 'unspecified' },
+      expected: { civilDate: '2027-04-15' },
+      tolerance: { windowMinutes: 2 },
+      source: { tier: 1, ref: 'RP2027', citation: 'Rashtriya Panchang 2027', verifiedBy: 'council', verifiedOn: '2026-11-01' },
+      reasoning: 'Test',
+      approved: true,
+      _filePath: '/golden/ram-navami__2027.json',
+    };
+
+    const conflictingSnapshot: SnapshotFixture = {
+      caseId: 'snap__ram-navami__2027__ujjain_india__global_sanatan',
+      festivalId: 'ram-navami',
+      year: 2027,
+      location: { label: 'Ujjain, India', lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
+      profile: { calendar: 'global_sanatan', tradition: 'unspecified' },
+      capturedAt: '2026-07-30T00:00:00Z',
+      engineVersion: '0.1.0',
+      ruleEngineVersion: '1.0.0',
+      captured: { civilDate: '2027-04-15', slug: 'ram-navami' },
+      approved: false,
+      _filePath: '/snapshot/snap__ram-navami__2027.json',
+    };
+
+    const result = analyzeLogicalFixtureIdentity([approvedGolden], [conflictingSnapshot]);
+    expect(result.approvedGoldenSnapshotOverlapKeys).toContain(getCanonicalFixtureKey(approvedGolden));
+  });
+
+  it('counts and reports pending intake overlap honestly while intake migration is pending', () => {
+    const pendingGolden: GoldenFixture = {
+      caseId: 'diwali__2026__delhi_india__north_indian_purnimanta',
+      festivalId: 'diwali',
+      year: 2026,
+      location: { label: 'Delhi, India', lat: 28.6139, lon: 77.2090, tz: 'Asia/Kolkata' },
+      profile: { calendar: 'north_indian_purnimanta', tradition: 'smarta' },
+      expected: null,
+      tolerance: { windowMinutes: 2 },
+      source: { tier: 1, ref: 'TODO', citation: 'TODO', verifiedBy: 'TODO', verifiedOn: '2026-01-01' },
+      reasoning: 'Placeholder',
+      approved: false,
+      _filePath: '/golden/diwali__2026.json',
+    };
+
+    const snapshot: SnapshotFixture = {
+      caseId: 'snap__diwali__2026__delhi_india__north_indian_purnimanta',
+      festivalId: 'diwali',
+      year: 2026,
+      location: { label: 'Delhi, India', lat: 28.6139, lon: 77.2090, tz: 'Asia/Kolkata' },
+      profile: { calendar: 'north_indian_purnimanta', tradition: 'smarta' },
+      capturedAt: '2026-07-30T00:00:00Z',
+      engineVersion: '0.1.0',
+      ruleEngineVersion: '1.0.0',
+      captured: { civilDate: '2026-11-08', slug: 'diwali' },
+      approved: false,
+      _filePath: '/snapshot/snap__diwali__2026.json',
+    };
+
+    const result = analyzeLogicalFixtureIdentity([pendingGolden], [snapshot]);
+    expect(result.approvedGoldenSnapshotOverlapKeys).toHaveLength(0);
+    expect(result.pendingIntakeSnapshotOverlapKeys).toHaveLength(1);
+    expect(result.pendingIntakeSnapshotOverlapKeys[0]).toBe(getCanonicalFixtureKey(pendingGolden));
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. ENGINE EVALUATION CACHING INVARIANT
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('Engine evaluation caching invariant', () => {
@@ -231,12 +364,10 @@ describe('Engine evaluation caching invariant', () => {
       ...snapshotFixtures.map(f => f.year),
     ]));
 
-    // Evaluate every single snapshot fixture date using getEngineDate
     for (const fixture of snapshotFixtures) {
       getEngineDate(fixture.festivalId, fixture.year);
     }
 
-    // Evaluate every single golden fixture date using getEngineDate
     for (const fixture of goldenFixtures) {
       getEngineDate(fixture.festivalId, fixture.year);
     }
@@ -247,12 +378,12 @@ describe('Engine evaluation caching invariant', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4. GOLDEN FIXTURE ASSERTIONS
+// 5. GOLDEN FIXTURE ASSERTIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('Golden fixtures — correctness assertions', () => {
-  const approvedGolden = goldenFixtures.filter(isApprovedGoldenFixture);
-  const pendingGolden  = goldenFixtures.filter(f => !isApprovedGoldenFixture(f));
+  const approvedGolden = goldenFixtures.filter(isApprovedGolden);
+  const pendingGolden  = goldenFixtures.filter(f => !isApprovedGolden(f));
 
   if (approvedGolden.length === 0) {
     it('(no approved golden fixtures yet — add Tier 1-4 sourced cases to __fixtures__/golden/ to build coverage)', () => {
@@ -277,7 +408,7 @@ describe('Golden fixtures — correctness assertions', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5. SNAPSHOT REGRESSION TESTS
+// 6. SNAPSHOT REGRESSION TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('Snapshot fixtures — regression tests (no unintended change)', () => {
@@ -305,7 +436,7 @@ describe('Snapshot fixtures — regression tests (no unintended change)', () => 
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6. COVERAGE REPORT
+// 7. COVERAGE REPORT
 // ─────────────────────────────────────────────────────────────────────────────
 
 afterAll(() => {

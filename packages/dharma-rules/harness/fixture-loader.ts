@@ -8,9 +8,10 @@
  * - A file in snapshot/ MUST NOT have a `source` block.
  * - The two directories must never mix types (detected by schema + structural check).
  * - Schema validation runs against the published JSON Schema at load time.
+ * - Canonical logical fixture identity is computed for governance checks.
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join, resolve, extname } from 'node:path';
 import Ajv from 'ajv';
 
@@ -102,6 +103,105 @@ export interface SnapshotFixture {
   _filePath: string; // injected by loader
 }
 
+// ── Governance Helpers & Logical Identity ───────────────────────────────────
+
+export function isApprovedGolden(f: GoldenFixture): boolean {
+  return (
+    f.approved === true &&
+    typeof f.expected?.civilDate === 'string' &&
+    f.expected.civilDate.length > 0 &&
+    f.source != null &&
+    f.source.tier >= 1 &&
+    f.source.tier <= 4
+  );
+}
+
+/**
+ * Computes a canonical logical fixture key for governance and overlap analysis.
+ * Format: festivalId::year::lat,lon@tz::calendar:tradition
+ * Strips namespace prefixes like `snap__` and normalizes text.
+ */
+export function getCanonicalFixtureKey(fixture: {
+  festivalId: string;
+  year: number;
+  location: Location;
+  profile: Profile;
+}): string {
+  const fest = fixture.festivalId.toLowerCase().trim();
+  const yr = fixture.year;
+  const latStr = Number(fixture.location.lat).toFixed(4);
+  const lonStr = Number(fixture.location.lon).toFixed(4);
+  const tz = fixture.location.tz.toLowerCase().trim();
+  const cal = fixture.profile.calendar.toLowerCase().trim();
+  const trad = fixture.profile.tradition.toLowerCase().trim();
+
+  return `${fest}::${yr}::${latStr},${lonStr}@${tz}::${cal}:${trad}`;
+}
+
+export interface LogicalIdentityAnalysis {
+  duplicateGoldenKeys: string[];
+  duplicateSnapshotKeys: string[];
+  approvedGoldenSnapshotOverlapKeys: string[];
+  pendingIntakeSnapshotOverlapKeys: string[];
+}
+
+export function analyzeLogicalFixtureIdentity(
+  goldenFixtures: GoldenFixture[],
+  snapshotFixtures: SnapshotFixture[],
+): LogicalIdentityAnalysis {
+  const goldenKeyMap = new Map<string, GoldenFixture[]>();
+  const snapshotKeyMap = new Map<string, SnapshotFixture[]>();
+
+  for (const g of goldenFixtures) {
+    const key = getCanonicalFixtureKey(g);
+    const list = goldenKeyMap.get(key) ?? [];
+    list.push(g);
+    goldenKeyMap.set(key, list);
+  }
+
+  for (const s of snapshotFixtures) {
+    const key = getCanonicalFixtureKey(s);
+    const list = snapshotKeyMap.get(key) ?? [];
+    list.push(s);
+    snapshotKeyMap.set(key, list);
+  }
+
+  const duplicateGoldenKeys: string[] = [];
+  for (const [key, list] of goldenKeyMap.entries()) {
+    if (list.length > 1) duplicateGoldenKeys.push(key);
+  }
+
+  const duplicateSnapshotKeys: string[] = [];
+  for (const [key, list] of snapshotKeyMap.entries()) {
+    if (list.length > 1) duplicateSnapshotKeys.push(key);
+  }
+
+  const approvedGoldenSnapshotOverlapKeys: string[] = [];
+  const pendingIntakeSnapshotOverlapKeys: string[] = [];
+
+  for (const [key] of snapshotKeyMap.entries()) {
+    const goldenList = goldenKeyMap.get(key);
+    if (!goldenList || goldenList.length === 0) continue;
+
+    const hasApprovedGolden = goldenList.some(isApprovedGolden);
+    const hasPendingGolden  = goldenList.some(g => !isApprovedGolden(g));
+
+    if (hasApprovedGolden) {
+      approvedGoldenSnapshotOverlapKeys.push(key);
+    }
+    if (hasPendingGolden) {
+      pendingIntakeSnapshotOverlapKeys.push(key);
+    }
+  }
+
+  return {
+    duplicateGoldenKeys,
+    duplicateSnapshotKeys,
+    approvedGoldenSnapshotOverlapKeys,
+    pendingIntakeSnapshotOverlapKeys,
+  };
+}
+
 // ── Validation errors ────────────────────────────────────────────────────────
 
 export class FixtureValidationError extends Error {
@@ -127,7 +227,7 @@ function walkJsonFiles(dir: string): string[] {
       .filter(f => extname(f) === '.json')
       .map(f => join(dir, f));
   } catch {
-    return []; // directory doesn't exist yet — that's fine
+    return [];
   }
 }
 
@@ -141,23 +241,17 @@ function parseJson(filePath: string): unknown {
 
 /**
  * Load and validate all golden fixtures.
- * HARD FAIL if:
- * - a file fails schema validation
- * - a file is missing a `source` block (structural check beyond schema)
- * - a file has a source.tier of 5 or 6 (caught by schema enum)
  */
 export function loadGoldenFixtures(): GoldenFixture[] {
   const files = walkJsonFiles(GOLDEN_DIR);
   return files.map(filePath => {
     const raw = parseJson(filePath) as Record<string, unknown>;
 
-    // Schema validates: source block required, tier must be 1-4, etc.
     const valid = validateGolden(raw);
     if (!valid) {
       throw new FixtureValidationError(filePath, validateGolden.errors ?? []);
     }
 
-    // Belt-and-suspenders: `source` must exist (schema requires it, but double-check)
     if (!('source' in raw) || raw['source'] == null) {
       throw new FixtureDirectoryError(
         'Golden fixture missing required `source` block — move to snapshot/ or add a Tier 1-4 source',
@@ -171,16 +265,12 @@ export function loadGoldenFixtures(): GoldenFixture[] {
 
 /**
  * Load and validate all snapshot fixtures.
- * HARD FAIL if:
- * - a file fails schema validation
- * - a file has a `source` block (snapshots must NOT claim correctness)
  */
 export function loadSnapshotFixtures(): SnapshotFixture[] {
   const files = walkJsonFiles(SNAPSHOT_DIR);
   return files.map(filePath => {
     const raw = parseJson(filePath) as Record<string, unknown>;
 
-    // Guard: snapshot files must NOT have a source block
     if ('source' in raw && raw['source'] != null) {
       throw new FixtureDirectoryError(
         'Snapshot fixture must NOT have a `source` block — it is a snapshot of behaviour, not a correctness claim. Move to golden/ if it has a Tier 1-4 citation.',
@@ -199,7 +289,6 @@ export function loadSnapshotFixtures(): SnapshotFixture[] {
 
 /**
  * Load the deliberately malformed fixtures for the validator's self-test.
- * Returns raw JSON without schema validation (so the test can assert it fails).
  */
 export function loadInvalidFixtures(): Array<{ filePath: string; raw: unknown }> {
   return walkJsonFiles(INVALID_DIR).map(filePath => ({
@@ -210,7 +299,6 @@ export function loadInvalidFixtures(): Array<{ filePath: string; raw: unknown }>
 
 /**
  * Validate a raw object against the golden schema and return errors (or null).
- * Exported for use in generator scripts.
  */
 export function validateAgainstGoldenSchema(raw: unknown): object[] | null {
   const valid = validateGolden(raw);
