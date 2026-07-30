@@ -2,8 +2,11 @@ import { describe, it, expect } from 'vitest';
 import * as PanchangEngineExports from '../index.js';
 import {
   calculatePanchang,
+  getPanchangTimes,
+  getTithiReminder,
   getTodayPanchang,
   getTodaySpiritualPulses,
+  isInWindow,
   createPanchangEngine,
   getLunarMonth,
   findNewMoonBefore,
@@ -13,6 +16,12 @@ import {
   findSankrantisBetween,
   PANCHANG_TRUST_META,
 } from '../index.js';
+
+// These compile-time assertions fail if helper-only types leak from the package root.
+// @ts-expect-error -- MonthClassificationInput is intentionally internal.
+export type RootMustNotExportMonthClassificationInput = import('../index.js').MonthClassificationInput;
+// @ts-expect-error -- MonthClassificationResult is intentionally internal.
+export type RootMustNotExportMonthClassificationResult = import('../index.js').MonthClassificationResult;
 
 describe('Panchang Engine — Public API Runtime Contract', () => {
   const testDate = new Date('2026-05-22T12:00:00Z');
@@ -96,11 +105,17 @@ describe('Panchang Engine — Public API Runtime Contract', () => {
       expect(typeof p.sunset).toBe('string');
       expect(p.sunset).toMatch(/^\d{2}:\d{2}\s+(AM|PM)$/);
 
-      // 4. Object must not contain NaN, undefined or "Invalid Date"
-      const stringified = JSON.stringify(p);
-      expect(stringified).not.toContain('NaN');
-      expect(stringified).not.toContain('undefined');
-      expect(stringified).not.toContain('Invalid Date');
+      // 4. Every top-level field must be populated, and every number must be finite.
+      for (const [key, value] of Object.entries(p)) {
+        expect(value, `${key} must not be undefined`).not.toBeUndefined();
+        expect(value, `${key} must not be null`).not.toBeNull();
+        if (typeof value === 'number') {
+          expect(Number.isFinite(value), `${key} must be finite`).toBe(true);
+        }
+        if (typeof value === 'string') {
+          expect(value, `${key} must not contain an invalid date`).not.toContain('Invalid Date');
+        }
+      }
     });
   });
 
@@ -128,8 +143,11 @@ describe('Panchang Engine — Public API Runtime Contract', () => {
   describe('Root Export Contract Governance', () => {
     it('exports all established public functions from the package root', () => {
       expect(typeof calculatePanchang).toBe('function');
+      expect(typeof getPanchangTimes).toBe('function');
+      expect(typeof getTithiReminder).toBe('function');
       expect(typeof getTodayPanchang).toBe('function');
       expect(typeof getTodaySpiritualPulses).toBe('function');
+      expect(typeof isInWindow).toBe('function');
       expect(typeof createPanchangEngine).toBe('function');
       expect(typeof getLunarMonth).toBe('function');
       expect(typeof findNewMoonBefore).toBe('function');
@@ -144,8 +162,6 @@ describe('Panchang Engine — Public API Runtime Contract', () => {
       const rootObject = PanchangEngineExports as Record<string, unknown>;
       expect(rootObject['classifyLunarMonth']).toBeUndefined();
       expect(rootObject['classifyLunarMonthFromBoundaries']).toBeUndefined();
-      expect(rootObject['MonthClassificationInput']).toBeUndefined();
-      expect(rootObject['MonthClassificationResult']).toBeUndefined();
     });
   });
 });
