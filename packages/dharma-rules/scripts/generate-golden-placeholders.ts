@@ -17,10 +17,8 @@
  *   4. Set `approved: true` after council sign-off.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs   = require('fs') as typeof import('fs');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path') as typeof import('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 const GOLDEN_DIR = path.resolve(__dirname, '..', '__fixtures__', 'golden');
 

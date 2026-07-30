@@ -20,19 +20,13 @@
  * This script is a machine behaviour-capture tool, not a validation tool.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs   = require('fs') as typeof import('fs');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path') as typeof import('path');
+import fs from 'node:fs';
+import path from 'node:path';
+import { calculateObservancesForYear } from '../../../src/lib/calendar/engine.js';
 
 // Resolve repo root: packages/dharma-rules/scripts/ → go up 3 levels
 const REPO_ROOT    = path.resolve(__dirname, '..', '..', '..');
 const SNAPSHOT_DIR = path.resolve(__dirname, '..', '__fixtures__', 'snapshot');
-
-// ── Engine import (CJS-compatible, tsx transforms TS) ──────────────────────
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { calculateObservancesForYear, RULE_ENGINE_VERSION } =
-  require(path.resolve(REPO_ROOT, 'src/lib/calendar/engine')) as typeof import('../../../src/lib/calendar/engine');
 
 // ── Panchang engine version ────────────────────────────────────────────────
 
