@@ -25,10 +25,10 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 //   - spiritual_date is computed server-side from the user's own
 //     profiles.timezone, never taken from the request body — a caller
 //     cannot backdate or forward-date a response.
-// RLS on dharm_veer_responses (owner-only INSERT/SELECT, no UPDATE/DELETE
-// policy at all) is the second, independent layer: even if this route had
-// a bug, the underlying table still refuses to let any user write a row
-// for someone else.
+// RLS on dharm_veer_responses is the second, independent layer: owner-only
+// INSERT/SELECT plus column-scoped UPDATE for mood/intention/privacy. The
+// completion evidence columns remain immutable, and no caller can write a
+// row or reflection for another user.
 //
 // daily_sadhana.dharmveer_done is still kept in sync via complete_dharmveer
 // (unchanged RPC from the P0-3 migration) purely for display purposes
@@ -62,6 +62,9 @@ export async function POST(req: NextRequest) {
     const mood = typeof body.mood === 'string' && VALID_MOODS.has(body.mood) ? body.mood : null;
     const intentionRaw = typeof body.intention === 'string' ? body.intention.trim() : '';
     const intention = intentionRaw.length > 0 ? intentionRaw.slice(0, MAX_INTENTION_LENGTH) : null;
+    const hasReflectionPayload =
+      Object.prototype.hasOwnProperty.call(body, 'mood')
+      || Object.prototype.hasOwnProperty.call(body, 'intention');
 
     if (!heroId) {
       return NextResponse.json({ error: 'heroId is required' }, { status: 400 });
@@ -104,6 +107,25 @@ export async function POST(req: NextRequest) {
       // situation.
       console.error('[POST /api/dharm-veer/submit] insert failed:', insertError.message);
       return NextResponse.json({ error: insertError.message }, { status: 500 });
+    }
+
+    // The silent 30-second read completion may have inserted this immutable
+    // evidence row before the reader opens the optional reflection sheet.
+    // On that duplicate path, enrich only the explicitly writable reflection
+    // columns. Column grants and owner-only RLS prevent changes to the actual
+    // completion evidence (hero, date, decision, user).
+    if (insertError?.code === '23505' && hasReflectionPayload) {
+      const { error: reflectionError } = await supabase
+        .from('dharm_veer_responses')
+        .update({ mood, intention, privacy })
+        .eq('user_id', user.id)
+        .eq('hero_id', hero.id)
+        .eq('spiritual_date', spiritualDate);
+
+      if (reflectionError) {
+        console.error('[POST /api/dharm-veer/submit] reflection update failed:', reflectionError.message);
+        return NextResponse.json({ error: reflectionError.message }, { status: 500 });
+      }
     }
 
     // Keep the display-only daily_sadhana.dharmveer_done flag in sync (see
