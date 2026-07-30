@@ -13,7 +13,10 @@
  * export type Paksha = 'shukla' | 'krishna'
  *
  * export interface LunarMonthResult { … }
+ * export interface MonthClassificationInput { … }
+ * export interface MonthClassificationResult { … }
  *
+ * export function classifyLunarMonth(input: MonthClassificationInput): MonthClassificationResult
  * export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthResult
  * export function findNewMoonBefore(instant: Date): Date | null
  * export function findNewMoonAfter(instant: Date): Date | null
@@ -92,6 +95,97 @@ export interface LunarMonthResult {
   diagnostics: string[];
 }
 
+export interface MonthClassificationInput {
+  sunSiderealAtStart: number;
+  sankrantis: Array<{ rashi: number; at: Date }>;
+  nextSankrantiAfterEnd?: { rashi: number; at: Date };
+  sunSiderealAfterEnd?: number;
+}
+
+export interface MonthClassificationResult {
+  amantaIndex: number;
+  amantaMonthName: string;
+  displayMonthName: string;
+  isAdhika: boolean;
+  isKshaya: boolean;
+  sankrantiCount: number;
+  diagnostics: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Pure classification helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Pure helper function to classify a lunar month given astronomical input.
+ * Canonical rule per calendar-profiles.md §1:
+ * - 0 Sankrantis: Adhika month. Takes the name of the following normal month (which contains the next Sankranti).
+ *   The entered rashi at a Sankranti directly corresponds to that month's amanta index (Mesha=0 -> Chaitra=0, etc.).
+ * - 1 Sankranti: Normal month. Name from Sun's rashi at start amavasya: (startRashi + 1) % 12.
+ * - 2 Sankrantis: Kshaya month. Skipped month convention.
+ */
+export function classifyLunarMonth(input: MonthClassificationInput): MonthClassificationResult {
+  const diagnostics: string[] = [];
+  const sankrantiCount = input.sankrantis.length;
+
+  let amantaIndex: number;
+  let isAdhika = false;
+  let isKshaya = false;
+  let amantaMonthName: string;
+  let displayMonthName: string;
+
+  if (sankrantiCount === 0) {
+    // ── ADHIKA (intercalary) month ─────────────────────────────────────────
+    // Takes the name of the FOLLOWING normal month, prefixed Adhika (§1.3).
+    // The next normal month contains nextSankrantiAfterEnd.
+    // The entered rashi at a Sankranti is ALREADY the amanta month index!
+    let nijaIndex: number;
+    if (input.nextSankrantiAfterEnd) {
+      nijaIndex = (input.nextSankrantiAfterEnd.rashi % 12 + 12) % 12;
+    } else if (input.sunSiderealAfterEnd !== undefined) {
+      nijaIndex = monthIndexFromSunSidereal(input.sunSiderealAfterEnd);
+      diagnostics.push('adhika: could not find next Sankranti; used day-after-end Sun position');
+    } else {
+      const startRashi = Math.floor(((input.sunSiderealAtStart % 360) + 360) % 360 / 30) % 12;
+      nijaIndex = (startRashi + 1) % 12;
+    }
+
+    amantaIndex     = nijaIndex;
+    isAdhika        = true;
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = `Adhika ${amantaMonthName}`;
+
+  } else if (sankrantiCount === 1) {
+    // ── NORMAL month ──────────────────────────────────────────────────────
+    amantaIndex     = monthIndexFromSunSidereal(input.sunSiderealAtStart);
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = amantaMonthName;
+
+  } else {
+    // ── KSHAYA (decayed) month ─────────────────────────────────────────────
+    isKshaya = true;
+    amantaIndex     = monthIndexFromSunSidereal(input.sunSiderealAtStart);
+    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
+    displayMonthName = amantaMonthName;
+
+    diagnostics.push(
+      `kshaya_masa: two Sankrantis (rashi ${input.sankrantis[0]?.rashi ?? '?'} and ` +
+      `${input.sankrantis[1]?.rashi ?? '?'}) in month interval. Month name "${amantaMonthName}" ` +
+      `is kshaya — skipped name convention must be applied at Layer C.`,
+    );
+  }
+
+  return {
+    amantaIndex,
+    amantaMonthName,
+    displayMonthName,
+    isAdhika,
+    isKshaya,
+    sankrantiCount,
+    diagnostics,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Exported primitive: findNewMoonBefore
 // ---------------------------------------------------------------------------
@@ -108,7 +202,6 @@ export function findNewMoonBefore(
   const snap = computeAstronomy(instant);
   const elong = snap.elongation; // in [0, 360)
 
-  // If elongation is currently within 60s of 0 boundary, return instant itself
   if (elong < 0.005 || elong > 359.995) {
     return instant;
   }
@@ -133,7 +226,6 @@ export function findNewMoonAfter(
   let searchFrom = instant;
   let searchElong = snap.elongation;
 
-  // If elongation is currently at amavasya boundary, advance 12h to find the NEXT amavasya
   if (snap.elongation < 0.005 || snap.elongation > 359.995) {
     searchFrom = new Date(instant.getTime() + 12 * 60 * 60 * 1000);
     searchElong = computeAstronomy(searchFrom).elongation;
@@ -300,55 +392,32 @@ export function getLunarMonth(instant: Date, system: MonthSystem): LunarMonthRes
 
   // ── Step 2: count Sankrantis in [start, end) ────────────────────────────
   const sankrantis = findSankrantisBetween(start, end);
-  const sankrantiCount = sankrantis.length;
 
-  // ── Step 3: determine amanta month name ─────────────────────────────────
+  // ── Step 3: classify lunar month via pure helper ─────────────────────────
   const startSnap = computeAstronomy(start);
-  const sunAtStart = startSnap.sunSidereal;
+  let nextSankrantiAfterEnd: { rashi: number; at: Date } | undefined;
+  let sunSiderealAfterEnd: number | undefined;
 
-  let amantaIndex: number;
-  let isAdhika = false;
-  let isKshaya = false;
-  let amantaMonthName: string;
-  let displayMonthName: string;
-
-  if (sankrantiCount === 0) {
-    // ADHIKA (intercalary) month
-    let nijaIndex: number;
+  if (sankrantis.length === 0) {
     const nextSankrantis = findSankrantisBetween(end, new Date(end.getTime() + 35 * 24 * 60 * 60 * 1000));
     if (nextSankrantis.length > 0) {
-      nijaIndex = (nextSankrantis[0].rashi + 1) % 12;
+      nextSankrantiAfterEnd = nextSankrantis[0];
     } else {
       const postSnap = computeAstronomy(new Date(end.getTime() + 24 * 60 * 60 * 1000));
-      nijaIndex = monthIndexFromSunSidereal(postSnap.sunSidereal);
-      diagnostics.push('adhika: could not find next Sankranti; used day-after-end Sun position');
+      sunSiderealAfterEnd = postSnap.sunSidereal;
     }
-
-    amantaIndex     = nijaIndex;
-    isAdhika        = true;
-    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
-    displayMonthName = `Adhika ${amantaMonthName}`;
-
-  } else if (sankrantiCount === 1) {
-    // NORMAL month
-    amantaIndex     = monthIndexFromSunSidereal(sunAtStart);
-    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
-    displayMonthName = amantaMonthName;
-
-  } else {
-    // KSHAYA (decayed) month
-    isKshaya = true;
-    amantaIndex     = monthIndexFromSunSidereal(sunAtStart);
-    amantaMonthName = MONTH_NAMES[amantaIndex] ?? 'Unknown';
-    displayMonthName = amantaMonthName;
-
-    diagnostics.push(
-      `kshaya_masa: two Sankrantis (rashi ${sankrantis[0]?.rashi ?? '?'} and ` +
-      `${sankrantis[1]?.rashi ?? '?'}) in [${start.toISOString()}, ` +
-      `${end.toISOString()}). Month name "${amantaMonthName}" is kshaya — ` +
-      `the skipped name convention must be applied at Layer C.`,
-    );
   }
+
+  const classification = classifyLunarMonth({
+    sunSiderealAtStart: startSnap.sunSidereal,
+    sankrantis,
+    nextSankrantiAfterEnd,
+    sunSiderealAfterEnd,
+  });
+
+  diagnostics.push(...classification.diagnostics);
+
+  const { amantaIndex, amantaMonthName, displayMonthName, isAdhika, isKshaya, sankrantiCount } = classification;
 
   // ── Step 4: paksha ───────────────────────────────────────────────────────
   const snap    = computeAstronomy(instant);

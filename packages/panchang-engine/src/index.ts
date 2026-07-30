@@ -4,8 +4,9 @@ import moonposition from 'astronomia/moonposition';
 import nutation from 'astronomia/nutation';
 import { Sunrise } from 'astronomia/sunrise';
 
-export type { MonthSystem, Paksha, LunarMonthResult } from './lunar-month/index.js';
+export type { MonthSystem, Paksha, LunarMonthResult, MonthClassificationInput, MonthClassificationResult } from './lunar-month/index.js';
 export {
+  classifyLunarMonth,
   getLunarMonth,
   findNewMoonBefore,
   findNewMoonAfter,

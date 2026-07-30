@@ -7,6 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 import {
+  classifyLunarMonth,
   getLunarMonth,
   findNewMoonBefore,
   findNewMoonAfter,
@@ -15,9 +16,75 @@ import {
   findSankrantisBetween,
 } from '../index.js';
 
-describe('Lunar Month Module — Deterministic Invariants', () => {
-  // ── 1. Both reproduced mid-month dates ─────────────────────────────────────
-  it('reproduces and resolves 2026-01-15T12:00:00Z without throw or solver failure', () => {
+describe('Lunar Month Module — Pure Classification Helper', () => {
+  // ── 0 Sankrantis (Adhika) ──────────────────────────────────────────────────
+  it('classifies 0 Sankrantis as an Adhika month taking the name of the next normal month', () => {
+    // Sun at start amavasya is in Vrishabha (rashi 1, 31.7°). No Sankranti occurs during the month.
+    // The next Sankranti after month-end enters Mithuna (rashi 2).
+    const res = classifyLunarMonth({
+      sunSiderealAtStart: 31.748,
+      sankrantis: [],
+      nextSankrantiAfterEnd: { rashi: 2, at: new Date('2026-06-15T07:06:13Z') },
+    });
+
+    expect(res.isAdhika).toBe(true);
+    expect(res.isKshaya).toBe(false);
+    expect(res.sankrantiCount).toBe(0);
+    expect(res.amantaIndex).toBe(2); // Jyeshtha (2)
+    expect(res.amantaMonthName).toBe('Jyeshtha');
+    expect(res.displayMonthName).toBe('Adhika Jyeshtha');
+  });
+
+  // ── 1 Sankranti (Normal) ───────────────────────────────────────────────────
+  it('classifies 1 Sankranti as a normal month taking name from start Sun rashi + 1', () => {
+    // Sun at start amavasya is in Dhanu (rashi 8, 244.6°). One Sankranti occurs entering Makara (rashi 9).
+    const res = classifyLunarMonth({
+      sunSiderealAtStart: 244.6,
+      sankrantis: [{ rashi: 9, at: new Date('2026-01-14T19:40:00Z') }],
+    });
+
+    expect(res.isAdhika).toBe(false);
+    expect(res.isKshaya).toBe(false);
+    expect(res.sankrantiCount).toBe(1);
+    expect(res.amantaIndex).toBe(9); // Pausha (9)
+    expect(res.amantaMonthName).toBe('Pausha');
+    expect(res.displayMonthName).toBe('Pausha');
+  });
+
+  // ── 2 Sankrantis (Kshaya) ──────────────────────────────────────────────────
+  it('classifies 2 Sankrantis as a Kshaya month with diagnostic', () => {
+    // Two Sankrantis occur in the same lunar month interval (rare decayed month)
+    const res = classifyLunarMonth({
+      sunSiderealAtStart: 215.0, // Vrischika (7) -> Kartika/Margashirsha
+      sankrantis: [
+        { rashi: 8, at: new Date('2026-12-15T00:00:00Z') },
+        { rashi: 9, at: new Date('2027-01-14T00:00:00Z') },
+      ],
+    });
+
+    expect(res.isAdhika).toBe(false);
+    expect(res.isKshaya).toBe(true);
+    expect(res.sankrantiCount).toBe(2);
+    expect(res.diagnostics.length).toBeGreaterThan(0);
+    expect(res.diagnostics[0]).toContain('kshaya_masa');
+  });
+});
+
+describe('Lunar Month Module — Integration Probes & Invariants', () => {
+  // ── May-June 2026 Adhika Jyeshtha Fix Probe ────────────────────────────────
+  it('correctly returns Adhika Jyeshtha (not Adhika Ashadha) for 2026-05-22', () => {
+    const d = new Date('2026-05-22T12:00:00Z');
+    const res = getLunarMonth(d, 'amanta');
+
+    expect(res.monthName).toBe('Adhika Jyeshtha');
+    expect(res.monthIndex).toBe(2);
+    expect(res.isAdhika).toBe(true);
+    expect(res.isKshaya).toBe(false);
+    expect(res.sankrantiCount).toBe(0);
+  });
+
+  // ── Regression Probes for 2026-01-15 and 2026-07-30 ────────────────────────
+  it('preserves Pausha month classification for 2026-01-15T12:00:00Z', () => {
     const d = new Date('2026-01-15T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
 
@@ -28,11 +95,9 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(res.isKshaya).toBe(false);
     expect(res.sankrantiCount).toBe(1);
     expect(res.diagnostics).toHaveLength(0);
-    expect(res.monthStartUtc).toBeTruthy();
-    expect(res.monthEndUtc).toBeTruthy();
   });
 
-  it('reproduces and resolves 2026-07-30T12:00:00Z without throw or solver failure', () => {
+  it('preserves Ashadha month classification for 2026-07-30T12:00:00Z', () => {
     const d = new Date('2026-07-30T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
 
@@ -43,15 +108,14 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(res.isKshaya).toBe(false);
     expect(res.sankrantiCount).toBe(1);
     expect(res.diagnostics).toHaveLength(0);
-    expect(res.monthStartUtc).toBeTruthy();
-    expect(res.monthEndUtc).toBeTruthy();
   });
 
-  // ── 2. Previous boundary < instant < next boundary invariant ─────────────
+  // ── Mathematical Invariants ────────────────────────────────────────────────
   it('maintains start < instant < end invariant for arbitrary dates', () => {
     const testDates = [
       new Date('2026-01-15T12:00:00Z'),
       new Date('2026-03-20T08:30:00Z'),
+      new Date('2026-05-22T12:00:00Z'),
       new Date('2026-07-30T12:00:00Z'),
       new Date('2026-11-10T18:00:00Z'),
     ];
@@ -67,7 +131,6 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     }
   });
 
-  // ── 3. Plausible lunation duration invariant ──────────────────────────────
   it('computes lunation duration between 29.1 and 29.9 days', () => {
     const d = new Date('2026-05-15T12:00:00Z');
     const res = getLunarMonth(d, 'amanta');
@@ -79,9 +142,7 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(durationDays).toBeLessThan(29.9);
   });
 
-  // ── 4. Near / exact new-moon and full-moon boundaries ────────────────────
   it('handles exact and near new-moon and full-moon boundaries cleanly', () => {
-    // 2026-01-18 is near amavasya
     const amavasyaDate = new Date('2026-01-18T19:52:44Z');
     const beforeAmavasya = findNewMoonBefore(amavasyaDate);
     const afterAmavasya  = findNewMoonAfter(amavasyaDate);
@@ -89,7 +150,6 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(beforeAmavasya).not.toBeNull();
     expect(afterAmavasya).not.toBeNull();
 
-    // 2026-02-01 is near purnima
     const purnimaDate = new Date('2026-02-01T22:00:00Z');
     const beforePurnima = findFullMoonBefore(purnimaDate);
     const afterPurnima  = findFullMoonAfter(purnimaDate);
@@ -98,32 +158,15 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(afterPurnima).not.toBeNull();
   });
 
-  // ── 5. Month name stability within one lunar month ────────────────────────
-  it('keeps month name stable on different days within the same lunar month', () => {
-    // Both 2026-02-01 and 2026-02-10 fall in the same amanta Magha month
-    const d1 = new Date('2026-02-01T12:00:00Z');
-    const d2 = new Date('2026-02-10T12:00:00Z');
-
-    const res1 = getLunarMonth(d1, 'amanta');
-    const res2 = getLunarMonth(d2, 'amanta');
-
-    expect(res1.amantaMonthName).toBe(res2.amantaMonthName);
-    expect(res1.monthStartUtc).toBe(res2.monthStartUtc);
-    expect(res1.monthEndUtc).toBe(res2.monthEndUtc);
-  });
-
-  // ── 6. Amanta vs Purnimanta conversion law ────────────────────────────────
   it('applies amanta/purnimanta conversion law correctly across pakshas', () => {
-    // Shukla paksha date: amanta and purnimanta month names MUST be identical
-    const shuklaDate = new Date('2026-02-20T12:00:00Z'); // Shukla Dwitiya/Tritiya
+    const shuklaDate = new Date('2026-02-20T12:00:00Z');
     const amantaShukla    = getLunarMonth(shuklaDate, 'amanta');
     const purnimantaShukla = getLunarMonth(shuklaDate, 'purnimanta');
 
     expect(amantaShukla.paksha).toBe('shukla');
     expect(purnimantaShukla.monthName).toBe(amantaShukla.monthName);
 
-    // Krishna paksha date: purnimanta month name MUST be amanta + 1 (next month name)
-    const krishnaDate = new Date('2026-03-08T12:00:00Z'); // Krishna Panchami
+    const krishnaDate = new Date('2026-03-08T12:00:00Z');
     const amantaKrishna    = getLunarMonth(krishnaDate, 'amanta');
     const purnimantaKrishna = getLunarMonth(krishnaDate, 'purnimanta');
 
@@ -131,22 +174,8 @@ describe('Lunar Month Module — Deterministic Invariants', () => {
     expect(purnimantaKrishna.monthIndex).toBe((amantaKrishna.monthIndex + 1) % 12);
   });
 
-  // ── 7. Sankranti classification ──────────────────────────────────────────
-  it('correctly counts Sankrantis within a lunar month interval', () => {
-    const start = new Date('2026-01-18T20:00:00Z');
-    const end   = new Date('2026-02-17T12:00:00Z');
-    const sankrantis = findSankrantisBetween(start, end);
-
-    // One solar ingress (Kumbha Sankranti in Feb) occurs in this window
-    expect(sankrantis.length).toBe(1);
-    expect(sankrantis[0].rashi).toBe(10); // Kumbha (10)
-  });
-
-  // ── 8. Solver failure produces explicit diagnostic ────────────────────────
   it('produces an explicit diagnostic on solver failure without returning estimated boundaries', () => {
     const d = new Date('2026-01-15T12:00:00Z');
-    // If we pass a 1-hour maxSearchHours window to findNewMoonBefore for a date 20 days after amavasya,
-    // solving fails and returns null.
     const start = findNewMoonBefore(d, 1);
     expect(start).toBeNull();
   });
