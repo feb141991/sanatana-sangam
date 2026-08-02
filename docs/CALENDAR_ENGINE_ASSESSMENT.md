@@ -128,13 +128,13 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Blocks | Evidence |
 |---|---|---|---|---|
-| 2.1 | Extract package; Layer-A/B boundary enforced | ⬜ | all | |
-| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⬜ | | |
-| 2.3 | Tolerance-based boundary solver (≤60 s) | ⬜ | | |
-| 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | |
-| 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | |
-| 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | 🟡 | **everything** | `packages/panchang-engine/src/lunar-month/` (additive module; in progress pending sourced golden validation) |
-| 2.7 | Adhika / Kṣaya māsa | 🟡 | | `packages/panchang-engine/src/lunar-month/` (additive module; in progress pending sourced golden validation) |
+| 2.1 | Extract package; Layer-A/B boundary enforced | ⬜ | all | Module still lives inside `packages/panchang-engine`; extraction deferred |
+| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⬜ | | `lahiriAyanamsha` re-exported unchanged — still the J2000 polynomial fit, no valid-range guard |
+| 2.3 | Tolerance-based boundary solver (≤60 s) | 🟡 | | `lunar-month/astronomy.ts` `solveBoundary`/`solveBoundaryBefore` use `TOLERANCE_MS = 60_000` per conventions §1.2. **Legacy `index.ts:350` still 45 fixed iterations — deliberately untouched** (changing it would alter existing output) |
+| 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | Verified absent: zero references engine-wide |
+| 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | Verified absent: zero references engine-wide. **Largest remaining Layer-A gap** |
+| 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | 🟡 | **everything** | `lunar-month/` — `findAmantaMonth`, `classifyLunarMonth`, `MonthSystem`, `findNewMoon/FullMoonBefore/After`, `findSankrantisBetween`; unit + invariant tests (`7ec3f2d`, `a1bc616`, `16c14fa`). **Implementation done; 🟡 pending sourced golden validation only** |
+| 2.7 | Adhika / Kṣaya māsa | 🟡 | | `classifyLunarMonth` handles both; classification corrected in `4fbd025`. 🟡 pending sourced golden validation |
 | 2.8 | Solar months + regional day-assignment (P1) | ⏸ 🔬 | Tamil/Malayalam profiles | |
 | 2.9 | Era systems + true new-year roll-over (D8) | ⬜ | | |
 | 2.10 | Vedic-day boundary rule | ⬜ | Layer C | |
@@ -159,8 +159,8 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Evidence |
 |---|---|---|---|
-| 4.1 | Golden fixture harness (D17) | 🟡 | `packages/dharma-rules/` (harness & snapshot regression live; sourced golden coverage remains 0) |
-| 4.2 | Minimum launch coverage (`calculation-examples.md` §7) | ⬜ | |
+| 4.1 | Golden fixture harness (D17) | ✅ | `packages/dharma-rules/`. Verified running: **988 passed / 216 skipped / 2.39 s**. Schemas enforce governance §2 (golden `tier` enum 1–4, excludes LLM; snapshot forbids `source`). Harness re-runs the real engine, not file replay. Wired into `ci.yml`. *Harness complete; sourced coverage is 4.2* |
+| 4.2 | Minimum launch coverage (`calculation-examples.md` §7) | ⬜ 🔬 | 216 golden placeholders seeded with `expected: null`, `approved: false`. **Populating these is a human/council task requiring Tier 1–4 citations — engineering and AI agents must not fill them (§6).** Now the gate on Phase 3 |
 | 4.3 | Astronomical validation vs Tier-1 sources, 12 cities | ⬜ | |
 | 4.4 | Edge-case fixtures E1–E13 | ⬜ | |
 | 4.5 | Persist integrity findings (D12) | ⬜ | |
@@ -236,3 +236,16 @@ the existing audit cannot detect a wrong rule by construction.
 | Date | Change | By |
 |---|---|---|
 | 2026-07-30 | Baseline assessment + Phase 1 specification set created | Claude (Opus 5) |
+| 2026-07-30 | Lunar-month module landed (2.6/2.7/2.3 → 🟡); golden harness landed and verified (4.1 → ✅, 988 pass / 2.39 s). Review found and fixed: unreported `package.json` regression breaking `corpus:validate-indexes`, and an unmemoized engine call making the suite unrunnable (8.1 min → 2.39 s). Verified `masaName` output byte-identical after an 845-line `index.ts` refactor — the D1/D2 landmine held | Claude (Opus 5) + Antigravity |
+
+### Note on snapshot fixture count
+
+The 972 snapshot fixtures are **54 distinct assertions with 18× redundancy** — all
+18 location/profile combinations currently return an identical date, because the
+engine has no profile support (D3) and computes everything at Ujjain (D5). This is
+expected and is documented inside each fixture.
+
+Their value is as a **tripwire**, not as 972 independent checks: once D5/D3 land,
+these combinations *must* diverge, and if they don't, the fix didn't work. The
+tripwire has already proved itself once — it confirmed that the 845-line
+`index.ts` refactor on 2026-07-30 changed zero festival dates.
