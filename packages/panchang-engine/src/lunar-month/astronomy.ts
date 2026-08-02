@@ -15,70 +15,23 @@
  * §1.2, implemented via a tolerance test rather than a fixed iteration count.
  */
 
-import julian from 'astronomia/julian';
-import solar from 'astronomia/solar';
-import moonposition from 'astronomia/moonposition';
-import nutation from 'astronomia/nutation';
+import {
+  normalizeAngle,
+  unwrapForward,
+  lahiriAyanamsha,
+  computeAstronomy,
+  type AstroSnapshot,
+} from '../core/astronomy.js';
 
-// ---------------------------------------------------------------------------
-// Core angle helpers
-// ---------------------------------------------------------------------------
+export {
+  normalizeAngle,
+  unwrapForward,
+  lahiriAyanamsha,
+  computeAstronomy,
+  type AstroSnapshot,
+};
 
-/** Normalise any angle into [0, 360). */
-export function normalizeAngle(deg: number): number {
-  return ((deg % 360) + 360) % 360;
-}
 
-/**
- * Unwrap `angle` forward past any 360° wrap so that it is >= `base`.
- * Used during bisection to keep monotonically increasing angles comparable.
- */
-export function unwrapForward(angle: number, base: number): number {
-  let v = angle;
-  while (v < base) v += 360;
-  return v;
-}
-
-// ---------------------------------------------------------------------------
-// Lahiri ayanamsha — identical to index.ts:161-164 (do NOT diverge)
-// ---------------------------------------------------------------------------
-
-export function lahiriAyanamsha(jde: number): number {
-  const t = (jde - 2451545.0) / 36525.0;
-  return 23.85306 + 1.39722 * t + 0.00018 * t * t - 0.000005 * t * t * t;
-}
-
-// ---------------------------------------------------------------------------
-// Astronomical positions at an instant
-// ---------------------------------------------------------------------------
-
-export interface AstroSnapshot {
-  jde: number;
-  sunTropical: number;
-  moonTropical: number;
-  ayanamsha: number;
-  sunSidereal: number;
-  moonSidereal: number;
-  /** moon_tropical − sun_tropical, normalised [0, 360) */
-  elongation: number;
-}
-
-export function computeAstronomy(date: Date): AstroSnapshot {
-  const jde = julian.DateToJDE(date);
-  const t   = (jde - 2451545.0) / 36525.0;
-
-  const sunTropical  = normalizeAngle((solar.apparentLongitude(t) * 180) / Math.PI);
-  const moonBase     = moonposition.position(jde).lon;
-  const [deltaPsi]   = nutation.nutation(jde);
-  const moonTropical = normalizeAngle(((moonBase + deltaPsi) * 180) / Math.PI);
-
-  const ayanamsha    = lahiriAyanamsha(jde);
-  const sunSidereal  = normalizeAngle(sunTropical - ayanamsha);
-  const moonSidereal = normalizeAngle(moonTropical - ayanamsha);
-  const elongation   = normalizeAngle(moonTropical - sunTropical);
-
-  return { jde, sunTropical, moonTropical, ayanamsha, sunSidereal, moonSidereal, elongation };
-}
 
 // ---------------------------------------------------------------------------
 // Bisection solver — tolerance-based (≤ 60 s), matching astronomy-conventions §6

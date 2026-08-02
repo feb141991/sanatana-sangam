@@ -1,8 +1,14 @@
 import julian from 'astronomia/julian';
-import solar from 'astronomia/solar';
-import moonposition from 'astronomia/moonposition';
-import nutation from 'astronomia/nutation';
 import { Sunrise } from 'astronomia/sunrise';
+import {
+  normalizeAngle,
+  unwrapForward,
+  lahiriAyanamsha,
+  computeAstronomy,
+  type AstroSnapshot as PanchangAstronomy,
+} from './core/astronomy.js';
+
+
 
 export type {
   MonthSystem,
@@ -152,54 +158,6 @@ function getUtcOffsetHours(timeZone: string, date: Date): number {
   }
 }
 
-type PanchangAstronomy = {
-  jde: number;
-  sunTropical: number;
-  moonTropical: number;
-  ayanamsha: number;
-  sunSidereal: number;
-  moonSidereal: number;
-  elongation: number;
-};
-
-function normalizeAngle(angle: number): number {
-  return ((angle % 360) + 360) % 360;
-}
-
-function unwrapForward(angle: number, baseAngle: number): number {
-  let value = angle;
-  while (value < baseAngle) {
-    value += 360;
-  }
-  return value;
-}
-
-function lahiriAyanamsha(jde: number): number {
-  const t = (jde - 2451545.0) / 36525.0;
-  return 23.85306 + 1.39722 * t + 0.00018 * t * t - 0.000005 * t * t * t;
-}
-
-function computeAstronomy(date: Date): PanchangAstronomy {
-  const jde = julian.DateToJDE(date);
-  const t = (jde - 2451545.0) / 36525.0;
-  const sunTropical = normalizeAngle((solar.apparentLongitude(t) * 180) / Math.PI);
-  const moonBase = moonposition.position(jde).lon;
-  const [deltaPsi] = nutation.nutation(jde);
-  const moonTropical = normalizeAngle(((moonBase + deltaPsi) * 180) / Math.PI);
-  const ayanamsha = lahiriAyanamsha(jde);
-  const sunSidereal = normalizeAngle(sunTropical - ayanamsha);
-  const moonSidereal = normalizeAngle(moonTropical - ayanamsha);
-
-  return {
-    jde,
-    sunTropical,
-    moonTropical,
-    ayanamsha,
-    sunSidereal,
-    moonSidereal,
-    elongation: normalizeAngle(moonTropical - sunTropical),
-  };
-}
 
 // Default (module-level) formatters — used when no timezone is supplied.
 function formatClock(date: Date | null, fmt = LOCAL_TIME_FORMAT): string {
