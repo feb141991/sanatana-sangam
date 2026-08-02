@@ -128,8 +128,8 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Blocks | Evidence |
 |---|---|---|---|---|
-| 2.1 | **Extract shared astronomy core + Layer-A/B boundary (this is the DEDUPLICATION item — see §7)** | ⬜ | **2.2, and all of §7 X1/X2/X7** | Resolves X1 (sun/moon maths ×3), X2 (helpers ×2), X7 (entry points ×3). **Must run BEFORE 2.2** or the ayanāṁśa gets fixed in one copy only |
-| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⏸ | | Blocked on 2.1 — `lahiriAyanamsha` currently exists in **two** places (§7 X2); fixing one silently diverges from the other |
+| 2.1 | **Extract shared astronomy core + Layer-A/B boundary (this is the DEDUPLICATION item — see §7)** | ✅ | | Resolves X1 (sun/moon maths ×3), X2 (helpers ×2), X7 (entry points ×3). Extracted `src/core/astronomy.ts` (`9d5f1ba` and Stage 2 commit). |
+| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⬜ | | Unblocked by 2.1 deduplication. |
 | 2.3 | Tolerance-based boundary solver (≤60 s) | 🟡 | | `lunar-month/astronomy.ts` `solveBoundary`/`solveBoundaryBefore` use `TOLERANCE_MS = 60_000` per conventions §1.2. **Legacy `index.ts:350` still 45 fixed iterations — deliberately untouched** (changing it would alter existing output) |
 | 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | Verified absent: zero references engine-wide |
 | 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | Verified absent: zero references engine-wide. **Largest remaining Layer-A gap** |
@@ -243,13 +243,13 @@ Audited 2026-07-30.
 
 | # | Duplicated concept | Copies | Why it exists | Retirement gate |
 |---|---|---|---|---|
-| **X1** | **Sun/moon longitude** | **3** — `index.ts` `computeAstronomy` (astronomia, precise) · `lunar-month/astronomy.ts` `computeAstronomy` (copy) · `getTodayPanchang` inline low-precision Meeus | New module is deliberately self-contained; `getTodayPanchang` predates both | **2.1** — extract one astronomy core, all three import it |
-| **X2** | Angle/ayanāṁśa helpers — `normalizeAngle`, `unwrapForward`, `lahiriAyanamsha` | 2 each | Same as X1 | **2.1** — and **2.1 must precede 2.2** (see below) |
+| **X1** | **Sun/moon longitude** | **1** core (`src/core/astronomy.ts`) | Resolved in 2.1 (`9d5f1ba` + Stage 2) | ✅ **Resolved** |
+| **X2** | Angle/ayanāṁśa helpers — `normalizeAngle`, `unwrapForward`, `lahiriAyanamsha` | **1** core (`src/core/astronomy.ts`) | Resolved in 2.1 (`9d5f1ba`) | ✅ **Resolved** |
 | **X3** | Boundary solver | 2 — `index.ts:350` `solveNextBoundary` (45 fixed iterations) · `lunar-month` `solveBoundary` (60 s tolerance) | Legacy left untouched to preserve output | **2.3** — retire legacy once callers migrate |
 | **X4** | Month-name array | 2 — `MASA_NAMES` (`index.ts:82`) · `MONTH_NAMES` (`lunar-month/names.ts:40`) | Same 12 strings, **different meaning**: one labels a solar rāśi (wrong), one a lunar month (right) | **3.7** — converge only with the rule migration. Merging earlier would be incorrect |
 | **X5** | Lunar month determination | 2 — legacy `masaName` (buggy, load-bearing) · `findAmantaMonth` (correct) | **Intentional, mandated.** Fixing in place would break all 118 rules | **3.7** — delete legacy in the atomic migration |
 | **X6** | Festival data source | 3 — `observance_definitions`/`observance_occurrences` (live) · `festivals` table (legacy, error-fallback in 3 admin/cron routes) · `FESTIVALS_2026` static array (already `@deprecated … removed in v2`) | Historical layering | **3.10 / v2** — delete both legacy sources once rules are data |
-| **X7** | Panchāṅga entry points | 3 — `calculatePanchang` · `getPanchangTimes` · `getTodayPanchang` | Grew separately for UI, cron, and digest | **2.1** — one core, thin adapters |
+| **X7** | Panchāṅga entry points | **1** astronomy core (`src/core/astronomy.ts`) backing thin adapters | Resolved in 2.1 | ✅ **Resolved** |
 
 ### X1 is a live user-visible risk, not just tidiness
 

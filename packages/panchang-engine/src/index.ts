@@ -768,28 +768,13 @@ const _WEEKDAY_DEITIES: Record<string, string> = {
 };
 
 export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangInfo {
-  // Astronomical calculations always use the real current UTC instant —
-  // the moon's position is time-dependent and doesn't care about timezone.
   const now  = new Date();
   const date = dateInput ?? now;
 
-  // Days since J2000.0
-  const jd = date.getTime() / 86_400_000 + 2_440_587.5;
-  const d  = jd - 2_451_545.0;
-
-  // Sun — mean longitude + equation of centre
-  const L_sun  = (280.466 + 0.985_647_4 * d) % 360;
-  const g_sun  = (357.528 + 0.985_600_3 * d) % 360;
-  const λ_sun  = ((L_sun + 1.915 * Math.sin(g_sun * Math.PI / 180) +
-                  0.02 * Math.sin(2 * g_sun * Math.PI / 180)) + 360) % 360;
-
-  // Moon — mean longitude + largest correction
-  const L_moon = (218.316 + 13.176_396 * d) % 360;
-  const M_moon = (134.963 + 13.064_993 * d) % 360;
-  const λ_moon = ((L_moon + 6.289 * Math.sin(M_moon * Math.PI / 180)) + 360) % 360;
+  const astro = computeAstronomy(date);
 
   // Tithi
-  const elongation  = ((λ_moon - λ_sun) + 360) % 360;
+  const elongation  = astro.elongation;
   const tithiRaw    = Math.floor(elongation / 12) + 1;
   const tithi       = Math.max(1, Math.min(30, tithiRaw));
   const paksha: 'Shukla' | 'Krishna' = tithi <= 15 ? 'Shukla' : 'Krishna';
@@ -808,7 +793,7 @@ export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangI
   const weekdayIndex = (() => {
     if (timezone) {
       // e.g. "2026-05-27" in the user's local date
-      const localIso = new Intl.DateTimeFormat('sv', { timeZone: timezone }).format(now);
+      const localIso = new Intl.DateTimeFormat('sv', { timeZone: timezone }).format(date);
       // Append noon UTC so getDay() returns the right calendar day regardless of server tz
       return new Date(`${localIso}T12:00:00Z`).getDay();
     }
@@ -825,8 +810,8 @@ export function getTodayPanchang(dateInput?: Date, timezone?: string): PanchangI
   const isAmavasya = tithi === 30;
   const isPradosh  = tithiInPaksha === 13;
 
-  // Approximate nakshatra (27 divisions of the ecliptic)
-  const nakshatraIdx = Math.floor(((λ_moon % 360) + 360) % 360 / (360 / 27));
+  // Precise nakshatra (27 divisions of the sidereal ecliptic)
+  const nakshatraIdx = Math.floor(astro.moonSidereal / (360 / 27));
   const nakshatra    = NAKSHATRAS[Math.max(0, Math.min(26, nakshatraIdx))];
 
   return { tithi, tithiName, paksha, weekday, weekdayDeity,
