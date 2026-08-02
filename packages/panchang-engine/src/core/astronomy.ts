@@ -62,6 +62,14 @@ export const LAHIRI_AYANAMSHA_JDE_MAX = 2488070.5; // 2100-12-31T23:59:59Z
  * Throws a RangeError outside this range to avoid silent extrapolation errors.
  */
 export function lahiriAyanamsha(jde: number): number {
+  // Checked before the range comparison: NaN fails BOTH `<` and `>`, so a
+  // non-finite JDE would slip past the range guard and return NaN, silently
+  // corrupting every sidereal value downstream (masaName would become
+  // MASA_NAMES[NaN] === undefined). Fail loudly instead.
+  if (!Number.isFinite(jde)) {
+    throw new RangeError(`Lahiri ayanamsha received a non-finite JDE: ${jde}.`);
+  }
+
   if (jde < LAHIRI_AYANAMSHA_JDE_MIN || jde > LAHIRI_AYANAMSHA_JDE_MAX) {
     throw new RangeError(
       `Lahiri ayanamsha is only valid between 1800-01-01 and 2100-12-31 CE (JDE ${LAHIRI_AYANAMSHA_JDE_MIN} to ${LAHIRI_AYANAMSHA_JDE_MAX}). Received JDE ${jde}.`
