@@ -63,10 +63,22 @@ Specifications are authoritative: `docs/calendar-domain-model.md`,
     `docs/astronomy-conventions.md` §1.2 — tithi boundaries to ≤ 60 s. Never return
     an estimated boundary; return `null` and a diagnostic.
 
+13. **One concept, one implementation.** Do not add a second copy of astronomy,
+    a constant table, a solver, or a data source. If a transitional duplicate is
+    genuinely unavoidable (e.g. a corrected implementation beside a load-bearing
+    buggy one), you **must** register it in `docs/CALENDAR_ENGINE_ASSESSMENT.md`
+    §7 with an explicit retirement gate, and say so in your report. **An
+    unregistered duplicate is a defect** — a fix applied to one copy silently
+    misses the other, which is exactly how defects D1/D2 were created.
+
 Additional hard constraints:
 
 - **Layer discipline:** Layer A must not import Layer B or C; Layer B must not import
   Layer C. A violation is a defect even if the output looks correct.
+- **Before adding a helper, grep for it.** `normalizeAngle`, `computeAstronomy`,
+  month-name arrays and boundary solvers already exist. Import, do not redefine.
+- **The mobile vendored tarball is a release artefact, not a copy to edit.**
+  Re-vendor from source; never hand-modify `vendor/*.tgz` contents.
 - **Swiss Ephemeris** must not be enabled without a recorded commercial-licence
   decision. Keep the existing `licenseMode: 'undecided'` guard.
 - **No scraping** of commercial panchāṅga services. See `docs/source-governance.md` §3.

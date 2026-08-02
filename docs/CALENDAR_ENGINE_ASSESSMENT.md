@@ -128,8 +128,8 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Blocks | Evidence |
 |---|---|---|---|---|
-| 2.1 | Extract package; Layer-A/B boundary enforced | ⬜ | all | Module still lives inside `packages/panchang-engine`; extraction deferred |
-| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⬜ | | `lahiriAyanamsha` re-exported unchanged — still the J2000 polynomial fit, no valid-range guard |
+| 2.1 | **Extract shared astronomy core + Layer-A/B boundary (this is the DEDUPLICATION item — see §7)** | ⬜ | **2.2, and all of §7 X1/X2/X7** | Resolves X1 (sun/moon maths ×3), X2 (helpers ×2), X7 (entry points ×3). **Must run BEFORE 2.2** or the ayanāṁśa gets fixed in one copy only |
+| 2.2 | Ayanāṁśa: true Lahiri + valid range (D7) | ⏸ | | Blocked on 2.1 — `lahiriAyanamsha` currently exists in **two** places (§7 X2); fixing one silently diverges from the other |
 | 2.3 | Tolerance-based boundary solver (≤60 s) | 🟡 | | `lunar-month/astronomy.ts` `solveBoundary`/`solveBoundaryBefore` use `TOLERANCE_MS = 60_000` per conventions §1.2. **Legacy `index.ts:350` still 45 fixed iterations — deliberately untouched** (changing it would alter existing output) |
 | 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | Verified absent: zero references engine-wide |
 | 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | Verified absent: zero references engine-wide. **Largest remaining Layer-A gap** |
@@ -228,6 +228,52 @@ the existing audit cannot detect a wrong rule by construction.
 | Swiss Ephemeris introduced without licence decision | Legal exposure | Keep the existing guard; ADR required |
 | Scraping a commercial panchāṅga for validation | UK/EU database-right + ToS exposure | Tier-1 print sources, manual transcription with citation |
 | Scope creep to "every observance in Sanātana Dharma" | Never ships | Phase 2 fixed at ~18 observances; profiles added incrementally |
+| **Parallel old/new implementations drift apart** | A fix applied to one copy silently misses the other — the D1/D2 trap repeating | **§7 duplication register**: every duplicate is registered with an owner and an expiry gate. No duplicate may be created without one |
+
+---
+
+## 7. Duplication register & retirement plan
+
+**Policy.** One concept, one implementation. Where a transitional duplicate is
+unavoidable (e.g. a corrected implementation living beside a load-bearing buggy
+one), it **must** be registered here with an explicit **retirement gate**. A
+duplicate without a registered gate is a defect.
+
+Audited 2026-07-30.
+
+| # | Duplicated concept | Copies | Why it exists | Retirement gate |
+|---|---|---|---|---|
+| **X1** | **Sun/moon longitude** | **3** — `index.ts` `computeAstronomy` (astronomia, precise) · `lunar-month/astronomy.ts` `computeAstronomy` (copy) · `getTodayPanchang` inline low-precision Meeus | New module is deliberately self-contained; `getTodayPanchang` predates both | **2.1** — extract one astronomy core, all three import it |
+| **X2** | Angle/ayanāṁśa helpers — `normalizeAngle`, `unwrapForward`, `lahiriAyanamsha` | 2 each | Same as X1 | **2.1** — and **2.1 must precede 2.2** (see below) |
+| **X3** | Boundary solver | 2 — `index.ts:350` `solveNextBoundary` (45 fixed iterations) · `lunar-month` `solveBoundary` (60 s tolerance) | Legacy left untouched to preserve output | **2.3** — retire legacy once callers migrate |
+| **X4** | Month-name array | 2 — `MASA_NAMES` (`index.ts:82`) · `MONTH_NAMES` (`lunar-month/names.ts:40`) | Same 12 strings, **different meaning**: one labels a solar rāśi (wrong), one a lunar month (right) | **3.7** — converge only with the rule migration. Merging earlier would be incorrect |
+| **X5** | Lunar month determination | 2 — legacy `masaName` (buggy, load-bearing) · `findAmantaMonth` (correct) | **Intentional, mandated.** Fixing in place would break all 118 rules | **3.7** — delete legacy in the atomic migration |
+| **X6** | Festival data source | 3 — `observance_definitions`/`observance_occurrences` (live) · `festivals` table (legacy, error-fallback in 3 admin/cron routes) · `FESTIVALS_2026` static array (already `@deprecated … removed in v2`) | Historical layering | **3.10 / v2** — delete both legacy sources once rules are data |
+| **X7** | Panchāṅga entry points | 3 — `calculatePanchang` · `getPanchangTimes` · `getTodayPanchang` | Grew separately for UI, cron, and digest | **2.1** — one core, thin adapters |
+
+### X1 is a live user-visible risk, not just tidiness
+
+`getTodayPanchang` uses its own low-precision formulas (its comment states
+**±1 tithi**) and backs the daily-digest API, while the Panchāṅga screen uses the
+precise path. **The same user can be told two different tithis on the same day.**
+Fixing X1 resolves this.
+
+### Sequencing consequence: 2.1 must precede 2.2
+
+Item 2.1 was scoped as "extract package" — cosmetic. It is not. It is the
+**deduplication** item. Because `lahiriAyanamsha` exists twice (X2), doing 2.2
+(true Lahiri ayanāṁśa) first means fixing it in two places, and missing one
+produces exactly the silent divergence that created D1/D2. **Do 2.1 first.**
+
+### Operational: vendored copy drift
+
+The mobile app consumes `@sangam/panchang-engine` as a vendored tarball
+(`shoonaya-mobile/vendor/sangam-panchang-engine-0.1.0.tgz`, **dated 5 Jul**) while
+the source has moved on (**last modified 30 Jul**). Mobile is therefore running an
+engine without the lunar-month module or the public-contract fix. Not urgent —
+nothing in the app calls the new code yet — but **re-vendor before shipping any
+calendar change to mobile**, and treat the tarball as a release artefact, not a
+copy to edit.
 
 ---
 
