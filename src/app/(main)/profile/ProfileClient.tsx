@@ -6,7 +6,8 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2 } from 'lucide-react';
+import { BellOff, EyeOff, LogOut, Edit3, MapPin, Lock, Camera, ShieldBan, X, Download, Loader2, ChevronLeft, ChevronRight, Monitor, Moon, Sun, Star, MessageSquare, MessageCircle, Settings, Shield, Users, AlertCircle, Share2, Globe } from 'lucide-react';
+
 import Link from 'next/link';
 import { Twitter, Link as LinkIcon } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -387,7 +388,12 @@ export default function ProfileClient({
     bio:              liveProfile?.bio              ?? '',
     city:             liveProfile?.city             ?? '',
     country:          liveProfile?.country          ?? '',
+    timezone:         (liveProfile as any)?.timezone         ?? '',
+    home_city:        (liveProfile as any)?.home_city        ?? '',
+    home_country:     (liveProfile as any)?.home_country     ?? '',
+    home_timezone:    (liveProfile as any)?.home_timezone    ?? '',
     tradition:        liveProfile?.tradition        ?? '',
+
     sampradaya:       liveProfile?.sampradaya       ?? '',
     ishta_devata:     liveProfile?.ishta_devata     ?? '',
     spiritual_level:  liveProfile?.spiritual_level  ?? 'jigyasu',
@@ -509,12 +515,66 @@ export default function ProfileClient({
     });
   }, [onesignalPlayerId, supabase, userId]);
 
+  // ── Detect-and-Ask Timezone Update (Rule 2) ───────────────────────────────
+  const [showTzPrompt, setShowTzPrompt] = useState(false);
+  const [detectedTz, setDetectedTz] = useState<string | null>(null);
+  const obsSource = (liveProfile as any)?.observance_location_source ?? 'unset';
+
   useEffect(() => {
     if (!userId || typeof window === 'undefined') return;
     const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (!browserTimeZone || browserTimeZone === profileTimezone) return;
-    supabase.from('profiles').update({ timezone: browserTimeZone }).eq('id', userId);
-  }, [profileTimezone, supabase, userId]);
+    if (!browserTimeZone || !profileTimezone || browserTimeZone === profileTimezone) return;
+    
+    // If observance_location_source === 'manual', never auto-prompt again for the same zone
+    if (obsSource === 'manual') return;
+
+    const dismissedKey = `shoonaya_dismiss_tz_${browserTimeZone}`;
+    if (sessionStorage.getItem(dismissedKey) === 'true') return;
+
+    setDetectedTz(browserTimeZone);
+    setShowTzPrompt(true);
+  }, [profileTimezone, obsSource, userId]);
+
+  async function handleUpdateTz() {
+    if (!detectedTz || !userId) return;
+    try {
+      await patchProfile(
+        {
+          timezone: detectedTz,
+          observance_location_source: 'device',
+        } as any,
+        `Observance timezone updated to ${detectedTz} 🙏`
+      );
+    } catch {
+      // Toast already handled in patchProfile
+    } finally {
+      setShowTzPrompt(false);
+    }
+  }
+
+  async function handleKeepTz() {
+    if (!userId) return;
+    try {
+      await patchProfile(
+        {
+          observance_location_source: 'manual',
+        } as any,
+        `Kept observance timezone ${profileTimezone} 🙏`
+      );
+    } catch {
+      // Toast already handled in patchProfile
+    } finally {
+      setShowTzPrompt(false);
+    }
+  }
+
+  function handleDismissTz() {
+    if (detectedTz) {
+      sessionStorage.setItem(`shoonaya_dismiss_tz_${detectedTz}`, 'true');
+    }
+    setShowTzPrompt(false);
+  }
+
   async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1198,6 +1258,59 @@ export default function ProfileClient({
         transition={{ duration: 0.4, delay: 0.1 }}
         className="max-w-xl mx-auto px-5 -mt-6 space-y-5 relative z-30 pb-32"
       >
+        {/* ── Detect-and-Ask Timezone Banner (Rule 2) ── */}
+        {showTzPrompt && detectedTz && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent relative overflow-hidden"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Globe className="text-[#C5A059]" size={18} />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">
+                    Timezone Update Detected
+                  </p>
+                  <p className="text-sm font-medium theme-ink">
+                    You appear to be in <span className="text-[#C5A059] font-semibold">{detectedTz}</span>. Update your timings?
+                  </p>
+                  <p className="text-xs theme-muted">
+                    Your saved observance timezone is <span className="font-medium">{profileTimezone}</span>. Updating keeps your daily panchang timings & reminders aligned with your location.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDismissTz}
+                className="text-white/40 hover:text-white/80 transition-colors p-1"
+                title="Dismiss"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 mt-4 pt-2 border-t border-white/5">
+              <button
+                type="button"
+                onClick={handleUpdateTz}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-[#C5A059] text-black hover:bg-[#b08e4d] transition-all shadow-md active:scale-95"
+              >
+                Update to {detectedTz}
+              </button>
+              <button
+                type="button"
+                onClick={handleKeepTz}
+                className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 theme-ink hover:bg-white/10 transition-all active:scale-95"
+              >
+                Keep {profileTimezone}
+              </button>
+            </div>
+          </motion.div>
+        )}
+
           <SadhanaHighlightsCard
             tradition={liveProfile?.tradition ?? 'hindu'}
             totalBeads={totalBeads}
@@ -1765,22 +1878,108 @@ export default function ProfileClient({
           </div>
 
           <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                { label: 'Full Name', key: 'full_name', placeholder: 'Your full name' },
-                { label: 'Home Town', key: 'home_town', placeholder: 'Where you are from' },
-              ].map(({ label, key, placeholder }) => (
-                <div key={key} className="space-y-2">
-                  <label className="block text-xs font-medium theme-muted px-1">{label}</label>
-                  <input type="text" placeholder={placeholder}
-                    value={(form as Record<string, string>)[key]}
-                    onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                    className="zenith-input w-full"
+            <div className="space-y-2">
+              <label className="block text-xs font-medium theme-muted px-1">Full Name</label>
+              <input
+                type="text"
+                placeholder="Your full name"
+                value={form.full_name}
+                onChange={(e) => setForm({ ...form, full_name: e.target.value })}
+                className="zenith-input w-full"
+              />
+            </div>
+
+            {/* ── Observance Location (Primary) ── */}
+            <div className="space-y-3 rounded-2xl p-4 border border-[#C5A059]/20 bg-[#C5A059]/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-[#C5A059] uppercase tracking-wider">Observance Location</p>
+                  <p className="text-[11px] theme-muted mt-0.5">WHERE you physically observe. Drives all sunrise, muhurta & reminder timings.</p>
+                </div>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#C5A059]/20 text-[#C5A059] font-bold uppercase tracking-wider">
+                  Primary
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">City</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Bedford"
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="zenith-input w-full text-xs"
                   />
                 </div>
-              ))}
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">Country</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. United Kingdom"
+                    value={form.country}
+                    onChange={(e) => setForm({ ...form, country: e.target.value })}
+                    className="zenith-input w-full text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">Timezone</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Europe/London"
+                    value={form.timezone}
+                    onChange={(e) => setForm({ ...form, timezone: e.target.value })}
+                    className="zenith-input w-full text-xs"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ── Home Origin Location (Display / Family) ── */}
+            <div className="space-y-3 rounded-2xl p-4 border border-white/10 bg-white/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold theme-muted uppercase tracking-wider">Home Origin Location</p>
+                  <p className="text-[11px] theme-dim mt-0.5">Family / origin place (display only, never alters reminders or tradition).</p>
+                </div>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-white/10 theme-dim font-bold uppercase tracking-wider">
+                  Display
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">Home City</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Amritsar"
+                    value={form.home_city}
+                    onChange={(e) => setForm({ ...form, home_city: e.target.value })}
+                    className="zenith-input w-full text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">Home Country</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. India"
+                    value={form.home_country}
+                    onChange={(e) => setForm({ ...form, home_country: e.target.value })}
+                    className="zenith-input w-full text-xs"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium theme-muted">Home Timezone</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Asia/Kolkata"
+                    value={form.home_timezone}
+                    onChange={(e) => setForm({ ...form, home_timezone: e.target.value })}
+                    className="zenith-input w-full text-xs"
+                  />
+                </div>
+              </div>
             </div>
           </div>
+
 
           <div className="space-y-6">
             <p className="text-sm font-medium text-[var(--brand-primary)]">Lineage and path</p>

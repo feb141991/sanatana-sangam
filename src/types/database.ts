@@ -25,6 +25,13 @@ export interface Database {
           gotra: string | null;
           kul_devata: string | null;
           home_town: string | null;
+          home_latitude: number | null;
+          home_longitude: number | null;
+          home_city: string | null;
+          home_country: string | null;
+          home_timezone: string | null;
+          observance_location_source: 'manual' | 'device' | 'unset' | null;
+
           shloka_streak: number;
           last_shloka_date: string | null;
           languages: string[];

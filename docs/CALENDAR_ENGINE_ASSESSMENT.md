@@ -91,7 +91,7 @@ defects are load-bearing (D1/D2 below) and must be fixed together.
 | **D2** | **The 118 rules were calibrated around D1** rather than D1 being fixed. Fixing D1 alone breaks every lunar festival. Must ship atomically with a rule migration + full date diff. | `src/lib/calendar/rules.ts:47-58` | **High** |
 | **D3** | No Amānta/Pūrṇimānta distinction anywhere. Layer B absent. | engine-wide | **High** |
 | **D4** | Rules evaluated at one synthetic instant/day (`1am UTC ≈ Ujjain sunrise`). No Nishita / Pradosha / Madhyāhna / Aparāhna / moonrise conditions exist. | `engine.ts:52-66` | **High** |
-| **D5** | **Every occurrence computed at Ujjain and served to all users.** Diaspora users get Indian timings. | `engine.ts:4-6, 60` | **High** |
+| **D5** | Every occurrence computed at Ujjain and served to all users. Diaspora users get Indian timings. | `engine.ts:4-6, 60` | **Partially Resolved** (Prerequisite done in `ProfileClient.tsx`) |
 | **D6** | Brahma Muhurta hardcoded to sunrise −96/−48 min; correct only for a 12-hour night. In Bedford in June the true window is ≈ −56/−28 min. | `panchang-engine/src/index.ts:398` | **Resolved** |
 | **D7** | Ayanāṁśa is a local polynomial fit, not the Lahiri definition; no stated valid range. | `panchang-engine/src/core/astronomy.ts` | **Resolved** |
 | **D8** | Vikram Samvat rolls over on a hardcoded 1 April ("±14 days" per its own comment). | `panchang-engine/src/index.ts:431-434` | Low |
@@ -149,7 +149,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 3.3 | `calendar_profiles` / `tradition_profiles` tables | ⬜ | | |
 | 3.4 | **`observance_rule_variants` table + uniqueness change (D15)** | ⬜ | variants | |
 | 3.5 | `source_references` table | ⬜ | governance | |
-| 3.6 | Per-location evaluation (D5) | ⬜ | diaspora correctness | |
+| 3.6 | Per-location evaluation (D5) | 🟡 | diaspora correctness | Prerequisite done: home origin location (`home_*`) separated from observance location; silent auto-overwrite replaced with detect-and-ask prompt in `ProfileClient.tsx`. |
 | 3.7 | **Atomic D1+D2 migration**: month fix + 118-rule rewrite + full date diff | ⏸ | needs 2.6 | |
 | 3.8 | Alternatives + `reasons[]` in result contract | ⬜ | "Why today?" | |
 | 3.9 | Ambiguity → review queue, never silent pick | ⬜ | | |
