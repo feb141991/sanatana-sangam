@@ -35,6 +35,16 @@ export {
   getMuhurtaWindows,
 } from './core/muhurta.js';
 
+export type {
+  RiseSetResult,
+  MoonRiseSetResult,
+} from './core/moon-rise-set.js';
+export {
+  getMoonRiseSet,
+  findNextMoonrise,
+} from './core/moon-rise-set.js';
+
+
 
 export interface PanchangData {
   tithi: string;

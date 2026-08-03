@@ -31,10 +31,12 @@ declare module 'astronomia/solar' {
 }
 
 declare module 'astronomia/moonposition' {
-  export function position(jde: number): { lon: number; lat: number; range: number };
+  export function position(jde: number): { lon: number; lat: number; range: number; ra: number; dec: number };
+  export function parallax(jde: number): number;
 
   const moonposition: {
     position: typeof position;
+    parallax: typeof parallax;
   };
 
   export default moonposition;
@@ -61,4 +63,44 @@ declare module 'astronomia/sunrise' {
     set(): CalendarLike | undefined;
     noon(): CalendarLike;
   }
+}
+
+declare module 'astronomia/parallax' {
+  export function topocentric(
+    c: { ra: number; dec: number; range: number },
+    rhoSinPhi: number,
+    rhoCosPhi: number,
+    lonWestRad: number,
+    jde: number
+  ): { _ra: number; _dec: number; ra: number; dec: number };
+
+  const parallax: {
+    topocentric: typeof topocentric;
+  };
+
+  export default parallax;
+}
+
+declare module 'astronomia/globe' {
+  export class Ellipsoid {
+    parallaxConstants(latRad: number, height: number): [number, number];
+  }
+
+  export const Earth76: Ellipsoid;
+
+  const globe: {
+    Earth76: typeof Earth76;
+  };
+
+  export default globe;
+}
+
+declare module 'astronomia/sidereal' {
+  export function apparent(jde: number): number;
+
+  const sidereal: {
+    apparent: typeof apparent;
+  };
+
+  export default sidereal;
 }

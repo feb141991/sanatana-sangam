@@ -100,7 +100,7 @@ defects are load-bearing (D1/D2 below) and must be fixed together.
 | **D11** | Integrity audit compares the engine **against itself** — structurally cannot detect a wrong rule. | `integrity.ts:126-138` | Medium |
 | **D12** | Audit findings are never persisted; the "166 engine mismatch" figure exists only in a transient cron response/notification. | `api/cron/calendar-health/route.ts:132-137` | Medium |
 | **D13** | LLM output used as a verification mechanism. Not a valid source (`source-governance.md` §6). | `src/lib/festival-verify.ts` | Medium |
-| **D14** | No moonrise/moonset computation at all → Karva Chauth / Sankaṣṭī cannot be correct. | engine-wide | Medium |
+| **D14** | No moonrise/moonset computation at all → Karva Chauth / Sankaṣṭī cannot be correct. | `panchang-engine/src/core/moon-rise-set.ts` | **Resolved** |
 | **D15** | Uniqueness is `(definition, year)` — structurally cannot store two profiles' dates. | `observance_occurrences` | **High** (blocker) |
 | **D16** | Nanakshahi hardcoded to the 2003 fixed-solar calendar with no system label. | `panchang-engine/src/index.ts:70-83` | Low `[S]` |
 | **D17** | Zero calendar tests, zero golden fixtures, zero external validation. | repo-wide | **High** |
@@ -131,7 +131,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 2.1 | **Extract shared astronomy core + Layer-A/B boundary (this is the DEDUPLICATION item — see §7)** | ✅ | | Resolves X1 (sun/moon maths ×3), X2 (helpers ×2), X7 (entry points ×3). Extracted `src/core/astronomy.ts` (`9d5f1ba` and Stage 2 commit). |
 | 2.2 | **Ayanāṁśa: true Lahiri + valid range (D7)** | ✅ | | Sourced Chitrapaksha/Lahiri formula (Positional Astronomy Centre / Indian Calendar Reform Committee 1955) in `src/core/astronomy.ts`. Range guard [1800–2100 CE], 4-epoch validation (<0.12″ residuals), 5-year 1,826-day zero-masaName-change proof. |
 | 2.3 | Tolerance-based boundary solver (≤60 s) | 🟡 | | `lunar-month/astronomy.ts` `solveBoundary`/`solveBoundaryBefore` use `TOLERANCE_MS = 60_000` per conventions §1.2. **Legacy `index.ts:350` still 45 fixed iterations — deliberately untouched** (changing it would alter existing output) |
-| 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | Verified absent: zero references engine-wide |
+| 2.4 | **Moonrise / moonset (D14)** | ✅ | Karva Chauth | Topocentric upper-limb calculation with horizontal parallax in `src/core/moon-rise-set.ts`. Verified with 8 invariant tests (T1–T8). |
 | 2.5 | **Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6)** | ✅ | Layer C | Extracted `src/core/muhurta.ts` (`dbcf894`). Maha Shivaratri 2026 acceptance test passed (Ujjain & Bedford). Fixed D6 in `calculatePanchang`. Note: D4 is now unblocked for item 3.2. |
 | 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | 🟡 | **everything** | `lunar-month/` — `findAmantaMonth`, `classifyLunarMonth`, `MonthSystem`, `findNewMoon/FullMoonBefore/After`, `findSankrantisBetween`; unit + invariant tests (`7ec3f2d`, `a1bc616`, `16c14fa`). **Implementation done; 🟡 pending sourced golden validation only** |
 | 2.7 | Adhika / Kṣaya māsa | 🟡 | | `classifyLunarMonth` handles both; classification corrected in `4fbd025`. 🟡 pending sourced golden validation |
