@@ -395,8 +395,15 @@ export function calculatePanchang(
 
   // ── Location-dependent timings ───────────────────────────────────────────────
   const { sunrise, sunset, noon } = getSunriseSunset(lat, lon, date, utcOffsetHours);
-  const brahmaMuhurtaStart = subtractMinutes(sunrise, 96);
-  const brahmaMuhurtaEnd = subtractMinutes(sunrise, 48);
+  const prevDate = new Date(date.getTime() - 86_400_000);
+  const { sunset: prevSunset } = getSunriseSunset(lat, lon, prevDate, utcOffsetHours);
+  const nightLengthMs = (prevSunset && sunrise)
+    ? sunrise.getTime() - prevSunset.getTime()
+    : 12 * 3600 * 1000;
+  const nightMuhurtaMs = nightLengthMs > 0 ? nightLengthMs / 15 : 48 * 60_000;
+  const brahmaMuhurtaStart = new Date(sunrise.getTime() - 2 * nightMuhurtaMs);
+  const brahmaMuhurtaEnd = new Date(sunrise.getTime() - 1 * nightMuhurtaMs);
+
 
   const dayLengthMs = Math.max(0, sunset.getTime() - sunrise.getTime());
   const partLengthMs = dayLengthMs / 8;

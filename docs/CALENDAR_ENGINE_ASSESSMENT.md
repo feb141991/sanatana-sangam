@@ -92,7 +92,7 @@ defects are load-bearing (D1/D2 below) and must be fixed together.
 | **D3** | No Amānta/Pūrṇimānta distinction anywhere. Layer B absent. | engine-wide | **High** |
 | **D4** | Rules evaluated at one synthetic instant/day (`1am UTC ≈ Ujjain sunrise`). No Nishita / Pradosha / Madhyāhna / Aparāhna / moonrise conditions exist. | `engine.ts:52-66` | **High** |
 | **D5** | **Every occurrence computed at Ujjain and served to all users.** Diaspora users get Indian timings. | `engine.ts:4-6, 60` | **High** |
-| **D6** | Brahma Muhurta hardcoded to sunrise −96/−48 min; correct only for a 12-hour night. In Bedford in June the true window is ≈ −56/−28 min. | `panchang-engine/src/index.ts:414-415` | Medium |
+| **D6** | Brahma Muhurta hardcoded to sunrise −96/−48 min; correct only for a 12-hour night. In Bedford in June the true window is ≈ −56/−28 min. | `panchang-engine/src/index.ts:398` | **Resolved** |
 | **D7** | Ayanāṁśa is a local polynomial fit, not the Lahiri definition; no stated valid range. | `panchang-engine/src/core/astronomy.ts` | **Resolved** |
 | **D8** | Vikram Samvat rolls over on a hardcoded 1 April ("±14 days" per its own comment). | `panchang-engine/src/index.ts:431-434` | Low |
 | **D9** | Rule parameters live in a TS literal, not versioned data. `calendar_rule_type` in the DB is a descriptive copy the engine never reads. | `rules.ts`; `scripts/seed-observance-definitions.ts:57-71` | Medium |
@@ -132,7 +132,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 2.2 | **Ayanāṁśa: true Lahiri + valid range (D7)** | ✅ | | Sourced Chitrapaksha/Lahiri formula (Positional Astronomy Centre / Indian Calendar Reform Committee 1955) in `src/core/astronomy.ts`. Range guard [1800–2100 CE], 4-epoch validation (<0.12″ residuals), 5-year 1,826-day zero-masaName-change proof. |
 | 2.3 | Tolerance-based boundary solver (≤60 s) | 🟡 | | `lunar-month/astronomy.ts` `solveBoundary`/`solveBoundaryBefore` use `TOLERANCE_MS = 60_000` per conventions §1.2. **Legacy `index.ts:350` still 45 fixed iterations — deliberately untouched** (changing it would alter existing output) |
 | 2.4 | Moonrise / moonset (D14) | ⬜ | Karva Chauth | Verified absent: zero references engine-wide |
-| 2.5 | Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6) | ⬜ | Layer C | Verified absent: zero references engine-wide. **Largest remaining Layer-A gap** |
+| 2.5 | **Variable muhurta windows: Nishita, Pradosha, Madhyāhna, Aparāhna, Brahma Muhurta (D6)** | ✅ | Layer C | Extracted `src/core/muhurta.ts` (`dbcf894`). Maha Shivaratri 2026 acceptance test passed (Ujjain & Bedford). Fixed D6 in `calculatePanchang`. Note: D4 is now unblocked for item 3.2. |
 | 2.6 | **Amānta/Pūrṇimānta lunar-month determination (D1/D3)** | 🟡 | **everything** | `lunar-month/` — `findAmantaMonth`, `classifyLunarMonth`, `MonthSystem`, `findNewMoon/FullMoonBefore/After`, `findSankrantisBetween`; unit + invariant tests (`7ec3f2d`, `a1bc616`, `16c14fa`). **Implementation done; 🟡 pending sourced golden validation only** |
 | 2.7 | Adhika / Kṣaya māsa | 🟡 | | `classifyLunarMonth` handles both; classification corrected in `4fbd025`. 🟡 pending sourced golden validation |
 | 2.8 | Solar months + regional day-assignment (P1) | ⏸ 🔬 | Tamil/Malayalam profiles | |
