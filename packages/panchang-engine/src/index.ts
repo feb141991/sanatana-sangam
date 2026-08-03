@@ -26,6 +26,16 @@ export {
   findSankrantisBetween,
 } from './lunar-month/index.js';
 
+export type {
+  MuhurtaWindow,
+  MuhurtaSet,
+  MuhurtaResult,
+} from './core/muhurta.js';
+export {
+  getMuhurtaWindows,
+} from './core/muhurta.js';
+
+
 export interface PanchangData {
   tithi: string;
   tithiIndex: number;

@@ -12,6 +12,8 @@ import julian from 'astronomia/julian';
 import solar from 'astronomia/solar';
 import moonposition from 'astronomia/moonposition';
 import nutation from 'astronomia/nutation';
+import { Sunrise } from 'astronomia/sunrise';
+
 
 // ---------------------------------------------------------------------------
 // Core angle helpers
@@ -116,3 +118,103 @@ export function computeAstronomy(date: Date): AstroSnapshot {
 
   return { jde, sunTropical, moonTropical, ayanamsha, sunSidereal, moonSidereal, elongation };
 }
+
+// ---------------------------------------------------------------------------
+// Sunrise and Sunset calculation
+// ---------------------------------------------------------------------------
+
+function getApproxSunriseSunset(
+  lat: number,
+  lon: number,
+  date: Date,
+  utcOffsetHours?: number
+): { sunrise: Date | null; sunset: Date | null } {
+  const dayOfYear = (() => {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date.getTime() - start.getTime();
+    return Math.floor(diff / 86_400_000);
+  })();
+
+  const latRad = (lat * Math.PI) / 180;
+  const declination =
+    -23.44 *
+    Math.cos((((360 / 365) * (dayOfYear + 10)) * Math.PI) / 180);
+  const decRad = (declination * Math.PI) / 180;
+
+  const cosH =
+    Math.cos((90.833 * Math.PI) / 180) /
+      (Math.cos(latRad) * Math.cos(decRad)) -
+    Math.tan(latRad) * Math.tan(decRad);
+
+  if (cosH > 1 || cosH < -1) {
+    // Polar day or polar night
+    return { sunrise: null, sunset: null };
+  }
+
+  const hourAngle = (Math.acos(cosH) * 180) / Math.PI;
+  const timezone =
+    utcOffsetHours !== undefined
+      ? utcOffsetHours
+      : -(date.getTimezoneOffset() / 60);
+  const equationOfTime = (() => {
+    const b = (((360 / 365) * (dayOfYear - 81)) * Math.PI) / 180;
+    return 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+  })();
+
+  const solarNoon = 12 + timezone - lon / 15 - equationOfTime / 60;
+  const sunriseHour = solarNoon - hourAngle / 15;
+  const sunsetHour = solarNoon + hourAngle / 15;
+  const startOfDay = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+
+  return {
+    sunrise: new Date(
+      startOfDay.getTime() + Math.round(sunriseHour * 60) * 60_000
+    ),
+    sunset: new Date(
+      startOfDay.getTime() + Math.round(sunsetHour * 60) * 60_000
+    ),
+  };
+}
+
+export function getSunriseSunset(
+  lat: number,
+  lon: number,
+  date: Date,
+  utcOffsetHours?: number
+): { sunrise: Date | null; sunset: Date | null; noon: Date | null } {
+  try {
+    const calendar = new julian.CalendarGregorian(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+    const sun = new Sunrise(calendar, lat, -lon, 0);
+    const sunriseDate = sun.rise()?.toDate() ?? null;
+    const sunsetDate = sun.set()?.toDate() ?? null;
+    const noonDate = sun.noon()?.toDate() ?? null;
+
+    if (sunriseDate && sunsetDate && noonDate) {
+      return {
+        sunrise: sunriseDate,
+        sunset: sunsetDate,
+        noon: noonDate,
+      };
+    }
+  } catch {
+    // Fall back to approximation for edge locations or library failures.
+  }
+
+  const fallback = getApproxSunriseSunset(lat, lon, date, utcOffsetHours);
+  if (!fallback.sunrise || !fallback.sunset) {
+    return { sunrise: null, sunset: null, noon: null };
+  }
+  const noon = new Date(
+    (fallback.sunrise.getTime() + fallback.sunset.getTime()) / 2
+  );
+  return { sunrise: fallback.sunrise, sunset: fallback.sunset, noon };
+}
+
