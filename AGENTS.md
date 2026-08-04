@@ -71,6 +71,18 @@ Specifications are authoritative: `docs/calendar-domain-model.md`,
     unregistered duplicate is a defect** — a fix applied to one copy silently
     misses the other, which is exactly how defects D1/D2 were created.
 
+14. **Every change and every review runs `docs/REVIEW_CHECKLIST.md`.** It is the
+    coverage contract. §2 is the evidence rule: every reported number must be
+    printed by a committed script runnable with one command, no hardcoded
+    conclusions, and a source is a citation with query parameters — not a label.
+    §3 is the standing invariant list: cardinality, detection capability, both
+    directions, detection-vs-behaviour, degenerate inputs, frames and units,
+    compensation, scope honesty. Checking a change against its own task
+    description is **not a review** — that is a closed loop, and it is how D15's
+    cardinality gap, D26 and D28 all reached `main` past a green suite. Sign off
+    per §5: for each §3 heading, clear / finding / not-applicable-because.
+    **Silence is not an answer.**
+
 Additional hard constraints:
 
 - **Layer discipline:** Layer A must not import Layer B or C; Layer B must not import
