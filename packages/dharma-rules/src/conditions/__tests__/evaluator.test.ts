@@ -39,7 +39,7 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
 
     const res = evaluateCondition(cond, '2026-09-04', location);
     expect(res.conditionType).toBe('tithi_presence');
-    expect(res.reasons[0].text).toContain('tithi_presence_check');
+    expect(res.reasons[0].code).toBe('tithi_presence_check');
   });
 
   it('evaluates viddha condition for Dashami piercing Arunodaya', () => {
@@ -89,5 +89,23 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
     expect(res.reasons.length).toBe(2);
     expect(res.reasons.some((r) => r.code === 'paksha_check')).toBe(true);
     expect(res.reasons.some((r) => r.code === 'tithi_presence_check')).toBe(true);
+  });
+
+  it('[D26 Fix Verification] asserts a krishna-paksha tithi condition (tithi=14, paksha=krishna) is satisfied when panchang.tithiIndex is 29', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const variant = {
+      ruleId: 'maha_shivaratri__purnimanta__smarta',
+      festivalId: 'maha_shivaratri',
+      traditionProfile: 'smarta',
+      conditions: [
+        { type: 'paksha' as const, value: 'krishna' as const },
+        { type: 'tithi_presence' as const, tithi: 14, period: 'nishita' as const, mode: 'prevails' as const },
+      ],
+    };
+
+    // On 2026-02-15 at Ujjain, Nishita window falls inside Krishna Chaturdashi (absolute tithiIndex 29)
+    const res = evaluateVariant(variant, '2026-02-15', location);
+    expect(res.qualified).toBe(true);
+    expect(res.reasons.some((r) => r.code === 'tithi_presence_check' && r.text.includes('MATCHED'))).toBe(true);
   });
 });

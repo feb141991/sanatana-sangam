@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "verify:calendar": "vitest run --reporter=verbose",
+    "verify:harness": "vitest run harness/ --reporter=verbose",
     "generate:snapshots": "npx tsx scripts/generate-snapshots.ts"
   },
   "devDependencies": {

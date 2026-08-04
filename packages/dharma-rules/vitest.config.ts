@@ -10,7 +10,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['harness/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'harness/**/*.test.ts'],
     globals: false,
     environment: 'node',
   },

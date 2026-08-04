@@ -92,7 +92,7 @@ requires an ADR; adding a *rule* using existing types is data only.
 |---|---|---|
 | `lunar_month` | `value`, `monthSystem` | Month name under the stated system. `monthSystem` is **mandatory** — an unqualified month name is ambiguous. |
 | `paksha` | `value: shukla\|krishna` | |
-| `tithi` | `value: 1..30` or `1..15` + paksha | Tithi index. |
+| `tithi` | `value: 1..15` + paksha (or `1..30` absolute) | Canonical scheme for rule authoring: within-paksha index 1..15 (1=Pratipada, 8=Ashtami, 14=Chaturdashi, 15=Purnima/Amavasya) qualified by `paksha` (`shukla` \| `krishna`). Evaluator normalises absolute 1..30 at condition boundary. |
 | `nakshatra` | `value` | |
 | `yoga` | `value` | |
 | `karana` | `value` | |

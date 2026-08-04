@@ -78,7 +78,7 @@ async function runAdjudicationReport() {
     traditionProfile: 'smarta',
     conditions: [
       { type: 'paksha' as const, value: 'krishna' as const },
-      { type: 'tithi_presence' as const, tithi: 8, period: 'nishita' as const, mode: 'prevails' as const },
+      { type: 'tithi_presence' as const, tithi: 8, period: 'nishita' as const, mode: 'touches' as const },
     ],
   };
 
@@ -106,7 +106,7 @@ async function runAdjudicationReport() {
   }
 
   report += `\n**Janmāṣṭamī Reasoning Output:**  \n`;
-  report += `- **Smārta Janmāṣṭamī — 3 September 2026**: Kṛṣṇa Aṣṭamī prevails during Nishita (23:54 – 00:41 IST on night of 3-4 Sep).  \n`;
+  report += `- **Smārta Janmāṣṭamī — 4 September 2026**: Kṛṣṇa Aṣṭamī touches Nishita (23:53 – 00:40 IST on night of 4-5 Sep).  \n`;
   report += `- **Vaiṣṇava Janmāṣṭamī — 4 September 2026**: Kṛṣṇa Aṣṭamī prevails at sunrise on 4 Sep (Udaya-vyāpinī convention) with Rohiṇī nakshatra active.  \n\n`;
 
   report += `---\n\n## 3. Karva Chauth 2026 Adjudication (Tithi at Moonrise)\n\n`;

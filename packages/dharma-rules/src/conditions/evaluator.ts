@@ -16,7 +16,10 @@ import {
   EvaluationReason,
   PeriodType,
   CONDITION_EVALUATOR_VERSION,
+  TithiCondition,
+  PakshaCondition,
 } from './types.js';
+
 
 export { CONDITION_EVALUATOR_VERSION };
 
@@ -158,11 +161,33 @@ export function getPeriodWindow(
   };
 }
 
+export function getWithinPakshaTithi(absoluteTithiIndex: number): { withinPakshaTithi: number; paksha: 'shukla' | 'krishna' } {
+  const paksha: 'shukla' | 'krishna' = absoluteTithiIndex <= 15 ? 'shukla' : 'krishna';
+  const withinPakshaTithi = absoluteTithiIndex <= 15 ? absoluteTithiIndex : absoluteTithiIndex - 15;
+  return { withinPakshaTithi, paksha };
+}
+
+export function isTithiMatching(
+  absoluteTithiIndex: number,
+  targetTithi: number,
+  targetPaksha?: 'shukla' | 'krishna'
+): boolean {
+  if (targetTithi > 15) {
+    return absoluteTithiIndex === targetTithi;
+  }
+  const { withinPakshaTithi, paksha } = getWithinPakshaTithi(absoluteTithiIndex);
+  if (targetPaksha) {
+    return withinPakshaTithi === targetTithi && paksha === targetPaksha;
+  }
+  return withinPakshaTithi === targetTithi || absoluteTithiIndex === targetTithi;
+}
+
 /** Evaluates a single rule condition on a given civil date and location */
 export function evaluateCondition(
   condition: RuleCondition,
   civilDateStr: string,
-  location: LocationInput
+  location: LocationInput,
+  contextPaksha?: 'shukla' | 'krishna'
 ): ConditionEvaluationResult {
   const reasons: EvaluationReason[] = [];
   const diagnostics: string[] = [];
@@ -209,11 +234,12 @@ export function evaluateCondition(
   }
 
   if (condition.type === 'tithi') {
-    const satisfied = panchang.tithiIndex === condition.value;
+    const targetPaksha = (condition as TithiCondition).paksha || contextPaksha;
+    const satisfied = isTithiMatching(panchang.tithiIndex, condition.value, targetPaksha);
     reasons.push({
       code: 'tithi_check',
-      text: `Tithi on ${civilDateStr} at sunrise is ${getTithiName(panchang.tithiIndex)} (index ${panchang.tithiIndex}, target: ${condition.value}).`,
-      details: { actualTithi: panchang.tithiIndex, targetTithi: condition.value },
+      text: `Tithi on ${civilDateStr} at sunrise is ${getTithiName(panchang.tithiIndex)} (index ${panchang.tithiIndex}, target: ${condition.value}${targetPaksha ? ' ' + targetPaksha : ''}).`,
+      details: { actualTithi: panchang.tithiIndex, targetTithi: condition.value, targetPaksha },
     });
     return {
       conditionType: condition.type,
@@ -265,17 +291,22 @@ export function evaluateCondition(
     const midPanchang = calculatePanchang(midInstant, location.lat, location.lon);
 
     const targetTithi = condition.tithi;
+    const targetPaksha = (condition as any).paksha || contextPaksha;
+
+    const mStart = isTithiMatching(startPanchang.tithiIndex, targetTithi, targetPaksha);
+    const mEnd = isTithiMatching(endPanchang.tithiIndex, targetTithi, targetPaksha);
+    const mMid = isTithiMatching(midPanchang.tithiIndex, targetTithi, targetPaksha);
+
     let satisfied = false;
 
     if (condition.mode === 'at') {
-      satisfied = startPanchang.tithiIndex === targetTithi;
+      satisfied = mStart;
     } else if (condition.mode === 'prevails') {
-      satisfied = startPanchang.tithiIndex === targetTithi && endPanchang.tithiIndex === targetTithi;
+      satisfied = mStart && mEnd;
     } else if (condition.mode === 'touches') {
-      satisfied = startPanchang.tithiIndex === targetTithi || endPanchang.tithiIndex === targetTithi || midPanchang.tithiIndex === targetTithi;
+      satisfied = mStart || mEnd || mMid;
     } else if (condition.mode === 'majority') {
-      const matchCount = [startPanchang.tithiIndex, midPanchang.tithiIndex, endPanchang.tithiIndex].filter((t) => t === targetTithi).length;
-      satisfied = matchCount >= 2;
+      satisfied = [mStart, mMid, mEnd].filter(Boolean).length >= 2;
     }
 
     const startStr = formatCivilDateInTz(window.start, location.tz) + ' ' + window.start.toISOString().slice(11, 16);
@@ -283,11 +314,12 @@ export function evaluateCondition(
 
     reasons.push({
       code: 'tithi_presence_check',
-      text: `Tithi ${getTithiName(targetTithi)} (${targetTithi}) presence mode '${condition.mode}' during '${condition.period}' ` +
+      text: `Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) presence mode '${condition.mode}' during '${condition.period}' ` +
         `[${startStr} to ${endStr}]: ${satisfied ? 'MATCHED' : 'DID NOT MATCH'}. ` +
         `(Start: ${getTithiName(startPanchang.tithiIndex)}, End: ${getTithiName(endPanchang.tithiIndex)}).`,
       details: {
         targetTithi,
+        targetPaksha,
         period: condition.period,
         mode: condition.mode,
         startTithi: startPanchang.tithiIndex,
@@ -414,8 +446,11 @@ export function evaluateVariant(
 
   let overallQualified: boolean | 'indeterminate' = true;
 
+  const pakshaCond = variant.conditions.find((c) => c.type === 'paksha') as PakshaCondition | undefined;
+  const contextPaksha = pakshaCond ? pakshaCond.value : undefined;
+
   for (const cond of variant.conditions) {
-    const res = evaluateCondition(cond, civilDateStr, location);
+    const res = evaluateCondition(cond, civilDateStr, location, contextPaksha);
     conditionResults.push(res);
     allReasons.push(...res.reasons);
     allDiagnostics.push(...res.diagnostics);
