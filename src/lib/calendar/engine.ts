@@ -1,9 +1,9 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
-import { calculatePanchang } from '../panchang';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
-export const UJJAIN_LAT = 23.1765;
-export const UJJAIN_LON = 75.7885;
+export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
+export const UJJAIN_LON = REFERENCE_LOCATION_UJJAIN.lon;
 
 // Versioning the calculation engine
 export const RULE_ENGINE_VERSION = '1.2.2'; // fixes Nag Panchami duplicate Shravana Panchami selection in 2026

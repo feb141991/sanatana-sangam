@@ -20,7 +20,7 @@ import {
   Loader2, Play, Star, Plus, Search, X,
   Share2, ChevronDown, ChevronUp, GraduationCap, Lock, Sparkles, BarChart2,
   ChevronRight, Volume2, VolumeX, Bookmark, Copy, EyeOff, CheckCircle2,
-  RotateCcw, LogOut, SlidersHorizontal, Check,
+  RotateCcw, LogOut, SlidersHorizontal, Check, Globe,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
@@ -47,7 +47,7 @@ import {
   RAMAYANA_STRUCTURE, BHAGAVATAM_STRUCTURE,
   type EpicStructure, type EpicKanda, type EpicChapter, type EpicVerse
 } from '@/lib/epics-registry';
-import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
+import { calculatePanchang, getTodaySpiritualPulses, REFERENCE_LOCATION_UJJAIN, resolveObservanceLocation } from '@/lib/panchang';
 import { getTodayShloka, getShlokaByLanguage } from '@/lib/shlokas';
 import { getMeaningLabel, resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
@@ -574,8 +574,12 @@ export default function PathshalaClient({
   const { t } = useLanguage();
 
   const { coords: _pathCoords } = useLocation();
-  const lat = _pathCoords?.lat ?? undefined;
-  const lon = _pathCoords?.lon ?? undefined;
+  const resolvedLoc = useMemo(() => {
+    return resolveObservanceLocation({
+      coords: _pathCoords?.lat != null && _pathCoords?.lon != null ? { lat: _pathCoords.lat, lon: _pathCoords.lon } : null,
+    });
+  }, [_pathCoords?.lat, _pathCoords?.lon]);
+
   const [activePaths, setActive]    = useState<ActiveEnrollment[]>([]);
   const [loading,     setLoading]   = useState(true);
   const [enrolling,   setEnrolling] = useState<string | null>(null);
@@ -600,9 +604,9 @@ export default function PathshalaClient({
   const pathsRef     = useRef<HTMLDivElement>(null);
   
   const pulse = useMemo(() => {
-    const p = calculatePanchang(new Date(), lat ?? undefined, lon ?? undefined);
+    const p = calculatePanchang(new Date(), resolvedLoc.lat, resolvedLoc.lon, resolvedLoc.tz);
     return getTodaySpiritualPulses(p.tithiIndex, tradition)[0] ?? null;
-  }, [tradition, lat, lon]);
+  }, [tradition, resolvedLoc]);
 
   // Show all 44 paths across all traditions in the Explore tab
   const allPaths: PathshalaPath[] = SEED_PATHS_LIB;
@@ -1538,6 +1542,17 @@ export default function PathshalaClient({
           </div>
 
           <div className="relative z-10">
+            {/* ── Reference Location Disclosure Banner (Defect D24 / §8) ── */}
+            {resolvedLoc.isReference && (
+              <div className="rounded-2xl p-3.5 mb-4 border border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                  <Globe className="text-[#C5A059]" size={16} />
+                </div>
+                <p className="text-xs text-[color:var(--brand-muted)]">
+                  Showing Ujjain reference timings — set your location for local times.
+                </p>
+              </div>
+            )}
             {/* Eyebrow + spiritual pulse */}
             <div className="flex items-center gap-2 mb-5">
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border"

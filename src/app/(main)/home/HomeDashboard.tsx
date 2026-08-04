@@ -3,14 +3,14 @@
 import { useEffect, useMemo, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Bell, X, Share2 } from 'lucide-react';
+import { Bell, X, Share2, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import { format as fmtDate } from 'date-fns';
 import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { calculatePanchang } from '@/lib/panchang';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN, resolveObservanceLocation } from '@/lib/panchang';
 import { getFestivalStory } from '@/lib/festival-stories';
 import { selectDharmVeer, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
@@ -724,11 +724,15 @@ export default function HomeDashboard({
 
   const { coords, city: liveCity } = useLocation();
 
-  const lat = coords?.lat ?? savedLat ?? undefined;
-  const lon = coords?.lon ?? savedLon ?? undefined;
+  const resolvedLoc = useMemo(() => {
+    return resolveObservanceLocation({
+      coords: coords?.lat != null && coords?.lon != null ? { lat: coords.lat, lon: coords.lon, city: liveCity } : null,
+      saved: savedLat != null && savedLon != null ? { lat: savedLat, lon: savedLon, city: savedCity } : null,
+    });
+  }, [coords?.lat, coords?.lon, liveCity, savedLat, savedLon, savedCity]);
 
   useEffect(() => {
-    const p = calculatePanchang(selectedDate, lat, lon);
+    const p = calculatePanchang(selectedDate, resolvedLoc.lat, resolvedLoc.lon, resolvedLoc.tz);
     setPanchang({
       tithi:      p.tithi,
       nakshatra:  p.nakshatra,
@@ -738,7 +742,7 @@ export default function HomeDashboard({
       rahuKaal:   p.rahuKaal,
       tithiIndex: p.tithiIndex,
     });
-  }, [selectedDate, lat, lon]);
+  }, [selectedDate, resolvedLoc]);
 
   useEffect(() => {
     const focus = searchParams.get('focus');
@@ -1015,6 +1019,19 @@ export default function HomeDashboard({
       />
 
       <div className="-mt-2 space-y-3">
+        {/* ── Reference Location Disclosure Banner (Defect D24 / §8) ── */}
+        {resolvedLoc.isReference && (
+          <div className="px-4 mb-2">
+            <div className="rounded-2xl p-3.5 border border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                <Globe className="text-[#C5A059]" size={16} />
+              </div>
+              <p className="text-xs text-[color:var(--brand-muted)]">
+                Showing Ujjain reference timings — set your location for local times.
+              </p>
+            </div>
+          </div>
+        )}
         {showEveningNudge && (
           <div className="px-4 mb-2">
             <motion.div

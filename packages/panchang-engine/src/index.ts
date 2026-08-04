@@ -26,6 +26,20 @@ export {
   findSankrantisBetween,
 } from './lunar-month/index.js';
 
+export {
+  DAY_BOUNDARY_VERSION,
+  formatCivilDateInTz,
+  parseCivilDateUtc,
+  offsetCivilDateStr,
+  getTzOffsetHours,
+  getSunriseForDateStr,
+  resolveVedicDayForInstant,
+  resolveVedicDayForInterval,
+  type LocationInput,
+  type VedicDayResolution,
+  type IntervalVedicDayResolution,
+} from './core/day-boundary.js';
+
 export type {
   MuhurtaWindow,
   MuhurtaSet,
@@ -338,10 +352,76 @@ function solveNextBoundary(
   return new Date(high);
 }
 
+/** Explicit opt-in reference location. §8 "Bharat reference" mode.
+ *  Any UI using this MUST label the result reference-only. Never a
+ *  silent fallback for a user whose location is simply unknown. */
+export const REFERENCE_LOCATION_UJJAIN = {
+  lat: 23.1765,
+  lon: 75.7885,
+  tz: 'Asia/Kolkata',
+} as const;
+
+export type LocationSource = 'device' | 'saved' | 'reference';
+
+export interface ResolvedLocation {
+  lat: number;
+  lon: number;
+  tz: string; // ALWAYS the tz belonging to THESE coordinates
+  source: LocationSource;
+  /** true when source === 'reference' — UI MUST disclose */
+  isReference: boolean;
+  /** e.g. "Ujjain (reference)" | "Bedford" — for display */
+  label: string;
+}
+
+export function resolveObservanceLocation(input?: {
+  coords?: { lat?: number | null; lon?: number | null; tz?: string | null; city?: string | null } | null;
+  saved?:  { lat?: number | null; lon?: number | null; tz?: string | null; city?: string | null } | null;
+}): ResolvedLocation {
+  const coordsLat = input?.coords?.lat;
+  const coordsLon = input?.coords?.lon;
+  if (typeof coordsLat === 'number' && typeof coordsLon === 'number' && !isNaN(coordsLat) && !isNaN(coordsLon)) {
+    const tz = input?.coords?.tz || (typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : REFERENCE_LOCATION_UJJAIN.tz);
+    const city = input?.coords?.city;
+    return {
+      lat: coordsLat,
+      lon: coordsLon,
+      tz: tz || REFERENCE_LOCATION_UJJAIN.tz,
+      source: 'device',
+      isReference: false,
+      label: city || 'Device Location',
+    };
+  }
+
+  const savedLat = input?.saved?.lat;
+  const savedLon = input?.saved?.lon;
+  if (typeof savedLat === 'number' && typeof savedLon === 'number' && !isNaN(savedLat) && !isNaN(savedLon)) {
+    const tz = input?.saved?.tz || (typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : REFERENCE_LOCATION_UJJAIN.tz);
+    const city = input?.saved?.city;
+    return {
+      lat: savedLat,
+      lon: savedLon,
+      tz: tz || REFERENCE_LOCATION_UJJAIN.tz,
+      source: 'saved',
+      isReference: false,
+      label: city || 'Saved Location',
+    };
+  }
+
+  return {
+    lat: REFERENCE_LOCATION_UJJAIN.lat,
+    lon: REFERENCE_LOCATION_UJJAIN.lon,
+    tz: REFERENCE_LOCATION_UJJAIN.tz,
+    source: 'reference',
+    isReference: true,
+    label: 'Ujjain (reference)',
+  };
+}
+
 export function calculatePanchang(
-  date: Date = new Date(),
-  lat = 51.5074,
-  lon = -0.1278,
+  date: Date,
+  lat: number,
+  lon: number,
   /** IANA timezone string, e.g. "Asia/Kolkata", "Europe/London", "America/New_York".
    *  When supplied, ALL time strings (sunrise, Rahu Kaal, etc.) are displayed in that
    *  timezone. Diaspora users pass their local timezone; IST observers omit / pass

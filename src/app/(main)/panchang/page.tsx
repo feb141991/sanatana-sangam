@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
-import { calculatePanchang } from '@/lib/panchang';
-import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
 import PanchangHub from './PanchangHub';
 
@@ -16,7 +15,7 @@ export const preferredRegion = 'iad1'; // US East — nearest to Supabase defaul
 
 // Memoised per-request so generateMetadata and the page share one calculation.
 const getPanchang = cache(() => {
-  return calculatePanchang(new Date(), UJJAIN_LAT, UJJAIN_LON);
+  return calculatePanchang(new Date(), REFERENCE_LOCATION_UJJAIN.lat, REFERENCE_LOCATION_UJJAIN.lon, REFERENCE_LOCATION_UJJAIN.tz);
 });
 
 export async function generateMetadata(): Promise<Metadata> {

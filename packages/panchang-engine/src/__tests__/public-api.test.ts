@@ -140,6 +140,43 @@ describe('Panchang Engine — Public API Runtime Contract', () => {
     });
   });
 
+  describe('resolveObservanceLocation (Defects D24 & D25)', () => {
+    it('returns reference location with isReference: true when no input is provided', () => {
+      const loc = PanchangEngineExports.resolveObservanceLocation();
+      expect(loc.source).toBe('reference');
+      expect(loc.isReference).toBe(true);
+      expect(loc.lat).toBe(23.1765);
+      expect(loc.lon).toBe(75.7885);
+      expect(loc.tz).toBe('Asia/Kolkata');
+      expect(loc.label).toBe('Ujjain (reference)');
+    });
+
+    it('returns device location with its own tz when device coordinates are present', () => {
+      const loc = PanchangEngineExports.resolveObservanceLocation({
+        coords: { lat: 52.1356, lon: -0.4685, tz: 'Europe/London', city: 'Bedford' },
+      });
+      expect(loc.source).toBe('device');
+      expect(loc.isReference).toBe(false);
+      expect(loc.lat).toBe(52.1356);
+      expect(loc.lon).toBe(-0.4685);
+      expect(loc.tz).toBe('Europe/London');
+      expect(loc.label).toBe('Bedford');
+    });
+
+    it('returns saved location when device coords are missing but saved coords exist', () => {
+      const loc = PanchangEngineExports.resolveObservanceLocation({
+        coords: null,
+        saved: { lat: 40.7128, lon: -74.0060, tz: 'America/New_York', city: 'New York' },
+      });
+      expect(loc.source).toBe('saved');
+      expect(loc.isReference).toBe(false);
+      expect(loc.lat).toBe(40.7128);
+      expect(loc.lon).toBe(-74.0060);
+      expect(loc.tz).toBe('America/New_York');
+      expect(loc.label).toBe('New York');
+    });
+  });
+
   describe('Root Export Contract Governance', () => {
     it('exports all established public functions from the package root', () => {
       expect(typeof calculatePanchang).toBe('function');

@@ -21,6 +21,8 @@ export default async function NityaKarmaPage() {
       tradition={profile?.tradition ?? 'hindu'}
       lifeStage={profile?.life_stage ?? null}
       genderContext={profile?.gender_context ?? null}
+      latitude={profile?.latitude ?? null}
+      longitude={profile?.longitude ?? null}
       timezone={profile?.timezone ?? null}
       appLanguage={(profile as any)?.app_language ?? 'en'}
       meaningLanguage={(profile as any)?.meaning_language ?? 'en'}

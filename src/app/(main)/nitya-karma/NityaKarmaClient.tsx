@@ -38,7 +38,7 @@ import { hapticLight, hapticSuccess } from '@/lib/platform';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import { localSpiritualDate, buildSpiritualDateRange } from '@/lib/sacred-time';
-import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
+import { calculatePanchang, getTodaySpiritualPulses, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { usePremium } from '@/hooks/usePremium';
 import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
@@ -1050,6 +1050,8 @@ interface Props {
   tradition:     string;
   lifeStage:     string | null;
   genderContext: string | null;
+  latitude?:     number | null;
+  longitude?:    number | null;
   timezone:      string | null;
   appLanguage?:  string | null;
   meaningLanguage?: string | null;
@@ -1067,6 +1069,8 @@ export default function NityaKarmaClient({
   tradition,
   lifeStage,
   genderContext,
+  latitude,
+  longitude,
   timezone,
   appLanguage,
   meaningLanguage,
@@ -1769,7 +1773,10 @@ export default function NityaKarmaClient({
   // Calculate once from the astronomy engine — tithiIndex drives all traditions.
   const sacredPulse = (() => {
     try {
-      const p = calculatePanchang(new Date());
+      const lat = latitude ?? REFERENCE_LOCATION_UJJAIN.lat;
+      const lon = longitude ?? REFERENCE_LOCATION_UJJAIN.lon;
+      const tz = timezone ?? REFERENCE_LOCATION_UJJAIN.tz;
+      const p = calculatePanchang(new Date(), lat, lon, tz);
       return getTodaySpiritualPulses(p.tithiIndex, tradition, new Date())[0] ?? null;
     } catch { return null; }
   })();

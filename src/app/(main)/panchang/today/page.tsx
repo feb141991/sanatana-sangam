@@ -1,14 +1,13 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { calculatePanchang } from '@/lib/panchang';
-import { UJJAIN_LAT, UJJAIN_LON } from '@/lib/calendar/engine';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
 import PanchangDetail from './PanchangDetail';
 
 // Memoised per-request: generateMetadata and the page share one calculation.
 const getDefaultPanchang = cache(() => {
-  return calculatePanchang(new Date(), UJJAIN_LAT, UJJAIN_LON);
+  return calculatePanchang(new Date(), REFERENCE_LOCATION_UJJAIN.lat, REFERENCE_LOCATION_UJJAIN.lon, REFERENCE_LOCATION_UJJAIN.tz);
 });
 
 export async function generateMetadata(): Promise<Metadata> {
