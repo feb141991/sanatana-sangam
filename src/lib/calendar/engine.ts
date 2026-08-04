@@ -1,12 +1,37 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
+import { getLunarMonth } from '@sangam/panchang-engine';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
 export const UJJAIN_LON = REFERENCE_LOCATION_UJJAIN.lon;
 
-// Versioning the calculation engine
-export const RULE_ENGINE_VERSION = '1.2.2'; // fixes Nag Panchami duplicate Shravana Panchami selection in 2026
+/**
+ * Version flag for the calculation engine.
+ *
+ * BUMPED TO 2.0.0 — breaking [C] change (D1+D2, Tracker 3.7, Stage 2).
+ * The corrected lunar month names (corrected_lunar_masa_name) are wired in.
+ * Re-materialisation is required when USE_CORRECTED_MASA is flipped to true.
+ * Stage 3 (the live switch) flips this flag default and triggers re-materialisation.
+ */
+export const RULE_ENGINE_VERSION = '2.0.0'; // D1+D2 Stage 2: corrected masa path behind USE_CORRECTED_MASA
+
+/**
+ * D1+D2 (Tracker 3.7) — Corrected lunar month path.
+ *
+ * DEFAULT: false  — legacy masaName path is active, byte-identical to v1.2.2.
+ * Set true for Stage 3 (live switch, re-materialisation). NOT in scope now.
+ *
+ * When false:
+ *   - precomputePanchangForYear runs exactly as before (masaIndex via sun sidereal + 11)
+ *   - CANONICAL_RULES use lunar_masa_name (legacy, D1-calibrated)
+ *   - verify:harness MUST be 988 passed / 216 skipped — invariant
+ * When true:
+ *   - precomputePanchangCorrectedForYear replaces masaName with getLunarMonth() amanta result
+ *   - CANONICAL_RULES use corrected_lunar_masa_name and corrected_lunar_tithi_index
+ *   - Requires re-materialisation and full date diff before going live [S]
+ */
+export const USE_CORRECTED_MASA: boolean = false;
 
 export interface CalculatedOccurrence {
   slug: string;
@@ -47,7 +72,9 @@ function isLeapYear(year: number): boolean {
 
 /**
  * Computes panchang for all days of the target Gregorian year.
- * We evaluate at exactly 05:00:00 UTC (morning in India, aligning with the target datasets).
+ * We evaluate at exactly 01:00:00 UTC (morning in India, aligning with Ujjain sunrise).
+ * LEGACY PATH — uses masaName from sun sidereal position (D1-calibrated).
+ * Byte-identical to pre-v2.0.0 when USE_CORRECTED_MASA is false.
  */
 export function precomputePanchangForYear(year: number): Array<{ dateStr: string; panchang: any }> {
   const numDays = isLeapYear(year) ? 366 : 365;
@@ -59,6 +86,44 @@ export function precomputePanchangForYear(year: number): Array<{ dateStr: string
     days.push({
       dateStr: formatUtcDate(current),
       panchang,
+    });
+  }
+
+  return days;
+}
+
+/**
+ * Computes panchang for all days of the target Gregorian year using CORRECTED lunar month names.
+ *
+ * D1+D2 (Tracker 3.7, Stage 1). Active only when USE_CORRECTED_MASA is true.
+ *
+ * Replaces masaName in the panchang object with the result of getLunarMonth(instant, 'amanta')
+ * from packages/panchang-engine/src/lunar-month/index.ts. This is the astronomically correct
+ * amanta month name (amavasya-boundary + sankranti counting), not the D1-shifted sun-rashi name.
+ *
+ * All other panchang fields (tithiIndex, nakshatra, etc.) are unchanged. The handlers
+ * (LunarTithiHandler etc.) still read panchang.masaName — only the data source changes.
+ *
+ * Rules must use corrected_lunar_masa_name (and corrected_lunar_tithi_index where different)
+ * when this path is active.
+ */
+export function precomputePanchangCorrectedForYear(year: number): Array<{ dateStr: string; panchang: any }> {
+  const numDays = isLeapYear(year) ? 366 : 365;
+  const days: Array<{ dateStr: string; panchang: any }> = [];
+
+  for (let i = 0; i < numDays; i++) {
+    const current = new Date(Date.UTC(year, 0, i + 1, 1, 0, 0));
+    const panchang = calculatePanchang(current, UJJAIN_LAT, UJJAIN_LON);
+
+    // Replace masaName with the correct amanta month from getLunarMonth().
+    // On solver failure (extremely rare) fall back to empty string so rules
+    // that need a specific month simply produce no match rather than a wrong one.
+    const lunarMonthResult = getLunarMonth(current, 'amanta');
+    const correctedMasaName = lunarMonthResult.ok ? lunarMonthResult.monthName : '';
+
+    days.push({
+      dateStr: formatUtcDate(current),
+      panchang: { ...panchang, masaName: correctedMasaName },
     });
   }
 
@@ -87,6 +152,35 @@ export const SolarFixedHandler = {
 };
 
 /**
+ * Verifies if the panchang's month name matches the rule's target month name
+ * under the rule's Adhika masa policy.
+ */
+export function isMasaMatching(
+  panchangMasaName: string,
+  ruleMasaName: string,
+  policy?: 'nija' | 'adhika' | 'both',
+): boolean {
+  if (!panchangMasaName || !ruleMasaName) return false;
+  
+  const isPanchangAdhika = panchangMasaName.startsWith('Adhika ');
+  const cleanPanchangMasa = isPanchangAdhika ? panchangMasaName.slice(7) : panchangMasaName;
+  
+  if (cleanPanchangMasa !== ruleMasaName) return false;
+  
+  const p = policy || 'nija';
+  if (p === 'nija') {
+    return !isPanchangAdhika;
+  }
+  if (p === 'adhika') {
+    return isPanchangAdhika;
+  }
+  if (p === 'both') {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Handler for Lunar Tithi rules
  */
 export const LunarTithiHandler = {
@@ -101,7 +195,7 @@ export const LunarTithiHandler = {
     // Primary scan: exact tithi match
     for (const d of days) {
       if (
-        d.panchang.masaName === rule.lunar_masa_name &&
+        isMasaMatching(d.panchang.masaName, rule.lunar_masa_name, rule.adhika_policy) &&
         d.panchang.tithiIndex === target
       ) {
         if (!matchedSet.has(d.dateStr)) {
@@ -110,23 +204,31 @@ export const LunarTithiHandler = {
         }
       }
     }
-
     // Secondary scan: detect tithis that the 5am UTC scan misses because the
     // tithi is fast-moving and fully contained within a single 24h window.
     // When prev.tithiIndex === T-1 and curr.tithiIndex === T+1 (with curr in
     // the target masa), the target tithi was present at IST sunrise on curr's
     // date but had already advanced by the 5am UTC scan time. Observe on curr.
-    if (rule.allow_skipped_tithi && target >= 1 && target < 15) {
+    const isCorrected = rule.corrected_month_system !== undefined;
+    const canCheckSkipped = rule.allow_skipped_tithi && (isCorrected ? (target >= 1 && target <= 30) : (target >= 1 && target < 15));
+
+    if (canCheckSkipped) {
       for (let i = 1; i < days.length; i++) {
         const prev = days[i - 1].panchang;
         const curr = days[i].panchang;
-        const skippedWithinPaksha = target > 1
-          && prev.tithiIndex === target - 1
-          && curr.tithiIndex === target + 1;
-        const skippedPratipadaAfterAmavasya = target === 1
-          && prev.tithiIndex === 30
-          && curr.tithiIndex === 2;
-        if (curr.masaName === rule.lunar_masa_name && (skippedWithinPaksha || skippedPratipadaAfterAmavasya)) {
+        let skipped = false;
+
+        if (target === 1) {
+          skipped = prev.tithiIndex === 30 && curr.tithiIndex === 2;
+        } else if (isCorrected && target === 16) {
+          skipped = prev.tithiIndex === 15 && curr.tithiIndex === 17;
+        } else if (isCorrected && target === 30) {
+          skipped = prev.tithiIndex === 29 && curr.tithiIndex === 1;
+        } else {
+          skipped = prev.tithiIndex === target - 1 && curr.tithiIndex === target + 1;
+        }
+
+        if (skipped && isMasaMatching(curr.masaName, rule.lunar_masa_name, rule.adhika_policy)) {
           if (!matchedSet.has(days[i].dateStr)) {
             matchedDates.push(days[i].dateStr);
             matchedSet.add(days[i].dateStr);
@@ -202,7 +304,7 @@ export const RecurringWeekdayHandler = {
     const matchedDates: string[] = [];
 
     for (const d of days) {
-      if (rule.lunar_masa_name && d.panchang.masaName !== rule.lunar_masa_name) {
+      if (rule.lunar_masa_name && !isMasaMatching(d.panchang.masaName, rule.lunar_masa_name, rule.adhika_policy)) {
         continue;
       }
 
@@ -227,7 +329,7 @@ export const NakshatraBasedHandler = {
     const matchedDates: string[] = [];
     for (const d of days) {
       if (
-        d.panchang.masaName === rule.lunar_masa_name &&
+        isMasaMatching(d.panchang.masaName, rule.lunar_masa_name, rule.adhika_policy) &&
         d.panchang.nakshatra === rule.nakshatra_name
       ) {
         matchedDates.push(d.dateStr);
@@ -396,4 +498,120 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
       recurring,
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// D1+D2 Stage 1: Corrected shadow evaluation path
+// ---------------------------------------------------------------------------
+
+/**
+ * Adapts a rule to use its corrected fields for the corrected engine path.
+ *
+ * In the corrected path:
+ *   - lunar_masa_name      → corrected_lunar_masa_name (if set, otherwise unchanged)
+ *   - lunar_tithi_index    → corrected_lunar_tithi_index (if set, otherwise unchanged)
+ *
+ * This adapter is used ONLY by buildOccurrencesMapCorrected. It never touches
+ * the legacy path. The original rule object is never mutated.
+ */
+function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
+  return {
+    ...rule,
+    lunar_masa_name: rule.corrected_lunar_masa_name ?? rule.lunar_masa_name,
+    lunar_tithi_index: rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index,
+    prefer_last_match: rule.corrected_prefer_last_match !== undefined ? rule.corrected_prefer_last_match : rule.prefer_last_match,
+    allow_skipped_tithi: rule.corrected_allow_skipped_tithi !== undefined ? rule.corrected_allow_skipped_tithi : rule.allow_skipped_tithi,
+  };
+}
+
+/**
+ * Parallel to buildOccurrencesMap but uses:
+ *   1. precomputePanchangCorrectedForYear (correct amanta masaName from getLunarMonth)
+ *   2. corrected_lunar_masa_name / corrected_lunar_tithi_index from each rule
+ *
+ * Used exclusively by calculateObservancesForYearCorrected (Stage 1 shadow diff).
+ * Does NOT affect calculateObservancesForYear (legacy path, flag OFF invariant).
+ */
+function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
+  const days = precomputePanchangCorrectedForYear(year);
+  const occurrencesMap: Record<string, string[]> = {};
+
+  // 1. First Pass: Evaluate absolute rules using corrected rule fields
+  for (const rule of CANONICAL_RULES) {
+    const r = toCorrectedRule(rule);
+    if (r.rule_family === 'solar_fixed') {
+      occurrencesMap[r.slug] = SolarFixedHandler.evaluate(r, year);
+    } else if (r.rule_family === 'lunar_tithi') {
+      occurrencesMap[r.slug] = LunarTithiHandler.evaluate(r, days);
+    } else if (r.rule_family === 'lunar_tithi_recurring') {
+      occurrencesMap[r.slug] = RecurringLunarTithiHandler.evaluate(r, days);
+    } else if (r.rule_family === 'weekday_recurring') {
+      occurrencesMap[r.slug] = RecurringWeekdayHandler.evaluate(r, days);
+    } else if (r.rule_family === 'nakshatra_based') {
+      occurrencesMap[r.slug] = NakshatraBasedHandler.evaluate(r, days);
+    } else if (r.rule_family === 'regional_calendar') {
+      occurrencesMap[r.slug] = NanakshahiHandler.evaluate(r, year);
+    } else {
+      occurrencesMap[r.slug] = [];
+    }
+  }
+
+  // 2. Second Pass: Resolve relative rules (identical to legacy — relative rules
+  //    are anchored to their base slugs which will already have corrected dates)
+  const maxIterations = 3;
+  for (let iter = 0; iter < maxIterations; iter++) {
+    for (const rule of CANONICAL_RULES) {
+      if (rule.rule_family === 'relative_to_other_observance') {
+        const baseSlug = rule.relative_base_slug;
+        const offset = rule.relative_offset_days || 0;
+        if (!baseSlug) continue;
+
+        const baseDates = occurrencesMap[baseSlug] || [];
+        const resolvedDates: string[] = [];
+
+        for (const baseDate of baseDates) {
+          const bd = new Date(baseDate + 'T00:00:00Z');
+          const rd = new Date(bd.getTime() + offset * 24 * 60 * 60 * 1000);
+          resolvedDates.push(formatUtcDate(rd));
+        }
+
+        occurrencesMap[rule.slug] = resolvedDates;
+      }
+    }
+  }
+
+  return occurrencesMap;
+}
+
+/**
+ * Calculates all occurrences of observances for a target year using the CORRECTED engine.
+ *
+ * D1+D2 Stage 1 — Shadow evaluation path. Used by the diff script only.
+ * Does not affect calculateObservancesForYear (legacy, flag OFF).
+ *
+ * Each rule's prefer_last_match applies as in the legacy path.
+ */
+export function calculateObservancesForYearCorrected(year: number): CalculatedOccurrence[] {
+  const occurrencesMap = buildOccurrencesMapCorrected(year);
+
+  const results: CalculatedOccurrence[] = [];
+  for (const rule of CANONICAL_RULES) {
+    const r = toCorrectedRule(rule);
+    const allDates = (occurrencesMap[r.slug] || []).filter(
+      d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+    );
+    if (allDates.length === 0) continue;
+    if (r.rule_family === 'lunar_tithi_recurring' || r.rule_family === 'weekday_recurring') {
+      for (const date of allDates) {
+        results.push({ slug: r.slug, date, year, recurring: true });
+      }
+      continue;
+    }
+    const selectedDate = r.prefer_last_match
+      ? allDates[allDates.length - 1]
+      : allDates[0];
+    results.push({ slug: r.slug, date: selectedDate, year });
+  }
+
+  return results;
 }

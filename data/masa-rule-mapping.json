@@ -1,0 +1,370 @@
+[
+  {
+    "slug": "vasant-panchami",
+    "display_name": "Vasant Panchami",
+    "legacy_lunar_masa_name": "Margashirsha",
+    "corrected_lunar_masa_name": "Magha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "maha-shivaratri",
+    "display_name": "Maha Shivaratri",
+    "legacy_lunar_masa_name": "Pausha",
+    "corrected_lunar_masa_name": "Magha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "holi",
+    "display_name": "Holi",
+    "legacy_lunar_masa_name": "Pausha",
+    "corrected_lunar_masa_name": "Phalguna",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "gudi-padwa",
+    "display_name": "Gudi Padwa",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "chaitra-navratri-begins",
+    "display_name": "Chaitra Navratri begins",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "ugadi",
+    "display_name": "Ugadi",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "ram-navami",
+    "display_name": "Ram Navami",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "hanuman-jayanti",
+    "display_name": "Hanuman Jayanti",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "akshaya-tritiya",
+    "display_name": "Akshaya Tritiya",
+    "legacy_lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Vaishakha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "narasimha-jayanti",
+    "display_name": "Narasimha Jayanti",
+    "legacy_lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Vaishakha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "shani-jayanti",
+    "display_name": "Shani Jayanti",
+    "legacy_lunar_masa_name": "Chaitra",
+    "corrected_lunar_masa_name": "Jyeshtha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vat-savitri-amavasya",
+    "display_name": "Vat Savitri Vrat",
+    "legacy_lunar_masa_name": "Chaitra",
+    "corrected_lunar_masa_name": "Jyeshtha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vat-savitri-purnima",
+    "display_name": "Vat Savitri Purnima",
+    "legacy_lunar_masa_name": "Chaitra",
+    "corrected_lunar_masa_name": "Jyeshtha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "jagannath-rath-yatra",
+    "display_name": "Jagannath Rath Yatra",
+    "legacy_lunar_masa_name": "Vaishakha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "gupt-navratri-ashadha-begins",
+    "display_name": "Ashadha Gupt Navratri begins",
+    "legacy_lunar_masa_name": "Vaishakha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "guru-purnima",
+    "display_name": "Guru Purnima",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "nag-panchami",
+    "display_name": "Nag Panchami",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "raksha-bandhan",
+    "display_name": "Raksha Bandhan",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "krishna-janmashtami",
+    "display_name": "Krishna Janmashtami",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "ganesh-chaturthi",
+    "display_name": "Ganesh Chaturthi",
+    "legacy_lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "onam",
+    "display_name": "Onam",
+    "legacy_lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "hartalika-teej",
+    "display_name": "Hartalika Teej",
+    "legacy_lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "navratri-begins",
+    "display_name": "Sharad Navratri begins",
+    "legacy_lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Ashwin",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "karva-chauth",
+    "display_name": "Karva Chauth",
+    "legacy_lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Kartika",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "diwali",
+    "display_name": "Diwali",
+    "legacy_lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Kartika",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "chhath-puja",
+    "display_name": "Chhath Puja",
+    "legacy_lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Kartika",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vivah-panchami",
+    "display_name": "Vivah Panchami",
+    "legacy_lunar_masa_name": "Ashwin",
+    "corrected_lunar_masa_name": "Margashirsha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "gita-jayanti",
+    "display_name": "Gita Jayanti",
+    "legacy_lunar_masa_name": "Ashwin",
+    "corrected_lunar_masa_name": "Margashirsha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vaikunta-ekadashi",
+    "display_name": "Vaikunta Ekadashi",
+    "legacy_lunar_masa_name": "Ashwin",
+    "corrected_lunar_masa_name": "Margashirsha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "gupt-navratri-magha-begins",
+    "display_name": "Magha Gupt Navratri begins",
+    "legacy_lunar_masa_name": "Margashirsha",
+    "corrected_lunar_masa_name": "Magha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "guru-ravidas-jayanti",
+    "display_name": "Guru Ravidas Jayanti",
+    "legacy_lunar_masa_name": "Margashirsha",
+    "corrected_lunar_masa_name": "Magha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "losar-tibetan-new-year",
+    "display_name": "Losar (Tibetan New Year)",
+    "legacy_lunar_masa_name": "Pausha",
+    "corrected_lunar_masa_name": "Phalguna",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "magha-puja",
+    "display_name": "Magha Puja",
+    "legacy_lunar_masa_name": "Margashirsha",
+    "corrected_lunar_masa_name": "Magha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vesak-buddha-purnima",
+    "display_name": "Vesak / Buddha Purnima",
+    "legacy_lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Vaishakha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "asalha-puja",
+    "display_name": "Asalha Puja",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "vassa-begins-rains-retreat",
+    "display_name": "Vassa begins (Rains Retreat)",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "ullambana-ancestor-day",
+    "display_name": "Ullambana (Ancestor Day)",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "pavarana-end-of-vassa",
+    "display_name": "Pavarana (End of Vassa)",
+    "legacy_lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Ashwin",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "kathina",
+    "display_name": "Kathina",
+    "legacy_lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Ashwin",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "mahavir-jayanti",
+    "display_name": "Mahavir Jayanti",
+    "legacy_lunar_masa_name": "Magha",
+    "corrected_lunar_masa_name": "Chaitra",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "akshaya-tritiya-jain",
+    "display_name": "Akshaya Tritiya (Jain)",
+    "legacy_lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Vaishakha",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "paryushana-parva-begins",
+    "display_name": "Paryushana Parva begins",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "samvatsari-paryushana-ends",
+    "display_name": "Samvatsari (Paryushana ends)",
+    "legacy_lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "das-lakshana-dharma-begins",
+    "display_name": "Das Lakshana Dharma begins",
+    "legacy_lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "shravan-somvar",
+    "display_name": "Shravan Somvar",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  },
+  {
+    "slug": "mangala-gauri-vrat",
+    "display_name": "Mangala Gauri Vrat",
+    "legacy_lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Shravana",
+    "adhika_policy": "nija",
+    "corrected_month_system": "amanta"
+  }
+]

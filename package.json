@@ -34,7 +34,9 @@
     "generate:snapshots": "npm run generate:snapshots --workspace=@sangam/dharma-rules",
     "generate:golden-placeholders": "npx tsx packages/dharma-rules/scripts/generate-golden-placeholders.ts",
     "demo:d15-lock-override": "npx tsx scripts/demo-d15-lock-override.ts",
-    "adjudicate-conditions": "npx tsx scripts/adjudicate-conditions.ts"
+    "adjudicate-conditions": "npx tsx scripts/adjudicate-conditions.ts",
+    "diff:masa-correction": "npx tsx scripts/diff-masa-correction.ts",
+    "check:adhika": "npx tsx scripts/check-adhika.ts"
   },
   "dependencies": {
     "@sangam/pathshala-engine": "*",

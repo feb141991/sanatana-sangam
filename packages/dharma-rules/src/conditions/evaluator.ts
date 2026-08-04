@@ -44,6 +44,29 @@ export function getTithiName(tithiIndex: number): string {
   return TITHI_NAMES[(tithiIndex - 1) % 30] || `Tithi ${tithiIndex}`;
 }
 
+/**
+ * Formats a UTC instant as "YYYY-MM-DD HH:MM" in the given IANA timezone.
+ * Replaces the old pattern of formatCivilDateInTz(instant, tz) + ' ' + instant.toISOString().slice(11,16)
+ * which mixed a local-date component with a UTC time component, yielding a hybrid that was
+ * neither local time nor UTC. All characters come from the same timezone here.
+ */
+function formatInstantInTz(instant: Date, tz: string): string {
+  try {
+    return instant.toLocaleString('sv-SE', {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  } catch {
+    // Fallback to UTC if timezone is invalid
+    return instant.toISOString().slice(0, 16).replace('T', ' ');
+  }
+}
+
 /** Computes the exact time window for a period on a civil date and location */
 export function getPeriodWindow(
   period: PeriodType,
@@ -167,19 +190,33 @@ export function getWithinPakshaTithi(absoluteTithiIndex: number): { withinPaksha
   return { withinPakshaTithi, paksha };
 }
 
+/**
+ * Test whether an absolute tithi index (1..30 from panchang.tithiIndex) matches
+ * a within-paksha target tithi (1..15) and optional paksha.
+ *
+ * Canonical scheme (documented in festival-rule-schema.md §3.1):
+ *   - targetTithi must be in 1..15 (within-paksha).
+ *   - Shukla: absolute 1..15, Krishna: absolute 16..30 mapped to 1..15.
+ *   - When targetPaksha is omitted, the tithi is paksha-ambiguous and matches
+ *     either paksha (e.g. recurring Ekadashi rules).
+ *
+ * The old `targetTithi > 15` escape hatch (which bypassed paksha-normalisation
+ * and did a raw absolute-index comparison) has been removed. The evaluator's
+ * condition vocabulary exclusively uses within-paksha tithi numbers qualified
+ * by a paksha field; absolute indices 16..30 are an internal convention of the
+ * legacy engine's rules.ts and do not appear in RuleCondition objects.
+ */
 export function isTithiMatching(
   absoluteTithiIndex: number,
   targetTithi: number,
   targetPaksha?: 'shukla' | 'krishna'
 ): boolean {
-  if (targetTithi > 15) {
-    return absoluteTithiIndex === targetTithi;
-  }
   const { withinPakshaTithi, paksha } = getWithinPakshaTithi(absoluteTithiIndex);
   if (targetPaksha) {
     return withinPakshaTithi === targetTithi && paksha === targetPaksha;
   }
-  return withinPakshaTithi === targetTithi || absoluteTithiIndex === targetTithi;
+  // Paksha-ambiguous: match if within-paksha number matches regardless of half
+  return withinPakshaTithi === targetTithi;
 }
 
 /** Evaluates a single rule condition on a given civil date and location */
@@ -309,8 +346,11 @@ export function evaluateCondition(
       satisfied = [mStart, mMid, mEnd].filter(Boolean).length >= 2;
     }
 
-    const startStr = formatCivilDateInTz(window.start, location.tz) + ' ' + window.start.toISOString().slice(11, 16);
-    const endStr = formatCivilDateInTz(window.end, location.tz) + ' ' + window.end.toISOString().slice(11, 16);
+    // formatInstantInTz produces "YYYY-MM-DD HH:MM" fully in the local timezone.
+    // The old code concatenated a local-timezone date with a UTC time slice,
+    // producing a hybrid timestamp that was neither local nor UTC.
+    const startStr = formatInstantInTz(window.start, location.tz);
+    const endStr = formatInstantInTz(window.end, location.tz);
 
     reasons.push({
       code: 'tithi_presence_check',

@@ -430,6 +430,10 @@ export interface Database {
           computed_latitude: number | null;
           computed_longitude: number | null;
           computed_timezone: string | null;
+          /** Instance discriminator (D15 amendment). Mirrors date column value.
+           *  NOT NULL — populated on insert and backfilled by migration.
+           *  Part of unique constraint: (definition_id, year, calendar_profile, occurrence_date, variant_key). */
+          occurrence_date: string;
         };
         Insert: Omit<Database['public']['Tables']['observance_occurrences']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_occurrences']['Insert']>;

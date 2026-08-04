@@ -44,6 +44,48 @@ export interface ObservanceRule {
   route_kind?: 'vrat' | null;
   route_slug?: string | null;
   region?: string | null;
+
+  // ── D1+D2 Corrected engine fields (Tracker 3.7, Stage 2) ─────────────────
+  // These fields are used ONLY by the corrected engine path (USE_CORRECTED_MASA = true).
+  // The legacy path reads only lunar_masa_name and lunar_tithi_index above.
+
+  /**
+   * The correct amanta lunar month name for this rule.
+   * This is the traditional Chandra masa name (e.g. 'Chaitra', 'Phalguna') as used
+   * in authoritative calendar sources.
+   */
+  corrected_lunar_masa_name?: string;
+
+  /**
+   * Correct lunar tithi index where the D1-calibrated value needed changing.
+   */
+  corrected_lunar_tithi_index?: number;
+
+  /**
+   * Month system for the corrected path. 'amanta' for all rules in Stage 2.
+   */
+  corrected_month_system?: 'amanta' | 'purnimanta';
+
+  /**
+   * Explicit declaration of Adhika masa (intercalary month) behavior.
+   * Can be:
+   *   - 'nija': Observed in the true (nija) month only (standard for annual festivals).
+   *   - 'both': Observed in both the adhika and nija month.
+   *   - 'adhika': Observed in the adhika month only.
+   */
+  adhika_policy?: 'nija' | 'adhika' | 'both';
+
+  /**
+   * Corrected prefer_last_match value for corrected engine path.
+   * Used to override prefer_last_match (disabling legacy D1 hacks).
+   */
+  corrected_prefer_last_match?: boolean;
+
+  /**
+   * Corrected allow_skipped_tithi value for corrected engine path.
+   * Used to override allow_skipped_tithi (disabling legacy D1 hacks).
+   */
+  corrected_allow_skipped_tithi?: boolean;
 }
 
 // Tithi index convention (amanta system):
@@ -82,6 +124,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Margashirsha', // traditional Magha
+    corrected_lunar_masa_name: 'Magha', // [D2] engine 'Margashirsha' = traditional 'Magha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 5,
   },
   {
@@ -94,6 +139,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Pausha', // traditional Phalguna (purnimanta) / Magha (amanta)
+    corrected_lunar_masa_name: 'Magha', // [D2] engine 'Pausha' = traditional 'Phalguna'
+    corrected_month_system: 'amanta',
+    corrected_lunar_tithi_index: 29, // [D2] Chaturdashi
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 28,     // Chaturdashi; use 28 since tithi-29 night falls after the 05:00 UTC scan
   },
   {
@@ -106,6 +155,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Pausha', // traditional Phalguna Purnima
+    corrected_lunar_masa_name: 'Phalguna', // [D2] engine 'Pausha' = traditional 'Phalguna'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -118,6 +170,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
   },
@@ -131,6 +186,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Shukla Pratipada
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
@@ -146,6 +204,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Pratipada
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
   },
@@ -159,6 +220,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Shukla Navami
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 9,
     allow_skipped_tithi: true, // Navami can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
@@ -172,6 +236,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Magha', // traditional Chaitra Purnima
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -184,6 +251,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
+    corrected_lunar_masa_name: 'Vaishakha', // [D2] engine 'Phalguna' = traditional 'Vaishakha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 3,
     allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
@@ -197,6 +267,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Chaturdashi
+    corrected_lunar_masa_name: 'Vaishakha', // [D2] engine 'Phalguna' = traditional 'Vaishakha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 14,
   },
   {
@@ -209,6 +282,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
+    corrected_lunar_masa_name: 'Jyeshtha', // [D2] engine 'Chaitra' = traditional 'Jyeshtha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 30,
   },
   {
@@ -221,6 +297,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Chaitra', // traditional Jyeshtha Amavasya
+    corrected_lunar_masa_name: 'Jyeshtha', // [D2] engine 'Chaitra' = traditional 'Jyeshtha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 30,
     route_kind: 'vrat',
     route_slug: 'vat-savitri',
@@ -235,6 +314,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Chaitra', // traditional Jyeshtha Purnima
+    corrected_lunar_masa_name: 'Jyeshtha', // [D2] engine 'Chaitra' = traditional 'Jyeshtha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'vat-savitri-purnima',
@@ -249,6 +331,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Dwitiya
+    corrected_lunar_masa_name: 'Ashadha', // [D2] engine 'Vaishakha' = traditional 'Ashadha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 2,
   },
   {
@@ -261,6 +346,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Vaishakha', // traditional Ashadha Shukla Pratipada
+    corrected_lunar_masa_name: 'Ashadha', // [D2] engine 'Vaishakha' = traditional 'Ashadha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
@@ -276,6 +364,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
     route_kind: 'vrat',
     route_slug: 'purnima',
@@ -290,6 +381,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Shukla Panchami
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    corrected_prefer_last_match: false, // [D2] D1 hack obsolete under correct month
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 5,
     prefer_last_match: true,
   },
@@ -303,6 +398,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -315,6 +413,10 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Ashtami (amanta)
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    corrected_prefer_last_match: false, // [D2] D1 hack obsolete under correct month
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 23,
     prefer_last_match: true,    // 'Jyeshtha'/23 fires twice (Ashadha & Shravana dark halves); want the later one
   },
@@ -328,6 +430,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Chaturthi
+    corrected_lunar_masa_name: 'Bhadrapada', // [D2] engine 'Ashadha' = traditional 'Bhadrapada'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 4,
   },
   {
@@ -340,6 +445,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'nakshatra_based',
     verification_type: 'nakshatra_based',
     lunar_masa_name: 'Ashadha',  // Chingam = sidereal Leo; panchang gives 'Ashadha' for Leo solar month
+    corrected_lunar_masa_name: 'Bhadrapada', // [D2] engine 'Ashadha' = traditional 'Bhadrapada'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     nakshatra_name: 'Shravana',  // Thiruvonam = moon in Shravana nakshatra
   },
   {
@@ -352,6 +460,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Tritiya
+    corrected_lunar_masa_name: 'Bhadrapada', // [D2] engine 'Ashadha' = traditional 'Bhadrapada'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 3,
     route_kind: 'vrat',
     route_slug: 'hartalika-teej',
@@ -384,6 +495,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Shravana', // traditional Ashwin Shukla Pratipada
+    corrected_lunar_masa_name: 'Ashwin', // [D2] engine 'Shravana' = traditional 'Ashwin'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
@@ -441,6 +555,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Bhadrapada', // traditional Kartika Krishna Chaturthi
+    corrected_lunar_masa_name: 'Kartika', // [D2] engine 'Bhadrapada' = traditional 'Kartika'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 19,
     route_kind: 'vrat',
     route_slug: 'karva-chauth',
@@ -467,6 +584,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Bhadrapada', // traditional Kartika Amavasya
+    corrected_lunar_masa_name: 'Kartika', // [D2] engine 'Bhadrapada' = traditional 'Kartika'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 29,          // Amavasya (30) begins that evening; 5am scan shows 29
   },
   {
@@ -503,6 +623,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Bhadrapada', // traditional Kartika Shukla Shashthi
+    corrected_lunar_masa_name: 'Kartika', // [D2] engine 'Bhadrapada' = traditional 'Kartika'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 6,
   },
   {
@@ -532,6 +655,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Panchami
+    corrected_lunar_masa_name: 'Margashirsha', // [D2] engine 'Ashwin' = traditional 'Margashirsha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 5,
   },
   {
@@ -544,6 +670,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
+    corrected_lunar_masa_name: 'Margashirsha', // [D2] engine 'Ashwin' = traditional 'Margashirsha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 11,
   },
   {
@@ -556,6 +685,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashwin', // traditional Margashirsha Shukla Ekadashi
+    corrected_lunar_masa_name: 'Margashirsha', // [D2] engine 'Ashwin' = traditional 'Margashirsha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 11,
     route_kind: 'vrat',
     route_slug: 'vaikunta-ekadashi',
@@ -570,6 +702,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Margashirsha', // traditional Magha Shukla Pratipada
+    corrected_lunar_masa_name: 'Magha', // [D2] engine 'Margashirsha' = traditional 'Magha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
     allow_skipped_tithi: true,
     route_kind: 'vrat',
@@ -611,7 +746,11 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
+    corrected_lunar_masa_name: 'Magha', // [D2] engine 'Margashirsha' = traditional 'Magha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
+    corrected_allow_skipped_tithi: true,
   },
   {
     slug: 'holla-mohalla',
@@ -759,6 +898,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'regional_calendar',
     lunar_masa_name: 'Pausha', // traditional Phalguna Pratipada (Tibetan 1st month day 1)
+    corrected_lunar_masa_name: 'Phalguna', // [D2] engine 'Pausha' = traditional 'Phalguna'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 1,
   },
   {
@@ -771,7 +913,11 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Margashirsha', // traditional Magha Purnima
+    corrected_lunar_masa_name: 'Magha', // [D2] engine 'Margashirsha' = traditional 'Magha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
+    corrected_allow_skipped_tithi: true,
   },
   {
     slug: 'vesak-buddha-purnima',
@@ -783,6 +929,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Purnima
+    corrected_lunar_masa_name: 'Vaishakha', // [D2] engine 'Phalguna' = traditional 'Vaishakha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -795,6 +944,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Purnima
+    corrected_lunar_masa_name: 'Ashadha', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -807,6 +959,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // engine label for traditional Ashadha Krishna Pratipada (day after Purnima)
+    corrected_lunar_masa_name: 'Ashadha', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 16,
   },
   {
@@ -819,6 +974,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Purnima
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -831,6 +989,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Shravana', // traditional Ashwin Purnima
+    corrected_lunar_masa_name: 'Ashwin', // [D2] engine 'Shravana' = traditional 'Ashwin'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 15,
   },
   {
@@ -843,6 +1004,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Shravana', // traditional Ashwin Krishna Pratipada
+    corrected_lunar_masa_name: 'Ashwin', // [D2] engine 'Shravana' = traditional 'Ashwin'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 16,
   },
   {
@@ -882,7 +1046,11 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
     lunar_masa_name: 'Magha', // traditional Chaitra Shukla Trayodashi
+    corrected_lunar_masa_name: 'Chaitra', // [D2] engine 'Magha' = traditional 'Chaitra'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 13,
+    corrected_allow_skipped_tithi: true,
   },
   {
     slug: 'akshaya-tritiya-jain',
@@ -894,6 +1062,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'historical_commemoration',
     lunar_masa_name: 'Phalguna', // traditional Vaishakha Shukla Tritiya
+    corrected_lunar_masa_name: 'Vaishakha', // [D2] engine 'Phalguna' = traditional 'Vaishakha'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 3,
     allow_skipped_tithi: true, // Tritiya can be fast-moving; 5am UTC scan may land on T-1/T+1
   },
@@ -907,6 +1078,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana Krishna Dvadashi / Bhadrapada Shukla 12
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 27,
   },
   {
@@ -919,6 +1093,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
+    corrected_lunar_masa_name: 'Bhadrapada', // [D2] engine 'Ashadha' = traditional 'Bhadrapada'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 5,
   },
   {
@@ -931,6 +1108,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Ashadha', // traditional Bhadrapada Shukla Panchami
+    corrected_lunar_masa_name: 'Bhadrapada', // [D2] engine 'Ashadha' = traditional 'Bhadrapada'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     lunar_tithi_index: 5,
   },
   {
@@ -986,6 +1166,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi_recurring',
     verification_type: 'lunar_tithi',
     recurring_tithi_indices: [11, 26],
+    adhika_policy: 'both', // [S] Council ratification pending: monthly vrat observed in both nija and adhika
     allow_skipped_tithi: true,
     route_kind: 'vrat',
     route_slug: 'ekadashi',
@@ -1056,6 +1237,7 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'lunar_tithi_recurring',
     verification_type: 'lunar_tithi',
     recurring_tithi_indices: [19],
+    adhika_policy: 'both', // [S] Council ratification pending: monthly vrat observed in both nija and adhika
     allow_skipped_tithi: true,
     route_kind: 'vrat',
     route_slug: 'sankashti-chaturthi',
@@ -1070,6 +1252,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'weekday_recurring',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     recurring_weekday: 1,
     route_kind: 'vrat',
     route_slug: 'somvar',
@@ -1084,6 +1269,9 @@ export const CANONICAL_RULES: ObservanceRule[] = [
     rule_family: 'weekday_recurring',
     verification_type: 'lunar_tithi',
     lunar_masa_name: 'Jyeshtha', // traditional Shravana month in current engine calibration
+    corrected_lunar_masa_name: 'Shravana', // [D2] engine 'Jyeshtha' = traditional 'Shravana'
+    corrected_month_system: 'amanta',
+    adhika_policy: 'nija', // [S] Council ratification pending: observed in nija month only
     recurring_weekday: 2,
     route_kind: 'vrat',
     route_slug: 'mangala-gauri',

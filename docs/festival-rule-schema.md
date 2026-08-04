@@ -92,7 +92,7 @@ requires an ADR; adding a *rule* using existing types is data only.
 |---|---|---|
 | `lunar_month` | `value`, `monthSystem` | Month name under the stated system. `monthSystem` is **mandatory** — an unqualified month name is ambiguous. |
 | `paksha` | `value: shukla\|krishna` | |
-| `tithi` | `value: 1..15` + paksha (or `1..30` absolute) | Canonical scheme for rule authoring: within-paksha index 1..15 (1=Pratipada, 8=Ashtami, 14=Chaturdashi, 15=Purnima/Amavasya) qualified by `paksha` (`shukla` \| `krishna`). Evaluator normalises absolute 1..30 at condition boundary. |
+| `tithi` | `value: 1..15` + `paksha` (mandatory) | **Canonical scheme**: within-paksha index 1..15 (Pratipada=1, Ashtami=8, Chaturdashi=14, Purnima=15, Amavasya=15 krishna) qualified by `paksha: shukla\|krishna`. The evaluator's `isTithiMatching` normalises the engine's absolute index (1..30) at evaluation time. Absolute indices (16..30) are an internal convention of the legacy engine `rules.ts` and **must not** appear in `RuleCondition` objects. See §3.1. |
 | `nakshatra` | `value` | |
 | `yoga` | `value` | |
 | `karana` | `value` | |
@@ -313,3 +313,37 @@ Any date that changes without an explanation is a regression, not an improvement
 - Every rule must declare ≥ 1 `sources[]` entry.
 - CI fails on: unresolvable priority tie · condition type not in §2 ·
   `lunar_month` without `monthSystem` · approved rule with no golden case.
+
+---
+
+## §3.1 Canonical Tithi Scheme for RuleCondition objects
+
+**One scheme is canonical. There is no other.**
+
+`RuleCondition` objects of type `tithi` or `tithi_presence` must express the
+tithi as a **within-paksha index (1..15)** accompanied by an explicit `paksha`
+field (`shukla` | `krishna`):
+
+```json
+{ "type": "tithi", "value": 8, "paksha": "krishna" }   // Krishna Ashtami = Janmashtami
+{ "type": "tithi", "value": 14, "paksha": "krishna" }  // Krishna Chaturdashi = Shivaratri
+{ "type": "tithi", "value": 15, "paksha": "shukla" }   // Purnima
+```
+
+The legacy engine (`rules.ts`) uses **absolute indices (1..30)** internally
+(Shukla Pratipada = 1 … Amavasya = 30). These are an internal convention of
+the `CANONICAL_RULES` array and the `LunarTithiHandler`. They must not appear
+in evaluator `RuleCondition` objects.
+
+The evaluator's `isTithiMatching(absoluteIdx, targetTithi, targetPaksha)` maps
+from the engine's absolute index to the within-paksha scheme via
+`getWithinPakshaTithi`. The old escape hatch that returned
+`absoluteIdx === targetTithi` when `targetTithi > 15` — which bypassed paksha
+normalisation — was **removed** in D26/D27 (evaluator v1.0.0, 2026-08-04).
+
+**Rationale**: the escape hatch kept two schemes alive simultaneously. Code that
+called `isTithiMatching(panchang.tithiIndex, 23)` (absolute Janmashtami = 23)
+received a correct answer accidentally, but only when the panchang and the rule
+happened to both count from 1. Code that called it with `targetTithi = 29`
+(Chaturdashi in absolute) would have silently failed the paksha check. The
+within-paksha + explicit paksha scheme is unambiguous.
