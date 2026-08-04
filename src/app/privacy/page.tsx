@@ -5,6 +5,9 @@ import PrivacyClient from './PrivacyClient';
 export const metadata: Metadata = {
   title: 'Privacy Policy | Shoonaya Global',
   description: 'Worldwide privacy policy for the Shoonaya spiritual community. Transparency for seekers.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/privacy',
+  },
 };
 
 export default function PrivacyPage() {

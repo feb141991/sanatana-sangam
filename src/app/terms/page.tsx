@@ -5,6 +5,9 @@ import TermsClient from './TermsClient';
 export const metadata: Metadata = {
   title: 'Terms & Conditions | Shoonaya Global',
   description: 'Worldwide terms of use for Shoonaya spiritual community and sacred library.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/terms',
+  },
 };
 
 export default function TermsPage() {

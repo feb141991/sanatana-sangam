@@ -30,6 +30,7 @@ const fontVars = [
 ].join(' ');
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.shoonaya.com'),
   title:       'Shoonaya App | Sanatan, Sikh, Jain & Buddhist Spiritual App',
   description: 'Shoonaya is a spiritual app for Daily Dharma, Panchang, scripture, japa, festivals, and community across Sanatan, Hindu, Sikh, Jain, and Buddhist traditions.',
   keywords:    [

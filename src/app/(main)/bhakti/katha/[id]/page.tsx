@@ -1,16 +1,19 @@
-import { notFound } from 'next/navigation';
-import { getKathaById } from '@/lib/katha-library';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { getCanonicalKathaId, getKathaById } from '@/lib/katha-library';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaReaderClient from './KathaReaderClient';
 import type { Metadata } from 'next';
 import { GeoArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
-import { extractKathaGeo } from '@/lib/seo/geo-extractors';interface Props {
+import { extractKathaGeo } from '@/lib/seo/geo-extractors';
+
+interface Props {
   params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const katha = getKathaById(id);
+  const canonicalId = getCanonicalKathaId(id);
+  const katha = getKathaById(canonicalId);
   
   if (!katha) return { title: 'Katha | Shoonaya' };
 
@@ -23,17 +26,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${katha.title}: Story & Meaning`,
       description,
       type: 'article',
-      url: `https://www.shoonaya.com/bhakti/katha/${id}`,
+      url: `https://www.shoonaya.com/bhakti/katha/${canonicalId}`,
     },
     alternates: {
-      canonical: `https://www.shoonaya.com/bhakti/katha/${id}`
+      canonical: `https://www.shoonaya.com/bhakti/katha/${canonicalId}`
     }
   };
 }
 
 export default async function KathaReaderPage({ params }: Props) {
   const { id } = await params;
-  const katha = getKathaById(id);
+  const canonicalId = getCanonicalKathaId(id);
+  if (canonicalId !== id) {
+    permanentRedirect(`/bhakti/katha/${canonicalId}`);
+  }
+
+  const katha = getKathaById(canonicalId);
   if (!katha) notFound();
 
   const supabase = await createServerSupabaseClient();
@@ -56,7 +64,7 @@ export default async function KathaReaderPage({ params }: Props) {
   }
 
   const geo = extractKathaGeo(katha);
-  const canonicalUrl = `https://www.shoonaya.com/bhakti/katha/${id}`;
+  const canonicalUrl = `https://www.shoonaya.com/bhakti/katha/${canonicalId}`;
 
   return (
     <>

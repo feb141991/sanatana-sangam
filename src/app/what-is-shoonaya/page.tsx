@@ -4,6 +4,9 @@ import PublicPageShell from '@/components/public/PublicPageShell';
 export const metadata: Metadata = {
   title: 'What is Shoonaya? | Spiritual App for Daily Dharma',
   description: 'Shoonaya is a spiritual companion app built for seekers of Sanatan, Sikh, Jain and Buddhist wisdom. Daily Dharma, Panchang, japa, scripture, and sacred community — all in one place.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/what-is-shoonaya',
+  },
   openGraph: {
     title: 'What is Shoonaya? | Spiritual App for Daily Dharma',
     description: 'Shoonaya is a spiritual companion app built for seekers of Sanatan, Sikh, Jain and Buddhist wisdom. Daily Dharma, Panchang, japa, scripture, and sacred community — all in one place.',

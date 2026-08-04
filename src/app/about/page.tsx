@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
 
 export const metadata: Metadata = {
-  title: 'About | Shoonaya',
-  description: 'Learn what Shoonaya is building for the global dharmic community.',
+  title: 'About Shoonaya | A Multi-Tradition Spiritual Companion',
+  description: 'Learn how Shoonaya supports daily dharmic practice, scripture, family continuity, and local community across Hindu, Sikh, Buddhist, and Jain paths.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/about',
+  },
 };
 
 export default function AboutPage() {

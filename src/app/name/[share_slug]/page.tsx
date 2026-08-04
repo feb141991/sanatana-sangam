@@ -26,14 +26,18 @@ export async function generateMetadata({
   const name = story.normalized_first_name || story.name_input;
   const title = `Spiritual Name Story of ${name} — Shoonaya`;
   const desc = story.sacred_meaning || story.meaning_summary || `Discover the first-name story, scripture connection, and blessing for ${name} on Shoonaya.`;
+  const canonicalUrl = `https://www.shoonaya.com/name/${share_slug}`;
 
   return {
     title,
     description: desc,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description: desc,
-      url: `https://www.shoonaya.com/name/${share_slug}`,
+      url: canonicalUrl,
       siteName: 'Shoonaya',
       type: 'website',
       images: [

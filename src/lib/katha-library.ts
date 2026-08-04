@@ -1,3 +1,5 @@
+import kathaAliases from './katha-aliases.json';
+
 export type KathaTradition = 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
 export type KathaOccasion =
   | 'ekadashi' | 'purnima' | 'amavasya' | 'pradosh' | 'chaturthi'
@@ -6365,7 +6367,13 @@ export const HEROES_KATHAS: Katha[] = [
 
 // ─── Master library ───────────────────────────────────────────────────────────
 
-export const ALL_KATHAS: Katha[] = [
+export const KATHA_CANONICAL_ID_BY_ALIAS: Readonly<Record<string, string>> = kathaAliases;
+
+export function getCanonicalKathaId(id: string): string {
+  return KATHA_CANONICAL_ID_BY_ALIAS[id] ?? id;
+}
+
+const KATHA_LIBRARY: Katha[] = [
   {
     id: 'katha-hindu-ashtavakra',
     title: `The Radiant Wisdom of Ashtavakra`,
@@ -7610,6 +7618,10 @@ export const ALL_KATHAS: Katha[] = [
   ...HEROES_KATHAS.map(k => ({ ...k, tradition: 'all' as const })),
 ];
 
+export const ALL_KATHAS: Katha[] = KATHA_LIBRARY.filter(
+  katha => !(katha.id in KATHA_CANONICAL_ID_BY_ALIAS)
+);
+
 /** Get kathas for a specific tradition */
 export function getKathasByTradition(tradition: KathaTradition): Katha[] {
   return ALL_KATHAS.filter(k => k.tradition === tradition || k.tradition === 'all');
@@ -7633,7 +7645,8 @@ export function getEkadashiKatha(monthNumber: number): Katha | null {
 
 /** Get a katha by ID */
 export function getKathaById(id: string): Katha | null {
-  return ALL_KATHAS.find(k => k.id === id) ?? null;
+  const canonicalId = getCanonicalKathaId(id);
+  return ALL_KATHAS.find(k => k.id === canonicalId) ?? null;
 }
 
 /** Get kathas related to a vrat */

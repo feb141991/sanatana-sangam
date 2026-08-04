@@ -1,7 +1,22 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
+const kathaAliases = require('./src/lib/katha-aliases.json');
 
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/landing.html',
+        destination: '/',
+        permanent: true,
+      },
+      ...Object.entries(kathaAliases).map(([alias, canonicalId]) => ({
+        source: `/bhakti/katha/${alias}`,
+        destination: `/bhakti/katha/${canonicalId}`,
+        permanent: true,
+      })),
+    ];
+  },
   async headers() {
     return [
       // ── PWA static assets — long cache ───────────────────────────────────

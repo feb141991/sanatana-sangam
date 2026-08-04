@@ -2,8 +2,11 @@ import type { Metadata } from 'next';
 import PublicPageShell from '@/components/public/PublicPageShell';
 
 export const metadata: Metadata = {
-  title: 'Contact | Shoonaya',
-  description: 'Contact and support information for Shoonaya.',
+  title: 'Contact Shoonaya | Support & Partnerships',
+  description: 'Contact Shoonaya for account support, safety concerns, product questions, and dharmic community partnerships.',
+  alternates: {
+    canonical: 'https://www.shoonaya.com/contact',
+  },
 };
 
 export default function ContactPage() {

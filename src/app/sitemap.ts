@@ -31,9 +31,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/bhakti/katha`,     changeFrequency: 'weekly',  priority: 0.8 },
     { url: `${BASE_URL}/discover`,         changeFrequency: 'daily',   priority: 0.7 },
 
-    // Public practice tools
-    { url: `${BASE_URL}/nitya-karma`,      changeFrequency: 'weekly',  priority: 0.6 },
-
     // Public / legal
     { url: `${BASE_URL}/privacy`,          changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${BASE_URL}/terms`,            changeFrequency: 'yearly',  priority: 0.3 },
