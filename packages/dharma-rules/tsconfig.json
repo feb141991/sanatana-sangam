@@ -16,6 +16,6 @@
       "@/*": ["../../src/*"]
     }
   },
-  "include": ["harness/**/*.ts", "scripts/**/*.ts"],
+  "include": ["src/**/*.ts", "harness/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

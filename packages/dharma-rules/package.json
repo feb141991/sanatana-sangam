@@ -14,5 +14,8 @@
     "ajv": "^8.17.1",
     "typescript": "^5.4.0",
     "vitest": "^4.1.4"
+  },
+  "dependencies": {
+    "@sangam/panchang-engine": "*"
   }
 }
