@@ -44,9 +44,11 @@ declare module 'astronomia/moonposition' {
 
 declare module 'astronomia/nutation' {
   export function nutation(jde: number): [number, number];
+  export function meanObliquity(jde: number): number;
 
   const nutationModule: {
     nutation: typeof nutation;
+    meanObliquity: typeof meanObliquity;
   };
 
   export default nutationModule;

@@ -4,7 +4,7 @@
  * Layer A Topocentric Moonrise and Moonset Engine for @sangam/panchang-engine.
  *
  * Computes topocentric upper-limb moonrise and moonset times with standard
- * atmospheric refraction (34') and lunar horizontal parallax based on
+ * atmospheric refraction (34') and horizontal parallax based on
  * astronomy-conventions.md §3.1 & §8.
  */
 
@@ -13,6 +13,7 @@ import moonposition from 'astronomia/moonposition';
 import parallax from 'astronomia/parallax';
 import globe from 'astronomia/globe';
 import sidereal from 'astronomia/sidereal';
+import nutation from 'astronomia/nutation';
 
 export interface RiseSetResult {
   ok: true;
@@ -38,27 +39,48 @@ export function getMoonUpperLimbAlt(
   const jde = julian.DateToJDE(date);
 
   const pos = moonposition.position(jde);
-  const pi = moonposition.parallax(jde);
+
+  // D19 Fix: pass pos.range in km to moonposition.parallax
+  const pi = moonposition.parallax(pos.range);
   const semidiameterRad = Math.asin(0.2725 * Math.sin(pi));
   const refractionRad = (34 / 60) * (Math.PI / 180);
+
+  // D18 Fix: convert ecliptic (pos.lon, pos.lat) -> apparent equatorial (ra, dec) using true obliquity
+  const meanEps = nutation.meanObliquity(jde);
+  const [, dEps] = nutation.nutation(jde);
+  const eps = meanEps + dEps;
+
+  const lambda = pos.lon;
+  const beta = pos.lat;
+
+  const sinLambda = Math.sin(lambda);
+  const cosLambda = Math.cos(lambda);
+  const sinBeta = Math.sin(beta);
+  const cosBeta = Math.cos(beta);
+  const tanBeta = Math.tan(beta);
+  const sinEps = Math.sin(eps);
+  const cosEps = Math.cos(eps);
+
+  const ra = Math.atan2(sinLambda * cosEps - tanBeta * sinEps, cosLambda);
+  const dec = Math.asin(Math.max(-1, Math.min(1, sinBeta * cosEps + cosBeta * sinEps * sinLambda)));
 
   const st0Rad = (sidereal.apparent(jde) / 3600) * 15 * (Math.PI / 180);
   const lst = st0Rad - lonWestRad;
 
-  let H = lst - pos.ra;
-  let dec = pos.dec;
+  let H = lst - ra;
+  let finalDec = dec;
 
   if (isTopocentric) {
     const [sphi, cphi] = globe.Earth76.parallaxConstants(latRad, 0);
-    const posAu = { ra: pos.ra, dec: pos.dec, range: pos.range / 149597870.7 };
+    const posAu = { ra, dec, range: pos.range / 149597870.7 };
     const topo = parallax.topocentric(posAu, sphi, cphi, lonWestRad, jde);
     H = lst - topo._ra;
-    dec = topo._dec;
+    finalDec = topo._dec;
   }
 
   const sinAlt =
-    Math.sin(latRad) * Math.sin(dec) +
-    Math.cos(latRad) * Math.cos(dec) * Math.cos(H);
+    Math.sin(latRad) * Math.sin(finalDec) +
+    Math.cos(latRad) * Math.cos(finalDec) * Math.cos(H);
   const centerAlt = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
 
   return ((centerAlt + refractionRad + semidiameterRad) * 180) / Math.PI;
@@ -90,6 +112,17 @@ function getTzOffsetMs(date: Date, timeZone: string): number {
   return localUtcMs - date.getTime();
 }
 
+function getLocalMidnight(year: number, month: number, day: number, timeZone?: string): Date {
+  if (!timeZone) {
+    return new Date(year, month - 1, day, 0, 0, 0);
+  }
+  const approxUtc = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+  const offsetMs = getTzOffsetMs(approxUtc, timeZone);
+  const midnightUtc = new Date(approxUtc.getTime() - offsetMs);
+  const actualOffsetMs = getTzOffsetMs(midnightUtc, timeZone);
+  return new Date(approxUtc.getTime() - actualOffsetMs);
+}
+
 function getCivilDayInterval(date: Date, timeZone?: string): { start: Date; end: Date } {
   if (timeZone) {
     const parts = new Intl.DateTimeFormat('en-US', {
@@ -102,10 +135,21 @@ function getCivilDayInterval(date: Date, timeZone?: string): { start: Date; end:
     const month = parseInt(parts.find((p) => p.type === 'month')!.value, 10);
     const day = parseInt(parts.find((p) => p.type === 'day')!.value, 10);
 
-    const approxUtc = new Date(Date.UTC(year, month - 1, day));
-    const offsetMs = getTzOffsetMs(approxUtc, timeZone);
-    const start = new Date(approxUtc.getTime() - offsetMs);
-    const end = new Date(start.getTime() + 86_400_000);
+    const start = getLocalMidnight(year, month, day, timeZone);
+
+    // Compute next day's local midnight independently (handles 23h, 24h, and 25h DST civil days)
+    const dayPlusOne = new Date(start.getTime() + 30 * 3600_000);
+    const nextParts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(dayPlusOne);
+    const nextYear = parseInt(nextParts.find((p) => p.type === 'year')!.value, 10);
+    const nextMonth = parseInt(nextParts.find((p) => p.type === 'month')!.value, 10);
+    const nextDay = parseInt(nextParts.find((p) => p.type === 'day')!.value, 10);
+
+    const end = getLocalMidnight(nextYear, nextMonth, nextDay, timeZone);
     return { start, end };
   } else {
     const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -123,46 +167,25 @@ export function getMoonRiseSet(
   lon: number,
   tz?: string
 ): MoonRiseSetResult {
-  // High-latitude check (§8)
-  if (Math.abs(lat) > 66.5) {
-    const { start, end } = getCivilDayInterval(date, tz);
-    let allAbove = true;
-    let allBelow = true;
-    const stepMs = 30 * 60_000;
-    for (let t = start.getTime(); t <= end.getTime(); t += stepMs) {
-      const alt = getMoonUpperLimbAlt(new Date(t), lat, lon);
-      if (alt <= 0) allAbove = false;
-      if (alt >= 0) allBelow = false;
-    }
-    if (allAbove) {
-      return {
-        ok: false,
-        reason: `Moon is circumpolar (does not set) for latitude ${lat}`,
-      };
-    }
-    if (allBelow) {
-      return {
-        ok: false,
-        reason: `Moon never rises for latitude ${lat}`,
-      };
-    }
+  const diagnostics: string[] = [];
+  let effectiveLat = lat;
+
+  // D21 Fix: High-latitude proxy latitude 60° when |lat| >= 66.5° per §8
+  if (Math.abs(lat) >= 66.5) {
+    effectiveLat = Math.sign(lat) * 60;
+    diagnostics.push('latitude_proxy');
   }
 
   const { start, end } = getCivilDayInterval(date, tz);
   const stepMs = 15 * 60_000;
   let moonrise: Date | null = null;
   let moonset: Date | null = null;
-  const diagnostics: string[] = [];
 
-  if (Math.abs(lat) >= 60) {
-    diagnostics.push('latitude_proxy');
-  }
-
-  let prevAlt = getMoonUpperLimbAlt(start, lat, lon);
+  let prevAlt = getMoonUpperLimbAlt(start, effectiveLat, lon);
 
   for (let t = start.getTime() + stepMs; t <= end.getTime(); t += stepMs) {
     const curDate = new Date(t);
-    const curAlt = getMoonUpperLimbAlt(curDate, lat, lon);
+    const curAlt = getMoonUpperLimbAlt(curDate, effectiveLat, lon);
 
     if (prevAlt <= 0 && curAlt > 0 && !moonrise) {
       let low = t - stepMs;
@@ -170,7 +193,7 @@ export function getMoonRiseSet(
       let aLow = prevAlt;
       while (high - low > 1000) {
         const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), lat, lon);
+        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
         if (aLow <= 0 && aMid > 0) {
           high = mid;
         } else {
@@ -187,7 +210,7 @@ export function getMoonRiseSet(
       let aLow = prevAlt;
       while (high - low > 1000) {
         const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), lat, lon);
+        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
         if (aLow >= 0 && aMid < 0) {
           high = mid;
         } else {
@@ -215,8 +238,13 @@ export function findNextMoonrise(
   lat: number,
   lon: number
 ): Date | null {
+  let effectiveLat = lat;
+  if (Math.abs(lat) >= 66.5) {
+    effectiveLat = Math.sign(lat) * 60;
+  }
+
   const stepMs = 15 * 60_000;
-  let prevAlt = getMoonUpperLimbAlt(after, lat, lon);
+  let prevAlt = getMoonUpperLimbAlt(after, effectiveLat, lon);
 
   for (
     let t = after.getTime() + stepMs;
@@ -224,7 +252,7 @@ export function findNextMoonrise(
     t += stepMs
   ) {
     const curDate = new Date(t);
-    const curAlt = getMoonUpperLimbAlt(curDate, lat, lon);
+    const curAlt = getMoonUpperLimbAlt(curDate, effectiveLat, lon);
 
     if (prevAlt <= 0 && curAlt > 0) {
       let low = t - stepMs;
@@ -232,7 +260,7 @@ export function findNextMoonrise(
       let aLow = prevAlt;
       while (high - low > 1000) {
         const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), lat, lon);
+        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
         if (aLow <= 0 && aMid > 0) {
           high = mid;
         } else {
