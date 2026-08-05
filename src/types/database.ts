@@ -438,6 +438,30 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['observance_occurrences']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_occurrences']['Insert']>;
       };
+      observance_review_queue: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          definition_id: string;
+          year: number;
+          calendar_profile: string;
+          location_label: string;
+          computed_latitude: number;
+          computed_longitude: number;
+          computed_timezone: string;
+          ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+          reasoning: string;
+          candidate_dates: Json;
+          evaluator_details: Json;
+          review_status: 'pending_review' | 'approved' | 'rejected';
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          review_notes: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['observance_review_queue']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['observance_review_queue']['Insert']>;
+      };
       guided_path_progress: {
         Row: {
           id: string;
@@ -653,3 +677,4 @@ export type ObservanceDefinition = Database['public']['Tables']['observance_defi
 export type DharmVeerRow = Database['public']['Tables']['dharm_veers']['Row'];
 export type DharmVeerGenerationLogRow = Database['public']['Tables']['dharm_veer_generation_log']['Row'];
 export type ObservanceOccurrence = Database['public']['Tables']['observance_occurrences']['Row'];
+export type ObservanceReviewQueue = Database['public']['Tables']['observance_review_queue']['Row'];
