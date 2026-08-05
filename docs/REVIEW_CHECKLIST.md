@@ -138,6 +138,30 @@ Applied to every change, regardless of what the task asked for.
   tripwire must stay **988 passed / 216 skipped** for any change that is not
   intended to move a date.
 
+### 3.9 Cross-engine consistency
+- **When two components can answer the same question, something must assert they
+  agree.** Three engines gave three different dates for Maha Shivaratri 2026 —
+  stored DB `2026-02-17`, masa-corrected rule engine `2026-02-16`, condition
+  evaluator `2026-02-15` — and nothing in the repo compared them. The
+  disagreement surfaced only because a human read two reports side by side.
+  `npm run reconcile:engines` now exists; keep it green or keep it explained.
+- **A report must never contradict its own generated data.** Twice a script
+  produced a correct table and then asserted something different in a
+  hand-written sentence: `scripts/adjudicate-conditions.ts:69` claimed a Nishita
+  window matching neither its own column nor its own reasoning string;
+  `scripts/reconcile-engines.ts:241` stated a Karva Chauth date its own table
+  contradicted. If a sentence states a date, a time or a verdict, it must be
+  interpolated from the same data as the table above it.
+- **This applies to commit messages too.** Commits `2780330` and `f9e5419` list
+  as "known open" four findings that were already fixed in the content those
+  same commits contain — staged from an earlier review without re-reading the
+  files at commit time. Re-verify at the moment of commit, not from memory of
+  the review.
+- **When a metric improves, check whether the situation improved.** Sankaṣṭī
+  went from "~10 of 12 months disagree" to "0 disagreements" only because a
+  third state absorbed them — 26 of 26 comparisons are now UNRESOLVED. The
+  number got cleaner; nothing got settled.
+
 ---
 
 ## 4. Known closed loops
