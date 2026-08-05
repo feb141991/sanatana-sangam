@@ -1022,9 +1022,9 @@ export default function HomeDashboard({
         {/* ── Reference Location Disclosure Banner (Defect D24 / §8) ── */}
         {resolvedLoc.isReference && (
           <div className="px-4 mb-2">
-            <div className="rounded-2xl p-3.5 border border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
-                <Globe className="text-[#C5A059]" size={16} />
+            <div className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                <Globe className="text-[#C5A059]" size={18} />
               </div>
               <p className="text-xs text-[color:var(--brand-muted)]">
                 Showing Ujjain reference timings — set your location for local times.
