@@ -1,4 +1,7 @@
-import { calculateObservancesForYear, RULE_ENGINE_VERSION } from './engine';
+import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearCorrected } from './engine';
+import { evaluateVariant } from '@sangam/dharma-rules';
+import { CANONICAL_RULES } from './rules';
+
 
 type MaterializeOccurrenceRow = {
   id: string;
@@ -96,6 +99,319 @@ function buildGeneratedOccurrenceReviewPatch(slug: string) {
   };
 }
 
+const EVALUATOR_RULES = [
+  {
+    slug: 'maha-shivaratri',
+    windowDays: 15,
+    variants: [
+      {
+        variantId: 'smarta',
+        spiritualTradition: 'smarta',
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Magha', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 14, period: 'nishita', mode: 'prevails' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'krishna-janmashtami',
+    windowDays: 15,
+    variants: [
+      {
+        variantId: 'smarta',
+        spiritualTradition: 'smarta',
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 8, period: 'nishita', mode: 'touches' },
+        ],
+      },
+      {
+        variantId: 'vaishnava',
+        spiritualTradition: 'vaishnava_gaudiya',
+        isPrimary: false,
+        conditions: [
+          { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 8, period: 'sunrise', mode: 'at' },
+          { type: 'nakshatra_presence', nakshatra: 'rohini', period: 'sunrise', mode: 'touches' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'karva-chauth',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: 'standard',
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 4, period: 'moonrise', mode: 'at' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'sankashti-chaturthi',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: 'standard',
+        isPrimary: true,
+        conditions: [
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 4, period: 'moonrise', mode: 'at' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'pradosh-vrat',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: 'standard',
+        isPrimary: true,
+        conditions: [
+          { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'prevails' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'diwali',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: 'standard',
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 15, period: 'pradosha', mode: 'touches' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'dhanteras',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: 'standard',
+        isPrimary: true,
+        conditions: [
+          { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'touches' },
+        ],
+      },
+    ],
+  },
+];
+
+function offsetDateStr(dateStr: string, offsetDays: number): string {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + offsetDays);
+  return d.toISOString().slice(0, 10);
+}
+
+export function calculateOccurrencesWithEvaluator(year: number): {
+  resolved: Array<{
+    slug: string;
+    date: string;
+    year: number;
+    recurring?: boolean;
+    variant_key?: string;
+    spiritual_tradition?: string;
+    is_primary_variant?: boolean;
+    reasons?: any;
+    diagnostics?: any;
+  }>;
+  unresolved: Array<{
+    slug: string;
+    year: number;
+    variant_key: string;
+    calendar_profile: string;
+    ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+    reasoning: string;
+    candidate_dates: string[];
+    evaluator_details: any;
+  }>;
+} {
+  const baseline = calculateObservancesForYearCorrected(year);
+  const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
+  const finalOccurrences: any[] = [];
+  const unresolved: any[] = [];
+
+  for (const occ of baseline) {
+    if (!evaluatorSlugs.has(occ.slug)) {
+      finalOccurrences.push({
+        slug: occ.slug,
+        date: occ.date,
+        year: occ.year,
+        recurring: occ.recurring,
+        variant_key: 'legacy-default',
+        spiritual_tradition: null,
+        is_primary_variant: true,
+        reasons: null,
+        diagnostics: null,
+      });
+    }
+  }
+
+  const ujjain = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+
+  for (const eRule of EVALUATOR_RULES) {
+    const candidates = baseline.filter(occ => occ.slug === eRule.slug);
+    if (candidates.length === 0) continue;
+
+    for (const candidate of candidates) {
+      const windowSize = eRule.windowDays;
+
+      for (const variant of eRule.variants) {
+        const qualified: Array<{ date: string; reasoning: any; diagnostics: string[] }> = [];
+        const vrddhiDates: Array<{ date: string; reasoning: any; diagnostics: string[] }> = [];
+        const allEvaluationResults: any[] = [];
+
+        for (let offset = -windowSize; offset <= windowSize; offset++) {
+          const checkDate = offsetDateStr(candidate.date, offset);
+          const res = evaluateVariant(
+            {
+              ruleId: variant.variantId,
+              festivalId: eRule.slug,
+              traditionProfile: variant.spiritualTradition,
+              conditions: variant.conditions,
+            },
+            checkDate,
+            ujjain
+          );
+
+          allEvaluationResults.push({
+            date: checkDate,
+            qualified: res.qualified,
+            reasons: res.reasons,
+            diagnostics: res.diagnostics,
+          });
+
+          if (res.qualified === true) {
+            const hasVrddhi = res.diagnostics.includes('vrddhi_tithi');
+            const item = {
+              date: checkDate,
+              reasoning: res.reasons,
+              diagnostics: res.diagnostics,
+            };
+            if (hasVrddhi) {
+              vrddhiDates.push(item);
+            } else {
+              qualified.push(item);
+            }
+          }
+        }
+
+        if (qualified.length === 1 && vrddhiDates.length === 0) {
+          const match = qualified[0];
+          finalOccurrences.push({
+            slug: eRule.slug,
+            date: match.date,
+            year: year,
+            recurring: eRule.isRecurring,
+            variant_key: variant.variantId,
+            spiritual_tradition: variant.spiritualTradition,
+            is_primary_variant: variant.isPrimary,
+            reasons: match.reasoning,
+            diagnostics: match.diagnostics,
+          });
+        } else {
+          let ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+          let reasoning: string;
+          let candidate_dates: string[];
+
+          if (vrddhiDates.length > 0) {
+            ambiguity_type = 'vrddhi_tithi';
+            reasoning = `Scholar review pending: Vrddhi tithi spans two sunrises (qualified on ${vrddhiDates.map(v => v.date).join(', ')}).`;
+            candidate_dates = vrddhiDates.map(v => v.date);
+          } else if (qualified.length > 1) {
+            ambiguity_type = 'multiple_qualified_dates';
+            reasoning = `Ambiguous: multiple dates qualified (${qualified.map(q => q.date).join(', ')}).`;
+            candidate_dates = qualified.map(q => q.date);
+          } else {
+            ambiguity_type = 'no_qualified_date';
+            reasoning = 'No qualified date found in window.';
+            candidate_dates = [];
+          }
+
+          unresolved.push({
+            slug: eRule.slug,
+            year: year,
+            variant_key: variant.variantId,
+            calendar_profile: 'legacy-ujjain',
+            ambiguity_type,
+            reasoning,
+            candidate_dates,
+            evaluator_details: {
+              ruleId: variant.variantId,
+              festivalId: eRule.slug,
+              windowSize,
+              allEvaluations: allEvaluationResults,
+              diagnostics: vrddhiDates.length > 0 ? ['vrddhi_tithi'] : (qualified.length > 1 ? ['multiple_candidates'] : ['zero_candidates']),
+            },
+          });
+
+          console.warn(
+            `[Evaluator Integration] Rule ${eRule.slug} (variant ${variant.variantId}) is UNRESOLVED in year ${year}. Ambiguity: ${ambiguity_type}. Qualified: ${qualified.length}, Vrddhi: ${vrddhiDates.length}.`
+          );
+        }
+      }
+    }
+  }
+
+  const resolvedOccurrences: any[] = [];
+  for (const occ of finalOccurrences) {
+    const rule = CANONICAL_RULES.find(r => r.slug === occ.slug);
+    if (rule && rule.rule_family === 'relative_to_other_observance') {
+      const baseSlug = rule.relative_base_slug;
+      if (baseSlug) {
+        const baseOccs = finalOccurrences.filter(o => o.slug === baseSlug);
+        for (const baseOcc of baseOccs) {
+          const bd = new Date(baseOcc.date + 'T00:00:00Z');
+          const offset = rule.relative_offset_days || 0;
+          const rd = new Date(bd.getTime() + offset * 24 * 60 * 60 * 1000);
+          const y = rd.getUTCFullYear();
+          const m = String(rd.getUTCMonth() + 1).padStart(2, '0');
+          const day = String(rd.getUTCDate()).padStart(2, '0');
+          resolvedOccurrences.push({
+            ...occ,
+            date: `${y}-${m}-${day}`,
+            variant_key: baseOcc.variant_key,
+            spiritual_tradition: baseOcc.spiritual_tradition,
+            is_primary_variant: baseOcc.is_primary_variant,
+          });
+        }
+      }
+    } else {
+      resolvedOccurrences.push(occ);
+    }
+  }
+
+  return { resolved: resolvedOccurrences, unresolved };
+}
+
+
 export async function materializeOccurrencesForYears({
   supabase,
   targetYears,
@@ -121,7 +437,7 @@ export async function materializeOccurrencesForYears({
 
   const { data: existingRows, error: existingError } = await supabase
     .from('observance_occurrences')
-    .select('id, definition_id, year, date, manual_date_override, locked_for_regeneration, final_date_source')
+    .select('id, definition_id, year, date, calendar_profile, variant_key, occurrence_date, manual_date_override, locked_for_regeneration, final_date_source')
     .in('year', targetYears);
 
   if (existingError) throw existingError;
@@ -139,139 +455,352 @@ export async function materializeOccurrencesForYears({
 
   for (const year of targetYears) {
     summary[year] = makeYearSummary();
-    const calculated = calculateObservancesForYear(year);
-    summary[year].calculated = calculated.length;
 
-    // Dates already claimed by a named (non-recurring) observance this year —
-    // recurring vrats are suppressed on these to avoid double-listing (e.g. a
-    // generic Ekadashi landing on Vaikunta Ekadashi / Gita Jayanti).
-    const namedDates = new Set(calculated.filter(o => !o.recurring).map(o => o.date));
+    if (USE_CONDITION_EVALUATOR) {
+      // ── Condition Evaluator Path ───────────────────────────────────────────
+      const { resolved: calculated, unresolved } = calculateOccurrencesWithEvaluator(year);
+      summary[year].calculated = calculated.length;
 
-    const toInsert: any[] = [];
-    const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
-    // Track which definitions have already been processed this year to prevent
-    // duplicate inserts when a rule matches more than once (tithi can appear
-    // twice near the edge of a solar-rashi window).
-    const processedThisYear = new Set<string>();
+      const namedDates = new Set(calculated.filter(o => !o.recurring).map(o => o.date));
 
-    for (const occ of calculated) {
-      const definitionId = definitionMap.get(occ.slug);
-      if (!definitionId) {
-        summary[year].missingDefinition += 1;
-        continue;
+      const toInsert: any[] = [];
+      const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+      const processedThisYear = new Set<string>();
+
+      // Build composite existing maps for fine-grained lookup
+      const existingCompositeMap = new Map<string, any>();
+      const existingCompositeDateSet = new Set<string>();
+      for (const row of existingRows ?? []) {
+        if (row.year === year) {
+          const profile = row.calendar_profile || 'legacy-ujjain';
+          const variant = row.variant_key || 'legacy-default';
+          existingCompositeMap.set(`${row.definition_id}:${profile}:${variant}`, row);
+          existingCompositeDateSet.add(`${row.definition_id}:${profile}:${variant}:${row.date}`);
+        }
       }
 
-      // Recurring vrats are keyed by (definition, date) — many per year, no
-      // update-in-place. Suppress any colliding with a named observance.
-      if (occ.recurring) {
-        if (namedDates.has(occ.date)) {
-          summary[year].suppressedOverlap += 1;
+      for (const occ of calculated) {
+        const definitionId = definitionMap.get(occ.slug);
+        if (!definitionId) {
+          summary[year].missingDefinition += 1;
           continue;
         }
-        const recurKey = `${definitionId}:${occ.date}`;
-        if (processedThisYear.has(recurKey)) continue;
-        processedThisYear.add(recurKey);
-        if (existingByDefinitionDate.has(recurKey)) continue; // already materialized
-        summary[year].insertable += 1;
-        const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
-        toInsert.push({
-          definition_id: definitionId,
-          year: occ.year,
-          date: occ.date,
-          calculation_version: RULE_ENGINE_VERSION,
-          calculated_by: calculatedBy,
-          ...reviewPatch,
-          source_provenance: {
-            source_name: 'calculation_engine',
-            source_kind: 'curated',
-          },
-        });
+
+        const profile = 'legacy-ujjain'; // evaluated at Ujjain
+        const variant = occ.variant_key || 'legacy-default';
+
+        if (occ.recurring) {
+          if (namedDates.has(occ.date)) {
+            summary[year].suppressedOverlap += 1;
+            continue;
+          }
+          const recurKey = `${definitionId}:${profile}:${variant}:${occ.date}`;
+          if (processedThisYear.has(recurKey)) continue;
+          processedThisYear.add(recurKey);
+          if (existingCompositeDateSet.has(recurKey)) continue; // already materialized
+
+          summary[year].insertable += 1;
+          const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
+          toInsert.push({
+            definition_id: definitionId,
+            year: occ.year,
+            date: occ.date,
+            occurrence_date: occ.date,
+            calendar_profile: profile,
+            spiritual_tradition: occ.spiritual_tradition || null,
+            variant_key: variant,
+            is_primary_variant: occ.is_primary_variant ?? true,
+            rule_version: '1.0.0',
+            astronomy_version: '1.0.0',
+            day_boundary_version: '1.0.0',
+            reasons: occ.reasons || null,
+            diagnostics: occ.diagnostics || null,
+            computed_latitude: 23.1765,
+            computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata',
+            calculation_version: RULE_ENGINE_VERSION,
+            calculated_by: calculatedBy,
+            ...reviewPatch,
+            source_provenance: {
+              source_name: 'condition_evaluator',
+              source_kind: 'curated',
+            },
+          });
+          continue;
+        }
+
+        const dedupKey = `${definitionId}:${profile}:${variant}:${occ.date}`;
+        if (processedThisYear.has(dedupKey)) continue;
+        processedThisYear.add(dedupKey);
+
+        const existing = existingCompositeMap.get(`${definitionId}:${profile}:${variant}`);
+        if (!existing) {
+          summary[year].insertable += 1;
+          const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
+          toInsert.push({
+            definition_id: definitionId,
+            year: occ.year,
+            date: occ.date,
+            occurrence_date: occ.date,
+            calendar_profile: profile,
+            spiritual_tradition: occ.spiritual_tradition || null,
+            variant_key: variant,
+            is_primary_variant: occ.is_primary_variant ?? true,
+            rule_version: '1.0.0',
+            astronomy_version: '1.0.0',
+            day_boundary_version: '1.0.0',
+            reasons: occ.reasons || null,
+            diagnostics: occ.diagnostics || null,
+            computed_latitude: 23.1765,
+            computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata',
+            calculation_version: RULE_ENGINE_VERSION,
+            calculated_by: calculatedBy,
+            ...reviewPatch,
+            source_provenance: {
+              source_name: 'condition_evaluator',
+              source_kind: 'curated',
+            },
+          });
+          continue;
+        }
+
+        if (existing.locked_for_regeneration) {
+          summary[year].skippedLocked += 1;
+          continue;
+        }
+
+        if (existing.manual_date_override) {
+          summary[year].skippedManual += 1;
+          continue;
+        }
+
+        if (!canUpdateGeneratedRow(existing)) {
+          summary[year].skippedProtected += 1;
+          continue;
+        }
+
+        if (existing.date !== occ.date) {
+          const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
+          toUpdate.push({
+            id: existing.id,
+            patch: {
+              date: occ.date,
+              occurrence_date: occ.date,
+              calendar_profile: profile,
+              spiritual_tradition: occ.spiritual_tradition || null,
+              variant_key: variant,
+              is_primary_variant: occ.is_primary_variant ?? true,
+              rule_version: '1.0.0',
+              astronomy_version: '1.0.0',
+              day_boundary_version: '1.0.0',
+              reasons: occ.reasons || null,
+              diagnostics: occ.diagnostics || null,
+              computed_latitude: 23.1765,
+              computed_longitude: 75.7885,
+              computed_timezone: 'Asia/Kolkata',
+              calculation_version: RULE_ENGINE_VERSION,
+              calculated_by: calculatedBy,
+              ...reviewPatch,
+              suggested_date: null,
+              source_provenance: {
+                source_name: 'condition_evaluator',
+                source_kind: 'curated',
+              },
+            },
+          });
+        }
+      }
+
+      if (!commit) {
+        summary[year].inserted = 0;
+        summary[year].updated = 0;
         continue;
       }
 
-      // Deduplicate: keep only the first match per (definition, year).
-      const dedupKey = `${definitionId}:${occ.year}`;
-      if (processedThisYear.has(dedupKey)) continue;
-      processedThisYear.add(dedupKey);
-
-      const existing = existingByDefinitionYear.get(`${definitionId}:${occ.year}`);
-      if (!existing) {
-        summary[year].insertable += 1;
-        toInsert.push({
-          definition_id: definitionId,
-          year: occ.year,
-          date: occ.date,
-          calculation_version: RULE_ENGINE_VERSION,
-          calculated_by: calculatedBy,
-          final_date_source: 'calculation_engine',
-          audit_status: 'not_run',
-          verification_status: 'not_checked',
-          source_provenance: {
-            source_name: 'calculation_engine',
-            source_kind: 'curated',
-          },
-        });
-        continue;
+      if (toInsert.length > 0) {
+        const { data: inserted, error: insertError } = await supabase
+          .from('observance_occurrences')
+          .insert(toInsert)
+          .select('id');
+        if (insertError) throw insertError;
+        summary[year].inserted = inserted?.length ?? 0;
+        totalInserted += summary[year].inserted;
       }
 
-      if (existing.locked_for_regeneration) {
-        summary[year].skippedLocked += 1;
-        continue;
+      for (const item of toUpdate) {
+        const { error: updateError } = await supabase
+          .from('observance_occurrences')
+          .update(item.patch)
+          .eq('id', item.id);
+        if (updateError) throw updateError;
+        summary[year].updated += 1;
+        totalUpdated += 1;
       }
 
-      if (existing.manual_date_override) {
-        summary[year].skippedManual += 1;
-        continue;
+      // Upsert unresolved review queue items if we are committing
+      if (commit && unresolved.length > 0) {
+        const queueRows = [];
+        for (const item of unresolved) {
+          const definitionId = definitionMap.get(item.slug);
+          if (!definitionId) continue;
+
+          queueRows.push({
+            definition_id: definitionId,
+            year: item.year,
+            calendar_profile: item.calendar_profile,
+            location_label: 'Ujjain, India',
+            computed_latitude: 23.1765,
+            computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata',
+            ambiguity_type: item.ambiguity_type,
+            reasoning: item.reasoning,
+            candidate_dates: item.candidate_dates,
+            evaluator_details: item.evaluator_details,
+            review_status: 'pending_review',
+          });
+        }
+
+        if (queueRows.length > 0) {
+          const { error: queueError } = await supabase
+            .from('observance_review_queue')
+            .upsert(queueRows, {
+              onConflict: 'definition_id,year,calendar_profile,computed_latitude,computed_longitude',
+            });
+          if (queueError) {
+            console.error('[Materialize Review Queue] Upsert error:', queueError);
+            throw queueError;
+          }
+        }
       }
 
-      if (!canUpdateGeneratedRow(existing)) {
-        summary[year].skippedProtected += 1;
-        continue;
-      }
+    } else {
+      // ── Legacy Rule Engine Path ────────────────────────────────────────────
+      const calculated = calculateObservancesForYear(year);
+      summary[year].calculated = calculated.length;
 
-      if (existing.date !== occ.date) {
-        const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
-        toUpdate.push({
-          id: existing.id,
-          patch: {
+      const namedDates = new Set(calculated.filter(o => !o.recurring).map(o => o.date));
+
+      const toInsert: any[] = [];
+      const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+      const processedThisYear = new Set<string>();
+
+      for (const occ of calculated) {
+        const definitionId = definitionMap.get(occ.slug);
+        if (!definitionId) {
+          summary[year].missingDefinition += 1;
+          continue;
+        }
+
+        if (occ.recurring) {
+          if (namedDates.has(occ.date)) {
+            summary[year].suppressedOverlap += 1;
+            continue;
+          }
+          const recurKey = `${definitionId}:${occ.date}`;
+          if (processedThisYear.has(recurKey)) continue;
+          processedThisYear.add(recurKey);
+          if (existingByDefinitionDate.has(recurKey)) continue;
+          summary[year].insertable += 1;
+          const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
+          toInsert.push({
+            definition_id: definitionId,
+            year: occ.year,
             date: occ.date,
             calculation_version: RULE_ENGINE_VERSION,
             calculated_by: calculatedBy,
             ...reviewPatch,
-            suggested_date: null,
             source_provenance: {
               source_name: 'calculation_engine',
               source_kind: 'curated',
             },
-          },
-        });
+          });
+          continue;
+        }
+
+        const dedupKey = `${definitionId}:${occ.year}`;
+        if (processedThisYear.has(dedupKey)) continue;
+        processedThisYear.add(dedupKey);
+
+        const existing = existingByDefinitionYear.get(`${definitionId}:${occ.year}`);
+        if (!existing) {
+          summary[year].insertable += 1;
+          toInsert.push({
+            definition_id: definitionId,
+            year: occ.year,
+            date: occ.date,
+            calculation_version: RULE_ENGINE_VERSION,
+            calculated_by: calculatedBy,
+            final_date_source: 'calculation_engine',
+            audit_status: 'not_run',
+            verification_status: 'not_checked',
+            source_provenance: {
+              source_name: 'calculation_engine',
+              source_kind: 'curated',
+            },
+          });
+          continue;
+        }
+
+        if (existing.locked_for_regeneration) {
+          summary[year].skippedLocked += 1;
+          continue;
+        }
+
+        if (existing.manual_date_override) {
+          summary[year].skippedManual += 1;
+          continue;
+        }
+
+        if (!canUpdateGeneratedRow(existing)) {
+          summary[year].skippedProtected += 1;
+          continue;
+        }
+
+        if (existing.date !== occ.date) {
+          const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
+          toUpdate.push({
+            id: existing.id,
+            patch: {
+              date: occ.date,
+              calculation_version: RULE_ENGINE_VERSION,
+              calculated_by: calculatedBy,
+              ...reviewPatch,
+              suggested_date: null,
+              source_provenance: {
+                source_name: 'calculation_engine',
+                source_kind: 'curated',
+              },
+            },
+          });
+        }
       }
-    }
 
-    if (!commit) {
-      summary[year].inserted = 0;
-      summary[year].updated = 0;
-      continue;
-    }
+      if (!commit) {
+        summary[year].inserted = 0;
+        summary[year].updated = 0;
+        continue;
+      }
 
-    if (toInsert.length > 0) {
-      const { data: inserted, error: insertError } = await supabase
-        .from('observance_occurrences')
-        .insert(toInsert)
-        .select('id');
-      if (insertError) throw insertError;
-      summary[year].inserted = inserted?.length ?? 0;
-      totalInserted += summary[year].inserted;
-    }
+      if (toInsert.length > 0) {
+        const { data: inserted, error: insertError } = await supabase
+          .from('observance_occurrences')
+          .insert(toInsert)
+          .select('id');
+        if (insertError) throw insertError;
+        summary[year].inserted = inserted?.length ?? 0;
+        totalInserted += summary[year].inserted;
+      }
 
-    for (const item of toUpdate) {
-      const { error: updateError } = await supabase
-        .from('observance_occurrences')
-        .update(item.patch)
-        .eq('id', item.id);
-      if (updateError) throw updateError;
-      summary[year].updated += 1;
-      totalUpdated += 1;
+      for (const item of toUpdate) {
+        const { error: updateError } = await supabase
+          .from('observance_occurrences')
+          .update(item.patch)
+          .eq('id', item.id);
+        if (updateError) throw updateError;
+        summary[year].updated += 1;
+        totalUpdated += 1;
+      }
     }
   }
 
@@ -283,3 +812,4 @@ export async function materializeOccurrencesForYears({
     summary,
   };
 }
+

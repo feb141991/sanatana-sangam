@@ -33,6 +33,13 @@ export const RULE_ENGINE_VERSION = '2.0.0'; // D1+D2 Stage 2: corrected masa pat
  */
 export const USE_CORRECTED_MASA: boolean = false;
 
+/**
+ * Gate integration behind USE_CONDITION_EVALUATOR, default OFF.
+ * Set true to route time-of-day/muhurta dependent rules to the condition evaluator.
+ */
+export const USE_CONDITION_EVALUATOR: boolean = false;
+
+
 export interface CalculatedOccurrence {
   slug: string;
   date: string; // YYYY-MM-DD
