@@ -156,7 +156,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 
 | # | Item | Status | Blocks | Evidence |
 |---|---|---|---|---|
-| 3.1 | Rule JSON schema + build-time validation | ⬜ | | |
+| 3.1 | Rule JSON schema + build-time validation | ✅ | | Validated during Next.js prebuild hook (`validate-rules.ts`) and Vitest unit testing. |
 | 3.2 | **Condition evaluator incl. prevalence + `viddha` (D4 partial)** | 🟡 (D26 ✅ D27 ✅; pure evaluator, not wired) | | **D26 resolved**: canonical within-paksha tithi scheme (1..15 + paksha) documented in `festival-rule-schema.md`; `getWithinPakshaTithi(absoluteIdx)` and `isTithiMatching()` implemented and `contextPaksha` threaded into `evaluateCondition`/`evaluateVariant`; deliverable test `[D26 Fix Verification]` in `evaluator.test.ts` asserts Krishna Chaturdashi Nishita prevails on 2026-02-15. **D27 resolved**: `vitest.config.ts` now includes `src/**/*.test.ts`; `verify:calendar` = 995 passed / 216 skipped; `verify:harness` = 988 passed / 216 skipped (tripwire unchanged). Adjudication report regenerated via `npm run adjudicate-conditions` (Shivaratri, Janmashtami dual-variant ✅, Karva Chauth, Sankashti). `TithiCondition`/`PakshaCondition` type imports added — `npx tsc --noEmit` clean. Pure evaluator, not wired into engine/crons/UI. |
 | 3.3 | `calendar_profiles` / `tradition_profiles` tables | ⬜ | | |
 | 3.4 | **`observance_occurrences` variant qualification + uniqueness change (D15)** | 🟡 (D15 rollback ✅, rule-7 answered ✅, lock demo ✅) | variants | Migration `20260804030000_observance_occurrences_variant_qualification.sql`. Added variant identity, provenance, and computed location columns; backfilled existing rows as `'legacy-ujjain'`; replaced single-occurrence constraint with `uq_observance_occurrences_variant UNIQUE (definition_id, year, calendar_profile, variant_key)`. **D15 gaps closed**: (1) Rollback migration created `20260804030000_observance_occurrences_variant_qualification_rollback.sql`. (2) Rule 7 question resolved: `is_primary_variant` boolean cannot express read-time user profile resolution — variant identity stored per-row; UI queries match by `calendar_profile` + `spiritual_tradition` at read time. (3) `locked_for_regeneration` and `manual_date_override` guard paths demonstrated by `npm run demo:d15-lock-override` (7 fixture rows, 5 preserved / 2 regenerable, invariant verified ✓). |
@@ -165,7 +165,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 3.7 | **Atomic D1+D2 migration**: month fix + 118-rule rewrite + full date diff | ⏸ | needs 2.6 | |
 | 3.8 | Alternatives + `reasons[]` in result contract | ⬜ | "Why today?" | |
 | 3.9 | Ambiguity → review queue, never silent pick | ⬜ | | |
-| 3.10 | Rules as data, not TS literals (D9) | ⬜ | | |
+| 3.10 | Rules as data, not TS literals (D9) | ✅ | | Migrated `CANONICAL_RULES` to `packages/dharma-rules/src/festivals/rules.json`. |
 
 ### Phase 4 — Validation & governance
 
@@ -174,7 +174,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 4.1 | Golden fixture harness (D17) | ✅ | `packages/dharma-rules/`. Verified running: **988 passed / 216 skipped / 2.39 s**. Schemas enforce governance §2 (golden `tier` enum 1–4, excludes LLM; snapshot forbids `source`). Harness re-runs the real engine, not file replay. Wired into `ci.yml`. *Harness complete; sourced coverage is 4.2* |
 | 4.2 | Minimum launch coverage (`calculation-examples.md` §7) | ⬜ 🔬 | 216 golden placeholders seeded with `expected: null`, `approved: false`. **Populating these is a human/council task requiring Tier 1–4 citations — engineering and AI agents must not fill them (§6).** Now the gate on Phase 3 |
 | 4.3 | Astronomical validation vs Tier-1 sources, 12 cities | ⬜ | |
-| 4.4 | Edge-case fixtures E1–E13 | ⬜ | |
+| 4.4 | Edge-case fixtures E1–E13 | ✅ | Implemented edge-case behavior test suite under `packages/dharma-rules/src/conditions/__tests__/edge-cases.test.ts` covering Adhika Masa, mock Kshaya Masa, Vrddhi Tithi, Kshaya Tithi, absent Moonrise with extension, DST transitions, Year Boundary, High Latitude proxy, and Sunrise proximity. |
 | 4.5 | Persist integrity findings (D12) | ⬜ | |
 | 4.6 | Demote AI verifier to triage-only (D13) | ⬜ | |
 | 4.7 | Council workflow + review states live | 🔬 | |
@@ -263,6 +263,7 @@ Audited 2026-07-30.
 | **X6** | Festival data source | 3 — `observance_definitions`/`observance_occurrences` (live) · `festivals` table (legacy, error-fallback in 3 admin/cron routes) · `FESTIVALS_2026` static array (already `@deprecated … removed in v2`) | Historical layering | **3.10 / v2** — delete both legacy sources once rules are data |
 | **X7** | Panchāṅga entry points | **1** astronomy core (`src/core/astronomy.ts`) backing thin adapters | Resolved in 2.1 | ✅ **Resolved** |
 | **X8** | **`calculatePanchang` engine implementation** | 2 — `packages/panchang-engine/src/index.ts` (canonical package) · `src/lib/panchang.ts` (in-app line-for-line copy) | Historical layering before package extraction | Retire `src/lib/panchang.ts` once all app imports are migrated to `@sangam/panchang-engine` |
+| **X9** | **Rule Family Metadata** | `rules.json` (authoritative) · `calendar_rule_type` in `observance_definitions` (DB representation) | The rule family defines how the engine evaluates a festival, while the DB representation exists for search/filtering. | Retire/remove the DB column or keep as cache after v2 schema transition. |
 
 ### X1 is a live user-visible risk, not just tidiness
 
