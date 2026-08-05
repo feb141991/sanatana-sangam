@@ -4,6 +4,13 @@ import {
   findNextMoonrise,
 } from '../moon-rise-set.js';
 
+export interface ProvenanceSource {
+  authority: 'USNO' | 'HMNAO' | 'IAE' | 'RashtriyaPanchang';
+  query: string;        // the exact query used
+  retrievedOn: string;  // ISO date
+  value: string | null; // the value AS PUBLISHED
+}
+
 /**
  * Tier 1/2 Astronomical Authority Golden Fixtures (USNO / HMNAO / PAC).
  * Acceptance criteria per §10 & §1.2: within 2 minutes of Tier 1/2 astronomical reference times.
@@ -16,7 +23,7 @@ interface GoldenFixture {
   dateStr: string; // YYYY-MM-DD
   refRiseLocal: string; // HH:MM in local time
   season: string; // Solstice / Equinox / High-Declination / Anchor
-  source: string;
+  source: ProvenanceSource;
 }
 
 const GOLDEN_FIXTURES: GoldenFixture[] = [
@@ -29,7 +36,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-02-17',
     refRiseLocal: '07:22',
     season: 'Anchor / New Moon',
-    source: 'HMNAO / USNO',
+    source: {
+      authority: 'HMNAO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=52.1356,-0.4685&tz=0',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Ujjain',
@@ -39,7 +51,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-02-17',
     refRiseLocal: '06:48',
     season: 'Anchor / New Moon',
-    source: 'USNO / Positional Astronomy Centre',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=23.1765,75.7885&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Ujjain',
@@ -49,7 +66,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-03-03',
     refRiseLocal: '18:29',
     season: 'Anchor / Full Moon',
-    source: 'USNO / Positional Astronomy Centre',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-03&coords=23.1765,75.7885&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
 
   // 2. §10 City List Coverage across Solstices, Equinoxes & High-Declination
@@ -61,7 +83,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-03-20',
     refRiseLocal: '06:55',
     season: 'Vernal Equinox',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=28.6139,77.2090&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Varanasi',
@@ -71,7 +98,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-06-21',
     refRiseLocal: '11:24',
     season: 'Summer Solstice',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=25.3176,82.9739&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Mumbai',
@@ -81,7 +113,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-09-22',
     refRiseLocal: '15:47',
     season: 'Autumnal Equinox',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=19.0760,72.8777&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Chennai',
@@ -91,7 +128,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-12-21',
     refRiseLocal: '14:58',
     season: 'Winter Solstice',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=13.0827,80.2707&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Kolkata',
@@ -101,7 +143,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-03-03',
     refRiseLocal: '17:37',
     season: 'Full Moon / High-Declination',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-03&coords=22.5726,88.3639&tz=5.5',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Kathmandu',
@@ -111,7 +158,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-03-20',
     refRiseLocal: '06:37',
     season: 'Vernal Equinox',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=27.7172,85.3240&tz=5.75',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'London',
@@ -121,7 +173,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-06-21',
     refRiseLocal: '12:39',
     season: 'Summer Solstice',
-    source: 'HMNAO Ephemeris',
+    source: {
+      authority: 'HMNAO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=51.5074,-0.1278&tz=1',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'New York',
@@ -131,7 +188,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-09-22',
     refRiseLocal: '17:01',
     season: 'Autumnal Equinox',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=40.7128,-74.0060&tz=-4',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Sydney',
@@ -141,7 +203,12 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-12-21',
     refRiseLocal: '17:04',
     season: 'Solstice (Southern Hemisphere)',
-    source: 'USNO Ephemeris',
+    source: {
+      authority: 'USNO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=-33.8688,151.2093&tz=11',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
   {
     city: 'Reykjavík',
@@ -151,9 +218,25 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     dateStr: '2026-03-20',
     refRiseLocal: '07:12',
     season: 'High Latitude Probe',
-    source: 'HMNAO Ephemeris',
+    source: {
+      authority: 'HMNAO',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=64.1466,-21.9426&tz=0',
+      retrievedOn: '2026-08-04',
+      value: 'PENDING',
+    },
   },
 ];
+
+export function validateResiduals(residuals: number[], roundingInterval = 1.0): void {
+  if (residuals.length === 0) return;
+  const allPositiveOrZero = residuals.every((r) => r >= 0);
+  const allNegativeOrZero = residuals.every((r) => r <= 0);
+  const allInsideInterval = residuals.every((r) => Math.abs(r) <= roundingInterval);
+
+  if ((allPositiveOrZero || allNegativeOrZero) && allInsideInterval) {
+    throw new Error('reference values appear derived from the engine');
+  }
+}
 
 function timeStrToMinutes(timeStr: string): number {
   const [h, m] = timeStr.split(':').map(Number);
@@ -183,29 +266,87 @@ function formatLocalTime(date: Date, tz: string): string {
 }
 
 describe('Moonrise Engine Tier 1/2 Golden Accuracy Suite (D23 & §10)', () => {
-  it('reproduces all anchor times and §10 city targets within 2 minutes tolerance', () => {
+  
+  describe('SNAPSHOT regression tripwires', () => {
+    it('reproduces all anchor times and §10 city targets within 2 minutes tolerance (regression snapshots)', () => {
+      for (const fixture of GOLDEN_FIXTURES) {
+        const [y, m, d] = fixture.dateStr.split('-').map(Number);
+        const testDate = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+        const res = getMoonRiseSet(testDate, fixture.lat, fixture.lon, fixture.tz);
+
+        expect(res.ok).toBe(true);
+        if (res.ok && res.moonrise) {
+          const computedLocalStr = formatLocalTime(res.moonrise, fixture.tz);
+          const computedMins = dateToLocalMinutes(res.moonrise, fixture.tz);
+          const refMins = timeStrToMinutes(fixture.refRiseLocal);
+          const diffMins = Math.abs(computedMins - refMins);
+
+          console.log(
+            `[SNAPSHOT check] ${fixture.city} (${fixture.dateStr}): Computed ${computedLocalStr} vs Ref ${fixture.refRiseLocal} (Diff: ${diffMins.toFixed(1)} min)`
+          );
+
+          expect(
+            diffMins,
+            `Moonrise snapshot for ${fixture.city} on ${fixture.dateStr} (${computedLocalStr}) differed from snapshot target (${fixture.refRiseLocal}) by ${diffMins} min`
+          ).toBeLessThanOrEqual(2);
+        }
+      }
+    });
+  });
+
+  describe('GOLDEN correctness tests against authoritative publication', () => {
     for (const fixture of GOLDEN_FIXTURES) {
-      const [y, m, d] = fixture.dateStr.split('-').map(Number);
-      const testDate = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
-      const res = getMoonRiseSet(testDate, fixture.lat, fixture.lon, fixture.tz);
+      const src = fixture.source;
+      const testName = `GOLDEN: Moonrise for ${fixture.city} on ${fixture.dateStr}`;
 
-      expect(res.ok).toBe(true);
-      if (res.ok && res.moonrise) {
-        const computedLocalStr = formatLocalTime(res.moonrise, fixture.tz);
-        const computedMins = dateToLocalMinutes(res.moonrise, fixture.tz);
-        const refMins = timeStrToMinutes(fixture.refRiseLocal);
-        const diffMins = Math.abs(computedMins - refMins);
+      if (src.value === 'PENDING') {
+        it.skip(`${testName} (Pending ${src.authority} retrieval)`, () => {});
+      } else if (src.value === null || src.value === undefined || src.value === '') {
+        it(testName, () => {
+          throw new Error(`Fixture for ${fixture.city} on ${fixture.dateStr} has authority '${src.authority}' but source.value is absent!`);
+        });
+      } else {
+        it(testName, () => {
+          const [y, m, d] = fixture.dateStr.split('-').map(Number);
+          const testDate = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+          const res = getMoonRiseSet(testDate, fixture.lat, fixture.lon, fixture.tz);
 
-        console.log(
-          `[§10 City Target] ${fixture.city} (${fixture.dateStr}): Computed ${computedLocalStr} vs Ref ${fixture.refRiseLocal} (Diff: ${diffMins.toFixed(1)} min)`
-        );
+          expect(res.ok).toBe(true);
+          if (res.ok && res.moonrise) {
+            const computedMins = dateToLocalMinutes(res.moonrise, fixture.tz);
+            const refMins = timeStrToMinutes(src.value!);
+            const diffMins = Math.abs(computedMins - refMins);
 
-        expect(
-          diffMins,
-          `Moonrise for ${fixture.city} on ${fixture.dateStr} (${computedLocalStr}) differed from reference (${fixture.refRiseLocal}) by ${diffMins} min`
-        ).toBeLessThanOrEqual(2);
+            expect(
+              diffMins,
+              `Moonrise for ${fixture.city} on ${fixture.dateStr} differed from golden reference (${src.value!}) by ${diffMins} min`
+            ).toBeLessThanOrEqual(2);
+          }
+        });
       }
     }
+  });
+
+  describe('Residual Check Validation (D23)', () => {
+    it('fails on the current fabricated values', () => {
+      const residuals: number[] = [];
+      for (const fixture of GOLDEN_FIXTURES) {
+        const [y, m, d] = fixture.dateStr.split('-').map(Number);
+        const testDate = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+        const res = getMoonRiseSet(testDate, fixture.lat, fixture.lon, fixture.tz);
+        if (res.ok && res.moonrise) {
+          const computedMins = dateToLocalMinutes(res.moonrise, fixture.tz);
+          const refMins = timeStrToMinutes(fixture.refRiseLocal);
+          residuals.push(computedMins - refMins);
+        }
+      }
+      expect(() => validateResiduals(residuals)).toThrow('reference values appear derived from the engine');
+    });
+
+    it('passes on a synthetic well-distributed set of residuals', () => {
+      const syntheticResiduals = [-0.5, 0.4, -0.2, 0.3, -0.9, 0.1];
+      expect(() => validateResiduals(syntheticResiduals)).not.toThrow();
+    });
   });
 
   describe('D20 — DST Civil Day Bounds (London 23h & 25h Transitions)', () => {
@@ -234,7 +375,6 @@ describe('Moonrise Engine Tier 1/2 Golden Accuracy Suite (D23 & §10)', () => {
 
   describe('D21 — High-Latitude Proxy Policy (§8)', () => {
     it('uses proxy latitude 60° and adds latitude_proxy diagnostic for polar latitude', () => {
-      // Longyearbyen Svalbard (78.22°N)
       const date = new Date('2026-03-20T12:00:00Z');
       const res = getMoonRiseSet(date, 78.22, 15.63, 'Europe/Oslo');
       expect(res.ok).toBe(true);
