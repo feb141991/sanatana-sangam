@@ -108,4 +108,64 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
     expect(res.qualified).toBe(true);
     expect(res.reasons.some((r) => r.code === 'tithi_presence_check' && r.text.includes('MATCHED'))).toBe(true);
   });
+
+  it('[EDGE-004 Vrddhi Verification] detects a vrddhi tithi spanning two sunrises (Krishna Ashtami on 2026-02-09 and 2026-02-10)', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const variant = {
+      ruleId: 'krishna_janmashtami__smarta_mock',
+      festivalId: 'krishna_janmashtami_mock',
+      conditions: [
+        { type: 'paksha' as const, value: 'krishna' as const },
+        { type: 'tithi' as const, value: 8, paksha: 'krishna' as const },
+      ],
+    };
+
+    // Day 1 of Vrddhi
+    const res1 = evaluateVariant(variant, '2026-02-09', location);
+    expect(res1.qualified).toBe(true);
+    expect(res1.diagnostics).toContain('vrddhi_tithi');
+    expect(res1.reasons.some(r => r.code === 'vrddhi_tithi_detected' && r.text.includes('[S]'))).toBe(true);
+
+    // Day 2 of Vrddhi
+    const res2 = evaluateVariant(variant, '2026-02-10', location);
+    expect(res2.qualified).toBe(true);
+    expect(res2.diagnostics).toContain('vrddhi_tithi');
+    expect(res2.reasons.some(r => r.code === 'vrddhi_tithi_detected' && r.text.includes('[S]'))).toBe(true);
+  });
+
+  it('[EDGE-004 Kshaya Verification] detects a kshaya tithi skipped at sunrise and triggers fallback (Shukla Ashtami on 2026-02-25)', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const variant = {
+      ruleId: 'durga_ashtami_mock',
+      festivalId: 'durga_ashtami_mock',
+      conditions: [
+        { type: 'paksha' as const, value: 'shukla' as const },
+        { type: 'tithi' as const, value: 8, paksha: 'shukla' as const },
+      ],
+    };
+
+    // On 2026-02-24 sunrise is Shukla Saptami (tithi 7)
+    const resPrev = evaluateVariant(variant, '2026-02-24', location);
+    expect(resPrev.qualified).toBe(false);
+
+    // On 2026-02-25 sunrise is Shukla Navami (tithi 9). Target Shukla Ashtami (8) was skipped.
+    const resCurr = evaluateVariant(variant, '2026-02-25', location);
+    expect(resCurr.qualified).toBe(true);
+    expect(resCurr.diagnostics).toContain('kshaya_tithi');
+    expect(resCurr.reasons.some(r => r.code === 'kshaya_tithi_detected')).toBe(true);
+  });
+
+  it('[Deprecation Warning Verification] allows absolute tithi > 15 but issues a deprecation warning', () => {
+    const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
+    const variant = {
+      ruleId: 'absolute_tithi_legacy_mock',
+      festivalId: 'absolute_tithi_legacy_mock',
+      conditions: [
+        { type: 'tithi' as const, value: 23 }, // absolute Krishna Ashtami
+      ],
+    };
+
+    const res = evaluateVariant(variant, '2026-02-09', location);
+    expect(res.qualified).toBe(true);
+  });
 });

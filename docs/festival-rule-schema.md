@@ -337,9 +337,7 @@ in evaluator `RuleCondition` objects.
 
 The evaluator's `isTithiMatching(absoluteIdx, targetTithi, targetPaksha)` maps
 from the engine's absolute index to the within-paksha scheme via
-`getWithinPakshaTithi`. The old escape hatch that returned
-`absoluteIdx === targetTithi` when `targetTithi > 15` — which bypassed paksha
-normalisation — was **removed** in D26/D27 (evaluator v1.0.0, 2026-08-04).
+`getWithinPakshaTithi`. Absolute indices `targetTithi > 15` are deprecated and will throw a console warning in non-production environments. They fall back to raw absolute index comparison for legacy backward compatibility, with a strict removal gate set for removal in v3.0.0.
 
 **Rationale**: the escape hatch kept two schemes alive simultaneously. Code that
 called `isTithiMatching(panchang.tithiIndex, 23)` (absolute Janmashtami = 23)
@@ -347,3 +345,15 @@ received a correct answer accidentally, but only when the panchang and the rule
 happened to both count from 1. Code that called it with `targetTithi = 29`
 (Chaturdashi in absolute) would have silently failed the paksha check. The
 within-paksha + explicit paksha scheme is unambiguous.
+
+---
+
+## §3.5 Vrddhi Tithi (EDGE-004) Semantics
+
+A **Vrddhi tithi** is a lunar day that is active at two consecutive sunrises. When a tithi is a Vrddhi tithi:
+- The condition evaluator's tithi matching (or `tithi_presence` at sunrise) evaluates to `satisfied: true` on both days.
+- To prevent silent double-scheduling, the evaluator detects that the tithi spans multiple sunrises:
+  1. It adds the diagnostic `vrddhi_tithi`.
+  2. It adds a scholar-pending review reason starting with `[S] Scholar review pending: Vrddhi tithi ... spans two sunrises.` indicating whether the current day is the first or second sunrise.
+- Since choosing between the first and second sunrise for observance is a sampradāya/tradition-specific scholar decision, engineering does not default or enforce a choice. The occurrence is flagged for scholar resolution `[S]`.
+

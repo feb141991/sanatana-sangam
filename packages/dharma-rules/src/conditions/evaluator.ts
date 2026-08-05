@@ -5,6 +5,7 @@ import {
   offsetCivilDateStr,
   getTzOffsetHours,
   LocationInput,
+  getLunarMonth,
 } from '../../../panchang-engine/src/index.js';
 import { getSunriseSunset } from '../../../panchang-engine/src/core/astronomy.js';
 import { getMoonRiseSet } from '../../../panchang-engine/src/core/moon-rise-set.js';
@@ -122,12 +123,27 @@ export function getPeriodWindow(
       break;
     case 'moonrise': {
       const moon = getMoonRiseSet(sampleDate, location.lat, location.lon, location.tz);
-      if (!moon.ok || !moon.moonrise) {
-        diagnostics.push('no_moonrise');
-        return null;
+      if (moon.ok && moon.moonrise) {
+        start = moon.moonrise;
+        end = moon.moonrise;
+      } else {
+        // Moonrise is absent on this civil date. Extend search to the following night.
+        const nextDate = offsetCivilDateStr(civilDateStr, 1);
+        const nextSampleDate = parseCivilDateUtc(nextDate);
+        const nextMoon = getMoonRiseSet(nextSampleDate, location.lat, location.lon, location.tz);
+        
+        const nextRiseSet = getSunriseSunset(effLat, location.lon, nextSampleDate, tzOffset);
+        const nextSunrise = nextRiseSet.sunrise || new Date(sunrise.getTime() + 86_400_000);
+
+        if (nextMoon.ok && nextMoon.moonrise && nextMoon.moonrise.getTime() < nextSunrise.getTime()) {
+          start = nextMoon.moonrise;
+          end = nextMoon.moonrise;
+          diagnostics.push('extended_moonrise');
+        } else {
+          diagnostics.push('no_moonrise');
+          return null;
+        }
       }
-      start = moon.moonrise;
-      end = moon.moonrise;
       break;
     }
     case 'moonset': {
@@ -211,12 +227,73 @@ export function isTithiMatching(
   targetTithi: number,
   targetPaksha?: 'shukla' | 'krishna'
 ): boolean {
+  if (targetTithi > 15) {
+    console.warn(
+      `[DEPRECATION WARNING] absolute tithi index ${targetTithi} was used in rule. Use within-paksha index (1..15) + explicit paksha instead. This fallback will be removed in v3.0.0.`
+    );
+    return absoluteTithiIndex === targetTithi;
+  }
   const { withinPakshaTithi, paksha } = getWithinPakshaTithi(absoluteTithiIndex);
   if (targetPaksha) {
     return withinPakshaTithi === targetTithi && paksha === targetPaksha;
   }
   // Paksha-ambiguous: match if within-paksha number matches regardless of half
   return withinPakshaTithi === targetTithi;
+}
+
+function getAbsoluteTithiIndex(targetTithi: number, targetPaksha?: 'shukla' | 'krishna'): number[] {
+  if (targetPaksha === 'shukla') return [targetTithi];
+  if (targetPaksha === 'krishna') return [targetTithi + 15];
+  return [targetTithi, targetTithi + 15];
+}
+
+function isAbsoluteTithiSkipped(prev: number, curr: number, target: number): boolean {
+  const p0 = prev - 1; // 0..29
+  const c0 = curr - 1; // 0..29
+  const t0 = target - 1; // 0..29
+  return (p0 + 1) % 30 === t0 && (p0 + 2) % 30 === c0;
+}
+
+function getUnderlyingTithiVrddhiInfo(
+  targetTithi: number,
+  targetPaksha: 'shukla' | 'krishna' | undefined,
+  civilDateStr: string,
+  location: LocationInput
+): { isVrddhi: boolean; sunrisesWithTithi: string[]; isFirstSunrise: boolean; isSecondSunrise: boolean } {
+  const yesterdayDate = offsetCivilDateStr(civilDateStr, -1);
+  const tomorrowDate = offsetCivilDateStr(civilDateStr, 1);
+
+  const yesterdaySunriseWindow = getPeriodWindow('sunrise', yesterdayDate, location);
+  const yesterdaySunrise = yesterdaySunriseWindow ? yesterdaySunriseWindow.start : parseCivilDateUtc(yesterdayDate);
+  const yesterdayPanchang = calculatePanchang(yesterdaySunrise, location.lat, location.lon);
+
+  const tomorrowSunriseWindow = getPeriodWindow('sunrise', tomorrowDate, location);
+  const tomorrowSunrise = tomorrowSunriseWindow ? tomorrowSunriseWindow.start : parseCivilDateUtc(tomorrowDate);
+  const tomorrowPanchang = calculatePanchang(tomorrowSunrise, location.lat, location.lon);
+
+  const riseWindow = getPeriodWindow('sunrise', civilDateStr, location);
+  const riseTime = riseWindow ? riseWindow.start : parseCivilDateUtc(civilDateStr);
+  const todayPanchang = calculatePanchang(riseTime, location.lat, location.lon);
+
+  const todayMatched = isTithiMatching(todayPanchang.tithiIndex, targetTithi, targetPaksha);
+  const yesterdayMatched = isTithiMatching(yesterdayPanchang.tithiIndex, targetTithi, targetPaksha);
+  const tomorrowMatched = isTithiMatching(tomorrowPanchang.tithiIndex, targetTithi, targetPaksha);
+
+  if (todayMatched && (yesterdayMatched || tomorrowMatched)) {
+    const sunrisesWithTithi = [];
+    if (yesterdayMatched) sunrisesWithTithi.push(yesterdayDate);
+    sunrisesWithTithi.push(civilDateStr);
+    if (tomorrowMatched) sunrisesWithTithi.push(tomorrowDate);
+
+    return {
+      isVrddhi: true,
+      sunrisesWithTithi,
+      isFirstSunrise: tomorrowMatched && !yesterdayMatched,
+      isSecondSunrise: yesterdayMatched && !tomorrowMatched,
+    };
+  }
+
+  return { isVrddhi: false, sunrisesWithTithi: [], isFirstSunrise: false, isSecondSunrise: false };
 }
 
 /** Evaluates a single rule condition on a given civil date and location */
@@ -237,19 +314,21 @@ export function evaluateCondition(
   const panchang = calculatePanchang(sunrise, location.lat, location.lon);
 
   if (condition.type === 'lunar_month') {
-    // Note: evaluate tithi/month conditions directly. No compensation for D1 per requirements.
-    const satisfied = panchang.masaName.toLowerCase() === condition.value.toLowerCase();
+    const monthSys = condition.monthSystem || 'amanta';
+    const mRes = getLunarMonth(sunrise, monthSys);
+    const actualMasa = mRes.ok ? mRes.monthName : panchang.masaName;
+    const satisfied = actualMasa.toLowerCase() === condition.value.toLowerCase();
     reasons.push({
       code: 'lunar_month_check',
-      text: `Lunar month on ${civilDateStr} at sunrise is ${panchang.masaName} (target: ${condition.value}, system: ${condition.monthSystem}).`,
-      details: { actualMasa: panchang.masaName, targetMasa: condition.value, system: condition.monthSystem },
+      text: `Lunar month on ${civilDateStr} at sunrise is ${actualMasa} (target: ${condition.value}, system: ${monthSys}).`,
+      details: { actualMasa, targetMasa: condition.value, system: monthSys },
     });
     return {
       conditionType: condition.type,
       satisfied,
       reasons,
       diagnostics,
-      astronomy: { masaName: panchang.masaName },
+      astronomy: { masaName: actualMasa },
     };
   }
 
@@ -272,12 +351,79 @@ export function evaluateCondition(
 
   if (condition.type === 'tithi') {
     const targetPaksha = (condition as TithiCondition).paksha || contextPaksha;
-    const satisfied = isTithiMatching(panchang.tithiIndex, condition.value, targetPaksha);
-    reasons.push({
-      code: 'tithi_check',
-      text: `Tithi on ${civilDateStr} at sunrise is ${getTithiName(panchang.tithiIndex)} (index ${panchang.tithiIndex}, target: ${condition.value}${targetPaksha ? ' ' + targetPaksha : ''}).`,
-      details: { actualTithi: panchang.tithiIndex, targetTithi: condition.value, targetPaksha },
-    });
+    const targetTithi = condition.value;
+
+    const yesterdayDate = offsetCivilDateStr(civilDateStr, -1);
+    const tomorrowDate = offsetCivilDateStr(civilDateStr, 1);
+
+    const yesterdaySunriseWindow = getPeriodWindow('sunrise', yesterdayDate, location);
+    const yesterdaySunrise = yesterdaySunriseWindow ? yesterdaySunriseWindow.start : parseCivilDateUtc(yesterdayDate);
+    const yesterdayPanchang = calculatePanchang(yesterdaySunrise, location.lat, location.lon);
+
+    const tomorrowSunriseWindow = getPeriodWindow('sunrise', tomorrowDate, location);
+    const tomorrowSunrise = tomorrowSunriseWindow ? tomorrowSunriseWindow.start : parseCivilDateUtc(tomorrowDate);
+    const tomorrowPanchang = calculatePanchang(tomorrowSunrise, location.lat, location.lon);
+
+    const todayMatched = isTithiMatching(panchang.tithiIndex, targetTithi, targetPaksha);
+    const yesterdayMatched = isTithiMatching(yesterdayPanchang.tithiIndex, targetTithi, targetPaksha);
+    const tomorrowMatched = isTithiMatching(tomorrowPanchang.tithiIndex, targetTithi, targetPaksha);
+
+    let satisfied = false;
+    let isVrddhi = false;
+    let isKshaya = false;
+
+    if (todayMatched) {
+      satisfied = true;
+      if (yesterdayMatched || tomorrowMatched) {
+        isVrddhi = true;
+        diagnostics.push('vrddhi_tithi');
+        const sunrisesWithTithi = [];
+        if (yesterdayMatched) sunrisesWithTithi.push(yesterdayDate);
+        sunrisesWithTithi.push(civilDateStr);
+        if (tomorrowMatched) sunrisesWithTithi.push(tomorrowDate);
+
+        reasons.push({
+          code: 'vrddhi_tithi_detected',
+          text: `[S] Scholar review pending: Vrddhi tithi ${getTithiName(targetTithi)} spans two sunrises (${sunrisesWithTithi.join(', ')}). Tradition-specific resolution is required.`,
+          details: {
+            targetTithi,
+            targetPaksha,
+            sunrisesWithTithi,
+            isFirstSunrise: tomorrowMatched && !yesterdayMatched,
+            isSecondSunrise: yesterdayMatched && !tomorrowMatched,
+          },
+        });
+      }
+    } else {
+      const targets = getAbsoluteTithiIndex(targetTithi, targetPaksha);
+      for (const t of targets) {
+        if (isAbsoluteTithiSkipped(yesterdayPanchang.tithiIndex, panchang.tithiIndex, t)) {
+          satisfied = true;
+          isKshaya = true;
+          diagnostics.push('kshaya_tithi');
+          reasons.push({
+            code: 'kshaya_tithi_detected',
+            text: `Kshaya tithi: Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) was skipped at sunrise. Fallback observed on ${civilDateStr}.`,
+            details: {
+              targetTithi,
+              targetPaksha,
+              yesterdayTithi: yesterdayPanchang.tithiIndex,
+              todayTithi: panchang.tithiIndex,
+            },
+          });
+          break;
+        }
+      }
+    }
+
+    if (!isVrddhi && !isKshaya) {
+      reasons.push({
+        code: 'tithi_check',
+        text: `Tithi on ${civilDateStr} at sunrise is ${getTithiName(panchang.tithiIndex)} (index ${panchang.tithiIndex}, target: ${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}).`,
+        details: { actualTithi: panchang.tithiIndex, targetTithi, targetPaksha },
+      });
+    }
+
     return {
       conditionType: condition.type,
       satisfied,
@@ -335,39 +481,115 @@ export function evaluateCondition(
     const mMid = isTithiMatching(midPanchang.tithiIndex, targetTithi, targetPaksha);
 
     let satisfied = false;
+    let isVrddhi = false;
+    let isKshaya = false;
 
-    if (condition.mode === 'at') {
+    if (condition.period === 'sunrise') {
       satisfied = mStart;
-    } else if (condition.mode === 'prevails') {
-      satisfied = mStart && mEnd;
-    } else if (condition.mode === 'touches') {
-      satisfied = mStart || mEnd || mMid;
-    } else if (condition.mode === 'majority') {
-      satisfied = [mStart, mMid, mEnd].filter(Boolean).length >= 2;
+      if (satisfied) {
+        const vrddhiInfo = getUnderlyingTithiVrddhiInfo(targetTithi, targetPaksha, civilDateStr, location);
+        if (vrddhiInfo.isVrddhi) {
+          isVrddhi = true;
+          diagnostics.push('vrddhi_tithi');
+          reasons.push({
+            code: 'vrddhi_tithi_detected',
+            text: `[S] Scholar review pending: Vrddhi tithi ${getTithiName(targetTithi)} spans two sunrises (${vrddhiInfo.sunrisesWithTithi.join(', ')}). Tradition-specific resolution is required.`,
+            details: {
+              targetTithi,
+              targetPaksha,
+              sunrisesWithTithi: vrddhiInfo.sunrisesWithTithi,
+              isFirstSunrise: vrddhiInfo.isFirstSunrise,
+              isSecondSunrise: vrddhiInfo.isSecondSunrise,
+            },
+          });
+        }
+      } else {
+        const yesterdayDate = offsetCivilDateStr(civilDateStr, -1);
+        const yesterdaySunriseWindow = getPeriodWindow('sunrise', yesterdayDate, location);
+        const yesterdaySunrise = yesterdaySunriseWindow ? yesterdaySunriseWindow.start : parseCivilDateUtc(yesterdayDate);
+        const yesterdayPanchang = calculatePanchang(yesterdaySunrise, location.lat, location.lon);
+        const targets = getAbsoluteTithiIndex(targetTithi, targetPaksha);
+        for (const t of targets) {
+          if (isAbsoluteTithiSkipped(yesterdayPanchang.tithiIndex, startPanchang.tithiIndex, t)) {
+            satisfied = true;
+            isKshaya = true;
+            diagnostics.push('kshaya_tithi');
+            reasons.push({
+              code: 'kshaya_tithi_detected',
+              text: `Kshaya tithi: Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) was skipped at sunrise. Fallback observed on ${civilDateStr}.`,
+              details: {
+                targetTithi,
+                targetPaksha,
+                yesterdayTithi: yesterdayPanchang.tithiIndex,
+                todayTithi: startPanchang.tithiIndex,
+              },
+            });
+            break;
+          }
+        }
+      }
+    } else {
+      if (condition.mode === 'at') {
+        satisfied = mStart;
+      } else if (condition.mode === 'prevails') {
+        satisfied = mStart && mEnd;
+      } else if (condition.mode === 'touches') {
+        satisfied = mStart || mEnd || mMid;
+      } else if (condition.mode === 'majority') {
+        satisfied = [mStart, mMid, mEnd].filter(Boolean).length >= 2;
+      }
+
+      if (satisfied) {
+        const vrddhiInfo = getUnderlyingTithiVrddhiInfo(targetTithi, targetPaksha, civilDateStr, location);
+        if (vrddhiInfo.isVrddhi) {
+          isVrddhi = true;
+          diagnostics.push('vrddhi_tithi');
+          reasons.push({
+            code: 'vrddhi_tithi_detected',
+            text: `[S] Scholar review pending: Vrddhi tithi ${getTithiName(targetTithi)} spans two sunrises (${vrddhiInfo.sunrisesWithTithi.join(', ')}). Tradition-specific resolution is required.`,
+            details: {
+              targetTithi,
+              targetPaksha,
+              sunrisesWithTithi: vrddhiInfo.sunrisesWithTithi,
+              isFirstSunrise: vrddhiInfo.isFirstSunrise,
+              isSecondSunrise: vrddhiInfo.isSecondSunrise,
+            },
+          });
+        }
+      }
     }
 
-    // formatInstantInTz produces "YYYY-MM-DD HH:MM" fully in the local timezone.
-    // The old code concatenated a local-timezone date with a UTC time slice,
-    // producing a hybrid timestamp that was neither local nor UTC.
     const startStr = formatInstantInTz(window.start, location.tz);
     const endStr = formatInstantInTz(window.end, location.tz);
 
-    reasons.push({
-      code: 'tithi_presence_check',
-      text: `Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) presence mode '${condition.mode}' during '${condition.period}' ` +
+    if (!isVrddhi && !isKshaya) {
+      let reasonCode = 'tithi_presence_check';
+      let reasonText = `Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) presence mode '${condition.mode}' during '${condition.period}' ` +
         `[${startStr} to ${endStr}]: ${satisfied ? 'MATCHED' : 'DID NOT MATCH'}. ` +
-        `(Start: ${getTithiName(startPanchang.tithiIndex)}, End: ${getTithiName(endPanchang.tithiIndex)}).`,
-      details: {
-        targetTithi,
-        targetPaksha,
-        period: condition.period,
-        mode: condition.mode,
-        startTithi: startPanchang.tithiIndex,
-        endTithi: endPanchang.tithiIndex,
-        startUtc: window.start.toISOString(),
-        endUtc: window.end.toISOString(),
-      },
-    });
+        `(Start: ${getTithiName(startPanchang.tithiIndex)}, End: ${getTithiName(endPanchang.tithiIndex)}).`;
+
+      if (window.diagnostics.includes('extended_moonrise')) {
+        reasonCode = 'extended_moonrise_check';
+        reasonText = `Moonrise absent on civil date ${civilDateStr}; extended search found actual moonrise on next civil date at ${startStr} (before next sunrise). ` +
+          `Tithi ${getTithiName(targetTithi)} (${targetTithi}${targetPaksha ? ' ' + targetPaksha : ''}) presence mode '${condition.mode}' during '${condition.period}': ${satisfied ? 'MATCHED' : 'DID NOT MATCH'}.`;
+      }
+
+      reasons.push({
+        code: reasonCode,
+        text: reasonText,
+        details: {
+          targetTithi,
+          targetPaksha,
+          period: condition.period,
+          mode: condition.mode,
+          startTithi: startPanchang.tithiIndex,
+          endTithi: endPanchang.tithiIndex,
+          startUtc: window.start.toISOString(),
+          endUtc: window.end.toISOString(),
+          isExtendedMoonrise: window.diagnostics.includes('extended_moonrise'),
+        },
+      });
+    }
 
     return {
       conditionType: condition.type,

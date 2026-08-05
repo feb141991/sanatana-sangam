@@ -41,7 +41,7 @@ export interface PakshaCondition extends BaseCondition {
 
 export interface TithiCondition extends BaseCondition {
   type: 'tithi';
-  value: number; // 1..30
+  value: number; // 1..15 (canonical within-paksha index). absolute indices (1..30) are deprecated.
   paksha?: 'shukla' | 'krishna';
 }
 
