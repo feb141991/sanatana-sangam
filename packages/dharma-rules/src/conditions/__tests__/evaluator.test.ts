@@ -4,6 +4,8 @@ import {
   evaluateCondition,
   evaluateVariant,
   getPeriodWindow,
+  type ObservanceResult,
+  type SourceReference,
 } from '../index.js';
 
 describe('Observance Condition Evaluator (Tracker 3.2)', () => {
@@ -167,5 +169,55 @@ describe('Observance Condition Evaluator (Tracker 3.2)', () => {
 
     const res = evaluateVariant(variant, '2026-02-09', location);
     expect(res.qualified).toBe(true);
+  });
+
+  it('conforms to the ObservanceResult and SourceReference type contracts', () => {
+    const mockSource: SourceReference = {
+      sourceName: 'Rashtriya Panchang',
+      tier: 1,
+      publisher: 'Positional Astronomy Centre',
+      edition: '2027',
+      copyrightStatus: 'purchased_print_reference',
+      usagePermitted: 'internal_validation_and_citation',
+    };
+
+    const mockResult: ObservanceResult = {
+      festivalId: 'maha_shivaratri',
+      status: 'resolved',
+      civilDate: '2027-03-06',
+      vedicDay: { start: '2027-03-06T00:41:00Z', end: '2027-03-07T00:40:00Z' },
+      windows: {
+        observance: { start: '2027-03-06T18:00:00Z', end: '2027-03-07T06:00:00Z' },
+      },
+      location: {
+        label: 'Bedford, UK',
+        lat: 52.135,
+        lon: -0.467,
+        tz: 'Europe/London',
+      },
+      profile: {
+        calendar: 'north_indian_purnimanta',
+        tradition: 'smarta',
+      },
+      versions: {
+        panchangaCore: '1.0.0',
+        calendarProfile: '1.0.0',
+        ruleEngine: '2.0.0',
+        rule: '1.0.0',
+      },
+      reasons: [
+        { code: 'tithi_prevails_in_window', text: 'Kṛṣṇa Chaturdaśī prevailed during Nishita' },
+      ],
+      alternatives: [],
+      confidence: 'high',
+      diagnostics: ['vrddhi_tithi', 'latitude_proxy', 'compressed_night', 'extended_moonrise'],
+      sourceRefs: [mockSource],
+      reviewStatus: 'approved',
+      isPrimary: true,
+    };
+
+    expect(mockResult.festivalId).toBe('maha_shivaratri');
+    expect(mockResult.sourceRefs[0].tier).toBe(1);
+    expect(mockResult.diagnostics).toContain('extended_moonrise');
   });
 });
