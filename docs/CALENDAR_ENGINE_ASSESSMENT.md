@@ -186,7 +186,7 @@ Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · �
 | 5.1 | Launch calendar profiles (10) | ⬜ | |
 | 5.2 | Launch tradition profiles (7) | ⬜ | |
 | 5.3 | Onboarding Q1–Q5 (location, region, sampradāya, scope, language) | ⬜ | |
-| 5.4 | Home tradition vs observance location as separate fields | ⬜ | |
+| 5.4 | Home tradition vs observance location as separate fields | ✅ | Shipped in `7d60818` — migration `20260803020000` adds `home_latitude/longitude/city/country/timezone` + `observance_location_source`; the silent browser-timezone overwrite at `ProfileClient.tsx:516` was replaced with detect-and-ask. Tradition isolation verified (no location write can touch `tradition`/`sampradaya`, AGENTS.md rule 4); all reminder crons verified untouched. `resolveObservanceLocation` (D24/D25) then made the reference fallback explicit and kept tz travelling with its own coordinates. **Entry was stale at ⬜ until 2026-08-04.** |
 | 5.5 | Local / Temple / Bharat-reference modes | ⬜ | |
 | 5.6 | "Why today?" explanation card | ⬜ | |
 | 5.7 | Two-recognised-observances UI + standing disclaimer | ⬜ | |
