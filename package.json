@@ -36,6 +36,8 @@
     "demo:d15-lock-override": "npx tsx scripts/demo-d15-lock-override.ts",
     "adjudicate-conditions": "npx tsx scripts/adjudicate-conditions.ts",
     "diff:masa-correction": "npx tsx scripts/diff-masa-correction.ts",
+    "reconcile:engines": "npx tsx scripts/reconcile-engines.ts",
+    "fixtures:usno-queries": "npx tsx scripts/usno-queries.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts"
   },
   "dependencies": {
