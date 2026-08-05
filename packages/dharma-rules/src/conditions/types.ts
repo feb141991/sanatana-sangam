@@ -124,3 +124,64 @@ export interface VariantEvaluationResult {
   reasons: EvaluationReason[];
   diagnostics: string[];
 }
+
+export type SourceTier = 1 | 2 | 3 | 4 | 5 | 6;
+
+export interface SourceReference {
+  id?: string;
+  sourceName: string;
+  textName?: string | null;
+  publisher?: string | null;
+  edition?: string | null;
+  pageOrSection?: string | null;
+  tier: SourceTier;
+  tradition?: string | null;
+  region?: string | null;
+  scholarNotes?: string | null;
+  copyrightStatus?: string | null;
+  usagePermitted?: string | null;
+  url?: string | null;
+}
+
+export interface ObservanceResult {
+  festivalId: string;
+  status: 'resolved' | 'ambiguous' | 'unresolved';
+  civilDate: string | null;
+  vedicDay?: { start: string; end: string } | null;
+  windows?: {
+    observance?: { start: string; end: string } | null;
+    puja?: { start: string; end: string; name?: string } | null;
+    paran?: { start: string; end: string } | null;
+  } | null;
+  location: {
+    label: string;
+    lat: number;
+    lon: number;
+    tz: string;
+  };
+  profile: {
+    calendar: string;
+    tradition: string;
+  };
+  versions: {
+    panchangaCore: string;
+    calendarProfile: string;
+    ruleEngine: string;
+    rule: string;
+  };
+  reasons: EvaluationReason[];
+  alternatives: Array<{
+    profile: {
+      calendar: string;
+      tradition: string;
+    };
+    civilDate: string | null;
+    monthLabel?: string | null;
+    note?: string | null;
+  }>;
+  confidence: 'high' | 'medium' | 'low';
+  diagnostics: string[];
+  sourceRefs: SourceReference[];
+  reviewStatus: 'draft' | 'technical_ok' | 'in_review' | 'approved' | 'disputed' | 'reviewed';
+  isPrimary: boolean; // Evaluated dynamically at read-time, not baked in
+}

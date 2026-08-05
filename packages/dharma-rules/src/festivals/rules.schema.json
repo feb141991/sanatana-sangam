@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ObservanceRulesSchema",
+  "description": "Schema for validating canonical calendar observance rules (Layer C)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "slug",
+      "display_name",
+      "emoji",
+      "description",
+      "kind",
+      "tradition",
+      "rule_family",
+      "verification_type"
+    ],
+    "properties": {
+      "slug": {
+        "type": "string",
+        "description": "Unique identifier of the observance rule"
+      },
+      "display_name": {
+        "type": "string",
+        "description": "Human readable name of the observance"
+      },
+      "emoji": {
+        "type": "string",
+        "description": "Emoji representing the observance visually"
+      },
+      "description": {
+        "type": "string",
+        "description": "Short description of the festival's meaning"
+      },
+      "kind": {
+        "type": "string",
+        "enum": ["major", "vrat", "regional"]
+      },
+      "tradition": {
+        "type": "string",
+        "enum": ["hindu", "sikh", "buddhist", "jain", "all"]
+      },
+      "rule_family": {
+        "type": "string",
+        "enum": [
+          "solar_fixed",
+          "lunar_tithi",
+          "lunar_tithi_recurring",
+          "weekday_recurring",
+          "relative_to_other_observance",
+          "nakshatra_based",
+          "regional_calendar"
+        ]
+      },
+      "verification_type": {
+        "type": "string",
+        "enum": [
+          "solar_fixed",
+          "lunar_tithi",
+          "nakshatra_based",
+          "regional_calendar",
+          "historical_commemoration"
+        ]
+      },
+      "solar_month": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 12,
+        "description": "Month of the Gregorian/Solar year (1-12)"
+      },
+      "solar_day": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 31,
+        "description": "Day of the Gregorian/Solar month (1-31)"
+      },
+      "lunar_tithi_index": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 30,
+        "description": "Absolute index of the tithi (1-15 Shukla, 16-30 Krishna)"
+      },
+      "lunar_masa_name": {
+        "type": "string",
+        "description": "Calibrated legacy month name for D1 engine"
+      },
+      "nanakshahi_month": {
+        "type": "string",
+        "description": "Month name in the Nanakshahi calendar"
+      },
+      "nanakshahi_day": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 31,
+        "description": "Day of the month in the Nanakshahi calendar"
+      },
+      "relative_base_slug": {
+        "type": "string",
+        "description": "Slug of the reference festival this rule is offset from"
+      },
+      "relative_offset_days": {
+        "type": "integer",
+        "description": "Offset in days from relative_base_slug"
+      },
+      "nakshatra_name": {
+        "type": "string",
+        "description": "Required nakshatra name"
+      },
+      "prefer_last_match": {
+        "type": "boolean",
+        "description": "Prefer later matching tithi in double-match cases"
+      },
+      "allow_skipped_tithi": {
+        "type": "boolean",
+        "description": "Allow matching skipped tithis on subsequent day"
+      },
+      "recurring_tithi_indices": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "description": "Indices of recurring tithis (e.g. for Ekadashi/Sankashti)"
+      },
+      "recurring_weekday": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 6,
+        "description": "Vedic day weekday: 0=Sunday, 1=Monday... 6=Saturday"
+      },
+      "route_kind": {
+        "type": ["string", "null"],
+        "enum": ["vrat", null]
+      },
+      "route_slug": {
+        "type": ["string", "null"]
+      },
+      "region": {
+        "type": ["string", "null"]
+      },
+
+      "corrected_lunar_masa_name": {
+        "type": "string",
+        "description": "Amanta lunar month name for D2 engine"
+      },
+      "corrected_lunar_tithi_index": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 30,
+        "description": "Corrected absolute tithi index"
+      },
+      "corrected_month_system": {
+        "type": "string",
+        "enum": ["amanta", "purnimanta"],
+        "description": "Lunisolar month naming system used by corrected engine"
+      },
+      "adhika_policy": {
+        "type": "string",
+        "enum": ["nija", "adhika", "both"],
+        "description": "Handling of Adhika (intercalary) month"
+      },
+      "corrected_prefer_last_match": {
+        "type": "boolean",
+        "description": "Corrected prefer_last_match flag"
+      },
+      "corrected_allow_skipped_tithi": {
+        "type": "boolean",
+        "description": "Corrected allow_skipped_tithi flag"
+      },
+
+      "tithi": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 15,
+        "description": "Within-paksha canonical tithi index (1-15)"
+      },
+      "paksha": {
+        "type": "string",
+        "enum": ["shukla", "krishna"],
+        "description": "Required paksha for within-paksha tithi"
+      },
+      "variant_id": {
+        "type": "string",
+        "description": "Identity of variant (e.g. smarta, vaishnava)"
+      },
+      "calendar_profile": {
+        "type": "string",
+        "description": "Profile compatibility context"
+      },
+      "spiritual_tradition": {
+        "type": "string",
+        "description": "Tradition compatibility context"
+      },
+      "ratified": {
+        "type": "boolean",
+        "description": "Scholar Advisory Council [S] ratification flag"
+      },
+      "review": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["draft", "technical_ok", "in_review", "approved", "disputed"]
+          },
+          "reviewedBy": {
+            "type": "string"
+          },
+          "effectiveFrom": {
+            "type": "string"
+          },
+          "lastReviewed": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": ["status"],
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
+}

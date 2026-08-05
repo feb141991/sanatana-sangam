@@ -22,4 +22,7 @@ export {
   type EvaluationReason,
   type ConditionEvaluationResult,
   type VariantEvaluationResult,
+  type SourceTier,
+  type SourceReference,
+  type ObservanceResult,
 } from './types.js';

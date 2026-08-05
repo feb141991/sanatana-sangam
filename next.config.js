@@ -89,6 +89,10 @@ const nextConfig = {
       '@sangam/sadhana-engine': path.resolve(__dirname, 'packages/sadhana-engine/src/index.ts'),
       '@sangam/pathshala-engine': path.resolve(__dirname, 'packages/pathshala-engine/src/index.ts'),
     };
+    config.resolve.extensionAlias = {
+      ...config.resolve.extensionAlias,
+      '.js': ['.ts', '.tsx', '.js'],
+    };
     if (!workflowEnabled) {
       const workflowStub = path.resolve(__dirname, 'src/workflows/local-stubs.ts');
       config.resolve.alias['workflow/api$'] = workflowStub;
