@@ -123,6 +123,23 @@ defects are load-bearing (D1/D2 below) and must be fixed together.
 
 Legend — ⬜ not started · 🟡 in progress · ✅ done · ⏸ blocked · 🔬 needs council
 
+### ⏸️ PARKED — deliberately deferred, not forgotten (2026-08-05)
+
+Two items gate everything downstream (profiles 5.x, panchāṅga UI 6.x, and the
+3.7 switch). **Neither is an engineering task**, which is why no further prompt
+moves them. Parked by explicit decision, not oversight.
+
+| # | Parked item | Why it needs a person | To resume |
+|---|---|---|---|
+| **G1** | **Flip `USE_CONDITION_EVALUATOR`** (currently `false`, `engine.ts:40`) | Reading the shadow diff is a **religious judgement, not a technical one**. The engine can show that Nishita falls in Amāvasyā on 16 Feb; it cannot decide that a community now observes Śivarātri on the 15th. Two items in it have no computed answer at all: Sankaṣṭī is **26 of 26 UNRESOLVED**, and Karva Chauth at Bedford resolves to **no date even at ±35 days** — a doctrinal question about what a Bedford observer actually does. | **Regenerate first** — `npm run diff:condition-evaluator`. The committed report reflects the rules as they were when it ran; rule work since then makes it silently stale (the same trap that stale-dated the reconciliation report after 3.1/3.10 landed). Then a human — ideally the council — reads it and decides. |
+| **G2** | **Populate the 13 moonrise golden fixtures** (D23; holds 2.4 at 🟡) | `source-governance.md`: **LLM output is Tier 6 and never a valid source.** A model filling these in would launder its own output behind a "USNO" citation — precisely the D23 failure the new fixture type exists to prevent. Must be a person. | `npm run fixtures:usno-queries` prints 13 URLs. Open each, read one number, paste it. ~10 minutes. Until then the moonrise engine — which Karva Chauth, Sankaṣṭī and every moonrise rule now depend on — has **zero external validation**. It is correct as far as independent review could verify, but uncited. |
+
+**Safe to leave parked.** Both flags are `false`, nothing is half-applied, and
+`verify:harness` reads 988/216. The work is dormant and reversible, not fragile.
+**Cost of parking:** users continue to see the current dates — Mahā Śivarātri
+2026 still reads 17 Feb in the app — and 2.4 stays 🟡.
+
+
 ### Phase 1 — Specification
 
 | # | Item | Status | Evidence |
