@@ -289,7 +289,7 @@ For each rule class, we establish a definitive authority assignment explaining w
 
 - **Maha Shivaratri 2026**: The corrected rule engine outputs `2026-02-16` because Chaturdashi is present at Ujjain sunrise. However, the condition evaluator demonstrates that by Nishita on 2026-02-16, Chaturdashi has already ended. The evaluator qualifies `2026-02-15` at Ujjain and `2026-02-15` at Bedford (status: YES).
 - **Krishna Janmashtami 2026**: The rule engine outputs a single date `2026-09-04`. The condition evaluator resolves two separate variants: Smarta Janmashtami is qualified on `2026-09-04` at Ujjain and `2026-09-03` at Bedford. Vaishnava Janmashtami is qualified on `2026-09-04` at Ujjain and `2026-09-04` at Bedford.
-- **Karva Chauth 2026**: The rule engine outputs `2026-11-28` (due to amanta Kartika month misclassification in rules database). The condition evaluator qualifies the correct date `2026-10-29` at Ujjain and `` at Bedford (status: YES).
+- **Karva Chauth 2026**: The rule engine outputs `2026-11-28` (due to amanta Kartika month misclassification in rules database). The condition evaluator qualifies the correct date `2026-10-29` at Ujjain and *None* at Bedford (status: YES).
 - **Sankashti Chaturthi 2026**: Reconciled across months. Evaluated 26 comparisons, finding 0 disagreements (YES) and 26 unresolved/ambiguous cases (UNRESOLVED).
 
 ## 4. Scholar Review Pending [S] / Ambiguous Cases
