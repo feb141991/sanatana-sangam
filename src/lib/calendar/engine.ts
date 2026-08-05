@@ -261,6 +261,12 @@ export const RecurringLunarTithiHandler = {
       const curr = days[i].panchang;
       const prev = i > 0 ? days[i - 1].panchang : null;
 
+      // Filter by Adhika policy if applicable
+      const cleanMasa = curr.masaName.startsWith('Adhika ') ? curr.masaName.slice(7) : curr.masaName;
+      if (!isMasaMatching(curr.masaName, cleanMasa, rule.adhika_policy)) {
+        continue;
+      }
+
       // Primary: target tithi present at the sunrise scan. Collapse a tithi that
       // spans two consecutive sunrises to its first day.
       if (targetSet.has(curr.tithiIndex)) {
