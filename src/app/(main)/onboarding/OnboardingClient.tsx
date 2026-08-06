@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, Sparkles } from 'lucide-react';
+import { ChevronLeft, Sparkles, Globe, Search, Navigation, Info, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
@@ -217,6 +217,77 @@ export default function OnboardingClient({
   const [nakshatra, setNakshatra] = useState('');
   const [theme, setTheme] = useState<'system' | 'dark' | 'light'>('system');
 
+  // Calendar Profile and Observance Location states
+  const [observanceLat, setObservanceLat] = useState<number | null>(null);
+  const [observanceLon, setObservanceLon] = useState<number | null>(null);
+  const [observanceCity, setObservanceCity] = useState<string | null>(null);
+  const [observanceCountry, setObservanceCountry] = useState<string | null>(null);
+  const [observanceTimezone, setObservanceTimezone] = useState<string | null>(null);
+  const [observanceLocationSource, setObservanceLocationSource] = useState<'manual' | 'device' | 'unset'>('unset');
+  const [locationSearchQuery, setLocationSearchQuery] = useState('');
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+
+  const [calendarProfile, setCalendarProfile] = useState<string | null>(null);
+  const [sampradaya, setSampradaya] = useState<string | null>(null);
+  const [calendarScope, setCalendarScope] = useState<'major_only' | 'all_observances' | null>(null);
+  const [calendarLanguage, setCalendarLanguage] = useState<string | null>(null);
+
+  const handleLocationSearch = async () => {
+    if (!locationSearchQuery.trim()) return;
+    setLocationLoading(true);
+    setLocationError('');
+    setLocationSuggestions([]);
+    try {
+      const res = await fetch(`/api/jyotish/geocode?q=${encodeURIComponent(locationSearchQuery)}`);
+      if (!res.ok) throw new Error('Location not found');
+      const data = await res.json();
+      setLocationSuggestions([data]);
+    } catch (err) {
+      setLocationError('Location not found. Please try a different query.');
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    setLocationLoading(true);
+    setLocationError('');
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(`/api/mandali/reverse-geocode?lat=${latitude}&lon=${longitude}`);
+          if (!res.ok) throw new Error('Reverse geocoding failed');
+          const data = await res.json();
+          setObservanceLat(latitude);
+          setObservanceLon(longitude);
+          setObservanceCity(data.city);
+          setObservanceCountry(data.country);
+          setObservanceLocationSource('device');
+          
+          const tz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'Asia/Kolkata';
+          setObservanceTimezone(tz);
+          
+          toast.success(`Location set: ${data.city}`);
+        } catch {
+          toast.error('Could not reverse geocode your coordinates.');
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        setLocationLoading(false);
+        toast.error('Location permission denied or lookup failed.');
+      }
+    );
+  };
+
   const [nameStory, setNameStory] = useState<OnboardingNameStory | null>(null);
   const [nameStoryLoading, setNameStoryLoading] = useState(false);
 
@@ -346,27 +417,32 @@ export default function OnboardingClient({
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (step === 6) {
-      if (direction > 0) {
-        setStep(7);
-      } else {
-        setStep(5);
-      }
+  const visibleStepsList = useMemo(() => {
+    const list = [1, 2, 3, 4];
+    if (tradition === 'hindu') {
+      list.push(5, 6, 11, 12, 13, 14);
     }
-  }, [step, direction]);
+    list.push(7, 8, 9, 10);
+    return list;
+  }, [tradition]);
 
-  const progressPct = (step / TOTAL_STEPS) * 100;
+  const activeIndex = visibleStepsList.indexOf(step);
+  const totalStepsCount = visibleStepsList.length;
+  const progressPct = ((activeIndex >= 0 ? activeIndex + 1 : 1) / totalStepsCount) * 100;
   const readyCopy = READY_COPY[tradition] ?? READY_COPY.hindu;
 
   const canContinueFromName = true;
 
   const currentTitle = useMemo(() => {
     if (step === 2) return 'Which path do you walk?';
-    if (step === 6) return getGoalHeading(tradition);
+    if (step === 6) return 'Where do you observe?';
+    if (step === 11) return 'Which regional calendar?';
+    if (step === 12) return 'Which spiritual tradition?';
+    if (step === 13) return 'Choose Calendar Scope';
+    if (step === 14) return 'Month Naming Language';
     if (step === 7) return 'What shall we call you?';
     return '';
-  }, [step, tradition]);
+  }, [step]);
 
   function goNext(nextStep = step + 1) {
     setDirection(1);
@@ -375,7 +451,21 @@ export default function OnboardingClient({
 
   function goBack() {
     setDirection(-1);
-    setStep((current) => Math.max(1, current - 1));
+    if (step === 7) {
+      setStep(tradition === 'hindu' ? 14 : 4);
+    } else if (step === 11) {
+      setStep(6);
+    } else if (step === 12) {
+      setStep(11);
+    } else if (step === 13) {
+      setStep(12);
+    } else if (step === 14) {
+      setStep(13);
+    } else if (step === 6) {
+      setStep(5);
+    } else {
+      setStep((current) => Math.max(1, current - 1));
+    }
   }
 
   async function complete(nextPath: '/japa' | '/home') {
@@ -399,6 +489,18 @@ export default function OnboardingClient({
           rashi: rashi || null,
           whatsapp_number: fullWhatsAppNumber,
           whatsapp_opt_in: whatsappOptIn && otpVerified,
+          // Observance location
+          latitude: observanceLat,
+          longitude: observanceLon,
+          city: observanceCity,
+          country: observanceCountry,
+          timezone: observanceTimezone,
+          observance_location_source: observanceLocationSource,
+          // Calendar profile
+          calendar_profile: calendarProfile,
+          sampradaya,
+          calendar_scope: calendarScope,
+          calendar_language: calendarLanguage,
         }),
       });
 
@@ -428,11 +530,11 @@ export default function OnboardingClient({
           />
         </div>
         <div className="mt-3 flex items-center justify-center gap-2">
-          {Array.from({ length: TOTAL_STEPS }, (_, index) => (
+          {visibleStepsList.map((s, idx) => (
             <div
-              key={index}
+              key={s}
               className="h-2 w-2 rounded-full"
-              style={{ background: index + 1 <= step ? 'var(--premium-gold)' : 'var(--premium-border)' }}
+              style={{ background: idx <= activeIndex ? 'var(--premium-gold)' : 'var(--premium-border)' }}
             />
           ))}
         </div>
@@ -1013,58 +1115,419 @@ export default function OnboardingClient({
               </div>
             )}
 
-            {/* Step 6: Goals (renumbered from 3, bypassed) */}
+            {/* Step 6: Observance Location (Q1) */}
             {step === 6 && (
               <div>
-                {tradition && (
-                  <div className="flex justify-center mb-6">
-                    <div 
-                      className="w-12 h-12 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
-                      style={{
-                        borderColor: 'rgba(200, 146, 74, 0.3)',
-                        padding: '12px'
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Where do you observe?
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-5">
+                  This determines your local sunrise, sunset, and auspicious timings. We evaluate timings at your actual coordinates.
+                </p>
+
+                {/* Location Search Input */}
+                <div className="space-y-3 mb-5">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={locationSearchQuery}
+                      onChange={(e) => setLocationSearchQuery(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleLocationSearch();
+                        }
                       }}
+                      placeholder="Search city (e.g. London, Delhi, New York)"
+                      className="flex-1 rounded-2xl bg-white border border-[var(--premium-border)] focus:border-[var(--premium-gold)] px-5 py-4 outline-none text-[var(--brand-primary-strong)] text-base"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleLocationSearch}
+                      className="px-5 rounded-2xl bg-[var(--premium-gold)] text-white hover:opacity-90 transition-opacity flex items-center justify-center"
                     >
-                      <span className="text-xl">
-                        {TRADITIONS.find(t => t.key === tradition)?.emoji || '🪔'}
-                      </span>
+                      <Search size={18} />
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleUseCurrentLocation}
+                    className="w-full flex items-center justify-center gap-2 rounded-2xl border border-[var(--premium-border)] bg-white/70 py-3.5 text-sm font-semibold text-[var(--brand-primary-strong)] hover:bg-[rgba(62,42,31,0.05)] transition-colors"
+                  >
+                    <Navigation size={15} />
+                    Use Current Location (GPS)
+                  </button>
+                </div>
+
+                {locationLoading && (
+                  <div className="text-xs text-[var(--brand-muted)] text-center py-2 animate-pulse">
+                    Locating/resolving address...
+                  </div>
+                )}
+
+                {locationError && (
+                  <div className="text-xs text-rose-600 font-semibold text-center py-2">
+                    {locationError}
+                  </div>
+                )}
+
+                {/* Search suggestions */}
+                {locationSuggestions.length > 0 && (
+                  <div className="mb-5 space-y-2">
+                    <p className="text-[10px] uppercase tracking-wider text-[var(--brand-muted)] font-semibold">Search Result</p>
+                    {locationSuggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setObservanceLat(item.lat);
+                          setObservanceLon(item.lng);
+                          setObservanceCity(item.city);
+                          setObservanceCountry(item.country);
+                          setObservanceTimezone(item.timezone);
+                          setObservanceLocationSource('manual');
+                          setLocationSuggestions([]);
+                          setLocationSearchQuery('');
+                          toast.success(`Observance location set: ${item.city}`);
+                        }}
+                        className="w-full flex items-center gap-3 rounded-2xl p-4 text-left border border-[var(--premium-border)] bg-white/90 hover:border-[var(--premium-gold)] transition-colors"
+                      >
+                        <MapPin className="text-[var(--premium-gold)] shrink-0" size={18} />
+                        <div>
+                          <div className="font-semibold text-sm text-[var(--brand-primary-strong)]">{item.city}, {item.country}</div>
+                          <div className="text-[10px] text-[var(--brand-muted)] mt-0.5">Timezone: {item.timezone} · Coords: {item.lat.toFixed(4)}°, {item.lng.toFixed(4)}°</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Selected Location Card */}
+                {observanceCity && (
+                  <div className="p-5 rounded-3xl bg-[rgba(200,146,74,0.06)] border border-[rgba(200,146,74,0.2)] mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[var(--premium-gold)]/10 border border-[var(--premium-gold)]/30 flex items-center justify-center shrink-0">
+                        <MapPin className="text-[var(--premium-gold)]" size={18} />
+                      </div>
+                      <div>
+                        <div className="text-xs uppercase tracking-widest text-[var(--premium-gold)] font-bold">Observing From</div>
+                        <div className="font-serif text-[18px] text-[var(--brand-primary-strong)] mt-0.5">{observanceCity}, {observanceCountry}</div>
+                        <div className="text-[11px] text-[var(--brand-muted)] mt-0.5">Timezone: {observanceTimezone} · Coords: {observanceLat?.toFixed(4)}°, {observanceLon?.toFixed(4)}°</div>
+                      </div>
                     </div>
                   </div>
                 )}
-                <h1 className="text-3xl font-medium mb-3 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>{currentTitle}</h1>
-                <div className="space-y-3 mt-6">
-                  {GOALS.map((item) => {
-                    const selected = goals.includes(item.key);
+
+                {/* Security rule disclaimer */}
+                <div className="p-4 rounded-2xl bg-white border border-[var(--premium-border)] text-xs text-[var(--brand-muted)] flex items-start gap-2.5 mb-6">
+                  <Info className="text-[var(--premium-gold)] shrink-0 mt-0.5" size={16} />
+                  <p className="leading-relaxed">
+                    <strong>Rule 4 compliance check:</strong> Your geolocated coordinates only set your local calculations. They do not dictate your regional calendar traditions (which you choose next).
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(11)}
+                    disabled={!observanceLat}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  >
+                    Confirm and Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setObservanceLat(null);
+                      setObservanceLon(null);
+                      setObservanceCity(null);
+                      setObservanceCountry(null);
+                      setObservanceTimezone(null);
+                      setObservanceLocationSource('unset');
+                      goNext(11);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center block"
+                  >
+                    Skip (Use Ujjain reference)
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 11: Regional Calendar (Q2) */}
+            {step === 11 && (
+              <div>
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Which regional calendar?
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                  Select the regional system used by your family or community to calculate month boundaries and eras.
+                </p>
+
+                <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1 mb-6">
+                  {[
+                    { slug: 'north_indian_purnimanta', label: 'North Indian', system: 'Purnimanta (Month ends on Purnima)', era: 'Vikram Samvat' },
+                    { slug: 'gujarati_amanta', label: 'Gujarati', system: 'Amanta (Month ends on Amavasya)', era: 'Vikram Samvat' },
+                    { slug: 'marathi_amanta', label: 'Marathi', system: 'Amanta', era: 'Śaka Samvat' },
+                    { slug: 'kannada_amanta', label: 'Kannada', system: 'Amanta', era: 'Śaka Samvat' },
+                    { slug: 'telugu_amanta', label: 'Telugu', system: 'Amanta', era: 'Śaka Samvat' },
+                    { slug: 'tamil_solar', label: 'Tamil', system: 'Solar (Month begins on Sankranti)', era: 'Tamil Era' },
+                    { slug: 'malayalam_solar', label: 'Malayalam', system: 'Solar', era: 'Kollam Era' },
+                    { slug: 'bengali_solar', label: 'Bengali', system: 'Solar', era: 'Bengali San' },
+                    { slug: 'odia', label: 'Odia', system: 'Amanta / Solar Rule', era: 'Śaka Samvat' },
+                    { slug: 'nepali_bikram', label: 'Nepali', system: 'Purnimanta', era: 'Bikram Sambat (Nepal)' },
+                    { slug: 'global_sanatan', label: 'Global', system: 'Amanta (English Transliterated)', era: 'Vikram Samvat' }
+                  ].map((p) => {
+                    const selected = calendarProfile === p.slug;
                     return (
                       <button
-                        key={item.key}
+                        key={p.slug}
                         type="button"
-                        onClick={() => {
-                          setGoals(prev => selected ? prev.filter(g => g !== item.key) : [...prev, item.key]);
-                          setTimeout(() => {
-                            setDirection(1);
-                            setStep(7);
-                          }, 300);
-                        }}
-                        className="w-full rounded-full px-4 py-3 text-left flex items-center gap-3 border transition-all"
-                        style={selected 
-                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200, 146, 74, 0.08)', borderWidth: '1.5px' } 
-                          : { borderColor: 'var(--premium-border)', background: 'rgba(255, 255, 255, 0.7)', borderWidth: '1px' }
+                        onClick={() => setCalendarProfile(p.slug)}
+                        className="w-full text-left rounded-2xl p-4 border transition-all flex items-start justify-between gap-4"
+                        style={selected
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.08)', borderWidth: '1.5px' }
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
                         }
                       >
-                        <div 
-                          className="w-10 h-10 flex items-center justify-center rounded-full border-[1.5px] bg-white shrink-0"
-                          style={{
-                            borderColor: 'rgba(200, 146, 74, 0.3)',
-                            padding: '8px'
-                          }}
-                        >
-                          <span className="text-base">{item.emoji}</span>
+                        <div>
+                          <div className="font-semibold text-[var(--brand-primary-strong)] text-sm">{p.label}</div>
+                          <div className="text-[10px] text-[var(--brand-muted)] mt-0.5">{p.system} · Era: {p.era}</div>
+                          <div className="text-[9px] uppercase tracking-wider text-[var(--premium-gold)] font-semibold mt-1">
+                            ⚖️ [S] ratification pending
+                          </div>
                         </div>
-                        <span className="font-medium text-[var(--brand-primary-strong)]">{item.label}</span>
+                        {selected && (
+                          <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold shrink-0">✓</div>
+                        )}
                       </button>
                     );
                   })}
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(12)}
+                    disabled={!calendarProfile}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCalendarProfile(null);
+                      goNext(12);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center block"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 12: Spiritual Tradition / Sampradaya (Q3) */}
+            {step === 12 && (
+              <div>
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Which spiritual tradition?
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                  Determines your Ekadashi calculation rules and default ritual guidelines.
+                </p>
+
+                <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1 mb-6">
+                  {[
+                    { slug: 'smarta', label: 'Smarta', desc: 'Standard non-sectarian Vedic guidelines.' },
+                    { slug: 'gaudiya_iskcon', label: 'Gaudiya Vaishnava (ISKCON)', desc: 'Chaitanya Mahaprabhu lineage, strict Vaishnava rules.' },
+                    { slug: 'sri_vaishnava', label: 'Sri Vaishnava', desc: 'Ramanujacharya lineage, strict South Indian rules.' },
+                    { slug: 'swaminarayan', label: 'Swaminarayan', desc: 'Swaminarayan lineage, Vaishnava rules.' },
+                    { slug: 'shaiva', label: 'Shaiva', desc: 'Devoted to Shiva and Shaiva Agamas.' },
+                    { slug: 'shakta', label: 'Shakta', desc: 'Devoted to the Divine Mother (Devi/Shakti).' },
+                    { slug: 'unspecified', label: 'Unspecified', desc: 'General standard rules without specific sectarian path.' }
+                  ].map((s) => {
+                    const selected = sampradaya === s.slug;
+                    return (
+                      <button
+                        key={s.slug}
+                        type="button"
+                        onClick={() => setSampradaya(s.slug)}
+                        className="w-full text-left rounded-2xl p-4 border transition-all flex items-start justify-between gap-4"
+                        style={selected
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.08)', borderWidth: '1.5px' }
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
+                        }
+                      >
+                        <div>
+                          <div className="font-semibold text-[var(--brand-primary-strong)] text-sm">{s.label}</div>
+                          <div className="text-[10px] text-[var(--brand-muted)] mt-0.5">{s.desc}</div>
+                          <div className="text-[9px] uppercase tracking-wider text-[var(--premium-gold)] font-semibold mt-1">
+                            ⚖️ [S] ratification pending
+                          </div>
+                        </div>
+                        {selected && (
+                          <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold shrink-0">✓</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(13)}
+                    disabled={!sampradaya}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSampradaya(null);
+                      goNext(13);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center block"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 13: Calendar Scope (Q4) */}
+            {step === 13 && (
+              <div>
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Choose Calendar Scope
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                  What density level of observances would you like to see on your dashboard?
+                </p>
+
+                <div className="space-y-3 mb-6">
+                  {[
+                    { slug: 'major_only', label: 'Major Observances Only', desc: 'Clutter-free default focusing on primary festivals, vrats, and major fast days.' },
+                    { slug: 'all_observances', label: 'All Observances', desc: 'Complete listings including minor astronomical conjunctions, local events, and standard tithis.' }
+                  ].map((s) => {
+                    const selected = calendarScope === s.slug;
+                    return (
+                      <button
+                        key={s.slug}
+                        type="button"
+                        onClick={() => setCalendarScope(s.slug as any)}
+                        className="w-full text-left rounded-2xl p-4 border transition-all flex items-start justify-between gap-4"
+                        style={selected
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.08)', borderWidth: '1.5px' }
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
+                        }
+                      >
+                        <div>
+                          <div className="font-semibold text-[var(--brand-primary-strong)] text-sm">{s.label}</div>
+                          <div className="text-xs text-[var(--brand-muted)] mt-1 leading-relaxed">{s.desc}</div>
+                        </div>
+                        {selected && (
+                          <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold shrink-0">✓</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(14)}
+                    disabled={!calendarScope}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCalendarScope(null);
+                      goNext(14);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center block"
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 14: Month Naming Language (Q5) */}
+            {step === 14 && (
+              <div>
+                <h1 className="text-3xl font-medium mb-1 text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  Month Naming Language
+                </h1>
+                <p className="text-[var(--brand-muted)] text-sm mb-6">
+                  Select the language/script in which you prefer calendar month names to be displayed.
+                </p>
+
+                <div className="space-y-2.5 max-h-[320px] overflow-y-auto pr-1 mb-6">
+                  {[
+                    { slug: 'en', label: 'English / Sanskrit Transliterated', sub: 'e.g. Chaitra, Vaisakha' },
+                    { slug: 'hi', label: 'Hindi', sub: 'चैत्र, वैशाख' },
+                    { slug: 'gu', label: 'Gujarati', sub: 'ચૈત્ર, વૈશાખ' },
+                    { slug: 'mr', label: 'Marathi', sub: 'चैत्र, वैशाख' },
+                    { slug: 'kn', label: 'Kannada', sub: 'ಚೈತ್ರ, ವೈಶಾಖ' },
+                    { slug: 'te', label: 'Telugu', sub: 'చైత్రము, వైశాఖము' },
+                    { slug: 'ta', label: 'Tamil', sub: 'சித்திரை, வைகாசி' },
+                    { slug: 'ml', label: 'Malayalam', sub: 'മേടം, ഇടവം' },
+                    { slug: 'bn', label: 'Bengali', sub: 'বৈশাখ, জ্যৈষ্ঠ' },
+                    { slug: 'or', label: 'Odia', sub: 'ବୈଶାଖ, ଜ୍ୟେଷ୍ଠ' },
+                    { slug: 'ne', label: 'Nepali', sub: 'बैशाख, जेठ' }
+                  ].map((l) => {
+                    const selected = calendarLanguage === l.slug;
+                    return (
+                      <button
+                        key={l.slug}
+                        type="button"
+                        onClick={() => setCalendarLanguage(l.slug)}
+                        className="w-full text-left rounded-2xl p-4 border transition-all flex items-start justify-between gap-4"
+                        style={selected
+                          ? { borderColor: 'var(--premium-gold)', background: 'rgba(200,146,74,0.08)', borderWidth: '1.5px' }
+                          : { borderColor: 'var(--premium-border)', background: 'rgba(255,255,255,0.7)', borderWidth: '1px' }
+                        }
+                      >
+                        <div>
+                          <div className="font-semibold text-[var(--brand-primary-strong)] text-sm">{l.label}</div>
+                          <div className="text-[10px] text-[var(--brand-muted)] mt-0.5">{l.sub}</div>
+                        </div>
+                        {selected && (
+                          <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold shrink-0">✓</div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => goNext(7)}
+                    disabled={!calendarLanguage}
+                    className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 disabled:opacity-40 hover:opacity-90 transition-opacity"
+                  >
+                    Continue →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCalendarLanguage(null);
+                      goNext(7);
+                    }}
+                    className="w-full text-[var(--brand-muted)] text-sm underline text-center block"
+                  >
+                    Skip for now
+                  </button>
                 </div>
               </div>
             )}

@@ -128,6 +128,9 @@ export interface Database {
           home_country: string | null;
           home_timezone: string | null;
           observance_location_source: 'manual' | 'device' | 'unset' | null;
+          calendar_profile: string | null;
+          calendar_scope: 'major_only' | 'all_observances' | null;
+          calendar_language: string | null;
 
           shloka_streak: number;
           last_shloka_date: string | null;

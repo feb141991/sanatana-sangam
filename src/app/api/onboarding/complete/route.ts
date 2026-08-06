@@ -22,6 +22,16 @@ export async function POST(req: NextRequest) {
       rashi?: string | null;
       nakshatra?: string | null;
       date_of_birth?: string | null;
+      latitude?: number | null;
+      longitude?: number | null;
+      city?: string | null;
+      country?: string | null;
+      timezone?: string | null;
+      observance_location_source?: 'manual' | 'device' | 'unset' | null;
+      calendar_profile?: string | null;
+      sampradaya?: string | null;
+      calendar_scope?: 'major_only' | 'all_observances' | null;
+      calendar_language?: string | null;
     } | null;
 
     const tradition = body?.tradition?.trim();
@@ -52,6 +62,16 @@ export async function POST(req: NextRequest) {
       rashi?: string | null;
       nakshatra?: string | null;
       date_of_birth?: string | null;
+      latitude?: number | null;
+      longitude?: number | null;
+      city?: string | null;
+      country?: string | null;
+      timezone?: string | null;
+      observance_location_source?: 'manual' | 'device' | 'unset' | null;
+      calendar_profile?: string | null;
+      sampradaya?: string | null;
+      calendar_scope?: 'major_only' | 'all_observances' | null;
+      calendar_language?: string | null;
     } = {
       onboarding_completed: true,
     };
@@ -70,6 +90,20 @@ export async function POST(req: NextRequest) {
     if (body?.rashi !== undefined) updatePayload.rashi = body.rashi || null;
     if (body?.nakshatra !== undefined) updatePayload.nakshatra = body.nakshatra || null;
     if (body?.date_of_birth !== undefined) updatePayload.date_of_birth = body.date_of_birth || null;
+
+    // Calendar Profile & Observance Location fields
+    if (body?.latitude !== undefined) updatePayload.latitude = body.latitude;
+    if (body?.longitude !== undefined) updatePayload.longitude = body.longitude;
+    if (body?.city !== undefined) updatePayload.city = body.city;
+    if (body?.country !== undefined) updatePayload.country = body.country;
+    if (body?.timezone !== undefined) updatePayload.timezone = body.timezone;
+    if (body?.observance_location_source !== undefined) {
+      updatePayload.observance_location_source = body.observance_location_source;
+    }
+    if (body?.calendar_profile !== undefined) updatePayload.calendar_profile = body.calendar_profile;
+    if (body?.sampradaya !== undefined) updatePayload.sampradaya = body.sampradaya;
+    if (body?.calendar_scope !== undefined) updatePayload.calendar_scope = body.calendar_scope;
+    if (body?.calendar_language !== undefined) updatePayload.calendar_language = body.calendar_language;
 
     // Validate phone number format if provided
     let cleanWhatsApp: string | null = null;

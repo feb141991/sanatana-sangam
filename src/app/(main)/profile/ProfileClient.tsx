@@ -410,6 +410,9 @@ export default function ProfileClient({
     date_of_birth:    (liveProfile as any)?.date_of_birth    ?? '',
     gender_context:   ((liveProfile as any)?.gender_context  ?? 'general') as GenderContext,
     rashi:            (liveProfile as any)?.rashi            ?? '',
+    calendar_profile: (liveProfile as any)?.calendar_profile ?? '',
+    calendar_scope:   (liveProfile as any)?.calendar_scope   ?? '',
+    calendar_language: (liveProfile as any)?.calendar_language ?? '',
   });
 
   const [localAppIcon, setLocalAppIcon] = useState<'normal' | 'pro'>('normal');
@@ -636,11 +639,15 @@ export default function ProfileClient({
     // kul → legacy_family_name (profiles has no 'kul' column)
     // kul_devata → stored separately, not a profiles column
     // date_of_birth: empty string → null (date column rejects empty strings)
-    const { tradition: _locked, date_of_birth, kul, kul_devata, ...rest } = form;
+    const { tradition: _locked, date_of_birth, kul, kul_devata, calendar_profile, calendar_scope, calendar_language, sampradaya, ...rest } = form;
     const formToSave = {
       ...rest,
       date_of_birth: date_of_birth || null,
       legacy_family_name: kul || null,
+      calendar_profile: calendar_profile || null,
+      calendar_scope: calendar_scope || null,
+      calendar_language: calendar_language || null,
+      sampradaya: sampradaya || null,
     };
     try {
       await updateProfileMutation.mutateAsync(formToSave);
@@ -2000,6 +2007,63 @@ export default function ProfileClient({
                   className="zenith-input w-full appearance-none">
                   <option value="">Select {ishtaDevataLabel.toLowerCase()}</option>
                   {ishtaDevataOptions.map((d) => <option key={d.value} value={d.value}>{d.emoji} {d.label}</option>)}
+                </select>
+              </div>
+
+              <div className="space-y-2 col-span-1 sm:col-span-2">
+                <div className="h-px bg-[var(--card-border)] my-2" />
+                <p className="text-xs font-semibold text-[var(--brand-primary)]">Calendar Preferences</p>
+                <p className="text-[10px] text-[var(--brand-muted)] mb-2">Regional systems, rules and month naming languages are under review (⚖️ [S] ratification pending).</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">Regional Calendar</label>
+                <select value={form.calendar_profile}
+                  onChange={(e) => setForm({ ...form, calendar_profile: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select calendar profile</option>
+                  <option value="north_indian_purnimanta">North Indian (Purnimanta)</option>
+                  <option value="gujarati_amanta">Gujarati (Amanta)</option>
+                  <option value="marathi_amanta">Marathi (Amanta)</option>
+                  <option value="kannada_amanta">Kannada (Amanta)</option>
+                  <option value="telugu_amanta">Telugu (Amanta)</option>
+                  <option value="tamil_solar">Tamil (Solar)</option>
+                  <option value="malayalam_solar">Malayalam (Solar)</option>
+                  <option value="bengali_solar">Bengali (Solar)</option>
+                  <option value="odia">Odia (Amanta)</option>
+                  <option value="nepali_bikram">Nepali (Bikram)</option>
+                  <option value="global_sanatan">Global (Amanta / Neutral)</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">Calendar Scope</label>
+                <select value={form.calendar_scope}
+                  onChange={(e) => setForm({ ...form, calendar_scope: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select calendar scope</option>
+                  <option value="major_only">Major Observances Only</option>
+                  <option value="all_observances">All Observances</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-medium theme-muted px-1">Month Name Language</label>
+                <select value={form.calendar_language}
+                  onChange={(e) => setForm({ ...form, calendar_language: e.target.value })}
+                  className="zenith-input w-full appearance-none">
+                  <option value="">Select month language</option>
+                  <option value="en">English (Chaitra, Vaisakha)</option>
+                  <option value="hi">Hindi (चैत्र, वैशाख)</option>
+                  <option value="gu">Gujarati (ચૈત્ર, વૈશાખ)</option>
+                  <option value="mr">Marathi (चैत्र, वैशाख)</option>
+                  <option value="kn">Kannada (ಚೈತ್ರ, ವೈಶಾಖ)</option>
+                  <option value="te">Telugu (చैत्रमु, वैशाखमु)</option>
+                  <option value="ta">Tamil (சித்திரை, வைகாசி)</option>
+                  <option value="ml">Malayalam (മേടം, இடவம்)</option>
+                  <option value="bn">Bengali (বৈশাখ, জ্যৈষ্ঠ)</option>
+                  <option value="or">Odia (ବୈଶାଖ, ଜ୍ୟେଷ୍ଠ)</option>
+                  <option value="ne">Nepali (बैशाख, जेठ)</option>
                 </select>
               </div>
             </div>

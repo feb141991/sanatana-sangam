@@ -422,6 +422,7 @@ export default async function HomePage() {
       karmaPoints={(profile as any)?.karma_points ?? 0}
       rhythmMode={(profile as any)?.nitya_rhythm_mode ?? 'morning'}
       displayStreak={nityaStreakRow?.current_streak ?? 0}
+      calendarProfile={(profile as any)?.calendar_profile ?? null}
     />
   );
 }

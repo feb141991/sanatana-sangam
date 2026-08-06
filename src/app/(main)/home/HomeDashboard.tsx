@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Bell, X, Share2, Globe } from 'lucide-react';
+import { Bell, X, Share2, Globe, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createPortal } from 'react-dom';
 import { format as fmtDate } from 'date-fns';
@@ -131,6 +131,7 @@ interface Props {
   ishtaDevata:       string | null;
   appLanguage?:      string;
   timezone:          string;
+  calendarProfile?:  string | null;
   meaningLanguage?:  string;
   transliterationLanguage?: string;
   showTransliteration?: boolean;
@@ -291,6 +292,7 @@ export default function HomeDashboard({
   karmaPoints = 0,
   rhythmMode = 'morning',
   displayStreak = 0,
+  calendarProfile = null,
 }: Props) {
   const supabase = useRef(createClient()).current;
   const queryClient = useQueryClient();
@@ -483,6 +485,7 @@ export default function HomeDashboard({
   }, [coverUrl]);
 
   const [showProfileNudge, setShowProfileNudge] = useState(false);
+  const [dismissedCalendarNudge, setDismissedCalendarNudge] = useState(false);
 
   useEffect(() => {
     if (avatarUrl && savedCity) return;
@@ -1029,6 +1032,39 @@ export default function HomeDashboard({
               <p className="text-xs text-[color:var(--brand-muted)]">
                 Showing Ujjain reference timings — set your location for local times.
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Calendar Profile Nudge Banner ── */}
+        {tradition === 'hindu' && !calendarProfile && !dismissedCalendarNudge && (
+          <div className="px-4 mb-2">
+            <div className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-start gap-3 relative overflow-hidden">
+              <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Calendar className="text-[#C5A059]" size={18} />
+              </div>
+              <div className="flex-1 min-w-0 pr-6">
+                <p className="text-xs font-semibold text-[var(--brand-primary)]">
+                  Complete your Calendar Preferences
+                </p>
+                <p className="text-[11px] text-[color:var(--brand-muted)] mt-0.5 leading-relaxed">
+                  Set your regional calendar system (Purnimanta vs Amanta) and month language for accurate daily readings. (⚖️ [S] ratification pending)
+                </p>
+                <button
+                  type="button"
+                  onClick={() => router.push('/profile')}
+                  className="mt-2 text-[10px] font-bold text-[#C5A059] underline hover:opacity-80 transition-opacity"
+                >
+                  Set Preferences →
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDismissedCalendarNudge(true)}
+                className="absolute top-3 right-3 text-[var(--brand-muted)] hover:opacity-80 transition-opacity"
+              >
+                <X size={14} />
+              </button>
             </div>
           </div>
         )}
