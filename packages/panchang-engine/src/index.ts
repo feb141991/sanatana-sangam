@@ -58,6 +58,11 @@ export {
   findNextMoonrise,
 } from './core/moon-rise-set.js';
 
+export {
+  lahiriAyanamsha,
+  normalizeAngle,
+} from './core/astronomy.js';
+
 
 
 export interface PanchangData {

@@ -2077,6 +2077,7 @@ export default function ProfileClient({
                 <label className="block text-xs font-medium theme-muted px-1">Date of birth</label>
                 <input
                   type="date"
+                  min="1800-01-01"
                   value={form.date_of_birth}
                   max={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}

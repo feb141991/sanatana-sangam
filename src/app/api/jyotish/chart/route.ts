@@ -100,6 +100,9 @@ export async function POST(req: NextRequest) {
     chart = generateAstroChart(input);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Chart calculation failed';
+    if (err instanceof RangeError) {
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 

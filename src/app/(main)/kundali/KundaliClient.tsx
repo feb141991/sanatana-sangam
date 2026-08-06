@@ -474,6 +474,7 @@ export default function KundaliClient({ lat, lon, city, timezone, isReference }:
                   </label>
                   <input
                     type="date"
+                    min="1800-01-01"
                     value={kundaliInput.birthDate}
                     onChange={e => setKundaliInput(prev => ({ ...prev, birthDate: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl border bg-white outline-none text-sm focus:border-[#C5A059] transition"

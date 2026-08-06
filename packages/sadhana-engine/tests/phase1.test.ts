@@ -19,7 +19,7 @@ describe('PanchangCalculator', () => {
   });
 
   it('should return valid panchang for any date', () => {
-    const result = panchang.getPanchang(new Date('2026-04-11'));
+    const result = panchang.getPanchang(new Date('2026-04-11'), 28.6139, 77.209);
 
     expect(result.date).toBe('2026-04-11');
     expect(result.tithi).toBeTruthy();
@@ -46,7 +46,7 @@ describe('PanchangCalculator', () => {
 
   it('should detect Ekadashi vrata', () => {
     // Find a date and check if Ekadashi is detected when tithi is 11
-    const range = panchang.getRange(new Date('2026-04-01'), 30);
+    const range = panchang.getRange(new Date('2026-04-01'), 30, 28.6139, 77.209);
     const ekadashis = range.filter(p =>
       p.vratas.some(v => v.type === 'ekadashi')
     );
@@ -64,7 +64,7 @@ describe('PanchangCalculator', () => {
   });
 
   it('should detect Purnima and Amavasya', () => {
-    const range = panchang.getRange(new Date('2026-04-01'), 30);
+    const range = panchang.getRange(new Date('2026-04-01'), 30, 28.6139, 77.209);
     const purnimaOrAmavasya = range.filter(p =>
       p.vratas.some(v => v.type === 'purnima' || v.type === 'amavasya')
     );
@@ -82,7 +82,7 @@ describe('PanchangCalculator', () => {
       'Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati',
     ];
 
-    const result = panchang.getToday();
+    const result = panchang.getToday(28.6139, 77.209);
     expect(VALID_NAKSHATRAS).toContain(result.nakshatra);
   });
 
@@ -92,14 +92,14 @@ describe('PanchangCalculator', () => {
       'Kimstughna', 'Shakuni', 'Chatushpada', 'Naga',
     ];
 
-    const range = panchang.getRange(new Date('2026-04-01'), 45);
+    const range = panchang.getRange(new Date('2026-04-01'), 45, 28.6139, 77.209);
     range.forEach((day) => {
       expect(VALID_KARANAS).toContain(day.karana);
     });
   });
 
   it('should distinguish Purnima and Amavasya instead of combining them', () => {
-    const range = panchang.getRange(new Date('2026-04-01'), 60);
+    const range = panchang.getRange(new Date('2026-04-01'), 60, 28.6139, 77.209);
     const tithis = range.map((day) => day.tithi);
 
     expect(tithis.some((tithi) => tithi.includes('Purnima'))).toBe(true);
@@ -108,7 +108,7 @@ describe('PanchangCalculator', () => {
   });
 
   it('should return a range of panchang for calendar view', () => {
-    const range = panchang.getRange(new Date('2026-04-01'), 7);
+    const range = panchang.getRange(new Date('2026-04-01'), 7, 28.6139, 77.209);
 
     expect(range).toHaveLength(7);
     expect(range[0].date).toBe('2026-04-01');
@@ -121,7 +121,7 @@ describe('PanchangCalculator', () => {
 
   it('should detect major festivals', () => {
     // Check a full year for festival detection
-    const range = panchang.getRange(new Date('2026-01-01'), 365);
+    const range = panchang.getRange(new Date('2026-01-01'), 365, 28.6139, 77.209);
     const festivals = range.flatMap(p => p.festivals);
     const festivalNames = festivals.map(f => f.name);
 

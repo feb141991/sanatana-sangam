@@ -280,7 +280,8 @@ Audited 2026-07-30.
 | **X6** | Festival data source | 3 — `observance_definitions`/`observance_occurrences` (live) · `festivals` table (legacy, error-fallback in 3 admin/cron routes) · `FESTIVALS_2026` static array (already `@deprecated … removed in v2`) | Historical layering | **3.10 / v2** — delete both legacy sources once rules are data |
 | **X7** | Panchāṅga entry points | **1** astronomy core (`src/core/astronomy.ts`) backing thin adapters | Resolved in 2.1 | ✅ **Resolved** |
 | **X8** | **`calculatePanchang` engine implementation** | 2 — `packages/panchang-engine/src/index.ts` (canonical package) · `src/lib/panchang.ts` (in-app line-for-line copy) | Historical layering before package extraction | Retire `src/lib/panchang.ts` once all app imports are migrated to `@sangam/panchang-engine` |
-| **X9** | **Rule Family Metadata** | `rules.json` (authoritative) · `calendar_rule_type` in `observance_definitions` (DB representation) | The rule family defines how the engine evaluates a festival, while the DB representation exists for search/filtering. | Retire/remove the DB column or keep as cache after v2 schema transition. |
+| **X9** | **Sadhana engine duplicate calculations** | `packages/sadhana-engine/src/content/panchang.ts` | 269 lines with its own `getTithiName`/`getKaranaName` remain duplicated even after this. | Retire once sadhana-engine delegates all panchang calculations to `@sangam/panchang-engine`. |
+| **X10** | **Rule Family Metadata** | `rules.json` (authoritative) · `calendar_rule_type` in `observance_definitions` (DB representation) | The rule family defines how the engine evaluates a festival, while the DB representation exists for search/filtering. | Retire/remove the DB column or keep as cache after v2 schema transition. |
 
 ### X1 is a live user-visible risk, not just tidiness
 

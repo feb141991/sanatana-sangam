@@ -3,6 +3,7 @@ import solar from 'astronomia/solar';
 import moonposition from 'astronomia/moonposition';
 import nutation from 'astronomia/nutation';
 import { Sunrise } from 'astronomia/sunrise';
+import { lahiriAyanamsha, normalizeAngle } from '@sangam/panchang-engine';
 
 import type { Panchang, Vrata, Festival } from '../types';
 
@@ -40,14 +41,7 @@ const MASAS = [
 
 const RITUS = ['Vasanta', 'Grishma', 'Varsha', 'Sharad', 'Hemanta', 'Shishira'];
 
-function normalizeAngle(angle: number): number {
-  return ((angle % 360) + 360) % 360;
-}
 
-function lahiriAyanamsha(jde: number): number {
-  const t = (jde - 2451545.0) / 36525.0;
-  return 23.85306 + 1.39722 * t + 0.00018 * t * t - 0.000005 * t * t * t;
-}
 
 function getTithiName(tithiNum: number, paksha: 'shukla' | 'krishna'): string {
   const tithiInPaksha = ((tithiNum - 1) % 15) + 1;
@@ -115,7 +109,7 @@ function getSunTimes(date: Date, lat: number, lng: number): { sunrise: Date; sun
 }
 
 export class PanchangCalculator {
-  getPanchang(date: Date, latitude = 28.6139, longitude = 77.209): Panchang {
+  getPanchang(date: Date, latitude: number, longitude: number): Panchang {
     const jde = julian.DateToJDE(date);
     const t = (jde - 2451545.0) / 36525.0;
     const [deltaPsi] = nutation.nutation(jde);
@@ -157,11 +151,11 @@ export class PanchangCalculator {
     };
   }
 
-  getToday(latitude?: number, longitude?: number): Panchang {
+  getToday(latitude: number, longitude: number): Panchang {
     return this.getPanchang(new Date(), latitude, longitude);
   }
 
-  getRange(start: Date, days: number, lat?: number, lng?: number): Panchang[] {
+  getRange(start: Date, days: number, lat: number, lng: number): Panchang[] {
     const results: Panchang[] = [];
     for (let i = 0; i < days; i += 1) {
       const d = new Date(start);

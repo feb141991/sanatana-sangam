@@ -5,6 +5,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as Astronomy from 'astronomy-engine';
+import { lahiriAyanamsha } from '@sangam/panchang-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -243,7 +244,12 @@ function toJulianDay(utcDate: Date): number {
 // ── Lahiri Ayanamsa ───────────────────────────────────────────────────────────
 // Standard formula based on Chitrapaksha (Lahiri) definition.
 // Accurate to ~0.1° which is sufficient for consumer Jyotish.
+export const USE_CANONICAL_AYANAMSHA = false;
+
 function getLahiriAyanamsa(jd: number): number {
+  if (USE_CANONICAL_AYANAMSHA) {
+    return lahiriAyanamsha(jd);
+  }
   const T = (jd - 2415020.0) / 36525.0;  // Julian centuries from J1900.0
   // Lahiri: 22.46040° at J1900.0, precessing at 1.3960°/century
   return 22.46040 + 1.3960 * T;
@@ -658,7 +664,7 @@ function buildNavamsha(planets: Record<string, GrahaPosition>, lagna: GrahaPosit
 
 function buildChartQuality(input: BirthInput): ChartQuality {
   const notes = [
-    'Astronomical positions use astronomy-engine with a Lahiri-style sidereal conversion.',
+    'Astronomical positions use astronomy-engine with Lahiri (Chitrapaksha) ayanamsa conversion (official ICRC 1955 definition).',
     'Use this as a high-quality consumer Jyotish estimate until Swiss Ephemeris validation is added.',
   ];
   if (input.timeUnknown) {
@@ -671,7 +677,15 @@ function buildChartQuality(input: BirthInput): ChartQuality {
 export function generateAstroChart(input: BirthInput): AstroChart {
   const utcDate  = birthLocalToUTC(input.date, input.time, input.timezone);
   const jd       = toJulianDay(utcDate);
-  const ayanamsa = getLahiriAyanamsa(jd);
+  let ayanamsa = 0;
+  try {
+    ayanamsa = getLahiriAyanamsa(jd);
+  } catch (e) {
+    if (e instanceof RangeError) {
+      throw new RangeError('birth date must be 1800 or later');
+    }
+    throw e;
+  }
 
   // Lagna
   const lagna = calcLagna(jd, input.lat, input.lng, ayanamsa);

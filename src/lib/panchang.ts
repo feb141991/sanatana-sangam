@@ -3,6 +3,7 @@ import solar from 'astronomia/solar';
 import moonposition from 'astronomia/moonposition';
 import nutation from 'astronomia/nutation';
 import { Sunrise } from 'astronomia/sunrise';
+import { lahiriAyanamsha } from '@sangam/panchang-engine';
 
 export interface PanchangData {
   tithi: string;
@@ -158,10 +159,7 @@ function unwrapForward(angle: number, baseAngle: number): number {
   return value;
 }
 
-function lahiriAyanamsha(jde: number): number {
-  const t = (jde - 2451545.0) / 36525.0;
-  return 23.85306 + 1.39722 * t + 0.00018 * t * t - 0.000005 * t * t * t;
-}
+
 
 function computeAstronomy(date: Date): PanchangAstronomy {
   const jde = julian.DateToJDE(date);
