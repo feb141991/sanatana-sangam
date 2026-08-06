@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }); }
 
-  const { completed = [], birth_date, tradition = 'hindu', member_name } = body;
+  const { completed = [], birth_date, tradition = 'other', member_name } = body;
 
   // Find the next incomplete sanskara
   const completedSet = new Set(completed);

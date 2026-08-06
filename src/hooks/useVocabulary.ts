@@ -8,7 +8,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
  * This ensures that a Sikh user sees "Sangat" while a Hindu user sees "Sangam",
  * even if the underlying feature is the same.
  */
-export function useVocabulary(tradition: string = 'hindu') {
+export function useVocabulary(tradition: string) {
   const meta = useMemo(() => getTraditionMeta(tradition), [tradition]);
 
   /**

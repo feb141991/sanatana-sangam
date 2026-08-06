@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
+import { calculatePanchang, REFERENCE_LOCATION_UJJAIN, resolveObservanceLocation } from '@/lib/panchang';
 import { JsonLd, BreadcrumbJsonLd, PanchangJsonLd } from '@/components/seo/JsonLd';
 import PanchangDetail from './PanchangDetail';
 
@@ -39,10 +39,10 @@ export default async function PanchangDetailPage() {
 
   // Run auth + profile fetch with a race against a 4 s timeout so a slow
   // Supabase cold-start never blocks the page beyond that.
-  let lat       = 28.6139;
-  let lon       = 77.2090;
+  let rawLat: number | null = null;
+  let rawLon: number | null = null;
   let city      = '';
-  let tradition = 'hindu';
+  let tradition = 'other';
   let timezone: string | undefined;
 
   try {
@@ -62,22 +62,23 @@ export default async function PanchangDetailPage() {
 
     const profile = await Promise.race([profileFetch, timeout]);
     if (profile) {
-      if (profile.latitude)  lat       = profile.latitude;
-      if (profile.longitude) lon       = profile.longitude;
+      if (profile.latitude != null)  rawLat    = profile.latitude;
+      if (profile.longitude != null) rawLon    = profile.longitude;
       if (profile.city)      city      = profile.neighbourhood ?? profile.city;
       if (profile.tradition) tradition = profile.tradition;
       if (profile.timezone)  timezone  = profile.timezone;
     }
   } catch {
-    // Falls back to Delhi defaults — better to show something than hang.
+    // Falls back to reference defaults — better to show something than hang.
   }
 
-  // Re-use cached default panchang if coords are still Delhi (common case),
-  // otherwise compute with user's location.
-  const isDefaultCoords = lat === 28.6139 && lon === 77.2090 && !timezone;
-  const panchang = isDefaultCoords
+  const resolved = resolveObservanceLocation({
+    saved: { lat: rawLat, lon: rawLon, tz: timezone, city }
+  });
+
+  const panchang = resolved.isReference
     ? getDefaultPanchang()
-    : calculatePanchang(new Date(), lat, lon, timezone);
+    : calculatePanchang(new Date(), resolved.lat, resolved.lon, resolved.tz);
 
   return (
     <>
@@ -94,7 +95,14 @@ export default async function PanchangDetailPage() {
         name={`Hindu Panchang for ${panchang.date}`}
         description="Daily Hindu almanac including tithi, nakshatra, yoga, karana, vara, muhurta and auspicious timings."
       />
-      <PanchangDetail lat={lat} lon={lon} city={city} tradition={tradition} timezone={timezone} />
+      <PanchangDetail
+        lat={resolved.lat}
+        lon={resolved.lon}
+        city={resolved.label}
+        tradition={tradition}
+        timezone={resolved.tz}
+        isReference={resolved.isReference}
+      />
     </>
   );
 }

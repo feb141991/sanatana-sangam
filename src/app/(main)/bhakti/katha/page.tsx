@@ -21,7 +21,7 @@ export default async function KathaPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let tradition = 'hindu';
+  let tradition = 'other';
   let userName = 'Sadhak';
 
   if (user) {
@@ -31,7 +31,7 @@ export default async function KathaPage() {
       .eq('id', user.id)
       .single();
     if (profile) {
-      tradition = profile.tradition || 'hindu';
+      tradition = profile.tradition || 'other';
       userName = profile.name || 'Sadhak';
     }
   }

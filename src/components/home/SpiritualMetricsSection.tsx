@@ -56,7 +56,7 @@ interface SpiritualMetricsSectionProps {
   shlokaStreak:         number;
   japaAlreadyDoneToday: boolean;
   readToday:            boolean;
-  tradition?:           string | null;
+  tradition:            string;
 }
 
 export default function SpiritualMetricsSection({
@@ -64,9 +64,9 @@ export default function SpiritualMetricsSection({
   shlokaStreak,
   japaAlreadyDoneToday,
   readToday,
-  tradition = 'hindu',
+  tradition,
 }: SpiritualMetricsSectionProps) {
-  const { term } = useVocabulary(tradition ?? 'hindu');
+  const { term } = useVocabulary(tradition);
   // ── Theme detection ────────────────────────────────────────────────────────
   const [isDark, setIsDark] = useState(true);
   useEffect(() => {

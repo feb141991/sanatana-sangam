@@ -5,12 +5,12 @@ import { useSacredCalendar } from '@/hooks/useSacredCalendar';
 import SacredIcon, { type SacredIconName } from '@/components/ui/SacredIcon';
 
 interface Props {
-  lat?: number;
-  lon?: number;
-  tradition?: string;
+  lat: number;
+  lon: number;
+  tradition: string;
 }
 
-export default function PanchangWidget({ lat = 51.5074, lon = -0.1278, tradition = 'hindu' }: Props) {
+export default function PanchangWidget({ lat, lon, tradition }: Props) {
   const p = useSacredCalendar(new Date(), lat, lon, tradition);
   const mood = {
     shell: 'linear-gradient(180deg, rgba(51, 51, 48, 0.985) 0%, rgba(43, 43, 40, 0.97) 56%, rgba(34, 34, 31, 0.98) 100%)',

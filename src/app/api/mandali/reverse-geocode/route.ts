@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const lat = req.nextUrl.searchParams.get('lat');
   const lon = req.nextUrl.searchParams.get('lon');
 
-  if (!lat || !lon) {
+  if (lat == null || lon == null || lat === '' || lon === '') {
     return NextResponse.json({ error: 'lat and lon are required' }, { status: 400 });
   }
 

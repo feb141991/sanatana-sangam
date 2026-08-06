@@ -249,8 +249,8 @@ export async function GET(request: Request) {
     };
 
     checks.profile_location = {
-      ok: Boolean(profile?.latitude && profile?.longitude),
-      detail: profile?.latitude && profile?.longitude
+      ok: profile?.latitude != null && profile?.longitude != null,
+      detail: profile?.latitude != null && profile?.longitude != null
         ? `Lat/Lng set — Panchang timing (Rahu Kalam etc.) will be localised`
         : 'No location set — Panchang Rahu Kalam filter will default to New Delhi coordinates',
     };

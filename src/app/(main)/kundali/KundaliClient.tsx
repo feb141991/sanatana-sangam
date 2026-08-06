@@ -4,7 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Share2, X } from 'lucide-react';
+import { ArrowLeft, Share2, X, Globe } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { createClient } from '@/lib/supabase';
@@ -15,6 +15,7 @@ interface Props {
   lon: number;
   city: string;
   timezone: string;
+  isReference: boolean;
 }
 
 const NAKSHATRA_ATTRS: Record<string, { gana: string; animal: string; element: string; symbol: string; syllable: string }> = {
@@ -180,7 +181,7 @@ function getAntardashaDates(dashaEntry: { planet: string; startDate: string; end
   });
 }
 
-export default function KundaliClient({ lat, lon, city, timezone }: Props) {
+export default function KundaliClient({ lat, lon, city, timezone, isReference }: Props) {
   const { t, lang, setLang } = useLanguage();
   const { playHaptic } = useZenithSensory();
   
@@ -188,10 +189,10 @@ export default function KundaliClient({ lat, lon, city, timezone }: Props) {
     name: '',
     birthDate: '',
     birthTime: '',
-    birthPlace: city || '',
-    lat: lat || 28.6139,
-    lng: lon || 77.2090,
-    timezone: timezone || 'Asia/Kolkata',
+    birthPlace: city,
+    lat: lat,
+    lng: lon,
+    timezone: timezone,
   });
 
   const [kundaliResult, setKundaliResult] = useState<KundaliResult | null>(null);
@@ -370,6 +371,18 @@ export default function KundaliClient({ lat, lon, city, timezone }: Props) {
                 {t('enterBirthDetails')}
               </p>
             </div>
+
+            {/* Location Notice (Defect D24 / §8) */}
+            {isReference && (
+              <div className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+                  <Globe className="text-[#C5A059]" size={18} />
+                </div>
+                <p className="text-xs text-[color:var(--brand-muted)]">
+                  Using Ujjain reference location. Set birth location to calculate correct chart.
+                </p>
+              </div>
+            )}
 
             <div className="space-y-4">
               {/* Saved profiles (logged-in) */}

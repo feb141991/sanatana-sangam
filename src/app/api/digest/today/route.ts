@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { localSpiritualDate } from '@/lib/sacred-time';
-import { calculatePanchang, getTodayPanchang } from '@/lib/panchang';
+import { calculatePanchang, getTodayPanchang, resolveObservanceLocation } from '@/lib/panchang';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 
 // GET /api/digest/today
@@ -17,7 +17,7 @@ export async function GET() {
     // ── 1. Fetch full profile (timezone + location + tradition + pro status) ────────
     const { data: profile } = await supabase
       .from('profiles')
-      .select('tradition, spiritual_level, full_name, username, timezone, latitude, longitude, is_pro, subscription_status')
+      .select('tradition, spiritual_level, full_name, username, timezone, latitude, longitude, is_pro, subscription_status, city, neighbourhood')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -46,14 +46,19 @@ export async function GET() {
     // ── 3. Compute panchang ────────────────────────────────────────────────
     // Lightweight version (tithi, nakshatra, weekday) — timezone-aware so a
     // user in New York at 10 PM sees their local tithi, not server-UTC tomorrow.
-    const panchangInfo = getTodayPanchang(undefined, profile?.timezone ?? 'Asia/Kolkata');
+    const resolved = resolveObservanceLocation({
+      saved: {
+        lat: profile?.latitude,
+        lon: profile?.longitude,
+        tz: profile?.timezone,
+        city: profile?.city,
+      }
+    });
+    const panchangInfo = getTodayPanchang(undefined, resolved.tz);
     const { tithi, tithiName, paksha, weekday, weekdayDeity, isEkadashi, nakshatra } = panchangInfo;
 
     // Full panchang (sunrise, Rahu Kaal, Brahma Muhurta) — uses user coords.
-    // Ujjain (23.1765°N, 75.7885°E) is the traditional Indian meridian fallback.
-    const lat = (profile?.latitude  as number | null) ?? 23.1765;
-    const lon = (profile?.longitude as number | null) ?? 75.7885;
-    const fullPanchang = calculatePanchang(new Date(), lat, lon, profile?.timezone ?? 'Asia/Kolkata');
+    const fullPanchang = calculatePanchang(new Date(), resolved.lat, resolved.lon, resolved.tz);
 
     const rawTradition = profile?.tradition ?? 'general';
     const level = profile?.spiritual_level ?? 'beginner';

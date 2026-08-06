@@ -23,7 +23,7 @@ export function useSacredCalendar(
   date: Date,
   lat: number,
   lon: number,
-  tradition: string = 'hindu',
+  tradition: string,
   /** IANA timezone string for the user's location (e.g. "Europe/London").
    *  Omit for India-based users — the browser's runtime timezone is used. */
   timezone?: string,

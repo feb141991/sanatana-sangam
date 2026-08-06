@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function BhaktiPage() {
   // Attempt to load user data — gracefully falls back for guests
-  let tradition = 'hindu';
+  let tradition = 'other';
   let japaStreak = 0;
   let sessionCountToday = 0;
 
@@ -49,7 +49,7 @@ export default async function BhaktiPage() {
           .gte('created_at', `${today}T00:00:00`),
       ]);
 
-      tradition  = profile?.tradition ?? 'hindu';
+      tradition  = profile?.tradition ?? 'other';
       japaStreak = sadhana?.streak_count ?? 0;
       sessionCountToday = count ?? 0;
     }

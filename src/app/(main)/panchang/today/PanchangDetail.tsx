@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X, Globe } from 'lucide-react';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -14,8 +14,9 @@ interface Props {
   lat:       number;
   lon:       number;
   city:      string;
-  tradition?: string;
-  timezone?: string;
+  tradition: string;
+  timezone:  string;
+  isReference: boolean;
 }
 
 const TRADITION_META: Record<string, { badge: string; note: string; accent: string; accentLight: string }> = {
@@ -206,7 +207,7 @@ function Stars({ count = 28 }: { count?: number }) {
   );
 }
 
-export default function PanchangDetail({ lat, lon, city, tradition = 'hindu', timezone }: Props) {
+export default function PanchangDetail({ lat, lon, city, tradition, timezone, isReference }: Props) {
   const { t } = useLanguage();
   const { playHaptic } = useZenithSensory();
   const tradMeta = TRADITION_META[tradition] ?? TRADITION_META.hindu;
@@ -375,12 +376,18 @@ export default function PanchangDetail({ lat, lon, city, tradition = 'hindu', ti
           </button>
         </div>
 
-        {/* Unauthenticated Location Info */}
-        {!isLoggedIn && lat === 28.6139 && lon === 77.2090 && (
-          <div className="rounded-xl px-3 py-2 flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <span className="text-sm">📍</span>
-            <p className="text-[11px] text-white/70 flex-1">Showing panchang for New Delhi.</p>
-            <Link href="/auth" className="text-[11px] font-bold text-[#C5A059] px-2 py-1 rounded bg-white/5">Sign in for local times</Link>
+        {/* Location Notice (Defect D24 / §8) */}
+        {isReference && (
+          <div className="clay-card rounded-2xl p-4 mb-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
+              <Globe className="text-[#C5A059]" size={18} />
+            </div>
+            <p className="text-xs text-[color:var(--brand-muted)]">
+              Showing Ujjain reference timings — set your location for local times.
+            </p>
+            {!isLoggedIn && (
+              <Link href="/auth" className="text-[11px] font-bold text-[#C5A059] px-2 py-1 rounded bg-white/5 whitespace-nowrap ml-auto">Sign in</Link>
+            )}
           </div>
         )}
 

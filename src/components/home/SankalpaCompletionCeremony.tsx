@@ -16,10 +16,10 @@ interface Props {
   onClose: () => void;
   sankalpaTitle: string;
   durationDays: number;
-  tradition?: string;
+  tradition: string;
 }
 
-export default function SankalpaCompletionCeremony({ isOpen, onClose, sankalpaTitle, durationDays, tradition = 'hindu' }: Props) {
+export default function SankalpaCompletionCeremony({ isOpen, onClose, sankalpaTitle, durationDays, tradition }: Props) {
   const copy = TRADITION_COPY[tradition] ?? TRADITION_COPY.hindu;
 
   useEffect(() => {

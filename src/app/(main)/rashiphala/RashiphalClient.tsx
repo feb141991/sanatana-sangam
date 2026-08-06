@@ -9,10 +9,10 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 
 interface Props {
   userRashi: string | null;
-  timezone?: string;
+  timezone: string;
 }
 
-export default function RashiphalClient({ userRashi, timezone = 'Asia/Kolkata' }: Props) {
+export default function RashiphalClient({ userRashi, timezone }: Props) {
   const { playHaptic } = useZenithSensory();
   const today = useMemo(() => new Date(), []);
   

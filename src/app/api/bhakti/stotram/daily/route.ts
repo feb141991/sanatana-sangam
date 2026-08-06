@@ -11,7 +11,7 @@ import { STOTRAMS, getStotramsByTradition } from '@/lib/stotrams';
  * "Today's Stotram" teaser card (Phase 3).
  */
 export async function GET(req: NextRequest) {
-  const tradition = req.nextUrl.searchParams.get('tradition') ?? 'hindu';
+  const tradition = req.nextUrl.searchParams.get('tradition') ?? 'other';
 
   const traditionStotrams = getStotramsByTradition(tradition);
   const dayOfYear = Math.floor(

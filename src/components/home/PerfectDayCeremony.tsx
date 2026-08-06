@@ -16,10 +16,10 @@ interface PerfectDayCeremonyProps {
   isOpen: boolean;
   onClose: () => void;
   insight: string | null;
-  tradition?: string;
+  tradition: string;
 }
 
-export default function PerfectDayCeremony({ isOpen, onClose, insight, tradition = 'hindu' }: PerfectDayCeremonyProps) {
+export default function PerfectDayCeremony({ isOpen, onClose, insight, tradition }: PerfectDayCeremonyProps) {
   const dayWord = TRADITION_DAY_WORD[tradition] ?? TRADITION_DAY_WORD.hindu;
   useEffect(() => {
     if (isOpen) {

@@ -237,7 +237,7 @@ export function buildPersonalizedPaths({
   }
 
   // ── 3. Tradition card — non-Hindu traditions get a tradition-specific card ─
-  const normalisedTradition = tradition?.toLowerCase() ?? 'hindu';
+  const normalisedTradition = tradition?.toLowerCase() ?? 'other';
   if (normalisedTradition !== 'hindu' && normalisedTradition !== 'other' && TRADITION_CARDS[normalisedTradition]) {
     const def = TRADITION_CARDS[normalisedTradition];
     cards.push({

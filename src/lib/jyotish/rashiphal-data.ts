@@ -270,8 +270,8 @@ function buildSadhanaPlan(rashiKey: string, transits: Record<string, GrahaPositi
 
 export function getDailyHoroscope(
   rashiKey: string,
-  date: Date = new Date(),
-  timeZone: string = 'Asia/Kolkata',
+  date: Date,
+  timeZone: string,
 ): RashiHoroscope {
   const rashi = RASHI_LIST.find(r => r.key === rashiKey) ?? RASHI_LIST[0];
   const transits = getTransitsForDate(date);

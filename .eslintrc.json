@@ -1,5 +1,26 @@
 {
   "extends": [
     "next/core-web-vitals"
-  ]
+  ],
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "AssignmentPattern[right.type='Literal'][right.value=/^(hindu|sikh|buddhist|jain)$/]",
+        "message": "Silently defaulting tradition parameter violates rule 7."
+      },
+      {
+        "selector": "AssignmentPattern[right.type='Literal'][right.value=/^(Asia\\/Kolkata|Europe\\/London|America\\/New_York|UTC)$/]",
+        "message": "Defaulting timezone parameter to a specific zone violates rule 8."
+      },
+      {
+        "selector": "AssignmentPattern[left.name=/^(lat|lon|lng|latitude|longitude)$/]",
+        "message": "Never default a coordinate. Make it required, or resolve it via resolveObservanceLocation() so the reference case is labelled (conventions §8, D22/D24). Matched by PARAMETER NAME, not by value: an allowlist of known literals missed 51.5074 itself."
+      },
+      {
+        "selector": "AssignmentPattern[left.name=/^(tz|timezone|timeZone)$/]",
+        "message": "Never default a timezone. It must travel with the coordinates it belongs to (D25). Matched by parameter name so an unlisted zone cannot slip through."
+      }
+    ]
+  }
 }

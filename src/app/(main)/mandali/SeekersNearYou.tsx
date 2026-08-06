@@ -113,7 +113,7 @@ export default function SeekersNearYou({ userId, profile }: Props) {
     }
   }, [profile?.latitude, profile?.longitude, profile?.city, userId]);
 
-  if (!profile?.latitude && !profile?.city) return null;
+  if (profile?.latitude == null && !profile?.city) return null;
 
   return (
     <div

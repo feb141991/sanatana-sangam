@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import JournalClient from './JournalClient';
+import { resolveObservanceLocation } from '@/lib/panchang';
 
 export const metadata = {
   title: 'Spiritual Progress Journal — Shoonaya',
@@ -16,7 +17,7 @@ export default async function JournalPage() {
   const [profileResult, entriesResult, reflectionResult] = await Promise.all([
     supabase
       .from('profiles')
-      .select('tradition, timezone, full_name, username')
+      .select('tradition, timezone, full_name, username, latitude, longitude, city, neighbourhood')
       .eq('id', user.id)
       .single(),
     supabase
@@ -38,8 +39,16 @@ export default async function JournalPage() {
   const initialEntries = entriesResult.data || [];
   const initialReflection = reflectionResult.data || null;
 
-  const tradition = profile?.tradition ?? 'hindu';
-  const timezone = profile?.timezone ?? 'Asia/Kolkata';
+  const tradition = profile?.tradition ?? 'other';
+  const resolved = resolveObservanceLocation({
+    saved: {
+      lat: profile?.latitude,
+      lon: profile?.longitude,
+      tz: profile?.timezone,
+      city: profile?.neighbourhood ?? profile?.city
+    }
+  });
+  const timezone = resolved.tz;
   const userName = profile?.full_name || profile?.username || 'Seeker';
 
   return (
