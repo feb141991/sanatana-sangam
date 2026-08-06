@@ -181,7 +181,7 @@ moves them. Parked by explicit decision, not oversight.
 | 3.6 | Per-location evaluation (D5) | 🟡 | diaspora correctness | Prerequisite done (`7d60818`): home origin (`home_*`) separated from observance location; silent auto-overwrite replaced with detect-and-ask in `ProfileClient.tsx`. Schema unblocked by 3.4 / D15 migration. **Blocked on 2.4** — the festival pipeline (`precomputePanchangForYear(year)` / `calculateObservancesForYear(year)`) takes *no* lat/lon at all and hardcodes Ujjain at `engine.ts:58`; plumbing user location through it before D18/D19 are fixed would feed real coordinates into a calculation that is wrong by 80 min at Bedford. Daily panchāṅga **is** already location-aware (5 call sites pass user lat/lon/tz); festivals are not. Also confirm the occurrence row records `location` per AGENTS.md rule 6. |
 | 3.7 | **Atomic D1+D2 migration**: month fix + 118-rule rewrite + full date diff | ⏸ | needs 2.6 | |
 | 3.8 | Alternatives + `reasons[]` in result contract | ⬜ | "Why today?" | |
-| 3.9 | Ambiguity → review queue, never silent pick | ⬜ | | |
+| 3.9 | Ambiguity → review queue, never silent pick | ✅ | | Migration `20260805160000_create_observance_review_queue.sql` (`feab8e0`). Persists what was ambiguous, why, the candidate dates, the evaluator's reasoning, profile and location, using the existing `review_status` vocabulary. Prerequisite for ever flipping `USE_CONDITION_EVALUATOR` — Sankaṣṭī is 26 of 26 UNRESOLVED and Karva Chauth resolves to no date at Bedford; without this they would become silent guesses. | |
 | 3.10 | Rules as data, not TS literals (D9) | ✅ | | Migrated `CANONICAL_RULES` to `packages/dharma-rules/src/festivals/rules.json`. |
 
 ### Phase 4 — Validation & governance
@@ -192,8 +192,8 @@ moves them. Parked by explicit decision, not oversight.
 | 4.2 | Minimum launch coverage (`calculation-examples.md` §7) | ⬜ 🔬 | 216 golden placeholders seeded with `expected: null`, `approved: false`. **Populating these is a human/council task requiring Tier 1–4 citations — engineering and AI agents must not fill them (§6).** Now the gate on Phase 3 |
 | 4.3 | Astronomical validation vs Tier-1 sources, 12 cities | ⬜ | |
 | 4.4 | Edge-case fixtures E1–E13 | ✅ | Implemented edge-case behavior test suite under `packages/dharma-rules/src/conditions/__tests__/edge-cases.test.ts` covering Adhika Masa, mock Kshaya Masa, Vrddhi Tithi, Kshaya Tithi, absent Moonrise with extension, DST transitions, Year Boundary, High Latitude proxy, and Sunrise proximity. |
-| 4.5 | Persist integrity findings (D12) | ⬜ | |
-| 4.6 | Demote AI verifier to triage-only (D13) | ⬜ | |
+| 4.5 | Persist integrity findings (D12) | ✅ | | Migration `20260806024500_create_calendar_integrity_findings.sql` (`4ff693b`). The "166 engine mismatch" figure previously existed only in a transient cron response and could not be trended or acted on. Schema records honestly that `integrity.ts` compares the engine **against itself** (D11) and so detects drift, not wrongness. |
+| 4.6 | Demote AI verifier to triage-only (D13) | ✅ | | `4ff693b`. Enforced **structurally, not by comment**: `AIAllowedUpdatePayload = Omit<…, 'review_status' \| 'date' \| 'verification_status'>` plus a runtime guard — compile-time and runtime. The AI path may flag for review; it can never mark anything verified or write a published date. |
 | 4.7 | Council workflow + review states live | 🔬 | |
 
 ### Phase 5 — Profiles & product surfaces
@@ -202,7 +202,7 @@ moves them. Parked by explicit decision, not oversight.
 |---|---|---|---|
 | 5.1 | Launch calendar profiles (10) | ⬜ | |
 | 5.2 | Launch tradition profiles (7) | ⬜ | |
-| 5.3 | Onboarding Q1–Q5 (location, region, sampradāya, scope, language) | ⬜ | |
+| 5.3 | Onboarding Q1–Q5 (location, region, sampradāya, scope, language) | ✅ | | `e11d54a`. Extends the existing 7-step flow; adds observance location + calendar profile, backed by the 3.3 tables. Two invariants verified: **skip means UNKNOWN, not a default** (`useState<string \| null>(null)`, null persists), and **location cannot set the calendar profile** (AGENTS.md rule 4) — geolocation writes only location fields. First work in this workstream to reach a user. |
 | 5.4 | Home tradition vs observance location as separate fields | ✅ | Shipped in `7d60818` — migration `20260803020000` adds `home_latitude/longitude/city/country/timezone` + `observance_location_source`; the silent browser-timezone overwrite at `ProfileClient.tsx:516` was replaced with detect-and-ask. Tradition isolation verified (no location write can touch `tradition`/`sampradaya`, AGENTS.md rule 4); all reminder crons verified untouched. `resolveObservanceLocation` (D24/D25) then made the reference fallback explicit and kept tz travelling with its own coordinates. **Entry was stale at ⬜ until 2026-08-04.** |
 | 5.5 | Local / Temple / Bharat-reference modes | ⬜ | |
 | 5.6 | "Why today?" explanation card | ⬜ | |
