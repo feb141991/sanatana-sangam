@@ -4,6 +4,21 @@ import { sendPushNotification } from '@/lib/push-server';
 import { resolveVratSlug } from '@/lib/vrat-data';
 import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
 import { buildCalendarIntegrityReport, type CalendarIntegrityRow } from '@/lib/calendar/integrity';
+import * as fs from 'fs';
+import * as path from 'path';
+
+function getPanchangEngineVersion(): string {
+  try {
+    const pkgPath = path.resolve(process.cwd(), 'packages/panchang-engine/package.json');
+    if (fs.existsSync(pkgPath)) {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+      return pkg.version || '0.1.0';
+    }
+  } catch (err) {
+    console.warn('[calendar-health] Failed to read engine version:', err);
+  }
+  return '0.1.0';
+}
 
 function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -89,6 +104,94 @@ export async function GET(request: Request) {
   const integrity = rawOccurrenceRows.length > 0
     ? buildCalendarIntegrityReport(rawOccurrenceRows, integrityYears)
     : null;
+
+  if (integrity) {
+    const engineVersion = getPanchangEngineVersion();
+    const nowIso = new Date().toISOString();
+    const activeFindings: Array<{
+      slug: string;
+      display_name: string;
+      year: number;
+      stored_date: string | null;
+      engine_date: string | null;
+      candidate_dates: string[] | null;
+      issue_type: 'engine_curated_mismatch' | 'missing_external_source' | 'multiple_candidates_needs_review' | 'unreviewed_or_not_verified';
+      reason: string;
+      engine_version: string;
+      is_open: boolean;
+      last_seen_at: string;
+    }> = [];
+
+    const lists = [
+      { issues: integrity.missingExternalSource, type: 'missing_external_source' as const },
+      { issues: integrity.engineCuratedMismatch, type: 'engine_curated_mismatch' as const },
+      { issues: integrity.multipleCandidatesNeedsReview, type: 'multiple_candidates_needs_review' as const },
+      { issues: integrity.unreviewedOrNotVerified, type: 'unreviewed_or_not_verified' as const },
+    ];
+
+    for (const { issues, type } of lists) {
+      for (const issue of issues) {
+        activeFindings.push({
+          slug: issue.slug,
+          display_name: issue.displayName,
+          year: issue.year,
+          stored_date: issue.storedDate ?? null,
+          engine_date: issue.engineDate ?? null,
+          candidate_dates: issue.candidateDates ?? null,
+          issue_type: type,
+          reason: issue.reason,
+          engine_version: engineVersion,
+          is_open: true,
+          last_seen_at: nowIso,
+        });
+      }
+    }
+
+    const uniqueFindingsMap = new Map<string, typeof activeFindings[number]>();
+    for (const finding of activeFindings) {
+      const key = `${finding.slug}:${finding.year}:${finding.issue_type}`;
+      if (uniqueFindingsMap.has(key)) {
+        const existing = uniqueFindingsMap.get(key)!;
+        existing.reason = `${existing.reason} | ${finding.reason}`;
+      } else {
+        uniqueFindingsMap.set(key, finding);
+      }
+    }
+    const deduplicatedFindings = Array.from(uniqueFindingsMap.values());
+
+    const seenFindingIds: string[] = [];
+    if (deduplicatedFindings.length > 0) {
+      const { data: upserted, error: upsertError } = await supabase
+        .from('calendar_integrity_findings')
+        .upsert(
+          deduplicatedFindings,
+          { onConflict: 'slug,year,issue_type' }
+        )
+        .select('id');
+
+      if (upsertError) {
+        console.error('[calendar-health] Error upserting findings:', upsertError);
+      } else if (upserted) {
+        seenFindingIds.push(...upserted.map((r: any) => r.id));
+      }
+    }
+
+    let resolveQuery = supabase
+      .from('calendar_integrity_findings')
+      .update({ is_open: false, resolved_at: nowIso })
+      .eq('is_open', true)
+      .in('year', integrityYears);
+
+    if (seenFindingIds.length > 0) {
+      resolveQuery = resolveQuery.filter('id', 'not.in', `(${seenFindingIds.join(',')})`);
+    }
+
+    const { error: resolveError } = await resolveQuery;
+
+    if (resolveError) {
+      console.error('[calendar-health] Error resolving findings:', resolveError);
+    }
+  }
   const hasIntegrityIssues = Boolean(integrity?.issueCount);
   const needsAttention = needsRefresh || hasIntegrityIssues;
 

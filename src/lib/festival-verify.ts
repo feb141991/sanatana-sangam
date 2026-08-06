@@ -23,6 +23,7 @@
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import type { Festival, FestivalVerificationConfidence, FestivalVerificationStoredStatus, FestivalVerificationType } from '@/lib/festivals';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
+import type { Database } from '@/types/database';
 
 // ─── Tithi Rule Definitions ───────────────────────────────────────────────────
 
@@ -564,3 +565,70 @@ export async function verifyFestivalDatesWithAI(
     results: combinedResults,
   };
 }
+
+/**
+ * Structurally safe subset of observance_occurrences Update type for AI/triage updates.
+ * Excludes 'review_status', 'date' (published date), and restricts 'verification_status'
+ * to forbid writing 'verified' (which only humans are authorized to set).
+ */
+export type AIAllowedUpdatePayload = Omit<
+  Database['public']['Tables']['observance_occurrences']['Update'],
+  'review_status' | 'date' | 'verification_status'
+> & {
+  verification_status?: Exclude<
+    Database['public']['Tables']['observance_occurrences']['Update']['verification_status'],
+    'verified'
+  >;
+};
+
+/**
+ * Prepares and validates a database update payload for a verification result.
+ * Ensures compile-time and runtime safety guards are active.
+ */
+export function buildAIUpdatePayload(
+  result: FestivalVerificationResult,
+  runAt: string,
+  currentRetryCount = 0
+): AIAllowedUpdatePayload {
+  const requiresAiAudit = result.verificationType === 'lunar_tithi';
+  const rowAuditFailed = requiresAiAudit
+    && result.status === 'not_checked'
+    && /AI verification unavailable|AI did not return a result|Not returned by AI/i.test(result.note);
+    
+  const nextAuditStatus: 'skipped' | 'failed' | 'completed' = !requiresAiAudit
+    ? 'skipped'
+    : rowAuditFailed
+      ? 'failed'
+      : 'completed';
+
+  // Forbid setting verification_status to 'verified'.
+  // If result.status is 'verified' (correct), the DB verification_status is not updated (left undefined).
+  // This satisfies the D13 structural constraint that AI can never mark anything verified in the DB.
+  const statusUpdate = result.status === 'verified' ? undefined : result.status;
+
+  const payload = {
+    verification_status: statusUpdate,
+    verification_confidence: result.confidence,
+    verification_note: result.note,
+    suggested_date: result.suggestedDate ?? null,
+    verification_run_at: runAt,
+    audit_status: nextAuditStatus,
+    audit_failure_reason: rowAuditFailed ? result.note : null,
+    audit_retry_count: rowAuditFailed ? currentRetryCount + 1 : 0,
+    last_audited_at: runAt,
+  };
+
+  // Runtime guard:
+  if ('review_status' in payload) {
+    throw new Error('AI verifier guard: review_status must not be updated by AI');
+  }
+  if ('date' in payload) {
+    throw new Error('AI verifier guard: date must not be updated by AI');
+  }
+  if ((payload as any).verification_status === 'verified') {
+    throw new Error('AI verifier guard: verification_status cannot be set to "verified" by AI');
+  }
+
+  return payload;
+}
+

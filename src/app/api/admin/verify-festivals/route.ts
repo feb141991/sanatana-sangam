@@ -2,7 +2,7 @@ import { verifyAdminCookieAuth } from '@/lib/admin-auth';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin';
 import { attachFestivalTrust, mapOccurrenceToFestival, getFallbackFestivalCalendar, type FestivalSourceRow } from '@/lib/festivals';
-import { verifyFestivalDatesWithAI } from '@/lib/festival-verify';
+import { verifyFestivalDatesWithAI, buildAIUpdatePayload } from '@/lib/festival-verify';
 import type { Database } from '@/types/database';
 
 type LegacyFestivalRow = Pick<
@@ -99,35 +99,13 @@ export async function POST(req: NextRequest) {
           })()
         ));
         if (!row) return;
-        const requiresAiAudit = result.verificationType === 'lunar_tithi';
-        const rowAuditFailed = requiresAiAudit
-          && result.status === 'not_checked'
-          && /AI verification unavailable|AI did not return a result|Not returned by AI/i.test(result.note);
-        const nextAuditStatus = !requiresAiAudit
-          ? 'skipped'
-          : rowAuditFailed
-            ? 'failed'
-            : 'completed';
         const currentRetryCount = typeof (row as any).audit_retry_count === 'number'
           ? (row as any).audit_retry_count
           : 0;
+        const updatePayload = buildAIUpdatePayload(result, report.runAt, currentRetryCount);
         await adminCheck.supabase
           .from('observance_occurrences')
-          .update({
-            verification_status: result.status,
-            verification_confidence: result.confidence,
-            verification_note: result.note,
-            suggested_date: result.suggestedDate ?? null,
-            verification_run_at: report.runAt,
-            audit_status: nextAuditStatus,
-            audit_failure_reason: rowAuditFailed
-              ? result.note
-              : null,
-            audit_retry_count: rowAuditFailed
-              ? currentRetryCount + 1
-              : 0,
-            last_audited_at: report.runAt,
-          })
+          .update(updatePayload)
           .eq('id', row.id);
       }));
     }

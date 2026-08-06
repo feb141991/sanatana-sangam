@@ -3,6 +3,103 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 export interface Database {
   public: {
     Tables: {
+      calendar_integrity_findings: {
+        Row: {
+          id: string;
+          slug: string;
+          display_name: string;
+          year: number;
+          stored_date: string | null;
+          engine_date: string | null;
+          candidate_dates: string[] | null;
+          issue_type: 'engine_curated_mismatch' | 'missing_external_source' | 'multiple_candidates_needs_review' | 'unreviewed_or_not_verified';
+          reason: string;
+          engine_version: string;
+          detected_at: string;
+          last_seen_at: string;
+          is_open: boolean;
+          resolved_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          display_name: string;
+          year: number;
+          stored_date?: string | null;
+          engine_date?: string | null;
+          candidate_dates?: string[] | null;
+          issue_type: 'engine_curated_mismatch' | 'missing_external_source' | 'multiple_candidates_needs_review' | 'unreviewed_or_not_verified';
+          reason: string;
+          engine_version: string;
+          detected_at?: string;
+          last_seen_at?: string;
+          is_open?: boolean;
+          resolved_at?: string | null;
+        };
+        Update: Partial<Database['public']['Tables']['calendar_integrity_findings']['Insert']>;
+      };
+      calendar_profiles: {
+        Row: {
+          slug: string;
+          display_name: string;
+          region: string;
+          month_system: 'amanta' | 'purnimanta' | 'solar' | null;
+          solar_month_rule: 'sunset_rule' | 'aparahna_rule' | 'midnight_rule' | 'same_day_rule' | null;
+          era: 'vikram_north' | 'vikram_gujarat' | 'shaka' | 'kollam' | 'bengali_san' | 'bikram_sambat' | 'nanakshahi' | null;
+          ayanamsha: string;
+          sunrise_rule: string;
+          month_name_locale: string;
+          version: string;
+          scholarly_status: string;
+          citation: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          display_name: string;
+          region: string;
+          month_system?: 'amanta' | 'purnimanta' | 'solar' | null;
+          solar_month_rule?: 'sunset_rule' | 'aparahna_rule' | 'midnight_rule' | 'same_day_rule' | null;
+          era?: 'vikram_north' | 'vikram_gujarat' | 'shaka' | 'kollam' | 'bengali_san' | 'bikram_sambat' | 'nanakshahi' | null;
+          ayanamsha?: string;
+          sunrise_rule?: string;
+          month_name_locale: string;
+          version?: string;
+          scholarly_status?: string;
+          citation: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['calendar_profiles']['Insert']>;
+      };
+      tradition_profiles: {
+        Row: {
+          slug: string;
+          display_name: string;
+          ekadashi_method: 'smarta' | 'vaishnava_suddha';
+          janmashtami_method: 'smarta_nishita' | 'vaishnava_rohini';
+          shivaratri_method: 'nishita';
+          paran_rule: 'standard' | 'vaishnava_strict';
+          version: string;
+          scholarly_status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          display_name: string;
+          ekadashi_method: 'smarta' | 'vaishnava_suddha';
+          janmashtami_method: 'smarta_nishita' | 'vaishnava_rohini';
+          shivaratri_method: 'nishita';
+          paran_rule: 'standard' | 'vaishnava_strict';
+          version?: string;
+          scholarly_status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['tradition_profiles']['Insert']>;
+      };
       profiles: {
         Row: {
           id: string;
@@ -678,3 +775,7 @@ export type DharmVeerRow = Database['public']['Tables']['dharm_veers']['Row'];
 export type DharmVeerGenerationLogRow = Database['public']['Tables']['dharm_veer_generation_log']['Row'];
 export type ObservanceOccurrence = Database['public']['Tables']['observance_occurrences']['Row'];
 export type ObservanceReviewQueue = Database['public']['Tables']['observance_review_queue']['Row'];
+export type CalendarProfile = Database['public']['Tables']['calendar_profiles']['Row'];
+export type TraditionProfile = Database['public']['Tables']['tradition_profiles']['Row'];
+export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
+
