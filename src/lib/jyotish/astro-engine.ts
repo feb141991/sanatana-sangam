@@ -148,8 +148,8 @@ const NAKSHATRAS: Array<{
 ];
 
 // Vimshottari Dasha: 120-year cycle (capitalized Sanskrit names)
-const DASHA_ORDER = ['Ketu','Shukra','Surya','Chandra','Mangal','Rahu','Guru','Shani','Budha'];
-const DASHA_YEARS: Record<string,number> = {
+export const DASHA_ORDER = ['Ketu','Shukra','Surya','Chandra','Mangal','Rahu','Guru','Shani','Budha'];
+export const DASHA_YEARS: Record<string,number> = {
   Ketu:6, Shukra:20, Surya:6, Chandra:10, Mangal:7, Rahu:18, Guru:16, Shani:19, Budha:17,
 };
 export const VIMSHOTTARI_ORDER = DASHA_ORDER;
@@ -202,7 +202,7 @@ const COMBUST_ORB: Record<string, number> = {
 
 // ── Timezone: local birth time → UTC ─────────────────────────────────────────
 // Uses Node.js built-in Intl API (V8 IANA tz database, handles historical DST)
-function birthLocalToUTC(dateStr: string, timeStr: string, ianaTimezone: string): Date {
+export function birthLocalToUTC(dateStr: string, timeStr: string, ianaTimezone: string): Date {
   const [y, mo, d] = dateStr.split('-').map(Number);
   const [h, mi]    = timeStr.split(':').map(Number);
 
@@ -226,7 +226,7 @@ function birthLocalToUTC(dateStr: string, timeStr: string, ianaTimezone: string)
 }
 
 // ── Julian Day from Date ──────────────────────────────────────────────────────
-function toJulianDay(utcDate: Date): number {
+export function toJulianDay(utcDate: Date): number {
   const y  = utcDate.getUTCFullYear();
   const mo = utcDate.getUTCMonth() + 1;
   const d  = utcDate.getUTCDate();
@@ -246,7 +246,7 @@ function toJulianDay(utcDate: Date): number {
 // Accurate to ~0.1° which is sufficient for consumer Jyotish.
 export const USE_CANONICAL_AYANAMSHA = false;
 
-function getLahiriAyanamsa(jd: number): number {
+export function getLahiriAyanamsa(jd: number): number {
   if (USE_CANONICAL_AYANAMSHA) {
     return lahiriAyanamsha(jd);
   }
@@ -256,7 +256,7 @@ function getLahiriAyanamsa(jd: number): number {
 }
 
 // ── Normalize degrees to 0–360 ────────────────────────────────────────────────
-function norm360(deg: number): number {
+export function norm360(deg: number): number {
   return ((deg % 360) + 360) % 360;
 }
 
@@ -293,7 +293,7 @@ function navamshaFromSidereal(sidDeg: number): { navamshaIndex: number; navamsha
 }
 
 // ── Nakshatra from Moon sidereal longitude ────────────────────────────────────
-function getNakshatra(moonSidereal: number): NakshatraInfo {
+export function getNakshatra(moonSidereal: number): NakshatraInfo {
   const nakArc    = 360 / 27;           // 13.333...°
   const padaArc   = nakArc / 4;         // 3.333...°
   const idx       = Math.floor(moonSidereal / nakArc) % 27;
@@ -315,7 +315,7 @@ function getNakshatra(moonSidereal: number): NakshatraInfo {
 }
 
 // ── Vimshottari Dasha ─────────────────────────────────────────────────────────
-function calcDasha(nak: NakshatraInfo, birthUtc: Date): DashaInfo {
+export function calcDasha(nak: NakshatraInfo, birthUtc: Date): DashaInfo {
   const startLord  = nak.lord; // Already capitalized (e.g. 'Ketu')
   const orderStart = DASHA_ORDER.indexOf(startLord);
   const firstYears = DASHA_YEARS[startLord] * nak.remainingFrac;
@@ -409,7 +409,7 @@ export function computeAntardashas(entry: DashaEntry): AntardashaEntry[] {
 // ── Lagna (Ascendant) ─────────────────────────────────────────────────────────
 // Standard formula from Meeus "Astronomical Algorithms":
 // Converts Local Sidereal Time + geographic latitude to ecliptic ascendant.
-function calcLagna(jd: number, lat: number, lng: number, ayanamsa: number): GrahaPosition {
+export function calcLagna(jd: number, lat: number, lng: number, ayanamsa: number): GrahaPosition {
   // Days from J2000.0
   const d = jd - 2451545.0;
 

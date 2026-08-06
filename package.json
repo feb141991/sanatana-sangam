@@ -39,7 +39,8 @@
     "diff:masa-correction": "npx tsx scripts/diff-masa-correction.ts",
     "reconcile:engines": "npx tsx scripts/reconcile-engines.ts",
     "fixtures:usno-queries": "npx tsx scripts/usno-queries.ts",
-    "check:adhika": "npx tsx scripts/check-adhika.ts"
+    "check:adhika": "npx tsx scripts/check-adhika.ts",
+    "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts"
   },
   "dependencies": {
     "@sangam/pathshala-engine": "*",
