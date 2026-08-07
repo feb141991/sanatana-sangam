@@ -244,7 +244,7 @@ export function toJulianDay(utcDate: Date): number {
 // ── Lahiri Ayanamsa ───────────────────────────────────────────────────────────
 // Standard formula based on Chitrapaksha (Lahiri) definition.
 // Accurate to ~0.1° which is sufficient for consumer Jyotish.
-export const USE_CANONICAL_AYANAMSHA = false;
+export const USE_CANONICAL_AYANAMSHA = true;
 
 export function getLahiriAyanamsa(jd: number): number {
   if (USE_CANONICAL_AYANAMSHA) {

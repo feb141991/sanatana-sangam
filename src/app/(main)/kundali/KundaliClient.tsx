@@ -4,11 +4,12 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Share2, X, Globe } from 'lucide-react';
+import { ArrowLeft, Share2, X, Globe, Calendar } from 'lucide-react';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { createClient } from '@/lib/supabase';
 import type { KundaliInput, KundaliResult } from '@/lib/jyotish/kundali-engine';
+import { AFFECTED_IDENTITY_PROFILE_IDS, AFFECTED_TIMING_PROFILE_IDS } from '@/lib/jyotish/ayanamsha-notices';
 
 interface Props {
   lat: number;
@@ -214,6 +215,19 @@ export default function KundaliClient({ lat, lon, city, timezone, isReference }:
 
   const [transits, setTransits] = useState<any>(null);
   const [sadeSati, setSadeSati] = useState<any>(null);
+
+  const matchingSavedProfile = useMemo(() => {
+    if (!kundaliResult) return null;
+    return savedProfiles.find((sp: any) => 
+      sp.date_of_birth === kundaliResult.input.birthDate &&
+      (sp.time_of_birth || '12:00').slice(0, 5) === (kundaliResult.input.birthTime || '12:00').slice(0, 5) &&
+      Math.abs((sp.birth_lat || 0) - kundaliResult.input.lat) < 0.01 &&
+      Math.abs((sp.birth_lng || 0) - kundaliResult.input.lng) < 0.01
+    );
+  }, [kundaliResult, savedProfiles]);
+
+  const hasIdentityShift = matchingSavedProfile && AFFECTED_IDENTITY_PROFILE_IDS.includes(matchingSavedProfile.id);
+  const hasTimingShift = matchingSavedProfile && AFFECTED_TIMING_PROFILE_IDS.includes(matchingSavedProfile.id);
 
   // Dynamic Localization: Automatically translate Kundali output when language changes
   useEffect(() => {
@@ -716,6 +730,39 @@ export default function KundaliClient({ lat, lon, city, timezone, isReference }:
                   : 'Birth time is available, so ascendant, houses, D9, and house-based interpretation are enabled.'}
               </p>
             </div>
+
+            {/* Targeted Ayanamsha Precision Notices */}
+            {hasIdentityShift && (
+              <div className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Globe className="text-[#C5A059]" size={18} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[color:var(--brand-primary-strong)]">
+                    Astro-Engine Alignment Update
+                  </h4>
+                  <p className="text-[11px] mt-1 leading-relaxed text-[color:var(--brand-muted)]">
+                    To improve accuracy, we have upgraded our astronomical calculation engine to the official Chitrapaksha (Lahiri) standards defined by the Positional Astronomy Centre (ICRC 1955). This update refines your chart&apos;s coordinate projections, which has shifted your janma nakshatra/pada, rashi, or lagna boundary calculation. Your daily sadhana dashboard has been updated to reflect these highly precise coordinates.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {hasTimingShift && (
+              <div className="clay-card rounded-2xl p-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Calendar className="text-[#C5A059]" size={18} />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-[color:var(--brand-primary-strong)]">
+                    Dasha Timeline Precision Update
+                  </h4>
+                  <p className="text-[11px] mt-1 leading-relaxed text-[color:var(--brand-muted)]">
+                    We have updated our calculations to the canonical Chitrapaksha standards. Your dasha/bhukti timing boundaries have been refined (shifts of approximately 1-2 days). Your planetary cycles are now aligned with these precise projections.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Identity banner */}
             <div className="rounded-2xl p-5 border bg-white space-y-3 shadow-sm"
