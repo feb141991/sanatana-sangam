@@ -1,5 +1,3 @@
-import julian from 'astronomia/julian';
-import { Sunrise } from 'astronomia/sunrise';
 import {
   normalizeAngle,
   unwrapForward,
@@ -7,6 +5,7 @@ import {
   computeAstronomy,
   type AstroSnapshot as PanchangAstronomy,
 } from './core/astronomy.js';
+import { dateToJde, getSunriseSunsetTimes } from './core/astronomy-adapter.js';
 
 
 
@@ -62,6 +61,14 @@ export {
   lahiriAyanamsha,
   normalizeAngle,
 } from './core/astronomy.js';
+
+export {
+  dateToJde,
+  getSolarApparentLongitude,
+  getMoonPosition,
+  getNutation,
+  getSunriseSunsetTimes,
+} from './core/astronomy-adapter.js';
 
 
 
@@ -278,17 +285,12 @@ function getSunriseSunset(
   utcOffsetHours?: number,
 ): { sunrise: Date; sunset: Date; noon: Date } {
   try {
-    const calendar = new julian.CalendarGregorian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    const sun = new Sunrise(calendar, lat, -lon, 0);
-    const sunriseDate = sun.rise()?.toDate() ?? null;
-    const sunsetDate = sun.set()?.toDate() ?? null;
-    const noonDate = sun.noon().toDate();
-
-    if (sunriseDate && sunsetDate) {
+    const { sunrise, sunset, noon } = getSunriseSunsetTimes(lat, lon, date);
+    if (sunrise && sunset && noon) {
       return {
-        sunrise: sunriseDate,
-        sunset: sunsetDate,
-        noon: noonDate,
+        sunrise,
+        sunset,
+        noon,
       };
     }
   } catch {

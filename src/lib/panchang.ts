@@ -1,9 +1,11 @@
-import julian from 'astronomia/julian';
-import solar from 'astronomia/solar';
-import moonposition from 'astronomia/moonposition';
-import nutation from 'astronomia/nutation';
-import { Sunrise } from 'astronomia/sunrise';
-import { lahiriAyanamsha } from '@sangam/panchang-engine';
+import {
+  lahiriAyanamsha,
+  dateToJde,
+  getSolarApparentLongitude,
+  getMoonPosition,
+  getNutation,
+  getSunriseSunsetTimes,
+} from '@sangam/panchang-engine';
 
 export interface PanchangData {
   tithi: string;
@@ -162,11 +164,11 @@ function unwrapForward(angle: number, baseAngle: number): number {
 
 
 function computeAstronomy(date: Date): PanchangAstronomy {
-  const jde = julian.DateToJDE(date);
+  const jde = dateToJde(date);
   const t = (jde - 2451545.0) / 36525.0;
-  const sunTropical = normalizeAngle((solar.apparentLongitude(t) * 180) / Math.PI);
-  const moonBase = moonposition.position(jde).lon;
-  const [deltaPsi] = nutation.nutation(jde);
+  const sunTropical = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI);
+  const moonBase = getMoonPosition(jde).lon;
+  const [deltaPsi] = getNutation(jde);
   const moonTropical = normalizeAngle(((moonBase + deltaPsi) * 180) / Math.PI);
   const ayanamsha = lahiriAyanamsha(jde);
   const sunSidereal = normalizeAngle(sunTropical - ayanamsha);
@@ -263,17 +265,12 @@ function getSunriseSunset(
   utcOffsetHours?: number,
 ): { sunrise: Date; sunset: Date; noon: Date } {
   try {
-    const calendar = new julian.CalendarGregorian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    const sun = new Sunrise(calendar, lat, -lon, 0);
-    const sunriseDate = sun.rise()?.toDate() ?? null;
-    const sunsetDate = sun.set()?.toDate() ?? null;
-    const noonDate = sun.noon().toDate();
-
-    if (sunriseDate && sunsetDate) {
+    const { sunrise, sunset, noon } = getSunriseSunsetTimes(lat, lon, date);
+    if (sunrise && sunset && noon) {
       return {
-        sunrise: sunriseDate,
-        sunset: sunsetDate,
-        noon: noonDate,
+        sunrise,
+        sunset,
+        noon,
       };
     }
   } catch {

@@ -8,11 +8,13 @@
  * profiles, or festival rules.
  */
 
-import julian from 'astronomia/julian';
-import solar from 'astronomia/solar';
-import moonposition from 'astronomia/moonposition';
-import nutation from 'astronomia/nutation';
-import { Sunrise } from 'astronomia/sunrise';
+import {
+  dateToJde,
+  getSolarApparentLongitude,
+  getMoonPosition,
+  getNutation,
+  getSunriseSunsetTimes,
+} from './astronomy-adapter.js';
 
 
 // ---------------------------------------------------------------------------
@@ -103,12 +105,12 @@ export interface AstroSnapshot {
 }
 
 export function computeAstronomy(date: Date): AstroSnapshot {
-  const jde = julian.DateToJDE(date);
+  const jde = dateToJde(date);
   const t   = (jde - 2451545.0) / 36525.0;
 
-  const sunTropical  = normalizeAngle((solar.apparentLongitude(t) * 180) / Math.PI);
-  const moonBase     = moonposition.position(jde).lon;
-  const [deltaPsi]   = nutation.nutation(jde);
+  const sunTropical  = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI);
+  const moonBase     = getMoonPosition(jde).lon;
+  const [deltaPsi]   = getNutation(jde);
   const moonTropical = normalizeAngle(((moonBase + deltaPsi) * 180) / Math.PI);
 
   const ayanamsha    = lahiriAyanamsha(jde);
@@ -187,22 +189,9 @@ export function getSunriseSunset(
   utcOffsetHours?: number
 ): { sunrise: Date | null; sunset: Date | null; noon: Date | null } {
   try {
-    const calendar = new julian.CalendarGregorian(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      date.getDate()
-    );
-    const sun = new Sunrise(calendar, lat, -lon, 0);
-    const sunriseDate = sun.rise()?.toDate() ?? null;
-    const sunsetDate = sun.set()?.toDate() ?? null;
-    const noonDate = sun.noon()?.toDate() ?? null;
-
-    if (sunriseDate && sunsetDate && noonDate) {
-      return {
-        sunrise: sunriseDate,
-        sunset: sunsetDate,
-        noon: noonDate,
-      };
+    const { sunrise, sunset, noon } = getSunriseSunsetTimes(lat, lon, date);
+    if (sunrise && sunset && noon) {
+      return { sunrise, sunset, noon };
     }
   } catch {
     // Fall back to approximation for edge locations or library failures.

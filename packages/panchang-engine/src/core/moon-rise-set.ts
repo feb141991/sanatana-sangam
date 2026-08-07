@@ -8,12 +8,16 @@
  * astronomy-conventions.md §3.1 & §8.
  */
 
-import julian from 'astronomia/julian';
-import moonposition from 'astronomia/moonposition';
-import parallax from 'astronomia/parallax';
-import globe from 'astronomia/globe';
-import sidereal from 'astronomia/sidereal';
-import nutation from 'astronomia/nutation';
+import {
+  dateToJde,
+  getMoonPosition,
+  getMoonParallax,
+  getNutation,
+  getMeanObliquity,
+  getApparentSiderealTimeRad,
+  getEarthParallaxConstants,
+  getTopocentricCoordinates,
+} from './astronomy-adapter.js';
 
 export interface RiseSetResult {
   ok: true;
@@ -36,18 +40,18 @@ export function getMoonUpperLimbAlt(
 ): number {
   const latRad = (latDeg * Math.PI) / 180;
   const lonWestRad = (-lonDeg * Math.PI) / 180;
-  const jde = julian.DateToJDE(date);
+  const jde = dateToJde(date);
 
-  const pos = moonposition.position(jde);
+  const pos = getMoonPosition(jde);
 
   // D19 Fix: pass pos.range in km to moonposition.parallax
-  const pi = moonposition.parallax(pos.range);
+  const pi = getMoonParallax(pos.range);
   const semidiameterRad = Math.asin(0.2725 * Math.sin(pi));
   const refractionRad = (34 / 60) * (Math.PI / 180);
 
   // D18 Fix: convert ecliptic (pos.lon, pos.lat) -> apparent equatorial (ra, dec) using true obliquity
-  const meanEps = nutation.meanObliquity(jde);
-  const [, dEps] = nutation.nutation(jde);
+  const meanEps = getMeanObliquity(jde);
+  const [, dEps] = getNutation(jde);
   const eps = meanEps + dEps;
 
   const lambda = pos.lon;
@@ -64,18 +68,17 @@ export function getMoonUpperLimbAlt(
   const ra = Math.atan2(sinLambda * cosEps - tanBeta * sinEps, cosLambda);
   const dec = Math.asin(Math.max(-1, Math.min(1, sinBeta * cosEps + cosBeta * sinEps * sinLambda)));
 
-  const st0Rad = (sidereal.apparent(jde) / 3600) * 15 * (Math.PI / 180);
+  const st0Rad = getApparentSiderealTimeRad(jde);
   const lst = st0Rad - lonWestRad;
 
   let H = lst - ra;
   let finalDec = dec;
 
   if (isTopocentric) {
-    const [sphi, cphi] = globe.Earth76.parallaxConstants(latRad, 0);
-    const posAu = { ra, dec, range: pos.range / 149597870.7 };
-    const topo = parallax.topocentric(posAu, sphi, cphi, lonWestRad, jde);
-    H = lst - topo._ra;
-    finalDec = topo._dec;
+    const [sphi, cphi] = getEarthParallaxConstants(latRad, 0);
+    const topo = getTopocentricCoordinates({ ra, dec, range: pos.range }, sphi, cphi, lonWestRad, jde);
+    H = lst - topo.ra;
+    finalDec = topo.dec;
   }
 
   const sinAlt =

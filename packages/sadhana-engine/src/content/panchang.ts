@@ -1,9 +1,12 @@
-import julian from 'astronomia/julian';
-import solar from 'astronomia/solar';
-import moonposition from 'astronomia/moonposition';
-import nutation from 'astronomia/nutation';
-import { Sunrise } from 'astronomia/sunrise';
-import { lahiriAyanamsha, normalizeAngle } from '@sangam/panchang-engine';
+import {
+  lahiriAyanamsha,
+  normalizeAngle,
+  dateToJde,
+  getSolarApparentLongitude,
+  getMoonPosition,
+  getNutation,
+  getSunriseSunsetTimes,
+} from '@sangam/panchang-engine';
 
 import type { Panchang, Vrata, Festival } from '../types';
 
@@ -94,10 +97,7 @@ function getApproxSunTimes(date: Date, lat: number, lng: number): { sunrise: Dat
 
 function getSunTimes(date: Date, lat: number, lng: number): { sunrise: Date; sunset: Date } {
   try {
-    const calendar = new julian.CalendarGregorian(date.getFullYear(), date.getMonth() + 1, date.getDate());
-    const sun = new Sunrise(calendar, lat, -lng, 0);
-    const sunrise = sun.rise()?.toDate();
-    const sunset = sun.set()?.toDate();
+    const { sunrise, sunset } = getSunriseSunsetTimes(lat, lng, date);
     if (sunrise && sunset) {
       return { sunrise, sunset };
     }
@@ -110,12 +110,12 @@ function getSunTimes(date: Date, lat: number, lng: number): { sunrise: Date; sun
 
 export class PanchangCalculator {
   getPanchang(date: Date, latitude: number, longitude: number): Panchang {
-    const jde = julian.DateToJDE(date);
+    const jde = dateToJde(date);
     const t = (jde - 2451545.0) / 36525.0;
-    const [deltaPsi] = nutation.nutation(jde);
+    const [deltaPsi] = getNutation(jde);
     const ayanamsha = lahiriAyanamsha(jde);
-    const sunLon = normalizeAngle((solar.apparentLongitude(t) * 180) / Math.PI);
-    const moonLon = normalizeAngle(((moonposition.position(jde).lon + deltaPsi) * 180) / Math.PI);
+    const sunLon = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI);
+    const moonLon = normalizeAngle(((getMoonPosition(jde).lon + deltaPsi) * 180) / Math.PI);
     const siderealSun = normalizeAngle(sunLon - ayanamsha);
     const siderealMoon = normalizeAngle(moonLon - ayanamsha);
     const elongation = normalizeAngle(moonLon - sunLon);
