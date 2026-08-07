@@ -83,6 +83,19 @@ Specifications are authoritative: `docs/calendar-domain-model.md`,
     per §5: for each §3 heading, clear / finding / not-applicable-because.
     **Silence is not an answer.**
 
+15. **Never hand-write physics; always own the dharma.** Every astronomical
+    calculation delegates to `astronomia` through the astronomy adapter — the
+    only file permitted to import it. Ayanāṁśa, tithi/nakshatra/yoga/karana,
+    muhurta windows, the Vedic day boundary, civil-date ownership, §8 policies
+    and all of Layers B and C are ours and always will be. **The test:** if it
+    would be identical for an observatory in Chile, it belongs to astronomia.
+    If a Hindu calendar concept appears in its name or reasoning, it is ours.
+    Where astronomia genuinely lacks something, that is a documented exception
+    recorded in `docs/CALENDAR_ENGINE_ASSESSMENT.md` §7. See
+    `docs/ASTRONOMY_BOUNDARY_PLAN.md`. **All 11 defects D18–D28 were in physics
+    we wrote; none were astronomia's** — this rule exists because of that
+    evidence, not on principle.
+
 Additional hard constraints:
 
 - **Layer discipline:** Layer A must not import Layer B or C; Layer B must not import
