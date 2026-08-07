@@ -14,6 +14,8 @@ import { Sunrise } from 'astronomia/sunrise';
 import parallax from 'astronomia/parallax';
 import globe from 'astronomia/globe';
 import sidereal from 'astronomia/sidereal';
+import base from 'astronomia/base';
+import iterate from 'astronomia/iterate';
 
 // ---------------------------------------------------------------------------
 // Julian Day & Calendar
@@ -25,7 +27,7 @@ import sidereal from 'astronomia/sidereal';
  * (68.88 s in 2026); mixing the two is what caused the moonrise bias.
  */
 export function dateToJd(date: Date): number {
-  return julian.DateToJD(date);
+  return new julian.CalendarGregorian().fromDate(date).toJD();
 }
 
 /** Julian Ephemeris Day (**TT** scale). Use for ephemeris positions. */
@@ -136,4 +138,12 @@ export function getSunriseSunsetTimes(
     sunset: sunsetDate,
     noon: noonDate,
   };
+}
+
+export function pmod(x: number, y: number): number {
+  return base.pmod(x, y);
+}
+
+export function binaryRoot(f: (x: number) => number, lower: number, upper: number): number {
+  return iterate.binaryRoot(f, lower, upper);
 }

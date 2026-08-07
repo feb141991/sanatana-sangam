@@ -1,12 +1,14 @@
 declare module 'astronomia/julian' {
   export class Calendar {
-    constructor(date?: Date);
+    constructor(date?: Date | number, month?: number, day?: number);
     toDate(): Date;
+    toJD(): number;
+    toJDE(): number;
+    fromDate(date: Date): this;
   }
 
-  export class CalendarGregorian {
-    constructor(year?: number, month?: number, day?: number);
-    toDate(): Date;
+  export class CalendarGregorian extends Calendar {
+    constructor(date?: Date | number, month?: number, day?: number);
   }
 
   export function DateToJDE(date: Date): number;
@@ -105,4 +107,20 @@ declare module 'astronomia/sidereal' {
   };
 
   export default sidereal;
+}
+
+declare module 'astronomia/base' {
+  export function pmod(x: number, y: number): number;
+  const base: {
+    pmod: typeof pmod;
+  };
+  export default base;
+}
+
+declare module 'astronomia/iterate' {
+  export function binaryRoot(f: (x: number) => number, lower: number, upper: number): number;
+  const iterate: {
+    binaryRoot: typeof binaryRoot;
+  };
+  export default iterate;
 }

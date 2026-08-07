@@ -14,6 +14,7 @@ import {
   getMoonPosition,
   getNutation,
   getSunriseSunsetTimes,
+  pmod,
 } from './astronomy-adapter.js';
 
 
@@ -23,7 +24,7 @@ import {
 
 /** Normalise any angle into [0, 360). */
 export function normalizeAngle(deg: number): number {
-  return ((deg % 360) + 360) % 360;
+  return pmod(deg, 360);
 }
 
 /**
