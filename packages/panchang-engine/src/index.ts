@@ -5,7 +5,8 @@ import {
   computeAstronomy,
   type AstroSnapshot as PanchangAstronomy,
 } from './core/astronomy.js';
-import { dateToJde, getSunriseSunsetTimes } from './core/astronomy-adapter.js';
+import { dateToJde, getSunriseSunsetTimes, getSolarApparentLongitude, binaryRoot } from './core/astronomy-adapter.js';
+import { findNewMoonBefore, findNewMoonAfter } from './lunar-month/index.js';
 
 
 
@@ -346,17 +347,13 @@ function solveNextBoundary(
     return null;
   }
 
-  for (let i = 0; i < 45; i += 1) {
-    const mid = Math.floor((low + high) / 2);
-    const midValue = unwrapForward(valueAt(new Date(mid)), startValue);
-    if (midValue >= target) {
-      high = mid;
-    } else {
-      low = mid;
-    }
-  }
+  const f = (t: number) => {
+    const val = unwrapForward(valueAt(new Date(t)), startValue);
+    return val - target;
+  };
 
-  return new Date(high);
+  const rootMs = binaryRoot(f, low, high);
+  return new Date(rootMs);
 }
 
 /** Explicit opt-in reference location. §8 "Bharat reference" mode.
@@ -425,15 +422,55 @@ export function resolveObservanceLocation(input?: {
   };
 }
 
+export function findNewMoonForRashi(year: number, targetRashi: number): Date {
+  const midMonth = targetRashi === 11 ? 2 : 9; // 0-indexed: 2 = March, 9 = October
+  const startSearch = new Date(Date.UTC(year, midMonth, 15, 12, 0, 0));
+  
+  const nm1 = findNewMoonBefore(startSearch);
+  const nm2 = findNewMoonAfter(startSearch);
+  
+  const candidates = [nm1, nm2].filter((d): d is Date => d !== null);
+  
+  for (const candidate of candidates) {
+    const jde = dateToJde(candidate);
+    const t = (jde - 2451545.0) / 36525.0;
+    const sunSidereal = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI - lahiriAyanamsha(jde));
+    const rashi = Math.floor(sunSidereal / 30) % 12;
+    if (rashi === targetRashi) {
+      return candidate;
+    }
+  }
+
+  if (nm1) {
+    const nmPrev = findNewMoonBefore(new Date(nm1.getTime() - 15 * 24 * 3600 * 1000));
+    if (nmPrev) {
+      const jde = dateToJde(nmPrev);
+      const t = (jde - 2451545.0) / 36525.0;
+      const sunSidereal = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI - lahiriAyanamsha(jde));
+      const rashi = Math.floor(sunSidereal / 30) % 12;
+      if (rashi === targetRashi) return nmPrev;
+    }
+  }
+  if (nm2) {
+    const nmNext = findNewMoonAfter(new Date(nm2.getTime() + 15 * 24 * 3600 * 1000));
+    if (nmNext) {
+      const jde = dateToJde(nmNext);
+      const t = (jde - 2451545.0) / 36525.0;
+      const sunSidereal = normalizeAngle((getSolarApparentLongitude(t) * 180) / Math.PI - lahiriAyanamsha(jde));
+      const rashi = Math.floor(sunSidereal / 30) % 12;
+      if (rashi === targetRashi) return nmNext;
+    }
+  }
+
+  throw new Error(`Failed to find new moon for rashi ${targetRashi} in year ${year}`);
+}
+
 export function calculatePanchang(
   date: Date,
   lat: number,
   lon: number,
-  /** IANA timezone string, e.g. "Asia/Kolkata", "Europe/London", "America/New_York".
-   *  When supplied, ALL time strings (sunrise, Rahu Kaal, etc.) are displayed in that
-   *  timezone. Diaspora users pass their local timezone; IST observers omit / pass
-   *  "Asia/Kolkata". Festival dates remain IST-canonical regardless. */
   timezone?: string,
+  era: 'vikram_north' | 'vikram_gujarat' | 'shaka' | 'kollam' | 'bengali_san' | 'bikram_sambat' | 'nanakshahi' | null = 'vikram_north',
 ): PanchangData {
   // ── Timezone-aware formatters ────────────────────────────────────────────────
   // When a timezone is provided we create scoped formatters so the output is
@@ -516,11 +553,35 @@ export function calculatePanchang(
   const masaName = MASA_NAMES[masaIndex];
 
   const gregYear = date.getFullYear();
-  // Vikrama Samvat increases by 1 at Chaitra Shukla Pratipada (~late March/early April).
-  // We use April 1 as the approximate cutover — accurate to ±14 days for display purposes.
-  const samvatCutover = new Date(gregYear, 3, 1); // April 1 (month is 0-indexed)
-  const samvatYear = date >= samvatCutover ? gregYear + 57 : gregYear + 56;
-  const samvatName = SAMVAT_NAMES[(samvatYear - 1) % 60] ?? '';
+  let samvatYear = gregYear + 57;
+  let samvatName = '';
+
+  if (era === 'vikram_north' || era === 'legacy-ujjain' as any || !era) {
+    // Vikram Samvat North rolls over at Chaitra Shukla Pratipada new moon (Sun in Mina). [S] pending ratification.
+    // Sourced from calendar-profiles.md §3.
+    const newYearDate = findNewMoonForRashi(gregYear, 11);
+    samvatYear = date >= newYearDate ? gregYear + 57 : gregYear + 56;
+    samvatName = SAMVAT_NAMES[(samvatYear - 1) % 60] ?? '';
+  } else if (era === 'vikram_gujarat') {
+    // Vikram Samvat Gujarat rolls over at Kartika Shukla Pratipada new moon (Sun in Tula). [S] pending ratification.
+    // Sourced from calendar-profiles.md §3.
+    const newYearDate = findNewMoonForRashi(gregYear, 6);
+    samvatYear = date >= newYearDate ? gregYear + 57 : gregYear + 56;
+    samvatName = SAMVAT_NAMES[(samvatYear - 1) % 60] ?? '';
+  } else if (era === 'shaka') {
+    // Shaka Samvat rolls over at Chaitra 1 (March 22, or March 21 in Gregorian leap years). [S] pending ratification.
+    // Sourced from calendar-profiles.md §3.
+    const isLeap = (gregYear % 4 === 0 && gregYear % 100 !== 0) || (gregYear % 400 === 0);
+    const newYearDate = new Date(Date.UTC(gregYear, 2, isLeap ? 21 : 22, 0, 0, 0));
+    samvatYear = date >= newYearDate ? gregYear - 78 : gregYear - 79;
+    samvatName = ''; // Shaka does not use 60-year Jovian cycles
+  } else {
+    // Out of scope: kollam, bengali_san, bikram_sambat, nanakshahi.
+    // These depend on solar calendar day assignment rules or council decisions which are pending [S].
+    // Sourced from calendar-profiles.md §3/§8.
+    samvatYear = 0;
+    samvatName = `[S] Era ${era} pending ratification/out-of-scope`;
+  }
 
   return {
     tithi,
