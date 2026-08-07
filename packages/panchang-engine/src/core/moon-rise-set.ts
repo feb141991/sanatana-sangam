@@ -9,6 +9,7 @@
  */
 
 import {
+  dateToJd,
   dateToJde,
   getMoonPosition,
   getMoonParallax,
@@ -68,7 +69,9 @@ export function getMoonUpperLimbAlt(
   const ra = Math.atan2(sinLambda * cosEps - tanBeta * sinEps, cosLambda);
   const dec = Math.asin(Math.max(-1, Math.min(1, sinBeta * cosEps + cosBeta * sinEps * sinLambda)));
 
-  const st0Rad = getApparentSiderealTimeRad(jde);
+  // Sidereal time is defined on UT, not TT. Passing jde here made every
+  // moonrise ~69 s early (13 of 13 vs USNO). See the adapter's doc comment.
+  const st0Rad = getApparentSiderealTimeRad(dateToJd(date));
   const lst = st0Rad - lonWestRad;
 
   let H = lst - ra;

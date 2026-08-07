@@ -19,6 +19,16 @@ import sidereal from 'astronomia/sidereal';
 // Julian Day & Calendar
 // ---------------------------------------------------------------------------
 
+/**
+ * Julian Day on the **UT** scale. Use for anything measuring Earth's rotation —
+ * sidereal time, hour angles, observer position. Differs from `dateToJde` by ΔT
+ * (68.88 s in 2026); mixing the two is what caused the moonrise bias.
+ */
+export function dateToJd(date: Date): number {
+  return julian.DateToJD(date);
+}
+
+/** Julian Ephemeris Day (**TT** scale). Use for ephemeris positions. */
 export function dateToJde(date: Date): number {
   return julian.DateToJDE(date);
 }
@@ -55,8 +65,23 @@ export function getMeanObliquity(jde: number): number {
 // Sidereal Time
 // ---------------------------------------------------------------------------
 
-export function getApparentSiderealTimeRad(jde: number): number {
-  return (sidereal.apparent(jde) / 3600) * 15 * (Math.PI / 180);
+/**
+ * Greenwich apparent sidereal time, in radians.
+ *
+ * *** Takes a JD on the UT scale, NOT a JDE. *** Sidereal time measures Earth's
+ * rotation, which is defined against UT. Feeding it TT advances it by ΔT
+ * (68.88 s in 2026), which advances every hour angle and so makes every
+ * computed rise time that much early.
+ *
+ * This was a real defect, found by the 13 USNO golden fixtures: the moonrise
+ * path passed `jde` here and ran early at 13 of 13 sites. Switching to UT moved
+ * the mean residual from −1.62 min to −0.62 min and made 5 of the 13 exact.
+ * Sunrise was never affected because it delegates to astronomia's own `Sunrise`,
+ * which handles the time base internally — which is why the bias was
+ * moon-specific.
+ */
+export function getApparentSiderealTimeRad(jdUT: number): number {
+  return (sidereal.apparent(jdUT) / 3600) * 15 * (Math.PI / 180);
 }
 
 // ---------------------------------------------------------------------------

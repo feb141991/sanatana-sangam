@@ -349,6 +349,16 @@ describe('Moonrise Engine Tier 1/2 Golden Accuracy Suite (D23 & §10)', () => {
     });
   });
 
+  // These two assert SNAPSHOTS of engine output, not sourced values — no USNO
+  // reading exists for these dates. What D20 actually tests is that a 23-hour
+  // and a 25-hour civil day are handled at all (res.ok, and a moonrise found);
+  // the exact minute is a change-detector, and it legitimately moves when the
+  // astronomy is corrected.
+  //
+  // Both moved +2 min when the sidereal-time fix landed (passing UT instead of
+  // TT). That is the snapshot doing its job — flagging a change — not a
+  // regression: the same fix took 5 of the 13 sourced USNO fixtures to exact
+  // and moved none away from it.
   describe('D20 — DST Civil Day Bounds (London 23h & 25h Transitions)', () => {
     it('handles 23-hour spring-forward DST transition day (London 2026-03-29)', () => {
       const date = new Date('2026-03-29T12:00:00Z');
@@ -357,7 +367,7 @@ describe('Moonrise Engine Tier 1/2 Golden Accuracy Suite (D23 & §10)', () => {
       if (res.ok && res.moonrise) {
         const localTime = formatLocalTime(res.moonrise, 'Europe/London');
         console.log('[DST Spring-Forward 23h] London 2026-03-29 Moonrise:', localTime);
-        expect(localTime).toBe('15:20');
+        expect(localTime).toBe('15:22'); // snapshot, not sourced
       }
     });
 
@@ -368,7 +378,7 @@ describe('Moonrise Engine Tier 1/2 Golden Accuracy Suite (D23 & §10)', () => {
       if (res.ok && res.moonrise) {
         const localTime = formatLocalTime(res.moonrise, 'Europe/London');
         console.log('[DST Fall-Back 25h] London 2026-10-25 Moonrise:', localTime);
-        expect(localTime).toBe('16:00');
+        expect(localTime).toBe('16:01'); // snapshot, not sourced
       }
     });
   });
