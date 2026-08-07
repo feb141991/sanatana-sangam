@@ -39,8 +39,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'HMNAO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=52.1356,-0.4685&tz=0',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '07:23',
     },
   },
   {
@@ -54,8 +54,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=23.1765,75.7885&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '06:49',
     },
   },
   {
@@ -69,8 +69,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-03&coords=23.1765,75.7885&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '18:31',
     },
   },
 
@@ -86,8 +86,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=28.6139,77.2090&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '06:56',
     },
   },
   {
@@ -101,8 +101,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=25.3176,82.9739&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '11:25',
     },
   },
   {
@@ -116,8 +116,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=19.0760,72.8777&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '15:49',
     },
   },
   {
@@ -131,8 +131,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=13.0827,80.2707&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '15:00',
     },
   },
   {
@@ -146,8 +146,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-03&coords=22.5726,88.3639&tz=5.5',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '17:39',
     },
   },
   {
@@ -161,8 +161,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=27.7172,85.3240&tz=5.75',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '06:39',
     },
   },
   {
@@ -176,8 +176,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'HMNAO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=51.5074,-0.1278&tz=1',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '12:41',
     },
   },
   {
@@ -191,8 +191,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=40.7128,-74.0060&tz=-4',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '17:02',
     },
   },
   {
@@ -206,8 +206,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'USNO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=-33.8688,151.2093&tz=11',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '17:06',
     },
   },
   {
@@ -221,8 +221,8 @@ const GOLDEN_FIXTURES: GoldenFixture[] = [
     source: {
       authority: 'HMNAO',
       query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=64.1466,-21.9426&tz=0',
-      retrievedOn: '2026-08-04',
-      value: 'PENDING',
+      retrievedOn: '2026-08-07',
+      value: '07:14',
     },
   },
 ];
