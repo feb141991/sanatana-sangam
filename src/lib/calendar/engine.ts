@@ -447,10 +447,19 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
 }
 
 /**
- * Calculates all occurrences of observances for a target Gregorian year.
- * Keeps calculation output deterministic and versionable.
+ * Calculates all occurrences of observances for a target Gregorian year, using
+ * the **legacy** masa path unconditionally — it ignores USE_CORRECTED_MASA.
+ *
+ * Diff and reconciliation scripts MUST call this, not `calculateObservancesForYear`,
+ * whenever they need "the legacy answer". `calculateObservancesForYear` dispatches on
+ * the gate, so once the gate is on it returns the *corrected* result and any script
+ * diffing it against `calculateObservancesForYearCorrected` silently becomes a
+ * self-comparison reporting zero movement.
+ *
+ * That is not hypothetical: `scripts/verify-masa-gate.ts` measures 74 differing
+ * (slug@date) pairs for 2026 with the gate off, and 0 with it on.
  */
-export function calculateObservancesForYear(year: number): CalculatedOccurrence[] {
+export function calculateObservancesForYearLegacy(year: number): CalculatedOccurrence[] {
   const occurrencesMap = buildOccurrencesMap(year);
 
   // 3. Assemble results — one occurrence per rule per year.
@@ -477,6 +486,19 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
   }
 
   return results;
+}
+
+/**
+ * The production entry point. Dispatches on USE_CORRECTED_MASA.
+ *
+ * Callers that want "whatever ships" use this. Callers that want a *specific*
+ * path must name it — `calculateObservancesForYearLegacy` or
+ * `calculateObservancesForYearCorrected` — so their meaning survives a gate flip.
+ */
+export function calculateObservancesForYear(year: number): CalculatedOccurrence[] {
+  return USE_CORRECTED_MASA
+    ? calculateObservancesForYearCorrected(year)
+    : calculateObservancesForYearLegacy(year);
 }
 
 export function calculateObservanceCandidateDiagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {

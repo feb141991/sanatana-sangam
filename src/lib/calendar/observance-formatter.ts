@@ -1,4 +1,4 @@
-import { calculateObservancesForYearCorrected } from './engine';
+import { calculateObservancesForYear } from './engine';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -74,11 +74,11 @@ export function formatOccurrencesToResults(
 ): ClientObservanceResult[] {
   const results: ClientObservanceResult[] = [];
 
-  // Keep a map of years to their baseline occurrences so we can look up legacy dates for unresolved ones
+  // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones
   const baselineByYear = new Map<number, any[]>();
   const getBaseline = (year: number) => {
     if (!baselineByYear.has(year)) {
-      baselineByYear.set(year, calculateObservancesForYearCorrected(year));
+      baselineByYear.set(year, calculateObservancesForYear(year));
     }
     return baselineByYear.get(year)!;
   };
@@ -150,7 +150,7 @@ export function formatOccurrencesToResults(
     if (!def) continue;
 
     const baseline = getBaseline(row.year);
-    const legacyDate = baseline.find(occ => occ.slug === def.slug)?.date;
+    const fallbackDate = baseline.find(occ => occ.slug === def.slug)?.date;
     
     let candidateDatesArray: string[] = [];
     if (row.candidate_dates) {
@@ -167,7 +167,7 @@ export function formatOccurrencesToResults(
 
     const targetDates = candidateDatesArray.length > 0
       ? candidateDatesArray
-      : (legacyDate ? [legacyDate] : []);
+      : (fallbackDate ? [fallbackDate] : []);
 
     const evalDiagnostics: string[] = (row.evaluator_details?.diagnostics as any) || [];
 
@@ -219,15 +219,29 @@ export function formatOccurrencesToResults(
     }
   }
 
-  // 3. Group by festival slug (festivalId) and classify variants [1], [2], [3], [4]
+  // 3. Group by festival slug AND location, then classify variants [1], [2], [3], [4].
+  //
+  // Location MUST be part of the key. The classification below decides "[1] DISPUTE vs
+  // [4] LOCATION EFFECT" by counting distinct traditions in the group — a valid test only
+  // when every row in the group was computed at the SAME place. None of the three API
+  // routes (calendar/day, /month, /upcoming) constrain location in their query, so without
+  // this a Smarta row computed at one location and a Gaudiya row computed at another would
+  // land in one group, count as two traditions, and be published as a tradition dispute —
+  // when the dates may differ purely because the locations do.
+  //
+  // Not a hypothetical failure mode: we made exactly this error in prose about Janmashtami
+  // 2026, reporting it as Smarta 3 Sep vs Vaishnava 4 Sep. At Ujjain both traditions are
+  // 4 Sep; the 3 Sep is Bedford-only. Telling a user two sampradayas disagree, when the
+  // truth is their longitude moved a sunrise, invents a religious claim (AGENTS.md rule 7).
   const groups = new Map<string, ClientObservanceResult[]>();
   for (const item of results) {
-    const key = item.festivalId;
+    const key = `${item.festivalId}@${item.location.lat},${item.location.lon}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }
 
-  for (const [slug, list] of groups.entries()) {
+  for (const [groupKey, list] of groups.entries()) {
+    const slug = groupKey.slice(0, groupKey.lastIndexOf('@'));
     if (list.length === 1) {
       list[0].isPrimary = true;
       continue;

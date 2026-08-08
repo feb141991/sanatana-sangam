@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { calculateObservancesForYearCorrected } from '../src/lib/calendar/engine';
+import { calculateObservancesForYear } from '../src/lib/calendar/engine';
 import { evaluateVariant } from '../packages/dharma-rules/src/conditions/index.js';
 import { CANONICAL_RULES } from '../src/lib/calendar/rules';
 
@@ -213,7 +213,7 @@ async function run() {
 
   const years = [2026, 2027, 2028];
   let report = `# Condition Evaluator Shadow Diff Report\n\n`;
-  report += `This report lists every date that shifts or is excluded under the condition evaluator path (\`USE_CONDITION_EVALUATOR = true\`) compared to the corrected rule engine baseline, across Ujjain, Bedford, London, New York, and Sydney.\n\n`;
+  report += `This report lists every date that shifts or is excluded under the condition evaluator path (\`USE_CONDITION_EVALUATOR = true\`) compared to the rule engine baseline that \`calculateOccurrencesWithEvaluator\` actually uses (gate-dependent: legacy while \`USE_CORRECTED_MASA\` is false, corrected once it is true), across Ujjain, Bedford, London, New York, and Sydney.\n\n`;
 
   report += `## 1. Summary of Authority and Exclusion Rules\n\n`;
   report += `- **Precedence assignment:** The condition evaluator rules are applied to the 7 time-of-day/muhurta dependent rules.\n`;
@@ -228,7 +228,7 @@ async function run() {
   let totalExcluded = 0;
 
   for (const year of years) {
-    const baseline = calculateObservancesForYearCorrected(year);
+    const baseline = calculateObservancesForYear(year);
 
     for (const eRule of EVALUATOR_RULES) {
       const candidates = baseline.filter(occ => occ.slug === eRule.slug);

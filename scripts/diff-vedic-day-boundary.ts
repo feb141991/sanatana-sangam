@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { CANONICAL_RULES, ObservanceRule } from '../src/lib/calendar/rules.js';
 import {
-  calculateObservancesForYear,
+  calculateObservancesForYearLegacy,
   SolarFixedHandler,
   LunarTithiHandler,
   RecurringLunarTithiHandler,
@@ -97,7 +97,7 @@ async function runShadowDiff() {
     console.log(`Computing occurrences for year ${year}...`);
 
     // 1. Compute Legacy Baseline (1am UTC synthetic Ujjain sunrise)
-    const legacyOccurrences = calculateObservancesForYear(year);
+    const legacyOccurrences = calculateObservancesForYearLegacy(year);
 
     // 2. Compute New Vedic Day Resolver occurrences for each location
     const locationOccMap = new Map<string, Array<{ slug: string; date: string; year: number }>>();

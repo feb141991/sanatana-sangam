@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  calculateObservancesForYear,
+  calculateObservancesForYearLegacy,
   calculateObservancesForYearCorrected,
   precomputePanchangCorrectedForYear,
   SolarFixedHandler,
@@ -275,7 +275,7 @@ const unexplainedList: Array<{ year: number; slug: string; legacyDate: string | 
 const bothList: Array<{ year: number; slug: string; legacyDate: string | null; correctedDate: string | null; shiftDays: number | null; reason: string }> = [];
 
 for (const year of years) {
-  const legacyList = calculateObservancesForYear(year);
+  const legacyList = calculateObservancesForYearLegacy(year);
   const correctedList = calculateObservancesForYearCorrected(year);
 
   const legacyGroup: Record<string, string[]> = {};

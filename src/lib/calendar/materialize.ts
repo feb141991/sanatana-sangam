@@ -299,7 +299,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     evaluator_details: any;
   }>;
 } {
-  const baseline = calculateObservancesForYearCorrected(year);
+  const baseline = calculateObservancesForYear(year);
   const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
   const finalOccurrences: any[] = [];
   const unresolved: any[] = [];
