@@ -470,7 +470,7 @@
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Bhadrapada",
     "corrected_lunar_masa_name": "Kartika",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 19,
     "route_kind": "vrat",
@@ -499,7 +499,7 @@
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Bhadrapada",
     "corrected_lunar_masa_name": "Kartika",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 29
   },
