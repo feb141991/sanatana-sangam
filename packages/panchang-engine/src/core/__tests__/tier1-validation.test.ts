@@ -47,21 +47,33 @@ describe('4.3 — sunset vs Tier-1 authority', () => {
 
       expect(sunset, `engine returned no sunset for ${label}`).not.toBeNull();
 
-      // Compare on the authority's own local clock, to the minute it printed.
-      const printed = new Intl.DateTimeFormat('en-GB', {
-        timeZone: s.tz, hour: '2-digit', minute: '2-digit', hour12: false,
-      }).format(sunset!);
+      // USNO and HMNAO publish rise/set ROUNDED to the nearest minute, so the
+      // engine value must be rounded the same way before comparing. Formatting
+      // with hour/minute alone TRUNCATES, which manufactures a spurious −1 minute
+      // for any engine time at ≥30 s past the minute. That bug failed 6 of these
+      // 13 fixtures on first run, and all 6 had engine-seconds ≥ 30 — a perfect
+      // match to the artifact, and zero of the 7 passing cases did. Truncating
+      // also makes the comparison coarser (60 s) than the tolerance it claims to
+      // enforce (30 s), which is not a valid test at any residual.
+      const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: s.tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+      }).format(sunset!).split(':').map(Number);
+      const engineSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
 
-      const toMin = (hhmm: string) => {
-        const [hh, mm] = hhmm.split(':').map(Number);
-        return hh * 60 + mm;
-      };
-      const deltaSeconds = Math.abs(toMin(printed) - toMin(f.value!)) * 60;
+      const [ah, am] = f.value!.split(':').map(Number);
+      const authoritySeconds = ah * 3600 + am * 60;
+
+      // The authority's printed minute represents anything within ±30 s of it,
+      // so the engine agrees when it lands inside that half-minute window.
+      const deltaSeconds = Math.abs(engineSeconds - authoritySeconds);
 
       expect(
         deltaSeconds,
-        `${label}: engine ${printed}, ${f.source!.authority} ${f.value} ` +
-          `(${deltaSeconds}s apart, budget ${TOLERANCES.sunsetSeconds}s)`
+        `${label}: engine ${Math.floor(engineSeconds / 3600)}:` +
+          `${String(Math.floor((engineSeconds % 3600) / 60)).padStart(2, '0')}:` +
+          `${String(engineSeconds % 60).padStart(2, '0')}, ` +
+          `${f.source!.authority} ${f.value} (${deltaSeconds}s apart, ` +
+          `budget ${TOLERANCES.sunsetSeconds}s)`
       ).toBeLessThanOrEqual(TOLERANCES.sunsetSeconds);
     });
   }

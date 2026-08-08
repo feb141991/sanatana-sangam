@@ -124,3 +124,22 @@ declare module 'astronomia/iterate' {
   };
   export default iterate;
 }
+
+// D30: full VSOP87 for the apparent solar longitude. The truncated Meeus series
+// previously used sat 2.2x outside the §1.2 Sankranti budget.
+declare module 'astronomia/planetposition' {
+  const planetposition: any;
+  export default planetposition;
+}
+declare module 'astronomia/elp' {
+  const elp: any;
+  export default elp;
+}
+declare module 'astronomia/data/vsop87Bearth' {
+  const data: any;
+  export default data;
+}
+declare module 'astronomia/data/elpMppDe' {
+  const data: any;
+  export default data;
+}

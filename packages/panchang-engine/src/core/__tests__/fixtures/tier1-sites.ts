@@ -42,7 +42,8 @@
  * `frame` below is mandatory so this is never left implicit.
  *
  * LLM output is Tier 6 and is NEVER a valid value here (source-governance §2).
- * Every `value` must be read off the authority's own response by a person.
+ * Every `value` must come from the authority's own response — read by a person or
+ * fetched by `scripts/fetch-tier1-fixtures.ts`. See `retrievalMethod`.
  */
 
 /** A citation. A label is not a source; the query must be replayable. */
@@ -52,6 +53,21 @@ export interface Tier1Source {
   query: string;
   /** ISO date the value was read. */
   retrievedOn: string;
+  /**
+   * How the value got here — the two carry different risks and the audit trail
+   * should not blur them.
+   *
+   * 'human-read'      — a person opened the page and typed the number.
+   * 'automated-fetch' — `scripts/fetch-tier1-fixtures.ts` called the authority's
+   *                     own API and parsed the response. No model saw or chose
+   *                     the value; re-running the script reproduces it exactly.
+   *
+   * Neither is LLM output. The rule that matters (source-governance §2) is that a
+   * model must never *supply* a value from its own weights and label it USNO —
+   * that was the D23 failure. Machine retrieval from the cited endpoint is the
+   * opposite of that: more replayable than a human transcription, not less.
+   */
+  retrievalMethod: 'human-read' | 'automated-fetch';
 }
 
 export interface Tier1Site {
@@ -103,35 +119,83 @@ export interface LongitudeFixture {
 
 /** Dates chosen to span solstices, equinoxes and the 2026 Adhika Jyeshtha. */
 export const SUNSET_FIXTURES: SunsetFixture[] = [
-  { city: 'Ujjain', dateStr: '2026-02-17', value: null, source: null },
-  { city: 'Ujjain', dateStr: '2026-06-21', value: null, source: null },
-  { city: 'Delhi', dateStr: '2026-03-20', value: null, source: null },
-  { city: 'Varanasi', dateStr: '2026-06-21', value: null, source: null },
-  { city: 'Mumbai', dateStr: '2026-09-22', value: null, source: null },
-  { city: 'Chennai', dateStr: '2026-12-21', value: null, source: null },
-  { city: 'Kolkata', dateStr: '2026-03-03', value: null, source: null },
-  { city: 'Kathmandu', dateStr: '2026-03-20', value: null, source: null },
-  { city: 'Bedford', dateStr: '2026-02-17', value: null, source: null },
-  { city: 'London', dateStr: '2026-06-21', value: null, source: null },
-  { city: 'New York', dateStr: '2026-09-22', value: null, source: null },
-  { city: 'Sydney', dateStr: '2026-12-21', value: null, source: null },
-  { city: 'Reykjavík', dateStr: '2026-03-20', value: null, source: null },
-];
+  { city: 'Ujjain', dateStr: '2026-02-17', value: '18:24',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=23.1765,75.7885&tz=5.5' } },
+  { city: 'Ujjain', dateStr: '2026-06-21', value: '19:15',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=23.1765,75.7885&tz=5.5' } },
+  { city: 'Delhi', dateStr: '2026-03-20', value: '18:32',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=28.6139,77.2090&tz=5.5' } },
+  { city: 'Varanasi', dateStr: '2026-06-21', value: '18:51',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=25.3176,82.9739&tz=5.5' } },
+  { city: 'Mumbai', dateStr: '2026-09-22', value: '18:35',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=19.0760,72.8777&tz=5.5' } },
+  { city: 'Chennai', dateStr: '2026-12-21', value: '17:48',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=13.0827,80.2707&tz=5.5' } },
+  { city: 'Kolkata', dateStr: '2026-03-03', value: '17:41',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-03&coords=22.5726,88.3639&tz=5.5' } },
+  { city: 'Kathmandu', dateStr: '2026-03-20', value: '18:15',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=27.7172,85.3240&tz=5.75' } },
+  { city: 'Bedford', dateStr: '2026-02-17', value: '17:19',
+    source: { authority: 'HMNAO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-02-17&coords=52.1356,-0.4685&tz=0' } },
+  { city: 'London', dateStr: '2026-06-21', value: '21:22',
+    source: { authority: 'HMNAO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-06-21&coords=51.5074,-0.1278&tz=1' } },
+  { city: 'New York', dateStr: '2026-09-22', value: '18:53',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-09-22&coords=40.7128,-74.0060&tz=-4' } },
+  { city: 'Sydney', dateStr: '2026-12-21', value: '20:05',
+    source: { authority: 'USNO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-12-21&coords=-33.8688,151.2093&tz=11' } },
+  { city: 'Reykjavík', dateStr: '2026-03-20', value: '19:43',
+    source: { authority: 'HMNAO', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-03-20&coords=64.1466,-21.9426&tz=0' } },];
 
 /** Instants for the longitude checks. Geocentric, so location-independent —
  *  these validate the ephemeris that every site's tithi/nakshatra depends on.
  *  Includes the 2026 Adhika Jyeshtha boundaries, since the leap month is what
  *  drives the largest festival-date shifts in the 3.7 migration. */
 export const LONGITUDE_FIXTURES: LongitudeFixture[] = [
-  { instantUtc: '2026-01-01T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-03-20T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-05-16T20:01:58Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-06-15T02:54:50Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-06-21T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-09-22T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2026-12-21T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-  { instantUtc: '2027-01-01T00:00:00Z', sunApparentLon: null, moonApparentLon: null, frame: null, source: null },
-];
+  { instantUtc: '2026-01-01T00:00:00Z',
+    sunApparentLon: 280.5685772, moonApparentLon: 66.7156363, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-01-01+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-01-01+00%3A00%3A00%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-03-20T00:00:00Z',
+    sunApparentLon: 359.3883245, moonApparentLon: 11.7297728, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-03-20+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-03-20+00%3A00%3A00%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-05-16T20:01:58Z',
+    sunApparentLon: 55.9620923, moonApparentLon: 55.9711957, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-05-16+20%3A01%3A58%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-05-16+20%3A01%3A58%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-06-15T02:54:50Z',
+    sunApparentLon: 84.0506538, moonApparentLon: 84.0572821, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-06-15+02%3A54%3A50%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-06-15+02%3A54%3A50%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-06-21T00:00:00Z',
+    sunApparentLon: 89.6655938, moonApparentLon: 168.6969009, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-06-21+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-06-21+00%3A00%3A00%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-09-22T00:00:00Z',
+    sunApparentLon: 179.0185133, moonApparentLon: 303.4139561, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-09-22+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-09-22+00%3A00%3A00%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2026-12-21T00:00:00Z',
+    sunApparentLon: 269.1161742, moonApparentLon: 46.265977, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-12-21+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272026-12-21+00%3A00%3A00%27&QUANTITIES=%2731%27' } },
+  { instantUtc: '2027-01-01T00:00:00Z',
+    sunApparentLon: 280.3203286, moonApparentLon: 204.6139311, frame: 'apparent',
+    source: { authority: 'JPL_HORIZONS', retrievedOn: '2026-08-08', retrievalMethod: 'automated-fetch',
+      query: 'Sun: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272027-01-01+00%3A00%3A00%27&QUANTITIES=%2731%27 | Moon: https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27301%27&OBJ_DATA=%27NO%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&CENTER=%27500%40399%27&TLIST=%272027-01-01+00%3A00%3A00%27&QUANTITIES=%2731%27' } },];
 
 /** §1.2 tolerances, as decimal degrees / seconds. Single source for the tests. */
 export const TOLERANCES = {

@@ -3,7 +3,13 @@
  *
  * WHY THIS IS NOT A SELF-COMPARISON
  * ---------------------------------
- * Our engine calls astronomia's LOW-precision series:
+ * HISTORICAL NOTE: as of D30 the engine's SUN is on full VSOP87. This script now
+ * measures the truncation of the series we MOVED AWAY FROM, and is kept as the
+ * record of why. The Moon deliberately stays on Meeus ch.47 (6.5" worst vs a
+ * 61.2" budget) -- switching it would be churn with real risk to the moonrise
+ * fixtures, for no tolerance gain.
+ *
+ * The series compared here:
  *   Sun  -> solar.apparentLongitude   (Meeus ch. 25 truncated)
  *   Moon -> moonposition.position     (Meeus ch. 47, ~10" claimed)
  *
@@ -83,7 +89,9 @@ for (const iso of INSTANTS) {
 const arcsec = (deg: number) => deg * 3600;
 const fmt = (deg: number) => `${deg >= 0 ? '+' : ''}${deg.toFixed(6)}° (${arcsec(deg).toFixed(1)}")`;
 
-console.log('\nEphemeris truncation: engine (Meeus, low-precision) vs astronomia high-precision');
+console.log('\nEphemeris truncation: Meeus low-precision vs astronomia high-precision');
+console.log('(the Sun row is why D30 moved the engine to VSOP87; the engine no longer');
+console.log(' uses solar.apparentLongitude. The Moon remains on Meeus, well inside budget.)');
 console.log('Sun : solar.apparentLongitude  vs  solar.apparentVSOP87');
 console.log('Moon: moonposition.position    vs  elp.position (ELP/MPP02)\n');
 console.log('| Instant                | ΔSun                    | ΔMoon                   | ΔElongation             |');
@@ -119,9 +127,10 @@ console.log('');
 if (okSun && okMoon && okElong) {
   console.log('All three inside budget. The low-precision series is adequate for our tolerances.');
 } else {
-  console.log('AT LEAST ONE QUANTITY IS OUTSIDE ITS OWN STATED BUDGET.');
-  console.log('astronomia already ships the higher-precision path with its data files,');
-  console.log('so this is a switch we can make, not a limit we have to accept.');
+  console.log('At least one LOW-PRECISION series is outside the budget it feeds.');
+  console.log('For the Sun that is D30, already fixed -- the engine is on VSOP87 now, and');
+  console.log('agrees with JPL Horizons in tier1-validation.test.ts. A row here exceeding');
+  console.log('budget is a statement about the series, not about the shipping engine.');
 }
 console.log('\nThis is a truncation measurement, NOT external validation.');
-console.log('4.3 still needs USNO / JPL values read by a person.\n');
+console.log('External validation lives in tier1-validation.test.ts (USNO + JPL Horizons).\n');

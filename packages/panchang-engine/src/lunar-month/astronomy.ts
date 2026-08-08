@@ -70,28 +70,57 @@ export function solveBoundary(
   const STEP_MS       = 6 * 60 * 60 * 1000; // advance bracket in 6-h chunks
   const maxHighMs     = startDate.getTime() + maxSearchHours * 60 * 60 * 1000;
 
-  // Step 1: expand high until the angle has crossed the target
+  // Step 1: expand `high` until the angle has crossed the target.
+  //
+  // Turns are ACCUMULATED as we scan rather than recovered by unwrapping each
+  // sample against `startValue`. `unwrapForward(v, base)` adds 360 only while
+  // v < base, so when `base` is small it cannot tell a pre-wrap value from a
+  // post-wrap one: with startValue = 0.006deg, a wrapped sample of 0.5deg stays
+  // 0.5 instead of becoming 360.5, the bracket never registers the crossing,
+  // and the search runs to maxSearchHours and returns null.
+  //
+  // That is a real defect, D31. It bites whenever stepDegrees = 360 (the new-
+  // and full-moon searches), because only then is the target a whole revolution
+  // away. The 12deg tithi and 13.33deg nakshatra callers are unaffected: their
+  // target is always within one step of startValue, so `base` is large whenever
+  // a wrap matters. Concretely, findNewMoonAfter returned null for roughly the
+  // first 50 minutes after every new moon -- masked until now by the 0.005deg
+  // guard in findNewMoonAfter, which was not protecting against re-finding the
+  // same boundary (its stated purpose) so much as accidentally keeping `base`
+  // out of the range where the unwrap breaks.
   let low  = startDate.getTime();
   let high = low + STEP_MS;
+  let prevRaw = normalizeAngle(startValue);
+  let turns = 0;
+  let crossed = false;
 
   while (high <= maxHighMs) {
-    const highValue = unwrapForward(valueAt(new Date(high)), startValue);
-    if (highValue >= target) break;
+    const raw = normalizeAngle(valueAt(new Date(high)));
+    if (raw < prevRaw) turns++;            // the angle wrapped past 360
+    prevRaw = raw;
+    if (raw + 360 * turns >= target) { crossed = true; break; }
     high += STEP_MS;
   }
 
-  if (high > maxHighMs) return null;
+  if (!crossed) return null;
 
   // Step 2: solve for the crossing with the shared solver (rule 13/15).
   // The previous loop stopped at TOLERANCE_MS and returned `high` — the UPPER
   // bracket, i.e. up to 60 s AFTER the true boundary. binaryRoot converges to
   // sub-ms, so the returned instant is the boundary itself rather than a
   // 60 s-late approximation of it. Still inside the §1.2 budget, and tighter.
-  const rootMs = binaryRoot(
-    (ms) => unwrapForward(valueAt(new Date(ms)), startValue) - target,
-    low,
-    high,
-  );
+  // Step 2: bisect inside the final bracket only. Measuring the signed distance
+  // from the target angle keeps this wrap-safe without any turn bookkeeping: the
+  // angle advances only a few degrees across one STEP_MS, so the signed distance
+  // is negative at the bracket's start and positive at its end regardless of
+  // where 360 falls between them.
+  const targetMod = normalizeAngle(target);
+  const signedFromTarget = (ms: number) => {
+    const d = normalizeAngle(valueAt(new Date(ms)) - targetMod);
+    return d > 180 ? d - 360 : d;
+  };
+
+  const rootMs = binaryRoot(signedFromTarget, Math.max(low, high - STEP_MS), high);
 
   return new Date(rootMs);
 }

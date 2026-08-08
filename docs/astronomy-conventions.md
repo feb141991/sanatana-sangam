@@ -53,6 +53,21 @@ Rates of change (mean):
 A tithi boundary landing within *n* minutes of sunrise means any boundary error
 > *n* **flips the festival date**. Precision is therefore not a nicety.
 
+**ADR 2026-08-08 — solar ephemeris moved to full VSOP87 (D30).**
+`getSolarApparentLongitude` called Meeus ch. 25's truncated series (~0.01° stated
+accuracy). Measured worst error over 2026–2028 was **27.3″** against astronomia's
+own VSOP87, and **24.0″** against JPL Horizons on 2026-03-20 — two independent
+references agreeing. Against the 12.2″ Sankranti budget below that is **2.2×
+over**, and it leaked into tithi through the elongation (33.1″ vs 30.6″).
+Now uses `solar.apparentVSOP87`, which applies the same nutation and aberration,
+so the **reference frame is unchanged** — this is a precision fix, not a
+convention change, and it moves us *into* compliance with the tolerances that
+were already `[C]`. Date impact measured before landing: across 1096 days at the
+rule engine's own evaluation instant, one index changed (2026-03-13 tithi 23→24)
+and no rule can fire there. `verify:harness` stayed at 988/216.
+The **Moon deliberately remains on Meeus ch. 47** — 6.5″ worst against a 61.2″
+budget, so switching it would be churn with real risk to the moonrise fixtures.
+
 **Required tolerances `[C]`:**
 
 | Quantity | Max error | Implied longitude error |

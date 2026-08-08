@@ -16,6 +16,11 @@ import globe from 'astronomia/globe';
 import sidereal from 'astronomia/sidereal';
 import base from 'astronomia/base';
 import iterate from 'astronomia/iterate';
+import planetposition from 'astronomia/planetposition';
+import vsop87Bearth from 'astronomia/data/vsop87Bearth';
+
+/** Earth's full VSOP87 series, for the apparent solar longitude (D30). */
+const earthVSOP87 = new planetposition.Planet(vsop87Bearth);
 
 // ---------------------------------------------------------------------------
 // Julian Day & Calendar
@@ -39,8 +44,31 @@ export function dateToJde(date: Date): number {
 // Sun & Moon Coordinates
 // ---------------------------------------------------------------------------
 
+/**
+ * Apparent geocentric ecliptic longitude of the Sun, radians (nutation +
+ * aberration applied).
+ *
+ * *** D30: full VSOP87, not Meeus's truncated series. ***
+ *
+ * This previously called `solar.apparentLongitude`, the low-precision Meeus
+ * ch. 25 series (~0.01 deg stated accuracy). Worst measured error over 2026-2028
+ * was 27.3" against astronomia's own VSOP87, and JPL Horizons independently put
+ * it at 24.0" on 2026-03-20 -- two references agreeing. The conventions §1.2
+ * Sankranti budget is 12.2", so the old path sat 2.2x outside our own stated
+ * tolerance, and it leaked into tithi via the elongation (33.1" worst against a
+ * 30.6" budget).
+ *
+ * `apparentVSOP87` applies the same corrections, so this changes precision, not
+ * convention -- the reference frame is identical.
+ *
+ * The signature still takes Julian centuries `t`, so every existing caller
+ * inherits the fix untouched, including the in-app copy at `src/lib/panchang.ts`
+ * (§7 X8, which must not be edited). The conversion is exact rather than a
+ * round trip: t is *defined* as (jde - J2000) / 36525.
+ */
 export function getSolarApparentLongitude(t: number): number {
-  return solar.apparentLongitude(t);
+  const jde = t * 36525.0 + 2451545.0;
+  return solar.apparentVSOP87(earthVSOP87, jde).lon;
 }
 
 export function getMoonPosition(jde: number): { lon: number; lat: number; range: number } {
