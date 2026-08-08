@@ -9,6 +9,7 @@
  */
 
 import {
+  binaryRoot,
   dateToJd,
   dateToJde,
   getMoonPosition,
@@ -194,37 +195,27 @@ export function getMoonRiseSet(
     const curAlt = getMoonUpperLimbAlt(curDate, effectiveLat, lon);
 
     if (prevAlt <= 0 && curAlt > 0 && !moonrise) {
-      let low = t - stepMs;
-      let high = t;
-      let aLow = prevAlt;
-      while (high - low > 1000) {
-        const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
-        if (aLow <= 0 && aMid > 0) {
-          high = mid;
-        } else {
-          low = mid;
-          aLow = aMid;
-        }
-      }
-      moonrise = new Date((low + high) / 2);
+      // Altitude is monotonically increasing through zero across this bracket,
+      // so the shared solver applies. Converges to sub-ms rather than the
+      // previous 1 s stop — well inside the §1.2 budget (rule 13/15).
+      const rootMs = binaryRoot(
+        (ms) => getMoonUpperLimbAlt(new Date(ms), effectiveLat, lon),
+        t - stepMs,
+        t,
+      );
+      moonrise = new Date(rootMs);
     }
 
     if (prevAlt >= 0 && curAlt < 0 && !moonset) {
-      let low = t - stepMs;
-      let high = t;
-      let aLow = prevAlt;
-      while (high - low > 1000) {
-        const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
-        if (aLow >= 0 && aMid < 0) {
-          high = mid;
-        } else {
-          low = mid;
-          aLow = aMid;
-        }
-      }
-      moonset = new Date((low + high) / 2);
+      // Altitude is monotonically decreasing through zero across this bracket,
+      // so the shared solver applies. Converges to sub-ms rather than the
+      // previous 1 s stop — well inside the §1.2 budget (rule 13/15).
+      const rootMs = binaryRoot(
+        (ms) => getMoonUpperLimbAlt(new Date(ms), effectiveLat, lon),
+        t - stepMs,
+        t,
+      );
+      moonset = new Date(rootMs);
     }
 
     prevAlt = curAlt;
@@ -261,20 +252,15 @@ export function findNextMoonrise(
     const curAlt = getMoonUpperLimbAlt(curDate, effectiveLat, lon);
 
     if (prevAlt <= 0 && curAlt > 0) {
-      let low = t - stepMs;
-      let high = t;
-      let aLow = prevAlt;
-      while (high - low > 1000) {
-        const mid = Math.floor((low + high) / 2);
-        const aMid = getMoonUpperLimbAlt(new Date(mid), effectiveLat, lon);
-        if (aLow <= 0 && aMid > 0) {
-          high = mid;
-        } else {
-          low = mid;
-          aLow = aMid;
-        }
-      }
-      return new Date((low + high) / 2);
+      // Altitude is monotonically increasing through zero across this bracket,
+      // so the shared solver applies. Converges to sub-ms rather than the
+      // previous 1 s stop — well inside the §1.2 budget (rule 13/15).
+      const rootMs = binaryRoot(
+        (ms) => getMoonUpperLimbAlt(new Date(ms), effectiveLat, lon),
+        t - stepMs,
+        t,
+      );
+      return new Date(rootMs);
     }
     prevAlt = curAlt;
   }

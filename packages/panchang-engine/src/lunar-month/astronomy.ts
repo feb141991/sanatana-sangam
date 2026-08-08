@@ -1,3 +1,4 @@
+import { binaryRoot } from '../core/astronomy-adapter.js';
 /**
  * lunar-month/astronomy.ts
  *
@@ -81,18 +82,18 @@ export function solveBoundary(
 
   if (high > maxHighMs) return null;
 
-  // Step 2: bisect until bracket width ≤ tolerance
-  while (high - low > TOLERANCE_MS) {
-    const mid      = Math.floor((low + high) / 2);
-    const midValue = unwrapForward(valueAt(new Date(mid)), startValue);
-    if (midValue >= target) {
-      high = mid;
-    } else {
-      low = mid;
-    }
-  }
+  // Step 2: solve for the crossing with the shared solver (rule 13/15).
+  // The previous loop stopped at TOLERANCE_MS and returned `high` — the UPPER
+  // bracket, i.e. up to 60 s AFTER the true boundary. binaryRoot converges to
+  // sub-ms, so the returned instant is the boundary itself rather than a
+  // 60 s-late approximation of it. Still inside the §1.2 budget, and tighter.
+  const rootMs = binaryRoot(
+    (ms) => unwrapForward(valueAt(new Date(ms)), startValue) - target,
+    low,
+    high,
+  );
 
-  return new Date(high);
+  return new Date(rootMs);
 }
 
 /**

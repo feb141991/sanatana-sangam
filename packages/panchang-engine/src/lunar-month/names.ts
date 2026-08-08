@@ -36,6 +36,8 @@
  * (Meena→Chaitra wraps: (11 + 1) % 12 = 0 ✓)
  */
 
+import { normalizeAngle } from '../core/astronomy.js';
+
 export const MONTH_NAMES: readonly string[] = [
   'Chaitra',      // 0
   'Vaishakha',    // 1
@@ -58,7 +60,7 @@ export const MONTH_NAMES: readonly string[] = [
  * Formula: (rashiIndex + 1) % 12 where rashiIndex = floor(sunSidereal / 30).
  */
 export function monthIndexFromSunSidereal(sunSidereal: number): number {
-  const rashiIndex = Math.floor(((sunSidereal % 360) + 360) % 360 / 30) % 12;
+  const rashiIndex = Math.floor(normalizeAngle(sunSidereal) / 30) % 12;
   return (rashiIndex + 1) % 12;
 }
 

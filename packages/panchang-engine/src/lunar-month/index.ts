@@ -43,6 +43,7 @@
  * 5. Discriminated union result: ok: true for valid lunar month, ok: false on solver failure.
  */
 
+import { normalizeAngle } from '../core/astronomy.js';
 import {
   computeAstronomy,
   solveBoundary,
@@ -156,7 +157,7 @@ export function classifyLunarMonth(input: MonthClassificationInput): MonthClassi
       nijaIndex = monthIndexFromSunSidereal(input.sunSiderealAfterEnd);
       diagnostics.push('adhika: could not find next Sankranti; used day-after-end Sun position');
     } else {
-      const startRashi = Math.floor(((input.sunSiderealAtStart % 360) + 360) % 360 / 30) % 12;
+      const startRashi = Math.floor(normalizeAngle(input.sunSiderealAtStart) / 30) % 12;
       nijaIndex = (startRashi + 1) % 12;
     }
 
