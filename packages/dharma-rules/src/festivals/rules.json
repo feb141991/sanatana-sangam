@@ -180,7 +180,7 @@
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Chaitra",
     "corrected_lunar_masa_name": "Jyeshtha",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 30
   },
@@ -195,7 +195,7 @@
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Chaitra",
     "corrected_lunar_masa_name": "Jyeshtha",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 30,
     "route_kind": "vrat",

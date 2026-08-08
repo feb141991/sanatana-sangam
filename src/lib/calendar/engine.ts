@@ -125,12 +125,30 @@ export function precomputePanchangCorrectedForYear(year: number): Array<{ dateSt
     // Replace masaName with the correct amanta month from getLunarMonth().
     // On solver failure (extremely rare) fall back to empty string so rules
     // that need a specific month simply produce no match rather than a wrong one.
-    const lunarMonthResult = getLunarMonth(current, 'amanta');
-    const correctedMasaName = lunarMonthResult.ok ? lunarMonthResult.monthName : '';
+    // D32: BOTH month systems are computed. A rule's `corrected_month_system`
+    // selects which one it is matched against.
+    //
+    // Previously only amanta was computed and `corrected_month_system` was never
+    // read -- line ~219 tests it for `!== undefined` as a "is this the corrected
+    // path" boolean and discards the value. So a rule declaring 'purnimanta' was
+    // silently evaluated as amanta.
+    //
+    // For SHUKLA-paksha rules the two systems agree, so this was invisible. For
+    // KRISHNA paksha they differ by exactly one month (purnimanta = amanta + 1),
+    // and every such rule was therefore a month out if its tradition reckons
+    // purnimanta -- which North India does. Vat Savitri / Shani Jayanti is the
+    // confirmed case: Jyeshtha Amavasya is 2026-05-16 purnimanta (correct) but
+    // 2026-07-14 amanta (which is really Ashadha Amavasya).
+    const amanta = getLunarMonth(current, 'amanta');
+    const purnimanta = getLunarMonth(current, 'purnimanta');
 
     days.push({
       dateStr: formatUtcDate(current),
-      panchang: { ...panchang, masaName: correctedMasaName },
+      panchang: {
+        ...panchang,
+        masaName: amanta.ok ? amanta.monthName : '',
+        masaNamePurnimanta: purnimanta.ok ? purnimanta.monthName : '',
+      },
     });
   }
 
@@ -571,19 +589,31 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
   const days = precomputePanchangCorrectedForYear(year);
   const occurrencesMap: Record<string, string[]> = {};
 
+  // D32: present each rule with the month name of ITS declared system. The
+  // handlers all read `panchang.masaName`, so the swap happens here rather than
+  // in every handler. Defaults to amanta, matching the previous behaviour, so a
+  // rule that does not declare a system is evaluated exactly as before.
+  const daysPurnimanta = days.map(d => ({
+    ...d,
+    panchang: { ...d.panchang, masaName: d.panchang.masaNamePurnimanta },
+  }));
+  const daysFor = (r: ObservanceRule) =>
+    r.corrected_month_system === 'purnimanta' ? daysPurnimanta : days;
+
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
     const r = toCorrectedRule(rule);
+    const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {
       occurrencesMap[r.slug] = SolarFixedHandler.evaluate(r, year);
     } else if (r.rule_family === 'lunar_tithi') {
-      occurrencesMap[r.slug] = LunarTithiHandler.evaluate(r, days);
+      occurrencesMap[r.slug] = LunarTithiHandler.evaluate(r, d);
     } else if (r.rule_family === 'lunar_tithi_recurring') {
-      occurrencesMap[r.slug] = RecurringLunarTithiHandler.evaluate(r, days);
+      occurrencesMap[r.slug] = RecurringLunarTithiHandler.evaluate(r, d);
     } else if (r.rule_family === 'weekday_recurring') {
-      occurrencesMap[r.slug] = RecurringWeekdayHandler.evaluate(r, days);
+      occurrencesMap[r.slug] = RecurringWeekdayHandler.evaluate(r, d);
     } else if (r.rule_family === 'nakshatra_based') {
-      occurrencesMap[r.slug] = NakshatraBasedHandler.evaluate(r, days);
+      occurrencesMap[r.slug] = NakshatraBasedHandler.evaluate(r, d);
     } else if (r.rule_family === 'regional_calendar') {
       occurrencesMap[r.slug] = NanakshahiHandler.evaluate(r, year);
     } else {
