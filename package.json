@@ -42,6 +42,7 @@
     "fixtures:tier1-queries": "npx tsx scripts/tier1-queries.ts",
     "fixtures:coverage": "npx tsx scripts/fixture-coverage.ts",
     "fixtures:fetch": "npx tsx scripts/fetch-tier1-fixtures.ts",
+    "audit:month-system": "npx tsx scripts/audit-month-system.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts",
     "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts"
   },
