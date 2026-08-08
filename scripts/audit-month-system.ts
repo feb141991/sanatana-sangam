@@ -65,7 +65,8 @@ for (const year of YEARS) {
 
   for (const rule of krishna) {
     const r = corrected(rule);
-    const key = `${rule.slug}${rule.sampradaya ? ' [' + rule.sampradaya + ']' : ''}`;
+    const sampradaya = (rule as { sampradaya?: string }).sampradaya;
+    const key = `${rule.slug}${sampradaya ? ' [' + sampradaya + ']' : ''}`;
     if (!rows.has(key)) {
       rows.set(key, {
         slug: key,
