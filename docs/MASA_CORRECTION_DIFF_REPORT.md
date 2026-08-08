@@ -7,8 +7,8 @@ This report quantifies and segregates the date shifts resulting from month name 
 Authoritative lunar month determination for May/June 2026 using the corrected engine path:
 
 - **Month Name**: `Adhika Jyeshtha`
-- **Month Start (UTC)**: `2026-05-16T20:02:20.625Z`
-- **Month End (UTC)**: `2026-06-15T02:55:12.597Z`
+- **Month Start (UTC)**: `2026-05-16T20:01:57.563Z`
+- **Month End (UTC)**: `2026-06-15T02:54:49.951Z`
 - **Sankranti Count in Interval**: `0`
 - **Is Adhika**: `true`
 
@@ -19,10 +19,10 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 ## Year 2026
 
 ### Summary Metrics
-- **Total Legacy Observances**: 179
-- **Total Corrected Observances**: 173
+- **Total Legacy Observances**: 180
+- **Total Corrected Observances**: 174
 - **Unchanged Dates**: 105
-- **Shifted Dates**: 68
+- **Shifted Dates**: 69
 - **Inserted Dates**: 0
 - **Removed Dates**: 6
 - **Average Absolute Shift**: 29.7 days
@@ -37,7 +37,7 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 | **ADHIKA_POLICY** | 0 | Date moved purely due to the Adhika month selection policy. |
 | **BOTH** | 3 | Date moved due to a combination of month-name correction and Adhika selection policy. |
 | **UNEXPLAINED** | 0 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
-| **NEEDS_MUHURTA_EVAL** | 52 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
+| **NEEDS_MUHURTA_EVAL** | 53 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
 
 ### Detailed Shifts
 
@@ -71,6 +71,7 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 | `purnima-vrat` | 2026-07-29 | 2026-08-28 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `shravan-somvar` | 2026-08-03 | 2026-08-31 | +28 | **SHIFTED** | `D1_CORRECTION` |
 | `mangala-gauri-vrat` | 2026-08-04 | 2026-09-01 | +28 | **SHIFTED** | `D1_CORRECTION` |
+| `krishna-janmashtami` | 2026-08-06 | 2026-09-04 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `krishna-janmashtami` | 2026-08-06 | 2026-09-04 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `shravan-somvar` | 2026-08-10 | 2026-09-07 | +28 | **SHIFTED** | `D1_CORRECTION` |
 | `paryushana-parva-begins` | 2026-08-10 | 2026-09-08 | +29 | **SHIFTED** | `D1_CORRECTION` |
@@ -123,13 +124,13 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 ## Year 2027
 
 ### Summary Metrics
-- **Total Legacy Observances**: 178
-- **Total Corrected Observances**: 179
+- **Total Legacy Observances**: 179
+- **Total Corrected Observances**: 180
 - **Unchanged Dates**: 140
-- **Shifted Dates**: 37
+- **Shifted Dates**: 38
 - **Inserted Dates**: 2
 - **Removed Dates**: 1
-- **Average Absolute Shift**: 25.9 days
+- **Average Absolute Shift**: 26.0 days
 - **Maximum Absolute Shift**: 30 days
 - **First Changed Date**: 2027-02-21
 - **Last Changed Date**: 2027-12-13
@@ -141,7 +142,7 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 | **ADHIKA_POLICY** | 0 | Date moved purely due to the Adhika month selection policy. |
 | **BOTH** | 0 | Date moved due to a combination of month-name correction and Adhika selection policy. |
 | **UNEXPLAINED** | 0 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
-| **NEEDS_MUHURTA_EVAL** | 14 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
+| **NEEDS_MUHURTA_EVAL** | 15 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
 
 ### Detailed Shifts
 
@@ -172,6 +173,7 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 | `shravan-somvar` | 2027-08-02 | 2027-08-23 | +21 | **SHIFTED** | `D1_CORRECTION` |
 | `mangala-gauri-vrat` | 2027-08-10 | 2027-08-24 | +14 | **SHIFTED** | `D1_CORRECTION` |
 | `krishna-janmashtami` | 2027-07-27 | 2027-08-25 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `krishna-janmashtami` | 2027-07-27 | 2027-08-25 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `paryushana-parva-begins` | 2027-07-30 | 2027-08-29 | +30 | **SHIFTED** | `D1_CORRECTION` |
 | `shravan-somvar` | 2027-08-09 | 2027-08-30 | +21 | **SHIFTED** | `D1_CORRECTION` |
 | `mangala-gauri-vrat` | 2027-08-17 | 2027-08-31 | +14 | **SHIFTED** | `D1_CORRECTION` |
@@ -193,9 +195,9 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 ## Year 2028
 
 ### Summary Metrics
-- **Total Legacy Observances**: 180
-- **Total Corrected Observances**: 178
-- **Unchanged Dates**: 164
+- **Total Legacy Observances**: 181
+- **Total Corrected Observances**: 179
+- **Unchanged Dates**: 165
 - **Shifted Dates**: 14
 - **Inserted Dates**: 0
 - **Removed Dates**: 2
