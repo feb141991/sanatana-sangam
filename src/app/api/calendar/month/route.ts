@@ -1,20 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 
 export const runtime = 'nodejs';
 
 export interface MonthResponse {
   year: number;
   month: number;
-  byDate: Record<string, Array<{
-    slug: string;
-    display_name: string;
-    emoji: string;
-    kind: "major" | "vrat" | "regional";
-    tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all";
-    route_kind: string | null;
-    route_slug: string | null;
-  }>>;
+  byDate: Record<string, ClientObservanceResult[]>;
 }
 
 export async function GET(request: NextRequest) {
@@ -36,15 +29,55 @@ export async function GET(request: NextRequest) {
     const lastDateObj = new Date(Date.UTC(year, month, 0));
     const lastDay = `${year}-${String(month).padStart(2, '0')}-${String(lastDateObj.getUTCDate()).padStart(2, '0')}`;
 
+    let tradition = searchParams.get('tradition') || 'all';
+    let calendarProfile = searchParams.get('calendar_profile') || '';
+
     const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
+
+    // Resolve tradition and calendar profile from profile if not explicitly passed
+    if (!calendarProfile || tradition === 'all') {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('calendar_profile, tradition')
+          .eq('id', user.id)
+          .single();
+        if (profile) {
+          if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
+          if (tradition === 'all') tradition = profile.tradition || 'all';
+        }
+      }
+    }
+    
+    if (!calendarProfile) calendarProfile = 'legacy-ujjain';
+
+    const { data: occurrencesData, error: occError } = await supabase
       .from('observance_occurrences')
       .select(`
         date,
+        occurrence_date,
+        review_status,
+        verification_status,
+        audit_status,
+        calendar_profile,
+        spiritual_tradition,
+        variant_key,
+        is_primary_variant,
+        reasons,
+        diagnostics,
+        source_refs,
+        computed_latitude,
+        computed_longitude,
+        computed_timezone,
+        rule_version,
+        astronomy_version,
+        day_boundary_version,
         observance_definitions!inner(
           slug,
           display_name,
           emoji,
+          description,
           kind,
           tradition,
           route_kind,
@@ -54,30 +87,67 @@ export async function GET(request: NextRequest) {
       `)
       .gte('date', firstDay)
       .lte('date', lastDay)
+      .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
       .eq('observance_definitions.active', true);
 
-    if (error) {
-      console.error('[API Calendar Month] Supabase error:', error);
+    if (occError) {
+      console.error('[API Calendar Month] Occurrences error:', occError);
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
 
-    const byDate: Record<string, any[]> = {};
-    for (const rawRow of (data || [])) {
-      const row = rawRow as any;
-      const dateKey = row.date;
+    // Query unresolved items from the review queue
+    const { data: queueData, error: queueError } = await supabase
+      .from('observance_review_queue')
+      .select(`
+        id,
+        definition_id,
+        year,
+        calendar_profile,
+        location_label,
+        computed_latitude,
+        computed_longitude,
+        computed_timezone,
+        ambiguity_type,
+        reasoning,
+        candidate_dates,
+        evaluator_details,
+        review_status,
+        observance_definitions!inner(
+          slug,
+          display_name,
+          emoji,
+          description,
+          kind,
+          tradition,
+          route_kind,
+          route_slug,
+          active
+        )
+      `)
+      .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
+      .eq('observance_definitions.active', true);
+
+    if (queueError) {
+      console.error('[API Calendar Month] Review queue error:', queueError);
+      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+    }
+
+    const formattedResults = formatOccurrencesToResults(
+      occurrencesData || [],
+      queueData || [],
+      tradition,
+      calendarProfile,
+      firstDay,
+      lastDay
+    );
+
+    const byDate: Record<string, ClientObservanceResult[]> = {};
+    for (const item of formattedResults) {
+      const dateKey = item.date;
       if (!byDate[dateKey]) {
         byDate[dateKey] = [];
       }
-      
-      byDate[dateKey].push({
-        slug: row.observance_definitions.slug,
-        display_name: row.observance_definitions.display_name,
-        emoji: row.observance_definitions.emoji,
-        kind: row.observance_definitions.kind,
-        tradition: row.observance_definitions.tradition,
-        route_kind: row.observance_definitions.route_kind,
-        route_slug: row.observance_definitions.route_slug,
-      });
+      byDate[dateKey].push(item);
     }
 
     const response: MonthResponse = {

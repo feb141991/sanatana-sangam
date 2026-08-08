@@ -108,6 +108,15 @@ const EVALUATOR_RULES = [
         variantId: 'smarta',
         spiritualTradition: 'smarta',
         isPrimary: true,
+        sourceRefs: [
+          {
+            sourceName: 'Dharma Sindhu',
+            tier: 2,
+            copyrightStatus: 'public_domain',
+            usagePermitted: 'academic_citation',
+            pageOrSection: 'Maha Shivaratri Vrata Nirnaya'
+          }
+        ],
         conditions: [
           { type: 'lunar_month', value: 'Magha', monthSystem: 'amanta' },
           { type: 'paksha', value: 'krishna' },
@@ -124,6 +133,15 @@ const EVALUATOR_RULES = [
         variantId: 'smarta',
         spiritualTradition: 'smarta',
         isPrimary: true,
+        sourceRefs: [
+          {
+            sourceName: 'Nirnaya Sindhu',
+            tier: 2,
+            copyrightStatus: 'public_domain',
+            usagePermitted: 'academic_citation',
+            pageOrSection: 'Krishna Janmashtami Nirnaya'
+          }
+        ],
         conditions: [
           { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
           { type: 'paksha', value: 'krishna' },
@@ -134,6 +152,15 @@ const EVALUATOR_RULES = [
         variantId: 'vaishnava',
         spiritualTradition: 'vaishnava_gaudiya',
         isPrimary: false,
+        sourceRefs: [
+          {
+            sourceName: 'Hari Bhakti Vilasa',
+            tier: 2,
+            copyrightStatus: 'public_domain',
+            usagePermitted: 'academic_citation',
+            pageOrSection: 'Krishna Janmashtami Rohini Vrata'
+          }
+        ],
         conditions: [
           { type: 'lunar_month', value: 'Shravana', monthSystem: 'amanta' },
           { type: 'paksha', value: 'krishna' },
@@ -151,6 +178,15 @@ const EVALUATOR_RULES = [
         variantId: 'standard',
         spiritualTradition: 'standard',
         isPrimary: true,
+        sourceRefs: [
+          {
+            sourceName: 'Dharma Sindhu',
+            tier: 2,
+            copyrightStatus: 'public_domain',
+            usagePermitted: 'academic_citation',
+            pageOrSection: 'Karva Chauth Vrata'
+          }
+        ],
         conditions: [
           { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
           { type: 'paksha', value: 'krishna' },
@@ -168,6 +204,15 @@ const EVALUATOR_RULES = [
         variantId: 'standard',
         spiritualTradition: 'standard',
         isPrimary: true,
+        sourceRefs: [
+          {
+            sourceName: 'Dharma Sindhu',
+            tier: 2,
+            copyrightStatus: 'public_domain',
+            usagePermitted: 'academic_citation',
+            pageOrSection: 'Sankashti Chaturthi Vrata'
+          }
+        ],
         conditions: [
           { type: 'paksha', value: 'krishna' },
           { type: 'tithi_presence', tithi: 4, period: 'moonrise', mode: 'at' },
@@ -241,6 +286,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     is_primary_variant?: boolean;
     reasons?: any;
     diagnostics?: any;
+    source_refs?: any;
   }>;
   unresolved: Array<{
     slug: string;
@@ -335,6 +381,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             is_primary_variant: variant.isPrimary,
             reasons: match.reasoning,
             diagnostics: match.diagnostics,
+            source_refs: (variant as any).sourceRefs || [],
           });
         } else {
           let ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
@@ -400,6 +447,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             variant_key: baseOcc.variant_key,
             spiritual_tradition: baseOcc.spiritual_tradition,
             is_primary_variant: baseOcc.is_primary_variant,
+            source_refs: baseOcc.source_refs || [],
           });
         }
       }
@@ -515,6 +563,7 @@ export async function materializeOccurrencesForYears({
             day_boundary_version: '1.0.0',
             reasons: occ.reasons || null,
             diagnostics: occ.diagnostics || null,
+            source_refs: occ.source_refs || null,
             computed_latitude: 23.1765,
             computed_longitude: 75.7885,
             computed_timezone: 'Asia/Kolkata',
@@ -551,6 +600,7 @@ export async function materializeOccurrencesForYears({
             day_boundary_version: '1.0.0',
             reasons: occ.reasons || null,
             diagnostics: occ.diagnostics || null,
+            source_refs: occ.source_refs || null,
             computed_latitude: 23.1765,
             computed_longitude: 75.7885,
             computed_timezone: 'Asia/Kolkata',
@@ -596,6 +646,7 @@ export async function materializeOccurrencesForYears({
               day_boundary_version: '1.0.0',
               reasons: occ.reasons || null,
               diagnostics: occ.diagnostics || null,
+              source_refs: occ.source_refs || null,
               computed_latitude: 23.1765,
               computed_longitude: 75.7885,
               computed_timezone: 'Asia/Kolkata',

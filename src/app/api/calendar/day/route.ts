@@ -1,22 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 
 export const runtime = 'nodejs';
 
 export interface DayResponse {
   date: string;
-  observances: Array<{
-    slug: string;
-    display_name: string;
-    emoji: string;
-    description: string;
-    kind: "major" | "vrat" | "regional";
-    tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all";
-    route_kind: string | null;
-    route_slug: string | null;
-    verification_status: string;
-    final_date_source: string;
-  }>;
+  observances: ClientObservanceResult[];
 }
 
 export async function GET(request: NextRequest) {
@@ -33,12 +23,50 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    let tradition = searchParams.get('tradition') || 'all';
+    let calendarProfile = searchParams.get('calendar_profile') || '';
+
     const supabase = await createServerSupabaseClient();
-    const { data, error } = await supabase
+
+    // Resolve tradition and calendar profile from profile if not explicitly passed
+    if (!calendarProfile || tradition === 'all') {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('calendar_profile, tradition')
+          .eq('id', user.id)
+          .single();
+        if (profile) {
+          if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
+          if (tradition === 'all') tradition = profile.tradition || 'all';
+        }
+      }
+    }
+    
+    if (!calendarProfile) calendarProfile = 'legacy-ujjain';
+
+    const { data: occurrencesData, error: occError } = await supabase
       .from('observance_occurrences')
       .select(`
+        date,
+        occurrence_date,
+        review_status,
         verification_status,
-        final_date_source,
+        audit_status,
+        calendar_profile,
+        spiritual_tradition,
+        variant_key,
+        is_primary_variant,
+        reasons,
+        diagnostics,
+        source_refs,
+        computed_latitude,
+        computed_longitude,
+        computed_timezone,
+        rule_version,
+        astronomy_version,
+        day_boundary_version,
         observance_definitions!inner(
           slug,
           display_name,
@@ -52,29 +80,63 @@ export async function GET(request: NextRequest) {
         )
       `)
       .eq('date', dateStr)
+      .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
       .eq('observance_definitions.active', true);
 
-    if (error) {
-      console.error('[API Calendar Day] Supabase error:', error);
+    if (occError) {
+      console.error('[API Calendar Day] Occurrences error:', occError);
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
 
-    const observances = (data || []).map((row: any) => ({
-      slug: row.observance_definitions.slug,
-      display_name: row.observance_definitions.display_name,
-      emoji: row.observance_definitions.emoji,
-      description: row.observance_definitions.description,
-      kind: row.observance_definitions.kind,
-      tradition: row.observance_definitions.tradition,
-      route_kind: row.observance_definitions.route_kind,
-      route_slug: row.observance_definitions.route_slug,
-      verification_status: row.verification_status,
-      final_date_source: row.final_date_source,
-    }));
+    // Query unresolved items from the review queue
+    const { data: queueData, error: queueError } = await supabase
+      .from('observance_review_queue')
+      .select(`
+        id,
+        definition_id,
+        year,
+        calendar_profile,
+        location_label,
+        computed_latitude,
+        computed_longitude,
+        computed_timezone,
+        ambiguity_type,
+        reasoning,
+        candidate_dates,
+        evaluator_details,
+        review_status,
+        observance_definitions!inner(
+          slug,
+          display_name,
+          emoji,
+          description,
+          kind,
+          tradition,
+          route_kind,
+          route_slug,
+          active
+        )
+      `)
+      .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
+      .eq('observance_definitions.active', true);
+
+    if (queueError) {
+      console.error('[API Calendar Day] Review queue error:', queueError);
+      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+    }
+
+    const formattedResults = formatOccurrencesToResults(
+      occurrencesData || [],
+      queueData || [],
+      tradition,
+      calendarProfile,
+      dateStr,
+      dateStr
+    );
 
     const response: DayResponse = {
       date: dateStr,
-      observances,
+      observances: formattedResults,
     };
 
     return NextResponse.json(response, {
