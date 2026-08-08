@@ -20,6 +20,8 @@ import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 
+import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
+
 type ReadingTheme = 'light' | 'dark' | 'sepia';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -426,6 +428,11 @@ export default function VratClient({
           <p className={`italic font-medium opacity-80 px-2 sm:px-4 break-words ${fontStyles[fontSize]}`}>
             &ldquo;{tagline}&rdquo;
           </p>
+
+          <ObservanceStatusNotice
+            status="resolved"
+            className="pt-2"
+          />
         </section>
 
         {/* Narrative Section */}

@@ -136,8 +136,13 @@ function VratCard({
       </div>
 
       {/* Days badge — top right */}
-      <div className="absolute top-3 right-3">
+      <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
         <DaysBadge days={days} isDark={isDark} />
+        {(festival as any).status === 'unresolved' && (
+          <span className="text-[9px] font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-1.5 py-0.5 rounded">
+            Under Review
+          </span>
+        )}
       </div>
     </div>
   );

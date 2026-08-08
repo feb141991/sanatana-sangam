@@ -4,6 +4,7 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X, Globe } from 'lucide-react';
+import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
@@ -390,6 +391,22 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
             )}
           </div>
         )}
+
+        {/* Observance Uncertainty & Status Notice */}
+        {(() => {
+          const todayIso = localSpiritualDate(timezone, 4);
+          const todayObs = upcomingObservances.find(o => o.date === todayIso || o.civilDate === todayIso);
+          if (!todayObs) return null;
+          return (
+            <ObservanceStatusNotice
+              status={todayObs.status}
+              reviewStatus={todayObs.reviewStatus}
+              alternatives={todayObs.alternatives}
+              requestedTradition={tradition}
+              className="mb-4"
+            />
+          );
+        })()}
 
         {/* Smart Banner */}
         {(() => {
