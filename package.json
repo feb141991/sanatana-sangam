@@ -39,6 +39,8 @@
     "diff:masa-correction": "npx tsx scripts/diff-masa-correction.ts",
     "reconcile:engines": "npx tsx scripts/reconcile-engines.ts",
     "fixtures:usno-queries": "npx tsx scripts/usno-queries.ts",
+    "fixtures:tier1-queries": "npx tsx scripts/tier1-queries.ts",
+    "fixtures:coverage": "npx tsx scripts/fixture-coverage.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts",
     "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts"
   },
