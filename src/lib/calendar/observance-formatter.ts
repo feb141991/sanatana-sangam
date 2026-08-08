@@ -1,5 +1,13 @@
 import { calculateObservancesForYearCorrected } from './engine';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
+import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
+
+// Build a set of slugs that have an explicit citation in rules.json
+const CITED_VARIANT_SLUGS = new Set<string>(
+  (rulesData as Array<{ slug: string; citation?: string }> )
+    .filter(r => !!r.citation)
+    .map(r => r.slug)
+);
 
 export interface ClientObservanceResult {
   // Backward compatibility
@@ -80,6 +88,18 @@ export function formatOccurrencesToResults(
     const def = row.observance_definitions;
     if (!def) continue;
 
+    // Collect all diagnostics, preserving latitude_proxy, compressed_night, vrddhi_tithi, extended_moonrise if present
+    const diagnosticsList: string[] = Array.isArray(row.diagnostics) ? [...row.diagnostics] : [];
+    if (row.reasons && Array.isArray(row.reasons)) {
+      for (const r of row.reasons) {
+        if (r.code && ['latitude_proxy', 'compressed_night', 'vrddhi_tithi', 'extended_moonrise'].includes(r.code)) {
+          if (!diagnosticsList.includes(r.code)) {
+            diagnosticsList.push(r.code);
+          }
+        }
+      }
+    }
+
     results.push({
       // Backward compatibility
       date: row.date,
@@ -117,14 +137,14 @@ export function formatOccurrencesToResults(
       reasons: (row.reasons as any) || [],
       alternatives: [],
       confidence: 'high',
-      diagnostics: (row.diagnostics as any) || [],
+      diagnostics: diagnosticsList,
       sourceRefs: (row.source_refs as any) || [],
       reviewStatus: row.review_status || 'reviewed',
       isPrimary: false, // will resolve below
     });
   }
 
-  // 2. Process unresolved queue items
+  // 2. Process unresolved queue items ([2] UNCERTAINTY)
   for (const row of queueItems) {
     const def = row.observance_definitions;
     if (!def) continue;
@@ -148,6 +168,8 @@ export function formatOccurrencesToResults(
     const targetDates = candidateDatesArray.length > 0
       ? candidateDatesArray
       : (legacyDate ? [legacyDate] : []);
+
+    const evalDiagnostics: string[] = (row.evaluator_details?.diagnostics as any) || [];
 
     for (const d of targetDates) {
       if (d >= fromStr && d <= toStr) {
@@ -188,7 +210,7 @@ export function formatOccurrencesToResults(
           reasons: [{ code: row.ambiguity_type, text: row.reasoning }],
           alternatives: [],
           confidence: 'low',
-          diagnostics: (row.evaluator_details?.diagnostics as any) || [],
+          diagnostics: evalDiagnostics,
           sourceRefs: [],
           reviewStatus: 'in_review',
           isPrimary: true, // only representation of this unresolved item
@@ -197,8 +219,7 @@ export function formatOccurrencesToResults(
     }
   }
 
-  // 3. Group by festival slug (festivalId) to resolve primary variant and alternatives
-  // We group items of the same festivalId and year/month context.
+  // 3. Group by festival slug (festivalId) and classify variants [1], [2], [3], [4]
   const groups = new Map<string, ClientObservanceResult[]>();
   for (const item of results) {
     const key = item.festivalId;
@@ -206,41 +227,78 @@ export function formatOccurrencesToResults(
     groups.get(key)!.push(item);
   }
 
-  for (const [_, list] of groups.entries()) {
+  for (const [slug, list] of groups.entries()) {
     if (list.length === 1) {
       list[0].isPrimary = true;
       continue;
     }
 
-    // Multiple variants or candidate dates exist. Let's find the primary one.
-    // Preference:
-    // 1. row.profile.tradition === requestedTradition
-    // 2. row.profile.tradition is standard or null/unspecified
-    // 3. First one
-    let primaryIndex = list.findIndex(item => item.profile.tradition === requestedTradition);
-    if (primaryIndex === -1) {
-      primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
-    }
-    if (primaryIndex === -1) {
-      primaryIndex = 0;
+    // Multiple candidates/rows exist. Apply [1]/[2]/[3]/[4] classification.
+    // [4] Location Effect: rows share a tradition but differ in lat/lon.
+    // Filter out location-only duplicates for user's primary view (same tradition, different location).
+    // Check if the festival slug has a cited variant in rules.json ([1] DISPUTE).
+    const isCitedDispute = CITED_VARIANT_SLUGS.has(slug);
+
+    // Group items by spiritual_tradition to detect [4] LOCATION EFFECT vs [1] DISPUTE
+    const itemsByTradition = new Map<string, ClientObservanceResult[]>();
+    for (const item of list) {
+      const trad = item.profile.tradition || 'standard';
+      if (!itemsByTradition.has(trad)) itemsByTradition.set(trad, []);
+      itemsByTradition.get(trad)!.push(item);
     }
 
-    for (let i = 0; i < list.length; i++) {
-      list[i].isPrimary = (i === primaryIndex);
-    }
+    // Determine if we have genuine distinct traditions with cited dispute [1]
+    if (isCitedDispute && itemsByTradition.size > 1) {
+      // [1] DISPUTE: Valid cited variant pair across traditions.
+      // Resolve primary based on user's requested profile/tradition.
+      let primaryIndex = list.findIndex(item => item.profile.tradition === requestedTradition);
+      if (primaryIndex === -1) {
+        primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
+      }
+      if (primaryIndex === -1) {
+        primaryIndex = 0;
+      }
 
-    // Populate alternatives for all items in the group
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      const otherVariants = list.filter((_, idx) => idx !== i);
-      item.alternatives = otherVariants.map(other => ({
-        profile: other.profile,
-        civilDate: other.civilDate,
-        monthLabel: null,
-        note: other.status === 'unresolved' ? 'Under Review' : null,
-      }));
+      for (let i = 0; i < list.length; i++) {
+        list[i].isPrimary = (i === primaryIndex);
+      }
+
+      // Populate alternatives for all items in the group
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        const otherVariants = list.filter((_, idx) => idx !== i);
+        item.alternatives = otherVariants.map(other => ({
+          profile: other.profile,
+          civilDate: other.civilDate,
+          monthLabel: null,
+          note: other.status === 'unresolved' ? 'Under Review' : null,
+        }));
+      }
+    } else {
+      // NOT a cited dispute. Could be [2] UNCERTAINTY, [3] ERROR, or [4] LOCATION EFFECT.
+      // Never publish as a legitimate variant pair!
+      // Select the primary item matching user profile/tradition/location.
+      let primaryIndex = list.findIndex(item => item.profile.tradition === requestedTradition);
+      if (primaryIndex === -1) {
+        primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
+      }
+      if (primaryIndex === -1) {
+        primaryIndex = 0;
+      }
+
+      for (let i = 0; i < list.length; i++) {
+        const item = list[i];
+        item.isPrimary = (i === primaryIndex);
+        // Do NOT populate alternatives as variant options for uncited or location-only differences!
+        item.alternatives = [];
+        if (item.status === 'resolved' && !isCitedDispute && list.some(other => other.civilDate !== item.civilDate)) {
+          // If dates differ without a cited rule variant, mark as ambiguous/under review rather than variant pair
+          item.status = 'ambiguous';
+        }
+      }
     }
   }
 
   return results;
 }
+
