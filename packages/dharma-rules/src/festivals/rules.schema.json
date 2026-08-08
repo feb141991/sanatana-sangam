@@ -16,6 +16,25 @@
       "verification_type"
     ],
     "properties": {
+      "sampradaya": {
+        "type": "string",
+        "enum": [
+          "smarta",
+          "smarta_nishita",
+          "gaudiya_iskcon",
+          "sri_vaishnava",
+          "swaminarayan",
+          "vaishnava_suddha",
+          "vaishnava_rohini",
+          "vaishnava_strict",
+          "standard"
+        ],
+        "description": "Sampradaya (tradition sub-group) for variant distinctions"
+      },
+      "citation": {
+        "type": "string",
+        "description": "Citation/source for the observed variant practice"
+      },
       "slug": {
         "type": "string",
         "description": "Unique identifier of the observance rule"
