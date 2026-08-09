@@ -1197,7 +1197,9 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "derivability": "requires_tradition_profile",
+    "derivability_note": "Theravada observance. Sri Lanka's official 2026 calendar places Vap Full Moon Poya on 25 Oct 2026 (Central Bank of Sri Lanka, user-provided); other Theravada calendars place Pavarana on 26 Oct. Both are correct under their own reckoning, so this is profile-dependent, not wrong. The astronomical full-moon instant (2026-10-26T04:12Z) does not by itself fix the ritual civil date. Awaiting Sri Lankan / Thai / Burmese profiles."
   },
   {
     "slug": "kathina",
@@ -1213,7 +1215,9 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 16,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "derivability": "externally_curated",
+    "derivability_note": "Kathina is a SEASON, not a day: the month following Pavarana, within which each monastery chooses its own ceremony date. There is therefore no single correct Gregorian date for any calendar to produce, and no tradition profile will make this computable. The date must be supplied externally per community."
   },
   {
     "slug": "sangha-day-loy-krathong",

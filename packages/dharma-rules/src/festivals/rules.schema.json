@@ -53,11 +53,21 @@
       },
       "kind": {
         "type": "string",
-        "enum": ["major", "vrat", "regional"]
+        "enum": [
+          "major",
+          "vrat",
+          "regional"
+        ]
       },
       "tradition": {
         "type": "string",
-        "enum": ["hindu", "sikh", "buddhist", "jain", "all"]
+        "enum": [
+          "hindu",
+          "sikh",
+          "buddhist",
+          "jain",
+          "all"
+        ]
       },
       "rule_family": {
         "type": "string",
@@ -149,16 +159,27 @@
         "description": "Vedic day weekday: 0=Sunday, 1=Monday... 6=Saturday"
       },
       "route_kind": {
-        "type": ["string", "null"],
-        "enum": ["vrat", null]
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "vrat",
+          null
+        ]
       },
       "route_slug": {
-        "type": ["string", "null"]
+        "type": [
+          "string",
+          "null"
+        ]
       },
       "region": {
-        "type": ["string", "null"]
+        "type": [
+          "string",
+          "null"
+        ]
       },
-
       "corrected_lunar_masa_name": {
         "type": "string",
         "description": "Amanta lunar month name for D2 engine"
@@ -171,12 +192,19 @@
       },
       "corrected_month_system": {
         "type": "string",
-        "enum": ["amanta", "purnimanta"],
+        "enum": [
+          "amanta",
+          "purnimanta"
+        ],
         "description": "Lunisolar month naming system used by corrected engine"
       },
       "adhika_policy": {
         "type": "string",
-        "enum": ["nija", "adhika", "both"],
+        "enum": [
+          "nija",
+          "adhika",
+          "both"
+        ],
         "description": "Handling of Adhika (intercalary) month"
       },
       "corrected_prefer_last_match": {
@@ -187,7 +215,6 @@
         "type": "boolean",
         "description": "Corrected allow_skipped_tithi flag"
       },
-
       "tithi": {
         "type": "integer",
         "minimum": 1,
@@ -196,7 +223,10 @@
       },
       "paksha": {
         "type": "string",
-        "enum": ["shukla", "krishna"],
+        "enum": [
+          "shukla",
+          "krishna"
+        ],
         "description": "Required paksha for within-paksha tithi"
       },
       "variant_id": {
@@ -220,7 +250,13 @@
         "properties": {
           "status": {
             "type": "string",
-            "enum": ["draft", "technical_ok", "in_review", "approved", "disputed"]
+            "enum": [
+              "draft",
+              "technical_ok",
+              "in_review",
+              "approved",
+              "disputed"
+            ]
           },
           "reviewedBy": {
             "type": "string"
@@ -235,8 +271,23 @@
             "type": "string"
           }
         },
-        "required": ["status"],
+        "required": [
+          "status"
+        ],
         "additionalProperties": false
+      },
+      "derivability": {
+        "type": "string",
+        "enum": [
+          "computed",
+          "requires_tradition_profile",
+          "externally_curated"
+        ],
+        "description": "Whether this observance's date can be derived by the engine at all. Absent means 'computed' -- the normal case. 'requires_tradition_profile': genuinely computable, but only under a calendar profile Shoonaya does not yet ship (e.g. Sri Lankan / Thai / Burmese Theravada). The amanta and purnimanta profiles are not authoritative for such observances, so their disagreement says nothing about the observance -- only about our coverage. 'externally_curated': not derivable by ANY calendar, because the date is chosen by an institution rather than computed (e.g. Kathina, where each monastery picks its own day within the month-long season after Pavarana). No future profile will fix this; the date has to come from outside."
+      },
+      "derivability_note": {
+        "type": "string",
+        "description": "Why this derivability applies, with sources where known."
       }
     },
     "additionalProperties": false
