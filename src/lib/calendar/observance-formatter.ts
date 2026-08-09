@@ -165,6 +165,23 @@ export function formatOccurrencesToResults(
       }
     }
 
+    // `engine_error` means a reviewer has determined our computed date is WRONG,
+    // not merely that we could not settle between candidates. `civilDate` is
+    // already null on this path, but the backward-compatible `date` field is
+    // populated from targetDates, and leaving a known-wrong value there keeps
+    // surfacing it to any caller still reading the old field.
+    //
+    // The date is still needed to place the row in the requested range -- an
+    // observance with no date at all cannot be filtered into a month, and
+    // emptying targetDates would make the row disappear completely rather than
+    // appear as "under review". So the candidate is kept for RANGE PLACEMENT and
+    // blanked at emit time.
+    //
+    // Net effect: the observance still shows, in the right month, with no date
+    // and an under-review notice. A missing date is recoverable; a confidently
+    // wrong one is not.
+    const isEngineError = row.ambiguity_type === 'engine_error';
+
     const targetDates = candidateDatesArray.length > 0
       ? candidateDatesArray
       : (fallbackDate ? [fallbackDate] : []);
@@ -174,8 +191,11 @@ export function formatOccurrencesToResults(
     for (const d of targetDates) {
       if (d >= fromStr && d <= toStr) {
         results.push({
-          // Backward compatibility
-          date: d,
+          // Backward compatibility. Blank for engine_error: `d` is the date a
+          // reviewer has flagged as wrong, so it must not leak through the
+          // legacy field. Callers on the current contract read civilDate, which
+          // is null here either way.
+          date: isEngineError ? '' : d,
           slug: def.slug,
           display_name: def.display_name,
           emoji: def.emoji ?? '🪔',

@@ -293,7 +293,28 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     year: number;
     variant_key: string;
     calendar_profile: string;
-    ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+    /**
+     * Why this occurrence could not be published.
+     *
+     * The first three are things the ENGINE noticed about the sky or the rule:
+     * no date qualified, several did, or a vrddhi tithi spans two sunrises.
+     * Each is a legitimate "we cannot tell yet".
+     *
+     * `engine_error` is different in kind: it means a REVIEWER has determined
+     * that we are wrong -- typically by comparing against an authority, which
+     * is what the 4.3 Tier-1 harness now makes possible. It is never set by the
+     * engine, because an engine cannot know it is wrong; that is the whole
+     * reason external validation exists.
+     *
+     * It is deliberately NOT a fourth user-facing state. To a user, "we are
+     * uncertain", "your location moved it" and "we got it wrong" all mean the
+     * same thing -- this date is not confirmed -- and inviting them to compare
+     * our confessions would be noise. What differs is operational: an
+     * engine_error must WITHHOLD the date (it is known wrong, and the contract
+     * already forbids showing a guessed date with a caveat) and should reach a
+     * person, where the others are ordinary queue items.
+     */
+    ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi' | 'engine_error';
     reasoning: string;
     candidate_dates: string[];
     evaluator_details: any;
@@ -384,7 +405,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             source_refs: (variant as any).sourceRefs || [],
           });
         } else {
-          let ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+          let ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi' | 'engine_error';
           let reasoning: string;
           let candidate_dates: string[];
 
