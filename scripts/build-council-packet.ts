@@ -82,6 +82,7 @@ further ~29 days in that year only.
 `;
 
 const newEntries: Record<number, Row[]> = {};
+const movedCount: Record<number, number> = {};
 
 for (const year of YEARS) {
   const L = calculateObservancesForYearLegacy(year);
@@ -108,6 +109,7 @@ for (const year of YEARS) {
   moved.sort((a, b) => a.to.localeCompare(b.to));
   newEntries[year] = added.sort((a, b) => a.to.localeCompare(b.to));
 
+  movedCount[year] = moved.length;
   md += `## ${year} — ${moved.length} dates change\n\n`;
   md += `| Observance | Currently shows | Would show | Shift | Why |\n|---|---|---|---|---|\n`;
   for (const r of moved) {
@@ -149,5 +151,15 @@ because someone said the old date looked right, and they were correct.
 
 const out = 'docs/COUNCIL_RATIFICATION_PACKET.md';
 writeFileSync(out, md, 'utf8');
-console.log(`Wrote ${out}`);
-for (const y of YEARS) console.log(`  ${y}: ${(md.match(new RegExp(`^\\| \\*\\*`, 'gm')) || []).length ? '' : ''}`);
+
+const totalMoved = YEARS.reduce((a, y) => a + movedCount[y], 0);
+const totalNew = YEARS.reduce((a, y) => a + newEntries[y].length, 0);
+
+console.log(`\nWrote ${out}\n`);
+console.log('  Year   Dates changing   New observances');
+for (const y of YEARS) {
+  console.log(`  ${y}   ${String(movedCount[y]).padStart(12)}   ${String(newEntries[y].length).padStart(15)}`);
+}
+console.log(`  ${'total'.padEnd(4)}   ${String(totalMoved).padStart(12)}   ${String(totalNew).padStart(15)}\n`);
+console.log('  Each changing date needs one answer: is the new date correct?');
+console.log('  New observances have no current date, so nothing moves for them.\n');
