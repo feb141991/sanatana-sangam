@@ -24,7 +24,8 @@
     "corrected_lunar_masa_name": "Magha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 5
+    "lunar_tithi_index": 5,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "maha-shivaratri",
@@ -40,7 +41,8 @@
     "corrected_month_system": "amanta",
     "corrected_lunar_tithi_index": 29,
     "adhika_policy": "nija",
-    "lunar_tithi_index": 28
+    "lunar_tithi_index": 28,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "holi",
@@ -55,7 +57,8 @@
     "corrected_lunar_masa_name": "Phalguna",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "gudi-padwa",
@@ -136,7 +139,8 @@
     "corrected_lunar_masa_name": "Chaitra",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "akshaya-tritiya",
@@ -167,7 +171,8 @@
     "corrected_lunar_masa_name": "Vaishakha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 14
+    "lunar_tithi_index": 14,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "shani-jayanti",
@@ -182,7 +187,8 @@
     "corrected_lunar_masa_name": "Jyeshtha",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 30
+    "lunar_tithi_index": 30,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "vat-savitri-amavasya",
@@ -199,7 +205,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 30,
     "route_kind": "vrat",
-    "route_slug": "vat-savitri"
+    "route_slug": "vat-savitri",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "vat-savitri-purnima",
@@ -216,7 +223,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "route_kind": "vrat",
-    "route_slug": "vat-savitri-purnima"
+    "route_slug": "vat-savitri-purnima",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "jagannath-rath-yatra",
@@ -231,7 +239,8 @@
     "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 2
+    "lunar_tithi_index": 2,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "gupt-navratri-ashadha-begins",
@@ -266,7 +275,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "route_kind": "vrat",
-    "route_slug": "purnima"
+    "route_slug": "purnima",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "nag-panchami",
@@ -283,7 +293,8 @@
     "corrected_prefer_last_match": false,
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
-    "prefer_last_match": true
+    "prefer_last_match": true,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "raksha-bandhan",
@@ -298,7 +309,8 @@
     "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "krishna-janmashtami",
@@ -317,7 +329,8 @@
     "corrected_prefer_last_match": false,
     "adhika_policy": "nija",
     "lunar_tithi_index": 23,
-    "prefer_last_match": true
+    "prefer_last_match": true,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "krishna-janmashtami",
@@ -336,7 +349,8 @@
     "corrected_prefer_last_match": false,
     "adhika_policy": "nija",
     "lunar_tithi_index": 23,
-    "prefer_last_match": true
+    "prefer_last_match": true,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "ganesh-chaturthi",
@@ -351,7 +365,8 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 4
+    "lunar_tithi_index": 4,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "onam",
@@ -383,7 +398,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
     "route_kind": "vrat",
-    "route_slug": "hartalika-teej"
+    "route_slug": "hartalika-teej",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "mahalaya-amavasya",
@@ -474,7 +490,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 19,
     "route_kind": "vrat",
-    "route_slug": "karva-chauth"
+    "route_slug": "karva-chauth",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "dhanteras",
@@ -501,7 +518,8 @@
     "corrected_lunar_masa_name": "Kartika",
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 29
+    "lunar_tithi_index": 29,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "govardhan-puja",
@@ -540,7 +558,8 @@
     "corrected_lunar_masa_name": "Kartika",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 6
+    "lunar_tithi_index": 6,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "kartik-purnima",
@@ -569,7 +588,8 @@
     "corrected_lunar_masa_name": "Margashirsha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 5
+    "lunar_tithi_index": 5,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "gita-jayanti",
@@ -584,7 +604,8 @@
     "corrected_lunar_masa_name": "Margashirsha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 11
+    "lunar_tithi_index": 11,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -601,7 +622,296 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
-    "route_slug": "vaikunta-ekadashi"
+    "route_slug": "vaikunta-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "kamada-ekadashi",
+    "display_name": "Kamada Ekadashi",
+    "emoji": "🌿",
+    "description": "First Ekadashi of the Hindu New Year — fulfills all pure desires",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Chaitra",
+    "corrected_lunar_masa_name": "Chaitra",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "kamada-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "nirjala-ekadashi",
+    "display_name": "Nirjala Ekadashi",
+    "emoji": "🌿",
+    "description": "Waterless fast granting the merit of all 24 Ekadashis",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Jyeshtha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "nirjala-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "devshayani-ekadashi",
+    "display_name": "Devshayani Ekadashi",
+    "emoji": "🌿",
+    "description": "Beginning of Lord Vishnu's four-month cosmic slumber (Chaturmas)",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "devshayani-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "shravana-putrada-ekadashi",
+    "display_name": "Putrada Ekadashi (Shravana)",
+    "emoji": "🌿",
+    "description": "Shravana Ekadashi for progeny, family lineage, and prosperity",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Shravana",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "shravana-putrada-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "parivartini-ekadashi",
+    "display_name": "Parivartini Ekadashi",
+    "emoji": "🌿",
+    "description": "The day Lord Vishnu turns upon His side during Chaturmas slumber",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "parivartini-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "devutthana-ekadashi",
+    "display_name": "Devutthana Ekadashi",
+    "emoji": "🌿",
+    "description": "Awakening of Lord Vishnu from cosmic sleep, marking the end of Chaturmas",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Kartika",
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "devutthana-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "amalaki-ekadashi",
+    "display_name": "Amalaki Ekadashi",
+    "emoji": "🌳",
+    "description": "Celebration of the sacred Amla tree as the abode of Lord Vishnu",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Phalguna",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 11,
+    "route_kind": "vrat",
+    "route_slug": "amalaki-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "papmochani-ekadashi",
+    "display_name": "Papmochani Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi that liberates from accumulated sins",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Chaitra",
+    "corrected_lunar_masa_name": "Chaitra",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "papmochani-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "apara-ekadashi",
+    "display_name": "Apara Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi granting limitless spiritual merit",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Jyeshtha",
+    "corrected_lunar_masa_name": "Jyeshtha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "apara-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "yogini-ekadashi",
+    "display_name": "Yogini Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi that cures diseases and grants liberation",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Ashadha",
+    "corrected_lunar_masa_name": "Ashadha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "yogini-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "kamika-ekadashi",
+    "display_name": "Kamika Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi that grants all desires and removes fear",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Shravana",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "kamika-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "aja-ekadashi",
+    "display_name": "Aja Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi that destroys sins and restores lost glory",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Bhadrapada",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "aja-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "rama-ekadashi",
+    "display_name": "Rama Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi named after Goddess Lakshmi granting prosperity",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Kartika",
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "rama-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "utpanna-ekadashi",
+    "display_name": "Utpanna Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi commemorating the birth of Goddess Ekadashi",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Margashirsha",
+    "corrected_lunar_masa_name": "Margashirsha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "utpanna-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "saphala-ekadashi",
+    "display_name": "Saphala Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi that makes all endeavors successful",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Pausha",
+    "corrected_lunar_masa_name": "Pausha",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "saphala-ekadashi",
+    "corrected_allow_skipped_tithi": true
+  },
+  {
+    "slug": "vijaya-ekadashi",
+    "display_name": "Vijaya Ekadashi",
+    "emoji": "🌿",
+    "description": "The Ekadashi of absolute victory in all endeavors",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "lunar_masa_name": "Phalguna",
+    "corrected_lunar_masa_name": "Phalguna",
+    "corrected_month_system": "amanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "vijaya-ekadashi",
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "gupt-navratri-magha-begins",
@@ -806,7 +1116,8 @@
     "corrected_lunar_masa_name": "Phalguna",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 1
+    "lunar_tithi_index": 1,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "magha-puja",
@@ -837,7 +1148,8 @@
     "corrected_lunar_masa_name": "Vaishakha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "asalha-puja",
@@ -852,7 +1164,8 @@
     "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "vassa-begins-rains-retreat",
@@ -867,7 +1180,8 @@
     "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 16
+    "lunar_tithi_index": 16,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "ullambana-ancestor-day",
@@ -882,7 +1196,8 @@
     "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "pavarana-end-of-vassa",
@@ -897,7 +1212,8 @@
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 15
+    "lunar_tithi_index": 15,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "kathina",
@@ -912,7 +1228,8 @@
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 16
+    "lunar_tithi_index": 16,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "sangha-day-loy-krathong",
@@ -983,7 +1300,8 @@
     "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 27
+    "lunar_tithi_index": 27,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "samvatsari-paryushana-ends",
@@ -998,7 +1316,8 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 5
+    "lunar_tithi_index": 5,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "das-lakshana-dharma-begins",
@@ -1013,7 +1332,8 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 5
+    "lunar_tithi_index": 5,
+    "corrected_allow_skipped_tithi": true
   },
   {
     "slug": "jain-new-year-pratipada",
