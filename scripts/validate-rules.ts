@@ -77,6 +77,37 @@ try {
     }
   }
 
+  // Guard 1b: `lunar_masa_name` must never equal `corrected_lunar_masa_name`.
+  //
+  // The legacy naming is D1-shifted, so a rule genuinely calibrated for the
+  // legacy path always names a DIFFERENT month from the corrected one -- 0 of
+  // the 47 rules carrying both names have them equal. Equality is therefore the
+  // signature of the corrected value having been copied into the legacy field.
+  //
+  // That is not cosmetic. USE_CORRECTED_MASA is false, so materialisation runs
+  // the LEGACY path; a copied name makes it resolve at a D1-shifted date and
+  // publish it. It happened with the 16 named ekadashi rules -- Kamada Ekadashi
+  // would have shipped as 2026-05-26 instead of 2026-03-29, about two months
+  // out. Omitting the legacy field entirely is correct for a new observance:
+  // LunarTithiHandler returns [] without it, so the legacy path publishes
+  // nothing, and a missing date is recoverable where a confident wrong one is not.
+  for (const rule of rules as any[]) {
+    if (
+      rule.lunar_masa_name &&
+      rule.corrected_lunar_masa_name &&
+      rule.lunar_masa_name === rule.corrected_lunar_masa_name
+    ) {
+      console.error(
+        `❌ "${rule.slug}" has lunar_masa_name === corrected_lunar_masa_name ` +
+        `("${rule.lunar_masa_name}"). The legacy naming is D1-shifted, so these ` +
+        `should never match -- this is the corrected value copied into the legacy ` +
+        `field, and it will publish a wrong date while USE_CORRECTED_MASA is false. ` +
+        `Omit lunar_masa_name for observances that have no calibrated legacy name.`
+      );
+      process.exit(1);
+    }
+  }
+
   // Guard 2: report observances sharing a (month, tithi, system) slot.
   //
   // WARNING, not an error. Co-occurrence is often correct -- Gudi Padwa, Ugadi
