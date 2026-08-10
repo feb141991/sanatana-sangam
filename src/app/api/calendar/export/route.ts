@@ -63,6 +63,7 @@ export async function GET(req: Request) {
     .select('id, date, observance_definitions(slug, name, description, traditions)')
     .gte('date', today)
     .lte('date', futureIso)
+    .eq('publication_status', 'published')
     .order('date', { ascending: true })
     .limit(200);
 

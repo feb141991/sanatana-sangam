@@ -85,7 +85,8 @@ export async function GET(request: NextRequest) {
       .gte('date', fromStr)
       .lte('date', toStr)
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
-      .eq('observance_definitions.active', true);
+      .eq('observance_definitions.active', true)
+      .eq('publication_status', 'published');
 
     if (reviewedOnly) {
       occurrencesQuery = occurrencesQuery

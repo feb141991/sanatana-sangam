@@ -88,7 +88,8 @@ export async function GET(request: NextRequest) {
       .gte('date', firstDay)
       .lte('date', lastDay)
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
-      .eq('observance_definitions.active', true);
+      .eq('observance_definitions.active', true)
+      .eq('publication_status', 'published');
 
     if (occError) {
       console.error('[API Calendar Month] Occurrences error:', occError);

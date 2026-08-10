@@ -546,6 +546,7 @@ export async function GET(request: NextRequest) {
         .lte('date', calendarTo)
         .eq('observance_definitions.active', true)
         .in('observance_definitions.tradition', [tradition, 'all'])
+        .eq('publication_status', 'published')
         .order('date', { ascending: true })
         .limit(8),
       DB_TIMEOUT,

@@ -81,7 +81,8 @@ export async function GET(request: NextRequest) {
       `)
       .eq('date', dateStr)
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
-      .eq('observance_definitions.active', true);
+      .eq('observance_definitions.active', true)
+      .eq('publication_status', 'published');
 
     if (occError) {
       console.error('[API Calendar Day] Occurrences error:', occError);

@@ -76,6 +76,11 @@ export async function fetchReviewedObservancesForNotifications(
     .eq('verification_status', 'verified')
     .eq('audit_status', 'completed')
     .neq('final_date_source', 'fallback')
+    // Fail closed: only 'published' is eligible. This holds even if an admin
+    // sets review/verification/audit to their approving values, because the
+    // database now knows the row is disputed and no longer relies on nobody
+    // having got round to approving it.
+    .eq('publication_status', 'published')
     .order('date', { ascending: true });
 
   // The reviewed+verified+completed filter above already excludes today's
