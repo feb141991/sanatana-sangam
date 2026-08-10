@@ -436,7 +436,20 @@ describe('Snapshot fixtures — regression tests (no unintended change)', () => 
       .map(r => r.slug),
   );
 
+  // Disputed (rule, year) pairs are withheld at runtime, so their snapshots have
+  // no date to match. Same treatment as deferred rules: skip, keep the captured
+  // value for when the dispute resolves.
+  const disputedYears = new Map<string, number[]>(
+    (CANONICAL_RULES as Array<{ slug: string; disputed_years?: number[] }>)
+      .filter(r => r.disputed_years?.length)
+      .map(r => [r.slug, r.disputed_years!]),
+  );
+
   for (const fixture of snapshotFixtures) {
+    if (disputedYears.get(fixture.festivalId)?.includes(fixture.year)) {
+      it.skip(`[SNAPSHOT DISPUTED] ${fixture.caseId} — ${fixture.festivalId} ${fixture.year} is withheld pending review`, () => {});
+      continue;
+    }
     if (deferredSlugs.has(fixture.festivalId)) {
       it.skip(`[SNAPSHOT DEFERRED] ${fixture.caseId} — ${fixture.festivalId} is not in the launch set`, () => {});
       continue;

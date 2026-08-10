@@ -98,6 +98,25 @@ function isLeapYear(year: number): boolean {
  * simply produces no occurrence, which means no calendar entry and no
  * notification, because both are built from occurrences.
  */
+/**
+ * Whether this observance may be published FOR A GIVEN YEAR.
+ *
+ * `isPublishable` answers "ever". This answers "this year", because a rule can
+ * be sound in one year and disputed in another -- Janmashtami's 2026 date is
+ * council-confirmed and reproduces, while its 2027 date is contested.
+ *
+ * This exists because a review correctly pointed out that `ratification_note`
+ * is prose. I had written that recording a disputed year meant it "cannot ship
+ * as silently verified". That was false: nothing read the note, so the disputed
+ * dates would have materialised exactly like any other. Documentation is not a
+ * gate. This is the gate.
+ */
+export function isPublishableForYear(rule: ObservanceRule, year: number): boolean {
+  if (!isPublishable(rule)) return false;
+  const disputed = (rule as { disputed_years?: number[] }).disputed_years;
+  return !disputed?.includes(year);
+}
+
 export function isPublishable(rule: ObservanceRule): boolean {
   const r = rule as { derivability?: string; launch_status?: string };
 
@@ -458,7 +477,7 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
 
   // 1. First Pass: Evaluate absolute rules
   for (const rule of CANONICAL_RULES) {
-    if (!isPublishable(rule)) { occurrencesMap[rule.slug] = []; continue; }
+    if (!isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rule.slug] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
@@ -486,7 +505,7 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
       // appeared in output despite being suppressed. Seven rules leaked through
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
-      if (!isPublishable(rule)) continue;
+      if (!isPublishableForYear(rule, year)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -647,7 +666,7 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
-    if (!isPublishable(rule)) { occurrencesMap[rule.slug] = []; continue; }
+    if (!isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {
@@ -678,7 +697,7 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
       // appeared in output despite being suppressed. Seven rules leaked through
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
-      if (!isPublishable(rule)) continue;
+      if (!isPublishableForYear(rule, year)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;

@@ -300,6 +300,13 @@
       "ratification_note": {
         "type": "string",
         "description": "Record of a council ruling on this rule's date, including rulings that REJECTED an engine-proposed change. Kept in the rule itself so the reasoning travels with the data rather than living only in a tracker someone has to remember to read."
+      },
+      "disputed_years": {
+        "type": "array",
+        "items": {
+          "type": "integer"
+        },
+        "description": "Years where this rule's computed date is DISPUTED and must not be published. Enforced at runtime by isPublishableForYear() -- unlike ratification_note, which is prose and was wrongly described as preventing publication. A disputed year produces no occurrence, so it cannot materialise or reach a notification."
       }
     },
     "additionalProperties": false

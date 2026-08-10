@@ -16,7 +16,7 @@
  *
  * Generated: 2026-08-10
  * Years: 2026, 2027, 2028
- * Entries: 309
+ * Entries: 303
  *
  * USE_CORRECTED_MASA at generation: false
  *
@@ -155,7 +155,6 @@ const FALLBACK_2027: FallbackFestival[] = [
   { name: 'Makar Sankranti', date: '2027-01-14', emoji: '🪁', description: 'Harvest festival marking the sun\'s transition into Capricorn', type: 'major', tradition: 'hindu', slug: 'makar-sankranti' },
   { name: 'Ekadashi', date: '2027-01-19', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
   { name: 'Pradosh Vrat', date: '2027-01-20', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
-  { name: 'Guru Ravidas Jayanti', date: '2027-01-22', emoji: '☬', description: 'Birth anniversary of Guru Ravidas Ji — saint-poet whose verses appear in the Guru Granth Sahib', type: 'major', tradition: 'sikh', slug: 'guru-ravidas-jayanti' },
   { name: 'Purnima Vrat', date: '2027-01-22', emoji: '🌕', description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.', type: 'vrat', tradition: 'hindu', slug: 'purnima-vrat' },
   { name: 'Ekadashi', date: '2027-02-02', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
   { name: 'Pradosh Vrat', date: '2027-02-04', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
@@ -200,10 +199,7 @@ const FALLBACK_2027: FallbackFestival[] = [
   { name: 'Guru Purnima', date: '2027-07-18', emoji: '🙏', description: 'Day to honour spiritual teachers and gurus — observed by all traditions', type: 'major', tradition: 'all', slug: 'guru-purnima' },
   { name: 'Purnima Vrat', date: '2027-07-18', emoji: '🌕', description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.', type: 'vrat', tradition: 'hindu', slug: 'purnima-vrat' },
   { name: 'Raksha Bandhan', date: '2027-07-18', emoji: '🧿', description: 'Festival celebrating the bond between brothers and sisters', type: 'major', tradition: 'hindu', slug: 'raksha-bandhan' },
-  { name: 'Krishna Janmashtami (Smarta / Nishita)', date: '2027-07-27', emoji: '🦚', description: 'Celebration of the birth of Lord Krishna at midnight (Smarta observance during Ashtami / Nishita Vyapti)', type: 'major', tradition: 'hindu', slug: 'krishna-janmashtami' },
-  { name: 'Krishna Janmashtami (Smarta / Nishita)', date: '2027-07-27', emoji: '🦚', description: 'Celebration of the birth of Lord Krishna at midnight (Smarta observance during Ashtami / Nishita Vyapti)', type: 'major', tradition: 'hindu', slug: 'krishna-janmashtami' },
   { name: 'Ekadashi', date: '2027-07-30', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
-  { name: 'Paryushana Parva begins', date: '2027-07-30', emoji: '🤲', description: 'The holiest Jain festival — 8 days (Shvetambara) of intensive fasting, prayer, scripture study and self-purification. The apex of the Jain spiritual year.', type: 'major', tradition: 'jain', slug: 'paryushana-parva-begins' },
   { name: 'Pradosh Vrat', date: '2027-07-31', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
   { name: 'Amavasya', date: '2027-08-02', emoji: '🌑', description: 'Monthly new moon observance for stillness, ancestor remembrance, charity, and local family practice.', type: 'vrat', tradition: 'hindu', slug: 'amavasya-vrat' },
   { name: 'Ekadashi', date: '2027-08-12', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
@@ -303,7 +299,6 @@ const FALLBACK_2028: FallbackFestival[] = [
   { name: 'Pradosh Vrat', date: '2028-07-04', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
   { name: 'Purnima Vrat', date: '2028-07-06', emoji: '🌕', description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.', type: 'vrat', tradition: 'hindu', slug: 'purnima-vrat' },
   { name: 'Ekadashi', date: '2028-07-18', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
-  { name: 'Paryushana Parva begins', date: '2028-07-19', emoji: '🤲', description: 'The holiest Jain festival — 8 days (Shvetambara) of intensive fasting, prayer, scripture study and self-purification. The apex of the Jain spiritual year.', type: 'major', tradition: 'jain', slug: 'paryushana-parva-begins' },
   { name: 'Pradosh Vrat', date: '2028-07-20', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
   { name: 'Amavasya', date: '2028-07-22', emoji: '🌑', description: 'Monthly new moon observance for stillness, ancestor remembrance, charity, and local family practice.', type: 'vrat', tradition: 'hindu', slug: 'amavasya-vrat' },
   { name: 'Ekadashi', date: '2028-08-01', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
@@ -335,7 +330,6 @@ const FALLBACK_2028: FallbackFestival[] = [
   { name: 'Ekadashi', date: '2028-10-28', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
   { name: 'Pradosh Vrat', date: '2028-10-31', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },
   { name: 'Purnima Vrat', date: '2028-11-02', emoji: '🌕', description: 'Monthly full moon observance for Satyanarayan Puja, charity, mantra, and family worship according to tradition.', type: 'vrat', tradition: 'hindu', slug: 'purnima-vrat' },
-  { name: 'Karva Chauth', date: '2028-11-06', emoji: '🌙', description: 'Vrat observed by married Hindu women for their husbands', type: 'vrat', tradition: 'hindu', slug: 'karva-chauth' },
   { name: 'Dhanteras', date: '2028-11-13', emoji: '💰', description: 'First day of Diwali festival — worship of Goddess Lakshmi', type: 'major', tradition: 'hindu', slug: 'dhanteras' },
   { name: 'Ekadashi', date: '2028-11-13', emoji: '🌙', description: 'Fortnightly Ekadashi vrat — the 11th tithi of both the waxing and waning moon, a day of fasting for Vishnu.', type: 'vrat', tradition: 'hindu', slug: 'ekadashi' },
   { name: 'Pradosh Vrat', date: '2028-11-14', emoji: '🪔', description: 'Fortnightly Pradosh vrat to Lord Shiva — the 13th tithi of both pakshas, observed in the twilight hour.', type: 'vrat', tradition: 'hindu', slug: 'pradosh-vrat' },

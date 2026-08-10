@@ -352,7 +352,10 @@
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10. 2026-09-04 CONFIRMED and reproduced. KNOWN WRONG 2027: ruled 2027-08-24 Smarta / 08-25 Vaishnava; engine gives 08-25 for the Smarta variant. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Nishita ownership is exactly what the Smarta variant already declares in its conditions."
+    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator.",
+    "disputed_years": [
+      2027
+    ]
   },
   {
     "slug": "krishna-janmashtami",
@@ -374,7 +377,10 @@
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10. 2026-09-04 CONFIRMED and reproduced. KNOWN WRONG 2027: ruled 2027-08-24 Smarta / 08-25 Vaishnava; engine gives 08-25 for the Smarta variant. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Nishita ownership is exactly what the Smarta variant already declares in its conditions."
+    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator.",
+    "disputed_years": [
+      2027
+    ]
   },
   {
     "slug": "ganesh-chaturthi",
@@ -525,7 +531,10 @@
     "route_slug": "karva-chauth",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10. 2026-10-29 CONFIRMED and reproduced. KNOWN WRONG 2028: ruled 2028-10-06, engine gives 10-07. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Karva Chauth is moonrise-owned, so the evening moonrise decides the day, not the morning scan."
+    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2028-10-06; engine and Drik Panchang both give 10-07. Karva Chauth is moonrise-owned and there is NO evaluator rule for it, so the earlier claim that the condition evaluator would resolve this was wrong. 2026 (10-29) is council-confirmed and reproduces.",
+    "disputed_years": [
+      2028
+    ]
   },
   {
     "slug": "dhanteras",
@@ -1017,7 +1026,10 @@
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10: 2027-02-22 (Magha Purnima). Engine gives 2027-02-21. DIFFERENT CAUSE from the other one-day gaps: Purnima (tithi 15) is KSHAYA in 2027 -- it is skipped entirely between 20 and 21 Feb, so the target tithi never appears at any scan instant. The engine falls back via the skipped-tithi path and lands a day early. Needs the kshaya rule for Purnima-anchored observances, not the condition evaluator."
+    "ratification_note": "DISPUTED, and our own astronomy supports NEITHER prior answer. Purnima 2027 is NOT kshaya -- that was my mischaracterisation. The boundary solver puts the Purnima interval at 2027-02-20T02:30Z to 2027-02-20T23:23Z, nearly 21 hours, entirely within 20 February. It is missed only because the fixed 01:00 UTC daily sample falls before it on the 20th and after it on the 21st. Council ruled 22 Feb, the sampled engine gives 21 Feb, and the astronomy indicates 20 Feb -- which is also what Drik Panchang lists. Withheld pending resolution.",
+    "disputed_years": [
+      2027
+    ]
   },
   {
     "slug": "holla-mohalla",
@@ -1378,7 +1390,11 @@
     "lunar_tithi_index": 27,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council ratified 2026-08-10. 2026-09-08 CONFIRMED and reproduced. KNOWN WRONG in later years: ruled 2027-08-28 (engine gives 08-29) and 2028-08-16 (engine gives 08-17). Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. 2026 is correct, so the rule ships; 2027-28 must be re-derived before those years matter. Council also ruled Samvatsari 2028-08-24 and Digambara Daslakshana 2028-08-25 to 09-03 (das-lakshana rule is deferred from the launch set)."
+    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-28 and 2028-08-16; the engine gives 08-29 and 08-17, and Drik Panchang (Tier 5, commercial -- QA signal only) agrees with the ENGINE for 2028. Our 2026 date (09-08) is council-confirmed and reproduces, so only these two years are withheld. There is no Paryushana evaluator, so this is NOT resolved by USE_CONDITION_EVALUATOR -- an earlier claim of mine that was wrong. May need a Jain-profile or externally-curated treatment.",
+    "disputed_years": [
+      2027,
+      2028
+    ]
   },
   {
     "slug": "samvatsari-paryushana-ends",
