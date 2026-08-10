@@ -13,6 +13,16 @@ import { getPeriodWindow } from '../evaluator';
 import { getSunriseSunset, computeAstronomy } from '../../../../panchang-engine/src/core/astronomy';
 import { solveBoundary } from '../../../../panchang-engine/src/lunar-month/astronomy';
 
+const BEDFORD_EXTENDED_MOONRISE_REFERENCE = {
+  authority: 'USNO',
+  absentMoonriseQuery:
+    'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-05-04&coords=52.135,-0.467&tz=1',
+  nextNightQuery:
+    'https://aa.usno.navy.mil/api/rstt/oneday?date=2026-05-05&coords=52.135,-0.467&tz=1',
+  retrievedOn: '2026-08-10',
+  nextMoonriseLocal: '00:19',
+} as const;
+
 describe('Edge-Case Behavior Fixtures (E1-E13)', () => {
 
   /**
@@ -128,6 +138,8 @@ describe('Edge-Case Behavior Fixtures (E1-E13)', () => {
   /**
    * E6 & E7: Civil date with NO moonrise & Next-Night Extension (Bedford - 2026-05-04)
    * Proves: Bedford has no moonrise on May 4, 2026, but next-night extension retrieves May 5 moonrise (which occurs before sunrise).
+   * Source: BEDFORD_EXTENDED_MOONRISE_REFERENCE records the exact USNO queries;
+   * USNO publishes no rise on May 4 and 00:19 local on May 5.
    * Defect this test would NOT catch: Cases where the extended moonrise falls *after* the next day's sunrise, which should be rejected.
    */
   it('E6 & E7: Moonrise - resolves absent moonrise at Bedford on May 4, 2026 via next-night extension', () => {
@@ -144,8 +156,16 @@ describe('Edge-Case Behavior Fixtures (E1-E13)', () => {
     expect(window).not.toBeNull();
     if (window) {
       expect(window.diagnostics.includes('extended_moonrise')).toBe(true);
-      // Expected time is May 5 at ~00:18 AM local / May 4 at 23:18 UTC
-      expect(window.start.toISOString()).toBe('2026-05-04T23:18:05.008Z');
+      const localMinute = window.start.toLocaleTimeString('en-GB', {
+        timeZone: location.tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+      expect(localMinute).toBe(BEDFORD_EXTENDED_MOONRISE_REFERENCE.nextMoonriseLocal);
+
+      const { sunrise: may5Sunrise } = getSunriseForDateStr('2026-05-05', location);
+      expect(window.start.getTime()).toBeLessThan(may5Sunrise.getTime());
     }
   });
 

@@ -296,6 +296,10 @@
           "deferred"
         ],
         "description": "Whether this observance ships in the launch set. Distinct from `derivability`: deferred means capable but not chosen, where a non-computed derivability means not knowable at all. Both suppress publication; only one is a scheduling decision."
+      },
+      "ratification_note": {
+        "type": "string",
+        "description": "Record of a council ruling on this rule's date, including rulings that REJECTED an engine-proposed change. Kept in the rule itself so the reasoning travels with the data rather than living only in a tracker someone has to remember to read."
       }
     },
     "additionalProperties": false

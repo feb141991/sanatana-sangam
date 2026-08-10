@@ -41,11 +41,11 @@
     "lunar_masa_name": "Pausha",
     "corrected_lunar_masa_name": "Magha",
     "corrected_month_system": "amanta",
-    "corrected_lunar_tithi_index": 29,
     "adhika_policy": "nija",
     "lunar_tithi_index": 28,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council REJECTED the tithi-index change (28 -> 29) on 2026-08-10. The arithmetic was right -- krishna N = 15 + N, so Chaturdashi is 29 -- but the observance falls on the day whose NIGHT holds Chaturdashi at nishitha, not the day whose sunrise does. The jagran runs from the evening of the ruled date into the following morning, which is what index 29 was landing on. Reverted to 28, which reproduces the ruled dates under a sunrise scan. The correct long-term model is nishitha evaluation via USE_CONDITION_EVALUATOR, not a tithi index."
   },
   {
     "slug": "holi",
@@ -286,14 +286,15 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Jyeshtha",
-    "corrected_lunar_masa_name": "Shravana",
+    "corrected_lunar_masa_name": "Ashadha",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "route_kind": "vrat",
     "route_slug": "purnima",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Corrected 2026-08-10 on council ruling: Guru Purnima is ASHADHA Purnima, not Shravana. It had shared a (month, tithi) slot with Raksha Bandhan and Ullambana, which validate:rules had flagged as a same-date collision and which was wrongly dismissed as regional co-naming. Ruling: 2026-07-29 and 2027-07-18, a month before Raksha Bandhan in each year."
   },
   {
     "slug": "nag-panchami",
