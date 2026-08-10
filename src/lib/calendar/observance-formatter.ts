@@ -191,11 +191,19 @@ export function formatOccurrencesToResults(
     for (const d of targetDates) {
       if (d >= fromStr && d <= toStr) {
         results.push({
-          // Backward compatibility. Blank for engine_error: `d` is the date a
-          // reviewer has flagged as wrong, so it must not leak through the
-          // legacy field. Callers on the current contract read civilDate, which
-          // is null here either way.
-          date: isEngineError ? '' : d,
+          // Backward compatibility -- blank for EVERY unresolved row, not just
+          // engine_error.
+          //
+          // When no candidate exists the fallback above reruns the legacy engine,
+          // so `d` is a GUESSED date. civilDate is correctly null, but this
+          // legacy field would still hand that guess to any caller reading it,
+          // which is exactly what the contract on the next lines forbids. The
+          // guess is kept only long enough to place the row in the requested
+          // range, then dropped.
+          //
+          // Every row emitted in this loop is status 'unresolved', so this is
+          // unconditional rather than a special case.
+          date: '',
           slug: def.slug,
           display_name: def.display_name,
           emoji: def.emoji ?? '🪔',

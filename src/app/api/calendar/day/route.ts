@@ -142,7 +142,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response, {
       status: 200,
       headers: {
-        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+                // PRIVACY: must be `private`. This response is personalised -- when
+        // `calendar_profile` or `tradition` is absent from the query string the
+        // route reads them from the SIGNED-IN USER's profile row. Two users
+        // requesting the identical URL therefore get different bodies, so a
+        // shared CDN cache keyed on the URL alone would serve one user's
+        // calendar selection to another. `private` keeps it in the browser cache
+        // only. Making this `public` again would require every selection input
+        // to be an explicit URL parameter.
+        'Cache-Control': 'private, max-age=3600, stale-while-revalidate=86400',
       },
     });
   } catch (err) {

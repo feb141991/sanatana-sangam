@@ -779,6 +779,11 @@ export async function materializeOccurrencesForYears({
             definition_id: definitionId,
             year: occ.year,
             date: occ.date,
+            // NOT NULL since the D15 migration (20260804030000, line 93). The
+            // evaluator-path inserts set this; both legacy-path inserts did not,
+            // and the legacy path is the ACTIVE one while USE_CONDITION_EVALUATOR
+            // is false -- so a commit-mode run would fail on insert.
+            occurrence_date: occ.date,
             calculation_version: RULE_ENGINE_VERSION,
             calculated_by: calculatedBy,
             ...reviewPatch,
@@ -801,6 +806,7 @@ export async function materializeOccurrencesForYears({
             definition_id: definitionId,
             year: occ.year,
             date: occ.date,
+            occurrence_date: occ.date, // NOT NULL since D15; see note above
             calculation_version: RULE_ENGINE_VERSION,
             calculated_by: calculatedBy,
             final_date_source: 'calculation_engine',
@@ -835,6 +841,11 @@ export async function materializeOccurrencesForYears({
             id: existing.id,
             patch: {
               date: occ.date,
+              // Must move WITH `date`. occurrence_date is part of the D15
+              // uniqueness key (definition_id, calendar_profile, occurrence_date,
+              // variant_key), so updating one without the other leaves the row
+              // self-contradictory: it claims one date and is keyed on another.
+              occurrence_date: occ.date,
               calculation_version: RULE_ENGINE_VERSION,
               calculated_by: calculatedBy,
               ...reviewPatch,
