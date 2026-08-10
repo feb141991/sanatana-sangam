@@ -45,8 +45,8 @@
     "lunar_tithi_index": 28,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council REJECTED the tithi-index change (28 -> 29) on 2026-08-10. The arithmetic was right -- krishna N = 15 + N, so Chaturdashi is 29 -- but the observance falls on the day whose NIGHT holds Chaturdashi at nishitha, not the day whose sunrise does. The jagran runs from the evening of the ruled date into the following morning, which is what index 29 was landing on. Reverted to 28, which reproduces the ruled dates under a sunrise scan. The correct long-term model is nishitha evaluation via USE_CONDITION_EVALUATOR, not a tithi index.",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Maha Shivaratri listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06"
   },
   {
     "slug": "holi",
@@ -532,11 +532,11 @@
     "route_slug": "karva-chauth",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2028-10-06; engine and Drik Panchang both give 10-07. Karva Chauth is moonrise-owned and there is NO evaluator rule for it, so the earlier claim that the condition evaluator would resolve this was wrong. 2026 (10-29) is council-confirmed and reproduces.",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.",
     "disputed_years": [
       2028
     ],
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Karaka Chaturthi listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29"
   },
   {
     "slug": "dhanteras",
@@ -567,7 +567,8 @@
     "lunar_tithi_index": 29,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Dipavali listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "govardhan-puja",
@@ -841,7 +842,8 @@
     "route_slug": "apara-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Apara Ekadasi listed at 2026-05-13"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "yogini-ekadashi",
@@ -878,7 +880,8 @@
     "route_slug": "kamika-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Kamika Ekadasi listed at 2026-08-09"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "aja-ekadashi",
@@ -897,7 +900,8 @@
     "route_slug": "aja-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Aja Ekadasi listed at 2026-09-07"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "rama-ekadashi",
@@ -916,7 +920,8 @@
     "route_slug": "rama-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Rama Ekadasi listed at 2026-11-05"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "utpanna-ekadashi",
@@ -935,7 +940,8 @@
     "route_slug": "utpanna-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Utpanna Ekadasi listed at 2026-12-04"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "saphala-ekadashi",
@@ -954,7 +960,8 @@
     "route_slug": "saphala-ekadashi",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Saphala Ekadasi listed at 2027-01-03"
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.96 -- Saphala Ekadasi listed at 2027-01-03",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "vijaya-ekadashi",
