@@ -21,6 +21,9 @@ export async function GET(request: NextRequest) {
     
     let tradition = searchParams.get('tradition') || 'all';
     let calendarProfile = searchParams.get('calendar_profile') || '';
+    // Variant selection keys on sampradaya, not tradition. Read-only here: it is
+    // never accepted from the query string, so one user cannot ask for another's.
+    let sampradaya: string | null = null;
     const reviewedOnly = searchParams.get('reviewed') === '1' || searchParams.get('reviewed') === 'true';
     const tz = searchParams.get('tz') || 'Asia/Kolkata';
 
@@ -37,12 +40,13 @@ export async function GET(request: NextRequest) {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('calendar_profile, tradition')
+          .select('calendar_profile, tradition, sampradaya')
           .eq('id', user.id)
           .single();
         if (profile) {
           if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
           if (tradition === 'all') tradition = profile.tradition || 'all';
+          sampradaya = profile.sampradaya || null;
         }
       }
     }
@@ -154,6 +158,7 @@ export async function GET(request: NextRequest) {
       queueData || [],
       tradition,
       calendarProfile,
+      sampradaya,
       fromStr,
       toStr
     );

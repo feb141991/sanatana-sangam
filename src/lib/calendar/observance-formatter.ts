@@ -65,11 +65,88 @@ export interface ClientObservanceResult {
   isPrimary: boolean;
 }
 
+/**
+ * Picks the rows belonging to the user's chosen calendar profile.
+ *
+ * THE BUG THIS FIXES
+ * ------------------
+ * The routes query `.in('calendar_profile', [calendarProfile, 'legacy-ujjain'])`
+ * -- the user's profile OR the legacy fallback -- so a user on any non-default
+ * profile gets TWO rows per festival. `calendarProfile` was then passed into this
+ * formatter and never read. Nothing downstream distinguished the two rows either:
+ * they group on `festivalId@lat,lon` (both are computed at Ujjain, so they land
+ * together) and the primary is chosen by `spiritual_tradition`, which both rows
+ * satisfy identically. The winner was therefore whichever the query returned
+ * first, and BOTH were emitted, since no route filters on `isPrimary`.
+ *
+ * The user-visible damage was worse than a duplicate. Where the two rows disagree
+ * -- exactly the amanta/purnimanta cases the profile EXISTS to express -- the
+ * uncited-difference branch below flips the entry to 'ambiguous'. Choosing a
+ * regional calendar made your own festivals appear disputed, which is precisely
+ * backwards.
+ *
+ * WHY A FALLBACK AND NOT A VARIANT
+ * --------------------------------
+ * `legacy-ujjain` here is a backstop for festivals not yet materialised under the
+ * chosen profile, not a second legitimate reading. Publishing it alongside the
+ * user's own profile would assert a disagreement between traditions that nobody
+ * claimed -- the error AGENTS.md rule 7 forbids, and the one the grouping comment
+ * below already warns about for locations.
+ *
+ * Users on `legacy-ujjain` (the default) are unaffected: `.in()` collapses the
+ * duplicate value, so their rows were never doubled.
+ */
+function resolveCalendarProfile(rows: any[], calendarProfile: string): any[] {
+  if (!calendarProfile) return rows;
+
+  // Keyed by location as well as slug, so this never silently merges rows that
+  // differ because they were computed at different places.
+  const groups = new Map<string, any[]>();
+  for (const row of rows) {
+    const slug = row.observance_definitions?.slug ?? '';
+    const key = `${slug}@${row.computed_latitude},${row.computed_longitude}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(row);
+  }
+
+  const kept = new Set<any>();
+  for (const list of groups.values()) {
+    const exact = list.filter(r => r.calendar_profile === calendarProfile);
+    // No row under the chosen profile means it was never materialised for it --
+    // keep the fallback rather than showing the user nothing.
+    for (const r of exact.length > 0 ? exact : list) kept.add(r);
+  }
+  return rows.filter(r => kept.has(r));
+}
+
 export function formatOccurrencesToResults(
   occurrencesRaw: any[],
   queueItems: any[],
+  /**
+   * Retained for signature stability and for the queue-item path below. Festival
+   * filtering by tradition happens in the SQL (`observance_definitions.tradition`),
+   * so this must NOT be used for variant selection -- see requestedSampradaya.
+   */
   requestedTradition: string,
   calendarProfile: string,
+  /**
+   * The user's SAMPRADAYA, which is what variant selection actually keys on.
+   *
+   * `requestedTradition` is 'hindu' | 'sikh' | 'buddhist' | 'jain' and correctly
+   * filters WHICH festivals appear. Variant selection below asks a different
+   * question -- which reading of one festival, e.g. Smarta vs Vaishnava
+   * Janmashtami -- and that lives in `occurrences.spiritual_tradition`. Passing
+   * tradition into that comparison could never match, so the user's own
+   * sampradaya was never consulted and selection fell through to 'standard' or
+   * to index 0, i.e. query order.
+   *
+   * Latent rather than live today: `spiritual_tradition` is NULL on all 557
+   * stored rows, so no variant pair exists to choose between and the dispute
+   * branch is unreachable. It would start returning the wrong variant the moment
+   * sampradaya-qualified rows are materialised -- which is exactly when nobody
+   * would be looking for a selection bug.
+   */
+  requestedSampradaya: string | null,
   fromStr: string,
   toStr: string
 ): ClientObservanceResult[] {
@@ -77,7 +154,7 @@ export function formatOccurrencesToResults(
   // endpoints sharing this formatter cannot diverge and a fourth cannot forget.
   // Stored rows predate the disputed-years gate, so filtering at read time is
   // the only thing that keeps them out of a response.
-  const occurrences = filterWithheldJoinedRows(occurrencesRaw);
+  const occurrences = resolveCalendarProfile(filterWithheldJoinedRows(occurrencesRaw), calendarProfile);
   const results: ClientObservanceResult[] = [];
 
   // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones
@@ -299,7 +376,9 @@ export function formatOccurrencesToResults(
     if (isCitedDispute && itemsByTradition.size > 1) {
       // [1] DISPUTE: Valid cited variant pair across traditions.
       // Resolve primary based on user's requested profile/tradition.
-      let primaryIndex = list.findIndex(item => item.profile.tradition === requestedTradition);
+      let primaryIndex = requestedSampradaya
+        ? list.findIndex(item => item.profile.tradition === requestedSampradaya)
+        : -1;
       if (primaryIndex === -1) {
         primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
       }
@@ -326,7 +405,9 @@ export function formatOccurrencesToResults(
       // NOT a cited dispute. Could be [2] UNCERTAINTY, [3] ERROR, or [4] LOCATION EFFECT.
       // Never publish as a legitimate variant pair!
       // Select the primary item matching user profile/tradition/location.
-      let primaryIndex = list.findIndex(item => item.profile.tradition === requestedTradition);
+      let primaryIndex = requestedSampradaya
+        ? list.findIndex(item => item.profile.tradition === requestedSampradaya)
+        : -1;
       if (primaryIndex === -1) {
         primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
       }
