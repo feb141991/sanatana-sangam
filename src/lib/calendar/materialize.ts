@@ -150,7 +150,14 @@ const EVALUATOR_RULES = [
       },
       {
         variantId: 'vaishnava',
-        spiritualTradition: 'vaishnava_gaudiya',
+        // Must match a tradition_profiles.slug — observance_occurrences has a FK
+        // on spiritual_tradition (migration 20260805195000 line 301). The seeded
+        // slugs are smarta, smarta_nishita, nishita, standard and gaudiya_iskcon.
+        // 'vaishnava_gaudiya' is none of them, so committing an evaluator result
+        // for this variant would have failed that constraint the moment
+        // USE_CONDITION_EVALUATOR was enabled. rules.json already uses
+        // gaudiya_iskcon for this same sampradaya.
+        spiritualTradition: 'gaudiya_iskcon',
         isPrimary: false,
         sourceRefs: [
           {
