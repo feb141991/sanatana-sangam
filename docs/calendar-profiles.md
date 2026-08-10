@@ -75,6 +75,45 @@ product must be able to explain — see `calculation-examples.md` §1.
   month, not the adhika month. Purushottama Maas observances are the exception.
   Each rule variant must declare `adhika_policy: 'nija' | 'adhika' | 'both'`.
 
+**ADR 2026-08-11 — the "Adhika X" prefix was not propagated through the §1.2
+pūrṇimānta kṛṣṇa-pakṣa conversion.**
+`packages/panchang-engine/src/lunar-month/index.ts`'s krishna-paksha branch
+computed `purnimantaMonth = amantaMonth + 1` correctly, but the code that was
+meant to apply the "Adhika " prefix here as well was an unfinished stub written
+on the module's first commit — both branches of an `isAdhika ? x : x` ternary
+returned the identical value, so the check did nothing.
+
+Consequence: an adhika month is assigned the **same amantaIndex** as the nija
+month that follows it (§1.3's own rule — the adhika month "takes the name of
+the following month"). Feeding that shared index into "+1" produced the
+**identical pūrṇimānta string** for two different real kṛṣṇa-pakṣa fortnights
+weeks apart: the adhika month's own kṛṣṇa paksha, and the nija month's kṛṣṇa
+paksha right after it. A rule searching for the plain name could silently
+match whichever window a naive scan reached first.
+
+Found via a real Tier 1 source (Rashtriya Panchang, Saka 1948): Yogini
+Ekādaśī 2026 is sourced at 2026-07-11 (inside the genuine, nija window), while
+the naive search found 2026-06-11 (inside Adhika Jyeṣṭha's own kṛṣṇa paksha) —
+a month early. `apara-ekadashi`, `shani-jayanti` and `vat-savitri-amavasya`
+share the *other* affected masa pair (Jyeṣṭha) in the same 2026 window and
+were unaffected only because their genuine occurrence happened to be the
+*first* one that year, not the second — the defect was present for all four,
+it simply didn't bite three of them.
+
+**Fix:** the krishna-paksha branch now applies the same "Adhika " prefix
+§1.3 already specifies for the amānta case, keyed on whether the *source*
+month (the one whose kṛṣṇa paksha is being named) is itself adhika. Not a new
+policy decision — this makes the code match what §1.3 already documents.
+`vijaya-ekadashi` additionally needed `corrected_prefer_last_match: true` for
+a genuine vṛddhi tithi at the same 2027 boundary (unrelated to this defect;
+tithi 26 legitimately touches sunrise on two consecutive days that year).
+Regression tests: `packages/panchang-engine/src/lunar-month/__tests__/lunar-month.test.ts`,
+*"Purnimanta krishna-paksha naming across an adhika month"* — verified to
+fail without the fix, using the real 2026 Adhika Jyeṣṭha window rather than
+synthetic input, so a future change to the boundary solver or ephemeris that
+shifted the adhika window would also be caught here.
+`@sangam/panchang-engine` 0.2.0 → **0.2.1**.
+
 ### 1.4 Kṣaya Māsa (decayed) `[C]`
 
 > A lunar month in which **two Sankrantis occur** is *kṣaya*; that month name is

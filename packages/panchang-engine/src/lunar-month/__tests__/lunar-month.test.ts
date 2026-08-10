@@ -218,3 +218,70 @@ describe('Lunar Month Module — Non-Authoritative Real-Date Behavior Probes', (
     }
   });
 });
+
+describe('Purnimanta krishna-paksha naming across an adhika month', () => {
+  // An adhika month is assigned the SAME amantaIndex as the nija month that
+  // follows it (see classifyLunarMonth's 0-Sankranti branch: "amantaIndex =
+  // nijaIndex"). That is correct for amanta display, but purnimanta naming for
+  // a krishna-paksha day computes "next month name" from that index -- so the
+  // adhika month's own krishna paksha and the following nija month's krishna
+  // paksha produced the IDENTICAL purnimanta string. Two real calendar windows,
+  // weeks apart, both claiming to be e.g. "Ashadha".
+  //
+  // Found via a real government source (Rashtriya Panchang, Saka 1948): Yogini
+  // Ekadashi 2026 is sourced at 2026-07-11, inside the genuine window, while a
+  // naive same-name search found 2026-06-11 instead -- inside Adhika Jyeshtha's
+  // own krishna paksha, a month early. The code was an unfinished stub: both
+  // branches of an `isAdhika ? x : x` ternary returned the identical value.
+  //
+  // 2026 carries a real Adhika Jyeshtha (2026-05-17 -> 2026-06-16); these tests
+  // run directly against that year rather than synthetic input, so a change to
+  // the ephemeris or the boundary solver that shifted the adhika window would
+  // also be caught here.
+  it('gives the adhika month itself an "Adhika " prefix on its krishna-paksha purnimanta name', () => {
+    // 2026-06-05: inside Adhika Jyeshtha (05-17..06-16), krishna paksha.
+    const probe = new Date('2026-06-05T12:00:00Z');
+    const res = getLunarMonth(probe, 'purnimanta');
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.paksha).toBe('krishna');
+    expect(res.monthName).toBe('Adhika Ashadha');
+  });
+
+  it('gives the following nija month krishna-paksha the PLAIN name, not the adhika-prefixed one', () => {
+    // 2026-07-10: inside nija Jyeshtha's krishna paksha (nija Jyeshtha runs
+    // 06-16..06-30), which purnimanta-names as the plain, unprefixed "Ashadha".
+    // This is the genuine occurrence -- distinct from the probe above, which
+    // must NOT collide with it.
+    const probe = new Date('2026-07-10T12:00:00Z');
+    const res = getLunarMonth(probe, 'purnimanta');
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.paksha).toBe('krishna');
+    expect(res.monthName).toBe('Ashadha');
+  });
+
+  it('the two "Ashadha" krishna-paksha windows are no longer the same string', () => {
+    // The property the whole fix is about. Before it, both probes above
+    // returned the identical 'Ashadha', so a rule searching for that exact
+    // name could match either window depending on which one a naive scan
+    // reached first -- and for Yogini Ekadashi, that was the wrong one.
+    const spurious = getLunarMonth(new Date('2026-06-05T12:00:00Z'), 'purnimanta');
+    const genuine = getLunarMonth(new Date('2026-07-10T12:00:00Z'), 'purnimanta');
+    expect(spurious.ok && genuine.ok).toBe(true);
+    if (!spurious.ok || !genuine.ok) return;
+    expect(spurious.monthName).not.toBe(genuine.monthName);
+  });
+
+  it('shukla-paksha days are unaffected by the adhika prefix logic', () => {
+    // The bug lives entirely in the krishna-paksha branch (purnimanta shukla
+    // name is defined as identical to amanta name, no "next month" step at
+    // all). Confirms the fix did not leak into the unrelated branch.
+    const probe = new Date('2026-05-20T12:00:00Z'); // shukla paksha of Adhika Jyeshtha
+    const res = getLunarMonth(probe, 'purnimanta');
+    expect(res.ok).toBe(true);
+    if (!res.ok) return;
+    expect(res.paksha).toBe('shukla');
+    expect(res.monthName).toBe('Adhika Jyeshtha');
+  });
+});

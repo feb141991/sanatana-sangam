@@ -459,9 +459,35 @@ export function getLunarMonth(
       // krishna: next month name
       const nextIdx   = nextMonthIndex(amantaIndex);
       finalMonthIndex = nextIdx;
-      finalMonthName  = isAdhika
-        ? (MONTH_NAMES[nextIdx] ?? 'Unknown')
-        : (MONTH_NAMES[nextIdx] ?? 'Unknown');
+
+      // An adhika month is assigned the SAME amantaIndex as the nija month
+      // that follows it (see classifyLunarMonth above -- "amantaIndex =
+      // nijaIndex" for the 0-Sankranti branch). That is correct for amanta
+      // naming/display, but it means this branch's plain "next month name"
+      // computation produces the IDENTICAL string for two different krishna
+      // fortnights: the adhika month's own krishna paksha, and the krishna
+      // paksha of the real nija month sharing its index right afterwards.
+      // Two real calendar windows, weeks apart, both named e.g. "Ashadha".
+      //
+      // Confirmed empirically against a real government panchanga (Rashtriya
+      // Panchang, Saka 1948) for the 2026 Adhika Jyeshtha: the genuine
+      // purnimanta-Ashadha krishna-paksha observance (Yogini Ekadashi, sourced
+      // 2026-07-10/11) falls in the SECOND window; a naive same-name search
+      // finds the FIRST (2026-06-11, inside Adhika Jyeshtha's own krishna
+      // paksha) and is a month wrong. This was previously an unfinished stub
+      // -- both branches of the isAdhika check below returned the identical
+      // plain name, so the check did nothing.
+      //
+      // Fix: when the SOURCE month (the one whose krishna paksha the target
+      // day falls in) is itself adhika, prefix the resulting purnimanta name
+      // with "Adhika " so the two windows are no longer the same string. A
+      // rule search for the plain name then matches only the genuine, later
+      // occurrence -- which is what every sourced/confirmed rule in this
+      // masa pair (shani-jayanti, vat-savitri-amavasya, apara-ekadashi) was
+      // already doing correctly, because their krishna paksha falls in a
+      // NON-adhika source month and is untouched by this branch.
+      const nextName = MONTH_NAMES[nextIdx] ?? 'Unknown';
+      finalMonthName = isAdhika ? `Adhika ${nextName}` : nextName;
     }
   }
 

@@ -1,8 +1,10 @@
 # Provenance manifest — Rashtriya Panchang, Saka 1948 (2026–27 A.D.)
 
 **Status: official-source-backed, pending council ratification — not fully settled.**
-Six `corrected_month_system` values were set to `purnimanta` on the strength of
-this source. That is a strong Tier 1 citation, not a scholarly ruling; per
+Eight `corrected_month_system` values were set to `purnimanta` on the strength
+of this source (six directly; `yogini-ekadashi` and `vijaya-ekadashi` after an
+engine defect blocking both was found and fixed — see "Two divergences" below,
+now resolved). That is a strong Tier 1 citation, not a scholarly ruling; per
 `source-governance.md` §2, only Tier 2 (traditional texts) or a council decision
 settles a rule variant's authority. Treat as provisional until ratified.
 
@@ -73,6 +75,8 @@ letters. Verified date range covered: 395 consecutive days, 2026-03-22 through
 | `karva-chauth` | Karaka Chaturthi | 7 (index #54), 79 (daily) | 2026-10-29 | **purnimanta** — already correct, confirmed |
 | `diwali` | Dipavali | 7 (index #55), 81 (daily) | 2026-11-08 | **purnimanta** — already correct, confirmed |
 | `maha-shivaratri` | Maha Shivaratri | 8 (index #81), 112–113 (daily) | 2027-03-06 (mainstream/S.India) | **amanta** — already correct, confirmed; independently matches the council ruling recorded 2026-08-09 |
+| `yogini-ekadashi` | Yogini Ekadasi (Vaishnava & Vidhava) | 30 (daily) | 2026-07-11 | amanta → **purnimanta**, plus an engine fix (see below) |
+| `vijaya-ekadashi` | Vijaya Ekadasi | 113 (daily) | 2027-03-04 | amanta → **purnimanta** + `corrected_prefer_last_match: true` |
 
 Note on `maha-shivaratri`: the daily entries (pages 112–113) split by region —
 "Maha Shivaratri (Kashmir)" falls on the *preceding* day, **2027-03-05**, while
@@ -116,32 +120,34 @@ day-by-day tithi tables. Both were checked and agree for every row above.
    month-system branching does not exist in the engine yet; this is the same
    architectural gap already recorded at tracker item D32.
 
-3. **Two divergences investigated and left unresolved, on purpose:**
+3. **Two divergences investigated, diagnosed, and now resolved (2026-08-11):**
 
    - **`vijaya-ekadashi`** — sourced 2027-03-04, one day after the naive
-     purnimanta prediction (2027-03-03). Direct engine inspection shows tithi
+     purnimanta prediction (2027-03-03). Direct engine inspection showed tithi
      26 (Ekadashi) touches sunrise on **both** 2027-03-03 and 2027-03-04 — a
      genuine vṛddhi (extended) tithi, matching the source's own "Ekadasi
-     ahoratra" notation for the 3rd. The system declaration is not the
-     problem; which day a vṛddhi tithi resolves to is a day-selection
-     question the simple system table cannot represent.
+     ahoratra" notation for the 3rd. Not a system problem — added
+     `corrected_prefer_last_match: true`, which selects the later of the two
+     candidate days. Verified a no-op in 2026 and 2028 (no vṛddhi tithi at
+     this position either year), so nothing else moves.
 
    - **`yogini-ekadashi`** — sourced 2026-07-10 (Smarta) / 07-11
      (Vaishnava), matching neither the naive amānta (2026-08-09) nor
-     purnimanta (2026-06-11) prediction. Root cause found by tracing masa-name
-     transitions: **2026 carries an intercalary "Adhika Jyeshtha"
-     (2026-05-17 → 06-16)**, which produces *two* separate pūrṇimānta windows
-     both named "Ashadha" — a short transitional one (2026-06-01 → 06-15) and
-     the genuine one (2026-06-30 → 07-29). The naive search returns the
-     *first* match it finds (11 June, inside the spurious transitional
-     window); the real sourced observance falls inside the second, genuine
-     window. This is an adhika-māsa search-selection defect, not a
-     system-naming one — flipping `corrected_month_system` would not fix it.
+     purnimanta (2026-06-11) prediction. Root cause: **2026 carries an
+     intercalary "Adhika Jyeshtha" (2026-05-17 → 06-16)**, and the engine's
+     purnimanta krishna-paksha naming had a genuine defect — an
+     `isAdhika ? x : x` stub, both branches identical, present since the
+     module's first commit — that let the adhika month's own krishna paksha
+     and the following nija month's krishna paksha compute the **identical**
+     purnimanta name ("Ashadha" for both). Fixed at the root in
+     `packages/panchang-engine/src/lunar-month/index.ts`; see
+     `docs/calendar-profiles.md` §1.3 for the full ADR. Verified against the
+     real `LunarTithiHandler`: resolves to **2026-07-11**, matching the
+     source exactly.
 
-   Both rules are left declared `amanta` (unchanged) rather than force-fit to
-   either candidate. Fixing either requires engine-level work — vṛddhi-tithi
-   day-selection policy and adhika-māsa-aware masa search respectively — not
-   a rules.json edit.
+   Both rules are now declared `purnimanta`, sourced and verified. The engine
+   fix was swept against all four launch years (2025-2028) for other affected
+   rules before landing — none found; see the 2026-08-11 assessment entry.
 
 ## Guards run after applying
 
