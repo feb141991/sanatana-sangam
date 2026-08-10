@@ -1,0 +1,99 @@
+/**
+ * Resolves which calendar a request should be answered in.
+ *
+ * WHY THIS IS SHARED
+ * ------------------
+ * `/calendar/upcoming`, `/month` and `/day` each had their own copy of this
+ * logic, and each copy carried the same two defects -- which is the argument for
+ * one implementation rather than three:
+ *
+ * 1. COOKIE-ONLY AUTH. They called `createServerSupabaseClient().auth.getUser()`,
+ *    which reads cookies. The native app authenticates with a Bearer token via
+ *    `apiFetch`, so `getUser()` returned nothing, the profile was never read, and
+ *    EVERY native user silently got `legacy-ujjain` and `tradition: 'all'` no
+ *    matter what they had chosen. `getApiUser` already solves this -- it tries
+ *    cookies, then Bearer -- and was simply not used here.
+ *
+ * 2. THE LOOKUP WAS CONDITIONAL. It ran only `if (!calendarProfile || tradition
+ *    === 'all')`, so a caller passing both explicitly skipped it entirely and got
+ *    `sampradaya: null`. Sampradaya can never come from the query string, so
+ *    there was no way for such a caller to supply it. The lookup is now
+ *    unconditional for signed-in users: the request may override the profile and
+ *    tradition it asks for, but it cannot supply a sampradaya, so that must
+ *    always be read from the profile.
+ *
+ * The returned client is the one that authenticated, per `getApiUser`'s contract,
+ * so subsequent reads stay under the caller's own RLS rather than a service role.
+ */
+import type { NextRequest } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { getApiUser } from '@/lib/api-auth';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+
+export const DEFAULT_CALENDAR_PROFILE = 'legacy-ujjain';
+
+export interface RequestProfile {
+  /** The client that authenticated, or an anonymous one. Reuse for reads. */
+  supabase: SupabaseClient;
+  calendarProfile: string;
+  tradition: string;
+  sampradaya: string | null;
+  /** True when a user was resolved -- useful for cache-control decisions. */
+  isAuthenticated: boolean;
+}
+
+export async function resolveRequestProfile(
+  request: NextRequest,
+  requested: { tradition: string; calendarProfile: string },
+): Promise<RequestProfile> {
+  const auth = await getApiUser(request);
+  // getApiUser returns a null client for anonymous callers; the calendar is
+  // readable without signing in, so fall back rather than rejecting.
+  const supabase = auth.supabase ?? (await createServerSupabaseClient());
+
+  let calendarProfile = requested.calendarProfile;
+  let tradition = requested.tradition;
+  let sampradaya: string | null = null;
+
+  if (auth.user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('calendar_profile, tradition, sampradaya')
+      .eq('id', auth.user.id)
+      .single();
+
+    if (profile) {
+      // Explicit query parameters still win for the two fields a caller can
+      // legitimately ask for.
+      if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
+      if (tradition === 'all') tradition = profile.tradition || 'all';
+      // Never overridable from the query string: one user must not be able to
+      // request another's sampradaya, and there is no reason to.
+      sampradaya = profile.sampradaya || null;
+    }
+  }
+
+  if (!calendarProfile) calendarProfile = DEFAULT_CALENDAR_PROFILE;
+
+  return { supabase, calendarProfile, tradition, sampradaya, isAuthenticated: !!auth.user };
+}
+
+/**
+ * Days of over-fetch on each side of the requested window.
+ *
+ * Profile precedence is decided before the window is applied, so the query has to
+ * return rows just outside it. Without the pad, a festival the chosen profile
+ * places on 1 September and the legacy fallback places on 31 August would, in an
+ * August query, arrive as a legacy row alone -- indistinguishable from "never
+ * materialised for this profile", which is what publishes the fallback.
+ *
+ * 31 days covers a full month-name shift, the largest divergence these profiles
+ * express. The cost is bounded: these tables hold hundreds of rows, not millions.
+ */
+export const PROFILE_RESOLUTION_PAD_DAYS = 31;
+
+/** Shifts a YYYY-MM-DD date string by whole days, in UTC. */
+export function shiftDate(dateStr: string, days: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}

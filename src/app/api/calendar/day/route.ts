@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 
 export const runtime = 'nodejs';
@@ -25,32 +25,17 @@ export async function GET(request: NextRequest) {
 
     let tradition = searchParams.get('tradition') || 'all';
     let calendarProfile = searchParams.get('calendar_profile') || '';
-    // Variant selection keys on sampradaya, not tradition. Read-only here: it is
-    // never accepted from the query string, so one user cannot ask for another's.
     let sampradaya: string | null = null;
 
-    const supabase = await createServerSupabaseClient();
+    // Cookie OR Bearer: the native app sends a Bearer token, so the previous
+    // cookie-only lookup silently gave every native user the default calendar.
+    const resolved = await resolveRequestProfile(request, { tradition, calendarProfile });
+    const supabase = resolved.supabase;
+    calendarProfile = resolved.calendarProfile;
+    tradition = resolved.tradition;
+    sampradaya = resolved.sampradaya;
 
-    // Resolve tradition and calendar profile from profile if not explicitly passed
-    if (!calendarProfile || tradition === 'all') {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('calendar_profile, tradition, sampradaya')
-          .eq('id', user.id)
-          .single();
-        if (profile) {
-          if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
-          if (tradition === 'all') tradition = profile.tradition || 'all';
-          sampradaya = profile.sampradaya || null;
-        }
-      }
-    }
-    
-    if (!calendarProfile) calendarProfile = 'legacy-ujjain';
-
-    const { data: occurrencesData, error: occError } = await supabase
+    let occurrencesQuery = supabase
       .from('observance_occurrences')
       .select(`
         date,
@@ -83,10 +68,24 @@ export async function GET(request: NextRequest) {
           active
         )
       `)
-      .eq('date', dateStr)
+      // A single-day request still needs the surrounding window: the chosen
+      // profile's row for this festival may sit a day either side, and only by
+      // seeing it can we tell 'not materialised' from 'just outside the range'.
+      // The formatter clips back to exactly dateStr.
+      .gte('date', shiftDate(dateStr, -PROFILE_RESOLUTION_PAD_DAYS))
+      .lte('date', shiftDate(dateStr, PROFILE_RESOLUTION_PAD_DAYS))
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
       .eq('observance_definitions.active', true)
       .eq('publication_status', 'published');
+
+    // Tradition filtering happens in SQL, as it already does on /upcoming.
+    // Without it this route returned every tradition to every user -- a
+    // Sikh user saw Jain observances and vice versa.
+    if (tradition && tradition !== 'all') {
+      occurrencesQuery = occurrencesQuery.in('observance_definitions.tradition', [tradition, 'all']);
+    }
+
+    const { data: occurrencesData, error: occError } = await occurrencesQuery;
 
     if (occError) {
       console.error('[API Calendar Day] Occurrences error:', occError);
@@ -94,7 +93,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Query unresolved items from the review queue
-    const { data: queueData, error: queueError } = await supabase
+    let queueQuery = supabase
       .from('observance_review_queue')
       .select(`
         id,
@@ -124,6 +123,15 @@ export async function GET(request: NextRequest) {
       `)
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
       .eq('observance_definitions.active', true);
+
+    // The queue leaked traditions for the same reason the occurrence query
+    // did -- only /upcoming filtered. An unresolved Jain observance would
+    // surface on a Sikh user's calendar as 'under review'.
+    if (tradition && tradition !== 'all') {
+      queueQuery = queueQuery.in('observance_definitions.tradition', [tradition, 'all']);
+    }
+
+    const { data: queueData, error: queueError } = await queueQuery;
 
     if (queueError) {
       console.error('[API Calendar Day] Review queue error:', queueError);

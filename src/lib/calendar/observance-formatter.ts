@@ -66,6 +66,23 @@ export interface ClientObservanceResult {
 }
 
 /**
+ * Clips occurrence rows to the requested window.
+ *
+ * The routes over-fetch by a pad so profile resolution can see rows just outside
+ * the window (see the call site). That pad must not reach the response, or a
+ * "September" request would return August dates.
+ */
+function clipToRange<T>(rows: T[], fromStr: string, toStr: string): T[] {
+  return rows.filter(row => {
+    const d = (row as any).date ?? (row as any).occurrence_date;
+    // A row with no date cannot be placed; keep it rather than silently dropping
+    // it, so the fault surfaces instead of a festival quietly vanishing.
+    if (!d) return true;
+    return d >= fromStr && d <= toStr;
+  });
+}
+
+/**
  * Picks the rows belonging to the user's chosen calendar profile.
  *
  * THE BUG THIS FIXES
@@ -79,39 +96,68 @@ export interface ClientObservanceResult {
  * satisfy identically. The winner was therefore whichever the query returned
  * first, and BOTH were emitted, since no route filters on `isPrimary`.
  *
- * The user-visible damage was worse than a duplicate. Where the two rows disagree
- * -- exactly the amanta/purnimanta cases the profile EXISTS to express -- the
- * uncited-difference branch below flips the entry to 'ambiguous'. Choosing a
- * regional calendar made your own festivals appear disputed, which is precisely
- * backwards.
+ * Where the two rows disagree -- exactly the amanta/purnimanta cases the profile
+ * EXISTS to express -- the uncited-difference branch below flips the entry to
+ * 'ambiguous', so choosing a regional calendar would make your own festivals
+ * appear disputed. LATENT, not live: every stored occurrence is currently
+ * `legacy-ujjain`, so there is no second row to duplicate. I previously called
+ * this live and was wrong -- I had already queried this table for
+ * `spiritual_tradition` and never ran the one-line check on `calendar_profile`.
+ *
+ * THE GROUPING KEY
+ * ----------------
+ * (slug, year, location). All three are load-bearing:
+ *
+ *   - LOCATION, so rows differing only because they were computed somewhere else
+ *     are never merged (the failure the grouping comment further down warns of).
+ *   - YEAR, because an `upcoming` window crosses New Year and a slug repeats
+ *     across years. Without it, a profile row in one year would suppress the
+ *     fallback in another.
+ *   - SLUG alone is NOT a group for recurring rules. Ekadashi and Pradosh emit
+ *     ~24 rows per year under one slug, so a slug-keyed group would let a single
+ *     profile row anywhere in the range drop every legacy row for that slug,
+ *     including dates the profile never covered.
+ *
+ * COMPLETENESS RULE: all-or-nothing within a group. If the chosen profile has any
+ * row for (slug, year, location), only its rows are used. A profile's
+ * materialisation for a slug-year is complete or absent; a partial one is a
+ * materialisation defect, and filling the holes from `legacy-ujjain` would
+ * interleave two calendars inside a single year -- a sequence of Ekadashi dates
+ * that belongs to neither. Better to show one calendar's answer consistently.
  *
  * WHY A FALLBACK AND NOT A VARIANT
  * --------------------------------
  * `legacy-ujjain` here is a backstop for festivals not yet materialised under the
  * chosen profile, not a second legitimate reading. Publishing it alongside the
  * user's own profile would assert a disagreement between traditions that nobody
- * claimed -- the error AGENTS.md rule 7 forbids, and the one the grouping comment
- * below already warns about for locations.
+ * claimed -- the error AGENTS.md rule 7 forbids.
  *
  * Users on `legacy-ujjain` (the default) are unaffected: `.in()` collapses the
  * duplicate value, so their rows were never doubled.
+ *
+ * Shared by occurrences and review-queue items: both carry a slug, a year and a
+ * location, and both are fetched with the same two-profile `.in()`, so a
+ * queue-only entry under one profile could otherwise surface alongside the
+ * occurrence from the other.
  */
-function resolveCalendarProfile(rows: any[], calendarProfile: string): any[] {
+function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
   if (!calendarProfile) return rows;
 
-  // Keyed by location as well as slug, so this never silently merges rows that
-  // differ because they were computed at different places.
-  const groups = new Map<string, any[]>();
+  const groups = new Map<string, T[]>();
   for (const row of rows) {
-    const slug = row.observance_definitions?.slug ?? '';
-    const key = `${slug}@${row.computed_latitude},${row.computed_longitude}`;
+    const r = row as any;
+    const slug = r.observance_definitions?.slug ?? '';
+    // Queue rows carry `year` directly; occurrences carry it too, but fall back
+    // to the date so a row missing it is never silently grouped under ''.
+    const year = r.year ?? String(r.date ?? r.occurrence_date ?? '').slice(0, 4);
+    const key = `${slug}|${year}|${r.computed_latitude},${r.computed_longitude}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(row);
   }
 
-  const kept = new Set<any>();
+  const kept = new Set<T>();
   for (const list of groups.values()) {
-    const exact = list.filter(r => r.calendar_profile === calendarProfile);
+    const exact = list.filter(r => (r as any).calendar_profile === calendarProfile);
     // No row under the chosen profile means it was never materialised for it --
     // keep the fallback rather than showing the user nothing.
     for (const r of exact.length > 0 ? exact : list) kept.add(r);
@@ -121,7 +167,7 @@ function resolveCalendarProfile(rows: any[], calendarProfile: string): any[] {
 
 export function formatOccurrencesToResults(
   occurrencesRaw: any[],
-  queueItems: any[],
+  queueItemsRaw: any[],
   /**
    * Retained for signature stability and for the queue-item path below. Festival
    * filtering by tradition happens in the SQL (`observance_definitions.tradition`),
@@ -154,7 +200,26 @@ export function formatOccurrencesToResults(
   // endpoints sharing this formatter cannot diverge and a fourth cannot forget.
   // Stored rows predate the disputed-years gate, so filtering at read time is
   // the only thing that keeps them out of a response.
-  const occurrences = resolveCalendarProfile(filterWithheldJoinedRows(occurrencesRaw), calendarProfile);
+  // ORDER MATTERS: withheld -> profile -> range.
+  //
+  // Profile precedence must be decided BEFORE the requested window is applied.
+  // The routes now fetch a padded range precisely so this can see across the
+  // boundary: if the chosen profile puts a festival on 1 September and the legacy
+  // fallback puts it on 31 August, an August query that had already been clipped
+  // would contain only the legacy row, and the "not materialised for this
+  // profile" fallback below would fire and publish it. The profile row exists --
+  // it is just one day outside the window. Resolving first distinguishes
+  // "not materialised" from "materialised just outside the window"; clipping
+  // afterwards keeps the response honest to what was asked for.
+  const occurrences = clipToRange(
+    resolveCalendarProfile(filterWithheldJoinedRows(occurrencesRaw), calendarProfile),
+    fromStr,
+    toStr,
+  );
+  // Queue items are fetched with the same two-profile `.in()`, so they need the
+  // same resolution. They are range-filtered separately further down, against
+  // their candidate dates rather than a stored date.
+  const queueItems = resolveCalendarProfile(queueItemsRaw, calendarProfile);
   const results: ClientObservanceResult[] = [];
 
   // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones

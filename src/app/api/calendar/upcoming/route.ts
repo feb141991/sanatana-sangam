@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 
@@ -21,8 +21,6 @@ export async function GET(request: NextRequest) {
     
     let tradition = searchParams.get('tradition') || 'all';
     let calendarProfile = searchParams.get('calendar_profile') || '';
-    // Variant selection keys on sampradaya, not tradition. Read-only here: it is
-    // never accepted from the query string, so one user cannot ask for another's.
     let sampradaya: string | null = null;
     const reviewedOnly = searchParams.get('reviewed') === '1' || searchParams.get('reviewed') === 'true';
     const tz = searchParams.get('tz') || 'Asia/Kolkata';
@@ -32,26 +30,13 @@ export async function GET(request: NextRequest) {
     const endDate = new Date(Date.UTC(fy, fm - 1, fd + days));
     const toStr = endDate.toISOString().split('T')[0];
 
-    const supabase = await createServerSupabaseClient();
-    
-    // Resolve tradition and calendar profile from profile if not explicitly passed
-    if (!calendarProfile || tradition === 'all') {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('calendar_profile, tradition, sampradaya')
-          .eq('id', user.id)
-          .single();
-        if (profile) {
-          if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
-          if (tradition === 'all') tradition = profile.tradition || 'all';
-          sampradaya = profile.sampradaya || null;
-        }
-      }
-    }
-    
-    if (!calendarProfile) calendarProfile = 'legacy-ujjain';
+    // Cookie OR Bearer: the native app sends a Bearer token, so the previous
+    // cookie-only lookup silently gave every native user the default calendar.
+    const resolved = await resolveRequestProfile(request, { tradition, calendarProfile });
+    const supabase = resolved.supabase;
+    calendarProfile = resolved.calendarProfile;
+    tradition = resolved.tradition;
+    sampradaya = resolved.sampradaya;
 
     let occurrencesQuery = supabase
       .from('observance_occurrences')
@@ -86,8 +71,10 @@ export async function GET(request: NextRequest) {
           active
         )
       `)
-      .gte('date', fromStr)
-      .lte('date', toStr)
+      // Over-fetch so profile resolution can see rows just outside the window;
+      // the formatter clips back to [fromStr, toStr] after resolving.
+      .gte('date', shiftDate(fromStr, -PROFILE_RESOLUTION_PAD_DAYS))
+      .lte('date', shiftDate(toStr, PROFILE_RESOLUTION_PAD_DAYS))
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
       .eq('observance_definitions.active', true)
       .eq('publication_status', 'published');

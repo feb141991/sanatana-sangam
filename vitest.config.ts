@@ -18,6 +18,13 @@ const r = (p: string) => resolve(__dirname, p);
 export default defineConfig({
   resolve: {
     alias: {
+      // MUST precede the bare '@sangam/dharma-rules' entry. Vite string aliases
+      // are PREFIX replacements, so the bare key rewrites
+      // '@sangam/dharma-rules/src/festivals/rules.json' into
+      // '<...>/conditions/index.ts/src/festivals/rules.json', which cannot
+      // resolve -- the reason app-level tests touching the observance formatter
+      // failed to load at all.
+      '@sangam/dharma-rules/src': r('./packages/dharma-rules/src'),
       '@sangam/dharma-rules': r('./packages/dharma-rules/src/conditions/index.ts'),
       '@sangam/panchang-engine': r('./packages/panchang-engine/src/index.ts'),
       '@sangam/sadhana-engine': r('./packages/sadhana-engine/src/index.ts'),
