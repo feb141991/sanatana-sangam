@@ -511,10 +511,43 @@ export async function materializeOccurrencesForYears({
 
   if (existingError) throw existingError;
 
+  // D15 defaults, from migration 20260804030000 line 77.
+  const DEFAULT_PROFILE = 'legacy-ujjain';
+  const DEFAULT_VARIANT = 'legacy-default';
+
+  /**
+   * Identity of "this observance's row for this year, profile and variant".
+   *
+   * NOT the D15 uniqueness key. That is
+   * (definition_id, year, calendar_profile, occurrence_date, variant_key), which
+   * includes the DATE -- and the date is precisely what a regeneration changes.
+   * Keying the lookup on it would mean a moved date never matches its existing
+   * row, so every regeneration would insert a duplicate instead of updating.
+   *
+   * So this is the uniqueness key minus the mutable component. It answers "which
+   * stored row does this computed occurrence correspond to", which is the
+   * question the update path actually asks.
+   *
+   * It previously omitted calendar_profile and variant_key entirely, collapsing
+   * every profile and variant for a definition+year into one entry. Harmless
+   * while only the legacy profile is written; wrong the moment multi-profile
+   * materialisation starts, because two profiles' rows would overwrite each
+   * other in this map and one would be silently re-inserted.
+   */
+  const rowIdentity = (
+    definitionId: string,
+    year: number,
+    profile: string | null | undefined,
+    variant: string | null | undefined,
+  ) => `${definitionId}:${year}:${profile ?? DEFAULT_PROFILE}:${variant ?? DEFAULT_VARIANT}`;
+
   const existingByDefinitionYear = new Map<string, MaterializeOccurrenceRow>();
   const existingByDefinitionDate = new Set<string>();
   for (const row of existingRows ?? []) {
-    existingByDefinitionYear.set(`${row.definition_id}:${row.year}`, row);
+    existingByDefinitionYear.set(
+      rowIdentity(row.definition_id, row.year, row.calendar_profile, row.variant_key),
+      row,
+    );
     existingByDefinitionDate.add(`${row.definition_id}:${row.date}`);
   }
 
@@ -795,11 +828,14 @@ export async function materializeOccurrencesForYears({
           continue;
         }
 
-        const dedupKey = `${definitionId}:${occ.year}`;
+        // The legacy path writes only the default profile/variant, so those are
+        // the values its rows carry. Using rowIdentity keeps it consistent with
+        // the evaluator path, which already keys on full variant identity.
+        const dedupKey = rowIdentity(definitionId, occ.year, DEFAULT_PROFILE, DEFAULT_VARIANT);
         if (processedThisYear.has(dedupKey)) continue;
         processedThisYear.add(dedupKey);
 
-        const existing = existingByDefinitionYear.get(`${definitionId}:${occ.year}`);
+        const existing = existingByDefinitionYear.get(dedupKey);
         if (!existing) {
           summary[year].insertable += 1;
           toInsert.push({
