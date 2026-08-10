@@ -232,16 +232,18 @@ describe('review-queue items are profile-resolved too', () => {
     },
   });
 
-  it('does not surface both the chosen-profile and legacy queue entries', () => {
-    // resolveCalendarProfile originally filtered occurrences only, so once
-    // profile-specific review entries exist a user would see the same unresolved
-    // observance twice, on two different dates.
+  it("surfaces the USER'S profile queue entry, not the legacy one", () => {
+    // Asserting the count alone let a real regression through: requiring a
+    // trustworthy batch made every profile queue entry fail (queue rows have no
+    // batch and never will), so the legacy entry always won and the test still
+    // saw exactly one row. Which one survives is the whole point.
     const queue = [
       queueRow('disputed-festival', 2026, 'gujarati-amanta', '2026-09-04'),
       queueRow('disputed-festival', 2026, 'legacy-ujjain', '2026-09-03'),
     ];
     const out = format([], 'gujarati-amanta', '2026-09-01', '2026-09-30', queue);
     expect(out).toHaveLength(1);
+    expect(out[0].profile.calendar).toBe('gujarati-amanta');
   });
 
   it('keeps the legacy queue entry when the profile has none', () => {

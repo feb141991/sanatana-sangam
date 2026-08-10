@@ -110,7 +110,18 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
       return {
         select() {
           return {
-            eq: async () => ({ data: opts.definitions, error: null }),
+            // Table- and column-aware: the commit helper now counts produced rows
+            // by querying batch_id, and a fake that answered `definitions` to
+            // every .eq() would have let a wrong count pass unnoticed.
+            eq: async (col?: string, val?: unknown) => {
+              if (col === 'batch_id') {
+                return {
+                  data: ([...existing, ...inserted] as Row[]).filter(r => r.batch_id === val),
+                  error: null,
+                };
+              }
+              return { data: opts.definitions, error: null };
+            },
             in: async () => ({ data: table === 'observance_occurrences' ? existing : [], error: null }),
             // insert().select('id') resolves here
             then: undefined,

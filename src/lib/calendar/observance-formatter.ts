@@ -167,7 +167,24 @@ function clipToRange<T>(rows: T[], fromStr: string, toStr: string): T[] {
  * queue-only entry under one profile could otherwise surface alongside the
  * occurrence from the other.
  */
-function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
+function resolveCalendarProfile<T>(
+  rows: T[],
+  calendarProfile: string,
+  /**
+   * Whether a chosen-profile set must prove completeness via its batch.
+   *
+   * TRUE for occurrences: a partial batch there means missing observances, so
+   * the legacy fallback is safer.
+   *
+   * FALSE for review-queue items, which have no batch and never will -- they are
+   * unresolved questions, not materialised rows, and no batch describes them.
+   * Demanding one made every profile-specific queue entry fail the check and
+   * silently hand the slot back to the legacy entry, so a user on a regional
+   * calendar saw the legacy candidate dates for a question about THEIR calendar.
+   * Two different concepts had been collapsed into one gate.
+   */
+  requireCompleteBatch = true,
+): T[] {
   if (!calendarProfile) return rows;
 
   const groups = new Map<string, T[]>();
@@ -201,7 +218,8 @@ function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
     // complete. Every row must carry a trustworthy batch: a group half of whose
     // rows came from a good batch and half from an aborted one is not complete,
     // whatever the totals look like.
-    const complete = exact.length > 0 && exact.every(r => isBatchTrustworthy((r as any).batch));
+    const complete = !requireCompleteBatch
+      || (exact.length > 0 && exact.every(r => isBatchTrustworthy((r as any).batch)));
 
     if (!complete && fallback.length > 0) {
       for (const r of fallback) {
@@ -281,7 +299,10 @@ export function formatOccurrencesToResults(
   // Queue items are fetched with the same two-profile `.in()`, so they need the
   // same resolution. They are range-filtered separately further down, against
   // their candidate dates rather than a stored date.
-  const queueItems = resolveCalendarProfile(queueItemsRaw, calendarProfile);
+  // `requireCompleteBatch: false` -- see the parameter's note. Queue rows are
+  // unresolved questions rather than materialised occurrences, so completeness
+  // is not a property they can have.
+  const queueItems = resolveCalendarProfile(queueItemsRaw, calendarProfile, false);
   const results: ClientObservanceResult[] = [];
   // Instance year per emitted result. Held beside the results rather than on
   // them because ClientObservanceResult is the public API shape, and grouping is

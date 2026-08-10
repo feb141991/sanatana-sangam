@@ -505,92 +505,166 @@ export function calculateOccurrencesWithEvaluator(year: number): {
 
 
 /**
- * Inserts occurrence rows under a materialisation batch.
+ * Commits occurrence rows under a materialisation batch.
  *
- * Replaces a bare `.insert(toInsert)` at both commit sites. Everything the read
- * path needs but cannot infer is recorded here, at the only moment it is known:
+ * Everything the read path needs but cannot infer is recorded here, at the only
+ * moment it is known: a stable `series_instance_key` derived from the instance
+ * ANCHOR (never the published date, which two variants of one instance disagree
+ * on by definition), and a batch carrying expected against produced.
  *
- *   - series_instance_key, from the instance ANCHOR rather than the published
- *     date, so two variants of one instance share a key and two instances of a
- *     series do not;
- *   - a batch per (definition, year, profile, variant, location) carrying how
- *     many rows were expected against how many landed.
+ * THREE CORRECTIONS OVER THE FIRST VERSION, ALL FROM REVIEW
  *
- * Batches are opened BEFORE the insert and closed after with the real count, so
- * a crash mid-way leaves `partial` -- which the read path refuses to trust --
- * rather than silence that looks like success. On an insert error the batch is
- * closed `failed` and the error rethrown; the previous behaviour of throwing
- * with nothing recorded left no trace of a half-written year.
+ * 1. EXPECTED comes from the engine's COMPLETE output for the identity, not from
+ *    `toInsert.length`. Those differ on every incremental run -- toInsert has
+ *    already had existing, locked and duplicate rows filtered out of it, so it
+ *    means "rows still to write", and a rerun that inserted nothing would have
+ *    recorded a proud 0/0 complete.
+ *
+ * 2. UPDATES are stamped too. Only inserts passed through here before, so a row
+ *    whose date moved kept a NULL batch and NULL key and silently opted out of
+ *    the contract it was supposed to be governed by.
+ *
+ * 3. PRODUCED is COUNTED FROM THE DATABASE, not from the payload length. The
+ *    payload counts what this run wrote; the batch is a claim about every row
+ *    that belongs to the identity. A moved date that inserts a new row while an
+ *    older row survives would otherwise let the batch report 1/1 complete with
+ *    two rows present.
  */
-async function insertOccurrencesWithBatches(
+async function commitOccurrencesWithBatches(
   supabase: any,
-  rows: any[],
-  versions: { engine: string; rule: string; astronomy?: string },
-): Promise<number> {
-  if (rows.length === 0) return 0;
+  args: {
+    toInsert: any[];
+    toUpdate: Array<{ id: string; patch: Record<string, unknown> }>;
+    /** Expected row count per batch identity, from the engine's full output. */
+    expectedByIdentity: Map<string, number>;
+    /** Identity metadata per key, so a batch can be opened for it. */
+    identityMeta: Map<string, any>;
+    versions: { engine: string; rule: string; astronomy?: string };
+  },
+): Promise<{ inserted: number; updated: number }> {
+  const { toInsert, toUpdate, expectedByIdentity, identityMeta, versions } = args;
 
   const groups = new Map<string, any[]>();
-  for (const row of rows) {
-    const key = [
-      row.definition_id, row.year, row.calendar_profile,
-      row.spiritual_tradition ?? '', row.variant_key ?? '',
-      row.computed_latitude, row.computed_longitude, row.computed_timezone,
-    ].join('|');
+  for (const row of toInsert) {
+    const key = batchIdentityKey(row);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(row);
   }
 
-  let insertedTotal = 0;
+  // Every identity the engine produced for this year opens a batch, including
+  // those with nothing left to insert -- otherwise a rerun leaves last run's
+  // batch standing while rows have since changed underneath it.
+  const identities = new Set<string>([...groups.keys(), ...expectedByIdentity.keys()]);
 
-  for (const group of groups.values()) {
-    const first = group[0];
+  let inserted = 0;
+  const batchByIdentity = new Map<string, string>();
+
+  for (const key of identities) {
+    const meta = identityMeta.get(key) ?? groups.get(key)?.[0];
+    if (!meta) continue;
+    const expected = expectedByIdentity.get(key) ?? (groups.get(key)?.length ?? 0);
+
     const batchId = await openBatch(
       supabase,
       {
-        definitionId: first.definition_id,
-        slug: first.__slug,
-        year: first.year,
-        calendarProfile: first.calendar_profile,
-        spiritualTradition: first.spiritual_tradition ?? null,
-        variantKey: first.variant_key ?? null,
-        lat: first.computed_latitude,
-        lon: first.computed_longitude,
-        tz: first.computed_timezone,
+        definitionId: meta.definition_id,
+        slug: meta.__slug,
+        year: meta.year,
+        calendarProfile: meta.calendar_profile,
+        spiritualTradition: meta.spiritual_tradition ?? null,
+        variantKey: meta.variant_key ?? null,
+        lat: meta.computed_latitude,
+        lon: meta.computed_longitude,
+        tz: meta.computed_timezone,
       },
-      group.length,
+      expected,
       versions,
     );
+    batchByIdentity.set(key, batchId);
 
-    const payload = group.map(({ __slug, __anchor, ...rest }) => ({
-      ...rest,
-      batch_id: batchId,
-      series_instance_key: buildSeriesInstanceKey({
-        slug: __slug,
-        year: rest.year,
-        calendarProfile: rest.calendar_profile,
-        lat: rest.computed_latitude,
-        lon: rest.computed_longitude,
-        tz: rest.computed_timezone,
-        instanceAnchor: __anchor,
-      }),
-    }));
+    const group = groups.get(key) ?? [];
+    if (group.length > 0) {
+      const payload = group.map(({ __slug, __anchor, ...rest }) => ({
+        ...rest,
+        batch_id: batchId,
+        series_instance_key: buildSeriesInstanceKey({
+          slug: __slug,
+          year: rest.year,
+          calendarProfile: rest.calendar_profile,
+          lat: rest.computed_latitude,
+          lon: rest.computed_longitude,
+          tz: rest.computed_timezone,
+          instanceAnchor: __anchor,
+        }),
+      }));
 
-    try {
-      const { data, error } = await supabase
-        .from('observance_occurrences')
-        .insert(payload)
-        .select('id');
-      if (error) throw error;
-      const produced = data?.length ?? 0;
-      insertedTotal += produced;
-      await closeBatch(supabase, batchId, produced, group.length);
-    } catch (err) {
-      await closeBatch(supabase, batchId, 0, group.length, String(err));
-      throw err;
+      try {
+        const { data, error } = await supabase
+          .from('observance_occurrences')
+          .insert(payload)
+          .select('id');
+        if (error) throw error;
+        inserted += data?.length ?? 0;
+      } catch (err) {
+        await closeBatch(supabase, batchId, 0, expected, String(err));
+        throw err;
+      }
     }
   }
 
-  return insertedTotal;
+  // Updates carry the same stamps as inserts. A row the engine still owns must
+  // belong to the current batch whether it was written now or moved now.
+  let updated = 0;
+  for (const item of toUpdate) {
+    const key = item.patch.__identityKey as string | undefined;
+    const batchId = key ? batchByIdentity.get(key) : undefined;
+    const { __identityKey, __slug, __anchor, ...patch } = item.patch as any;
+    const stamped = batchId
+      ? {
+          ...patch,
+          batch_id: batchId,
+          series_instance_key: buildSeriesInstanceKey({
+            slug: __slug,
+            year: patch.year ?? (identityMeta.get(key!)?.year),
+            calendarProfile: identityMeta.get(key!)?.calendar_profile,
+            lat: identityMeta.get(key!)?.computed_latitude,
+            lon: identityMeta.get(key!)?.computed_longitude,
+            tz: identityMeta.get(key!)?.computed_timezone,
+            instanceAnchor: __anchor ?? patch.date,
+          }),
+        }
+      : patch;
+
+    const { error } = await supabase
+      .from('observance_occurrences')
+      .update(stamped)
+      .eq('id', item.id);
+    if (error) throw error;
+    updated += 1;
+  }
+
+  // Close each batch against what the DATABASE holds for it, not what this run
+  // happened to write.
+  for (const [key, batchId] of batchByIdentity) {
+    const expected = expectedByIdentity.get(key) ?? (groups.get(key)?.length ?? 0);
+    const { data, error } = await supabase
+      .from('observance_occurrences')
+      .select('id')
+      .eq('batch_id', batchId);
+    if (error) throw error;
+    await closeBatch(supabase, batchId, data?.length ?? 0, expected);
+  }
+
+  return { inserted, updated };
+}
+
+/** The batch identity a row belongs to. One definition, shared by every caller. */
+function batchIdentityKey(row: any): string {
+  return [
+    row.definition_id, row.year, row.calendar_profile,
+    row.spiritual_tradition ?? '', row.variant_key ?? '',
+    row.computed_latitude, row.computed_longitude, row.computed_timezone,
+  ].join('|');
 }
 
 export async function materializeOccurrencesForYears({
@@ -679,6 +753,11 @@ export async function materializeOccurrencesForYears({
 
       const toInsert: any[] = [];
       const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+      // The engine's COMPLETE intended set for this year, captured before any
+      // existing/locked/duplicate filtering. This is what `expected_row_count`
+      // must mean -- "what should exist", not "what is left to write".
+      const expectedRows: any[] = [];
+
       const processedThisYear = new Set<string>();
 
       // Build composite existing maps for fine-grained lookup
@@ -702,6 +781,13 @@ export async function materializeOccurrencesForYears({
 
         const profile = 'legacy-ujjain'; // evaluated at Ujjain
         const variant = occ.variant_key || 'legacy-default';
+
+        expectedRows.push({
+          definition_id: definitionId, year, calendar_profile: profile,
+          spiritual_tradition: occ.spiritual_tradition ?? null, variant_key: variant,
+          computed_latitude: 23.1765, computed_longitude: 75.7885,
+          computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+        });
 
         if (occ.recurring) {
           if (namedDates.has(occ.date)) {
@@ -807,6 +893,19 @@ export async function materializeOccurrencesForYears({
           toUpdate.push({
             id: existing.id,
             patch: {
+              // Internal, stripped before the UPDATE. Without these an updated
+              // row kept a NULL batch and NULL key, opting itself out of the
+              // contract meant to govern it.
+              __identityKey: batchIdentityKey({
+                definition_id: definitionId, year,
+                calendar_profile: (existing as any).calendar_profile ?? DEFAULT_PROFILE,
+                spiritual_tradition: (occ as any).spiritual_tradition ?? null,
+                variant_key: (existing as any).variant_key ?? DEFAULT_VARIANT,
+                computed_latitude: 23.1765, computed_longitude: 75.7885,
+                computed_timezone: 'Asia/Kolkata',
+              }),
+              __slug: occ.slug,
+              __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
               date: occ.date,
               occurrence_date: occ.date,
               calendar_profile: profile,
@@ -841,24 +940,29 @@ export async function materializeOccurrencesForYears({
         continue;
       }
 
-      if (toInsert.length > 0) {
-        summary[year].inserted = await insertOccurrencesWithBatches(supabase, toInsert, {
-          engine: RULE_ENGINE_VERSION,
-          rule: '1.0.0',
-          astronomy: '1.0.0',
-        });
-        totalInserted += summary[year].inserted;
+      // EXPECTED comes from the engine's complete output for this year, not from
+      // toInsert -- which has already had existing, locked and duplicate rows
+      // filtered out and therefore means "rows still to write". A rerun with
+      // nothing to insert would otherwise record 0/0 and call itself complete.
+      const expectedByIdentity = new Map<string, number>();
+      const identityMeta = new Map<string, any>();
+      for (const row of expectedRows) {
+        const key = batchIdentityKey(row);
+        expectedByIdentity.set(key, (expectedByIdentity.get(key) ?? 0) + 1);
+        if (!identityMeta.has(key)) identityMeta.set(key, row);
       }
 
-      for (const item of toUpdate) {
-        const { error: updateError } = await supabase
-          .from('observance_occurrences')
-          .update(item.patch)
-          .eq('id', item.id);
-        if (updateError) throw updateError;
-        summary[year].updated += 1;
-        totalUpdated += 1;
-      }
+      const committed = await commitOccurrencesWithBatches(supabase, {
+        toInsert,
+        toUpdate,
+        expectedByIdentity,
+        identityMeta,
+        versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
+      });
+      summary[year].inserted = committed.inserted;
+      summary[year].updated = committed.updated;
+      totalInserted += committed.inserted;
+      totalUpdated += committed.updated;
 
       // Upsert unresolved review queue items if we are committing
       if (commit && unresolved.length > 0) {
@@ -905,6 +1009,11 @@ export async function materializeOccurrencesForYears({
 
       const toInsert: any[] = [];
       const toUpdate: Array<{ id: string; patch: Record<string, unknown> }> = [];
+      // The engine's COMPLETE intended set for this year, captured before any
+      // existing/locked/duplicate filtering. This is what `expected_row_count`
+      // must mean -- "what should exist", not "what is left to write".
+      const expectedRows: any[] = [];
+
       const processedThisYear = new Set<string>();
 
       for (const occ of calculated) {
@@ -913,6 +1022,13 @@ export async function materializeOccurrencesForYears({
           summary[year].missingDefinition += 1;
           continue;
         }
+
+        expectedRows.push({
+          definition_id: definitionId, year, calendar_profile: DEFAULT_PROFILE,
+          spiritual_tradition: null, variant_key: DEFAULT_VARIANT,
+          computed_latitude: 23.1765, computed_longitude: 75.7885,
+          computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+        });
 
         if (occ.recurring) {
           if (namedDates.has(occ.date)) {
@@ -1018,6 +1134,19 @@ export async function materializeOccurrencesForYears({
           toUpdate.push({
             id: existing.id,
             patch: {
+              // Internal, stripped before the UPDATE. Without these an updated
+              // row kept a NULL batch and NULL key, opting itself out of the
+              // contract meant to govern it.
+              __identityKey: batchIdentityKey({
+                definition_id: definitionId, year,
+                calendar_profile: (existing as any).calendar_profile ?? DEFAULT_PROFILE,
+                spiritual_tradition: (occ as any).spiritual_tradition ?? null,
+                variant_key: (existing as any).variant_key ?? DEFAULT_VARIANT,
+                computed_latitude: 23.1765, computed_longitude: 75.7885,
+                computed_timezone: 'Asia/Kolkata',
+              }),
+              __slug: occ.slug,
+              __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
               date: occ.date,
               // Must move WITH `date`. occurrence_date is part of the D15
               // uniqueness key (definition_id, calendar_profile, occurrence_date,
@@ -1043,24 +1172,29 @@ export async function materializeOccurrencesForYears({
         continue;
       }
 
-      if (toInsert.length > 0) {
-        summary[year].inserted = await insertOccurrencesWithBatches(supabase, toInsert, {
-          engine: RULE_ENGINE_VERSION,
-          rule: '1.0.0',
-          astronomy: '1.0.0',
-        });
-        totalInserted += summary[year].inserted;
+      // EXPECTED comes from the engine's complete output for this year, not from
+      // toInsert -- which has already had existing, locked and duplicate rows
+      // filtered out and therefore means "rows still to write". A rerun with
+      // nothing to insert would otherwise record 0/0 and call itself complete.
+      const expectedByIdentity = new Map<string, number>();
+      const identityMeta = new Map<string, any>();
+      for (const row of expectedRows) {
+        const key = batchIdentityKey(row);
+        expectedByIdentity.set(key, (expectedByIdentity.get(key) ?? 0) + 1);
+        if (!identityMeta.has(key)) identityMeta.set(key, row);
       }
 
-      for (const item of toUpdate) {
-        const { error: updateError } = await supabase
-          .from('observance_occurrences')
-          .update(item.patch)
-          .eq('id', item.id);
-        if (updateError) throw updateError;
-        summary[year].updated += 1;
-        totalUpdated += 1;
-      }
+      const committed = await commitOccurrencesWithBatches(supabase, {
+        toInsert,
+        toUpdate,
+        expectedByIdentity,
+        identityMeta,
+        versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
+      });
+      summary[year].inserted = committed.inserted;
+      summary[year].updated = committed.updated;
+      totalInserted += committed.inserted;
+      totalUpdated += committed.updated;
     }
   }
 

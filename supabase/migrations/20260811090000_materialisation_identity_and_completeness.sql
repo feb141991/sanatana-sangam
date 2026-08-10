@@ -75,15 +75,30 @@ CREATE TABLE IF NOT EXISTS public.observance_materialisation_batches (
     CHECK (status <> 'complete' OR produced_row_count = expected_row_count)
 );
 
--- One batch per materialisation identity. COALESCE rather than a plain UNIQUE
--- because NULL <> NULL in Postgres, so the unqualified variant would otherwise
--- be insertable an unlimited number of times.
+-- One batch per materialisation identity.
+--
+-- NULLS NOT DISTINCT rather than COALESCE(...) expressions. The expression form
+-- solved the NULL problem and created a worse one: PostgreSQL cannot infer an
+-- EXPRESSION index from a raw-column ON CONFLICT target, so every upsert against
+-- it fails with
+--
+--   there is no unique or exclusion constraint matching the ON CONFLICT
+--   specification
+--
+-- which is what `openBatch` sends. The first real call would have thrown. It was
+-- not caught because the batch path was only ever exercised through the test's
+-- fake client, which cannot model conflict-target inference -- the shadow
+-- database existed and the code was never routed through it.
+--
+-- NULLS NOT DISTINCT (PostgreSQL 15+; production runs 17) treats NULL as a value
+-- for uniqueness, giving the same guarantee on raw columns that a conflict target
+-- can name.
 CREATE UNIQUE INDEX IF NOT EXISTS uq_observance_materialisation_batches_identity
   ON public.observance_materialisation_batches (
     definition_id, year, calendar_profile,
-    COALESCE(spiritual_tradition, ''), COALESCE(variant_key, ''),
+    spiritual_tradition, variant_key,
     computed_latitude, computed_longitude, computed_timezone
-  );
+  ) NULLS NOT DISTINCT;
 
 CREATE INDEX IF NOT EXISTS idx_observance_materialisation_batches_lookup
   ON public.observance_materialisation_batches (definition_id, year, calendar_profile);
@@ -123,3 +138,35 @@ CREATE INDEX IF NOT EXISTS idx_observance_occurrences_series_instance
 -- batch_id = NULL, which is what marks them as pre-contract legacy rows. Inventing
 -- keys for them would fabricate the very identity this column exists to record
 -- honestly, and would make 557 unverified rows look batch-verified.
+
+-- 3 ── access control ────────────────────────────────────────────────────────
+-- This is an internal integrity table. Nothing a user does should read or write
+-- it, and the read path consults it only through a server-side query. Enabling
+-- RLS with NO policy denies every anon/authenticated request outright; the
+-- service role bypasses RLS by design, which is the only access this needs.
+--
+-- Enabled explicitly rather than relied upon: a table created without RLS in a
+-- Supabase project is reachable by any client holding the anon key, so silence
+-- here would have published the materialisation history of the whole calendar.
+ALTER TABLE public.observance_materialisation_batches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.observance_materialisation_batches FORCE ROW LEVEL SECURITY;
+
+-- Guarded so the migration is portable. `anon` and `authenticated` are Supabase
+-- roles and do not exist in a plain PostgreSQL instance, so an unguarded REVOKE
+-- aborts the script there -- which is exactly what happened on the shadow, and
+-- would have meant the access-control half of this migration was never actually
+-- executed against anything before reaching production.
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    REVOKE ALL ON public.observance_materialisation_batches FROM anon;
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    REVOKE ALL ON public.observance_materialisation_batches FROM authenticated;
+  END IF;
+END $$;
+
+COMMENT ON TABLE public.observance_materialisation_batches IS
+  'Internal materialisation bookkeeping. RLS enabled with no policy: service-role only. '
+  'The read path may substitute a profile''s occurrences for the legacy fallback only when '
+  'the matching batch is status=complete and produced_row_count = expected_row_count.';
