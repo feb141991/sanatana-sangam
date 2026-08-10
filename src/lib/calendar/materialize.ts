@@ -1,4 +1,5 @@
 import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearCorrected } from './engine';
+import { openBatch, closeBatch, buildSeriesInstanceKey } from './materialisation-batch';
 import { evaluateVariant } from '@sangam/dharma-rules';
 import { CANONICAL_RULES } from './rules';
 
@@ -287,6 +288,15 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     slug: string;
     date: string;
     year: number;
+    /**
+     * The instance this row is a reading OF -- the baseline occurrence's date.
+     *
+     * Not the published date. A variant may resolve days away from its anchor;
+     * that is exactly what makes it a variant, and why the published date cannot
+     * serve as identity. Two rows sharing an anchor are the same observance seen
+     * two ways; two rows with different anchors are different observances.
+     */
+    instance_anchor: string;
     recurring?: boolean;
     variant_key?: string;
     spiritual_tradition?: string;
@@ -338,6 +348,8 @@ export function calculateOccurrencesWithEvaluator(year: number): {
         slug: occ.slug,
         date: occ.date,
         year: occ.year,
+        // No variants for this rule, so the occurrence is its own instance.
+        instance_anchor: occ.date,
         recurring: occ.recurring,
         variant_key: 'legacy-default',
         spiritual_tradition: null,
@@ -403,6 +415,10 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             slug: eRule.slug,
             date: match.date,
             year: year,
+            // The candidate this variant was evaluated FROM. Every variant in
+            // this inner loop shares it, which is precisely what makes them
+            // readings of one instance rather than separate observances.
+            instance_anchor: candidate.date,
             recurring: eRule.isRecurring,
             variant_key: variant.variantId,
             spiritual_tradition: variant.spiritualTradition,
@@ -487,6 +503,95 @@ export function calculateOccurrencesWithEvaluator(year: number): {
   return { resolved: resolvedOccurrences, unresolved };
 }
 
+
+/**
+ * Inserts occurrence rows under a materialisation batch.
+ *
+ * Replaces a bare `.insert(toInsert)` at both commit sites. Everything the read
+ * path needs but cannot infer is recorded here, at the only moment it is known:
+ *
+ *   - series_instance_key, from the instance ANCHOR rather than the published
+ *     date, so two variants of one instance share a key and two instances of a
+ *     series do not;
+ *   - a batch per (definition, year, profile, variant, location) carrying how
+ *     many rows were expected against how many landed.
+ *
+ * Batches are opened BEFORE the insert and closed after with the real count, so
+ * a crash mid-way leaves `partial` -- which the read path refuses to trust --
+ * rather than silence that looks like success. On an insert error the batch is
+ * closed `failed` and the error rethrown; the previous behaviour of throwing
+ * with nothing recorded left no trace of a half-written year.
+ */
+async function insertOccurrencesWithBatches(
+  supabase: any,
+  rows: any[],
+  versions: { engine: string; rule: string; astronomy?: string },
+): Promise<number> {
+  if (rows.length === 0) return 0;
+
+  const groups = new Map<string, any[]>();
+  for (const row of rows) {
+    const key = [
+      row.definition_id, row.year, row.calendar_profile,
+      row.spiritual_tradition ?? '', row.variant_key ?? '',
+      row.computed_latitude, row.computed_longitude, row.computed_timezone,
+    ].join('|');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(row);
+  }
+
+  let insertedTotal = 0;
+
+  for (const group of groups.values()) {
+    const first = group[0];
+    const batchId = await openBatch(
+      supabase,
+      {
+        definitionId: first.definition_id,
+        slug: first.__slug,
+        year: first.year,
+        calendarProfile: first.calendar_profile,
+        spiritualTradition: first.spiritual_tradition ?? null,
+        variantKey: first.variant_key ?? null,
+        lat: first.computed_latitude,
+        lon: first.computed_longitude,
+        tz: first.computed_timezone,
+      },
+      group.length,
+      versions,
+    );
+
+    const payload = group.map(({ __slug, __anchor, ...rest }) => ({
+      ...rest,
+      batch_id: batchId,
+      series_instance_key: buildSeriesInstanceKey({
+        slug: __slug,
+        year: rest.year,
+        calendarProfile: rest.calendar_profile,
+        lat: rest.computed_latitude,
+        lon: rest.computed_longitude,
+        tz: rest.computed_timezone,
+        instanceAnchor: __anchor,
+      }),
+    }));
+
+    try {
+      const { data, error } = await supabase
+        .from('observance_occurrences')
+        .insert(payload)
+        .select('id');
+      if (error) throw error;
+      const produced = data?.length ?? 0;
+      insertedTotal += produced;
+      await closeBatch(supabase, batchId, produced, group.length);
+    } catch (err) {
+      await closeBatch(supabase, batchId, 0, group.length, String(err));
+      throw err;
+    }
+  }
+
+  return insertedTotal;
+}
 
 export async function materializeOccurrencesForYears({
   supabase,
@@ -612,6 +717,9 @@ export async function materializeOccurrencesForYears({
           const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
           toInsert.push({
             definition_id: definitionId,
+            // Write-time facts the read path cannot infer. Stripped before insert.
+            __slug: occ.slug,
+            __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
             year: occ.year,
             date: occ.date,
             occurrence_date: occ.date,
@@ -649,6 +757,9 @@ export async function materializeOccurrencesForYears({
           const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
           toInsert.push({
             definition_id: definitionId,
+            // Write-time facts the read path cannot infer. Stripped before insert.
+            __slug: occ.slug,
+            __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
             year: occ.year,
             date: occ.date,
             occurrence_date: occ.date,
@@ -731,12 +842,11 @@ export async function materializeOccurrencesForYears({
       }
 
       if (toInsert.length > 0) {
-        const { data: inserted, error: insertError } = await supabase
-          .from('observance_occurrences')
-          .insert(toInsert)
-          .select('id');
-        if (insertError) throw insertError;
-        summary[year].inserted = inserted?.length ?? 0;
+        summary[year].inserted = await insertOccurrencesWithBatches(supabase, toInsert, {
+          engine: RULE_ENGINE_VERSION,
+          rule: '1.0.0',
+          astronomy: '1.0.0',
+        });
         totalInserted += summary[year].inserted;
       }
 
@@ -817,6 +927,9 @@ export async function materializeOccurrencesForYears({
           const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
           toInsert.push({
             definition_id: definitionId,
+            // Write-time facts the read path cannot infer. Stripped before insert.
+            __slug: occ.slug,
+            __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
             year: occ.year,
             date: occ.date,
             // NOT NULL since the D15 migration (20260804030000, line 93). The
@@ -824,6 +937,18 @@ export async function materializeOccurrencesForYears({
             // and the legacy path is the ACTIVE one while USE_CONDITION_EVALUATOR
             // is false -- so a commit-mode run would fail on insert.
             occurrence_date: occ.date,
+            // Made EXPLICIT here. Both legacy-path inserts previously wrote
+            // neither the profile nor the location, leaving each row's identity
+            // implicit -- which is the same class of omission the batch contract
+            // exists to end. The values match what every stored row already
+            // holds; naming them means the row describes itself rather than
+            // depending on a default nobody declared.
+            calendar_profile: DEFAULT_PROFILE,
+            variant_key: DEFAULT_VARIANT,
+            is_primary_variant: true,
+            computed_latitude: 23.1765,
+            computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata',
             calculation_version: RULE_ENGINE_VERSION,
             calculated_by: calculatedBy,
             ...reviewPatch,
@@ -847,9 +972,19 @@ export async function materializeOccurrencesForYears({
           summary[year].insertable += 1;
           toInsert.push({
             definition_id: definitionId,
+            // Write-time facts the read path cannot infer. Stripped before insert.
+            __slug: occ.slug,
+            __anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
             year: occ.year,
             date: occ.date,
             occurrence_date: occ.date, // NOT NULL since D15; see note above
+            // Identity made explicit, as at the sibling insert above.
+            calendar_profile: DEFAULT_PROFILE,
+            variant_key: DEFAULT_VARIANT,
+            is_primary_variant: true,
+            computed_latitude: 23.1765,
+            computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata',
             calculation_version: RULE_ENGINE_VERSION,
             calculated_by: calculatedBy,
             final_date_source: 'calculation_engine',
@@ -909,12 +1044,11 @@ export async function materializeOccurrencesForYears({
       }
 
       if (toInsert.length > 0) {
-        const { data: inserted, error: insertError } = await supabase
-          .from('observance_occurrences')
-          .insert(toInsert)
-          .select('id');
-        if (insertError) throw insertError;
-        summary[year].inserted = inserted?.length ?? 0;
+        summary[year].inserted = await insertOccurrencesWithBatches(supabase, toInsert, {
+          engine: RULE_ENGINE_VERSION,
+          rule: '1.0.0',
+          astronomy: '1.0.0',
+        });
         totalInserted += summary[year].inserted;
       }
 

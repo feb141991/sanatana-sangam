@@ -61,8 +61,52 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
     }
   };
 
+  // Batch rows, keyed by the migration's unique identity index. Modelled here
+  // rather than stubbed away because the batch CHECK constraint is the single
+  // fact the read path trusts, and a fake that accepts an impossible batch would
+  // let a broken materialiser pass.
+  const batches = new Map<string, Row>();
+  const batchIdentity = (r: Row) => [
+    r.definition_id, r.year, r.calendar_profile,
+    r.spiritual_tradition ?? '', r.variant_key ?? '',
+    r.computed_latitude, r.computed_longitude, r.computed_timezone,
+  ].join('|');
+
   const client = {
     from(table: string) {
+      if (table === 'observance_materialisation_batches') {
+        return {
+          upsert: (row: Row) => ({
+            select: () => ({
+              single: async () => {
+                const key = batchIdentity(row);
+                const prior = batches.get(key);
+                // Re-opening must RESET, or a failed re-run inherits the previous
+                // run's 'complete' over an incomplete set of rows.
+                const id = prior?.id ?? `batch-${batches.size}`;
+                batches.set(key, { ...row, id, status: 'partial', produced_row_count: 0 });
+                return { data: { id }, error: null };
+              },
+            }),
+          }),
+          update: (patch: Row) => ({
+            eq: async (_col: string, id: string) => {
+              for (const [k, b] of batches) {
+                if (b.id !== id) continue;
+                const merged = { ...b, ...patch };
+                // Mirrors observance_materialisation_batches_complete_means_complete.
+                if (merged.status === 'complete' && merged.produced_row_count !== merged.expected_row_count) {
+                  throw new Error(
+                    `batch ${id} claims complete with ${merged.produced_row_count}/${merged.expected_row_count} rows`
+                  );
+                }
+                batches.set(k, merged);
+              }
+              return { error: null };
+            },
+          }),
+        };
+      }
       return {
         select() {
           return {
@@ -117,7 +161,7 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
     },
   };
 
-  return { client, inserted, updated, queueUpserts, existing };
+  return { client, inserted, updated, queueUpserts, existing, batches };
 }
 
 const DEFS = [
@@ -258,5 +302,67 @@ describe('materializeOccurrencesForYears — commit mode', () => {
       second.inserted.length,
       'second commit re-inserted rows that already exist — the existing-row lookup is not finding them'
     ).toBe(0);
+  });
+
+  it('stamps every inserted row with a batch and a series-instance key', async () => {
+    // The read path may only trust rows it can tie to a completed batch. A row
+    // with neither is indistinguishable from the 557 pre-contract legacy rows,
+    // so an unstamped insert would quietly opt out of the whole contract.
+    const c = makeClient({ definitions: DEFS });
+    await materializeOccurrencesForYears({
+      supabase: c.client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+    expect(c.inserted.length).toBeGreaterThan(0);
+    expect(c.inserted.every(r => !!r.batch_id)).toBe(true);
+    expect(c.inserted.every(r => typeof r.series_instance_key === 'string' && r.series_instance_key.length === 32)).toBe(true);
+  });
+
+  it('never leaks the internal __slug / __anchor fields into the insert payload', async () => {
+    // They exist only to carry write-time facts to the batch helper. Postgres
+    // would reject them as unknown columns, so this fails loudly in tests rather
+    // than at the first real commit.
+    const c = makeClient({ definitions: DEFS });
+    await materializeOccurrencesForYears({
+      supabase: c.client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+    expect(c.inserted.some(r => '__slug' in r || '__anchor' in r)).toBe(false);
+  });
+
+  it('closes each batch as complete only when every expected row landed', async () => {
+    // The fake enforces the same CHECK as the database, so a batch that claimed
+    // completeness without the rows would throw rather than pass.
+    const c = makeClient({ definitions: DEFS });
+    await materializeOccurrencesForYears({
+      supabase: c.client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+    const all = [...c.batches.values()];
+    expect(all.length).toBeGreaterThan(0);
+    expect(all.every(b => b.status === 'complete')).toBe(true);
+    expect(all.every(b => b.produced_row_count === b.expected_row_count)).toBe(true);
+    // Every produced row is accounted for by exactly the batches' totals.
+    const produced = all.reduce((n, b) => n + (b.produced_row_count as number), 0);
+    expect(produced).toBe(c.inserted.length);
+  });
+
+  it('gives one instance ONE key across its variants, and distinct keys across a series', async () => {
+    // The property the whole identity change exists for. Rows sharing an
+    // instance anchor must share a key even though their dates differ, and
+    // separate instances of a recurring series must not collide.
+    const c = makeClient({ definitions: DEFS });
+    await materializeOccurrencesForYears({
+      supabase: c.client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+    const byKey = new Map<string, Set<string>>();
+    for (const r of c.inserted) {
+      const k = r.series_instance_key as string;
+      if (!byKey.has(k)) byKey.set(k, new Set());
+      byKey.get(k)!.add(r.date as string);
+    }
+    // Distinct dates of one slug-year must not all collapse onto one key.
+    const diwali = c.inserted.filter(r => r.definition_id === 'def-diwali');
+    if (diwali.length > 1) {
+      expect(new Set(diwali.map(r => r.series_instance_key)).size).toBe(diwali.length);
+    }
+    expect(byKey.size).toBe(new Set(c.inserted.map(r => `${r.definition_id}|${r.date}`)).size);
   });
 });

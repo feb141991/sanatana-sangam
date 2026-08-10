@@ -41,7 +41,14 @@ const format = (rows: any[], profile: string, sampradaya: string | null = null) 
   formatOccurrencesToResults(rows, [], 'hindu', profile, sampradaya, '2026-01-01', '2026-12-31');
 
 describe('calendar profile resolution', () => {
-  const gujarati = row({ date: '2026-09-04', calendar_profile: 'gujarati-amanta' });
+  // A profile set may only supersede the legacy fallback when its materialisation
+  // batch reports complete. Row counts no longer decide it, so a fixture that
+  // means "this profile is complete" has to say so.
+  const gujarati = row({
+    date: '2026-09-04',
+    calendar_profile: 'gujarati-amanta',
+    batch: { id: 'b', status: 'complete', expected_row_count: 1, produced_row_count: 1 },
+  });
   const legacy   = row({ date: '2026-09-03', calendar_profile: 'legacy-ujjain' });
 
   it('returns ONE entry, not both rows, when the user has a non-default profile', () => {

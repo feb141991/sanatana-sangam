@@ -88,7 +88,8 @@ Applied to every change, regardless of what the task asked for.
   construction)*
 - Do the new tests actually run? Check the test-runner `include` globs. *(D27 —
   `src/conditions/__tests__` was excluded; the suite reported an unchanged
-  988/216 before *and* after the code landed)*
+  988/216 before *and* after the code landed — a figure that was itself stale for
+  days before anyone rechecked it; see the baseline note in §3.8)*
 
 ### 3.3 Both directions
 - Verified it works. Verified it **stops** working when it should?
@@ -135,8 +136,20 @@ Applied to every change, regardless of what the task asked for.
 - List **every** file touched, including any outside the stated scope. Three
   consecutive tasks changed files they did not report.
 - Did anything switch live that was supposed to be shadow-only? The snapshot
-  tripwire must stay **988 passed / 216 skipped** for any change that is not
-  intended to move a date.
+  tripwire must stay **574 passed / 666 skipped (1240)** for any change that is
+  not intended to move a date.
+
+  > **Baseline updated 2026-08-11**, from the long-quoted 988/216. That number
+  > went stale when the launch-set deferral and the disputed-year withholding
+  > moved snapshots to skipped, and it sat wrong in five documents until a review
+  > caught it. The drift is fully accountable, with no regression:
+  >
+  > `988 − 450 newly-skipped + 36 new tests = 574`, exactly.
+  >
+  > **When you change this number, show the arithmetic.** A tripwire whose
+  > expected value is folklore cannot trip: nobody can tell a real regression
+  > from another quiet drift. If your change moves it, the reconciliation belongs
+  > in the commit message.
 
 ### 3.9 Cross-engine consistency
 - **When two components can answer the same question, something must assert they
@@ -170,7 +183,7 @@ Structural blind spots. Do not cite these as evidence of correctness.
 
 | Mechanism | Cannot detect |
 |---|---|
-| `verify:harness` (988/216) | Anything outside `harness/**`. It is a date-movement tripwire, not a correctness check. |
+| `verify:harness` (574/666) | Anything outside `harness/**`. It is a date-movement tripwire, not a correctness check. **Also blind to anything it SKIPS** — 666 of 1240 are skipped, so more than half the fixtures assert nothing on any given run. |
 | Snapshot fixtures | Correctness. All 18 location/profile combinations currently return identical dates (no profile support, D3/D5). They prove *no unintended change*, nothing more. |
 | `integrity.ts` audit | A wrong rule — it compares the engine against itself. *(D11)* |
 | Invariant tests | Errors shared by both sides of the comparison. *(D23)* |

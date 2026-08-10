@@ -1,4 +1,5 @@
 import { calculateObservancesForYear } from './engine';
+import { isBatchTrustworthy } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
@@ -134,22 +135,22 @@ function clipToRange<T>(rows: T[], fromStr: string, toStr: string): T[] {
  *
  * COMPLETENESS RULE. Filling gaps from `legacy-ujjain` would interleave two
  * calendars inside one year -- a sequence of Ekadashi dates belonging to neither
- * -- so a group is answered by ONE calendar. But "the profile has at least one
- * row, so the profile wins" was an assumption with nothing behind it: an
- * interrupted materialisation that wrote 2 of 24 Ekadashis would have silently
- * deleted the other 22. No completion marker or expected count exists to check
- * against, so this compares what is actually present:
+ * -- so a group is answered by ONE calendar. Which one is now decided by the
+ * MATERIALISATION BATCH, not by counting rows.
  *
- *   profile rows >= fallback rows  -> profile wins (complete as far as we can tell)
- *   profile rows <  fallback rows  -> INCOMPLETE; the fallback is kept and the
- *                                     rows are flagged, because losing real
- *                                     observances is worse than showing the
- *                                     legacy calendar's dates for one slug-year
+ * The count comparison this replaces (profile rows >= fallback rows -> profile
+ * wins) was a heuristic with a hole: it could not see two equally-short sets, and
+ * it could not tell "this profile legitimately has fewer occurrences" from "the
+ * batch died half way". Both are questions only the WRITER can answer, so the
+ * writer now answers them -- see materialisation-batch.ts.
  *
- * A count comparison is weaker than a real completion marker -- if BOTH sets are
- * short, nothing here can tell. The materialiser should record an expected count
- * per (slug, year, profile) and this should assert against it; until then the
- * flag makes the condition visible rather than silent.
+ *   batch complete AND produced == expected -> the profile answers the group
+ *   anything else                           -> legacy is kept, rows are flagged
+ *
+ * Rows with no batch at all are the pre-contract legacy rows (all 557 of them at
+ * time of writing). They are never treated as a complete profile batch, so they
+ * can never suppress anything -- which is the correct reading of "we do not know
+ * whether this set is complete".
  *
  * WHY A FALLBACK AND NOT A VARIANT
  * --------------------------------
@@ -176,7 +177,10 @@ function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
     // Queue rows carry `year` directly; occurrences carry it too, but fall back
     // to the date so a row missing it is never silently grouped under ''.
     const year = r.year ?? String(r.date ?? r.occurrence_date ?? '').slice(0, 4);
-    const key = `${slug}|${year}|${r.computed_latitude},${r.computed_longitude}`;
+    // Timezone is part of the identity: the same coordinates under a different
+    // tz resolve sunrise to a different civil day, so those are genuinely
+    // different materialisations rather than one to choose between.
+    const key = `${slug}|${year}|${r.computed_latitude},${r.computed_longitude}|${r.computed_timezone ?? ''}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(row);
   }
@@ -193,11 +197,25 @@ function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
       continue;
     }
 
-    // Present but short of the fallback: treat as an interrupted batch. Keeping
-    // the profile rows here would drop observances the user should see, with no
-    // trace that anything went missing.
-    if (fallback.length > exact.length) {
+    // A profile set may only supersede the fallback when its batch SAYS it is
+    // complete. Every row must carry a trustworthy batch: a group half of whose
+    // rows came from a good batch and half from an aborted one is not complete,
+    // whatever the totals look like.
+    const complete = exact.length > 0 && exact.every(r => isBatchTrustworthy((r as any).batch));
+
+    if (!complete && fallback.length > 0) {
       for (const r of fallback) {
+        kept.add(r);
+        (r as any).__incompleteProfileBatch = calendarProfile;
+      }
+      continue;
+    }
+
+    // No fallback to fall back to. Publishing an incomplete profile set is worse
+    // than publishing nothing only if the alternative exists -- here it does not,
+    // so the rows are shown and flagged.
+    if (!complete) {
+      for (const r of exact) {
         kept.add(r);
         (r as any).__incompleteProfileBatch = calendarProfile;
       }
@@ -271,9 +289,17 @@ export function formatOccurrencesToResults(
   // so the year cannot be recovered from the result afterwards -- it has to be
   // captured here, at emit time, while the source row is still in hand.
   const instanceYear = new WeakMap<ClientObservanceResult, string>();
-  const emit = (result: ClientObservanceResult, year: string | number | null | undefined) => {
+  // The materialiser's own instance identity, when the row has one. Preferred
+  // over anything derived here -- see the grouping note below.
+  const instanceKey = new WeakMap<ClientObservanceResult, string>();
+  const emit = (
+    result: ClientObservanceResult,
+    year: string | number | null | undefined,
+    seriesInstanceKey?: string | null,
+  ) => {
     results.push(result);
     if (year) instanceYear.set(result, String(year));
+    if (seriesInstanceKey) instanceKey.set(result, seriesInstanceKey);
   };
 
   // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones
@@ -348,7 +374,7 @@ export function formatOccurrencesToResults(
       sourceRefs: (row.source_refs as any) || [],
       reviewStatus: row.review_status || 'reviewed',
       isPrimary: false, // will resolve below
-    }, row.year ?? String(row.date ?? "").slice(0, 4));
+    }, row.year ?? String(row.date ?? "").slice(0, 4), row.series_instance_key);
   }
 
   // 2. Process unresolved queue items ([2] UNCERTAINTY)
@@ -495,10 +521,22 @@ export function formatOccurrencesToResults(
     // each time the test asserted the rows were PRESENT without asserting what
     // they were. Cardinality is the thing to check.
     const year = instanceYear.get(item) ?? '';
-    // Recurring rules add the date on top, because one slug-year holds a whole
-    // series of distinct instances rather than a single dated one.
-    const instance = RECURRING_SLUGS.has(item.festivalId) ? `#${item.civilDate ?? item.date}` : '';
-    const key = `${item.festivalId}|${year}${instance}@${item.location.lat},${item.location.lon}`;
+
+    // STORED KEY WINS. `series_instance_key` is written by the materialiser from
+    // the instance the row was actually derived from, so it states the identity
+    // rather than guessing it. That matters most in the case the date CANNOT
+    // express: two sampradaya readings of one Ekadashi fall on different days by
+    // definition, so date-as-identity reads them as two observances and loses the
+    // variant. Only rows written under the batch contract carry it.
+    //
+    // Rows without one are the 557 pre-contract legacy rows, which fall back to
+    // the derived key: slug + year, plus the date for recurring series (whose one
+    // slug-year holds many distinct instances), plus location INCLUDING timezone.
+    const stored = instanceKey.get(item);
+    const instance = stored
+      ? `#${stored}`
+      : RECURRING_SLUGS.has(item.festivalId) ? `#${item.civilDate ?? item.date}` : '';
+    const key = `${item.festivalId}|${year}${instance}@${item.location.lat},${item.location.lon},${item.location.tz}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }

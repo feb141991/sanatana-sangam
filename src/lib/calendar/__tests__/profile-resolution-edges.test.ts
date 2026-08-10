@@ -18,7 +18,24 @@ import { formatOccurrencesToResults } from '../observance-formatter';
 
 const UJJAIN = { computed_latitude: 23.1765, computed_longitude: 75.7885, computed_timezone: 'Asia/Kolkata' };
 
-const occ = (slug: string, date: string, calendar_profile: string) => ({
+/**
+ * A complete materialisation batch, as the read path now requires before a
+ * profile may supersede the legacy fallback.
+ *
+ * Row COUNTS no longer decide this. These fixtures used to rely on the old
+ * heuristic (more rows wins), which could not see two equally-short sets; a
+ * profile set is now trusted only when the materialiser recorded that it
+ * finished. Tests that mean "the profile is complete" must say so.
+ */
+const completeBatch = (n = 1) => ({
+  id: 'batch-complete', status: 'complete', expected_row_count: n, produced_row_count: n,
+});
+const partialBatch = (expected: number, produced: number) => ({
+  id: 'batch-partial', status: 'partial', expected_row_count: expected, produced_row_count: produced,
+});
+
+const occ = (slug: string, date: string, calendar_profile: string, batch: any = null) => ({
+  batch,
   ...UJJAIN,
   date,
   occurrence_date: date,
@@ -46,7 +63,7 @@ describe('profile resolution happens before range clipping', () => {
     // resolution ran after clipping, only the legacy row would remain, the
     // "never materialised for this profile" branch would fire, and 31 August
     // would be published to a user whose calendar says 1 September.
-    const profileRow = occ('test-festival', '2026-09-01', 'gujarati-amanta');
+    const profileRow = occ('test-festival', '2026-09-01', 'gujarati-amanta', completeBatch());
     const legacyRow  = occ('test-festival', '2026-08-31', 'legacy-ujjain');
 
     const out = format([profileRow, legacyRow], 'gujarati-amanta', '2026-08-01', '2026-08-31');
@@ -140,14 +157,18 @@ describe('recurring observances are grouped per year, not per slug alone', () =>
     expect(out).toHaveLength(3);
   });
 
-  it('uses the profile exclusively when it is at least as complete as the fallback', () => {
+  it('uses the profile exclusively when its BATCH reports complete', () => {
     // Interleaving would produce a sequence of dates belonging to neither
-    // calendar, so a complete profile answers the whole slug-year.
+    // calendar, so a complete profile answers the whole slug-year. Completeness
+    // is now the materialiser's statement, not an inference from row counts --
+    // note the profile has FEWER rows here than the fallback and still wins,
+    // which the old count heuristic could never have allowed.
     const rows = [
-      occ('ekadashi', '2026-03-02', 'gujarati-amanta'),
-      occ('ekadashi', '2026-03-16', 'gujarati-amanta'),
+      occ('ekadashi', '2026-03-02', 'gujarati-amanta', completeBatch(2)),
+      occ('ekadashi', '2026-03-16', 'gujarati-amanta', completeBatch(2)),
       occ('ekadashi', '2026-03-01', 'legacy-ujjain'),
       occ('ekadashi', '2026-03-15', 'legacy-ujjain'),
+      occ('ekadashi', '2026-03-29', 'legacy-ujjain'),
     ];
     const out = format(rows, 'gujarati-amanta', '2026-03-01', '2026-03-31');
     expect(out.map(r => r.civilDate).sort()).toEqual(['2026-03-02', '2026-03-16']);
@@ -163,8 +184,8 @@ describe('incomplete profile materialisation does not silently delete observance
     // no completion marker to check, so the counts are compared and the shortfall
     // is surfaced rather than assumed away.
     const rows = [
-      occ('ekadashi', '2026-03-02', 'gujarati-amanta'),
-      occ('ekadashi', '2026-03-16', 'gujarati-amanta'),
+      occ('ekadashi', '2026-03-02', 'gujarati-amanta', partialBatch(24, 2)),
+      occ('ekadashi', '2026-03-16', 'gujarati-amanta', partialBatch(24, 2)),
       occ('ekadashi', '2026-03-01', 'legacy-ujjain'),
       occ('ekadashi', '2026-03-15', 'legacy-ujjain'),
       occ('ekadashi', '2026-03-29', 'legacy-ujjain'),
@@ -182,7 +203,7 @@ describe('incomplete profile materialisation does not silently delete observance
     // Equal counts are the normal case for a non-recurring festival and must not
     // trip the incompleteness check.
     const rows = [
-      occ('test-festival', '2026-09-04', 'gujarati-amanta'),
+      occ('test-festival', '2026-09-04', 'gujarati-amanta', completeBatch()),
       occ('test-festival', '2026-09-03', 'legacy-ujjain'),
     ];
     const out = format(rows, 'gujarati-amanta', '2026-09-01', '2026-09-30');
