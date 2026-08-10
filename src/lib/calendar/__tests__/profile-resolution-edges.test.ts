@@ -80,24 +80,56 @@ describe('grouping key includes the year', () => {
 });
 
 describe('recurring observances are grouped per year, not per slug alone', () => {
-  it('one profile row does not drop legacy rows for dates the profile never covered', () => {
-    // Ekadashi emits ~24 rows a year under one slug. A slug-keyed group would let
-    // a single profile row anywhere in the range delete every legacy row for the
-    // slug -- a user on a regional calendar would lose most of their Ekadashis.
+  it('publishes every instance of a series as resolved and primary', () => {
+    // The assertion this file was missing. The previous version checked only the
+    // COUNT, so it passed while all three rows came back status 'ambiguous' with
+    // only the first isPrimary -- the downstream grouping was reading a series of
+    // distinct observances as competing readings of one date. Any consumer
+    // honouring isPrimary would have shown one Ekadashi instead of three.
+    const rows = [
+      occ('ekadashi', '2026-03-01', 'legacy-ujjain'),
+      occ('ekadashi', '2026-03-15', 'legacy-ujjain'),
+      occ('ekadashi', '2026-03-29', 'legacy-ujjain'),
+    ];
+    const out = format(rows, 'legacy-ujjain', '2026-03-01', '2026-03-31');
+    expect(out).toHaveLength(3);
+    expect(out.map(r => r.status)).toEqual(['resolved', 'resolved', 'resolved']);
+    expect(out.every(r => r.isPrimary)).toBe(true);
+    expect(out.every(r => r.alternatives.length === 0)).toBe(true);
+  });
+
+  it('does not drop legacy rows when the profile has none for that slug-year', () => {
     const rows = [
       occ('ekadashi', '2026-03-01', 'legacy-ujjain'),
       occ('ekadashi', '2026-03-15', 'legacy-ujjain'),
       occ('ekadashi', '2026-03-29', 'legacy-ujjain'),
     ];
     const out = format(rows, 'gujarati-amanta', '2026-03-01', '2026-03-31');
-    // No profile rows at all for this slug-year: the whole fallback set stands.
     expect(out).toHaveLength(3);
   });
 
-  it('applies all-or-nothing within a slug-year rather than interleaving calendars', () => {
-    // Where the profile HAS materialised the slug for the year, its rows are used
-    // exclusively. Filling gaps from legacy would produce a sequence of dates
-    // belonging to neither calendar.
+  it('uses the profile exclusively when it is at least as complete as the fallback', () => {
+    // Interleaving would produce a sequence of dates belonging to neither
+    // calendar, so a complete profile answers the whole slug-year.
+    const rows = [
+      occ('ekadashi', '2026-03-02', 'gujarati-amanta'),
+      occ('ekadashi', '2026-03-16', 'gujarati-amanta'),
+      occ('ekadashi', '2026-03-01', 'legacy-ujjain'),
+      occ('ekadashi', '2026-03-15', 'legacy-ujjain'),
+    ];
+    const out = format(rows, 'gujarati-amanta', '2026-03-01', '2026-03-31');
+    expect(out.map(r => r.civilDate).sort()).toEqual(['2026-03-02', '2026-03-16']);
+    expect(out.every(r => r.profile.calendar === 'gujarati-amanta')).toBe(true);
+  });
+});
+
+describe('incomplete profile materialisation does not silently delete observances', () => {
+  it('keeps the fallback when the profile has FEWER rows, and flags it', () => {
+    // The previous version of this suite ENDORSED the opposite: it asserted that
+    // two profile Ekadashis should replace three legacy ones, which is an
+    // interrupted materialisation silently removing a real observance. There is
+    // no completion marker to check, so the counts are compared and the shortfall
+    // is surfaced rather than assumed away.
     const rows = [
       occ('ekadashi', '2026-03-02', 'gujarati-amanta'),
       occ('ekadashi', '2026-03-16', 'gujarati-amanta'),
@@ -106,8 +138,25 @@ describe('recurring observances are grouped per year, not per slug alone', () =>
       occ('ekadashi', '2026-03-29', 'legacy-ujjain'),
     ];
     const out = format(rows, 'gujarati-amanta', '2026-03-01', '2026-03-31');
-    expect(out.map(r => r.civilDate).sort()).toEqual(['2026-03-02', '2026-03-16']);
-    expect(out.every(r => r.profile.calendar === 'gujarati-amanta')).toBe(true);
+
+    // Nothing is lost: all three legacy instances survive.
+    expect(out).toHaveLength(3);
+    expect(out.map(r => r.civilDate).sort()).toEqual(['2026-03-01', '2026-03-15', '2026-03-29']);
+    // And the condition is visible rather than silent.
+    expect(out.every(r => r.diagnostics.includes('incomplete_profile_materialisation'))).toBe(true);
+  });
+
+  it('does not flag a single-instance festival where both sides have one row', () => {
+    // Equal counts are the normal case for a non-recurring festival and must not
+    // trip the incompleteness check.
+    const rows = [
+      occ('test-festival', '2026-09-04', 'gujarati-amanta'),
+      occ('test-festival', '2026-09-03', 'legacy-ujjain'),
+    ];
+    const out = format(rows, 'gujarati-amanta', '2026-09-01', '2026-09-30');
+    expect(out).toHaveLength(1);
+    expect(out[0].civilDate).toBe('2026-09-04');
+    expect(out[0].diagnostics).not.toContain('incomplete_profile_materialisation');
   });
 });
 

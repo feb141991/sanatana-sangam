@@ -40,6 +40,24 @@ export interface RequestProfile {
   sampradaya: string | null;
   /** True when a user was resolved -- useful for cache-control decisions. */
   isAuthenticated: boolean;
+  /**
+   * Credentials were PRESENT but did not authenticate -- an expired or malformed
+   * token, say. Distinct from a guest, who sends none.
+   *
+   * Both used to collapse into "no user", so a signed-in native client whose
+   * token had expired was quietly served the default calendar and had no way to
+   * discover it needed to refresh. Silently degrading someone's calendar is a
+   * worse outcome than telling them to sign in again.
+   */
+  invalidCredentials: boolean;
+  /**
+   * The profile READ failed -- a database or RLS fault, not an absent row.
+   *
+   * A missing row is normal (a user who has set nothing) and correctly falls back
+   * to defaults. A failed read is a fault, and answering it with 'legacy-ujjain'
+   * presents a guess as the user's own setting.
+   */
+  profileError: Error | null;
 }
 
 export async function resolveRequestProfile(
@@ -51,16 +69,30 @@ export async function resolveRequestProfile(
   // readable without signing in, so fall back rather than rejecting.
   const supabase = auth.supabase ?? (await createServerSupabaseClient());
 
+  // Did the caller even attempt to authenticate? getApiUser reports only whether
+  // it succeeded, and "guest" and "broken token" need different answers.
+  const hasBearer = !!request.headers?.get?.('authorization');
+  const hasSessionCookie = (request.cookies?.getAll?.() ?? []).some(c => c.name.startsWith('sb-'));
+  const invalidCredentials = !auth.user && (hasBearer || hasSessionCookie);
+
   let calendarProfile = requested.calendarProfile;
   let tradition = requested.tradition;
   let sampradaya: string | null = null;
+  let profileError: Error | null = null;
 
   if (auth.user) {
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('calendar_profile, tradition, sampradaya')
       .eq('id', auth.user.id)
       .single();
+
+    // PGRST116 is `.single()` finding no row -- an ordinary state for a user who
+    // has chosen nothing, and correctly handled by the defaults below. Anything
+    // else is a real failure and must not masquerade as "user has no settings".
+    if (error && (error as { code?: string }).code !== 'PGRST116') {
+      profileError = new Error(error.message ?? 'profile read failed');
+    }
 
     if (profile) {
       // Explicit query parameters still win for the two fields a caller can
@@ -75,7 +107,12 @@ export async function resolveRequestProfile(
 
   if (!calendarProfile) calendarProfile = DEFAULT_CALENDAR_PROFILE;
 
-  return { supabase, calendarProfile, tradition, sampradaya, isAuthenticated: !!auth.user };
+  return {
+    supabase, calendarProfile, tradition, sampradaya,
+    isAuthenticated: !!auth.user,
+    invalidCredentials,
+    profileError,
+  };
 }
 
 /**

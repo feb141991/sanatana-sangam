@@ -36,6 +36,18 @@ export async function GET(request: NextRequest) {
     // Cookie OR Bearer: the native app sends a Bearer token, so the previous
     // cookie-only lookup silently gave every native user the default calendar.
     const resolved = await resolveRequestProfile(request, { tradition, calendarProfile });
+    // Credentials were sent and rejected: say so instead of quietly serving
+    // the default calendar, which leaves a stale client with no way to learn
+    // it must refresh.
+    if (resolved.invalidCredentials) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    // A failed profile READ is a fault, not an absent setting. Answering it
+    // with the default would present a guess as the user's own choice.
+    if (resolved.profileError) {
+      console.error('[API Calendar Month] Profile read error:', resolved.profileError);
+      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+    }
     const supabase = resolved.supabase;
     calendarProfile = resolved.calendarProfile;
     tradition = resolved.tradition;
@@ -125,7 +137,11 @@ export async function GET(request: NextRequest) {
         )
       `)
       .in('calendar_profile', [calendarProfile, 'legacy-ujjain'])
-      .eq('observance_definitions.active', true);
+      .eq('observance_definitions.active', true)
+      // Terminal states must not surface as 'under review'. Approved and rejected
+      // rows were still fetched and emitted with reviewStatus 'in_review', so a
+      // settled decision kept showing as an open question.
+      .eq('review_status', 'pending_review');
 
     // The queue leaked traditions for the same reason the occurrence query
     // did -- only /upcoming filtered. An unresolved Jain observance would

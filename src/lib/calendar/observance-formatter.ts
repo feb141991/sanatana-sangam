@@ -4,6 +4,20 @@ import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
 // Build a set of slugs that have an explicit citation in rules.json
+/**
+ * Slugs whose rule emits a SERIES rather than a single dated instance.
+ *
+ * Ekadashi and Pradosh produce ~24 occurrences a year under one slug. Every
+ * grouping in this file that means "one observance instance" must therefore
+ * exclude them, or the whole series collapses into a single group and gets
+ * classified as though its members were competing readings of one date.
+ */
+const RECURRING_SLUGS = new Set<string>(
+  (rulesData as Array<{ slug: string; rule_family?: string }>)
+    .filter(r => r.rule_family === 'lunar_tithi_recurring' || r.rule_family === 'weekday_recurring')
+    .map(r => r.slug)
+);
+
 const CITED_VARIANT_SLUGS = new Set<string>(
   (rulesData as Array<{ slug: string; citation?: string }> )
     .filter(r => !!r.citation)
@@ -118,12 +132,24 @@ function clipToRange<T>(rows: T[], fromStr: string, toStr: string): T[] {
  *     profile row anywhere in the range drop every legacy row for that slug,
  *     including dates the profile never covered.
  *
- * COMPLETENESS RULE: all-or-nothing within a group. If the chosen profile has any
- * row for (slug, year, location), only its rows are used. A profile's
- * materialisation for a slug-year is complete or absent; a partial one is a
- * materialisation defect, and filling the holes from `legacy-ujjain` would
- * interleave two calendars inside a single year -- a sequence of Ekadashi dates
- * that belongs to neither. Better to show one calendar's answer consistently.
+ * COMPLETENESS RULE. Filling gaps from `legacy-ujjain` would interleave two
+ * calendars inside one year -- a sequence of Ekadashi dates belonging to neither
+ * -- so a group is answered by ONE calendar. But "the profile has at least one
+ * row, so the profile wins" was an assumption with nothing behind it: an
+ * interrupted materialisation that wrote 2 of 24 Ekadashis would have silently
+ * deleted the other 22. No completion marker or expected count exists to check
+ * against, so this compares what is actually present:
+ *
+ *   profile rows >= fallback rows  -> profile wins (complete as far as we can tell)
+ *   profile rows <  fallback rows  -> INCOMPLETE; the fallback is kept and the
+ *                                     rows are flagged, because losing real
+ *                                     observances is worse than showing the
+ *                                     legacy calendar's dates for one slug-year
+ *
+ * A count comparison is weaker than a real completion marker -- if BOTH sets are
+ * short, nothing here can tell. The materialiser should record an expected count
+ * per (slug, year, profile) and this should assert against it; until then the
+ * flag makes the condition visible rather than silent.
  *
  * WHY A FALLBACK AND NOT A VARIANT
  * --------------------------------
@@ -158,9 +184,27 @@ function resolveCalendarProfile<T>(rows: T[], calendarProfile: string): T[] {
   const kept = new Set<T>();
   for (const list of groups.values()) {
     const exact = list.filter(r => (r as any).calendar_profile === calendarProfile);
-    // No row under the chosen profile means it was never materialised for it --
-    // keep the fallback rather than showing the user nothing.
-    for (const r of exact.length > 0 ? exact : list) kept.add(r);
+    const fallback = list.filter(r => (r as any).calendar_profile !== calendarProfile);
+
+    // Never materialised for this profile -- show the fallback rather than
+    // nothing.
+    if (exact.length === 0) {
+      for (const r of list) kept.add(r);
+      continue;
+    }
+
+    // Present but short of the fallback: treat as an interrupted batch. Keeping
+    // the profile rows here would drop observances the user should see, with no
+    // trace that anything went missing.
+    if (fallback.length > exact.length) {
+      for (const r of fallback) {
+        kept.add(r);
+        (r as any).__incompleteProfileBatch = calendarProfile;
+      }
+      continue;
+    }
+
+    for (const r of exact) kept.add(r);
   }
   return rows.filter(r => kept.has(r));
 }
@@ -238,6 +282,11 @@ export function formatOccurrencesToResults(
 
     // Collect all diagnostics, preserving latitude_proxy, compressed_night, vrddhi_tithi, extended_moonrise if present
     const diagnosticsList: string[] = Array.isArray(row.diagnostics) ? [...row.diagnostics] : [];
+    // Set by resolveCalendarProfile when the chosen profile had fewer rows than
+    // the fallback for this slug-year, i.e. a partial materialisation. Surfaced
+    // so the condition is observable instead of silently changing which calendar
+    // a user is reading.
+    if (row.__incompleteProfileBatch) diagnosticsList.push('incomplete_profile_materialisation');
     if (row.reasons && Array.isArray(row.reasons)) {
       for (const r of row.reasons) {
         if (r.code && ['latitude_proxy', 'compressed_night', 'vrddhi_tithi', 'extended_moonrise'].includes(r.code)) {
@@ -409,15 +458,30 @@ export function formatOccurrencesToResults(
   // 2026, reporting it as Smarta 3 Sep vs Vaishnava 4 Sep. At Ujjain both traditions are
   // 4 Sep; the 3 Sep is Bedford-only. Telling a user two sampradayas disagree, when the
   // truth is their longitude moved a sunrise, invents a religious claim (AGENTS.md rule 7).
+  // The key must identify ONE OBSERVANCE INSTANCE, not one festival. Keying on
+  // slug+location alone collapsed every Ekadashi in the range into a single
+  // group, and the classification below then read them as competing readings of
+  // one date: a probe with three ordinary March Ekadashis returned all three as
+  // 'ambiguous' with only the first isPrimary, so any consumer honouring
+  // isPrimary would drop two real observances.
+  //
+  // For a recurring series each row IS its own instance, so the date completes
+  // the key. Genuine variants of one recurring instance cannot be expressed this
+  // way -- two sampradayas observing the same Ekadashi on different days would
+  // look like two instances -- but that needs a stored series/instance
+  // identifier, which no column provides today. Recorded rather than papered
+  // over: nothing materialises recurring variants at present, and inventing an
+  // identity here would guess at pairings the data does not state.
   const groups = new Map<string, ClientObservanceResult[]>();
   for (const item of results) {
-    const key = `${item.festivalId}@${item.location.lat},${item.location.lon}`;
+    const instance = RECURRING_SLUGS.has(item.festivalId) ? `#${item.civilDate ?? item.date}` : '';
+    const key = `${item.festivalId}${instance}@${item.location.lat},${item.location.lon}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }
 
   for (const [groupKey, list] of groups.entries()) {
-    const slug = groupKey.slice(0, groupKey.lastIndexOf('@'));
+    const slug = groupKey.slice(0, groupKey.lastIndexOf('@')).split('#')[0];
     if (list.length === 1) {
       list[0].isPrimary = true;
       continue;

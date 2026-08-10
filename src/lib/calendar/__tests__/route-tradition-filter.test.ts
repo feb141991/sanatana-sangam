@@ -51,6 +51,8 @@ vi.mock('@/lib/calendar/request-profile', async (importOriginal) => {
       tradition: requested.tradition,
       sampradaya: null,
       isAuthenticated: true,
+      invalidCredentials: false,
+      profileError: null,
     }),
   };
 });
@@ -116,6 +118,26 @@ describe('withheld occurrences stay filtered at the database', () => {
     await monthGET(request('http://t/api/calendar/month?year=2026&month=9&tradition=all'));
     expect(
       calls.some(c => c.method === 'eq' && c.args[0] === 'publication_status' && c.args[1] === 'published'),
+    ).toBe(true);
+  });
+});
+
+describe('only pending review-queue rows reach a public calendar', () => {
+  it('month and day both constrain review_status', async () => {
+    // The routes fetched every queue state while the formatter emitted
+    // reviewStatus 'in_review' unconditionally, so an approved or rejected item
+    // kept showing users a settled decision as an open question.
+    await monthGET(request('http://t/api/calendar/month?year=2026&month=9&tradition=all'));
+    const q = calls.filter(
+      c => c.table === 'observance_review_queue' && c.method === 'eq' && c.args[0] === 'review_status',
+    );
+    expect(q).toHaveLength(1);
+    expect(q[0].args[1]).toBe('pending_review');
+
+    calls = [];
+    await dayGET(request('http://t/api/calendar/day?date=2026-09-04&tradition=all'));
+    expect(
+      calls.some(c => c.table === 'observance_review_queue' && c.method === 'eq' && c.args[1] === 'pending_review'),
     ).toBe(true);
   });
 });
