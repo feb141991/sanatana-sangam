@@ -39,6 +39,15 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
       ]
     },
     {
+      title: 'Google Sign-In Data',
+      summary: 'Basic identity information is used only for your Shoonaya account.',
+      content: [
+        'If you choose Continue with Google, Shoonaya receives your Google account name, email address, profile image, and a provider authentication identifier. We use this information only to create and secure your Shoonaya account, sign you in, identify your profile, and personalize account-facing features.',
+        'Shoonaya does not request access to your Gmail, Google Drive, Google Contacts, Google Calendar, or other private Google product data. We do not sell Google user data or use it for advertising.',
+        'Google authentication is processed through our authentication provider, Supabase. Your use of Google sign-in is optional; email sign-up is also available.',
+      ]
+    },
+    {
       title: 'Data Sharing',
       summary: 'We do not sell your personal data.',
       content: [
