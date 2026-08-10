@@ -45,7 +45,8 @@
     "lunar_tithi_index": 28,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Council REJECTED the tithi-index change (28 -> 29) on 2026-08-10. The arithmetic was right -- krishna N = 15 + N, so Chaturdashi is 29 -- but the observance falls on the day whose NIGHT holds Chaturdashi at nishitha, not the day whose sunrise does. The jagran runs from the evening of the ruled date into the following morning, which is what index 29 was landing on. Reverted to 28, which reproduces the ruled dates under a sunrise scan. The correct long-term model is nishitha evaluation via USE_CONDITION_EVALUATOR, not a tithi index."
+    "ratification_note": "Council REJECTED the tithi-index change (28 -> 29) on 2026-08-10. The arithmetic was right -- krishna N = 15 + N, so Chaturdashi is 29 -- but the observance falls on the day whose NIGHT holds Chaturdashi at nishitha, not the day whose sunrise does. The jagran runs from the evening of the ruled date into the following morning, which is what index 29 was landing on. Reverted to 28, which reproduces the ruled dates under a sunrise scan. The correct long-term model is nishitha evaluation via USE_CONDITION_EVALUATOR, not a tithi index.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Maha Shivaratri listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
   },
   {
     "slug": "holi",
@@ -534,7 +535,8 @@
     "ratification_note": "DISPUTED, not proven wrong. Council ruled 2028-10-06; engine and Drik Panchang both give 10-07. Karva Chauth is moonrise-owned and there is NO evaluator rule for it, so the earlier claim that the condition evaluator would resolve this was wrong. 2026 (10-29) is council-confirmed and reproduces.",
     "disputed_years": [
       2028
-    ]
+    ],
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Karaka Chaturthi listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
   },
   {
     "slug": "dhanteras",
@@ -564,7 +566,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 29,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Dipavali listed at (matches shipping date; see docs/CALENDAR_ENGINE_ASSESSMENT.md)"
   },
   {
     "slug": "govardhan-puja",
@@ -831,13 +834,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Jyeshtha",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "apara-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Apara Ekadasi listed at 2026-05-13"
   },
   {
     "slug": "yogini-ekadashi",
@@ -867,13 +871,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Shravana",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "kamika-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Kamika Ekadasi listed at 2026-08-09"
   },
   {
     "slug": "aja-ekadashi",
@@ -885,13 +890,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Bhadrapada",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "aja-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Aja Ekadasi listed at 2026-09-07"
   },
   {
     "slug": "rama-ekadashi",
@@ -903,13 +909,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Kartika",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "rama-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Rama Ekadasi listed at 2026-11-05"
   },
   {
     "slug": "utpanna-ekadashi",
@@ -921,13 +928,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Margashirsha",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "utpanna-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Utpanna Ekadasi listed at 2026-12-04"
   },
   {
     "slug": "saphala-ekadashi",
@@ -939,13 +947,14 @@
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "corrected_lunar_masa_name": "Pausha",
-    "corrected_month_system": "amanta",
+    "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "saphala-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition -- Saphala Ekadasi listed at 2027-01-03"
   },
   {
     "slug": "vijaya-ekadashi",
