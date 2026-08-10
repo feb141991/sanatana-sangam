@@ -31,8 +31,9 @@ const fontVars = [
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.shoonaya.com'),
-  title:       'Shoonaya App | Sanatan, Sikh, Jain & Buddhist Spiritual App',
-  description: 'Shoonaya is a spiritual app for Daily Dharma, Panchang, scripture, japa, festivals, and community across Sanatan, Hindu, Sikh, Jain, and Buddhist traditions.',
+  title:       'Shoonaya',
+  applicationName: 'Shoonaya',
+  description: 'Shoonaya is a spiritual companion application for Sanatan Dharma, Hindu, Sikh, Buddhist, and Jain traditions. The app provides daily Panchang astronomical calculations, sacred scripture reading, Japa mala counter, live temple darshan, and spiritual community features.',
   keywords:    [
       // Brand
       'Shoonaya', 'shoonaya app', 'Shoonya', 'shoonya app',
