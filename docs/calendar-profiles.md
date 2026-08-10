@@ -282,8 +282,10 @@ Recommend, never impose. Show the recommendation and let the user change it.
 | Country of residence | **Low** — a UK address does not imply a UK-organisation calendar |
 | GPS | **Never** used for profile, only for `observanceLocation` |
 
-Fallback for "I'm not sure" → `global_sanatan` + `smarta`, with copy that says
-these are neutral defaults and can be changed at any time.
+Fallback for "I'm not sure" → `global_sanatan` + `unspecified`.
+`unspecified` uses the Smārta calculation method until the user chooses a
+sampradāya, but the product must never label that user as Smārta. These are
+neutral launch defaults and can be changed at any time.
 
 ---
 

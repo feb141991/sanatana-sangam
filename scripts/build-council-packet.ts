@@ -25,19 +25,76 @@ const isNewEkadashi = (slug: string) =>
   /ekadashi/.test(slug) && !['ekadashi', 'vaikunta-ekadashi'].includes(slug);
 
 const MONTH_OF = (dateStr: string): string => {
-  const r = getLunarMonth(new Date(dateStr + 'T01:00:00Z'), 'amanta') as any;
+  const r = getLunarMonth(new Date(dateStr + 'T01:00:00Z'), 'amanta');
   return r.ok ? r.monthName : '?';
 };
 
-interface Row { slug: string; name: string; from: string; to: string; days: number; reason: string; }
+interface CouncilRule {
+  slug: string;
+  display_name: string;
+  rule_family: string;
+  corrected_lunar_masa_name?: string;
+  corrected_lunar_tithi_index?: number;
+  corrected_month_system?: 'amanta' | 'purnimanta';
+  adhika_policy?: 'nija' | 'adhika' | 'both';
+  lunar_tithi_index?: number;
+  relative_base_slug?: string;
+  relative_offset_days?: number;
+  calendar_profile?: string;
+  sampradaya?: string;
+  launch_status?: 'included' | 'deferred';
+  derivability?: 'computed' | 'requires_tradition_profile' | 'externally_curated';
+}
+
+interface Row {
+  slug: string;
+  name: string;
+  from: string;
+  to: string;
+  days: number;
+  reason: string;
+  qualification: string;
+}
+
+const councilRuleOf = (slug: string): CouncilRule | undefined =>
+  ruleOf(slug) as CouncilRule | undefined;
+
+/** Batch 0: council reviews only rules that can actually ship at launch. */
+const isInCouncilLaunchScope = (slug: string): boolean => {
+  const rule = councilRuleOf(slug);
+  if (!rule || rule.launch_status !== 'included') return false;
+  return rule.derivability === undefined || rule.derivability === 'computed';
+};
+
+const qualificationFor = (slug: string): string => {
+  const rule = councilRuleOf(slug);
+  if (!rule) return 'Unqualified';
+
+  const parts = [
+    rule.corrected_month_system
+      ? `month system: ${rule.corrected_month_system} ([S] pending)`
+      : null,
+    rule.calendar_profile
+      ? `calendar profile: ${rule.calendar_profile} ([S] pending)`
+      : null,
+    rule.sampradaya
+      ? `sampradaya: ${rule.sampradaya} ([S] pending)`
+      : null,
+  ].filter((value): value is string => value !== null);
+
+  return parts.length > 0
+    ? parts.join(' / ')
+    : 'Product baseline: global_sanatan / unspecified; [S] method not ratified';
+};
 
 /** Plain-language reason, derived from the rule and the dates — not asserted. */
 function reasonFor(slug: string, from: string, to: string, days: number): string {
-  const r = ruleOf(slug) as any;
+  const r = councilRuleOf(slug);
   if (!r) return 'Follows another observance that moved.';
 
   if (r.rule_family === 'relative_to_other_observance') {
-    return `Anchored to ${r.relative_base_slug} (${r.relative_offset_days >= 0 ? '+' : ''}${r.relative_offset_days} days); moves only because that observance moves.`;
+    const offsetDays = r.relative_offset_days ?? 0;
+    return `Anchored to ${r.relative_base_slug} (${offsetDays >= 0 ? '+' : ''}${offsetDays} days); moves only because that observance moves.`;
   }
   if (r.corrected_lunar_tithi_index !== undefined && r.corrected_lunar_tithi_index !== r.lunar_tithi_index) {
     return `Tithi corrected from index ${r.lunar_tithi_index} to ${r.corrected_lunar_tithi_index}. In this engine krishna tithi N = 15 + N, so ${r.corrected_lunar_tithi_index} is Krishna ${r.corrected_lunar_tithi_index - 15}${r.corrected_lunar_tithi_index === 29 ? ' (Chaturdashi)' : r.corrected_lunar_tithi_index === 30 ? ' (Amavasya)' : ''}. The old index named the tithi one day earlier.`;
@@ -68,6 +125,11 @@ JPL. We are asking one question per row:
 
 **Nothing has been changed yet.** These dates are what *would* be published.
 
+**Scope.** This packet contains only rules marked for launch that the engine can
+derive. Deferred rules and rules requiring an unsupported tradition profile or
+an externally curated date are excluded. This packet does not ratify a calendar
+profile, month system or sampradāya method; those remain separate [S] decisions.
+
 **Why dates move by about a month.** The old engine named a lunar month from the
 Sun's zodiacal sign, which runs roughly one month out from the true
 amavasya-to-amavasya month. The observance itself never moved — our name for the
@@ -94,16 +156,33 @@ for (const year of YEARS) {
   const added: Row[] = [];
 
   for (const [slug, to] of cm) {
-    const r = ruleOf(slug) as any;
+    if (!isInCouncilLaunchScope(slug)) continue;
+    const r = councilRuleOf(slug);
     const name = r?.display_name ?? slug;
     const from = lm.get(slug);
     if (!from) {
-      if (isNewEkadashi(slug)) added.push({ slug, name, from: '—', to, days: 0, reason: 'New observance. It has content in the app but never had a scheduled date.' });
+      if (isNewEkadashi(slug)) added.push({
+        slug,
+        name,
+        from: '—',
+        to,
+        days: 0,
+        reason: 'New observance. It has content in the app but never had a scheduled date.',
+        qualification: qualificationFor(slug),
+      });
       continue;
     }
     if (from === to) continue;
     const days = Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
-    moved.push({ slug, name, from, to, days, reason: reasonFor(slug, from, to, days) });
+    moved.push({
+      slug,
+      name,
+      from,
+      to,
+      days,
+      reason: reasonFor(slug, from, to, days),
+      qualification: qualificationFor(slug),
+    });
   }
 
   moved.sort((a, b) => a.to.localeCompare(b.to));
@@ -111,9 +190,9 @@ for (const year of YEARS) {
 
   movedCount[year] = moved.length;
   md += `## ${year} — ${moved.length} dates change\n\n`;
-  md += `| Observance | Currently shows | Would show | Shift | Why |\n|---|---|---|---|---|\n`;
+  md += `| Observance | Currently shows | Would show | Shift | Rule qualification | Why |\n|---|---|---|---|---|---|\n`;
   for (const r of moved) {
-    md += `| **${r.name}** | ${r.from} | **${r.to}** | ${r.days > 0 ? '+' : ''}${r.days} d | ${r.reason} |\n`;
+    md += `| **${r.name}** | ${r.from} | **${r.to}** | ${r.days > 0 ? '+' : ''}${r.days} d | ${r.qualification} | ${r.reason} |\n`;
   }
   md += `\n`;
 }
@@ -124,7 +203,8 @@ md += `These have written content in the app but no scheduled date, so nothing i
 for (const year of YEARS) {
   const rows = newEntries[year];
   if (!rows.length) continue;
-  md += `**${year}** — ${rows.length} entries: ` + rows.map(r => `${r.name} (${r.to})`).join(', ') + `\n\n`;
+  md += `**${year}** — ${rows.length} entries: ` +
+    rows.map(r => `${r.name} (${r.to}; ${r.qualification})`).join(', ') + `\n\n`;
 }
 
 md += `---
@@ -138,6 +218,8 @@ For each row, one of:
   why the engine disagrees; this has already caught two real errors.)
 - **Unsure** — we will leave it under review and publish no date rather than a
   doubtful one.
+- **Disputed** — more than one recognised tradition has a valid result. Tell us
+  which profiles each result applies to; Shoonaya will preserve the variants.
 
 A "No" is genuinely useful. Two of the corrections in this list were found
 because someone said the old date looked right, and they were correct.
@@ -145,7 +227,8 @@ because someone said the old date looked right, and they were correct.
 ## What we are NOT asking
 
 - Whether the astronomy is right — that is externally validated.
-- Whether to use amanta or purnimanta — that is per-observance and already set.
+- Whether to use amanta or purnimanta where the rule qualification says the
+  profile ruling is pending — that remains a separate [S] decision.
 - Anything about the code.
 `;
 

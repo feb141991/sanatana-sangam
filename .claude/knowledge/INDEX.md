@@ -39,6 +39,7 @@ Updated by the `shoonaya-knowledge-curator` agent.
 - [Feature Card Routing](decisions/feature-card-routing.md) — Landing cards link to /signup, never to protected app routes
 - [Nav and Footer Branding](decisions/nav-footer-branding.md) — river-light-horizontal.png is canonical; no text fallbacks
 - [Nitya Karma Error Boundaries](decisions/nitya-karma-error-boundaries.md) — Route-level error.tsx on /insights and /plans; reset() + Go Back recovery; never a single parent boundary
+- [Calendar Launch Governance](decisions/calendar-launch-governance.md) — Neutral launch defaults, unresolved-date withholding, profile-selected variants, and deferred scholarly scope
 
 ## How to add entries
 
