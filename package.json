@@ -44,6 +44,7 @@
     "fixtures:fetch": "npx tsx scripts/fetch-tier1-fixtures.ts",
     "audit:month-system": "npx tsx scripts/audit-month-system.ts",
     "council:packet": "npx tsx scripts/build-council-packet.ts",
+    "derive:e13": "npx tsx scripts/derive-e13-longitude.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts",
     "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts"
   },

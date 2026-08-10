@@ -309,9 +309,28 @@ describe('Edge-Case Behavior Fixtures (E1-E13)', () => {
    * Defect this test would NOT catch: Inaccuracies in the planetary ephemeris data itself (e.g., if the raw coordinates from Astronomia have an error, the computed boundary time would shift, but the test would still show them as matching because the test itself queries Astronomia).
    */
   it('E13: Sunrise Boundary - tithi boundary within 60s of sunrise has undefined ownership [S]', () => {
-    // Special simulated longitude where sunrise on 2026-05-06 lands exactly next to the Chaturthi-to-Panchami tithi boundary
+    // SYNTHETIC longitude, chosen so sunrise coincides with the
+    // Chaturthi->Panchami tithi boundary. No observer lives here and no
+    // authority publishes it: this is a DERIVED constant, not a cited one, and
+    // it must be re-derived whenever the ephemeris changes.
+    //
+    // Re-derived 2026-08-10 from 45.117 -> 45.4416. D30 moved the engine's solar
+    // longitude from Meeus's truncated series to full VSOP87 (previously 2.2x
+    // outside the §1.2 Sankranti budget; now agreeing with JPL Horizons).
+    // Elongation moves 12.19 deg/day, so a ~24" solar shift moves a tithi
+    // boundary ~47 s -- and the old constant's gap had grown to 77.878 s, so the
+    // fixture had stopped demonstrating the §1.2 case it exists for.
+    //
+    // The assertion below stays at 60 s. Loosening it would have deleted the
+    // test's meaning; the observer moves instead. The new constant sits at a
+    // 0.007 s gap -- deliberately centred rather than merely under the limit, so
+    // it keeps ~60 s of headroom in both directions against future drift.
+    //
+    // If this test fails again, do NOT adjust the threshold. Run:
+    //   npx tsx scripts/derive-e13-longitude.ts
+    // which prints the boundary, the residual and a fresh constant.
     const lat = 23.176;
-    const lon = 45.117; // simulated longitude
+    const lon = 45.4416; // derived — see scripts/derive-e13-longitude.ts
     const tz = 'Asia/Kolkata'; // keep timezone simple
     const loc = { lat, lon, tz };
 
