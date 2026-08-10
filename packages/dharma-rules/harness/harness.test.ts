@@ -419,7 +419,28 @@ describe('Snapshot fixtures — regression tests (no unintended change)', () => 
     });
   }
 
+  // A snapshot for a rule that is no longer published is not a regression --
+  // it is out of scope. The launch subset deliberately suppresses 63 rule rows,
+  // and their fixtures would otherwise all fail claiming the engine "changed".
+  //
+  // Skipped rather than regenerated or deleted, for two reasons. Regenerating
+  // would bake "no date" into the fixture and destroy the captured value we
+  // will want back when the rule returns to the launch set. Deleting loses it
+  // outright. Skipping preserves it and costs nothing.
+  //
+  // Mirrors the [GOLDEN PENDING] treatment above: out-of-scope fixtures are
+  // visible as skips, never as passes.
+  const deferredSlugs = new Set(
+    (CANONICAL_RULES as Array<{ slug: string; launch_status?: string }>)
+      .filter(r => r.launch_status === 'deferred')
+      .map(r => r.slug),
+  );
+
   for (const fixture of snapshotFixtures) {
+    if (deferredSlugs.has(fixture.festivalId)) {
+      it.skip(`[SNAPSHOT DEFERRED] ${fixture.caseId} — ${fixture.festivalId} is not in the launch set`, () => {});
+      continue;
+    }
     it(`[SNAPSHOT] ${fixture.caseId} — ${fixture.festivalId} ${fixture.year} → ${fixture.captured.civilDate}`, () => {
       const engineDate = getEngineDate(fixture.festivalId, fixture.year);
 

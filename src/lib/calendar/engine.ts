@@ -99,8 +99,19 @@ function isLeapYear(year: number): boolean {
  * notification, because both are built from occurrences.
  */
 export function isPublishable(rule: ObservanceRule): boolean {
-  const d = (rule as { derivability?: string }).derivability;
-  return d === undefined || d === 'computed';
+  const r = rule as { derivability?: string; launch_status?: string };
+
+  // Not knowable — no calendar we ship can produce an honest date.
+  if (r.derivability !== undefined && r.derivability !== 'computed') return false;
+
+  // Knowable, but not in the launch subset. A separate axis on purpose: this one
+  // is a scheduling decision that reverses with a data edit, where derivability
+  // is a statement about what is computable at all. Collapsing them would lose
+  // the difference between "we cannot know this" and "we know it but are not
+  // ready to stand behind it".
+  if (r.launch_status === 'deferred') return false;
+
+  return true;
 }
 
 /**
@@ -469,6 +480,13 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
   const maxIterations = 3;
   for (let iter = 0; iter < maxIterations; iter++) {
     for (const rule of CANONICAL_RULES) {
+      // The second pass iterates CANONICAL_RULES afresh, so it needs the same
+      // publication gate as the first. Without it a deferred relative rule still
+      // resolved -- its base was published, so the offset succeeded and the rule
+      // appeared in output despite being suppressed. Seven rules leaked through
+      // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
+      // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
+      if (!isPublishable(rule)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -654,6 +672,13 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
   const maxIterations = 3;
   for (let iter = 0; iter < maxIterations; iter++) {
     for (const rule of CANONICAL_RULES) {
+      // The second pass iterates CANONICAL_RULES afresh, so it needs the same
+      // publication gate as the first. Without it a deferred relative rule still
+      // resolved -- its base was published, so the offset succeeded and the rule
+      // appeared in output despite being suppressed. Seven rules leaked through
+      // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
+      // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
+      if (!isPublishable(rule)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;

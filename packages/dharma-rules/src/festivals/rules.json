@@ -9,7 +9,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "solar_fixed",
     "solar_month": 1,
-    "solar_day": 14
+    "solar_day": 14,
+    "launch_status": "included"
   },
   {
     "slug": "vasant-panchami",
@@ -25,7 +26,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "maha-shivaratri",
@@ -42,7 +44,8 @@
     "corrected_lunar_tithi_index": 29,
     "adhika_policy": "nija",
     "lunar_tithi_index": 28,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "holi",
@@ -58,7 +61,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "gudi-padwa",
@@ -74,7 +78,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
-    "allow_skipped_tithi": true
+    "allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "chaitra-navratri-begins",
@@ -92,7 +97,8 @@
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "chaitra-navratri"
+    "route_slug": "chaitra-navratri",
+    "launch_status": "deferred"
   },
   {
     "slug": "ugadi",
@@ -108,7 +114,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
-    "allow_skipped_tithi": true
+    "allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "ram-navami",
@@ -124,7 +131,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 9,
-    "allow_skipped_tithi": true
+    "allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "hanuman-jayanti",
@@ -140,7 +148,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "akshaya-tritiya",
@@ -156,7 +165,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
-    "allow_skipped_tithi": true
+    "allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "narasimha-jayanti",
@@ -172,7 +182,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 14,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "shani-jayanti",
@@ -188,7 +199,8 @@
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 30,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vat-savitri-amavasya",
@@ -206,7 +218,8 @@
     "lunar_tithi_index": 30,
     "route_kind": "vrat",
     "route_slug": "vat-savitri",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vat-savitri-purnima",
@@ -224,7 +237,8 @@
     "lunar_tithi_index": 15,
     "route_kind": "vrat",
     "route_slug": "vat-savitri-purnima",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "jagannath-rath-yatra",
@@ -240,7 +254,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 2,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "gupt-navratri-ashadha-begins",
@@ -258,7 +273,8 @@
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "gupt-navratri"
+    "route_slug": "gupt-navratri",
+    "launch_status": "deferred"
   },
   {
     "slug": "guru-purnima",
@@ -276,7 +292,8 @@
     "lunar_tithi_index": 15,
     "route_kind": "vrat",
     "route_slug": "purnima",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "nag-panchami",
@@ -294,7 +311,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "prefer_last_match": true,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "raksha-bandhan",
@@ -310,7 +328,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "krishna-janmashtami",
@@ -330,7 +349,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 23,
     "prefer_last_match": true,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "krishna-janmashtami",
@@ -350,7 +370,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 23,
     "prefer_last_match": true,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "ganesh-chaturthi",
@@ -366,7 +387,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 4,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "onam",
@@ -381,7 +403,8 @@
     "corrected_lunar_masa_name": "Bhadrapada",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "nakshatra_name": "Shravana"
+    "nakshatra_name": "Shravana",
+    "launch_status": "deferred"
   },
   {
     "slug": "hartalika-teej",
@@ -399,7 +422,8 @@
     "lunar_tithi_index": 3,
     "route_kind": "vrat",
     "route_slug": "hartalika-teej",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "mahalaya-amavasya",
@@ -413,7 +437,8 @@
     "relative_base_slug": "navratri-begins",
     "relative_offset_days": -1,
     "route_kind": "vrat",
-    "route_slug": "amavasya"
+    "route_slug": "amavasya",
+    "launch_status": "deferred"
   },
   {
     "slug": "navratri-begins",
@@ -431,7 +456,8 @@
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "sharad-navratri"
+    "route_slug": "sharad-navratri",
+    "launch_status": "included"
   },
   {
     "slug": "chintpurni-mata-chaitra-navratri",
@@ -446,7 +472,8 @@
     "relative_offset_days": 0,
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
-    "region": "Himachal Pradesh / Chintpurni Shakti Peeth"
+    "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
+    "launch_status": "deferred"
   },
   {
     "slug": "chintpurni-mata-sharad-navratri",
@@ -461,7 +488,8 @@
     "relative_offset_days": 0,
     "route_kind": "vrat",
     "route_slug": "chintpurni-mata-navratri",
-    "region": "Himachal Pradesh / Chintpurni Shakti Peeth"
+    "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
+    "launch_status": "deferred"
   },
   {
     "slug": "dussehra",
@@ -473,7 +501,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "navratri-begins",
-    "relative_offset_days": 9
+    "relative_offset_days": 9,
+    "launch_status": "included"
   },
   {
     "slug": "karva-chauth",
@@ -491,7 +520,8 @@
     "lunar_tithi_index": 19,
     "route_kind": "vrat",
     "route_slug": "karva-chauth",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "dhanteras",
@@ -503,7 +533,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
-    "relative_offset_days": -2
+    "relative_offset_days": -2,
+    "launch_status": "included"
   },
   {
     "slug": "diwali",
@@ -519,7 +550,8 @@
     "corrected_month_system": "purnimanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 29,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "govardhan-puja",
@@ -531,7 +563,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 1
+    "relative_offset_days": 1,
+    "launch_status": "included"
   },
   {
     "slug": "bhai-dooj",
@@ -543,7 +576,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 2
+    "relative_offset_days": 2,
+    "launch_status": "included"
   },
   {
     "slug": "chhath-puja",
@@ -559,7 +593,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 6,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "kartik-purnima",
@@ -573,7 +608,8 @@
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
     "route_kind": "vrat",
-    "route_slug": "purnima"
+    "route_slug": "purnima",
+    "launch_status": "deferred"
   },
   {
     "slug": "vivah-panchami",
@@ -589,7 +625,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "gita-jayanti",
@@ -605,7 +642,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 11,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vaikunta-ekadashi",
@@ -623,7 +661,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "vaikunta-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "kamada-ekadashi",
@@ -640,7 +679,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "kamada-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "nirjala-ekadashi",
@@ -657,7 +697,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "nirjala-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "devshayani-ekadashi",
@@ -674,7 +715,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "devshayani-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "shravana-putrada-ekadashi",
@@ -691,7 +733,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "shravana-putrada-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "parivartini-ekadashi",
@@ -708,7 +751,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "parivartini-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "devutthana-ekadashi",
@@ -725,7 +769,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "devutthana-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "amalaki-ekadashi",
@@ -742,7 +787,8 @@
     "lunar_tithi_index": 11,
     "route_kind": "vrat",
     "route_slug": "amalaki-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "papmochani-ekadashi",
@@ -759,7 +805,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "papmochani-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "apara-ekadashi",
@@ -776,7 +823,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "apara-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "yogini-ekadashi",
@@ -793,7 +841,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "yogini-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "kamika-ekadashi",
@@ -810,7 +859,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "kamika-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "aja-ekadashi",
@@ -827,7 +877,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "aja-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "rama-ekadashi",
@@ -844,7 +895,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "rama-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "utpanna-ekadashi",
@@ -861,7 +913,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "utpanna-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "saphala-ekadashi",
@@ -878,7 +931,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "saphala-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vijaya-ekadashi",
@@ -895,7 +949,8 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "vijaya-ekadashi",
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "gupt-navratri-magha-begins",
@@ -913,7 +968,8 @@
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "gupt-navratri"
+    "route_slug": "gupt-navratri",
+    "launch_status": "deferred"
   },
   {
     "slug": "guru-gobind-singh-gurpurab",
@@ -925,7 +981,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "historical_commemoration",
     "solar_month": 1,
-    "solar_day": 5
+    "solar_day": 5,
+    "launch_status": "included"
   },
   {
     "slug": "lohri",
@@ -937,7 +994,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "solar_fixed",
     "relative_base_slug": "makar-sankranti",
-    "relative_offset_days": -1
+    "relative_offset_days": -1,
+    "launch_status": "included"
   },
   {
     "slug": "guru-ravidas-jayanti",
@@ -953,7 +1011,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "holla-mohalla",
@@ -965,7 +1024,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "holi",
-    "relative_offset_days": 1
+    "relative_offset_days": 1,
+    "launch_status": "included"
   },
   {
     "slug": "baisakhi",
@@ -977,7 +1037,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "solar_fixed",
     "solar_month": 4,
-    "solar_day": 14
+    "solar_day": 14,
+    "launch_status": "included"
   },
   {
     "slug": "guru-amar-das-gurpurab",
@@ -989,7 +1050,8 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Jeth",
-    "nanakshahi_day": 9
+    "nanakshahi_day": 9,
+    "launch_status": "deferred"
   },
   {
     "slug": "guru-arjan-dev-martyrdom",
@@ -1001,7 +1063,8 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Harh",
-    "nanakshahi_day": 2
+    "nanakshahi_day": 2,
+    "launch_status": "included"
   },
   {
     "slug": "guru-har-krishan-gurpurab",
@@ -1013,7 +1076,8 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Sawan",
-    "nanakshahi_day": 8
+    "nanakshahi_day": 8,
+    "launch_status": "deferred"
   },
   {
     "slug": "guru-ram-das-gurpurab",
@@ -1025,7 +1089,8 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Assu",
-    "nanakshahi_day": 25
+    "nanakshahi_day": 25,
+    "launch_status": "deferred"
   },
   {
     "slug": "bandhi-chhor-divas",
@@ -1037,7 +1102,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 0
+    "relative_offset_days": 0,
+    "launch_status": "included"
   },
   {
     "slug": "guru-nanak-gurpurab",
@@ -1049,7 +1115,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 16
+    "relative_offset_days": 16,
+    "launch_status": "included"
   },
   {
     "slug": "guru-tegh-bahadur-martyrdom",
@@ -1061,7 +1128,8 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Maghar",
-    "nanakshahi_day": 10
+    "nanakshahi_day": 10,
+    "launch_status": "included"
   },
   {
     "slug": "sahibzade-shaheedi-diwas",
@@ -1073,7 +1141,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "historical_commemoration",
     "solar_month": 12,
-    "solar_day": 26
+    "solar_day": 26,
+    "launch_status": "included"
   },
   {
     "slug": "parinirvana-day",
@@ -1085,7 +1154,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "historical_commemoration",
     "solar_month": 2,
-    "solar_day": 15
+    "solar_day": 15,
+    "launch_status": "deferred"
   },
   {
     "slug": "losar-tibetan-new-year",
@@ -1101,7 +1171,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "magha-puja",
@@ -1117,7 +1188,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vesak-buddha-purnima",
@@ -1133,7 +1205,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "asalha-puja",
@@ -1149,7 +1222,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "vassa-begins-rains-retreat",
@@ -1165,7 +1239,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 16,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "ullambana-ancestor-day",
@@ -1181,7 +1256,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "pavarana-end-of-vassa",
@@ -1199,7 +1275,8 @@
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
     "derivability": "requires_tradition_profile",
-    "derivability_note": "Theravada observance. Sri Lanka's official 2026 calendar places Vap Full Moon Poya on 25 Oct 2026 (Central Bank of Sri Lanka, user-provided); other Theravada calendars place Pavarana on 26 Oct. Both are correct under their own reckoning, so this is profile-dependent, not wrong. The astronomical full-moon instant (2026-10-26T04:12Z) does not by itself fix the ritual civil date. Awaiting Sri Lankan / Thai / Burmese profiles."
+    "derivability_note": "Theravada observance. Sri Lanka's official 2026 calendar places Vap Full Moon Poya on 25 Oct 2026 (Central Bank of Sri Lanka, user-provided); other Theravada calendars place Pavarana on 26 Oct. Both are correct under their own reckoning, so this is profile-dependent, not wrong. The astronomical full-moon instant (2026-10-26T04:12Z) does not by itself fix the ritual civil date. Awaiting Sri Lankan / Thai / Burmese profiles.",
+    "launch_status": "deferred"
   },
   {
     "slug": "kathina",
@@ -1217,7 +1294,8 @@
     "lunar_tithi_index": 16,
     "corrected_allow_skipped_tithi": true,
     "derivability": "externally_curated",
-    "derivability_note": "Kathina is a SEASON, not a day: the month following Pavarana, within which each monastery chooses its own ceremony date. There is therefore no single correct Gregorian date for any calendar to produce, and no tradition profile will make this computable. The date must be supplied externally per community."
+    "derivability_note": "Kathina is a SEASON, not a day: the month following Pavarana, within which each monastery chooses its own ceremony date. There is therefore no single correct Gregorian date for any calendar to produce, and no tradition profile will make this computable. The date must be supplied externally per community.",
+    "launch_status": "deferred"
   },
   {
     "slug": "sangha-day-loy-krathong",
@@ -1229,7 +1307,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 16
+    "relative_offset_days": 16,
+    "launch_status": "deferred"
   },
   {
     "slug": "bodhi-day",
@@ -1241,7 +1320,8 @@
     "rule_family": "solar_fixed",
     "verification_type": "historical_commemoration",
     "solar_month": 12,
-    "solar_day": 8
+    "solar_day": 8,
+    "launch_status": "deferred"
   },
   {
     "slug": "mahavir-jayanti",
@@ -1257,7 +1337,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 13,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "akshaya-tritiya-jain",
@@ -1273,7 +1354,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
-    "allow_skipped_tithi": true
+    "allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "paryushana-parva-begins",
@@ -1289,7 +1371,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 27,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "samvatsari-paryushana-ends",
@@ -1305,7 +1388,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "included"
   },
   {
     "slug": "das-lakshana-dharma-begins",
@@ -1321,7 +1405,8 @@
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
-    "corrected_allow_skipped_tithi": true
+    "corrected_allow_skipped_tithi": true,
+    "launch_status": "deferred"
   },
   {
     "slug": "jain-new-year-pratipada",
@@ -1333,7 +1418,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 1
+    "relative_offset_days": 1,
+    "launch_status": "deferred"
   },
   {
     "slug": "jain-diwali-nirvana-ladnun",
@@ -1345,7 +1431,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 0
+    "relative_offset_days": 0,
+    "launch_status": "deferred"
   },
   {
     "slug": "kartik-purnima-jain",
@@ -1357,7 +1444,8 @@
     "rule_family": "relative_to_other_observance",
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
-    "relative_offset_days": 16
+    "relative_offset_days": 16,
+    "launch_status": "deferred"
   },
   {
     "slug": "ekadashi",
@@ -1375,7 +1463,8 @@
     "adhika_policy": "both",
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "ekadashi"
+    "route_slug": "ekadashi",
+    "launch_status": "included"
   },
   {
     "slug": "pradosh-vrat",
@@ -1392,7 +1481,8 @@
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "pradosh"
+    "route_slug": "pradosh",
+    "launch_status": "included"
   },
   {
     "slug": "purnima-vrat",
@@ -1408,7 +1498,8 @@
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "purnima"
+    "route_slug": "purnima",
+    "launch_status": "included"
   },
   {
     "slug": "amavasya-vrat",
@@ -1424,7 +1515,8 @@
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "amavasya"
+    "route_slug": "amavasya",
+    "launch_status": "included"
   },
   {
     "slug": "vinayaka-chaturthi",
@@ -1440,7 +1532,8 @@
     ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "chaturthi"
+    "route_slug": "chaturthi",
+    "launch_status": "deferred"
   },
   {
     "slug": "sankashti-chaturthi",
@@ -1457,7 +1550,8 @@
     "adhika_policy": "both",
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
-    "route_slug": "sankashti-chaturthi"
+    "route_slug": "sankashti-chaturthi",
+    "launch_status": "deferred"
   },
   {
     "slug": "shravan-somvar",
@@ -1474,7 +1568,8 @@
     "adhika_policy": "nija",
     "recurring_weekday": 1,
     "route_kind": "vrat",
-    "route_slug": "somvar"
+    "route_slug": "somvar",
+    "launch_status": "deferred"
   },
   {
     "slug": "mangala-gauri-vrat",
@@ -1491,6 +1586,7 @@
     "adhika_policy": "nija",
     "recurring_weekday": 2,
     "route_kind": "vrat",
-    "route_slug": "mangala-gauri"
+    "route_slug": "mangala-gauri",
+    "launch_status": "deferred"
   }
 ]

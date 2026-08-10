@@ -108,6 +108,29 @@ try {
     }
   }
 
+  // Guard 3: a launch rule must not depend on a deferred one.
+  //
+  // `relative_to_other_observance` resolves against a base slug. If the base is
+  // deferred it produces no occurrence, so the dependent produces nothing
+  // either -- silently, with no error anywhere. Diwali carries five dependants
+  // and navratri-begins three, so one careless deferral empties a whole cluster.
+  for (const rule of rules as any[]) {
+    if (rule.launch_status !== 'included' || !rule.relative_base_slug) continue;
+    const base = (rules as any[]).find(r => r.slug === rule.relative_base_slug);
+    if (!base) {
+      console.error(`❌ "${rule.slug}" is anchored to "${rule.relative_base_slug}", which does not exist.`);
+      process.exit(1);
+    }
+    if (base.launch_status === 'deferred') {
+      console.error(
+        `❌ "${rule.slug}" is in the launch set but its base "${base.slug}" is deferred. ` +
+        `A relative rule offsets from its base's date, so this would publish nothing at ` +
+        `all rather than erroring. Either include the base or defer the dependant.`
+      );
+      process.exit(1);
+    }
+  }
+
   // Guard 2: report observances sharing a (month, tithi, system) slot.
   //
   // WARNING, not an error. Co-occurrence is often correct -- Gudi Padwa, Ugadi

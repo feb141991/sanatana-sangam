@@ -288,6 +288,14 @@
       "derivability_note": {
         "type": "string",
         "description": "Why this derivability applies, with sources where known."
+      },
+      "launch_status": {
+        "type": "string",
+        "enum": [
+          "included",
+          "deferred"
+        ],
+        "description": "Whether this observance ships in the launch set. Distinct from `derivability`: deferred means capable but not chosen, where a non-computed derivability means not knowable at all. Both suppress publication; only one is a scheduling decision."
       }
     },
     "additionalProperties": false
