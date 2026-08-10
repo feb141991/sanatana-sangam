@@ -535,6 +535,10 @@ async function commitOccurrencesWithBatches(
   args: {
     toInsert: any[];
     toUpdate: Array<{ id: string; patch: Record<string, unknown> }>;
+    /** Rows the engine still owns whose date did not move; stamped, not rewritten. */
+    toStamp: Array<{ id: string; slug: string; anchor: string; date: string }>;
+    /** Identity keys this run is responsible for, used to retire stale rows. */
+    identityKeysThisRun: Set<string>;
     /** Expected row count per batch identity, from the engine's full output. */
     expectedByIdentity: Map<string, number>;
     /** Identity metadata per key, so a batch can be opened for it. */
@@ -542,7 +546,7 @@ async function commitOccurrencesWithBatches(
     versions: { engine: string; rule: string; astronomy?: string };
   },
 ): Promise<{ inserted: number; updated: number }> {
-  const { toInsert, toUpdate, expectedByIdentity, identityMeta, versions } = args;
+  const { toInsert, toUpdate, toStamp, identityKeysThisRun, expectedByIdentity, identityMeta, versions } = args;
 
   const groups = new Map<string, any[]>();
   for (const row of toInsert) {
@@ -643,6 +647,78 @@ async function commitOccurrencesWithBatches(
     updated += 1;
   }
 
+  // Stamp rows the engine still owns whose date did not change. Without this a
+  // pre-contract row, or one written by an older engine, keeps NULL stamps and
+  // never joins the set its batch claims to describe.
+  for (const item of toStamp) {
+    const key = [...identityKeysThisRun].find(k => identityMeta.get(k)?.__slug === item.slug);
+    const batchId = key ? batchByIdentity.get(key) : undefined;
+    const meta = key ? identityMeta.get(key) : undefined;
+    if (!batchId || !meta) continue;
+    const { error } = await supabase
+      .from('observance_occurrences')
+      .update({
+        batch_id: batchId,
+        series_instance_key: buildSeriesInstanceKey({
+          slug: item.slug,
+          year: meta.year,
+          calendarProfile: meta.calendar_profile,
+          lat: meta.computed_latitude,
+          lon: meta.computed_longitude,
+          tz: meta.computed_timezone,
+          instanceAnchor: item.anchor,
+        }),
+        calculation_version: versions.engine,
+        rule_version: versions.rule,
+        astronomy_version: versions.astronomy ?? null,
+      })
+      .eq('id', item.id);
+    if (error) throw error;
+  }
+
+  // RETIRE stale generated rows.
+  //
+  // Counting from the database made a leftover row produce a permanently partial
+  // batch -- fail-safe, but stuck: nothing removed the row, so every later rerun
+  // stayed partial forever. Detection is not reconciliation.
+  //
+  // A row is stale when it belongs to this batch's identity, the engine did not
+  // claim it this run, and it is engine-generated. Locked rows, manual overrides
+  // and non-engine sources are left alone: the engine does not own those, and
+  // deleting a curator's decision to satisfy a counter would be the worst kind of
+  // fix. They are unlinked from the batch instead, so the count stays honest
+  // without destroying anything.
+  for (const [key, batchId] of batchByIdentity) {
+    const meta = identityMeta.get(key);
+    if (!meta) continue;
+    const claimed = new Set<string>([
+      ...(groups.get(key) ?? []).map(r => r.date),
+      ...toStamp.map(t => t.date),
+      ...toUpdate.map(u => String((u.patch as any).date ?? '')),
+    ]);
+
+    const { data: linked, error: linkErr } = await supabase
+      .from('observance_occurrences')
+      .select('id')
+      .eq('batch_id', batchId);
+    if (linkErr) throw linkErr;
+
+    for (const row of linked ?? []) {
+      const r = row as any;
+      if (r.date && claimed.has(r.date)) continue;
+      if (r.locked_for_regeneration || r.manual_date_override) {
+        // Not ours to remove -- unlink so it stops counting against the batch.
+        await supabase.from('observance_occurrences').update({ batch_id: null }).eq('id', r.id);
+        continue;
+      }
+      if (r.final_date_source && r.final_date_source !== 'calculation_engine') {
+        await supabase.from('observance_occurrences').update({ batch_id: null }).eq('id', r.id);
+        continue;
+      }
+      await supabase.from('observance_occurrences').delete().eq('id', r.id);
+    }
+  }
+
   // Close each batch against what the DATABASE holds for it, not what this run
   // happened to write.
   for (const [key, batchId] of batchByIdentity) {
@@ -729,12 +805,16 @@ export async function materializeOccurrencesForYears({
 
   const existingByDefinitionYear = new Map<string, MaterializeOccurrenceRow>();
   const existingByDefinitionDate = new Set<string>();
+  // Same keys, but holding the ROW -- needed to stamp a row whose date did not
+  // change. The Sets alone can only answer "does it exist".
+  const existingByDate = new Map<string, any>();
   for (const row of existingRows ?? []) {
     existingByDefinitionYear.set(
       rowIdentity(row.definition_id, row.year, row.calendar_profile, row.variant_key),
       row,
     );
     existingByDefinitionDate.add(`${row.definition_id}:${row.date}`);
+    existingByDate.set(`${row.definition_id}:${row.date}`, row);
   }
 
   const summary: Record<number, MaterializeYearSummary> = {};
@@ -757,18 +837,30 @@ export async function materializeOccurrencesForYears({
       // existing/locked/duplicate filtering. This is what `expected_row_count`
       // must mean -- "what should exist", not "what is left to write".
       const expectedRows: any[] = [];
+      /**
+       * Rows the engine still owns whose date did not change.
+       *
+       * They need the current batch and key even though nothing about the date
+       * moved: without this a row written before the contract, or by an older
+       * engine, keeps NULL stamps forever and never joins the set its batch
+       * claims to describe. Locked and manually-overridden rows are excluded --
+       * the engine does not own those.
+       */
+      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string }> = [];
 
       const processedThisYear = new Set<string>();
 
       // Build composite existing maps for fine-grained lookup
       const existingCompositeMap = new Map<string, any>();
       const existingCompositeDateSet = new Set<string>();
+      const existingCompositeByDate = new Map<string, any>();
       for (const row of existingRows ?? []) {
         if (row.year === year) {
           const profile = row.calendar_profile || 'legacy-ujjain';
           const variant = row.variant_key || 'legacy-default';
           existingCompositeMap.set(`${row.definition_id}:${profile}:${variant}`, row);
           existingCompositeDateSet.add(`${row.definition_id}:${profile}:${variant}:${row.date}`);
+          existingCompositeByDate.set(`${row.definition_id}:${profile}:${variant}:${row.date}`, row);
         }
       }
 
@@ -782,13 +874,6 @@ export async function materializeOccurrencesForYears({
         const profile = 'legacy-ujjain'; // evaluated at Ujjain
         const variant = occ.variant_key || 'legacy-default';
 
-        expectedRows.push({
-          definition_id: definitionId, year, calendar_profile: profile,
-          spiritual_tradition: occ.spiritual_tradition ?? null, variant_key: variant,
-          computed_latitude: 23.1765, computed_longitude: 75.7885,
-          computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
-        });
-
         if (occ.recurring) {
           if (namedDates.has(occ.date)) {
             summary[year].suppressedOverlap += 1;
@@ -797,7 +882,28 @@ export async function materializeOccurrencesForYears({
           const recurKey = `${definitionId}:${profile}:${variant}:${occ.date}`;
           if (processedThisYear.has(recurKey)) continue;
           processedThisYear.add(recurKey);
-          if (existingCompositeDateSet.has(recurKey)) continue; // already materialized
+
+          // Counted after policy suppression and dedup, before the existing-row
+          // check -- see the note on the sibling branch.
+          expectedRows.push({
+            definition_id: definitionId, year, calendar_profile: profile,
+            spiritual_tradition: occ.spiritual_tradition ?? null, variant_key: variant,
+            computed_latitude: 23.1765, computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+          });
+
+          if (existingCompositeDateSet.has(recurKey)) {
+            // Same date, but the row may predate the contract or an engine
+            // change. Rows only entered toUpdate when their DATE moved, so a
+            // rule/version/diagnostic change that kept the date left the row
+            // unstamped -- NULL batch, NULL key -- while its batch advertised
+            // the current engine version over rows an older one produced.
+            const same = existingCompositeByDate.get(recurKey);
+            if (same && !same.locked_for_regeneration) {
+              toStamp.push({ id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date });
+            }
+            continue;
+          }
 
           summary[year].insertable += 1;
           const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
@@ -835,6 +941,20 @@ export async function materializeOccurrencesForYears({
 
         const dedupKey = `${definitionId}:${profile}:${variant}:${occ.date}`;
         if (processedThisYear.has(dedupKey)) continue;
+        // Counted HERE, after policy suppression and dedup but before the
+        // existing-row check. Those three `continue`s are not the same kind of
+        // thing: a named-date collision and a duplicate are decisions that this
+        // row should NOT be persisted, while an existing row is one that already
+        // is. Counting before all three made `expected` include rows the policy
+        // deliberately drops -- 8 in 2026, 6 in 2027, 7 in 2028 -- so those
+        // batches could never reach complete no matter how many times they ran.
+          expectedRows.push({
+            definition_id: definitionId, year, calendar_profile: profile,
+            spiritual_tradition: occ.spiritual_tradition ?? null, variant_key: variant,
+            computed_latitude: 23.1765, computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+          });
+
         processedThisYear.add(dedupKey);
 
         const existing = existingCompositeMap.get(`${definitionId}:${profile}:${variant}`);
@@ -955,6 +1075,8 @@ export async function materializeOccurrencesForYears({
       const committed = await commitOccurrencesWithBatches(supabase, {
         toInsert,
         toUpdate,
+        toStamp,
+        identityKeysThisRun: new Set(expectedByIdentity.keys()),
         expectedByIdentity,
         identityMeta,
         versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
@@ -1013,6 +1135,16 @@ export async function materializeOccurrencesForYears({
       // existing/locked/duplicate filtering. This is what `expected_row_count`
       // must mean -- "what should exist", not "what is left to write".
       const expectedRows: any[] = [];
+      /**
+       * Rows the engine still owns whose date did not change.
+       *
+       * They need the current batch and key even though nothing about the date
+       * moved: without this a row written before the contract, or by an older
+       * engine, keeps NULL stamps forever and never joins the set its batch
+       * claims to describe. Locked and manually-overridden rows are excluded --
+       * the engine does not own those.
+       */
+      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string }> = [];
 
       const processedThisYear = new Set<string>();
 
@@ -1023,13 +1155,6 @@ export async function materializeOccurrencesForYears({
           continue;
         }
 
-        expectedRows.push({
-          definition_id: definitionId, year, calendar_profile: DEFAULT_PROFILE,
-          spiritual_tradition: null, variant_key: DEFAULT_VARIANT,
-          computed_latitude: 23.1765, computed_longitude: 75.7885,
-          computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
-        });
-
         if (occ.recurring) {
           if (namedDates.has(occ.date)) {
             summary[year].suppressedOverlap += 1;
@@ -1038,7 +1163,26 @@ export async function materializeOccurrencesForYears({
           const recurKey = `${definitionId}:${occ.date}`;
           if (processedThisYear.has(recurKey)) continue;
           processedThisYear.add(recurKey);
-          if (existingByDefinitionDate.has(recurKey)) continue;
+        // Counted HERE, after policy suppression and dedup but before the
+        // existing-row check. Those three `continue`s are not the same kind of
+        // thing: a named-date collision and a duplicate are decisions that this
+        // row should NOT be persisted, while an existing row is one that already
+        // is. Counting before all three made `expected` include rows the policy
+        // deliberately drops -- 8 in 2026, 6 in 2027, 7 in 2028 -- so those
+        // batches could never reach complete no matter how many times they ran.
+          expectedRows.push({
+            definition_id: definitionId, year, calendar_profile: DEFAULT_PROFILE,
+            spiritual_tradition: null, variant_key: DEFAULT_VARIANT,
+            computed_latitude: 23.1765, computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+          });
+          if (existingByDefinitionDate.has(recurKey)) {
+            const same = existingByDate.get(recurKey);
+            if (same && !same.locked_for_regeneration) {
+              toStamp.push({ id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date });
+            }
+            continue;
+          }
           summary[year].insertable += 1;
           const reviewPatch = buildGeneratedOccurrenceReviewPatch(occ.slug);
           toInsert.push({
@@ -1082,6 +1226,19 @@ export async function materializeOccurrencesForYears({
         const dedupKey = rowIdentity(definitionId, occ.year, DEFAULT_PROFILE, DEFAULT_VARIANT);
         if (processedThisYear.has(dedupKey)) continue;
         processedThisYear.add(dedupKey);
+
+          // Counted HERE: after policy suppression and dedup, before the
+          // existing-row check. Those `continue`s differ in kind -- a named-date
+          // collision and a duplicate mean the row should NOT be persisted,
+          // while an existing row already is one. Counting before all three put
+          // deliberately-dropped rows into `expected` (8 in 2026, 6 in 2027,
+          // 7 in 2028), so those batches could never reach complete.
+          expectedRows.push({
+            definition_id: definitionId, year, calendar_profile: DEFAULT_PROFILE,
+            spiritual_tradition: null, variant_key: DEFAULT_VARIANT,
+            computed_latitude: 23.1765, computed_longitude: 75.7885,
+            computed_timezone: 'Asia/Kolkata', __slug: occ.slug,
+          });
 
         const existing = existingByDefinitionYear.get(dedupKey);
         if (!existing) {
@@ -1187,6 +1344,8 @@ export async function materializeOccurrencesForYears({
       const committed = await commitOccurrencesWithBatches(supabase, {
         toInsert,
         toUpdate,
+        toStamp,
+        identityKeysThisRun: new Set(expectedByIdentity.keys()),
         expectedByIdentity,
         identityMeta,
         versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },

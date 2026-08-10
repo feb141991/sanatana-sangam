@@ -66,6 +66,7 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
   // fact the read path trusts, and a fake that accepts an impossible batch would
   // let a broken materialiser pass.
   const batches = new Map<string, Row>();
+  const deleted: string[] = [];
   const batchIdentity = (r: Row) => [
     r.definition_id, r.year, r.calendar_profile,
     r.spiritual_tradition ?? '', r.variant_key ?? '',
@@ -164,6 +165,21 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
             },
           };
         },
+        // Stale-row retirement genuinely removes rows, so the fake must too --
+        // a stub returning { error: null } would let a broken reconciliation
+        // report success while the row it claimed to retire was still there.
+        delete() {
+          return {
+            eq: async (_col: string, id: string) => {
+              deleted.push(id);
+              for (const list of [existing, inserted]) {
+                const i = (list as Row[]).findIndex(r => r.id === id);
+                if (i >= 0) (list as Row[]).splice(i, 1);
+              }
+              return { error: null };
+            },
+          };
+        },
         upsert(rows: Row[]) {
           queueUpserts.push(...(Array.isArray(rows) ? rows : [rows]));
           return Promise.resolve({ error: null });
@@ -172,12 +188,34 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
     },
   };
 
-  return { client, inserted, updated, queueUpserts, existing, batches };
+  return { client, inserted, updated, queueUpserts, existing, batches, deleted };
 }
 
 const DEFS = [
   { id: 'def-diwali', slug: 'diwali' },
   { id: 'def-holi', slug: 'holi' },
+];
+
+/**
+ * Definitions wide enough for named-date SUPPRESSION to actually occur.
+ *
+ * DEFS alone holds two annual festivals, so no recurring row can ever collide
+ * with a named date and the suppression path is never entered. A test written
+ * against DEFS would have asserted a property it could not exercise -- which is
+ * why the test below refuses to run unless it observes real suppression.
+ */
+const DEFS_WITH_RECURRING = [
+  ...DEFS,
+  { id: 'def-ekadashi', slug: 'ekadashi' },
+  { id: 'def-pradosh', slug: 'pradosh-vrat' },
+  { id: 'def-purnima', slug: 'purnima-vrat' },
+  { id: 'def-amavasya', slug: 'amavasya-vrat' },
+  { id: 'def-shivaratri', slug: 'maha-shivaratri' },
+  { id: 'def-ganesh', slug: 'ganesh-chaturthi' },
+  { id: 'def-navratri', slug: 'navratri-begins' },
+  { id: 'def-dussehra', slug: 'dussehra' },
+  { id: 'def-guru-purnima', slug: 'guru-purnima' },
+  { id: 'def-raksha', slug: 'raksha-bandhan' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -375,5 +413,30 @@ describe('materializeOccurrencesForYears — commit mode', () => {
       expect(new Set(diwali.map(r => r.series_instance_key)).size).toBe(diwali.length);
     }
     expect(byKey.size).toBe(new Set(c.inserted.map(r => `${r.definition_id}|${r.date}`)).size);
+  });
+
+  it('excludes policy-suppressed rows from expected_row_count', async () => {
+    // Named-date collisions are DELIBERATELY not persisted (a recurring Ekadashi
+    // that lands on a named festival's date is suppressed). Counting them into
+    // `expected` -- which the first version did -- meant those batches could
+    // never reach complete however many times they ran: 8 such collisions in
+    // 2026, 6 in 2027, 7 in 2028.
+    //
+    // Asserted through the OUTCOME rather than the counter, because that is what
+    // the read path consults: if any expected count still included a suppressed
+    // row, its batch would close 'partial' and this fails.
+    const c = makeClient({ definitions: DEFS_WITH_RECURRING });
+    const result = await materializeOccurrencesForYears({
+      supabase: c.client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+
+    const suppressed = (result as any).summary?.[2026]?.suppressedOverlap ?? 0;
+    expect(suppressed, 'no suppression happened, so this test proves nothing').toBeGreaterThan(0);
+
+    const partial = [...c.batches.values()].filter(b => b.status !== 'complete');
+    expect(
+      partial.map(b => `${b.definition_id}:${b.expected_row_count}/${b.produced_row_count}`),
+      'a batch stayed partial -- expected still counts rows policy suppresses'
+    ).toEqual([]);
   });
 });

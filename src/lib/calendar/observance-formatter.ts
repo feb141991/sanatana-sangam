@@ -80,6 +80,9 @@ export interface ClientObservanceResult {
   isPrimary: boolean;
 }
 
+/** The profile every pre-contract row carries; it is the fallback itself. */
+const DEFAULT_FALLBACK_PROFILE = 'legacy-ujjain';
+
 /**
  * Clips occurrence rows to the requested window.
  *
@@ -229,13 +232,20 @@ function resolveCalendarProfile<T>(
       continue;
     }
 
-    // No fallback to fall back to. Publishing an incomplete profile set is worse
-    // than publishing nothing only if the alternative exists -- here it does not,
-    // so the rows are shown and flagged.
+    // No fallback to fall back to, so the rows are shown either way. Whether to
+    // FLAG them is a separate question, and the answer differs for the default
+    // profile.
     if (!complete) {
+      // `legacy-ujjain` IS the fallback. Its rows predate the batch contract by
+      // construction -- all 557 of them -- so "no trustworthy batch" is their
+      // normal state, not a fault. Flagging it would put an incompleteness
+      // warning on every observance every current user sees, the moment
+      // diagnostics become visible: a warning that fires always is noise, and
+      // teaches people to ignore the one that matters.
+      const isDefaultFallback = calendarProfile === DEFAULT_FALLBACK_PROFILE;
       for (const r of exact) {
         kept.add(r);
-        (r as any).__incompleteProfileBatch = calendarProfile;
+        if (!isDefaultFallback) (r as any).__incompleteProfileBatch = calendarProfile;
       }
       continue;
     }

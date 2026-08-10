@@ -132,6 +132,14 @@ Applied to every change, regardless of what the task asked for.
   it also encodes real semantics. `allow_skipped_tithi` is both a D1 compensation
   **and** the only kṣaya-tithi handling in the codebase.
 
+### 3.7b Is the evidence reproducible?
+- Every number in a report must come from a **committed one-command script**.
+  *(A "19/19 shadow checks pass" once lived only as prose here, with the scripts
+  in a temp directory — unreproducible by anyone, including its author the next
+  day. A number nobody can regenerate is a claim, not evidence.)*
+- `npm run verify:materialisation-shadow` builds a shadow database, applies the
+  migration, runs every check, verifies the rollback and drops it.
+
 ### 3.8 Scope honesty
 - List **every** file touched, including any outside the stated scope. Three
   consecutive tasks changed files they did not report.

@@ -48,7 +48,8 @@
     "launch:apply": "npx tsx scripts/apply-launch-set.ts",
     "generate:fallback": "npx tsx scripts/generate-festival-fallback.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts",
-    "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts"
+    "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts",
+    "verify:materialisation-shadow": "bash scripts/shadow/verify-materialisation-shadow.sh"
   },
   "dependencies": {
     "@sangam/pathshala-engine": "*",
