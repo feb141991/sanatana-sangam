@@ -28,7 +28,7 @@ echo "building shadow database '$DB' ..."
 psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;" -c "CREATE DATABASE $DB;" || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-schema.sql" || exit 2
 
-( cd "$ROOT" && python3 "$HERE/gen_shadow_data.py" "$HERE" ) || exit 2
+node "$HERE/gen-shadow-data.mjs" || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-data.sql" || exit 2
 
 # Baselines captured BEFORE the migration, so "unchanged" is measured rather than
