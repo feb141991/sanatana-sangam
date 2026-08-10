@@ -73,6 +73,12 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
     r.computed_latitude, r.computed_longitude, r.computed_timezone,
   ].join('|');
 
+  const project = (rows: Row[], columns?: string): Row[] => {
+    if (!columns || columns === '*') return rows;
+    const names = columns.split(',').map(name => name.trim());
+    return rows.map(row => Object.fromEntries(names.map(name => [name, row[name]])));
+  };
+
   const client = {
     from(table: string) {
       if (table === 'observance_materialisation_batches') {
@@ -109,7 +115,7 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
         };
       }
       return {
-        select() {
+        select(columns?: string) {
           return {
             // Table- and column-aware: the commit helper now counts produced rows
             // by querying batch_id, and a fake that answered `definitions` to
@@ -117,13 +123,19 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
             eq: async (col?: string, val?: unknown) => {
               if (col === 'batch_id') {
                 return {
-                  data: ([...existing, ...inserted] as Row[]).filter(r => r.batch_id === val),
+                  data: project(
+                    ([...existing, ...inserted] as Row[]).filter(r => r.batch_id === val),
+                    columns,
+                  ),
                   error: null,
                 };
               }
-              return { data: opts.definitions, error: null };
+              return { data: project(opts.definitions, columns), error: null };
             },
-            in: async () => ({ data: table === 'observance_occurrences' ? existing : [], error: null }),
+            in: async () => ({
+              data: table === 'observance_occurrences' ? project(existing, columns) : [],
+              error: null,
+            }),
             // insert().select('id') resolves here
             then: undefined,
           };
@@ -351,6 +363,9 @@ describe('materializeOccurrencesForYears — commit mode', () => {
       second.inserted.length,
       'second commit re-inserted rows that already exist — the existing-row lookup is not finding them'
     ).toBe(0);
+    expect(second.deleted, 'second commit deleted rows that are still claimed by the engine').toHaveLength(0);
+    expect(second.existing, 'second commit did not preserve the complete first-run occurrence set')
+      .toHaveLength(first.inserted.length);
   });
 
   it('stamps every inserted row with a batch and a series-instance key', async () => {

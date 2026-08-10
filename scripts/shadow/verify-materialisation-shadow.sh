@@ -24,12 +24,21 @@ ROLLBACK="$ROOT/supabase/rollbacks/20260811090000_materialisation_identity_and_c
 
 command -v psql >/dev/null 2>&1 || { echo "psql not found -- a local PostgreSQL 15+ is required"; exit 2; }
 
-echo "building shadow database '$DB' ..."
-psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;" -c "CREATE DATABASE $DB;" || exit 2
-psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-schema.sql" || exit 2
+cleanup() {
+  psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;" >/dev/null 2>&1 || true
+  rm -f "$HERE/shadow-data.sql" "$HERE/baseline.md5" "$HERE/baseline-schema.md5"
+}
 
-node "$HERE/gen-shadow-data.mjs" || exit 2
-psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-data.sql" || exit 2
+build_shadow() {
+  echo "building shadow database '$DB' ..."
+  psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;" -c "CREATE DATABASE $DB;" || return 1
+  psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-schema.sql" || return 1
+  node "$HERE/gen-shadow-data.mjs" || return 1
+  psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-data.sql" || return 1
+}
+
+trap cleanup EXIT INT TERM
+build_shadow || exit 2
 
 # Baselines captured BEFORE the migration, so "unchanged" is measured rather than
 # asserted.
@@ -62,11 +71,15 @@ else
   ROLL=1
 fi
 
-psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;"
-rm -f "$HERE/shadow-data.sql" "$HERE/baseline.md5" "$HERE/baseline-schema.md5"
+echo
+echo "=== actual materialiser ================================================"
+build_shadow || exit 2
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$MIGRATION" || exit 2
+(cd "$ROOT" && SHADOW_DATABASE_URL="postgresql:///$DB" npx tsx "$HERE/run-materializer.mts")
+MATERIALISER=$?
 
 echo
-if [ "$ACCEPT" -eq 0 ] && [ "$ROLL" -eq 0 ]; then
+if [ "$ACCEPT" -eq 0 ] && [ "$ROLL" -eq 0 ] && [ "$MATERIALISER" -eq 0 ]; then
   echo "verify:materialisation-shadow PASSED"; exit 0
 else
   echo "verify:materialisation-shadow FAILED"; exit 1

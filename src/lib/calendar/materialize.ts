@@ -536,9 +536,7 @@ async function commitOccurrencesWithBatches(
     toInsert: any[];
     toUpdate: Array<{ id: string; patch: Record<string, unknown> }>;
     /** Rows the engine still owns whose date did not move; stamped, not rewritten. */
-    toStamp: Array<{ id: string; slug: string; anchor: string; date: string }>;
-    /** Identity keys this run is responsible for, used to retire stale rows. */
-    identityKeysThisRun: Set<string>;
+    toStamp: Array<{ id: string; slug: string; anchor: string; date: string; identityKey: string }>;
     /** Expected row count per batch identity, from the engine's full output. */
     expectedByIdentity: Map<string, number>;
     /** Identity metadata per key, so a batch can be opened for it. */
@@ -546,7 +544,7 @@ async function commitOccurrencesWithBatches(
     versions: { engine: string; rule: string; astronomy?: string };
   },
 ): Promise<{ inserted: number; updated: number }> {
-  const { toInsert, toUpdate, toStamp, identityKeysThisRun, expectedByIdentity, identityMeta, versions } = args;
+  const { toInsert, toUpdate, toStamp, expectedByIdentity, identityMeta, versions } = args;
 
   const groups = new Map<string, any[]>();
   for (const row of toInsert) {
@@ -651,9 +649,13 @@ async function commitOccurrencesWithBatches(
   // pre-contract row, or one written by an older engine, keeps NULL stamps and
   // never joins the set its batch claims to describe.
   for (const item of toStamp) {
-    const key = [...identityKeysThisRun].find(k => identityMeta.get(k)?.__slug === item.slug);
-    const batchId = key ? batchByIdentity.get(key) : undefined;
-    const meta = key ? identityMeta.get(key) : undefined;
+    // Exact identity, not "first thing sharing this slug". Multiple identities
+    // (different profiles, sampradayas, or variants) can share one slug in the
+    // same commit, and picking by slug alone could stamp a row into a batch that
+    // does not describe it.
+    const key = item.identityKey;
+    const batchId = batchByIdentity.get(key);
+    const meta = identityMeta.get(key);
     if (!batchId || !meta) continue;
     const { error } = await supabase
       .from('observance_occurrences')
@@ -691,31 +693,60 @@ async function commitOccurrencesWithBatches(
   for (const [key, batchId] of batchByIdentity) {
     const meta = identityMeta.get(key);
     if (!meta) continue;
+
+    // Scoped to THIS identity's own stamps and updates, not the whole commit's.
+    // Mixing every toStamp/toUpdate date into every batch's claimed set let a
+    // date belonging to a DIFFERENT definition or profile incorrectly preserve
+    // a stale row here -- two identities can land on the same calendar date in
+    // a given year (a Diwali date coinciding with an Ekadashi date, say) with
+    // no relationship to each other at all.
     const claimed = new Set<string>([
       ...(groups.get(key) ?? []).map(r => r.date),
-      ...toStamp.map(t => t.date),
-      ...toUpdate.map(u => String((u.patch as any).date ?? '')),
+      ...toStamp.filter(t => t.identityKey === key).map(t => t.date),
+      ...toUpdate
+        .filter(u => (u.patch as any).__identityKey === key)
+        .map(u => String((u.patch as any).date ?? '')),
     ]);
 
+    // Every field the loop below inspects, not just `id`. Selecting `id` alone
+    // and then reading `.date`, `.locked_for_regeneration`,
+    // `.manual_date_override` and `.final_date_source` off the result made every
+    // one of those undefined, so every branch fell through to the final
+    // unconditional `.delete()` -- every row linked to a batch, deleted, on any
+    // rerun. Caught in review; verified by reproducing it against the shadow.
     const { data: linked, error: linkErr } = await supabase
       .from('observance_occurrences')
-      .select('id')
+      .select('id, date, locked_for_regeneration, manual_date_override, final_date_source')
       .eq('batch_id', batchId);
     if (linkErr) throw linkErr;
 
     for (const row of linked ?? []) {
       const r = row as any;
       if (r.date && claimed.has(r.date)) continue;
+
       if (r.locked_for_regeneration || r.manual_date_override) {
-        // Not ours to remove -- unlink so it stops counting against the batch.
-        await supabase.from('observance_occurrences').update({ batch_id: null }).eq('id', r.id);
+        // Not ours to remove -- unlink so it stops counting against the batch,
+        // but leave the row itself untouched.
+        const { error } = await supabase
+          .from('observance_occurrences')
+          .update({ batch_id: null })
+          .eq('id', r.id);
+        if (error) throw error;
         continue;
       }
-      if (r.final_date_source && r.final_date_source !== 'calculation_engine') {
-        await supabase.from('observance_occurrences').update({ batch_id: null }).eq('id', r.id);
+      if (!canUpdateGeneratedRow(r)) {
+        // Same reasoning, different signal: a manual/reviewed source the engine
+        // does not own, caught even without locked_for_regeneration being set.
+        const { error } = await supabase
+          .from('observance_occurrences')
+          .update({ batch_id: null })
+          .eq('id', r.id);
+        if (error) throw error;
         continue;
       }
-      await supabase.from('observance_occurrences').delete().eq('id', r.id);
+
+      const { error } = await supabase.from('observance_occurrences').delete().eq('id', r.id);
+      if (error) throw error;
     }
   }
 
@@ -846,7 +877,7 @@ export async function materializeOccurrencesForYears({
        * claims to describe. Locked and manually-overridden rows are excluded --
        * the engine does not own those.
        */
-      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string }> = [];
+      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string; identityKey: string }> = [];
 
       const processedThisYear = new Set<string>();
 
@@ -899,8 +930,20 @@ export async function materializeOccurrencesForYears({
             // unstamped -- NULL batch, NULL key -- while its batch advertised
             // the current engine version over rows an older one produced.
             const same = existingCompositeByDate.get(recurKey);
-            if (same && !same.locked_for_regeneration) {
-              toStamp.push({ id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date });
+            if (
+              same &&
+              !same.locked_for_regeneration &&
+              !same.manual_date_override &&
+              canUpdateGeneratedRow(same)
+            ) {
+              toStamp.push({
+                id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date,
+                identityKey: batchIdentityKey({
+                  definition_id: definitionId, year, calendar_profile: profile,
+                  spiritual_tradition: occ.spiritual_tradition ?? null, variant_key: variant,
+                  computed_latitude: 23.1765, computed_longitude: 75.7885, computed_timezone: 'Asia/Kolkata',
+                }),
+              });
             }
             continue;
           }
@@ -1051,6 +1094,23 @@ export async function materializeOccurrencesForYears({
               },
             },
           });
+        } else {
+          toStamp.push({
+            id: existing.id,
+            slug: occ.slug,
+            anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
+            date: occ.date,
+            identityKey: batchIdentityKey({
+              definition_id: definitionId,
+              year,
+              calendar_profile: profile,
+              spiritual_tradition: occ.spiritual_tradition ?? null,
+              variant_key: variant,
+              computed_latitude: 23.1765,
+              computed_longitude: 75.7885,
+              computed_timezone: 'Asia/Kolkata',
+            }),
+          });
         }
       }
 
@@ -1076,7 +1136,6 @@ export async function materializeOccurrencesForYears({
         toInsert,
         toUpdate,
         toStamp,
-        identityKeysThisRun: new Set(expectedByIdentity.keys()),
         expectedByIdentity,
         identityMeta,
         versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
@@ -1144,7 +1203,7 @@ export async function materializeOccurrencesForYears({
        * claims to describe. Locked and manually-overridden rows are excluded --
        * the engine does not own those.
        */
-      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string }> = [];
+      const toStamp: Array<{ id: string; slug: string; anchor: string; date: string; identityKey: string }> = [];
 
       const processedThisYear = new Set<string>();
 
@@ -1178,8 +1237,20 @@ export async function materializeOccurrencesForYears({
           });
           if (existingByDefinitionDate.has(recurKey)) {
             const same = existingByDate.get(recurKey);
-            if (same && !same.locked_for_regeneration) {
-              toStamp.push({ id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date });
+            if (
+              same &&
+              !same.locked_for_regeneration &&
+              !same.manual_date_override &&
+              canUpdateGeneratedRow(same)
+            ) {
+              toStamp.push({
+                id: same.id, slug: occ.slug, anchor: occ.date, date: occ.date,
+                identityKey: batchIdentityKey({
+                  definition_id: definitionId, year, calendar_profile: DEFAULT_PROFILE,
+                  spiritual_tradition: null, variant_key: DEFAULT_VARIANT,
+                  computed_latitude: 23.1765, computed_longitude: 75.7885, computed_timezone: 'Asia/Kolkata',
+                }),
+              });
             }
             continue;
           }
@@ -1320,6 +1391,23 @@ export async function materializeOccurrencesForYears({
               },
             },
           });
+        } else {
+          toStamp.push({
+            id: existing.id,
+            slug: occ.slug,
+            anchor: (occ as { instance_anchor?: string }).instance_anchor ?? occ.date,
+            date: occ.date,
+            identityKey: batchIdentityKey({
+              definition_id: definitionId,
+              year,
+              calendar_profile: DEFAULT_PROFILE,
+              spiritual_tradition: null,
+              variant_key: DEFAULT_VARIANT,
+              computed_latitude: 23.1765,
+              computed_longitude: 75.7885,
+              computed_timezone: 'Asia/Kolkata',
+            }),
+          });
         }
       }
 
@@ -1345,7 +1433,6 @@ export async function materializeOccurrencesForYears({
         toInsert,
         toUpdate,
         toStamp,
-        identityKeysThisRun: new Set(expectedByIdentity.keys()),
         expectedByIdentity,
         identityMeta,
         versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
@@ -1365,4 +1452,3 @@ export async function materializeOccurrencesForYears({
     summary,
   };
 }
-
