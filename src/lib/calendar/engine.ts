@@ -78,6 +78,32 @@ function isLeapYear(year: number): boolean {
 }
 
 /**
+ * Whether this observance may be published at all.
+ *
+ * A rule carrying a `derivability` other than `computed` is one we cannot
+ * honestly date:
+ *
+ *   requires_tradition_profile — computable, but only under a calendar profile
+ *     Shoonaya does not ship. Our amanta/purnimanta profiles are not
+ *     authoritative for it, so a date derived from them is an India-derived
+ *     substitute, not the observance's date.
+ *
+ *   externally_curated — not computable by ANY calendar, because the date is
+ *     chosen by an institution rather than computed (Kathina: a month-long
+ *     season within which each monastery picks its own day).
+ *
+ * In both cases publishing our computed value would assert something we cannot
+ * stand behind. The definition stays in rules.json — with its sources and
+ * reasoning — so it can be switched on the moment a real profile exists. It
+ * simply produces no occurrence, which means no calendar entry and no
+ * notification, because both are built from occurrences.
+ */
+export function isPublishable(rule: ObservanceRule): boolean {
+  const d = (rule as { derivability?: string }).derivability;
+  return d === undefined || d === 'computed';
+}
+
+/**
  * Computes panchang for all days of the target Gregorian year.
  * We evaluate at exactly 01:00:00 UTC (morning in India, aligning with Ujjain sunrise).
  * LEGACY PATH — uses masaName from sun sidereal position (D1-calibrated).
@@ -421,6 +447,7 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
 
   // 1. First Pass: Evaluate absolute rules
   for (const rule of CANONICAL_RULES) {
+    if (!isPublishable(rule)) { occurrencesMap[rule.slug] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rule.slug] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
@@ -602,6 +629,7 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
+    if (!isPublishable(rule)) { occurrencesMap[rule.slug] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {
