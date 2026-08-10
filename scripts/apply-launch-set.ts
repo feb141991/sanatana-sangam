@@ -38,7 +38,26 @@ const SCHEMA = 'packages/dharma-rules/src/festivals/rules.schema.json';
  * are major (AGENTS.md rule 10).
  */
 const LAUNCH: Record<string, string[]> = {
-  'Ekadashi & Pradosh':        ['ekadashi', 'pradosh-vrat'],
+  // The generic fortnightly rules, plus the 24-name cycle. The named ekadashis
+  // are what people actually observe by name -- Nirjala, Devshayani, Kamika --
+  // and their bilingual content already exists in src/lib/vrat-data.ts.
+  //
+  // IMPORTANT: 15 of the 16 named rules CANNOT resolve on the legacy path. Their
+  // legacy month name differs between years (nirjala: Vaishakha in 2026, Chaitra
+  // in 2027; apara's legacy TITHI differs, 27 vs 26), because the legacy engine
+  // names months from the Sun's rashi, which drifts against the lunation. No
+  // single legacy name exists to give them. See scripts/derive-legacy-masa.ts.
+  //
+  // They are in the launch set as a recorded decision; they publish nothing
+  // until USE_CORRECTED_MASA flips. That is the blocker, not this list.
+  'Ekadashi & Pradosh':        [
+    'ekadashi', 'pradosh-vrat',
+    'kamada-ekadashi', 'nirjala-ekadashi', 'devshayani-ekadashi',
+    'shravana-putrada-ekadashi', 'parivartini-ekadashi', 'devutthana-ekadashi',
+    'amalaki-ekadashi', 'papmochani-ekadashi', 'apara-ekadashi',
+    'yogini-ekadashi', 'kamika-ekadashi', 'aja-ekadashi', 'rama-ekadashi',
+    'utpanna-ekadashi', 'saphala-ekadashi', 'vijaya-ekadashi',
+  ],
   'Amavasya & Purnima':        ['amavasya-vrat', 'purnima-vrat'],
   'Maha Shivaratri':           ['maha-shivaratri'],
   'Holi':                      ['holi'],

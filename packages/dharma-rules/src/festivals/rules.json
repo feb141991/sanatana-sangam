@@ -680,7 +680,7 @@
     "route_kind": "vrat",
     "route_slug": "kamada-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "nirjala-ekadashi",
@@ -698,7 +698,7 @@
     "route_kind": "vrat",
     "route_slug": "nirjala-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "devshayani-ekadashi",
@@ -716,7 +716,7 @@
     "route_kind": "vrat",
     "route_slug": "devshayani-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "shravana-putrada-ekadashi",
@@ -734,7 +734,7 @@
     "route_kind": "vrat",
     "route_slug": "shravana-putrada-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "parivartini-ekadashi",
@@ -752,7 +752,7 @@
     "route_kind": "vrat",
     "route_slug": "parivartini-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "devutthana-ekadashi",
@@ -770,7 +770,7 @@
     "route_kind": "vrat",
     "route_slug": "devutthana-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "amalaki-ekadashi",
@@ -788,7 +788,7 @@
     "route_kind": "vrat",
     "route_slug": "amalaki-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "papmochani-ekadashi",
@@ -806,7 +806,7 @@
     "route_kind": "vrat",
     "route_slug": "papmochani-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "apara-ekadashi",
@@ -824,7 +824,7 @@
     "route_kind": "vrat",
     "route_slug": "apara-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "yogini-ekadashi",
@@ -842,7 +842,7 @@
     "route_kind": "vrat",
     "route_slug": "yogini-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "kamika-ekadashi",
@@ -860,7 +860,7 @@
     "route_kind": "vrat",
     "route_slug": "kamika-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "aja-ekadashi",
@@ -878,7 +878,7 @@
     "route_kind": "vrat",
     "route_slug": "aja-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "rama-ekadashi",
@@ -896,7 +896,7 @@
     "route_kind": "vrat",
     "route_slug": "rama-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "utpanna-ekadashi",
@@ -914,7 +914,7 @@
     "route_kind": "vrat",
     "route_slug": "utpanna-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "saphala-ekadashi",
@@ -932,7 +932,7 @@
     "route_kind": "vrat",
     "route_slug": "saphala-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "vijaya-ekadashi",
@@ -950,7 +950,7 @@
     "route_kind": "vrat",
     "route_slug": "vijaya-ekadashi",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "included"
   },
   {
     "slug": "gupt-navratri-magha-begins",
