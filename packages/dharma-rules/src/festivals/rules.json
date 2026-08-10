@@ -294,7 +294,7 @@
     "route_slug": "purnima",
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Corrected 2026-08-10 on council ruling: Guru Purnima is ASHADHA Purnima, not Shravana. It had shared a (month, tithi) slot with Raksha Bandhan and Ullambana, which validate:rules had flagged as a same-date collision and which was wrongly dismissed as regional co-naming. Ruling: 2026-07-29 and 2027-07-18, a month before Raksha Bandhan in each year."
+    "ratification_note": "Council ratified 2026-08-10. Ashadha Purnima. CONFIRMED and reproduced for all three years: 2026-07-29, 2027-07-18, 2028-07-06. The 2028 ruling independently confirms the Ashadha correction -- had the month still been Shravana, 2028 would have fallen in August."
   },
   {
     "slug": "nag-panchami",
@@ -351,7 +351,8 @@
     "lunar_tithi_index": 23,
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council ratified 2026-08-10. 2026-09-04 CONFIRMED and reproduced. KNOWN WRONG 2027: ruled 2027-08-24 Smarta / 08-25 Vaishnava; engine gives 08-25 for the Smarta variant. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Nishita ownership is exactly what the Smarta variant already declares in its conditions."
   },
   {
     "slug": "krishna-janmashtami",
@@ -372,7 +373,8 @@
     "lunar_tithi_index": 23,
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council ratified 2026-08-10. 2026-09-04 CONFIRMED and reproduced. KNOWN WRONG 2027: ruled 2027-08-24 Smarta / 08-25 Vaishnava; engine gives 08-25 for the Smarta variant. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Nishita ownership is exactly what the Smarta variant already declares in its conditions."
   },
   {
     "slug": "ganesh-chaturthi",
@@ -522,7 +524,8 @@
     "route_kind": "vrat",
     "route_slug": "karva-chauth",
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council ratified 2026-08-10. 2026-10-29 CONFIRMED and reproduced. KNOWN WRONG 2028: ruled 2028-10-06, engine gives 10-07. Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. Karva Chauth is moonrise-owned, so the evening moonrise decides the day, not the morning scan."
   },
   {
     "slug": "dhanteras",
@@ -1013,7 +1016,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council ratified 2026-08-10: 2027-02-22 (Magha Purnima). Engine gives 2027-02-21. DIFFERENT CAUSE from the other one-day gaps: Purnima (tithi 15) is KSHAYA in 2027 -- it is skipped entirely between 20 and 21 Feb, so the target tithi never appears at any scan instant. The engine falls back via the skipped-tithi path and lands a day early. Needs the kshaya rule for Purnima-anchored observances, not the condition evaluator."
   },
   {
     "slug": "holla-mohalla",
@@ -1373,7 +1377,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 27,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Council ratified 2026-08-10. 2026-09-08 CONFIRMED and reproduced. KNOWN WRONG in later years: ruled 2027-08-28 (engine gives 08-29) and 2028-08-16 (engine gives 08-17). Cause: the engine samples tithi at 01:00 UTC (~Ujjain sunrise), but this observance is not sunrise-owned. The ruled day is the day the target tithi BEGINS; the scan lands on the day it is current at 01:00. Not fixable by a tithi index -- that was the Mahashivaratri mistake. Requires USE_CONDITION_EVALUATOR. 2026 is correct, so the rule ships; 2027-28 must be re-derived before those years matter. Council also ruled Samvatsari 2028-08-24 and Digambara Daslakshana 2028-08-25 to 09-03 (das-lakshana rule is deferred from the launch set)."
   },
   {
     "slug": "samvatsari-paryushana-ends",

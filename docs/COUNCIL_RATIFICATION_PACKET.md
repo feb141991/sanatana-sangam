@@ -26,25 +26,21 @@ further ~29 days in that year only.
 
 ---
 
-## 2026 — 5 dates change
+## 2026 — 3 dates change
 
 | Observance | Currently shows | Would show | Shift | Rule qualification | Why |
 |---|---|---|---|---|---|
-| **Maha Shivaratri** | 2026-02-15 | **2026-02-16** | +1 d | month system: amanta ([S] pending) | Tithi corrected from index 28 to 29. In this engine krishna tithi N = 15 + N, so 29 is Krishna 14 (Chaturdashi). The old index named the tithi one day earlier. |
-| **Guru Purnima** | 2026-07-29 | **2026-08-28** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Raksha Bandhan** | 2026-07-29 | **2026-08-28** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Krishna Janmashtami (Smarta / Nishita)** | 2026-08-06 | **2026-09-04** | +29 d | month system: amanta ([S] pending) / sampradaya: smarta_nishita ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Paryushana Parva begins** | 2026-08-10 | **2026-09-08** | +29 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 
-## 2027 — 8 dates change
+## 2027 — 6 dates change
 
 | Observance | Currently shows | Would show | Shift | Rule qualification | Why |
 |---|---|---|---|---|---|
 | **Guru Ravidas Jayanti** | 2027-01-22 | **2027-02-21** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Magha; only our name for that month changed. |
-| **Maha Shivaratri** | 2027-03-06 | **2027-03-07** | +1 d | month system: amanta ([S] pending) | Tithi corrected from index 28 to 29. In this engine krishna tithi N = 15 + N, so 29 is Krishna 14 (Chaturdashi). The old index named the tithi one day earlier. |
 | **Ram Navami** | 2027-03-17 | **2027-04-15** | +29 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Chaitra; only our name for that month changed. |
 | **Mahavir Jayanti** | 2027-03-20 | **2027-04-19** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Chaitra; only our name for that month changed. |
-| **Guru Purnima** | 2027-07-18 | **2027-08-17** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Raksha Bandhan** | 2027-07-18 | **2027-08-17** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Krishna Janmashtami (Smarta / Nishita)** | 2027-07-27 | **2027-08-25** | +29 d | month system: amanta ([S] pending) / sampradaya: smarta_nishita ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Paryushana Parva begins** | 2027-07-30 | **2027-08-29** | +30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
@@ -53,7 +49,7 @@ further ~29 days in that year only.
 
 | Observance | Currently shows | Would show | Shift | Rule qualification | Why |
 |---|---|---|---|---|---|
-| **Maha Shivaratri** | 2028-02-23 | **2028-02-24** | +1 d | month system: amanta ([S] pending) | Tithi corrected from index 28 to 29. In this engine krishna tithi N = 15 + N, so 29 is Krishna 14 (Chaturdashi). The old index named the tithi one day earlier. |
+| **Guru Purnima** | 2028-08-05 | **2028-07-06** | -30 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Ashadha; only our name for that month changed. |
 | **Paryushana Parva begins** | 2028-07-19 | **2028-08-17** | +29 d | month system: amanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Shravana; only our name for that month changed. |
 | **Karva Chauth** | 2028-11-06 | **2028-10-07** | -30 d | month system: purnimanta ([S] pending) | Month naming corrected. The old engine named months from the Sun's rashi, which ran one month out. The observance stays in Kartika (purnimanta); only our name for that month changed. |
 | **Dhanteras** | 2028-11-13 | **2028-10-15** | -29 d | Product baseline: global_sanatan / unspecified; [S] method not ratified | Anchored to diwali (-2 days); moves only because that observance moves. |
