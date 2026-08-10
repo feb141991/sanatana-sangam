@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
@@ -59,11 +60,16 @@ export async function GET(req: Request) {
 
   const { data: occurrences } = await supabase
     .from('observance_occurrences')
-    .select('id, date, observance_definitions(name, description, traditions)')
+    .select('id, date, observance_definitions(slug, name, description, traditions)')
     .gte('date', today)
     .lte('date', futureIso)
     .order('date', { ascending: true })
     .limit(200);
+
+  // An .ics subscription is the stickiest surface we have: once a withheld date
+  // is in someone's phone calendar it stays there, so this filter matters more
+  // here than anywhere else.
+  const publishable = filterWithheldJoinedRows(occurrences ?? []);
 
   const dtstamp = nowToICS();
   const lines: string[] = [
@@ -78,7 +84,7 @@ export async function GET(req: Request) {
   ];
 
   // ── Festivals ──────────────────────────────────────────────────────────────
-  for (const occ of occurrences ?? []) {
+  for (const occ of publishable ?? []) {
     const def = (occ as any).observance_definitions;
     if (!def) continue;
 

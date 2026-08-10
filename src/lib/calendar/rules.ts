@@ -33,6 +33,25 @@ export interface ObservanceRule {
   adhika_policy?: 'nija' | 'adhika' | 'both';
   corrected_prefer_last_match?: boolean;
   corrected_allow_skipped_tithi?: boolean;
+
+  // ── Publication gating ────────────────────────────────────────────────────
+  // These three decide whether a rule reaches a user, so they belong in the
+  // type rather than behind `as` casts at each read site. They were cast-only
+  // until a review pointed out that a gate the compiler cannot see is a gate
+  // that silently accepts a typo -- `disputed_year: [2027]` would have parsed,
+  // validated, and published the very date it was meant to withhold.
+
+  /** Can we compute this honestly at all? Non-'computed' never publishes. */
+  derivability?: 'computed' | 'requires_tradition_profile' | 'externally_curated';
+  derivability_note?: string;
+  /** Do we ship it now? A scheduling decision, distinct from derivability. */
+  launch_status?: 'included' | 'deferred';
+  ratification_note?: string;
+  /**
+   * Years whose computed date is contested and must not be published.
+   * Per-year because a rule can be sound in one year and disputed in the next.
+   */
+  disputed_years?: number[];
 }
 
 export const CANONICAL_RULES: ObservanceRule[] = rulesJson as ObservanceRule[];

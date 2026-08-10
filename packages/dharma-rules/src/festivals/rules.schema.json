@@ -304,9 +304,12 @@
       "disputed_years": {
         "type": "array",
         "items": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1900,
+          "maximum": 2200
         },
-        "description": "Years where this rule's computed date is DISPUTED and must not be published. Enforced at runtime by isPublishableForYear() -- unlike ratification_note, which is prose and was wrongly described as preventing publication. A disputed year produces no occurrence, so it cannot materialise or reach a notification."
+        "uniqueItems": true,
+        "description": "Years whose computed date is contested and is withheld from publication. Enforced by isPublishableForYear(); unlike ratification_note this is read by code."
       }
     },
     "additionalProperties": false

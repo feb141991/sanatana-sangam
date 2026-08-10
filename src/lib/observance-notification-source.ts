@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { filterWithheldJoinedRows } from './calendar/withheld';
 import { mapOccurrenceToFestival, type Festival } from '@/lib/festivals';
 
 type ReviewedObservanceKind = 'major' | 'regional' | 'vrat';
@@ -77,12 +78,18 @@ export async function fetchReviewedObservancesForNotifications(
     .neq('final_date_source', 'fallback')
     .order('date', { ascending: true });
 
+  // The reviewed+verified+completed filter above already excludes today's
+  // disputed rows -- but only by accident, because nobody has approved them yet.
+  // The database has no knowledge of `disputed_years`, so an admin could approve
+  // one at any time and it would immediately become notification-eligible.
+  // A push notification cannot be recalled, so the protection is made explicit.
+
   if (error) {
     return { observances: [], error: new Error(error.message) };
   }
 
   const kindSet = new Set(allowedKinds);
-  const observances = (data ?? [])
+  const observances = filterWithheldJoinedRows(data ?? [])
     .filter((row) => isReviewedNotificationObservance(row, kindSet))
     .map((row) => ({
       ...mapOccurrenceToFestival(row),

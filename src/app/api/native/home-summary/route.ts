@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getApiUser } from '@/lib/api-auth';
@@ -567,7 +568,9 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  const observanceRows = observanceResult.data ?? [];
+  // Home is the highest-traffic surface in the app; a withheld date reaching
+  // it would be the most-seen version of the mistake.
+  const observanceRows = filterWithheldJoinedRows(observanceResult.data ?? []);
   const heroAssetRows = heroAssetResult.data ?? [];
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;

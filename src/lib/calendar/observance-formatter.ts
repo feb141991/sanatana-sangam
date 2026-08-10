@@ -1,4 +1,5 @@
 import { calculateObservancesForYear } from './engine';
+import { filterWithheldJoinedRows } from './withheld';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -65,13 +66,18 @@ export interface ClientObservanceResult {
 }
 
 export function formatOccurrencesToResults(
-  occurrences: any[],
+  occurrencesRaw: any[],
   queueItems: any[],
   requestedTradition: string,
   calendarProfile: string,
   fromStr: string,
   toStr: string
 ): ClientObservanceResult[] {
+  // Withheld rows are dropped HERE rather than in each route, so the three
+  // endpoints sharing this formatter cannot diverge and a fourth cannot forget.
+  // Stored rows predate the disputed-years gate, so filtering at read time is
+  // the only thing that keeps them out of a response.
+  const occurrences = filterWithheldJoinedRows(occurrencesRaw);
   const results: ClientObservanceResult[] = [];
 
   // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones

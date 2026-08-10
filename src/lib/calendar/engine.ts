@@ -58,6 +58,10 @@ export interface ObservanceCandidateDiagnostic {
   selectedDate: string | null;
   selectionPolicy: 'all_recurring' | 'first_match' | 'last_match' | 'none';
   recurring: boolean;
+  /** True when the engine computed dates but publication is withheld. */
+  publicationWithheld: boolean;
+  /** Why it was withheld, or null when it publishes normally. */
+  withheldReason: 'derivability' | 'deferred' | 'disputed_year' | null;
 }
 
 /**
@@ -113,12 +117,11 @@ function isLeapYear(year: number): boolean {
  */
 export function isPublishableForYear(rule: ObservanceRule, year: number): boolean {
   if (!isPublishable(rule)) return false;
-  const disputed = (rule as { disputed_years?: number[] }).disputed_years;
-  return !disputed?.includes(year);
+  return !rule.disputed_years?.includes(year);
 }
 
 export function isPublishable(rule: ObservanceRule): boolean {
-  const r = rule as { derivability?: string; launch_status?: string };
+  const r = rule;
 
   // Not knowable — no calendar we ship can produce an honest date.
   if (r.derivability !== undefined && r.derivability !== 'computed') return false;
@@ -471,13 +474,19 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
 
-function buildOccurrencesMap(year: number): Record<string, string[]> {
+function buildOccurrencesMap(
+  year: number,
+  opts: { applyPublicationGate?: boolean } = {},
+): Record<string, string[]> {
+  // Gated BY DEFAULT. Callers that want raw candidates must ask for them
+  // explicitly, so a new publishing call site cannot forget the gate.
+  const gate = opts.applyPublicationGate !== false;
   const days = precomputePanchangForYear(year);
   const occurrencesMap: Record<string, string[]> = {};
 
   // 1. First Pass: Evaluate absolute rules
   for (const rule of CANONICAL_RULES) {
-    if (!isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
       occurrencesMap[rule.slug] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
@@ -505,7 +514,7 @@ function buildOccurrencesMap(year: number): Record<string, string[]> {
       // appeared in output despite being suppressed. Seven rules leaked through
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
-      if (!isPublishableForYear(rule, year)) continue;
+      if (gate && !isPublishableForYear(rule, year)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
@@ -584,7 +593,13 @@ export function calculateObservancesForYear(year: number): CalculatedOccurrence[
 }
 
 export function calculateObservanceCandidateDiagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
-  const occurrencesMap = buildOccurrencesMap(year);
+  // UNGATED on purpose. A review caught that routing this through the gated
+  // builder made every withheld rule report zero candidates -- so the tool whose
+  // entire job is explaining what the engine did was reporting that it did
+  // nothing. Suppression is a publication decision, not an amnesia policy: the
+  // candidate dates are the evidence a reviewer needs to resolve the dispute.
+  // Publication is gated elsewhere; this surface reports and labels instead.
+  const occurrencesMap = buildOccurrencesMap(year, { applyPublicationGate: false });
 
   return CANONICAL_RULES.map((rule) => {
     const candidateDates = (occurrencesMap[rule.slug] || []).filter(
@@ -604,10 +619,18 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
         ? candidateDates[candidateDates.length - 1]
         : candidateDates[0];
 
+    const withheldReason: ObservanceCandidateDiagnostic['withheldReason'] =
+      rule.derivability !== undefined && rule.derivability !== 'computed' ? 'derivability'
+      : rule.launch_status === 'deferred' ? 'deferred'
+      : rule.disputed_years?.includes(year) ? 'disputed_year'
+      : null;
+
     return {
       slug: rule.slug,
       year,
       ruleFamily: rule.rule_family,
+      publicationWithheld: withheldReason !== null,
+      withheldReason,
       candidateDates,
       candidateCount: candidateDates.length,
       selectedDate,
@@ -649,7 +672,13 @@ function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
  * Used exclusively by calculateObservancesForYearCorrected (Stage 1 shadow diff).
  * Does NOT affect calculateObservancesForYear (legacy path, flag OFF invariant).
  */
-function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
+function buildOccurrencesMapCorrected(
+  year: number,
+  opts: { applyPublicationGate?: boolean } = {},
+): Record<string, string[]> {
+  // Gated BY DEFAULT. Callers that want raw candidates must ask for them
+  // explicitly, so a new publishing call site cannot forget the gate.
+  const gate = opts.applyPublicationGate !== false;
   const days = precomputePanchangCorrectedForYear(year);
   const occurrencesMap: Record<string, string[]> = {};
 
@@ -666,7 +695,7 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
-    if (!isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {
@@ -697,7 +726,7 @@ function buildOccurrencesMapCorrected(year: number): Record<string, string[]> {
       // appeared in output despite being suppressed. Seven rules leaked through
       // this way (mahalaya-amavasya, kartik-purnima, the Jain Diwali cluster,
       // sangha-day-loy-krathong, chintpurni-mata-sharad-navratri).
-      if (!isPublishableForYear(rule, year)) continue;
+      if (gate && !isPublishableForYear(rule, year)) continue;
       if (rule.rule_family === 'relative_to_other_observance') {
         const baseSlug = rule.relative_base_slug;
         const offset = rule.relative_offset_days || 0;
