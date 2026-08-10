@@ -77,6 +77,38 @@ describe('grouping key includes the year', () => {
     const out = format(rows, 'gujarati-amanta', '2026-12-01', '2027-01-31');
     expect(out.map(r => r.civilDate).sort()).toEqual(['2026-12-28', '2027-01-05']);
   });
+
+  it('publishes two YEARS of an annual festival as two resolved primaries', () => {
+    // The assertion the test above was missing. Checking only that both dates
+    // survive says nothing about what they were classified as: the final grouping
+    // keyed annual rows on slug+location with no year, so Diwali 2026 and Diwali
+    // 2027 were read as competing readings of one date -- both 'ambiguous', one
+    // primary. Two years of the same festival are not a dispute.
+    //
+    // Third occurrence of this shape in this file. Presence is not cardinality.
+    const rows = [
+      occ('diwali', '2026-11-08', 'legacy-ujjain'),
+      occ('diwali', '2027-10-29', 'legacy-ujjain'),
+    ];
+    const out = format(rows, 'legacy-ujjain', '2026-11-01', '2027-11-30');
+    expect(out).toHaveLength(2);
+    expect(out.map(r => r.status)).toEqual(['resolved', 'resolved']);
+    expect(out.every(r => r.isPrimary)).toBe(true);
+    expect(out.every(r => r.alternatives.length === 0)).toBe(true);
+  });
+
+  it('still groups a genuine same-year variant pair', () => {
+    // The converse guard. Adding year to the key must not over-split: two
+    // sampradaya readings of ONE instance are a real dispute and must stay in one
+    // group, or the fix for over-merging silently destroys variant handling.
+    const smarta = { ...occ('krishna-janmashtami', '2026-09-04', 'legacy-ujjain'), spiritual_tradition: 'smarta' };
+    const vaish  = { ...occ('krishna-janmashtami', '2026-09-05', 'legacy-ujjain'), spiritual_tradition: 'vaishnava' };
+    const out = formatOccurrencesToResults([smarta, vaish], [], 'hindu', 'legacy-ujjain', 'vaishnava', '2026-09-01', '2026-09-30');
+    expect(out).toHaveLength(2);
+    expect(out.filter(r => r.isPrimary)).toHaveLength(1);
+    expect(out.find(r => r.isPrimary)!.civilDate).toBe('2026-09-05');
+    expect(out.find(r => r.isPrimary)!.alternatives.length).toBeGreaterThan(0);
+  });
 });
 
 describe('recurring observances are grouped per year, not per slug alone', () => {

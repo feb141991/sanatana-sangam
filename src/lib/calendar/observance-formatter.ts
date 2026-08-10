@@ -265,6 +265,16 @@ export function formatOccurrencesToResults(
   // their candidate dates rather than a stored date.
   const queueItems = resolveCalendarProfile(queueItemsRaw, calendarProfile);
   const results: ClientObservanceResult[] = [];
+  // Instance year per emitted result. Held beside the results rather than on
+  // them because ClientObservanceResult is the public API shape, and grouping is
+  // an internal concern. An unresolved row has its `date` blanked deliberately,
+  // so the year cannot be recovered from the result afterwards -- it has to be
+  // captured here, at emit time, while the source row is still in hand.
+  const instanceYear = new WeakMap<ClientObservanceResult, string>();
+  const emit = (result: ClientObservanceResult, year: string | number | null | undefined) => {
+    results.push(result);
+    if (year) instanceYear.set(result, String(year));
+  };
 
   // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones
   const baselineByYear = new Map<number, any[]>();
@@ -297,7 +307,7 @@ export function formatOccurrencesToResults(
       }
     }
 
-    results.push({
+    emit({
       // Backward compatibility
       date: row.date,
       slug: def.slug,
@@ -338,7 +348,7 @@ export function formatOccurrencesToResults(
       sourceRefs: (row.source_refs as any) || [],
       reviewStatus: row.review_status || 'reviewed',
       isPrimary: false, // will resolve below
-    });
+    }, row.year ?? String(row.date ?? "").slice(0, 4));
   }
 
   // 2. Process unresolved queue items ([2] UNCERTAINTY)
@@ -387,7 +397,7 @@ export function formatOccurrencesToResults(
 
     for (const d of targetDates) {
       if (d >= fromStr && d <= toStr) {
-        results.push({
+        emit({
           // Backward compatibility -- blank for EVERY unresolved row, not just
           // engine_error.
           //
@@ -439,7 +449,7 @@ export function formatOccurrencesToResults(
           sourceRefs: [],
           reviewStatus: 'in_review',
           isPrimary: true, // only representation of this unresolved item
-        });
+        }, row.year ?? String(d ?? "").slice(0, 4));
       }
     }
   }
@@ -474,14 +484,27 @@ export function formatOccurrencesToResults(
   // identity here would guess at pairings the data does not state.
   const groups = new Map<string, ClientObservanceResult[]>();
   for (const item of results) {
+    // YEAR belongs in the key for EVERY observance, not only recurring ones.
+    // Restricting the date component to recurring slugs left annual festivals
+    // keyed on slug+location alone, so Diwali 2026 and Diwali 2027 -- two
+    // instances an `upcoming` window can legitimately span -- grouped together
+    // and were classified as competing readings of one date: both 'ambiguous',
+    // one primary. Two separate years of the same festival are not a dispute.
+    //
+    // This is the third time the same shape of bug has appeared in this file, and
+    // each time the test asserted the rows were PRESENT without asserting what
+    // they were. Cardinality is the thing to check.
+    const year = instanceYear.get(item) ?? '';
+    // Recurring rules add the date on top, because one slug-year holds a whole
+    // series of distinct instances rather than a single dated one.
     const instance = RECURRING_SLUGS.has(item.festivalId) ? `#${item.civilDate ?? item.date}` : '';
-    const key = `${item.festivalId}${instance}@${item.location.lat},${item.location.lon}`;
+    const key = `${item.festivalId}|${year}${instance}@${item.location.lat},${item.location.lon}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(item);
   }
 
   for (const [groupKey, list] of groups.entries()) {
-    const slug = groupKey.slice(0, groupKey.lastIndexOf('@')).split('#')[0];
+    const slug = groupKey.slice(0, groupKey.lastIndexOf('@')).split('|')[0];
     if (list.length === 1) {
       list[0].isPrimary = true;
       continue;
