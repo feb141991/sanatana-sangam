@@ -249,10 +249,14 @@ describe('Purnimanta krishna-paksha naming across an adhika month', () => {
   });
 
   it('gives the following nija month krishna-paksha the PLAIN name, not the adhika-prefixed one', () => {
-    // 2026-07-10: inside nija Jyeshtha's krishna paksha (nija Jyeshtha runs
-    // 06-16..06-30), which purnimanta-names as the plain, unprefixed "Ashadha".
-    // This is the genuine occurrence -- distinct from the probe above, which
-    // must NOT collide with it.
+    // 2026-07-10: inside nija Jyeshtha's krishna paksha. Nija Jyeshtha (the
+    // amanta MONTH, ending at its amavasya) runs 2026-06-16 -> 07-14; its
+    // paksha flips shukla->krishna at the full moon around 06-30, which is
+    // when the purnimanta LABEL here starts reading "Ashadha" (the "+1"
+    // krishna-paksha rule). Two different boundaries -- the month itself does
+    // not end until 07-14, only the paksha (and therefore the purnimanta
+    // name) changes at 06-30. This is the genuine occurrence -- distinct from
+    // the probe above, which must NOT collide with it.
     const probe = new Date('2026-07-10T12:00:00Z');
     const res = getLunarMonth(probe, 'purnimanta');
     expect(res.ok).toBe(true);
