@@ -1,18 +1,16 @@
 /**
  * calendar-context.ts
  *
- * Pure, typed resolver that transforms stored user choices into a read-time
- * ResolvedCalendarContext.
+ * ResolvedCalendarContext builder.
+ * Resolves user choices into read-time context object.
  *
- * GOVERNANCE RULES:
- * 1. Calendar profile must NEVER be inferred from GPS/timezone.
- * 2. Missing choices remain 'unknown'.
- * 3. 'unspecified' tradition profile uses approved Smarta calculation behavior
- *    (calculationMethodProfile: 'smarta', ekadashiMethod: 'smarta', janmashtamiMethod: 'smarta_nishita')
- *    but MUST remain labelled 'unspecified' in displayedTraditionProfile.
- * 4. Authentication / database query failures must NOT be treated as guest sessions.
- * 5. Location and timezone must remain an atomic pair.
- * 6. Pure calculation metadata resolution only — does NOT compute dates or touch UI.
+ * Governance Rules:
+ * 1. Calendar profile MUST NEVER be inferred from GPS/location/timezone.
+ * 2. Missing choices remain unknown.
+ * 3. "unspecified" uses approved Smarta calculation behavior but remains labelled unspecified.
+ * 4. Authentication/profile query failures MUST NOT be treated as guests.
+ * 5. Location and timezone MUST remain an atomic pair.
+ * 6. Temporary travel mode NEVER mutates calendar profile, tradition profile, or home location.
  */
 
 export type CalendarProfileId =
@@ -29,19 +27,11 @@ export type CalendarProfileId =
   | 'nepali_bikram'
   | 'global_sanatan'
   | 'nanakshahi'
+  | 'legacy-ujjain'
   | 'unknown';
 
-export type MonthSystem = 'amanta' | 'purnimanta' | 'solar' | 'unknown';
-
-export type CalendarEra =
-  | 'vikram_north'
-  | 'vikram_gujarat'
-  | 'shaka'
-  | 'kollam'
-  | 'bengali_san'
-  | 'bikram_sambat'
-  | 'nanakshahi'
-  | 'unknown';
+export type MonthSystem = 'purnimanta' | 'amanta' | 'solar' | 'unknown';
+export type CalendarEra = 'vikram_north' | 'vikram_gujarat' | 'shaka' | 'kollam' | 'bengali_san' | 'bikram_sambat' | 'nanakshahi' | 'unknown';
 
 export type TraditionProfileId =
   | 'smarta'
@@ -66,6 +56,9 @@ export interface AtomicObservanceLocation {
   latitude: number | null;
   longitude: number | null;
   timezone: string | null;
+  isTravelLocation?: boolean;
+  isDivergentFromHome?: boolean;
+  homeObservanceLocation?: AtomicObservanceLocation | null;
 }
 
 export type LocationSource = 'user_explicit' | 'default_baseline' | 'unknown';
@@ -79,6 +72,8 @@ export interface DisclosureDiagnostics {
   traditionKnown: boolean;
   locationKnown: boolean;
   isUnspecifiedLabel: boolean;
+  isTravelDivergent: boolean;
+  isTravelModeActive: boolean;
   errorMessage?: string;
   notes: string[];
 }
@@ -92,9 +87,14 @@ export interface ResolvedCalendarContext {
   ekadashiMethod: EkadashiMethod;
   janmashtamiMethod: JanmashtamiMethod;
   observanceLocation: AtomicObservanceLocation;
+  savedObservanceLocation: AtomicObservanceLocation;
+  effectiveCalculationLocation: AtomicObservanceLocation;
+  isTravelModeActive: boolean;
+  isTravelDivergenceDetected: boolean;
   timezone: string | null;
   locationSource: LocationSource;
   disclosureDiagnostics: DisclosureDiagnostics;
+  cacheKey?: string;
 }
 
 export interface CalendarSelectionInput {
@@ -106,6 +106,14 @@ export interface CalendarSelectionInput {
     longitude?: number | null;
     timezone?: string | null;
   } | null;
+  travelLocation?: {
+    label?: string | null;
+    latitude?: number | null;
+    longitude?: number | null;
+    timezone?: string | null;
+  } | null;
+  confirmTravelLocation?: boolean;
+  dateForCacheKey?: string;
   // Auth / session diagnostics flags
   isAuthenticated?: boolean;
   invalidCredentials?: boolean;
@@ -131,47 +139,73 @@ const CALENDAR_PROFILE_MAP: Record<string, CalendarProfileDefinition> = {
   nepali_bikram:           { monthSystem: 'purnimanta', era: 'bikram_sambat' },
   global_sanatan:          { monthSystem: 'amanta',     era: 'vikram_north' },
   nanakshahi:              { monthSystem: 'solar',      era: 'nanakshahi' },
+  'legacy-ujjain':         { monthSystem: 'purnimanta', era: 'vikram_north' },
 };
 
-/**
- * Normalizes input calendar profile string ID.
- */
+/** Normalizes calendar profile ID, falling back to 'unknown' */
 export function normalizeCalendarProfileId(raw?: string | null): CalendarProfileId {
   if (!raw) return 'unknown';
-  const clean = raw.trim().toLowerCase().replace(/-/g, '_');
+  const clean = raw.trim().toLowerCase();
   if (clean in CALENDAR_PROFILE_MAP) {
     return clean as CalendarProfileId;
   }
   return 'unknown';
 }
 
-/**
- * Normalizes input tradition profile string ID.
- */
+/** Normalizes tradition profile ID, falling back to 'unknown' */
 export function normalizeTraditionProfileId(raw?: string | null): TraditionProfileId {
   if (!raw) return 'unknown';
-  const clean = raw.trim().toLowerCase().replace(/-/g, '_');
-  if (clean === 'gaudiya' || clean === 'gaudiya_iskcon' || clean === 'vaishnava' || clean === 'vaishnava_suddha' || clean === 'vaishnava_vidhava') return 'gaudiya_iskcon';
-  if (clean === 'smarta') return 'smarta';
-  if (clean === 'sri_vaishnava' || clean === 'srivaishnava') return 'sri_vaishnava';
-  if (clean === 'swaminarayan') return 'swaminarayan';
-  if (clean === 'shaiva') return 'shaiva';
-  if (clean === 'shakta') return 'shakta';
-  if (clean === 'unspecified' || clean === 'hindu' || clean === 'standard') return 'unspecified';
-  if (clean === 'sikh') return 'sikh';
-  if (clean === 'jain') return 'jain';
-  if (clean === 'buddhist') return 'buddhist';
-  if (clean === 'all') return 'all';
-  return 'unknown';
+  const clean = raw.trim().toLowerCase();
+
+  const aliases: Record<string, TraditionProfileId> = {
+    hindu: 'unspecified',
+    standard: 'unspecified',
+    unspecified: 'unspecified',
+    smarta: 'smarta',
+    gaudiya_iskcon: 'gaudiya_iskcon',
+    gaudiya: 'gaudiya_iskcon',
+    iskcon: 'gaudiya_iskcon',
+    sri_vaishnava: 'sri_vaishnava',
+    srivaishnava: 'sri_vaishnava',
+    vaishnava: 'sri_vaishnava',
+    swaminarayan: 'swaminarayan',
+    shaiva: 'shaiva',
+    shakta: 'shakta',
+    sikh: 'sikh',
+    jain: 'jain',
+    buddhist: 'buddhist',
+    all: 'all',
+  };
+
+  return aliases[clean] ?? 'unknown';
+}
+
+/** Builds pure deterministic calendar calculation cache key */
+export function buildCalendarCacheKey(params: {
+  date: string;
+  latitude: number | null;
+  longitude: number | null;
+  timezone: string | null;
+  calendarProfile: string;
+  displayedTraditionProfile: string;
+  engineVersion?: string;
+}): string {
+  const latStr = params.latitude != null ? params.latitude.toFixed(4) : 'null';
+  const lonStr = params.longitude != null ? params.longitude.toFixed(4) : 'null';
+  const tzStr = params.timezone || 'null';
+  const calStr = params.calendarProfile || 'unknown';
+  const tradStr = params.displayedTraditionProfile || 'unknown';
+  const verStr = params.engineVersion || '1.0.0';
+  return `${params.date}::coords=${latStr},${lonStr}::tz=${tzStr}::cal=${calStr}::trad=${tradStr}::ver=${verStr}`;
 }
 
 /**
- * Resolves stored user choices and query context into a pure ResolvedCalendarContext.
+ * Pure typed resolver function that converts user selections into a ResolvedCalendarContext.
  */
 export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedCalendarContext {
   const notes: string[] = [];
 
-  // Determine Resolution Status
+  // Resolution Status Diagnostics
   let resolutionStatus: ResolutionStatus = 'resolved';
   let errorMessage: string | undefined = undefined;
 
@@ -210,7 +244,6 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
       displayedTraditionProfile === 'shaiva' ||
       displayedTraditionProfile === 'shakta' ||
       displayedTraditionProfile === 'unspecified') {
-    // Unspecified uses approved Smarta calculation behavior
     calculationMethodProfile = 'smarta';
     ekadashiMethod = 'smarta';
     janmashtamiMethod = 'smarta_nishita';
@@ -235,34 +268,93 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
   const hasLon = typeof loc?.longitude === 'number' && !isNaN(loc.longitude);
   const hasTz = typeof loc?.timezone === 'string' && loc.timezone.trim().length > 0;
 
-  let observanceLocation: AtomicObservanceLocation;
-  let timezone: string | null = null;
+  let savedObservanceLocation: AtomicObservanceLocation;
   let locationSource: LocationSource = 'unknown';
   let locationKnown = false;
 
   if (hasLat && hasLon && hasTz) {
-    observanceLocation = {
+    savedObservanceLocation = {
       label: loc?.label?.trim() || null,
       latitude: loc!.latitude!,
       longitude: loc!.longitude!,
       timezone: loc!.timezone!.trim(),
     };
-    timezone = observanceLocation.timezone;
     locationSource = 'user_explicit';
     locationKnown = true;
   } else {
     // Atomic null pair when location details are missing
-    observanceLocation = {
+    savedObservanceLocation = {
       label: null,
       latitude: null,
       longitude: null,
       timezone: null,
     };
-    timezone = null;
     locationSource = 'unknown';
     locationKnown = false;
     notes.push('Observance location and timezone incomplete or missing.');
   }
+
+  // Travel location divergence detection
+  const tLoc = input.travelLocation;
+  const hasTLat = typeof tLoc?.latitude === 'number' && !isNaN(tLoc.latitude);
+  const hasTLon = typeof tLoc?.longitude === 'number' && !isNaN(tLoc.longitude);
+  const hasTTz = typeof tLoc?.timezone === 'string' && tLoc.timezone.trim().length > 0;
+
+  let isTravelDivergenceDetected = false;
+  let travelObservanceLocation: AtomicObservanceLocation | null = null;
+
+  if (hasTLat && hasTLon && hasTTz) {
+    travelObservanceLocation = {
+      label: tLoc?.label?.trim() || 'Travel Location',
+      latitude: tLoc!.latitude!,
+      longitude: tLoc!.longitude!,
+      timezone: tLoc!.timezone!.trim(),
+      isTravelLocation: true,
+      homeObservanceLocation: savedObservanceLocation,
+    };
+
+    // Compare with saved home location
+    const tzDiff = savedObservanceLocation.timezone !== travelObservanceLocation.timezone;
+    const latDiff = (savedObservanceLocation.latitude != null && travelObservanceLocation.latitude != null)
+      ? Math.abs(savedObservanceLocation.latitude - travelObservanceLocation.latitude) > 0.05
+      : true;
+    const lonDiff = (savedObservanceLocation.longitude != null && travelObservanceLocation.longitude != null)
+      ? Math.abs(savedObservanceLocation.longitude - travelObservanceLocation.longitude) > 0.05
+      : true;
+
+    isTravelDivergenceDetected = tzDiff || latDiff || lonDiff;
+  }
+
+  const isTravelModeActive = Boolean(isTravelDivergenceDetected && input.confirmTravelLocation === true);
+
+  if (isTravelDivergenceDetected) {
+    if (isTravelModeActive) {
+      notes.push('Travel mode active: using temporary travel location for calculations without altering home profile.');
+    } else {
+      notes.push('Device/travel location divergence detected. Calculation continues using saved observance location until confirmed.');
+    }
+  }
+
+  const effectiveCalculationLocation: AtomicObservanceLocation = (isTravelModeActive && travelObservanceLocation)
+    ? {
+        ...travelObservanceLocation,
+        isDivergentFromHome: true,
+      }
+    : savedObservanceLocation;
+
+  const observanceLocation = effectiveCalculationLocation;
+  const timezone = effectiveCalculationLocation.timezone;
+
+  const cacheKey = input.dateForCacheKey
+    ? buildCalendarCacheKey({
+        date: input.dateForCacheKey,
+        latitude: effectiveCalculationLocation.latitude,
+        longitude: effectiveCalculationLocation.longitude,
+        timezone: effectiveCalculationLocation.timezone,
+        calendarProfile,
+        displayedTraditionProfile,
+      })
+    : undefined;
 
   const disclosureDiagnostics: DisclosureDiagnostics = {
     resolutionStatus,
@@ -271,6 +363,8 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
     traditionKnown,
     locationKnown,
     isUnspecifiedLabel: displayedTraditionProfile === 'unspecified',
+    isTravelDivergent: isTravelDivergenceDetected,
+    isTravelModeActive,
     errorMessage,
     notes,
   };
@@ -284,8 +378,13 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
     ekadashiMethod,
     janmashtamiMethod,
     observanceLocation,
+    savedObservanceLocation,
+    effectiveCalculationLocation,
+    isTravelModeActive,
+    isTravelDivergenceDetected,
     timezone,
     locationSource,
     disclosureDiagnostics,
+    cacheKey,
   };
 }
