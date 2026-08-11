@@ -1,0 +1,35 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
+  "caseId": "vijaya-ekadashi__2027__ujjain_india__north_indian_purnimanta",
+  "festivalId": "vijaya-ekadashi",
+  "year": 2027,
+  "location": {
+    "label": "Ujjain, India",
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "profile": {
+    "calendar": "north_indian_purnimanta",
+    "tradition": "unspecified"
+  },
+  "expected": {
+    "civilDate": "2027-03-04",
+    "monthLabel": "Phalguna (purnimanta)",
+    "windows": null,
+    "reasonCodes": ["vrddhi_tithi_second_day_preferred"],
+    "alternativeCount": 1
+  },
+  "tolerance": {
+    "windowMinutes": 2
+  },
+  "source": {
+    "tier": 1,
+    "ref": "rashtriya-panchang-saka-1948-p113",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.113 -- 'Vijaya Ekadasi' listed at 2027-03-04, the day after tithi 26 first touches sunrise; the source shows 'Ekadasi ahoratra' (tithi spanning the whole day) for 2027-03-03, confirming a genuine vrddhi tithi.",
+    "verifiedBy": "engineering (Tier 1 source; NOT council-ratified -- see approved: false)",
+    "verifiedOn": "2026-08-10"
+  },
+  "reasoning": "Tithi 26 (Ekadashi) touches sunrise on BOTH 2027-03-03 and 2027-03-04 (verified via direct engine inspection) -- a genuine vrddhi (extended) tithi, not a system-naming question. corrected_prefer_last_match: true selects the later of the two candidate days, matching the source exactly. Verified as a no-op in 2026 and 2028, which have no vrddhi tithi at this position either year, so the flag does not move any other year's date.",
+  "approved": false
+}
