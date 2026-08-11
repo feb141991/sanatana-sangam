@@ -87,7 +87,7 @@ export async function resolveRequestProfile(
   if (auth.user) {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('calendar_profile, tradition, sampradaya, observance_location')
+      .select('calendar_profile, tradition, sampradaya, city, country, latitude, longitude, timezone')
       .eq('id', auth.user.id)
       .single();
 
@@ -106,7 +106,16 @@ export async function resolveRequestProfile(
       // Never overridable from the query string: one user must not be able to
       // request another's sampradaya, and there is no reason to.
       sampradaya = profile.sampradaya || null;
-      userLocation = (profile as any).observance_location || null;
+      userLocation = (profile.latitude != null && profile.longitude != null)
+        ? {
+            label: [profile.city, profile.country].filter(Boolean).join(', ') || 'Custom Location',
+            latitude: Number(profile.latitude),
+            longitude: Number(profile.longitude),
+            timezone: profile.timezone || 'Asia/Kolkata',
+            city: profile.city || null,
+            country: profile.country || null,
+          }
+        : null;
     }
   }
 
@@ -115,7 +124,7 @@ export async function resolveRequestProfile(
   // Resolve pure ResolvedCalendarContext ONCE per request
   const context = resolveCalendarContext({
     calendarProfile: calendarProfile || null,
-    traditionProfile: (tradition !== 'all' ? tradition : (sampradaya || undefined)) || null,
+    traditionProfile: sampradaya || (tradition !== 'all' ? tradition : null),
     location: userLocation,
     isAuthenticated: !!auth.user,
     invalidCredentials,
