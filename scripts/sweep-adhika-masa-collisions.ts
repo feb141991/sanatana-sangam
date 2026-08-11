@@ -39,44 +39,21 @@
  */
 import { precomputePanchangCorrectedForYear } from '../src/lib/calendar/engine';
 import { CANONICAL_RULES } from '../src/lib/calendar/rules';
+import { contiguousWindows, Window } from '../src/lib/calendar/adhika-window';
 
 const years = process.argv.slice(2).map(Number).filter(n => !isNaN(n));
 const YEARS = years.length > 0 ? years : [2025, 2026, 2027, 2028];
 
-interface Window { start: string; end: string }
-
-function contiguousWindows(
-  days: Array<{ dateStr: string; panchang: any }>,
-  key: 'masaName' | 'masaNamePurnimanta',
-  filter?: (name: string) => boolean,
-): Map<string, Window[]> {
-  const windowsByName = new Map<string, Window[]>();
-  let cur: string | null = null;
-  let start: string | null = null;
-  for (const d of days) {
-    const name = d.panchang[key] as string;
-    const matches = filter ? filter(name) : true;
-    if (matches && name === cur) continue;
-    if (cur !== null) {
-      if (!filter || filter(cur)) {
-        if (!windowsByName.has(cur)) windowsByName.set(cur, []);
-        windowsByName.get(cur)!.push({ start: start!, end: d.dateStr });
-      }
-    }
-    cur = matches ? name : null;
-    start = matches ? d.dateStr : null;
-  }
-  return windowsByName;
-}
-
 let anyDoubleWindow = false;
 const allDoubleWindows: Array<{ year: number; masa: string; windows: Window[] }> = [];
+const daysByYear = new Map<number, any[]>();
 
 for (const year of YEARS) {
   console.log(`\n=== ${year} ===`);
   const days = precomputePanchangCorrectedForYear(year);
+  daysByYear.set(year, days);
 
-  const adhika = contiguousWindows(days, 'masaName', n => n?.startsWith('Adhika'));
+  const adhika = contiguousWindows(days, 'masaName', { filterKey: n => n?.startsWith('Adhika') });
   if (adhika.size === 0) {
     console.log('  no adhika month this year');
   } else {
@@ -85,13 +62,12 @@ for (const year of YEARS) {
     }
   }
 
-  // krishna-paksha rows only, identified by tithiIndex > 15 (this project's
-  // scheme throughout: shukla n = n, krishna n = 15+n). A shukla-paksha
-  // segment of the SAME purnimanta name is normal structure (the following
-  // nija month's own shukla paksha, unprefixed) and can never match a
-  // tithi > 15 rule, so including it here would report a false hazard.
-  const krishnaDays = days.filter(d => (d.panchang.tithiIndex ?? 0) > 15);
-  const purnimantaWindows = contiguousWindows(krishnaDays, 'masaNamePurnimanta');
+  // Iterate over the complete ordered daily series. Define active key only when
+  // the day is krishna paksha (tithiIndex > 15). Explicitly closes/resets when day
+  // is not krishna paksha, masa name changes, or year ends (EOF).
+  const purnimantaWindows = contiguousWindows(days, 'masaNamePurnimanta', {
+    isActive: d => (d.panchang.tithiIndex ?? 0) > 15,
+  });
   for (const [name, wins] of purnimantaWindows) {
     if (wins.length > 1) {
       anyDoubleWindow = true;
@@ -108,7 +84,7 @@ if (!anyDoubleWindow) {
 } else {
   const checked = new Set<string>();
   for (const { year, masa, windows } of allDoubleWindows) {
-    const days = precomputePanchangCorrectedForYear(year);
+    const days = daysByYear.get(year) || precomputePanchangCorrectedForYear(year);
     const targets = CANONICAL_RULES.filter(
       (r: any) =>
         r.corrected_month_system === 'purnimanta' &&
@@ -126,7 +102,7 @@ if (!anyDoubleWindow) {
       const dates = matches.map(m => m.dateStr);
       let landedIn = 'no exact match (kshaya/vrddhi at this position)';
       windows.forEach((w, i) => {
-        if (dates.some(d => d >= w.start && d < w.end)) {
+        if (dates.some(d => d >= w.start && d <= w.end)) {
           landedIn = `window ${i + 1} of ${windows.length} [${w.start}..${w.end}]${i === windows.length - 1 ? ' (LATEST -- usually genuine for a within-year adhika insertion)' : ' (EARLIER -- check carefully)'}`;
         }
       });
