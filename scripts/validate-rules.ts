@@ -39,9 +39,9 @@ try {
 
   for (let i = 0; i < rules.length; i++) {
     const rule = rules[i];
-    const key = `${rule.slug}|${rule.calendar_profile || ''}|${rule.sampradaya || ''}`;
+    const key = `${rule.slug}|${rule.calendar_profile || ''}|${rule.variant_key || rule.sampradaya || rule.variant_id || ''}`;
     if (seenKeys.has(key)) {
-      console.error(`❌ Duplicate rule entry for key "${key}" at index ${i}. Rules with same slug must differ by calendar_profile or sampradaya.`);
+      console.error(`❌ Duplicate rule entry for key "${key}" at index ${i}. Rules with same slug must differ by calendar_profile, variant_key, or sampradaya.`);
       process.exit(1);
     }
     seenKeys.set(key, rule);

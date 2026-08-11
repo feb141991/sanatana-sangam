@@ -178,6 +178,9 @@ export function ruleIdentityKey(rule: ObservanceRule): string {
   return rule.slug;
 }
 
+const legacyPanchangCache = new Map<number, Array<{ dateStr: string; panchang: any }>>();
+const correctedPanchangCache = new Map<number, Array<{ dateStr: string; panchang: any }>>();
+
 /**
  * Computes panchang for all days of the target Gregorian year.
  * We evaluate at exactly 01:00:00 UTC (morning in India, aligning with Ujjain sunrise).
@@ -185,6 +188,9 @@ export function ruleIdentityKey(rule: ObservanceRule): string {
  * Byte-identical to pre-v2.0.0 when USE_CORRECTED_MASA is false.
  */
 export function precomputePanchangForYear(year: number): Array<{ dateStr: string; panchang: any }> {
+  if (legacyPanchangCache.has(year)) {
+    return legacyPanchangCache.get(year)!;
+  }
   const numDays = isLeapYear(year) ? 366 : 365;
   const days: Array<{ dateStr: string; panchang: any }> = [];
 
@@ -197,6 +203,7 @@ export function precomputePanchangForYear(year: number): Array<{ dateStr: string
     });
   }
 
+  legacyPanchangCache.set(year, days);
   return days;
 }
 
@@ -216,6 +223,9 @@ export function precomputePanchangForYear(year: number): Array<{ dateStr: string
  * when this path is active.
  */
 export function precomputePanchangCorrectedForYear(year: number): Array<{ dateStr: string; panchang: any }> {
+  if (correctedPanchangCache.has(year)) {
+    return correctedPanchangCache.get(year)!;
+  }
   const numDays = isLeapYear(year) ? 366 : 365;
   const days: Array<{ dateStr: string; panchang: any }> = [];
 
@@ -253,6 +263,7 @@ export function precomputePanchangCorrectedForYear(year: number): Array<{ dateSt
     });
   }
 
+  correctedPanchangCache.set(year, days);
   return days;
 }
 
@@ -336,9 +347,10 @@ export const LunarTithiHandler = {
     // the target masa), the target tithi was present at IST sunrise on curr's
     // date but had already advanced by the 5am UTC scan time. Observe on curr.
     const isCorrected = rule.corrected_month_system !== undefined;
-    const canCheckSkipped = rule.allow_skipped_tithi && (isCorrected ? (target >= 1 && target <= 30) : (target >= 1 && target < 15));
+    const canCheckSkipped = (rule.allow_skipped_tithi || rule.skipped_tithi_policy !== undefined) && (isCorrected ? (target >= 1 && target <= 30) : (target >= 1 && target < 15));
 
     if (canCheckSkipped) {
+      const policy = rule.skipped_tithi_policy ?? 'following_day';
       for (let i = 1; i < days.length; i++) {
         const prev = days[i - 1].panchang;
         const curr = days[i].panchang;
@@ -354,10 +366,13 @@ export const LunarTithiHandler = {
           skipped = prev.tithiIndex === target - 1 && curr.tithiIndex === target + 1;
         }
 
-        if (skipped && isMasaMatching(curr.masaName, rule.lunar_masa_name, rule.adhika_policy)) {
-          if (!matchedSet.has(days[i].dateStr)) {
-            matchedDates.push(days[i].dateStr);
-            matchedSet.add(days[i].dateStr);
+        if (skipped) {
+          const targetDay = (policy === 'previous_day' || policy === 'day_before') ? days[i - 1] : days[i];
+          if (isMasaMatching(targetDay.panchang.masaName, rule.lunar_masa_name, rule.adhika_policy)) {
+            if (!matchedSet.has(targetDay.dateStr)) {
+              matchedDates.push(targetDay.dateStr);
+              matchedSet.add(targetDay.dateStr);
+            }
           }
         }
       }
@@ -679,16 +694,17 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
     const recurring = rule.rule_family === 'lunar_tithi_recurring' || rule.rule_family === 'weekday_recurring';
+    const preferLast = rule.corrected_prefer_last_match ?? rule.prefer_last_match;
     const selectionPolicy: ObservanceCandidateDiagnostic['selectionPolicy'] = candidateDates.length === 0
       ? 'none'
       : recurring
         ? 'all_recurring'
-        : rule.prefer_last_match
+        : preferLast
           ? 'last_match'
           : 'first_match';
     const selectedDate = candidateDates.length === 0
       ? null
-      : rule.prefer_last_match
+      : preferLast
         ? candidateDates[candidateDates.length - 1]
         : candidateDates[0];
 
@@ -735,6 +751,7 @@ function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
     lunar_tithi_index: rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index,
     prefer_last_match: rule.corrected_prefer_last_match !== undefined ? rule.corrected_prefer_last_match : rule.prefer_last_match,
     allow_skipped_tithi: rule.corrected_allow_skipped_tithi !== undefined ? rule.corrected_allow_skipped_tithi : rule.allow_skipped_tithi,
+    skipped_tithi_policy: rule.corrected_skipped_tithi_policy ?? rule.skipped_tithi_policy,
   };
 }
 

@@ -229,6 +229,30 @@
         ],
         "description": "Required paksha for within-paksha tithi"
       },
+      "variant_key": {
+        "type": "string",
+        "description": "Identity key of variant (e.g. smarta, vaishnava_vidhava)"
+      },
+      "skipped_tithi_policy": {
+        "type": "string",
+        "enum": [
+          "previous_day",
+          "following_day",
+          "day_before",
+          "day_after"
+        ],
+        "description": "Kshaya-tithi observance policy: previous_day (day before sunrise skip) or following_day (day after sunrise skip)"
+      },
+      "corrected_skipped_tithi_policy": {
+        "type": "string",
+        "enum": [
+          "previous_day",
+          "following_day",
+          "day_before",
+          "day_after"
+        ],
+        "description": "Corrected engine kshaya-tithi observance policy"
+      },
       "variant_id": {
         "type": "string",
         "description": "Identity of variant (e.g. smarta, vaishnava)"

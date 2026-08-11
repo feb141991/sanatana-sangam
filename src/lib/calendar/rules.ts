@@ -7,6 +7,8 @@ export interface DisputedVariant {
   review_status: string;
 }
 
+export type SkippedTithiPolicy = 'previous_day' | 'following_day' | 'day_before' | 'day_after';
+
 export interface ObservanceRule {
   slug: string;
   display_name: string;
@@ -27,6 +29,7 @@ export interface ObservanceRule {
   nakshatra_name?: string;
   prefer_last_match?: boolean;
   allow_skipped_tithi?: boolean;
+  skipped_tithi_policy?: SkippedTithiPolicy;
   recurring_tithi_indices?: number[];
   recurring_weekday?: number;
   route_kind?: 'vrat' | null;
@@ -51,6 +54,7 @@ export interface ObservanceRule {
   adhika_policy?: 'nija' | 'adhika' | 'both';
   corrected_prefer_last_match?: boolean;
   corrected_allow_skipped_tithi?: boolean;
+  corrected_skipped_tithi_policy?: SkippedTithiPolicy;
 
   // ── Publication gating ────────────────────────────────────────────────────
   // These three decide whether a rule reaches a user, so they belong in the

@@ -1614,9 +1614,10 @@
   },
   {
     "slug": "yogini-ekadashi",
-    "display_name": "Yogini Ekadashi",
+    "variant_key": "smarta",
+    "display_name": "Yogini Ekadashi (Smarta)",
     "emoji": "🌿",
-    "description": "The Ekadashi that cures diseases and grants liberation",
+    "description": "The Ekadashi that cures diseases and grants liberation (Smarta observance)",
     "kind": "vrat",
     "tradition": "hindu",
     "rule_family": "lunar_tithi",
@@ -1627,9 +1628,48 @@
     "lunar_tithi_index": 26,
     "route_kind": "vrat",
     "route_slug": "yogini-ekadashi",
-    "corrected_allow_skipped_tithi": true,
+    "corrected_skipped_tithi_policy": "previous_day",
+    "corrected_prefer_last_match": true,
     "launch_status": "included",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists BOTH readings for 2026: 'Yogini Ekadasi (Smarta)' at 2026-07-10, 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11 (a genuine kshaya tithi -- 07-10 tithi=25, 07-11 tithi=27, tithi 26 skipped at sunrise between them). This rule publishes the Vaishnava/Vidhava reading (07-11) because that is the ONLY one the engine can currently compute -- LunarTithiHandler's skip-detection always resolves a skipped tithi to the day AFTER, with no mechanism to select the day before. Required a separate engine fix (packages/panchang-engine/src/lunar-month/index.ts, adhika-month purnimanta krishna-paksha naming collision -- 2026-08-11 assessment entry) before even this one reading could resolve to the sourced date at all.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Smarta)' at 2026-07-10.",
+    "disputed_years": [
+      2026
+    ],
+    "disputed_variants": [
+      {
+        "variant_key": "smarta",
+        "civil_date": "2026-07-10",
+        "source_ref": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+        "review_status": "disputed"
+      },
+      {
+        "variant_key": "vaishnava_vidhava",
+        "civil_date": "2026-07-11",
+        "source_ref": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+        "review_status": "disputed"
+      }
+    ]
+  },
+  {
+    "slug": "yogini-ekadashi",
+    "variant_key": "vaishnava_vidhava",
+    "display_name": "Yogini Ekadashi (Vaishnava & Vidhava)",
+    "emoji": "🌿",
+    "description": "The Ekadashi that cures diseases and grants liberation (Vaishnava & Vidhava observance)",
+    "kind": "vrat",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "corrected_lunar_masa_name": "Ashadha",
+    "corrected_month_system": "purnimanta",
+    "adhika_policy": "nija",
+    "lunar_tithi_index": 26,
+    "route_kind": "vrat",
+    "route_slug": "yogini-ekadashi",
+    "corrected_skipped_tithi_policy": "following_day",
+    "corrected_prefer_last_match": true,
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
     "disputed_years": [
       2026
     ],

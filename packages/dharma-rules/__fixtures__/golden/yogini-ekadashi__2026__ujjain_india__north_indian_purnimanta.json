@@ -27,10 +27,10 @@
   "source": {
     "tier": 1,
     "ref": "rashtriya-panchang-saka-1948-p30",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists both readings for 2026: 'Yogini Ekadasi (Smarta)' at 2026-07-10, 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11. This fixture is for the Vaishnava/Vidhava reading, the only one the engine can currently compute -- see docs/sources/rashtriya-panchang-saka-1948.manifest.md and the rule's own ratification_note for why the Smarta reading is not yet modelled.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists both readings for 2026: 'Yogini Ekadasi (Smarta)' at 2026-07-10, 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
     "verifiedBy": "engineering (Tier 1 source; NOT council-ratified -- see approved: false)",
     "verifiedOn": "2026-08-10"
   },
-  "reasoning": "Tithi 26 (Ekadashi) is genuinely skipped at sunrise in 2026 -- 2026-07-10 shows tithi 25 at the 5am UTC sample, 2026-07-11 shows tithi 27, with no sunrise sample ever landing exactly on tithi 26. LunarTithiHandler's skip-detection (corrected_allow_skipped_tithi: true) resolves this to the day AFTER the skip, 2026-07-11, matching the Vaishnava/Vidhava reading in the source exactly. Required an engine fix first: the purnimanta krishna-paksha masa name for this window collided with a spurious window inside 2026's intercalary Adhika Jyeshtha before packages/panchang-engine/src/lunar-month/index.ts was corrected (2026-08-11) -- see docs/calendar-profiles.md section 1.3.",
+  "reasoning": "Tithi 26 (Ekadashi) is genuinely skipped at sunrise in 2026 -- 2026-07-10 shows tithi 25 at the 5am UTC sample, 2026-07-11 shows tithi 27, with no sunrise sample ever landing exactly on tithi 26. LunarTithiHandler's skip-detection with following_day policy (corrected_skipped_tithi_policy: following_day) resolves this to the day AFTER the skip, 2026-07-11, matching the Vaishnava/Vidhava reading in the source exactly.",
   "approved": false
 }

@@ -211,8 +211,12 @@ md += `---\n\n## Disputed variants (withheld from single publication)\n\n`;
 md += `Observances with recognised variants or contested dates for specific years. ` +
   `Under AGENTS.md rule 7, these are withheld from single universal publication.\n\n`;
 
-const rulesWithVariants = (CANONICAL_RULES as any[]).filter(
-  r => r.disputed_variants && r.disputed_variants.length > 0,
+const rulesWithVariants = Array.from(
+  new Map(
+    (CANONICAL_RULES as any[])
+      .filter(r => r.disputed_variants && r.disputed_variants.length > 0)
+      .map(r => [r.slug, r])
+  ).values()
 );
 
 for (const rule of rulesWithVariants) {
