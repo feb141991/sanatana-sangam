@@ -207,6 +207,24 @@ for (const year of YEARS) {
     rows.map(r => `${r.name} (${r.to}; ${r.qualification})`).join(', ') + `\n\n`;
 }
 
+md += `---\n\n## Disputed variants (withheld from single publication)\n\n`;
+md += `Observances with recognised variants or contested dates for specific years. ` +
+  `Under AGENTS.md rule 7, these are withheld from single universal publication.\n\n`;
+
+const rulesWithVariants = (CANONICAL_RULES as any[]).filter(
+  r => r.disputed_variants && r.disputed_variants.length > 0,
+);
+
+for (const rule of rulesWithVariants) {
+  const years = (rule.disputed_years ?? []).join(', ');
+  md += `### ${rule.display_name} (${rule.slug}) — Disputed year(s): ${years}\n\n`;
+  md += `| Variant Key | Civil Date | Source Reference | Review Status |\n|---|---|---|---|\n`;
+  for (const v of rule.disputed_variants) {
+    md += `| **${v.variant_key}** | **${v.civil_date}** | ${v.source_ref} | ${v.review_status} |\n`;
+  }
+  md += `\n`;
+}
+
 md += `---
 
 ## How to respond

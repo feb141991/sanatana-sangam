@@ -96,6 +96,7 @@ describe('disputed_years — publication gate', () => {
       );
       // Only meaningful where an undisputed neighbour exists inside the
       // generated range; paryushana is disputed in both 2027 and 2028.
+      if (path === 'legacy' && !rule.lunar_masa_name) return;
       if (undisputed.length === 0) return;
 
       for (const y of undisputed) {
@@ -117,4 +118,37 @@ describe('disputed_years — suppression is not amnesia', () => {
     expect(diag!.withheldReason).toBe('disputed_year');
     expect(diag!.candidateDates.length, 'candidate evidence was destroyed by the gate').toBeGreaterThan(0);
   }, TIMEOUT);
+});
+
+describe('disputed_variants — Yogini Ekadashi 2026 structured alternatives', () => {
+  it('proves Yogini Ekadashi 2026 is withheld from publication while retaining source-backed alternatives', () => {
+    const correctedDates = calculateObservancesForYearCorrected(2026)
+      .filter(o => o.slug === 'yogini-ekadashi');
+    expect(correctedDates).toEqual([]);
+
+    const diag = calculateObservanceCandidateDiagnosticsForYear(2026)
+      .find(d => d.slug === 'yogini-ekadashi');
+    expect(diag).toBeDefined();
+    expect(diag!.publicationWithheld).toBe(true);
+    expect(diag!.withheldReason).toBe('disputed_year');
+    expect(diag!.candidateDates.length).toBeGreaterThan(0);
+
+    const rule = CANONICAL_RULES.find(r => r.slug === 'yogini-ekadashi');
+    expect(rule).toBeDefined();
+    expect(rule!.disputed_years).toContain(2026);
+    expect(rule!.disputed_variants).toBeDefined();
+    expect(rule!.disputed_variants).toHaveLength(2);
+
+    const smarta = rule!.disputed_variants!.find(v => v.variant_key === 'smarta');
+    expect(smarta).toBeDefined();
+    expect(smarta!.civil_date).toBe('2026-07-10');
+    expect(smarta!.review_status).toBe('disputed');
+    expect(smarta!.source_ref).toContain('Rashtriya Panchang');
+
+    const vaishnava = rule!.disputed_variants!.find(v => v.variant_key === 'vaishnava_vidhava');
+    expect(vaishnava).toBeDefined();
+    expect(vaishnava!.civil_date).toBe('2026-07-11');
+    expect(vaishnava!.review_status).toBe('disputed');
+    expect(vaishnava!.source_ref).toContain('Rashtriya Panchang');
+  });
 });

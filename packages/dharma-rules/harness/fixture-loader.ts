@@ -50,6 +50,7 @@ export interface Location {
 export interface Profile {
   calendar: string;
   tradition: string;
+  variantKey?: string;
 }
 
 export interface GoldenSource {
@@ -134,8 +135,9 @@ export function getCanonicalFixtureKey(fixture: {
   const tz = fixture.location.tz.toLowerCase().trim();
   const cal = fixture.profile.calendar.toLowerCase().trim();
   const trad = fixture.profile.tradition.toLowerCase().trim();
+  const vk = (fixture.profile.variantKey ?? '').toLowerCase().trim();
 
-  return `${fest}::${yr}::${latStr},${lonStr}@${tz}::${cal}:${trad}`;
+  return `${fest}::${yr}::${latStr},${lonStr}@${tz}::${cal}:${trad}${vk ? `:${vk}` : ''}`;
 }
 
 export interface LogicalIdentityAnalysis {

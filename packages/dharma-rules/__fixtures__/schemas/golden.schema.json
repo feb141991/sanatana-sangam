@@ -67,6 +67,10 @@
         "tradition": {
           "type": "string",
           "enum": ["smarta", "gaudiya_iskcon", "sri_vaishnava", "swaminarayan", "shaiva", "shakta", "unspecified", "all", "sikh", "buddhist", "jain"]
+        },
+        "variantKey": {
+          "type": "string",
+          "description": "Optional variant key for disputed / sampradaya variants, e.g. smarta, vaishnava_vidhava"
         }
       }
     },

@@ -1,5 +1,12 @@
 import rulesJson from '../../../packages/dharma-rules/src/festivals/rules.json';
 
+export interface DisputedVariant {
+  variant_key: string;
+  civil_date: string;
+  source_ref: string;
+  review_status: string;
+}
+
 export interface ObservanceRule {
   slug: string;
   display_name: string;
@@ -52,6 +59,7 @@ export interface ObservanceRule {
    * Per-year because a rule can be sound in one year and disputed in the next.
    */
   disputed_years?: number[];
+  disputed_variants?: DisputedVariant[];
 }
 
 export const CANONICAL_RULES: ObservanceRule[] = rulesJson as ObservanceRule[];

@@ -1630,6 +1630,22 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists BOTH readings for 2026: 'Yogini Ekadasi (Smarta)' at 2026-07-10, 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11 (a genuine kshaya tithi -- 07-10 tithi=25, 07-11 tithi=27, tithi 26 skipped at sunrise between them). This rule publishes the Vaishnava/Vidhava reading (07-11) because that is the ONLY one the engine can currently compute -- LunarTithiHandler's skip-detection always resolves a skipped tithi to the day AFTER, with no mechanism to select the day before. Required a separate engine fix (packages/panchang-engine/src/lunar-month/index.ts, adhika-month purnimanta krishna-paksha naming collision -- 2026-08-11 assessment entry) before even this one reading could resolve to the sourced date at all.",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: 7 of 13 (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only.\n\nSMARTA VARIANT NOT MODELLED -- attempted 2026-08-11, reverted after finding it would ship wrong, not just incomplete. The natural fix (a second sampradaya='smarta' row, per the krishna-janmashtami precedent) does NOT work with the current engine: calculateObservancesForYearCorrected's occurrencesMap is keyed by SLUG ONLY, and its final per-rule loop does not re-check isPublishableForYear for each row sharing that slug -- it just fans the one shared map value out to every row. A deferred second row therefore does NOT get suppressed; it silently computes the SAME date as the included row (verified directly: both resolved to 2026-07-11), which would have published 07-11 labelled as BOTH 'Smarta' and 'Vaishnava', when the source says Smarta is 07-10 -- worse than the single-row state, because it would assert something false rather than merely omit something true. krishna-janmashtami's existing two rows have the identical latent gap; it has never surfaced there because both of its rows are identical in every gating-relevant field (masa, tithi, system, launch_status), so which one 'wins' the shared map slot never mattered. Currently inert: both USE_CORRECTED_MASA and USE_CONDITION_EVALUATOR are false, so nothing exercises this path in production today. Real follow-up, correctly scoped as engine work, not a rules.json edit: give same-slug variant rows independently gate-able identity (e.g. keyed on slug+sampradaya, not bare slug) before any future variant pair with DIFFERING launch_status/derivability can ship. Filed rather than patched under time pressure -- the Smarta date (2026-07-10) is preserved in the citation above for when this is fixed."
+    "disputed_years": [
+      2026
+    ],
+    "disputed_variants": [
+      {
+        "variant_key": "smarta",
+        "civil_date": "2026-07-10",
+        "source_ref": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+        "review_status": "disputed"
+      },
+      {
+        "variant_key": "vaishnava_vidhava",
+        "civil_date": "2026-07-11",
+        "source_ref": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30",
+        "review_status": "disputed"
+      }
+    ]
   }
 ]

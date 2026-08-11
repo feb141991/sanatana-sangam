@@ -1,0 +1,36 @@
+{
+  "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
+  "caseId": "yogini-ekadashi__2026__ujjain_india__north_indian_purnimanta__smarta",
+  "festivalId": "yogini-ekadashi",
+  "year": 2026,
+  "location": {
+    "label": "Ujjain, India",
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata"
+  },
+  "profile": {
+    "calendar": "north_indian_purnimanta",
+    "tradition": "smarta",
+    "variantKey": "smarta"
+  },
+  "expected": {
+    "civilDate": "2026-07-10",
+    "monthLabel": "Ashadha (purnimanta)",
+    "windows": null,
+    "reasonCodes": ["kshaya_tithi_prevails_before_sunrise"],
+    "alternativeCount": 1
+  },
+  "tolerance": {
+    "windowMinutes": 2
+  },
+  "source": {
+    "tier": 1,
+    "ref": "rashtriya-panchang-saka-1948-p30",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists both readings for 2026: 'Yogini Ekadasi (Smarta)' at 2026-07-10, 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
+    "verifiedBy": "engineering (Tier 1 source; NOT council-ratified -- see approved: false)",
+    "verifiedOn": "2026-08-10"
+  },
+  "reasoning": "Rashtriya Panchang records Smarta reading at 2026-07-10 for Yogini Ekadashi in 2026.",
+  "approved": false
+}

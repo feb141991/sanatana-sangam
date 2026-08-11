@@ -310,6 +310,35 @@
         },
         "uniqueItems": true,
         "description": "Years whose computed date is contested and is withheld from publication. Enforced by isPublishableForYear(); unlike ratification_note this is read by code."
+      },
+      "disputed_variants": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "variant_key": {
+              "type": "string"
+            },
+            "civil_date": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            "source_ref": {
+              "type": "string"
+            },
+            "review_status": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "variant_key",
+            "civil_date",
+            "source_ref",
+            "review_status"
+          ],
+          "additionalProperties": false
+        },
+        "description": "Structured metadata for recognised variant dates when a year is disputed."
       }
     },
     "additionalProperties": false

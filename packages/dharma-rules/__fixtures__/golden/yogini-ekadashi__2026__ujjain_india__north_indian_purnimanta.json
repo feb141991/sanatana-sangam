@@ -1,6 +1,6 @@
 {
   "$schema": "https://shoonaya.app/schemas/fixture/golden/v1",
-  "caseId": "yogini-ekadashi__2026__ujjain_india__north_indian_purnimanta",
+  "caseId": "yogini-ekadashi__2026__ujjain_india__north_indian_purnimanta__vaishnava_vidhava",
   "festivalId": "yogini-ekadashi",
   "year": 2026,
   "location": {
@@ -11,14 +11,15 @@
   },
   "profile": {
     "calendar": "north_indian_purnimanta",
-    "tradition": "unspecified"
+    "tradition": "unspecified",
+    "variantKey": "vaishnava_vidhava"
   },
   "expected": {
     "civilDate": "2026-07-11",
     "monthLabel": "Ashadha (purnimanta)",
     "windows": null,
     "reasonCodes": ["kshaya_tithi_skipped_at_sunrise"],
-    "alternativeCount": 0
+    "alternativeCount": 1
   },
   "tolerance": {
     "windowMinutes": 2

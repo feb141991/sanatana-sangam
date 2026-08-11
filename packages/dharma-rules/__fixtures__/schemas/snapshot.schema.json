@@ -43,7 +43,8 @@
       "additionalProperties": false,
       "properties": {
         "calendar": { "type": "string" },
-        "tradition": { "type": "string" }
+        "tradition": { "type": "string" },
+        "variantKey": { "type": "string" }
       }
     },
     "capturedAt": {

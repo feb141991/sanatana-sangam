@@ -599,10 +599,14 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
   // nothing. Suppression is a publication decision, not an amnesia policy: the
   // candidate dates are the evidence a reviewer needs to resolve the dispute.
   // Publication is gated elsewhere; this surface reports and labels instead.
-  const occurrencesMap = buildOccurrencesMap(year, { applyPublicationGate: false });
+  const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false });
+  const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false });
 
   return CANONICAL_RULES.map((rule) => {
-    const candidateDates = (occurrencesMap[rule.slug] || []).filter(
+    const rawDates = (legacyMap[rule.slug] && legacyMap[rule.slug].length > 0)
+      ? legacyMap[rule.slug]
+      : (correctedMap[rule.slug] || []);
+    const candidateDates = rawDates.filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
     const recurring = rule.rule_family === 'lunar_tithi_recurring' || rule.rule_family === 'weekday_recurring';
