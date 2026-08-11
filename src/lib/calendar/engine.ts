@@ -42,6 +42,16 @@ export const USE_CONDITION_EVALUATOR: boolean = false;
 
 export interface CalculatedOccurrence {
   slug: string;
+  /**
+   * Stable per-rule identity — slug::variant_key (or slug::sampradaya as
+   * fallback, or just slug for single-row rules). Derived by ruleIdentityKey().
+   *
+   * This is the internal key the engine uses to isolate same-slug variants in
+   * its occurrence maps. Consumers that only need the public route slug should
+   * read `.slug`. Consumers that need to distinguish variants (e.g. the
+   * materialiser's batch-tracking) should read `.ruleKey`.
+   */
+  ruleKey: string;
   date: string; // YYYY-MM-DD
   year: number;
   /** True for recurring tithi vrats (many per definition per year). Lets the
@@ -51,6 +61,11 @@ export interface CalculatedOccurrence {
 
 export interface ObservanceCandidateDiagnostic {
   slug: string;
+  /**
+   * Stable per-rule identity. One diagnostic is emitted per rule row, not per
+   * slug — two same-slug variants each produce their own diagnostic entry.
+   */
+  ruleKey: string;
   year: number;
   ruleFamily: ObservanceRule['rule_family'];
   candidateDates: string[];
@@ -134,6 +149,33 @@ export function isPublishable(rule: ObservanceRule): boolean {
   if (r.launch_status === 'deferred') return false;
 
   return true;
+}
+
+/**
+ * Stable internal identity for a rule — distinct from the public route slug.
+ *
+ * For single-row rules (the overwhelming majority) this is just the slug.
+ * For same-slug variant rows (e.g. the two krishna-janmashtami rows that
+ * differ by sampradaya) it is slug::variant_key, or slug::sampradaya as a
+ * fallback when variant_key is absent.
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * The occurrence builders keyed their internal maps by `rule.slug`. When two
+ * rules share a slug, the second write silently overwrote the first's computed
+ * dates. A publication gate on the second rule (e.g. `launch_status: deferred`)
+ * then wrote `[]`, which the first rule's assembler-loop entry would later read
+ * back — the included rule lost its dates. The outcome depended entirely on
+ * array position, not on the rules' own gating fields.
+ *
+ * This function is the single definition of identity. Callers that need a
+ * display slug should read `.slug`; callers that need to distinguish variants
+ * should use this.
+ */
+export function ruleIdentityKey(rule: ObservanceRule): string {
+  if (rule.variant_key) return `${rule.slug}::${rule.variant_key}`;
+  if (rule.sampradaya) return `${rule.slug}::${rule.sampradaya}`;
+  return rule.slug;
 }
 
 /**
@@ -482,25 +524,40 @@ function buildOccurrencesMap(
   // explicitly, so a new publishing call site cannot forget the gate.
   const gate = opts.applyPublicationGate !== false;
   const days = precomputePanchangForYear(year);
+  // Keyed by ruleIdentityKey(rule), NOT rule.slug.
+  //
+  // Using rule.slug as the key meant that two rules sharing a slug (same-slug
+  // variants) overwrote each other in this map. Whether the included rule or
+  // the deferred rule won depended entirely on their position in CANONICAL_RULES
+  // — a publication gate that depended on array order, not on gating fields.
   const occurrencesMap: Record<string, string[]> = {};
+
+  // slug → ruleIdentityKey[] — lets the relative-rule second pass look up a
+  // base slug's dates without knowing its variant structure. Today all
+  // relative_base_slug values point to single-row rules whose ruleKey equals
+  // their slug, so this is currently a one-to-one map. When a base rule gains
+  // same-slug variants, all their dates are collected for the derived rule.
+  const slugIndex = new Map<string, string[]>();
 
   // 1. First Pass: Evaluate absolute rules
   for (const rule of CANONICAL_RULES) {
-    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
+    const rk = ruleIdentityKey(rule);
+    slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     if (rule.rule_family === 'solar_fixed') {
-      occurrencesMap[rule.slug] = SolarFixedHandler.evaluate(rule, year);
+      occurrencesMap[rk] = SolarFixedHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'lunar_tithi') {
-      occurrencesMap[rule.slug] = LunarTithiHandler.evaluate(rule, days);
+      occurrencesMap[rk] = LunarTithiHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'lunar_tithi_recurring') {
-      occurrencesMap[rule.slug] = RecurringLunarTithiHandler.evaluate(rule, days);
+      occurrencesMap[rk] = RecurringLunarTithiHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'weekday_recurring') {
-      occurrencesMap[rule.slug] = RecurringWeekdayHandler.evaluate(rule, days);
+      occurrencesMap[rk] = RecurringWeekdayHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'nakshatra_based') {
-      occurrencesMap[rule.slug] = NakshatraBasedHandler.evaluate(rule, days);
+      occurrencesMap[rk] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
-      occurrencesMap[rule.slug] = NanakshahiHandler.evaluate(rule, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year);
     } else {
-      occurrencesMap[rule.slug] = [];
+      occurrencesMap[rk] = [];
     }
   }
 
@@ -520,7 +577,13 @@ function buildOccurrencesMap(
         const offset = rule.relative_offset_days || 0;
         if (!baseSlug) continue;
 
-        const baseDates = occurrencesMap[baseSlug] || [];
+        // Collect dates from ALL identities that carry the base slug.
+        // For single-row bases (today's only case) this is identical to the old
+        // occurrencesMap[baseSlug] lookup. For future multi-variant bases it will
+        // aggregate all variants' dates — consistent with relative rules being
+        // anchored to the OBSERVANCE, not a specific variant of it.
+        const baseKeys = slugIndex.get(baseSlug) ?? [];
+        const baseDates = [...new Set(baseKeys.flatMap(k => occurrencesMap[k] ?? []))];
         const resolvedDates: string[] = [];
 
         for (const baseDate of baseDates) {
@@ -529,7 +592,7 @@ function buildOccurrencesMap(
           resolvedDates.push(formatUtcDate(rd));
         }
 
-        occurrencesMap[rule.slug] = resolvedDates;
+        occurrencesMap[ruleIdentityKey(rule)] = resolvedDates;
       }
     }
   }
@@ -559,21 +622,22 @@ export function calculateObservancesForYearLegacy(year: number): CalculatedOccur
   // the rule explicitly sets `prefer_last_match: true`.
   const results: CalculatedOccurrence[] = [];
   for (const rule of CANONICAL_RULES) {
-    const allDates = (occurrencesMap[rule.slug] || []).filter(
+    const rk = ruleIdentityKey(rule);
+    const allDates = (occurrencesMap[rk] || []).filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
     if (allDates.length === 0) continue;
     // Recurring vrats emit EVERY occurrence in the year, not just one.
     if (rule.rule_family === 'lunar_tithi_recurring' || rule.rule_family === 'weekday_recurring') {
       for (const date of allDates) {
-        results.push({ slug: rule.slug, date, year, recurring: true });
+        results.push({ slug: rule.slug, ruleKey: rk, date, year, recurring: true });
       }
       continue;
     }
     const selectedDate = rule.prefer_last_match
       ? allDates[allDates.length - 1]
       : allDates[0];
-    results.push({ slug: rule.slug, date: selectedDate, year });
+    results.push({ slug: rule.slug, ruleKey: rk, date: selectedDate, year });
   }
 
   return results;
@@ -599,13 +663,18 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
   // nothing. Suppression is a publication decision, not an amnesia policy: the
   // candidate dates are the evidence a reviewer needs to resolve the dispute.
   // Publication is gated elsewhere; this surface reports and labels instead.
+  //
+  // One diagnostic entry is emitted PER RULE ROW (per ruleIdentityKey), not per
+  // slug. Two same-slug variant rows each produce their own entry, so a reviewer
+  // can distinguish which variant computed which candidate dates.
   const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false });
   const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false });
 
   return CANONICAL_RULES.map((rule) => {
-    const rawDates = (legacyMap[rule.slug] && legacyMap[rule.slug].length > 0)
-      ? legacyMap[rule.slug]
-      : (correctedMap[rule.slug] || []);
+    const rk = ruleIdentityKey(rule);
+    const rawDates = (legacyMap[rk] && legacyMap[rk].length > 0)
+      ? legacyMap[rk]
+      : (correctedMap[rk] || []);
     const candidateDates = rawDates.filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
@@ -631,6 +700,7 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
 
     return {
       slug: rule.slug,
+      ruleKey: rk,
       year,
       ruleFamily: rule.rule_family,
       publicationWithheld: withheldReason !== null,
@@ -684,7 +754,11 @@ function buildOccurrencesMapCorrected(
   // explicitly, so a new publishing call site cannot forget the gate.
   const gate = opts.applyPublicationGate !== false;
   const days = precomputePanchangCorrectedForYear(year);
+  // Keyed by ruleIdentityKey(rule) — same reasoning as buildOccurrencesMap.
   const occurrencesMap: Record<string, string[]> = {};
+
+  // slug → ruleIdentityKey[] for relative-rule resolution (same as legacy path).
+  const slugIndex = new Map<string, string[]>();
 
   // D32: present each rule with the month name of ITS declared system. The
   // handlers all read `panchang.masaName`, so the swap happens here rather than
@@ -699,23 +773,25 @@ function buildOccurrencesMapCorrected(
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
-    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rule.slug] = []; continue; }
+    const rk = ruleIdentityKey(rule);
+    slugIndex.set(rule.slug, [...(slugIndex.get(rule.slug) ?? []), rk]);
+    if (gate && !isPublishableForYear(rule, year)) { occurrencesMap[rk] = []; continue; }
     const r = toCorrectedRule(rule);
     const d = daysFor(r);
     if (r.rule_family === 'solar_fixed') {
-      occurrencesMap[r.slug] = SolarFixedHandler.evaluate(r, year);
+      occurrencesMap[rk] = SolarFixedHandler.evaluate(r, year);
     } else if (r.rule_family === 'lunar_tithi') {
-      occurrencesMap[r.slug] = LunarTithiHandler.evaluate(r, d);
+      occurrencesMap[rk] = LunarTithiHandler.evaluate(r, d);
     } else if (r.rule_family === 'lunar_tithi_recurring') {
-      occurrencesMap[r.slug] = RecurringLunarTithiHandler.evaluate(r, d);
+      occurrencesMap[rk] = RecurringLunarTithiHandler.evaluate(r, d);
     } else if (r.rule_family === 'weekday_recurring') {
-      occurrencesMap[r.slug] = RecurringWeekdayHandler.evaluate(r, d);
+      occurrencesMap[rk] = RecurringWeekdayHandler.evaluate(r, d);
     } else if (r.rule_family === 'nakshatra_based') {
-      occurrencesMap[r.slug] = NakshatraBasedHandler.evaluate(r, d);
+      occurrencesMap[rk] = NakshatraBasedHandler.evaluate(r, d);
     } else if (r.rule_family === 'regional_calendar') {
-      occurrencesMap[r.slug] = NanakshahiHandler.evaluate(r, year);
+      occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year);
     } else {
-      occurrencesMap[r.slug] = [];
+      occurrencesMap[rk] = [];
     }
   }
 
@@ -736,7 +812,8 @@ function buildOccurrencesMapCorrected(
         const offset = rule.relative_offset_days || 0;
         if (!baseSlug) continue;
 
-        const baseDates = occurrencesMap[baseSlug] || [];
+        const baseKeys = slugIndex.get(baseSlug) ?? [];
+        const baseDates = [...new Set(baseKeys.flatMap(k => occurrencesMap[k] ?? []))];
         const resolvedDates: string[] = [];
 
         for (const baseDate of baseDates) {
@@ -745,7 +822,7 @@ function buildOccurrencesMapCorrected(
           resolvedDates.push(formatUtcDate(rd));
         }
 
-        occurrencesMap[rule.slug] = resolvedDates;
+        occurrencesMap[ruleIdentityKey(rule)] = resolvedDates;
       }
     }
   }
@@ -766,21 +843,22 @@ export function calculateObservancesForYearCorrected(year: number): CalculatedOc
 
   const results: CalculatedOccurrence[] = [];
   for (const rule of CANONICAL_RULES) {
+    const rk = ruleIdentityKey(rule);
     const r = toCorrectedRule(rule);
-    const allDates = (occurrencesMap[r.slug] || []).filter(
+    const allDates = (occurrencesMap[rk] || []).filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
     if (allDates.length === 0) continue;
     if (r.rule_family === 'lunar_tithi_recurring' || r.rule_family === 'weekday_recurring') {
       for (const date of allDates) {
-        results.push({ slug: r.slug, date, year, recurring: true });
+        results.push({ slug: r.slug, ruleKey: rk, date, year, recurring: true });
       }
       continue;
     }
     const selectedDate = r.prefer_last_match
       ? allDates[allDates.length - 1]
       : allDates[0];
-    results.push({ slug: r.slug, date: selectedDate, year });
+    results.push({ slug: r.slug, ruleKey: rk, date: selectedDate, year });
   }
 
   return results;

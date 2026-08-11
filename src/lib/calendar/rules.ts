@@ -33,6 +33,17 @@ export interface ObservanceRule {
   route_slug?: string | null;
   region?: string | null;
 
+  // ── Variant identity ──────────────────────────────────────────────────────
+  // These fields exist in rules.json for rules that have per-tradition variants
+  // (e.g. the two krishna-janmashtami rows). They are intentionally absent from
+  // single-row rules, which carry no qualifier.
+  //
+  // `variant_key` is the canonical identity qualifier and takes precedence.
+  // `sampradaya` is the older field on the janmashtami rows; used as fallback
+  // when variant_key is absent. See ruleIdentityKey() in engine.ts.
+  variant_key?: string;
+  sampradaya?: string;
+
   // ── D1+D2 Corrected engine fields (Tracker 3.7, Stage 2) ─────────────────
   corrected_lunar_masa_name?: string;
   corrected_lunar_tithi_index?: number;
