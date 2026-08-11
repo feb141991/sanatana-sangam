@@ -164,7 +164,8 @@ export async function GET(request: NextRequest) {
       calendarProfile,
       sampradaya,
       firstDay,
-      lastDay
+      lastDay,
+      resolved.context
     );
 
     const byDate: Record<string, ClientObservanceResult[]> = {};

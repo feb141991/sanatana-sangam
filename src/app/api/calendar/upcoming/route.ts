@@ -161,7 +161,8 @@ export async function GET(request: NextRequest) {
       calendarProfile,
       sampradaya,
       fromStr,
-      toStr
+      toStr,
+      resolved.context
     );
 
     // Re-sort results by date in JS

@@ -29,6 +29,7 @@ import type { NextRequest } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getApiUser } from '@/lib/api-auth';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { resolveCalendarContext, type ResolvedCalendarContext } from '@/lib/calendar/calendar-context';
 
 export const DEFAULT_CALENDAR_PROFILE = 'legacy-ujjain';
 
@@ -38,6 +39,8 @@ export interface RequestProfile {
   calendarProfile: string;
   tradition: string;
   sampradaya: string | null;
+  /** Pure ResolvedCalendarContext resolved once per request */
+  context: ResolvedCalendarContext;
   /** True when a user was resolved -- useful for cache-control decisions. */
   isAuthenticated: boolean;
   /**
@@ -79,11 +82,12 @@ export async function resolveRequestProfile(
   let tradition = requested.tradition;
   let sampradaya: string | null = null;
   let profileError: Error | null = null;
+  let userLocation: any = null;
 
   if (auth.user) {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('calendar_profile, tradition, sampradaya')
+      .select('calendar_profile, tradition, sampradaya, observance_location')
       .eq('id', auth.user.id)
       .single();
 
@@ -102,13 +106,24 @@ export async function resolveRequestProfile(
       // Never overridable from the query string: one user must not be able to
       // request another's sampradaya, and there is no reason to.
       sampradaya = profile.sampradaya || null;
+      userLocation = (profile as any).observance_location || null;
     }
   }
 
   if (!calendarProfile) calendarProfile = DEFAULT_CALENDAR_PROFILE;
 
+  // Resolve pure ResolvedCalendarContext ONCE per request
+  const context = resolveCalendarContext({
+    calendarProfile: calendarProfile || null,
+    traditionProfile: (tradition !== 'all' ? tradition : (sampradaya || undefined)) || null,
+    location: userLocation,
+    isAuthenticated: !!auth.user,
+    invalidCredentials,
+    dbError: profileError,
+  });
+
   return {
-    supabase, calendarProfile, tradition, sampradaya,
+    supabase, calendarProfile, tradition, sampradaya, context,
     isAuthenticated: !!auth.user,
     invalidCredentials,
     profileError,

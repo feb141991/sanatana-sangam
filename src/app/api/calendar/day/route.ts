@@ -161,7 +161,8 @@ export async function GET(request: NextRequest) {
       calendarProfile,
       sampradaya,
       dateStr,
-      dateStr
+      dateStr,
+      resolved.context
     );
 
     const response: DayResponse = {

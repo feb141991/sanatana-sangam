@@ -151,13 +151,13 @@ export function normalizeCalendarProfileId(raw?: string | null): CalendarProfile
 export function normalizeTraditionProfileId(raw?: string | null): TraditionProfileId {
   if (!raw) return 'unknown';
   const clean = raw.trim().toLowerCase().replace(/-/g, '_');
-  if (clean === 'gaudiya' || clean === 'gaudiya_iskcon') return 'gaudiya_iskcon';
+  if (clean === 'gaudiya' || clean === 'gaudiya_iskcon' || clean === 'vaishnava' || clean === 'vaishnava_suddha' || clean === 'vaishnava_vidhava') return 'gaudiya_iskcon';
   if (clean === 'smarta') return 'smarta';
   if (clean === 'sri_vaishnava' || clean === 'srivaishnava') return 'sri_vaishnava';
   if (clean === 'swaminarayan') return 'swaminarayan';
   if (clean === 'shaiva') return 'shaiva';
   if (clean === 'shakta') return 'shakta';
-  if (clean === 'unspecified') return 'unspecified';
+  if (clean === 'unspecified' || clean === 'hindu' || clean === 'standard') return 'unspecified';
   if (clean === 'sikh') return 'sikh';
   if (clean === 'jain') return 'jain';
   if (clean === 'buddhist') return 'buddhist';

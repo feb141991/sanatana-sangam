@@ -1,6 +1,7 @@
 import { calculateObservancesForYear } from './engine';
 import { isBatchTrustworthy } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
+import { resolveCalendarContext, type ResolvedCalendarContext } from './calendar-context';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -39,7 +40,7 @@ export interface ClientObservanceResult {
 
   // ObservanceResult contract
   festivalId: string;
-  status: 'resolved' | 'ambiguous' | 'unresolved';
+  status: 'resolved' | 'ambiguous' | 'unresolved' | 'under_review';
   civilDate: string | null;
   vedicDay?: { start: string; end: string } | null;
   windows?: {
@@ -100,92 +101,9 @@ function clipToRange<T>(rows: T[], fromStr: string, toStr: string): T[] {
   });
 }
 
-/**
- * Picks the rows belonging to the user's chosen calendar profile.
- *
- * THE BUG THIS FIXES
- * ------------------
- * The routes query `.in('calendar_profile', [calendarProfile, 'legacy-ujjain'])`
- * -- the user's profile OR the legacy fallback -- so a user on any non-default
- * profile gets TWO rows per festival. `calendarProfile` was then passed into this
- * formatter and never read. Nothing downstream distinguished the two rows either:
- * they group on `festivalId@lat,lon` (both are computed at Ujjain, so they land
- * together) and the primary is chosen by `spiritual_tradition`, which both rows
- * satisfy identically. The winner was therefore whichever the query returned
- * first, and BOTH were emitted, since no route filters on `isPrimary`.
- *
- * Where the two rows disagree -- exactly the amanta/purnimanta cases the profile
- * EXISTS to express -- the uncited-difference branch below flips the entry to
- * 'ambiguous', so choosing a regional calendar would make your own festivals
- * appear disputed. LATENT, not live: every stored occurrence is currently
- * `legacy-ujjain`, so there is no second row to duplicate. I previously called
- * this live and was wrong -- I had already queried this table for
- * `spiritual_tradition` and never ran the one-line check on `calendar_profile`.
- *
- * THE GROUPING KEY
- * ----------------
- * (slug, year, location). All three are load-bearing:
- *
- *   - LOCATION, so rows differing only because they were computed somewhere else
- *     are never merged (the failure the grouping comment further down warns of).
- *   - YEAR, because an `upcoming` window crosses New Year and a slug repeats
- *     across years. Without it, a profile row in one year would suppress the
- *     fallback in another.
- *   - SLUG alone is NOT a group for recurring rules. Ekadashi and Pradosh emit
- *     ~24 rows per year under one slug, so a slug-keyed group would let a single
- *     profile row anywhere in the range drop every legacy row for that slug,
- *     including dates the profile never covered.
- *
- * COMPLETENESS RULE. Filling gaps from `legacy-ujjain` would interleave two
- * calendars inside one year -- a sequence of Ekadashi dates belonging to neither
- * -- so a group is answered by ONE calendar. Which one is now decided by the
- * MATERIALISATION BATCH, not by counting rows.
- *
- * The count comparison this replaces (profile rows >= fallback rows -> profile
- * wins) was a heuristic with a hole: it could not see two equally-short sets, and
- * it could not tell "this profile legitimately has fewer occurrences" from "the
- * batch died half way". Both are questions only the WRITER can answer, so the
- * writer now answers them -- see materialisation-batch.ts.
- *
- *   batch complete AND produced == expected -> the profile answers the group
- *   anything else                           -> legacy is kept, rows are flagged
- *
- * Rows with no batch at all are the pre-contract legacy rows (all 557 of them at
- * time of writing). They are never treated as a complete profile batch, so they
- * can never suppress anything -- which is the correct reading of "we do not know
- * whether this set is complete".
- *
- * WHY A FALLBACK AND NOT A VARIANT
- * --------------------------------
- * `legacy-ujjain` here is a backstop for festivals not yet materialised under the
- * chosen profile, not a second legitimate reading. Publishing it alongside the
- * user's own profile would assert a disagreement between traditions that nobody
- * claimed -- the error AGENTS.md rule 7 forbids.
- *
- * Users on `legacy-ujjain` (the default) are unaffected: `.in()` collapses the
- * duplicate value, so their rows were never doubled.
- *
- * Shared by occurrences and review-queue items: both carry a slug, a year and a
- * location, and both are fetched with the same two-profile `.in()`, so a
- * queue-only entry under one profile could otherwise surface alongside the
- * occurrence from the other.
- */
 function resolveCalendarProfile<T>(
   rows: T[],
   calendarProfile: string,
-  /**
-   * Whether a chosen-profile set must prove completeness via its batch.
-   *
-   * TRUE for occurrences: a partial batch there means missing observances, so
-   * the legacy fallback is safer.
-   *
-   * FALSE for review-queue items, which have no batch and never will -- they are
-   * unresolved questions, not materialised rows, and no batch describes them.
-   * Demanding one made every profile-specific queue entry fail the check and
-   * silently hand the slot back to the legacy entry, so a user on a regional
-   * calendar saw the legacy candidate dates for a question about THEIR calendar.
-   * Two different concepts had been collapsed into one gate.
-   */
   requireCompleteBatch = true,
 ): T[] {
   if (!calendarProfile) return rows;
@@ -194,12 +112,7 @@ function resolveCalendarProfile<T>(
   for (const row of rows) {
     const r = row as any;
     const slug = r.observance_definitions?.slug ?? '';
-    // Queue rows carry `year` directly; occurrences carry it too, but fall back
-    // to the date so a row missing it is never silently grouped under ''.
     const year = r.year ?? String(r.date ?? r.occurrence_date ?? '').slice(0, 4);
-    // Timezone is part of the identity: the same coordinates under a different
-    // tz resolve sunrise to a different civil day, so those are genuinely
-    // different materialisations rather than one to choose between.
     const key = `${slug}|${year}|${r.computed_latitude},${r.computed_longitude}|${r.computed_timezone ?? ''}`;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(row);
@@ -210,17 +123,11 @@ function resolveCalendarProfile<T>(
     const exact = list.filter(r => (r as any).calendar_profile === calendarProfile);
     const fallback = list.filter(r => (r as any).calendar_profile !== calendarProfile);
 
-    // Never materialised for this profile -- show the fallback rather than
-    // nothing.
     if (exact.length === 0) {
       for (const r of list) kept.add(r);
       continue;
     }
 
-    // A profile set may only supersede the fallback when its batch SAYS it is
-    // complete. Every row must carry a trustworthy batch: a group half of whose
-    // rows came from a good batch and half from an aborted one is not complete,
-    // whatever the totals look like.
     const complete = !requireCompleteBatch
       || (exact.length > 0 && exact.every(r => isBatchTrustworthy((r as any).batch)));
 
@@ -232,16 +139,7 @@ function resolveCalendarProfile<T>(
       continue;
     }
 
-    // No fallback to fall back to, so the rows are shown either way. Whether to
-    // FLAG them is a separate question, and the answer differs for the default
-    // profile.
     if (!complete) {
-      // `legacy-ujjain` IS the fallback. Its rows predate the batch contract by
-      // construction -- all 557 of them -- so "no trustworthy batch" is their
-      // normal state, not a fault. Flagging it would put an incompleteness
-      // warning on every observance every current user sees, the moment
-      // diagnostics become visible: a warning that fires always is noise, and
-      // teaches people to ignore the one that matters.
       const isDefaultFallback = calendarProfile === DEFAULT_FALLBACK_PROFILE;
       for (const r of exact) {
         kept.add(r);
@@ -258,34 +156,17 @@ function resolveCalendarProfile<T>(
 export function formatOccurrencesToResults(
   occurrencesRaw: any[],
   queueItemsRaw: any[],
-  /**
-   * Retained for signature stability and for the queue-item path below. Festival
-   * filtering by tradition happens in the SQL (`observance_definitions.tradition`),
-   * so this must NOT be used for variant selection -- see requestedSampradaya.
-   */
   requestedTradition: string,
   calendarProfile: string,
-  /**
-   * The user's SAMPRADAYA, which is what variant selection actually keys on.
-   *
-   * `requestedTradition` is 'hindu' | 'sikh' | 'buddhist' | 'jain' and correctly
-   * filters WHICH festivals appear. Variant selection below asks a different
-   * question -- which reading of one festival, e.g. Smarta vs Vaishnava
-   * Janmashtami -- and that lives in `occurrences.spiritual_tradition`. Passing
-   * tradition into that comparison could never match, so the user's own
-   * sampradaya was never consulted and selection fell through to 'standard' or
-   * to index 0, i.e. query order.
-   *
-   * Latent rather than live today: `spiritual_tradition` is NULL on all 557
-   * stored rows, so no variant pair exists to choose between and the dispute
-   * branch is unreachable. It would start returning the wrong variant the moment
-   * sampradaya-qualified rows are materialised -- which is exactly when nobody
-   * would be looking for a selection bug.
-   */
   requestedSampradaya: string | null,
   fromStr: string,
-  toStr: string
+  toStr: string,
+  calendarContext?: ResolvedCalendarContext,
 ): ClientObservanceResult[] {
+  const context = calendarContext ?? resolveCalendarContext({
+    calendarProfile,
+    traditionProfile: requestedSampradaya || requestedTradition,
+  });
   // Withheld rows are dropped HERE rather than in each route, so the three
   // endpoints sharing this formatter cannot diverge and a fourth cannot forget.
   // Stored rows predate the disputed-years gate, so filtering at read time is
@@ -595,32 +476,75 @@ export function formatOccurrencesToResults(
 
     // Determine if we have genuine distinct traditions with cited dispute [1]
     if (isCitedDispute && itemsByTradition.size > 1) {
-      // [1] DISPUTE: Valid cited variant pair across traditions.
-      // Resolve primary based on user's requested profile/tradition.
-      let primaryIndex = requestedSampradaya
-        ? list.findIndex(item => item.profile.tradition === requestedSampradaya)
-        : -1;
-      if (primaryIndex === -1) {
-        primaryIndex = list.findIndex(item => item.profile.tradition === 'standard' || item.profile.tradition === 'unspecified');
-      }
-      if (primaryIndex === -1) {
-        primaryIndex = 0;
-      }
+      // Check if user's tradition profile contract can resolve a primary variant
+      const isUnknownTradition = context.displayedTraditionProfile === 'unknown';
+      
+      if (isUnknownTradition) {
+        // Unresolved or unsupported profile returns under_review with candidates, never a guessed date
+        for (const item of list) {
+          item.status = 'under_review';
+          item.civilDate = null;
+          item.date = '';
+          item.isPrimary = false;
+        }
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i];
+          const otherVariants = list.filter((_, idx) => idx !== i);
+          item.alternatives = otherVariants.map(other => ({
+            profile: other.profile,
+            civilDate: other.civilDate,
+            monthLabel: null,
+            note: 'Under Review',
+          }));
+        }
+      } else {
+        // Select primary based on context.ekadashiMethod / context.calculationMethodProfile
+        let primaryIndex = -1;
 
-      for (let i = 0; i < list.length; i++) {
-        list[i].isPrimary = (i === primaryIndex);
-      }
+        if (context.ekadashiMethod === 'vaishnava_suddha') {
+          primaryIndex = list.findIndex(item =>
+            item.profile.tradition === 'vaishnava_vidhava' ||
+            item.profile.tradition === 'vaishnava' ||
+            item.profile.tradition === 'gaudiya_iskcon' ||
+            item.profile.tradition === 'sri_vaishnava' ||
+            item.profile.tradition === 'swaminarayan'
+          );
+        } else if (context.ekadashiMethod === 'smarta') {
+          primaryIndex = list.findIndex(item =>
+            item.profile.tradition === 'smarta' ||
+            item.profile.tradition === 'standard' ||
+            item.profile.tradition === 'unspecified'
+          );
+        }
 
-      // Populate alternatives for all items in the group
-      for (let i = 0; i < list.length; i++) {
-        const item = list[i];
-        const otherVariants = list.filter((_, idx) => idx !== i);
-        item.alternatives = otherVariants.map(other => ({
-          profile: other.profile,
-          civilDate: other.civilDate,
-          monthLabel: null,
-          note: other.status === 'unresolved' ? 'Under Review' : null,
-        }));
+        if (primaryIndex === -1 && requestedSampradaya) {
+          primaryIndex = list.findIndex(item => item.profile.tradition === requestedSampradaya);
+        }
+        if (primaryIndex === -1) {
+          primaryIndex = 0;
+        }
+
+        for (let i = 0; i < list.length; i++) {
+          list[i].isPrimary = (i === primaryIndex);
+          if (context.disclosureDiagnostics.isUnspecifiedLabel && list[i].isPrimary) {
+            list[i].profile.tradition = 'unspecified';
+            if (!list[i].diagnostics.includes('unspecified_tradition_default')) {
+              list[i].diagnostics.push('unspecified_tradition_default');
+            }
+          }
+        }
+
+        // Populate alternatives for all items in the group
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i];
+          const otherVariants = list.filter((_, idx) => idx !== i);
+          item.alternatives = otherVariants.map(other => ({
+            profile: other.profile,
+            civilDate: other.civilDate,
+            monthLabel: null,
+            note: other.status === 'unresolved' ? 'Under Review' : null,
+          }));
+        }
       }
     } else {
       // NOT a cited dispute. Could be [2] UNCERTAINTY, [3] ERROR, or [4] LOCATION EFFECT.
