@@ -22,20 +22,29 @@ export default function AdminDashboard() {
     globalReach: 0,
     intelligence: null
   });
+  const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/stats');
-      const data = await res.json();
+      const [statsRes, alertsRes] = await Promise.all([
+        fetch('/api/admin/stats'),
+        fetch('/api/admin/alerts')
+      ]);
+      const data = await statsRes.json();
+      const alertsData = await alertsRes.json();
       setStats({
         totalSeekers: data.totalSeekers || 0,
+        onboardedSeekers: data.onboardedSeekers || 0,
         activeNow: data.activeNow || 0,
         pendingReports: data.pendingReports || 0,
-        globalReach: data.globalReach || 0
+        pendingDharmVeerReview: data.pendingDharmVeerReview || 0,
+        globalReach: data.globalReach || 0,
+        intelligence: data.intelligence
       });
+      setAlerts(alertsData.alerts || []);
     } catch (err) {
-      console.error('Failed to fetch stats');
+      console.error('Failed to fetch stats/alerts');
     } finally {
       setLoading(false);
     }
@@ -211,18 +220,37 @@ export default function AdminDashboard() {
             </section>
 
             <section className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-rose-500/5">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-rose-600 mb-6 flex items-center gap-2">
-                <AlertTriangle size={16} /> Urgent Alerts
-              </h3>
-              <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-white border border-rose-500/20 shadow-sm">
-                  <p className="text-xs font-bold theme-ink">Database Latency Spike</p>
-                  <p className="text-[10px] text-[var(--brand-muted)] mt-1">Detected +200ms increase in query resolution for `posts` table.</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white border border-rose-500/20 shadow-sm">
-                  <p className="text-xs font-bold theme-ink">Abnormal Login Attempts</p>
-                  <p className="text-[10px] text-[var(--brand-muted)] mt-1">12 failed attempts from IP 192.168.1.1 on @sangam_admin.</p>
-                </div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-rose-600 flex items-center gap-2">
+                  <AlertTriangle size={16} /> Urgent Alerts
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 text-[10px] font-bold">
+                  {alerts.length} Active
+                </span>
+              </div>
+              <div className="space-y-3">
+                {alerts.length === 0 ? (
+                  <div className="p-4 rounded-2xl bg-white border border-black/5 text-center text-xs text-[var(--brand-muted)]">
+                    No urgent alerts found.
+                  </div>
+                ) : (
+                  alerts.map((item) => (
+                    <Link key={item.id} href={item.href} className="block">
+                      <div className="p-4 rounded-2xl bg-white border border-rose-500/20 shadow-sm hover:border-rose-500/50 hover:shadow-md transition-all group cursor-pointer">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-xs font-bold theme-ink group-hover:text-rose-600 transition-colors">
+                            {item.title}
+                          </p>
+                          <ArrowUpRight size={14} className="text-[var(--brand-muted)] group-hover:text-rose-600 shrink-0 transition-colors" />
+                        </div>
+                        <p className="text-[10px] text-[var(--brand-muted)] mt-1 line-clamp-2">{item.desc}</p>
+                        <p className="text-[9px] text-[var(--brand-muted)] font-mono mt-2">
+                          {new Date(item.timestamp).toLocaleString()}
+                        </p>
+                      </div>
+                    </Link>
+                  ))
+                )}
               </div>
             </section>
           </div>

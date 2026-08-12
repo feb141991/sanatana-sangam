@@ -21,7 +21,7 @@ function ReportCenterContent() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const res = await fetch('/api/admin/stats');
+        const res = await fetch('/api/admin/reports');
         const data = await res.json();
         setStats(data);
       } catch (err) {
@@ -79,18 +79,18 @@ function ReportCenterContent() {
         {activeTab === 'overview' && (
           <>
             <section className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <GrowthCard label="Total Seekers" value={stats?.totalSeekers?.toLocaleString() || '...'} trend="14.2%" up={true} icon={Users} color="blue" />
-              <GrowthCard label="Active Engagement" value={stats?.activeNow?.toLocaleString() || '...'} trend="8.1%" up={true} icon={Activity} color="emerald" />
-              <GrowthCard label="Retention Rate" value={stats?.intelligence?.retentionRate || '...'} trend="3.4%" up={true} icon={Heart} color="amber" />
-              <GrowthCard label="System Load" value="Stable" trend="2.1ms" up={true} icon={ShieldAlert} color="rose" />
+              <GrowthCard label="Total Seekers" value={stats?.overview?.totalSeekers?.toLocaleString() || '...'} trend="Live DB" up={true} icon={Users} color="blue" />
+              <GrowthCard label="Active Streak Seekers" value={stats?.overview?.activeStreakSeekers?.toLocaleString() || '...'} trend="Active" up={true} icon={Activity} color="emerald" />
+              <GrowthCard label="Retention Rate" value={stats?.overview?.retentionRate || '...'} trend="Calculated" up={true} icon={Heart} color="amber" />
+              <GrowthCard label="Open Integrity Issues" value={stats?.governance?.openIntegrityFindings ?? '...'} trend={stats?.governance?.openIntegrityFindings > 0 ? 'Needs Action' : 'Clean'} up={stats?.governance?.openIntegrityFindings === 0} icon={ShieldAlert} color="rose" />
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-8 space-y-6">
                 <div className="glass-panel rounded-[2.5rem] border border-black/5 p-8 bg-white/40">
-                  <h3 className="text-lg font-bold theme-ink mb-6">Recent System Logs</h3>
+                  <h3 className="text-lg font-bold theme-ink mb-6">Recent System & Cron Logs</h3>
                   <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 scrollbar-none">
-                    <CronLogList />
+                    <CronLogList logs={stats?.logs} />
                   </div>
                 </div>
               </div>
@@ -100,15 +100,42 @@ function ReportCenterContent() {
                     <FileText size={16} /> Fast Access
                   </h3>
                   <div className="space-y-3">
-                    <ReportButton label="Monthly Revenue Audit" onClick={() => setActiveTab('finance')} />
+                    <ReportButton label="Calendar Governance Audit" onClick={() => setActiveTab('governance')} />
                     <ReportButton label="Content Usage Report" onClick={() => setActiveTab('content')} />
                     <ReportButton label="User Growth & Retention" onClick={() => setActiveTab('lifecycle')} />
-                    <ReportButton label="Export Renewal Dues" onClick={() => alert('Dues exported to CSV')} />
+                    <ReportButton label="Export Seeker Data" onClick={() => setActiveTab('export')} />
                   </div>
                 </div>
               </div>
             </div>
           </>
+        )}
+
+        {activeTab === 'governance' && (
+          <div className="space-y-8">
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <GrowthCard label="Golden Fixtures Total" value={stats?.governance?.goldenFixturesTotal ?? '...'} trend="Configured" up={true} icon={FileText} color="blue" />
+              <GrowthCard label="Sourced & Verified" value={stats?.governance?.realFixtures ?? '...'} trend="Tier 1-4" up={true} icon={TrendingUp} color="emerald" />
+              <GrowthCard label="Approved Fixtures" value={stats?.governance?.approvedFixtures ?? '...'} trend="Signed Off" up={true} icon={Heart} color="amber" />
+            </section>
+            <div className="glass-panel rounded-[3rem] border border-black/5 p-10 bg-white/40">
+              <h3 className="text-xl font-bold theme-ink mb-8">Governance Status & Integrity</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <ReportList title="Golden Fixture Health" items={[
+                  { label: 'Total Golden Fixtures', val: stats?.governance?.goldenFixturesTotal ?? 0 },
+                  { label: 'Real Sourced Fixtures', val: stats?.governance?.realFixtures ?? 0 },
+                  { label: 'Council Approved Fixtures', val: stats?.governance?.approvedFixtures ?? 0 },
+                  { label: 'Open Integrity Findings', val: stats?.governance?.openIntegrityFindings ?? 0 },
+                ]} />
+                <ReportList title="Biographies & Moderation" items={[
+                  { label: 'Pending Dharm Veer Reviews', val: stats?.governance?.pendingDharmVeerReviews ?? 0 },
+                  { label: 'Total Moderation Reports', val: stats?.moderation?.totalReports ?? 0 },
+                  { label: 'Pending Moderation Reports', val: stats?.moderation?.pendingReports ?? 0 },
+                  { label: 'Resolved Moderation Reports', val: stats?.moderation?.resolvedReports ?? 0 },
+                ]} />
+              </div>
+            </div>
+          </div>
         )}
 
         {activeTab === 'finance' && (
@@ -131,13 +158,13 @@ function ReportCenterContent() {
         {activeTab === 'content' && (
           <div className="space-y-8">
             <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <GrowthCard label="Avg. Session Time" value="18m 42s" trend="4%" up={true} icon={Clock} color="amber" />
-              <GrowthCard label="Total Content Views" value="842k" trend="22%" up={true} icon={Globe} color="blue" />
-              <GrowthCard label="Interaction Rate" value="64%" trend="1%" up={true} icon={Heart} color="rose" />
+              <GrowthCard label="Active Sadhana Users" value={stats?.overview?.activeStreakSeekers?.toLocaleString() || '0'} trend="Real-time" up={true} icon={Clock} color="amber" />
+              <GrowthCard label="Total Registered Seekers" value={stats?.overview?.totalSeekers?.toLocaleString() || '0'} trend="Live DB" up={true} icon={Globe} color="blue" />
+              <GrowthCard label="Onboarding Completion" value={`${Math.round(((stats?.overview?.onboardedSeekers || 0) / (stats?.overview?.totalSeekers || 1)) * 100)}%`} trend="Verified" up={true} icon={Heart} color="rose" />
             </section>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <ReportList title="Most Engaging Kathas" items={stats?.intelligence?.topContent || []} />
-              <ReportList title="Sadhana Practice Popularity" items={[{ label: 'Mantra Japa', val: '42k sessions' }, { label: 'Nitya Karma', val: '28k sessions' }, { label: 'Pathshala Reading', val: '15k sessions' }]} />
+              <ReportList title="Most Engaging Kathas & Content" items={stats?.content?.topContent || []} />
+              <ReportList title="Sadhana Practice Activity" items={stats?.content?.sadhanaSessions || []} />
             </div>
           </div>
         )}
@@ -145,22 +172,17 @@ function ReportCenterContent() {
         {activeTab === 'lifecycle' && (
           <div className="space-y-8">
             <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <GrowthCard label="New Signups Today" value="+124" trend="12%" up={true} icon={Users} color="emerald" />
-              <GrowthCard label="Re-activated Users" value="14" trend="2%" up={true} icon={RefreshCw} color="blue" />
-              <GrowthCard label="Inactive (>30 Days)" value="1,204" trend="8%" up={false} icon={AlertCircle} color="rose" />
+              <GrowthCard label="Total Onboarded" value={stats?.overview?.onboardedSeekers?.toLocaleString() || '0'} trend="Live DB" up={true} icon={Users} color="emerald" />
+              <GrowthCard label="Streak Active Seekers" value={stats?.overview?.activeStreakSeekers?.toLocaleString() || '0'} trend="Active" up={true} icon={RefreshCw} color="blue" />
+              <GrowthCard label="Banned Accounts" value={stats?.overview?.bannedSeekers?.toLocaleString() || '0'} trend="Moderated" up={false} icon={AlertCircle} color="rose" />
             </section>
             <div className="glass-panel rounded-[3rem] border border-black/5 p-10 bg-white/40">
-              <h3 className="text-xl font-bold theme-ink mb-8">User Retention Cohorts</h3>
+              <h3 className="text-xl font-bold theme-ink mb-8">Tradition Distribution (Real Data)</h3>
               <div className="space-y-4">
-                {[{ label: 'Week 1 Retention', val: '72%' }, { label: 'Month 1 Retention', val: '54%' }, { label: 'Tradition-Specific Stickiness', val: '88% (Shiva)' }].map((cohort, i) => (
+                {(stats?.traditions || []).map((t: any, i: number) => (
                   <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-black/5">
-                    <span className="font-bold theme-ink">{cohort.label}</span>
-                    <div className="flex items-center gap-4">
-                      <div className="w-32 h-2 bg-black/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--premium-gold)]" style={{ width: cohort.val }} />
-                      </div>
-                      <span className="text-sm font-bold text-[var(--premium-gold)]">{cohort.val}</span>
-                    </div>
+                    <span className="font-bold theme-ink capitalize">{t.label}</span>
+                    <span className="text-sm font-bold text-[var(--premium-gold)]">{t.val}</span>
                   </div>
                 ))}
               </div>
@@ -255,9 +277,13 @@ function GrowthCard({ label, value, trend, up, icon: Icon, color }: any) {
   );
 }
 
-function CronLogList() {
-  const [logs, setLogs] = useState<any[]>([]);
+function CronLogList({ logs: initialLogs }: { logs?: any[] }) {
+  const [logs, setLogs] = useState<any[]>(initialLogs || []);
   useEffect(() => {
+    if (initialLogs && initialLogs.length > 0) {
+      setLogs(initialLogs);
+      return;
+    }
     async function fetchLogs() {
       try {
         const res = await fetch('/api/admin/logs');
@@ -268,21 +294,24 @@ function CronLogList() {
       }
     }
     fetchLogs();
-  }, []);
-  if (logs.length === 0) return <div className="py-10 text-center text-[var(--brand-muted)] text-xs italic">No recent logs found.</div>;
+  }, [initialLogs]);
+  if (logs.length === 0) return <div className="py-10 text-center text-[var(--brand-muted)] text-xs italic">No recent system or cron logs recorded.</div>;
   return (
     <div className="space-y-2">
       {logs.map((log: any) => (
         <div key={log.id} className="flex items-center justify-between p-4 rounded-2xl bg-white border border-black/5 hover:bg-black/5 transition-all">
           <div className="flex items-center gap-4">
-            <div className={`w-2 h-2 rounded-full ${log.status === 'success' ? 'bg-green-500' : 'bg-rose-500'}`} />
+            <div className={`w-2 h-2 rounded-full ${log.status === 'success' || !log.status ? 'bg-green-500' : 'bg-rose-500'}`} />
             <div>
-              <p className="text-xs font-bold theme-ink">{log.job_name}</p>
-              <p className="text-[10px] text-[var(--brand-muted)]">{new Date(log.created_at).toLocaleString()} · {log.execution_time}ms</p>
+              <p className="text-xs font-bold theme-ink">{log.job_name || log.action || 'System Process'}</p>
+              <p className="text-[10px] text-[var(--brand-muted)]">
+                {new Date(log.created_at).toLocaleString()}
+                {log.execution_time ? ` · ${log.execution_time}ms` : ''}
+              </p>
             </div>
           </div>
-          <span className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${log.status === 'success' ? 'text-green-600 bg-green-500/10' : 'text-rose-600 bg-rose-500/10'}`}>
-            {log.status}
+          <span className={`px-2 py-1 rounded-md text-[8px] font-black uppercase tracking-widest ${log.status === 'success' || !log.status ? 'text-green-600 bg-green-500/10' : 'text-rose-600 bg-rose-500/10'}`}>
+            {log.status || 'OK'}
           </span>
         </div>
       ))}
