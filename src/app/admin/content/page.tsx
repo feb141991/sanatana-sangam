@@ -12,6 +12,7 @@ import Link from 'next/link';
 
 type VerificationStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review';
 type StatFilter = 'pending' | 'ai_mismatch' | 'ai_not_checked' | 'manual_review' | 'audit_failed' | 'unsafe_route';
+type TypeFilter = 'major' | 'vrat' | 'regional';
 
 interface FestivalRow {
   id?: string;
@@ -95,6 +96,7 @@ export default function FestivalManagement() {
   const [stats, setStats]                   = useState<FestivalAdminStats | null>(null);
   const [source, setSource]                 = useState<'database' | 'fallback'>('fallback');
   const [activeFilter, setActiveFilter]     = useState<StatFilter | null>(null);
+  const [typeFilter, setTypeFilter]         = useState<TypeFilter | null>(null);
 
   const fetchFestivals = useCallback(async (year: number) => {
     setLoading(true);
@@ -128,8 +130,12 @@ export default function FestivalManagement() {
   }, [fetchFestivals, selectedYear]);
 
   const visibleFestivals = useMemo(() => {
-    if (!activeFilter) return festivals;
-    return festivals.filter((f) => {
+    let result = festivals;
+    if (typeFilter) {
+      result = result.filter(f => f.type === typeFilter);
+    }
+    if (!activeFilter) return result;
+    return result.filter((f) => {
       switch (activeFilter) {
         case 'pending':        return f.review_status !== 'reviewed';
         case 'ai_mismatch':   return f.verification_status === 'mismatch';
@@ -139,12 +145,11 @@ export default function FestivalManagement() {
         case 'unsafe_route':  {
           if (f.route_kind === 'vrat') return !f.route_slug;
           if (f.type !== 'vrat') return false;
-          // Mirrors server-side resolveVratSlug check: no route_slug on a vrat-type row
           return !f.route_slug;
         }
       }
     });
-  }, [festivals, activeFilter]);
+  }, [festivals, activeFilter, typeFilter]);
 
   function toggleFilter(f: StatFilter) {
     setActiveFilter(prev => prev === f ? null : f);
@@ -503,13 +508,33 @@ export default function FestivalManagement() {
         ) : (
           <>
             <div className="flex items-center justify-between px-2">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--brand-muted)]">
-                {visibleFestivals.length}{activeFilter ? ` of ${festivals.length}` : ''} festivals in {selectedYear}
-              </h2>
-              <div className="flex items-center gap-3">
-                {activeFilter && (
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--brand-muted)]">
+                  {visibleFestivals.length}{(activeFilter || typeFilter) ? ` of ${festivals.length}` : ''} festivals in {selectedYear}
+                </h2>
+                {/* Type filter pills */}
+                {(['major', 'vrat', 'regional'] as TypeFilter[]).map(t => (
                   <button
-                    onClick={() => setActiveFilter(null)}
+                    key={t}
+                    onClick={() => setTypeFilter(prev => prev === t ? null : t)}
+                    className={`px-3 py-1 rounded-full text-xs font-bold capitalize transition-all ${
+                      typeFilter === t
+                        ? t === 'major'    ? 'bg-amber-500 text-white'
+                          : t === 'vrat'   ? 'bg-violet-500 text-white'
+                          : 'bg-teal-500 text-white'
+                        : t === 'major'    ? 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/20'
+                          : t === 'vrat'   ? 'bg-violet-500/10 text-violet-700 hover:bg-violet-500/20'
+                          : 'bg-teal-500/10 text-teal-700 hover:bg-teal-500/20'
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-3">
+                {(activeFilter || typeFilter) && (
+                  <button
+                    onClick={() => { setActiveFilter(null); setTypeFilter(null); }}
                     className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[var(--premium-gold)] hover:opacity-70 transition-opacity"
                   >
                     <XCircle size={12} /> Clear filter
@@ -528,9 +553,20 @@ export default function FestivalManagement() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="text-3xl">{fest.emoji || '🕉️'}</div>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${fest.type === 'major' ? 'bg-amber-500/10 text-amber-600' : 'bg-blue-500/10 text-blue-600'}`}>
+                    <button
+                      onClick={() => setTypeFilter(prev => prev === fest.type ? null : fest.type as TypeFilter)}
+                      className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full transition-all ${
+                        typeFilter === fest.type
+                          ? fest.type === 'major'    ? 'bg-amber-500 text-white'
+                            : fest.type === 'vrat'   ? 'bg-violet-500 text-white'
+                            : 'bg-teal-500 text-white'
+                          : fest.type === 'major'    ? 'bg-amber-500/10 text-amber-700 hover:bg-amber-500/20'
+                            : fest.type === 'vrat'   ? 'bg-violet-500/10 text-violet-700 hover:bg-violet-500/20'
+                            : 'bg-teal-500/10 text-teal-700 hover:bg-teal-500/20'
+                      }`}
+                    >
                       {fest.type}
-                    </span>
+                    </button>
                   </div>
                   <h3 className="text-lg font-bold theme-ink">{fest.name}</h3>
                   <p className="text-xs text-[var(--brand-muted)] mt-1">
