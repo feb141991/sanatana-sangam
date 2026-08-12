@@ -76,16 +76,10 @@ export const PHASE2_OBSERVANCE_SLUGS: string[] = [
 ];
 
 // ── Load fixtures (at module scope so they can be reused across describe blocks) ─
+// Top-level await: golden fixtures now come from Supabase, not files.
 
-let goldenFixtures: GoldenFixture[];
-let snapshotFixtures: SnapshotFixture[];
-
-try {
-  goldenFixtures = loadGoldenFixtures();
-  snapshotFixtures = loadSnapshotFixtures();
-} catch (e) {
-  throw e;
-}
+const goldenFixtures: GoldenFixture[] = await loadGoldenFixtures();
+const snapshotFixtures: SnapshotFixture[] = loadSnapshotFixtures();
 
 // ── Engine Evaluation Cache ──────────────────────────────────────────────────
 

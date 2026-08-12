@@ -1,26 +1,37 @@
 /**
  * generate-golden-placeholders.ts
  *
- * Creates placeholder golden fixture files for the 18 Phase-2 observances.
+ * Inserts placeholder golden_fixtures rows for the 18 Phase-2 observances.
  * ALL `expected` values are null and `approved` is false.
  *
  * *** CRITICAL: DO NOT populate expected values from model output. ***
  * *** Per source-governance.md §6: model output is NEVER a source. ***
- * *** These files require human review against a cited Tier 1-4 source. ***
+ * *** These rows require human review against a cited Tier 1-4 source, via
+ * *** /admin/calendar-governance. ***
  *
  * Run: npx tsx scripts/generate-golden-placeholders.ts
  *
- * After running, for each file:
+ * After running, for each row (in the admin GUI, not by hand-editing files --
+ * golden fixtures moved to public.golden_fixtures):
  *   1. Locate the festival date in a Tier 1-4 source (e.g. Rashtriya Panchang).
  *   2. Fill in `expected.civilDate` manually.
  *   3. Fill in the `source` block with the citation.
  *   4. Set `approved: true` after council sign-off.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
+import { resolve } from 'node:path';
+import { createClient } from '@supabase/supabase-js';
+import { config as loadDotenv } from 'dotenv';
 
-const GOLDEN_DIR = path.resolve(__dirname, '..', '__fixtures__', 'golden');
+loadDotenv({ path: resolve(__dirname, '../../../.env.local') });
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !key) {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in env');
+  process.exit(1);
+}
+const supabase = createClient(url, key);
 
 // Priority locations for golden fixtures (the ones most likely to differ in results)
 const GOLDEN_LOCATIONS = [
@@ -71,32 +82,17 @@ function makeCaseId(
   return `${slug}__${year}__${locPart}__${calPart}`;
 }
 
-function main(): void {
-  fs.mkdirSync(GOLDEN_DIR, { recursive: true });
-
-  let generated = 0;
-  let skipped   = 0;
-
-  console.log('\n  📋 Golden placeholder generator');
-  console.log('  *** CRITICAL: expected values are null. Human review required. ***');
-  console.log('  *** Never populate expected values from model output.           ***\n');
+async function main(): Promise<void> {
+  const rows: Array<Record<string, unknown>> = [];
 
   for (const year of GOLDEN_YEARS) {
     for (const slug of PHASE2_SLUGS) {
       for (const location of GOLDEN_LOCATIONS) {
         for (const profile of GOLDEN_PROFILES) {
-          const caseId  = makeCaseId(slug, year, location, profile);
-          const outPath = path.join(GOLDEN_DIR, `${caseId}.json`);
-
-          if (fs.existsSync(outPath)) {
-            skipped++;
-            continue;
-          }
-
-          const placeholder = {
-            $schema: 'https://shoonaya.app/schemas/fixture/golden/v1',
-            caseId,
-            festivalId: slug,
+          const caseId = makeCaseId(slug, year, location, profile);
+          rows.push({
+            case_id: caseId,
+            festival_id: slug,
             year,
             location: {
               label: location.label,
@@ -109,14 +105,6 @@ function main(): void {
               tradition: profile.tradition,
             },
             expected: null,
-            // ── TODO: fill in expected after human review ──
-            // "expected": {
-            //   "civilDate": "YYYY-MM-DD",   ← from Tier 1-4 source only
-            //   "monthLabel": null,
-            //   "windows": null,
-            //   "reasonCodes": null,
-            //   "alternativeCount": null
-            // },
             tolerance: { windowMinutes: 2 },
             source: {
               tier: 1,
@@ -127,22 +115,34 @@ function main(): void {
             },
             reasoning: `TODO: Explain why the engine produces the expected date for ${slug} ${year} at ${location.label} under ${profile.calendar}.`,
             approved: false,
-          };
-
-          fs.writeFileSync(outPath, JSON.stringify(placeholder, null, 2) + '\n', 'utf-8');
-          generated++;
+          });
         }
       }
     }
   }
 
-  console.log(`  ✅ Created: ${generated} golden placeholder(s)`);
-  if (skipped > 0) {
-    console.log(`  ⏭️  Skipped: ${skipped} (already existed)`);
+  console.log('\n  📋 Golden placeholder generator (writing to golden_fixtures)');
+  console.log('  *** CRITICAL: expected values are null. Human review required. ***');
+  console.log('  *** Never populate expected values from model output.           ***\n');
+
+  // ignoreDuplicates: an existing row (already sourced or mid-review) must
+  // never be silently overwritten back to a TODO placeholder by a re-run.
+  const { data, error } = await supabase
+    .from('golden_fixtures')
+    .upsert(rows, { onConflict: 'case_id', ignoreDuplicates: true })
+    .select('case_id');
+
+  if (error) {
+    console.error('Insert failed:', error);
+    process.exit(1);
   }
-  console.log('\n  Next steps for each file:');
+
+  const inserted = data?.length ?? 0;
+  console.log(`  ✅ Inserted: ${inserted} new golden placeholder row(s)`);
+  console.log(`  ⏭️  Skipped: ${rows.length - inserted} (already existed)`);
+  console.log('\n  Next steps for each row:');
   console.log('    1. Find the date in Rashtriya Panchang or another Tier 1-4 source.');
-  console.log('    2. Manually set expected.civilDate to the cited date.');
+  console.log('    2. In /admin/calendar-governance, set expected.civilDate to the cited date.');
   console.log('    3. Update the source block with the full citation.');
   console.log('    4. Submit for council review, then set approved: true.\n');
 }

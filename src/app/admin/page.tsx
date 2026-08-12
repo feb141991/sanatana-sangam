@@ -155,12 +155,18 @@ export default function AdminDashboard() {
                   title="Mandali Hub" 
                   desc="Manage local spiritual community chapters." 
                 />
-                <CommandLink 
+                <CommandLink
                   href="/admin/dharm-veer-review"
-                  icon={BookOpen} 
-                  title="Dharm Veer Review Queue" 
-                  desc="Approve or reject auto-sourced biographies before they go live." 
+                  icon={BookOpen}
+                  title="Dharm Veer Review Queue"
+                  desc="Approve or reject auto-sourced biographies before they go live."
                   count={stats.pendingDharmVeerReview}
+                />
+                <CommandLink
+                  href="/admin/calendar-governance"
+                  icon={BarChart3}
+                  title="Calendar Governance"
+                  desc="Golden-fixture sourcing, disputed variant review, and coverage by tradition."
                 />
               </div>
             </section>

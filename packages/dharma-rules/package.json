@@ -17,6 +17,8 @@
     "vitest": "^4.1.4"
   },
   "dependencies": {
-    "@sangam/panchang-engine": "*"
+    "@sangam/panchang-engine": "*",
+    "@supabase/supabase-js": "^2.112.3",
+    "dotenv": "^17.4.2"
   }
 }

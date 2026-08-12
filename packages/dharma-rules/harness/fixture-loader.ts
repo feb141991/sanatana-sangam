@@ -3,25 +3,60 @@
  *
  * Loads and validates golden and snapshot fixtures.
  *
+ * GOLDEN FIXTURES LIVE IN THE DATABASE (`public.golden_fixtures`), NOT FILES.
+ * They moved off git-tracked JSON so the admin governance GUI
+ * (/admin/calendar-governance) can read and update approval state directly --
+ * a council decision no longer requires a file edit + commit. `loadGoldenFixtures`
+ * is therefore async and requires SUPABASE_SERVICE_ROLE_KEY (the table is RLS-
+ * locked to service-role only, matching observance_materialisation_batches'
+ * posture -- an anon-key read would silently return zero rows, not an error,
+ * which is exactly the kind of failure that must be loud here).
+ *
+ * Snapshot fixtures are UNCHANGED -- still file-based. They are behaviour
+ * tripwires, not sourced correctness claims, so there is no council-approval
+ * workflow that would benefit from a DB-backed GUI the way golden fixtures do.
+ *
  * Key invariants enforced here (not just in tests):
- * - A file in golden/ MUST have a `source` block with tier 1-4. Fail if missing.
+ * - Every golden_fixtures row MUST have a `source` block with tier 1-4. Fail if missing.
  * - A file in snapshot/ MUST NOT have a `source` block.
- * - The two directories must never mix types (detected by schema + structural check).
- * - Schema validation runs against the published JSON Schema at load time.
+ * - Schema validation runs against the published JSON Schema at load time, for
+ *   both the DB rows and the snapshot files -- a malformed row written by the
+ *   admin GUI must fail exactly as loudly as a malformed file used to.
  * - Canonical logical fixture identity is computed for governance checks.
  */
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, resolve, extname } from 'node:path';
 import Ajv from 'ajv';
+import { createClient } from '@supabase/supabase-js';
+import { config as loadDotenv } from 'dotenv';
+
+// Repo root's .env.local carries NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
+// regardless of whether this module is loaded from the Next app, a `tsx` script,
+// or vitest in this package -- none of those three otherwise agree on env loading.
+loadDotenv({ path: resolve(__dirname, '../../../.env.local') });
 
 // ── Path constants ──────────────────────────────────────────────────────────
 
 const FIXTURES_ROOT = resolve(__dirname, '../__fixtures__');
-export const GOLDEN_DIR    = join(FIXTURES_ROOT, 'golden');
 export const SNAPSHOT_DIR  = join(FIXTURES_ROOT, 'snapshot');
 const INVALID_DIR          = join(FIXTURES_ROOT, 'fixtures-invalid');
 const SCHEMAS_DIR          = join(FIXTURES_ROOT, 'schemas');
+
+// ── DB client for golden_fixtures ───────────────────────────────────────────
+
+function goldenFixturesClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      'loadGoldenFixtures() requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY. ' +
+      'golden_fixtures is RLS-locked to service-role only -- there is no anon-key fallback, ' +
+      'because that would silently return an empty fixture set instead of failing loudly.',
+    );
+  }
+  return createClient(url, key);
+}
 
 // ── Schema loader ───────────────────────────────────────────────────────────
 
@@ -80,7 +115,7 @@ export interface GoldenFixture {
   source: GoldenSource;
   reasoning: string;
   approved: boolean;
-  _filePath: string; // injected by loader, not in schema
+  _filePath: string; // "db:golden_fixtures" for DB-backed golden rows; a real path for snapshot files
 }
 
 export interface SnapshotCaptured {
@@ -242,26 +277,53 @@ function parseJson(filePath: string): unknown {
 }
 
 /**
- * Load and validate all golden fixtures.
+ * Load and validate all golden fixtures from `public.golden_fixtures`.
+ *
+ * Async because it's a DB read, unlike every other loader in this file.
+ * Every row is put back through the exact same golden.schema.json validation
+ * a file used to get, so a malformed row (e.g. written by the admin GUI) is
+ * caught here rather than surfacing as a confusing engine-comparison failure
+ * three functions later.
  */
-export function loadGoldenFixtures(): GoldenFixture[] {
-  const files = walkJsonFiles(GOLDEN_DIR);
-  return files.map(filePath => {
-    const raw = parseJson(filePath) as Record<string, unknown>;
+export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
+  const supabase = goldenFixturesClient();
+  const { data, error } = await supabase
+    .from('golden_fixtures')
+    .select('case_id, festival_id, year, location, profile, expected, tolerance, source, reasoning, approved');
+
+  if (error) {
+    throw new Error(`Failed to load golden_fixtures from Supabase: ${error.message}`);
+  }
+
+  return (data ?? []).map(row => {
+    const raw: Record<string, unknown> = {
+      caseId: row.case_id,
+      festivalId: row.festival_id,
+      year: row.year,
+      location: row.location,
+      profile: row.profile,
+      expected: row.expected,
+      tolerance: row.tolerance,
+      source: row.source,
+      reasoning: row.reasoning,
+      approved: row.approved,
+    };
+
+    const virtualPath = `db:golden_fixtures#${row.case_id}`;
 
     const valid = validateGolden(raw);
     if (!valid) {
-      throw new FixtureValidationError(filePath, validateGolden.errors ?? []);
+      throw new FixtureValidationError(virtualPath, validateGolden.errors ?? []);
     }
 
     if (!('source' in raw) || raw['source'] == null) {
       throw new FixtureDirectoryError(
-        'Golden fixture missing required `source` block — move to snapshot/ or add a Tier 1-4 source',
-        filePath,
+        'Golden fixture missing required `source` block — every golden_fixtures row must cite a Tier 1-4 source',
+        virtualPath,
       );
     }
 
-    return { ...(raw as unknown as GoldenFixture), _filePath: filePath };
+    return { ...(raw as unknown as GoldenFixture), _filePath: virtualPath };
   });
 }
 
