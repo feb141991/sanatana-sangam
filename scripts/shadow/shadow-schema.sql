@@ -20,6 +20,19 @@ CREATE TABLE calendar_profiles (
   updated_at        timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE tradition_profiles (
+  slug                 text PRIMARY KEY,
+  display_name         text NOT NULL,
+  ekadashi_method      text NOT NULL,
+  janmashtami_method   text NOT NULL,
+  shivaratri_method    text NOT NULL,
+  paran_rule           text NOT NULL,
+  version              text NOT NULL DEFAULT '1.0.0',
+  scholarly_status     text NOT NULL DEFAULT '[S] ratification pending',
+  created_at           timestamptz NOT NULL DEFAULT now(),
+  updated_at           timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE TABLE observance_definitions (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at          timestamptz NOT NULL DEFAULT now(),

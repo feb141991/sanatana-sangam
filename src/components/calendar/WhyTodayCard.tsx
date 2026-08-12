@@ -86,7 +86,7 @@ export function WhyTodayCard({ observance, context, onOpenModal }: WhyTodayCardP
           onClick={onOpenModal}
           className="w-full min-h-[44px] rounded-full border border-[var(--premium-gold,#C8924A)] text-[var(--premium-gold,#C8924A)] hover:bg-[rgba(200,146,74,0.08)] font-bold text-xs transition-colors flex items-center justify-center"
         >
-          View Full Breakdown & Pramana Sources →
+          View Full Breakdown →
         </button>
       )}
     </div>

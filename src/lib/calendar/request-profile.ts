@@ -29,7 +29,16 @@ import type { NextRequest } from 'next/server';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getApiUser } from '@/lib/api-auth';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { resolveCalendarContext, type ResolvedCalendarContext } from '@/lib/calendar/calendar-context';
+import {
+  resolveCalendarContext,
+  type CalendarEra,
+  type CalendarProfileDefinition,
+  type EkadashiMethod,
+  type JanmashtamiMethod,
+  type MonthSystem,
+  type ResolvedCalendarContext,
+  type TraditionProfileDefinition,
+} from '@/lib/calendar/calendar-context';
 
 export const DEFAULT_CALENDAR_PROFILE = 'legacy-ujjain';
 
@@ -39,6 +48,7 @@ export interface RequestProfile {
   calendarProfile: string;
   tradition: string;
   sampradaya: string | null;
+  ekadashiMethod: EkadashiMethod;
   /** Pure ResolvedCalendarContext resolved once per request */
   context: ResolvedCalendarContext;
   /** True when a user was resolved -- useful for cache-control decisions. */
@@ -46,21 +56,40 @@ export interface RequestProfile {
   /**
    * Credentials were PRESENT but did not authenticate -- an expired or malformed
    * token, say. Distinct from a guest, who sends none.
-   *
-   * Both used to collapse into "no user", so a signed-in native client whose
-   * token had expired was quietly served the default calendar and had no way to
-   * discover it needed to refresh. Silently degrading someone's calendar is a
-   * worse outcome than telling them to sign in again.
    */
   invalidCredentials: boolean;
   /**
    * The profile READ failed -- a database or RLS fault, not an absent row.
-   *
-   * A missing row is normal (a user who has set nothing) and correctly falls back
-   * to defaults. A failed read is a fault, and answering it with 'legacy-ujjain'
-   * presents a guess as the user's own setting.
+   * A missing row is normal and falls back to unspecified defaults.
+   * A failed read is a fault, returning an explicit API error rather than guessing.
    */
   profileError: Error | null;
+}
+
+function toMonthSystem(value: unknown): MonthSystem {
+  return value === 'amanta' || value === 'purnimanta' || value === 'solar'
+    ? value
+    : 'unknown';
+}
+
+function toCalendarEra(value: unknown): CalendarEra {
+  return value === 'vikram_north' ||
+    value === 'vikram_gujarat' ||
+    value === 'shaka' ||
+    value === 'kollam' ||
+    value === 'bengali_san' ||
+    value === 'bikram_sambat' ||
+    value === 'nanakshahi'
+    ? value
+    : 'unknown';
+}
+
+function toEkadashiMethod(value: unknown): EkadashiMethod {
+  return value === 'smarta' || value === 'vaishnava_suddha' ? value : 'unknown';
+}
+
+function toJanmashtamiMethod(value: unknown): JanmashtamiMethod {
+  return value === 'smarta_nishita' || value === 'vaishnava_rohini' ? value : 'unknown';
 }
 
 export async function resolveRequestProfile(
@@ -68,12 +97,8 @@ export async function resolveRequestProfile(
   requested: { tradition: string; calendarProfile: string },
 ): Promise<RequestProfile> {
   const auth = await getApiUser(request);
-  // getApiUser returns a null client for anonymous callers; the calendar is
-  // readable without signing in, so fall back rather than rejecting.
   const supabase = auth.supabase ?? (await createServerSupabaseClient());
 
-  // Did the caller even attempt to authenticate? getApiUser reports only whether
-  // it succeeded, and "guest" and "broken token" need different answers.
   const hasBearer = !!request.headers?.get?.('authorization');
   const hasSessionCookie = (request.cookies?.getAll?.() ?? []).some(c => c.name.startsWith('sb-'));
   const invalidCredentials = !auth.user && (hasBearer || hasSessionCookie);
@@ -83,6 +108,8 @@ export async function resolveRequestProfile(
   let sampradaya: string | null = null;
   let profileError: Error | null = null;
   let userLocation: any = null;
+  let calendarProfileDefinition: CalendarProfileDefinition | null = null;
+  let traditionProfileDefinition: TraditionProfileDefinition | null = null;
 
   if (auth.user) {
     const { data: profile, error } = await supabase
@@ -91,27 +118,25 @@ export async function resolveRequestProfile(
       .eq('id', auth.user.id)
       .single();
 
-    // PGRST116 is `.single()` finding no row -- an ordinary state for a user who
-    // has chosen nothing, and correctly handled by the defaults below. Anything
-    // else is a real failure and must not masquerade as "user has no settings".
     if (error && (error as { code?: string }).code !== 'PGRST116') {
       profileError = new Error(error.message ?? 'profile read failed');
     }
 
     if (profile) {
-      // Explicit query parameters still win for the two fields a caller can
-      // legitimately ask for.
       if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
       if (tradition === 'all') tradition = profile.tradition || 'all';
-      // Never overridable from the query string: one user must not be able to
-      // request another's sampradaya, and there is no reason to.
       sampradaya = profile.sampradaya || null;
-      userLocation = (profile.latitude != null && profile.longitude != null)
+      userLocation = (
+        profile.latitude != null &&
+        profile.longitude != null &&
+        typeof profile.timezone === 'string' &&
+        profile.timezone.trim().length > 0
+      )
         ? {
             label: [profile.city, profile.country].filter(Boolean).join(', ') || 'Custom Location',
             latitude: Number(profile.latitude),
             longitude: Number(profile.longitude),
-            timezone: profile.timezone || 'Asia/Kolkata',
+            timezone: profile.timezone.trim(),
             city: profile.city || null,
             country: profile.country || null,
           }
@@ -121,10 +146,56 @@ export async function resolveRequestProfile(
 
   if (!calendarProfile) calendarProfile = DEFAULT_CALENDAR_PROFILE;
 
+  if (!profileError) {
+    const targetTraditionSlug = sampradaya || (auth.user && tradition === 'hindu' ? 'unspecified' : null);
+    const calendarQuery = supabase
+      .from('calendar_profiles')
+      .select('slug, month_system, era')
+      .eq('slug', calendarProfile)
+      .maybeSingle();
+    const traditionQuery = targetTraditionSlug
+      ? supabase
+          .from('tradition_profiles')
+          .select('slug, ekadashi_method, janmashtami_method')
+          .eq('slug', targetTraditionSlug)
+          .maybeSingle()
+      : Promise.resolve({ data: null, error: null });
+
+    const [calendarResult, traditionResult] = await Promise.all([calendarQuery, traditionQuery]);
+
+    if (calendarResult.error) {
+      profileError = new Error(calendarResult.error.message ?? 'calendar profile read failed');
+    } else if (traditionResult.error) {
+      profileError = new Error(traditionResult.error.message ?? 'tradition profile read failed');
+    } else {
+      const calendarRow = calendarResult.data;
+      if (calendarRow?.slug) {
+        calendarProfileDefinition = {
+          slug: calendarRow.slug,
+          monthSystem: toMonthSystem(calendarRow.month_system),
+          era: toCalendarEra(calendarRow.era),
+        };
+      }
+
+      const traditionRow = traditionResult.data;
+      if (traditionRow?.slug) {
+        traditionProfileDefinition = {
+          slug: traditionRow.slug,
+          ekadashiMethod: toEkadashiMethod(traditionRow.ekadashi_method),
+          janmashtamiMethod: toJanmashtamiMethod(traditionRow.janmashtami_method),
+        };
+      }
+    }
+  }
+
+  const selectedTraditionProfile = traditionProfileDefinition?.slug ?? null;
+
   // Resolve pure ResolvedCalendarContext ONCE per request
   const context = resolveCalendarContext({
     calendarProfile: calendarProfile || null,
-    traditionProfile: sampradaya || (tradition !== 'all' ? tradition : null),
+    traditionProfile: selectedTraditionProfile,
+    calendarProfileDefinition: profileError ? null : calendarProfileDefinition,
+    traditionProfileDefinition: profileError ? null : traditionProfileDefinition,
     location: userLocation,
     isAuthenticated: !!auth.user,
     invalidCredentials,
@@ -132,28 +203,20 @@ export async function resolveRequestProfile(
   });
 
   return {
-    supabase, calendarProfile, tradition, sampradaya, context,
+    supabase,
+    calendarProfile,
+    tradition,
+    sampradaya,
+    ekadashiMethod: context.ekadashiMethod,
+    context,
     isAuthenticated: !!auth.user,
     invalidCredentials,
     profileError,
   };
 }
 
-/**
- * Days of over-fetch on each side of the requested window.
- *
- * Profile precedence is decided before the window is applied, so the query has to
- * return rows just outside it. Without the pad, a festival the chosen profile
- * places on 1 September and the legacy fallback places on 31 August would, in an
- * August query, arrive as a legacy row alone -- indistinguishable from "never
- * materialised for this profile", which is what publishes the fallback.
- *
- * 31 days covers a full month-name shift, the largest divergence these profiles
- * express. The cost is bounded: these tables hold hundreds of rows, not millions.
- */
 export const PROFILE_RESOLUTION_PAD_DAYS = 31;
 
-/** Shifts a YYYY-MM-DD date string by whole days, in UTC. */
 export function shiftDate(dateStr: string, days: number): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);

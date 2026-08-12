@@ -9,8 +9,8 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "validate:rules": "npx tsx scripts/validate-rules.ts",
-    "prebuild": "npx tsx scripts/validate-rules.ts && npm run build --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve --workspace=@sangam/pramana-eval",
-    "prepare": "npm run build --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve --workspace=@sangam/pramana-eval",
+    "prebuild": "npx tsx scripts/validate-rules.ts && npm run build --workspace=@sangam/panchang-engine --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve --workspace=@sangam/pramana-eval",
+    "prepare": "npm run build --workspace=@sangam/panchang-engine --workspace=@sangam/pramana-core --workspace=@sangam/pramana-serve --workspace=@sangam/pramana-eval",
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx",
     "compare:gita-retrieval": "npx tsx scripts/compare_retrieval.ts",
@@ -30,8 +30,8 @@
     "generate:splash": "npx tsx scripts/generate-splash.ts",
     "minify:static-html": "node scripts/minify-static-html.mjs",
     "test:indexnow": "node --test scripts/submit-indexnow.test.mjs",
-    "verify:calendar": "npm run verify:calendar --workspace=@sangam/dharma-rules",
-    "verify:harness": "npm run verify:harness --workspace=@sangam/dharma-rules",
+    "verify:calendar": "npm run build --workspace=@sangam/panchang-engine && npm run verify:calendar --workspace=@sangam/dharma-rules",
+    "verify:harness": "npm run build --workspace=@sangam/panchang-engine && npm run verify:harness --workspace=@sangam/dharma-rules",
     "generate:snapshots": "npm run generate:snapshots --workspace=@sangam/dharma-rules",
     "generate:golden-placeholders": "npx tsx packages/dharma-rules/scripts/generate-golden-placeholders.ts",
     "demo:d15-lock-override": "npx tsx scripts/demo-d15-lock-override.ts",
@@ -49,7 +49,8 @@
     "generate:fallback": "npx tsx scripts/generate-festival-fallback.ts",
     "check:adhika": "npx tsx scripts/check-adhika.ts",
     "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts",
-    "verify:materialisation-shadow": "bash scripts/shadow/verify-materialisation-shadow.sh"
+    "verify:materialisation-shadow": "bash scripts/shadow/verify-materialisation-shadow.sh",
+    "verify:review-queue-shadow": "bash scripts/shadow/verify-review-queue-shadow.sh"
   },
   "dependencies": {
     "@sangam/pathshala-engine": "*",

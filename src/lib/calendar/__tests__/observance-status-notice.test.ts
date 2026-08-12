@@ -8,7 +8,7 @@
  * 3. Unsupported profile / unknown context resolves isUnderReview = true and does NOT pick candidate 0 as a guessed date.
  * 4. Yogini Ekadashi dual sourced readings format cleanly with source citations.
  * 5. Location-only date differences set isLocationVarianceOnly = true and label location effect, not a tradition dispute.
- * 6. Source provenance formats raw strings (e.g. rp_s30) into clean human labels without bare IDs.
+ * 6. Source provenance is rendered only from typed, tiered source metadata.
  * 7. Engine error state handling.
  */
 
@@ -30,7 +30,11 @@ describe('ObservanceStatusNotice Helper & Display State Logic', () => {
         civilDate: '2026-07-10',
         isPrimary: true,
         profileEligibility: 'Matches your Smarta profile',
-        sourceRef: { title: 'Rashtriya Panchang, Saka 1948, p.30', tier: 1 },
+        sourceRef: {
+          sourceName: 'Rashtriya Panchang, Saka 1948',
+          tier: 1,
+          pageOrSection: 'p.30',
+        },
       },
       {
         variantKey: 'vaishnava',
@@ -38,7 +42,11 @@ describe('ObservanceStatusNotice Helper & Display State Logic', () => {
         civilDate: '2026-07-11',
         isPrimary: false,
         profileEligibility: 'Applies to Vaishnava profile',
-        sourceRef: { title: 'Rashtriya Panchang, Saka 1948, p.30', tier: 1 },
+        sourceRef: {
+          sourceName: 'Rashtriya Panchang, Saka 1948',
+          tier: 1,
+          pageOrSection: 'p.30',
+        },
       },
     ];
 
@@ -114,13 +122,21 @@ describe('ObservanceStatusNotice Helper & Display State Logic', () => {
       {
         profile: { calendar: 'north_indian_purnimanta', tradition: 'smarta' },
         civilDate: '2026-07-10',
-        sourceRef: 'rp_s30',
+        sourceRef: {
+          sourceName: 'Rashtriya Panchang, Saka 1948',
+          tier: 1,
+          pageOrSection: 'p.30',
+        },
         note: 'Smarta sunrise tithi reading',
       },
       {
         profile: { calendar: 'north_indian_purnimanta', tradition: 'vaishnava_vidhava' },
         civilDate: '2026-07-11',
-        sourceRef: 'rp_s30',
+        sourceRef: {
+          sourceName: 'Rashtriya Panchang, Saka 1948',
+          tier: 1,
+          pageOrSection: 'p.30',
+        },
         note: 'Vaishnava Suddha reading',
       },
     ];
@@ -147,10 +163,13 @@ describe('ObservanceStatusNotice Helper & Display State Logic', () => {
     expect(state.isLocationVarianceOnly).toBe(true);
   });
 
-  it('6. Formats source provenance without bare string IDs like rp_s30', () => {
-    expect(formatSourceProvenance('rp_s30')).toBe('Tier 1: Rashtriya Panchang, Saka 1948, p.30');
-    expect(formatSourceProvenance({ ref: 'rp_s30', tier: 1 })).toBe('Tier 1: Rashtriya Panchang, Saka 1948, p.30');
-    expect(formatSourceProvenance(null)).toBe('Tier 1: Rashtriya Panchang Saka 1948 Standard');
+  it('6. Formats only typed source metadata and fails closed when it is absent', () => {
+    expect(formatSourceProvenance({
+      sourceName: 'Rashtriya Panchang, Saka 1948',
+      tier: 1,
+      pageOrSection: 'p.30',
+    })).toBe('Tier 1: Rashtriya Panchang, Saka 1948, p.30');
+    expect(formatSourceProvenance(null)).toBe('Source metadata unavailable');
   });
 
   it('7. Formats tradition labels for all recognized sampradayas', () => {

@@ -2,6 +2,7 @@ import rulesJson from '../../../packages/dharma-rules/src/festivals/rules.json';
 
 export interface DisputedVariant {
   variant_key: string;
+  spiritual_tradition?: string;
   civil_date: string;
   source_ref: string;
   review_status: string;
@@ -46,6 +47,7 @@ export interface ObservanceRule {
   // when variant_key is absent. See ruleIdentityKey() in engine.ts.
   variant_key?: string;
   sampradaya?: string;
+  spiritual_tradition?: string;
 
   // ── D1+D2 Corrected engine fields (Tracker 3.7, Stage 2) ─────────────────
   corrected_lunar_masa_name?: string;
@@ -69,6 +71,8 @@ export interface ObservanceRule {
   /** Do we ship it now? A scheduling decision, distinct from derivability. */
   launch_status?: 'included' | 'deferred';
   ratification_note?: string;
+  /** Tier-1..4 source citation for the rule's own (non-disputed) date. */
+  citation?: string;
   /**
    * Years whose computed date is contested and must not be published.
    * Per-year because a rule can be sound in one year and disputed in the next.

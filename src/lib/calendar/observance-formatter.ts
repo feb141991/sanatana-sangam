@@ -1,7 +1,7 @@
-import { calculateObservancesForYear } from './engine';
 import { isBatchTrustworthy } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
 import { resolveCalendarContext, type ResolvedCalendarContext } from './calendar-context';
+import { selectTraditionVariant, type EkadashiVariantCandidate } from './ekadashi-selection';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -40,8 +40,13 @@ export interface ClientObservanceResult {
 
   // ObservanceResult contract
   festivalId: string;
+  variantKey?: string | null;
   status: 'resolved' | 'ambiguous' | 'unresolved' | 'under_review';
   civilDate: string | null;
+  /** Candidate dates may be disclosed for review, but never treated as confirmed. */
+  candidateDates: string[];
+  /** Used only to place a review item in a day/month response; never a confirmed date. */
+  reviewPlacementDate: string | null;
   vedicDay?: { start: string; end: string } | null;
   windows?: {
     observance?: { start: string; end: string } | null;
@@ -66,6 +71,7 @@ export interface ClientObservanceResult {
   };
   reasons: EvaluationReason[];
   alternatives: Array<{
+    variantKey?: string | null;
     profile: {
       calendar: string;
       tradition: string;
@@ -214,15 +220,6 @@ export function formatOccurrencesToResults(
     if (seriesInstanceKey) instanceKey.set(result, seriesInstanceKey);
   };
 
-  // Keep a map of years to their baseline occurrences so we can look up fallback dates for unresolved ones
-  const baselineByYear = new Map<number, any[]>();
-  const getBaseline = (year: number) => {
-    if (!baselineByYear.has(year)) {
-      baselineByYear.set(year, calculateObservancesForYear(year));
-    }
-    return baselineByYear.get(year)!;
-  };
-
   // 1. Process resolved/disputed occurrences
   for (const row of occurrences) {
     const def = row.observance_definitions;
@@ -259,8 +256,11 @@ export function formatOccurrencesToResults(
 
       // ObservanceResult contract
       festivalId: def.slug,
+      variantKey: row.variant_key ?? null,
       status: row.review_status === 'needs_review' ? 'ambiguous' : 'resolved',
       civilDate: row.date,
+      candidateDates: row.date ? [row.date] : [],
+      reviewPlacementDate: row.date ?? null,
       vedicDay: null,
       windows: null,
       location: {
@@ -294,9 +294,6 @@ export function formatOccurrencesToResults(
     const def = row.observance_definitions;
     if (!def) continue;
 
-    const baseline = getBaseline(row.year);
-    const fallbackDate = baseline.find(occ => occ.slug === def.slug)?.date;
-    
     let candidateDatesArray: string[] = [];
     if (row.candidate_dates) {
       if (Array.isArray(row.candidate_dates)) {
@@ -327,9 +324,10 @@ export function formatOccurrencesToResults(
     // wrong one is not.
     const isEngineError = row.ambiguity_type === 'engine_error';
 
-    const targetDates = candidateDatesArray.length > 0
-      ? candidateDatesArray
-      : (fallbackDate ? [fallbackDate] : []);
+    // A queue item with no candidates remains available to the council in the
+    // persisted review queue, but cannot honestly be placed on a user calendar.
+    // Never rerun the engine here to manufacture a placement date.
+    const targetDates = candidateDatesArray;
 
     const evalDiagnostics: string[] = (row.evaluator_details?.diagnostics as any) || [];
 
@@ -360,8 +358,11 @@ export function formatOccurrencesToResults(
 
           // ObservanceResult contract
           festivalId: def.slug,
+          variantKey: row.variant_key ?? null,
           status: 'unresolved',
           civilDate: null, // "Do NOT show a guessed date with a caveat" -> must be null in contract!
+          candidateDates: candidateDatesArray,
+          reviewPlacementDate: d,
           vedicDay: null,
           windows: null,
           location: {
@@ -372,7 +373,7 @@ export function formatOccurrencesToResults(
           },
           profile: {
             calendar: row.calendar_profile || 'legacy-ujjain',
-            tradition: 'standard',
+            tradition: row.spiritual_tradition || 'unspecified',
           },
           versions: {
             panchangaCore: '1.0.0',
@@ -460,73 +461,60 @@ export function formatOccurrencesToResults(
       continue;
     }
 
-    // Multiple candidates/rows exist. Apply [1]/[2]/[3]/[4] classification.
-    // [4] Location Effect: rows share a tradition but differ in lat/lon.
-    // Filter out location-only duplicates for user's primary view (same tradition, different location).
-    // Check if the festival slug has a cited variant in rules.json ([1] DISPUTE).
     const isCitedDispute = CITED_VARIANT_SLUGS.has(slug);
 
-    // Group items by spiritual_tradition to detect [4] LOCATION EFFECT vs [1] DISPUTE
-    const itemsByTradition = new Map<string, ClientObservanceResult[]>();
+    const itemsByVariantKey = new Map<string, ClientObservanceResult[]>();
     for (const item of list) {
-      const trad = item.profile.tradition || 'standard';
-      if (!itemsByTradition.has(trad)) itemsByTradition.set(trad, []);
-      itemsByTradition.get(trad)!.push(item);
+      const key = item.variantKey || item.profile.tradition || 'standard';
+      if (!itemsByVariantKey.has(key)) itemsByVariantKey.set(key, []);
+      itemsByVariantKey.get(key)!.push(item);
     }
 
-    // Determine if we have genuine distinct traditions with cited dispute [1]
-    if (isCitedDispute && itemsByTradition.size > 1) {
-      // Check if user's tradition profile contract can resolve a primary variant
-      const isUnknownTradition = context.displayedTraditionProfile === 'unknown';
-      
-      if (isUnknownTradition) {
-        // Unresolved or unsupported profile returns under_review with candidates, never a guessed date
-        for (const item of list) {
-          item.status = 'under_review';
-          item.civilDate = null;
-          item.date = '';
-          item.isPrimary = false;
-        }
-        for (let i = 0; i < list.length; i++) {
-          const item = list[i];
-          const otherVariants = list.filter((_, idx) => idx !== i);
-          item.alternatives = otherVariants.map(other => ({
-            profile: other.profile,
-            civilDate: other.civilDate,
-            monthLabel: null,
-            note: 'Under Review',
-          }));
-        }
-      } else {
-        // Select primary based on context.ekadashiMethod / context.calculationMethodProfile
-        let primaryIndex = -1;
+    if (isCitedDispute && itemsByVariantKey.size > 1) {
+      const candidates: EkadashiVariantCandidate[] = list.map(item => ({
+        variantKey: item.variantKey || item.profile.tradition,
+        date: item.civilDate ?? item.date,
+        displayName: item.display_name,
+      }));
 
-        if (context.ekadashiMethod === 'vaishnava_suddha') {
-          primaryIndex = list.findIndex(item =>
-            item.profile.tradition === 'vaishnava_vidhava' ||
+      const isUnspecified = context.disclosureDiagnostics.isUnspecifiedLabel;
+      const targetLabel = isUnspecified ? 'unspecified' : context.displayedTraditionProfile;
+
+      const selectionMethod = slug === 'krishna-janmashtami'
+        ? context.janmashtamiMethod
+        : context.ekadashiMethod;
+      const selResult = selectTraditionVariant(candidates, selectionMethod, targetLabel, slug);
+
+      if (selResult.status === 'resolved' && selResult.selectedVariant) {
+        let primaryIndex = list.findIndex(item =>
+          (item.variantKey && item.variantKey === selResult.selectedVariant?.variantKey) ||
+          item.profile.tradition === selResult.selectedVariant?.variantKey ||
+          (selResult.selectedVariant?.variantKey === 'vaishnava_vidhava' && (
+            item.variantKey === 'vaishnava_vidhava' ||
             item.profile.tradition === 'vaishnava' ||
             item.profile.tradition === 'gaudiya_iskcon' ||
             item.profile.tradition === 'sri_vaishnava' ||
             item.profile.tradition === 'swaminarayan'
-          );
-        } else if (context.ekadashiMethod === 'smarta') {
-          primaryIndex = list.findIndex(item =>
-            item.profile.tradition === 'smarta' ||
-            item.profile.tradition === 'standard' ||
-            item.profile.tradition === 'unspecified'
-          );
-        }
-
-        if (primaryIndex === -1 && requestedSampradaya) {
-          primaryIndex = list.findIndex(item => item.profile.tradition === requestedSampradaya);
-        }
-        if (primaryIndex === -1) {
-          primaryIndex = 0;
-        }
+          ))
+        );
+        if (primaryIndex === -1) primaryIndex = 0;
 
         for (let i = 0; i < list.length; i++) {
           list[i].isPrimary = (i === primaryIndex);
-          if (context.disclosureDiagnostics.isUnspecifiedLabel && list[i].isPrimary) {
+          const isUnresolvedOrWithheld = list[i].reviewStatus === 'in_review' ||
+            list[i].reviewStatus === 'pending_review' ||
+            list[i].status === 'unresolved' ||
+            list[i].status === 'under_review';
+
+          if (isUnresolvedOrWithheld) {
+            list[i].status = 'under_review';
+            list[i].civilDate = null;
+            list[i].date = '';
+          } else {
+            list[i].status = 'resolved';
+          }
+
+          if (isUnspecified && list[i].isPrimary) {
             list[i].profile.tradition = 'unspecified';
             if (!list[i].diagnostics.includes('unspecified_tradition_default')) {
               list[i].diagnostics.push('unspecified_tradition_default');
@@ -534,15 +522,42 @@ export function formatOccurrencesToResults(
           }
         }
 
-        // Populate alternatives for all items in the group
         for (let i = 0; i < list.length; i++) {
           const item = list[i];
           const otherVariants = list.filter((_, idx) => idx !== i);
           item.alternatives = otherVariants.map(other => ({
+            variantKey: other.variantKey ?? null,
             profile: other.profile,
-            civilDate: other.civilDate,
+            civilDate: other.civilDate ?? other.reviewPlacementDate ?? other.candidateDates?.[0] ?? null,
+            sourceRefs: other.sourceRefs ?? [],
             monthLabel: null,
-            note: other.status === 'unresolved' ? 'Under Review' : null,
+            note: (other.status === 'unresolved' || other.status === 'under_review') ? 'Under Review' : null,
+          }));
+        }
+      } else {
+        const candidateDatesByItem = new Map(
+          list.map(item => [item, item.civilDate ?? item.candidateDates[0] ?? null]),
+        );
+        const allCandidateDates = Array.from(
+          new Set(Array.from(candidateDatesByItem.values()).filter((date): date is string => Boolean(date))),
+        );
+        for (const item of list) {
+          item.status = 'under_review';
+          item.civilDate = null;
+          item.date = '';
+          item.candidateDates = allCandidateDates;
+          item.reviewPlacementDate = candidateDatesByItem.get(item) ?? null;
+          item.isPrimary = false;
+        }
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i];
+          const otherVariants = list.filter((_, idx) => idx !== i);
+          item.alternatives = otherVariants.map(other => ({
+            variantKey: other.variantKey ?? null,
+            profile: other.profile,
+            civilDate: candidateDatesByItem.get(other) ?? null,
+            monthLabel: null,
+            note: 'Under Review',
           }));
         }
       }
@@ -575,4 +590,3 @@ export function formatOccurrencesToResults(
 
   return results;
 }
-

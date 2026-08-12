@@ -1,14 +1,54 @@
 import {
-  calculatePanchang,
+  calculatePanchang as calculatePanchangUncached,
   formatCivilDateInTz,
   parseCivilDateUtc,
   offsetCivilDateStr,
   getTzOffsetHours,
   LocationInput,
-  getLunarMonth,
+  getLunarMonth as getLunarMonthUncached,
 } from '../../../panchang-engine/src/index.js';
 import { getSunriseSunset } from '../../../panchang-engine/src/core/astronomy.js';
 import { getMoonRiseSet } from '../../../panchang-engine/src/core/moon-rise-set.js';
+
+/**
+ * `calculatePanchang`/`getLunarMonth` each run an astronomy bisection solver
+ * (~100ms+ per call). A single `evaluateVariant` call evaluates several
+ * conditions (paksha, tithi, lunar_month, ...) against the SAME civil date --
+ * and `calculateOccurrencesWithEvaluator` re-evaluates overlapping ±window-day
+ * ranges across every variant of a rule, so the same (instant, location)
+ * combination is recomputed dozens of times. Both are pure given their inputs,
+ * so a bounded memo removes duplicate solver runs without changing results.
+ * The limit prevents long-lived server processes from retaining every
+ * date/location combination they have ever evaluated.
+ */
+const EVALUATOR_CACHE_LIMIT = 4096;
+
+function memoizeBounded<T>(cache: Map<string, T>, key: string, compute: () => T): T {
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  const result = compute();
+  cache.set(key, result);
+  if (cache.size > EVALUATOR_CACHE_LIMIT) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
+  }
+  return result;
+}
+
+const panchangCache = new Map<string, ReturnType<typeof calculatePanchangUncached>>();
+function calculatePanchang(instant: Date, lat: number, lon: number): ReturnType<typeof calculatePanchangUncached> {
+  const key = `${instant.getTime()}|${lat}|${lon}`;
+  return memoizeBounded(panchangCache, key, () => calculatePanchangUncached(instant, lat, lon));
+}
+
+const lunarMonthCache = new Map<string, ReturnType<typeof getLunarMonthUncached>>();
+function getLunarMonth(
+  instant: Date,
+  system: Parameters<typeof getLunarMonthUncached>[1],
+): ReturnType<typeof getLunarMonthUncached> {
+  const key = `${instant.getTime()}|${system}`;
+  return memoizeBounded(lunarMonthCache, key, () => getLunarMonthUncached(instant, system));
+}
 
 import {
   RuleCondition,
@@ -68,8 +108,23 @@ function formatInstantInTz(instant: Date, tz: string): string {
   }
 }
 
+const periodWindowCache = new Map<string, PeriodWindow | null>();
+
 /** Computes the exact time window for a period on a civil date and location */
 export function getPeriodWindow(
+  period: PeriodType,
+  civilDateStr: string,
+  location: LocationInput
+): PeriodWindow | null {
+  const cacheKey = `${period}|${civilDateStr}|${location.lat}|${location.lon}|${location.tz}`;
+  return memoizeBounded(
+    periodWindowCache,
+    cacheKey,
+    () => computePeriodWindow(period, civilDateStr, location),
+  );
+}
+
+function computePeriodWindow(
   period: PeriodType,
   civilDateStr: string,
   location: LocationInput

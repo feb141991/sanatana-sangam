@@ -29,6 +29,8 @@ describe('Phase 5 "Why today?" Data Mapper (mapWhyTodayExplanation)', () => {
     festivalId: 'ram-navami',
     status: 'resolved',
     civilDate: '2026-04-26',
+    candidateDates: ['2026-04-26'],
+    reviewPlacementDate: '2026-04-26',
     vedicDay: { start: '06:05 AM', end: '06:08 AM (+1 day)' },
     windows: {
       observance: { start: '06:05 AM', end: '07:30 PM' },
@@ -59,7 +61,11 @@ describe('Phase 5 "Why today?" Data Mapper (mapWhyTodayExplanation)', () => {
     confidence: 'high',
     diagnostics: [],
     sourceRefs: [
-      { title: 'Rashtriya Panchang Saka 1948', tier: 1, citation: 'Page 42' } as any,
+      {
+        sourceName: 'Rashtriya Panchang Saka 1948',
+        tier: 1,
+        pageOrSection: 'Page 42',
+      },
     ],
     reviewStatus: 'reviewed',
     isPrimary: true,
@@ -165,6 +171,16 @@ describe('Phase 5 "Why today?" Data Mapper (mapWhyTodayExplanation)', () => {
     const context = resolveCalendarContext({
       calendarProfile: 'north_indian_purnimanta',
       traditionProfile: 'unspecified',
+      calendarProfileDefinition: {
+        slug: 'north_indian_purnimanta',
+        monthSystem: 'purnimanta',
+        era: 'vikram_north',
+      },
+      traditionProfileDefinition: {
+        slug: 'unspecified',
+        ekadashiMethod: 'smarta',
+        janmashtamiMethod: 'smarta_nishita',
+      },
     });
 
     const exp = mapWhyTodayExplanation(sampleResolvedResult, context);
@@ -185,5 +201,15 @@ describe('Phase 5 "Why today?" Data Mapper (mapWhyTodayExplanation)', () => {
     const exp = mapWhyTodayExplanation(debugResult);
     expect(exp.reasons[0].description).not.toContain('[debug: eval_code_4291]');
     expect(exp.reasons[0].description).toBe('Calculated using morning solar angle');
+  });
+
+  it('6. Never fabricates an authoritative source when provenance is absent', () => {
+    const exp = mapWhyTodayExplanation({
+      ...sampleResolvedResult,
+      sourceRefs: [],
+    });
+
+    expect(exp.sources).toEqual([]);
+    expect(exp.reviewState.statusLabel).toBe('Published Calendar Result');
   });
 });

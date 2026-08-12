@@ -7,6 +7,7 @@
  */
 
 import type { ResolvedCalendarContext } from '@/lib/calendar/calendar-context';
+import type { SourceReference } from '@sangam/dharma-rules';
 import type { ObservanceAlternative, ObservanceVariantItem } from './ObservanceStatusNotice';
 
 /** Formats tradition / sampradaya key to human label */
@@ -28,21 +29,10 @@ export function formatTraditionLabel(traditionKey?: string | null): string {
 }
 
 /** Formats source provenance object into clean human string without bare codes */
-export function formatSourceProvenance(source?: any): string {
-  if (!source) return 'Tier 1: Rashtriya Panchang Saka 1948 Standard';
-  if (typeof source === 'string') {
-    if (source === 'rp_s30' || source.startsWith('rp_')) {
-      return 'Tier 1: Rashtriya Panchang, Saka 1948, p.30';
-    }
-    return `Tier 1: ${source.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`;
-  }
-  const title = source.title || source.ref || 'Rashtriya Panchang';
-  const cleanTitle = (typeof title === 'string' && title.startsWith('rp_'))
-    ? 'Rashtriya Panchang, Saka 1948, p.30'
-    : title;
-  const tier = source.tier ? `Tier ${source.tier}` : 'Tier 1';
-  const citation = source.citation ? `, ${source.citation}` : '';
-  return `${tier}: ${cleanTitle}${citation}`;
+export function formatSourceProvenance(source?: SourceReference | null): string {
+  if (!source?.sourceName || !source?.tier) return 'Source metadata unavailable';
+  const citation = source.pageOrSection ? `, ${source.pageOrSection}` : '';
+  return `Tier ${source.tier}: ${source.sourceName}${citation}`;
 }
 
 export interface NoticeDisplayState {
@@ -60,7 +50,7 @@ export function resolveNoticeDisplayState(params: {
   primaryDate?: string | null;
   variants?: ObservanceVariantItem[];
   alternatives?: ObservanceAlternative[];
-  sourceRefs?: any[];
+  sourceRefs?: SourceReference[];
   context?: ResolvedCalendarContext;
 }): NoticeDisplayState {
   const {

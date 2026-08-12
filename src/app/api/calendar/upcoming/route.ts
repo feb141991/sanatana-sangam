@@ -117,6 +117,8 @@ export async function GET(request: NextRequest) {
         definition_id,
         year,
         calendar_profile,
+        spiritual_tradition,
+        variant_key,
         location_label,
         computed_latitude,
         computed_longitude,
@@ -125,6 +127,7 @@ export async function GET(request: NextRequest) {
         reasoning,
         candidate_dates,
         evaluator_details,
+        source_refs,
         review_status,
         observance_definitions!inner(
           slug,
@@ -166,7 +169,11 @@ export async function GET(request: NextRequest) {
     );
 
     // Re-sort results by date in JS
-    formattedResults.sort((a, b) => a.date.localeCompare(b.date));
+    formattedResults.sort((a, b) => {
+      const aDate = a.civilDate ?? a.reviewPlacementDate ?? '';
+      const bDate = b.civilDate ?? b.reviewPlacementDate ?? '';
+      return aDate.localeCompare(bDate);
+    });
 
     const response: UpcomingResponse = {
       from: fromStr,

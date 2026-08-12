@@ -19,6 +19,7 @@ import { ReaderIntro } from '@/components/ui/ReaderIntro';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
+import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 
@@ -208,6 +209,27 @@ export default function VratClient({
   const [observeCount,     setObserveCount]     = useState(0);
   const [observeLoading,   setObserveLoading]   = useState(false);
   const [observeStatusLoaded, setObserveStatusLoaded] = useState(false);
+  const [calendarObservance, setCalendarObservance] = useState<ClientObservanceResult | null>(null);
+
+  useEffect(() => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
+    fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => {
+        const observances = Array.isArray(data?.observances)
+          ? data.observances as ClientObservanceResult[]
+          : [];
+        const matching = observances.filter((observance) =>
+          observance.festivalId === vrat.id ||
+          observance.route_slug === originalSlug ||
+          observance.slug === originalSlug,
+        );
+        setCalendarObservance(
+          matching.find((observance) => observance.isPrimary) ?? matching[0] ?? null,
+        );
+      })
+      .catch(() => setCalendarObservance(null));
+  }, [originalSlug, vrat.id]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -429,10 +451,16 @@ export default function VratClient({
             &ldquo;{tagline}&rdquo;
           </p>
 
-          <ObservanceStatusNotice
-            status="resolved"
-            className="pt-2"
-          />
+          {calendarObservance && (
+            <ObservanceStatusNotice
+              status={calendarObservance.status}
+              reviewStatus={calendarObservance.reviewStatus}
+              primaryDate={calendarObservance.civilDate}
+              alternatives={calendarObservance.alternatives}
+              sourceRefs={calendarObservance.sourceRefs}
+              className="pt-2"
+            />
+          )}
         </section>
 
         {/* Narrative Section */}

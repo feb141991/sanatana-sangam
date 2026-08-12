@@ -550,10 +550,13 @@ export interface Database {
           computed_latitude: number;
           computed_longitude: number;
           computed_timezone: string;
-          ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi';
+          ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi' | 'disputed_ratification' | 'engine_error';
+          spiritual_tradition: string | null;
+          variant_key: string;
           reasoning: string;
           candidate_dates: Json;
           evaluator_details: Json;
+          source_refs: Json;
           review_status: 'pending_review' | 'approved' | 'rejected';
           reviewed_by: string | null;
           reviewed_at: string | null;
@@ -781,4 +784,3 @@ export type ObservanceReviewQueue = Database['public']['Tables']['observance_rev
 export type CalendarProfile = Database['public']['Tables']['calendar_profiles']['Row'];
 export type TraditionProfile = Database['public']['Tables']['tradition_profiles']['Row'];
 export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
-

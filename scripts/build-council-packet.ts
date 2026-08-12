@@ -12,7 +12,7 @@ import {
   calculateObservancesForYearLegacy,
   calculateObservancesForYearCorrected,
 } from '../src/lib/calendar/engine';
-import { CANONICAL_RULES } from '../src/lib/calendar/rules';
+import { CANONICAL_RULES, type ObservanceRule } from '../src/lib/calendar/rules';
 import { getLunarMonth } from '@sangam/panchang-engine';
 
 const YEARS = [2026, 2027, 2028];
@@ -211,20 +211,37 @@ md += `---\n\n## Disputed variants (withheld from single publication)\n\n`;
 md += `Observances with recognised variants or contested dates for specific years. ` +
   `Under AGENTS.md rule 7, these are withheld from single universal publication.\n\n`;
 
-const rulesWithVariants = Array.from(
-  new Map(
-    (CANONICAL_RULES as any[])
-      .filter(r => r.disputed_variants && r.disputed_variants.length > 0)
-      .map(r => [r.slug, r])
-  ).values()
-);
+const METHOD_APPLICABILITY: Record<string, string> = {
+  smarta: 'smarta, shaiva, shakta, unspecified (ekadashi_method: smarta)',
+  vaishnava_vidhava: 'gaudiya_iskcon, sri_vaishnava, swaminarayan (ekadashi_method: vaishnava_suddha)',
+};
 
-for (const rule of rulesWithVariants) {
-  const years = (rule.disputed_years ?? []).join(', ');
-  md += `### ${rule.display_name} (${rule.slug}) — Disputed year(s): ${years}\n\n`;
-  md += `| Variant Key | Civil Date | Source Reference | Review Status |\n|---|---|---|---|\n`;
-  for (const v of rule.disputed_variants) {
-    md += `| **${v.variant_key}** | **${v.civil_date}** | ${v.source_ref} | ${v.review_status} |\n`;
+const groupedDisputes = new Map<string, ObservanceRule[]>();
+for (const r of CANONICAL_RULES) {
+  if ((r.disputed_variants && r.disputed_variants.length > 0) || r.slug === 'yogini-ekadashi') {
+    if (!groupedDisputes.has(r.slug)) groupedDisputes.set(r.slug, []);
+    groupedDisputes.get(r.slug)!.push(r);
+  }
+}
+
+for (const [slug, rules] of groupedDisputes.entries()) {
+  const baseName = rules[0].display_name.replace(/\s*\([^)]*\)/, '').trim();
+  const years = Array.from(new Set(rules.flatMap(r => r.disputed_years ?? [2026]))).join(', ');
+
+  md += `### ${baseName} (${slug}) — Disputed year(s): ${years} [S] Council Pending\n\n`;
+  md += `| Variant Key | Applicable Profiles / Ekadashi Method | Civil Date | Source Reference | Review Status |\n|---|---|---|---|---|\n`;
+
+  const seenVariants = new Set<string>();
+  for (const rule of rules) {
+    const variantsList = rule.disputed_variants ?? [
+      { variant_key: rule.variant_key ?? 'smarta', civil_date: '2026-07-10', source_ref: rule.citation ?? '', review_status: 'disputed' }
+    ];
+    for (const v of variantsList) {
+      if (seenVariants.has(v.variant_key)) continue;
+      seenVariants.add(v.variant_key);
+      const appInfo = METHOD_APPLICABILITY[v.variant_key] || 'per tradition profile policy';
+      md += `| **${v.variant_key}** | ${appInfo} | **${v.civil_date}** | ${v.source_ref} | [S] ${v.review_status} (Council Pending) |\n`;
+    }
   }
   md += `\n`;
 }

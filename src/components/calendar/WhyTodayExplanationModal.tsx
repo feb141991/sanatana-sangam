@@ -109,7 +109,9 @@ export function WhyTodayExplanationModal({
                 <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3">
                   <ShieldCheck className="text-emerald-700 shrink-0" size={18} />
                   <span className="text-xs font-semibold text-emerald-900">
-                    Sourced & Published under Saka Governance Standard
+                    {explanation.sources.length > 0
+                      ? 'Published with tiered source metadata'
+                      : 'Published calendar result; source metadata is unavailable in this response'}
                   </span>
                 </div>
               )}

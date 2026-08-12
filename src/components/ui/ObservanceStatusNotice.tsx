@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { HelpCircle, GitFork, Info, AlertTriangle, MapPin, CheckCircle2 } from 'lucide-react';
+import type { SourceReference } from '@sangam/dharma-rules';
 import type { ResolvedCalendarContext } from '@/lib/calendar/calendar-context';
 import {
   formatTraditionLabel,
@@ -17,7 +18,7 @@ export interface ObservanceAlternative {
   civilDate: string | null;
   monthLabel?: string | null;
   note?: string | null;
-  sourceRef?: any;
+  sourceRef?: SourceReference | null;
 }
 
 export interface ObservanceVariantItem {
@@ -28,7 +29,7 @@ export interface ObservanceVariantItem {
   formattedDate?: string;
   isPrimary?: boolean;
   profileEligibility?: string;
-  sourceRef?: any;
+  sourceRef?: SourceReference | null;
   note?: string | null;
 }
 
@@ -44,7 +45,7 @@ export interface ObservanceStatusNoticeProps {
   primaryDate?: string | null;
   variants?: ObservanceVariantItem[];
   alternatives?: ObservanceAlternative[];
-  sourceRefs?: any[];
+  sourceRefs?: SourceReference[];
   context?: ResolvedCalendarContext;
   className?: string;
 }

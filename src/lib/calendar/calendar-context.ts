@@ -13,39 +13,12 @@
  * 6. Temporary travel mode NEVER mutates calendar profile, tradition profile, or home location.
  */
 
-export type CalendarProfileId =
-  | 'north_indian_purnimanta'
-  | 'gujarati_amanta'
-  | 'marathi_amanta'
-  | 'kannada_telugu_amanta'
-  | 'kannada_amanta'
-  | 'telugu_amanta'
-  | 'tamil_solar'
-  | 'malayalam_solar'
-  | 'bengali_solar'
-  | 'odia'
-  | 'nepali_bikram'
-  | 'global_sanatan'
-  | 'nanakshahi'
-  | 'legacy-ujjain'
-  | 'unknown';
+export type CalendarProfileId = string;
 
 export type MonthSystem = 'purnimanta' | 'amanta' | 'solar' | 'unknown';
 export type CalendarEra = 'vikram_north' | 'vikram_gujarat' | 'shaka' | 'kollam' | 'bengali_san' | 'bikram_sambat' | 'nanakshahi' | 'unknown';
 
-export type TraditionProfileId =
-  | 'smarta'
-  | 'gaudiya_iskcon'
-  | 'sri_vaishnava'
-  | 'swaminarayan'
-  | 'shaiva'
-  | 'shakta'
-  | 'unspecified'
-  | 'sikh'
-  | 'jain'
-  | 'buddhist'
-  | 'all'
-  | 'unknown';
+export type TraditionProfileId = string;
 
 export type CalculationMethodProfile = 'smarta' | 'vaishnava_suddha' | 'unknown';
 export type EkadashiMethod = 'smarta' | 'vaishnava_suddha' | 'unknown';
@@ -100,6 +73,9 @@ export interface ResolvedCalendarContext {
 export interface CalendarSelectionInput {
   calendarProfile?: string | null;
   traditionProfile?: string | null;
+  ekadashiMethod?: EkadashiMethod | null;
+  calendarProfileDefinition?: CalendarProfileDefinition | null;
+  traditionProfileDefinition?: TraditionProfileDefinition | null;
   location?: {
     label?: string | null;
     latitude?: number | null;
@@ -113,6 +89,7 @@ export interface CalendarSelectionInput {
     timezone?: string | null;
   } | null;
   confirmTravelLocation?: boolean;
+  supportsTravelRecalculation?: boolean;
   dateForCacheKey?: string;
   // Auth / session diagnostics flags
   isAuthenticated?: boolean;
@@ -120,64 +97,39 @@ export interface CalendarSelectionInput {
   dbError?: Error | string | null;
 }
 
-interface CalendarProfileDefinition {
+export interface CalendarProfileDefinition {
+  slug: string;
   monthSystem: MonthSystem;
   era: CalendarEra;
 }
 
-const CALENDAR_PROFILE_MAP: Record<string, CalendarProfileDefinition> = {
-  north_indian_purnimanta: { monthSystem: 'purnimanta', era: 'vikram_north' },
-  gujarati_amanta:         { monthSystem: 'amanta',     era: 'vikram_gujarat' },
-  marathi_amanta:          { monthSystem: 'amanta',     era: 'shaka' },
-  kannada_telugu_amanta:   { monthSystem: 'amanta',     era: 'shaka' },
-  kannada_amanta:          { monthSystem: 'amanta',     era: 'shaka' },
-  telugu_amanta:           { monthSystem: 'amanta',     era: 'shaka' },
-  tamil_solar:             { monthSystem: 'solar',      era: 'unknown' },
-  malayalam_solar:         { monthSystem: 'solar',      era: 'kollam' },
-  bengali_solar:           { monthSystem: 'solar',      era: 'bengali_san' },
-  odia:                    { monthSystem: 'amanta',     era: 'shaka' },
-  nepali_bikram:           { monthSystem: 'purnimanta', era: 'bikram_sambat' },
-  global_sanatan:          { monthSystem: 'amanta',     era: 'vikram_north' },
-  nanakshahi:              { monthSystem: 'solar',      era: 'nanakshahi' },
-  'legacy-ujjain':         { monthSystem: 'purnimanta', era: 'vikram_north' },
-};
+export interface TraditionProfileDefinition {
+  slug: string;
+  ekadashiMethod: EkadashiMethod;
+  janmashtamiMethod: JanmashtamiMethod;
+}
+
+function normalizeSlug(raw?: string | null): string | null {
+  const clean = raw?.trim().toLowerCase();
+  return clean || null;
+}
 
 /** Normalizes calendar profile ID, falling back to 'unknown' */
-export function normalizeCalendarProfileId(raw?: string | null): CalendarProfileId {
-  if (!raw) return 'unknown';
-  const clean = raw.trim().toLowerCase();
-  if (clean in CALENDAR_PROFILE_MAP) {
-    return clean as CalendarProfileId;
-  }
-  return 'unknown';
+export function normalizeCalendarProfileId(
+  raw?: string | null,
+  definition?: CalendarProfileDefinition | null,
+): CalendarProfileId {
+  const clean = normalizeSlug(raw);
+  return clean && normalizeSlug(definition?.slug) === clean ? clean : 'unknown';
 }
 
 /** Normalizes tradition profile ID, falling back to 'unknown' */
-export function normalizeTraditionProfileId(raw?: string | null): TraditionProfileId {
-  if (!raw) return 'unknown';
-  const clean = raw.trim().toLowerCase();
-
-  const aliases: Record<string, TraditionProfileId> = {
-    hindu: 'unspecified',
-    standard: 'unspecified',
-    unspecified: 'unspecified',
-    smarta: 'smarta',
-    gaudiya_iskcon: 'gaudiya_iskcon',
-    gaudiya: 'gaudiya_iskcon',
-    iskcon: 'gaudiya_iskcon',
-    sri_vaishnava: 'sri_vaishnava',
-    srivaishnava: 'sri_vaishnava',
-    vaishnava: 'sri_vaishnava',
-    swaminarayan: 'swaminarayan',
-    shaiva: 'shaiva',
-    shakta: 'shakta',
-    sikh: 'sikh',
-    jain: 'jain',
-    buddhist: 'buddhist',
-    all: 'all',
-  };
-
-  return aliases[clean] ?? 'unknown';
+export function normalizeTraditionProfileId(
+  raw?: string | null,
+  definition?: TraditionProfileDefinition | null,
+): TraditionProfileId {
+  const clean = normalizeSlug(raw);
+  return clean && normalizeSlug(definition?.slug) === clean ? clean : 'unknown';
 }
 
 /** Builds pure deterministic calendar calculation cache key */
@@ -222,10 +174,13 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
   }
 
   // Rule 1: Calendar profile must NEVER be inferred from GPS / location / timezone
-  const calendarProfile = normalizeCalendarProfileId(input.calendarProfile);
-  const profileDef = CALENDAR_PROFILE_MAP[calendarProfile];
-  const monthSystem: MonthSystem = profileDef ? profileDef.monthSystem : 'unknown';
-  const era: CalendarEra = profileDef ? profileDef.era : 'unknown';
+  const calendarProfile = normalizeCalendarProfileId(
+    input.calendarProfile,
+    input.calendarProfileDefinition,
+  );
+  const profileDef = calendarProfile === 'unknown' ? null : input.calendarProfileDefinition;
+  const monthSystem: MonthSystem = profileDef?.monthSystem ?? 'unknown';
+  const era: CalendarEra = profileDef?.era ?? 'unknown';
 
   const calendarProfileKnown = calendarProfile !== 'unknown';
   if (!calendarProfileKnown) {
@@ -233,34 +188,16 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
   }
 
   // Rule 3: Tradition profile resolution
-  const displayedTraditionProfile = normalizeTraditionProfileId(input.traditionProfile);
+  const displayedTraditionProfile = normalizeTraditionProfileId(
+    input.traditionProfile,
+    input.traditionProfileDefinition,
+  );
   const traditionKnown = displayedTraditionProfile !== 'unknown';
 
-  let calculationMethodProfile: CalculationMethodProfile = 'unknown';
-  let ekadashiMethod: EkadashiMethod = 'unknown';
-  let janmashtamiMethod: JanmashtamiMethod = 'unknown';
-
-  if (displayedTraditionProfile === 'smarta' ||
-      displayedTraditionProfile === 'shaiva' ||
-      displayedTraditionProfile === 'shakta' ||
-      displayedTraditionProfile === 'unspecified') {
-    calculationMethodProfile = 'smarta';
-    ekadashiMethod = 'smarta';
-    janmashtamiMethod = 'smarta_nishita';
-  } else if (displayedTraditionProfile === 'gaudiya_iskcon' ||
-             displayedTraditionProfile === 'sri_vaishnava' ||
-             displayedTraditionProfile === 'swaminarayan') {
-    calculationMethodProfile = 'vaishnava_suddha';
-    ekadashiMethod = 'vaishnava_suddha';
-    janmashtamiMethod = 'vaishnava_rohini';
-  } else if (displayedTraditionProfile === 'sikh' ||
-             displayedTraditionProfile === 'jain' ||
-             displayedTraditionProfile === 'buddhist' ||
-             displayedTraditionProfile === 'all') {
-    calculationMethodProfile = 'smarta';
-    ekadashiMethod = 'smarta';
-    janmashtamiMethod = 'smarta_nishita';
-  }
+  const traditionDef = traditionKnown ? input.traditionProfileDefinition : null;
+  const ekadashiMethod: EkadashiMethod = input.ekadashiMethod ?? traditionDef?.ekadashiMethod ?? 'unknown';
+  const janmashtamiMethod: JanmashtamiMethod = traditionDef?.janmashtamiMethod ?? 'unknown';
+  const calculationMethodProfile: CalculationMethodProfile = ekadashiMethod;
 
   // Rule 5: Location and timezone must remain an atomic pair
   const loc = input.location;
@@ -325,11 +262,18 @@ export function resolveCalendarContext(input: CalendarSelectionInput): ResolvedC
     isTravelDivergenceDetected = tzDiff || latDiff || lonDiff;
   }
 
-  const isTravelModeActive = Boolean(isTravelDivergenceDetected && input.confirmTravelLocation === true);
+  const travelRecalculationSupported = input.supportsTravelRecalculation === true;
+  const isTravelModeActive = Boolean(
+    travelRecalculationSupported &&
+    isTravelDivergenceDetected &&
+    input.confirmTravelLocation === true,
+  );
 
   if (isTravelDivergenceDetected) {
     if (isTravelModeActive) {
       notes.push('Travel mode active: using temporary travel location for calculations without altering home profile.');
+    } else if (input.confirmTravelLocation === true && !travelRecalculationSupported) {
+      notes.push('Travel recalculation is unavailable until location-qualified observances are materialised; saved observance location remains active.');
     } else {
       notes.push('Device/travel location divergence detected. Calculation continues using saved observance location until confirmed.');
     }

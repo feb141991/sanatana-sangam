@@ -4,10 +4,14 @@
  * Read-time selection helper for Ekadashi variants based on tradition profile / ekadashi_method.
  *
  * Requirements:
+ * - Delete KNOWN_PROFILES and every duplicate tradition-to-method map.
+ * - Resolve ekadashi_method from persisted tradition_profiles policy.
  * - Smarta profile selects 07-10 (smarta variant).
  * - Vaishnava method selects 07-11 (vaishnava_vidhava variant).
  * - unspecified follows the approved product rule for Smarta behavior but remains labelled "unspecified".
- * - unsupported/ambiguous profiles enter review (status: 'needs_review') rather than receiving a silent default.
+ * - Single candidate sets check applicability to the user's method (no silent fallback).
+ * - Missing required variant or unsupported/ambiguous profile returns needs_review without candidate[0] fallback.
+ * - Candidate order in array must not affect selection.
  */
 
 export interface EkadashiVariantCandidate {
@@ -25,101 +29,101 @@ export interface EkadashiSelectionResult {
   reviewReason?: string;
 }
 
-/** Supported tradition profiles and their ekadashi_method mapping */
-const KNOWN_PROFILES: Record<string, 'smarta' | 'vaishnava_suddha' | 'unspecified'> = {
-  smarta: 'smarta',
-  shaiva: 'smarta',
-  shakta: 'smarta',
-  gaudiya_iskcon: 'vaishnava_suddha',
-  sri_vaishnava: 'vaishnava_suddha',
-  swaminarayan: 'vaishnava_suddha',
-  unspecified: 'unspecified',
-};
+export type TraditionVariantMethod =
+  | 'smarta'
+  | 'vaishnava_suddha'
+  | 'smarta_nishita'
+  | 'vaishnava_rohini'
+  | 'unknown'
+  | string;
 
-export function selectEkadashiVariant(
+/**
+ * Resolves a Smarta/Vaishnava variant from a persisted tradition policy.
+ * The caller supplies the policy field appropriate to the observance; this is
+ * important because Janmashtami is governed by `janmashtami_method`, not by
+ * the user's Ekadashi policy.
+ */
+export function selectTraditionVariant(
   candidates: EkadashiVariantCandidate[],
-  profileOrTradition: string | { tradition?: string; ekadashi_method?: string; sampradaya?: string } | null | undefined
+  methodInput: TraditionVariantMethod,
+  displayedLabel?: string,
+  observanceLabel = 'observance',
 ): EkadashiSelectionResult {
+  const label = displayedLabel || (typeof methodInput === 'string' ? methodInput : 'unspecified');
+
   if (!candidates || candidates.length === 0) {
     return {
       selectedVariant: null,
       selectedDate: null,
-      traditionLabel: 'unspecified',
+      traditionLabel: label,
       status: 'unsupported',
       reviewReason: 'No candidate variants provided',
     };
   }
 
-  // Single candidate — no selection ambiguity
-  if (candidates.length === 1) {
-    return {
-      selectedVariant: candidates[0],
-      selectedDate: candidates[0].date,
-      traditionLabel: candidates[0].variantKey,
-      status: 'resolved',
-    };
+  const usesSmarta = methodInput === 'smarta' || methodInput === 'smarta_nishita';
+  const usesVaishnava = methodInput === 'vaishnava_suddha' || methodInput === 'vaishnava_rohini';
+
+  if (usesSmarta) {
+    const selectedVariant = candidates.find(candidate => candidate.variantKey === 'smarta');
+    return selectedVariant
+      ? {
+          selectedVariant,
+          selectedDate: selectedVariant.date,
+          traditionLabel: label,
+          status: 'resolved',
+        }
+      : {
+          selectedVariant: null,
+          selectedDate: null,
+          traditionLabel: label,
+          status: 'needs_review',
+          reviewReason: `Smarta candidate missing for ${observanceLabel} profile "${label}"`,
+        };
   }
 
-  // Resolve method from input
-  let method: 'smarta' | 'vaishnava_suddha' | 'unspecified' | 'unsupported' = 'unsupported';
-  let inputLabel = 'unspecified';
-
-  if (typeof profileOrTradition === 'string') {
-    inputLabel = profileOrTradition;
-    if (profileOrTradition in KNOWN_PROFILES) {
-      method = KNOWN_PROFILES[profileOrTradition];
-    } else if (profileOrTradition === 'smarta' || profileOrTradition === 'vaishnava_suddha') {
-      method = profileOrTradition;
-    }
-  } else if (profileOrTradition && typeof profileOrTradition === 'object') {
-    if (profileOrTradition.ekadashi_method === 'smarta' || profileOrTradition.ekadashi_method === 'vaishnava_suddha') {
-      method = profileOrTradition.ekadashi_method;
-      inputLabel = profileOrTradition.sampradaya || profileOrTradition.tradition || method;
-    } else {
-      const trad = profileOrTradition.sampradaya || profileOrTradition.tradition || '';
-      if (trad in KNOWN_PROFILES) {
-        method = KNOWN_PROFILES[trad];
-        inputLabel = trad;
-      }
-    }
+  if (usesVaishnava) {
+    const selectedVariant = candidates.find(candidate =>
+      candidate.variantKey === 'vaishnava_vidhava' ||
+      candidate.variantKey === 'vaishnava' ||
+      candidate.variantKey === 'gaudiya_iskcon' ||
+      candidate.variantKey === 'sri_vaishnava' ||
+      candidate.variantKey === 'swaminarayan',
+    );
+    return selectedVariant
+      ? {
+          selectedVariant,
+          selectedDate: selectedVariant.date,
+          traditionLabel: label,
+          status: 'resolved',
+        }
+      : {
+          selectedVariant: null,
+          selectedDate: null,
+          traditionLabel: label,
+          status: 'needs_review',
+          reviewReason: `Vaishnava candidate missing for ${observanceLabel} profile "${label}"`,
+        };
   }
 
-  if (method === 'smarta') {
-    const smartaCandidate = candidates.find(c => c.variantKey === 'smarta');
-    if (smartaCandidate) {
-      return {
-        selectedVariant: smartaCandidate,
-        selectedDate: smartaCandidate.date,
-        traditionLabel: inputLabel || 'smarta',
-        status: 'resolved',
-      };
-    }
-  } else if (method === 'vaishnava_suddha') {
-    const vaishnavaCandidate = candidates.find(c => c.variantKey === 'vaishnava_vidhava' || c.variantKey === 'vaishnava');
-    if (vaishnavaCandidate) {
-      return {
-        selectedVariant: vaishnavaCandidate,
-        selectedDate: vaishnavaCandidate.date,
-        traditionLabel: inputLabel || 'vaishnava_suddha',
-        status: 'resolved',
-      };
-    }
-  } else if (method === 'unspecified') {
-    const smartaCandidate = candidates.find(c => c.variantKey === 'smarta') ?? candidates[0];
-    return {
-      selectedVariant: smartaCandidate,
-      selectedDate: smartaCandidate.date,
-      traditionLabel: 'unspecified',
-      status: 'resolved',
-    };
-  }
-
-  // Unsupported or ambiguous profile enters review rather than receiving a silent default
   return {
     selectedVariant: null,
     selectedDate: null,
-    traditionLabel: inputLabel || 'unknown',
+    traditionLabel: label,
     status: 'needs_review',
-    reviewReason: `Unsupported or ambiguous profile "${inputLabel}" for Ekadashi selection`,
+    reviewReason: `Unsupported or ambiguous profile "${label}" for ${observanceLabel} selection`,
   };
+}
+
+export function selectEkadashiVariant(
+  candidates: EkadashiVariantCandidate[],
+  methodInput: TraditionVariantMethod,
+  displayedLabel?: string,
+): EkadashiSelectionResult {
+  return selectTraditionVariant(
+    candidates,
+    methodInput,
+    displayedLabel ?? (typeof methodInput === 'string' ? methodInput : 'unspecified'),
+    'Ekadashi',
+  );
 }

@@ -15,6 +15,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { formatOccurrencesToResults } from '../observance-formatter';
+import { resolveCalendarContext } from '../calendar-context';
 
 const UJJAIN = { computed_latitude: 23.1765, computed_longitude: 75.7885, computed_timezone: 'Asia/Kolkata' };
 
@@ -118,9 +119,40 @@ describe('grouping key includes the year', () => {
     // The converse guard. Adding year to the key must not over-split: two
     // sampradaya readings of ONE instance are a real dispute and must stay in one
     // group, or the fix for over-merging silently destroys variant handling.
-    const smarta = { ...occ('krishna-janmashtami', '2026-09-04', 'legacy-ujjain'), spiritual_tradition: 'smarta' };
-    const vaish  = { ...occ('krishna-janmashtami', '2026-09-05', 'legacy-ujjain'), spiritual_tradition: 'vaishnava' };
-    const out = formatOccurrencesToResults([smarta, vaish], [], 'hindu', 'legacy-ujjain', 'vaishnava', '2026-09-01', '2026-09-30');
+    // variant_key must be cleared, not just spiritual_tradition overridden: occ()'s
+    // base fixture sets variant_key: 'default' on every row, and the grouping code
+    // prefers variantKey over profile.tradition when it builds itemsByVariantKey
+    // (observance-formatter.ts ~475), so leaving 'default' on both rows collapsed
+    // them into one identity regardless of their differing spiritual_tradition --
+    // silently skipping the whole isCitedDispute branch this test exists to reach.
+    // Real krishna-janmashtami rows never carry variant_key (only sampradaya /
+    // spiritual_tradition -- see rules.json), so null here matches production.
+    const smarta = { ...occ('krishna-janmashtami', '2026-09-04', 'legacy-ujjain'), variant_key: null, spiritual_tradition: 'smarta' };
+    const vaish  = { ...occ('krishna-janmashtami', '2026-09-05', 'legacy-ujjain'), variant_key: null, spiritual_tradition: 'gaudiya_iskcon' };
+    const context = resolveCalendarContext({
+      calendarProfile: 'legacy-ujjain',
+      calendarProfileDefinition: {
+        slug: 'legacy-ujjain',
+        monthSystem: 'unknown',
+        era: 'vikram_north',
+      },
+      traditionProfile: 'gaudiya_iskcon',
+      traditionProfileDefinition: {
+        slug: 'gaudiya_iskcon',
+        ekadashiMethod: 'vaishnava_suddha',
+        janmashtamiMethod: 'vaishnava_rohini',
+      },
+    });
+    const out = formatOccurrencesToResults(
+      [smarta, vaish],
+      [],
+      'hindu',
+      'legacy-ujjain',
+      'gaudiya_iskcon',
+      '2026-09-01',
+      '2026-09-30',
+      context,
+    );
     expect(out).toHaveLength(2);
     expect(out.filter(r => r.isPrimary)).toHaveLength(1);
     expect(out.find(r => r.isPrimary)!.civilDate).toBe('2026-09-05');
@@ -214,11 +246,19 @@ describe('incomplete profile materialisation does not silently delete observance
 });
 
 describe('review-queue items are profile-resolved too', () => {
-  const queueRow = (slug: string, year: number, calendar_profile: string, candidate: string) => ({
-    id: `${slug}-${calendar_profile}`,
+  const queueRow = (
+    slug: string,
+    year: number,
+    calendar_profile: string,
+    candidate: string,
+    spiritual_tradition: string | null = null,
+  ) => ({
+    id: `${slug}-${calendar_profile}-${spiritual_tradition ?? 'unspecified'}`,
     definition_id: 'def-1',
     year,
     calendar_profile,
+    spiritual_tradition,
+    variant_key: spiritual_tradition ?? 'legacy-default',
     location_label: 'Ujjain, India',
     ...UJJAIN,
     ambiguity_type: 'multiple_qualified_dates',
@@ -250,5 +290,36 @@ describe('review-queue items are profile-resolved too', () => {
     const queue = [queueRow('disputed-festival', 2026, 'legacy-ujjain', '2026-09-03')];
     const out = format([], 'gujarati-amanta', '2026-09-01', '2026-09-30', queue);
     expect(out).toHaveLength(1);
+  });
+
+  it('keeps unresolved sampradaya variants distinct and selects one presentation primary', () => {
+    const queue = [
+      queueRow('krishna-janmashtami', 2026, 'legacy-ujjain', '2026-09-04', 'smarta'),
+      queueRow('krishna-janmashtami', 2026, 'legacy-ujjain', '2026-09-05', 'gaudiya_iskcon'),
+    ];
+    const context = resolveCalendarContext({
+      calendarProfile: 'legacy-ujjain',
+      calendarProfileDefinition: {
+        slug: 'legacy-ujjain',
+        monthSystem: 'unknown',
+        era: 'vikram_north',
+      },
+      traditionProfile: 'gaudiya_iskcon',
+      traditionProfileDefinition: {
+        slug: 'gaudiya_iskcon',
+        ekadashiMethod: 'vaishnava_suddha',
+        janmashtamiMethod: 'vaishnava_rohini',
+      },
+    });
+
+    const out = formatOccurrencesToResults(
+      [], queue, 'hindu', 'legacy-ujjain', 'gaudiya_iskcon',
+      '2026-09-01', '2026-09-30', context,
+    );
+
+    expect(out).toHaveLength(2);
+    expect(out.filter(item => item.isPrimary)).toHaveLength(1);
+    expect(out.find(item => item.isPrimary)?.profile.tradition).toBe('gaudiya_iskcon');
+    expect(out.every(item => item.civilDate === null)).toBe(true);
   });
 });

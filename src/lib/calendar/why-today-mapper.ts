@@ -13,6 +13,7 @@
 
 import type { ClientObservanceResult } from './observance-formatter';
 import type { ResolvedCalendarContext } from './calendar-context';
+import type { SourceTier } from '@sangam/dharma-rules';
 
 export interface WhyTodayReason {
   code: string;
@@ -29,7 +30,7 @@ export interface WhyTodayRitualWindow {
 export interface WhyTodaySource {
   title: string;
   tier: string;
-  tierNumber: number;
+  tierNumber: SourceTier;
   citation?: string;
 }
 
@@ -172,37 +173,14 @@ function formatHumanDate(dateStr: string | null | undefined): string {
 
 /** Formats regional calendar profile ID into human label */
 function formatProfileLabel(calendarProfile?: string, traditionProfile?: string): string {
-  const profileNames: Record<string, string> = {
-    north_indian_purnimanta: 'North Indian (Purnimanta)',
-    gujarati_amanta: 'Gujarati (Amanta)',
-    marathi_amanta: 'Marathi (Amanta)',
-    kannada_amanta: 'Kannada (Amanta)',
-    telugu_amanta: 'Telugu (Amanta)',
-    tamil_solar: 'Tamil (Solar)',
-    malayalam_solar: 'Malayalam (Solar)',
-    bengali_solar: 'Bengali (Solar)',
-    odia: 'Odia',
-    nepali_bikram: 'Nepali (Bikram)',
-    global_sanatan: 'Global Sanatan',
-    'legacy-ujjain': 'Ujjain Reference',
-  };
-
-  const traditionNames: Record<string, string> = {
-    smarta: 'Smarta',
-    gaudiya_iskcon: 'Gaudiya Vaishnava',
-    sri_vaishnava: 'Sri Vaishnava',
-    swaminarayan: 'Swaminarayan',
-    shaiva: 'Shaiva',
-    shakta: 'Shakta',
-    vaishnava: 'Vaishnava',
-    vaishnava_vidhava: 'Vaishnava Vidhava',
-    vaishnava_suddha: 'Vaishnava Suddha',
-    unspecified: 'Unspecified Tradition',
-    standard: 'Standard',
-  };
-
-  const cal = profileNames[calendarProfile || ''] ?? (calendarProfile ? calendarProfile.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Standard');
-  const trad = traditionNames[traditionProfile || ''] ?? (traditionProfile ? traditionProfile.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Standard');
+  const formatSlug = (value?: string) => value
+    ? value.replace(/[-_]+/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase())
+    : 'Unspecified';
+  const calendarMatch = calendarProfile?.match(/^(.*)_(amanta|purnimanta|solar)$/);
+  const cal = calendarMatch
+    ? `${formatSlug(calendarMatch[1])} (${formatSlug(calendarMatch[2])})`
+    : formatSlug(calendarProfile);
+  const trad = formatSlug(traditionProfile);
   return `${cal} · ${trad}`;
 }
 
@@ -287,28 +265,14 @@ export function mapWhyTodayExplanation(
   const sources: WhyTodaySource[] = [];
   if (Array.isArray(result.sourceRefs)) {
     for (const s of result.sourceRefs) {
-      const title = (s as any).title || (s as any).ref || 'Dharmashastra Source';
-      const tierNum = Number((s as any).tier ?? 1);
-      const tierLabel = tierNum === 1
-        ? 'Tier 1: Sourced Panchanga & Dharmashastra'
-        : tierNum === 2
-        ? 'Tier 2: Traditional Sampradaya Vidhi'
-        : 'Tier 3: Regional Custom';
+      if (!s?.sourceName || !s?.tier) continue;
       sources.push({
-        title,
-        tier: tierLabel,
-        tierNumber: Number.isFinite(tierNum) ? tierNum : 1,
-        citation: (s as any).citation || undefined,
+        title: s.sourceName,
+        tier: `Tier ${s.tier}`,
+        tierNumber: s.tier,
+        citation: s.pageOrSection || undefined,
       });
     }
-  }
-  if (sources.length === 0) {
-    sources.push({
-      title: 'Rashtriya Panchang & Dharma Rules Engine',
-      tier: 'Tier 1: Sourced Panchanga & Dharmashastra',
-      tierNumber: 1,
-      citation: 'Saka Calendar Governance Standard',
-    });
   }
 
   // 4. Diagnostics disclosures mapping
@@ -350,7 +314,9 @@ export function mapWhyTodayExplanation(
 
   const statusLabel = isUnderReview
     ? 'Under Governance Review'
-    : 'Reviewed & Sourced';
+    : sources.length > 0
+      ? 'Published with Source Metadata'
+      : 'Published Calendar Result';
 
   const reviewReason = isUnderReview
     ? reasons.find(r => r.code === 'disputed_year' || r.code === 'engine_error')?.description ||

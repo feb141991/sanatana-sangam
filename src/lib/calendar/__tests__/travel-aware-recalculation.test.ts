@@ -7,7 +7,8 @@
  * 2. Asking/requiring confirmation before using temporary travel location.
  * 3. Temporary travel mode isolation (never mutates calendar profile, tradition profile, or home location).
  * 4. Deterministic cache key generation including civil date, coords, timezone, profile, and engine version.
- * 5. Notifications continuing to use saved observance location unless confirmed.
+ * 5. Travel preference cannot override saved-location calculations before the
+ *    backend supports location-qualified observances.
  * 6. Handling DST boundaries (e.g. Europe/London GMT/BST) and International Date Line crossings (e.g. Tokyo to Honolulu).
  * 7. Location provenance reporting showing which location produced each date.
  */
@@ -23,7 +24,18 @@ import {
   isDstActiveInTimezone,
   formatLocationProvenance,
 } from '../timezone-utils';
-import { getNotificationObservanceLocation } from '@/lib/observance-notification-source';
+
+const northIndianProfile = {
+  slug: 'north_indian_purnimanta',
+  monthSystem: 'purnimanta' as const,
+  era: 'vikram_north' as const,
+};
+
+const smartaProfile = {
+  slug: 'smarta',
+  ekadashiMethod: 'smarta' as const,
+  janmashtamiMethod: 'smarta_nishita' as const,
+};
 
 describe('Travel-Aware Recalculation & Isolation', () => {
   const homeIndiaLocation = {
@@ -54,6 +66,8 @@ describe('Travel-Aware Recalculation & Isolation', () => {
     const unconfirmedContext = resolveCalendarContext({
       calendarProfile: 'north_indian_purnimanta',
       traditionProfile: 'smarta',
+      calendarProfileDefinition: northIndianProfile,
+      traditionProfileDefinition: smartaProfile,
       location: homeIndiaLocation,
       travelLocation: travelBedfordLocation,
       confirmTravelLocation: false, // User has NOT confirmed travel mode yet
@@ -64,13 +78,33 @@ describe('Travel-Aware Recalculation & Isolation', () => {
     expect(unconfirmedContext.effectiveCalculationLocation.latitude).toBe(28.6139);
     expect(unconfirmedContext.effectiveCalculationLocation.timezone).toBe('Asia/Kolkata');
 
-    // Confirmed travel location -> calculations use travel location for this request
+    // Confirmation alone cannot activate a calculation path that the backend
+    // cannot yet serve honestly.
+    const unsupportedContext = resolveCalendarContext({
+      calendarProfile: 'north_indian_purnimanta',
+      traditionProfile: 'smarta',
+      calendarProfileDefinition: northIndianProfile,
+      traditionProfileDefinition: smartaProfile,
+      location: homeIndiaLocation,
+      travelLocation: travelBedfordLocation,
+      confirmTravelLocation: true,
+    });
+
+    expect(unsupportedContext.isTravelDivergenceDetected).toBe(true);
+    expect(unsupportedContext.isTravelModeActive).toBe(false);
+    expect(unsupportedContext.effectiveCalculationLocation.latitude).toBe(28.6139);
+    expect(unsupportedContext.disclosureDiagnostics.notes.join(' ')).toContain('unavailable');
+
+    // A caller backed by location-qualified observances may activate travel mode.
     const confirmedContext = resolveCalendarContext({
       calendarProfile: 'north_indian_purnimanta',
       traditionProfile: 'smarta',
+      calendarProfileDefinition: northIndianProfile,
+      traditionProfileDefinition: smartaProfile,
       location: homeIndiaLocation,
       travelLocation: travelBedfordLocation,
-      confirmTravelLocation: true, // User confirmed travel mode
+      confirmTravelLocation: true,
+      supportsTravelRecalculation: true,
     });
 
     expect(confirmedContext.isTravelDivergenceDetected).toBe(true);
@@ -84,9 +118,20 @@ describe('Travel-Aware Recalculation & Isolation', () => {
     const confirmedContext = resolveCalendarContext({
       calendarProfile: 'marathi_amanta',
       traditionProfile: 'swaminarayan',
+      calendarProfileDefinition: {
+        slug: 'marathi_amanta',
+        monthSystem: 'amanta',
+        era: 'shaka',
+      },
+      traditionProfileDefinition: {
+        slug: 'swaminarayan',
+        ekadashiMethod: 'vaishnava_suddha',
+        janmashtamiMethod: 'vaishnava_rohini',
+      },
       location: homeIndiaLocation,
       travelLocation: travelBedfordLocation,
       confirmTravelLocation: true,
+      supportsTravelRecalculation: true,
     });
 
     // Spiritual profile & home location remain untouched
@@ -120,6 +165,8 @@ describe('Travel-Aware Recalculation & Isolation', () => {
     const context = resolveCalendarContext({
       calendarProfile: 'north_indian_purnimanta',
       traditionProfile: 'smarta',
+      calendarProfileDefinition: northIndianProfile,
+      traditionProfileDefinition: smartaProfile,
       location: homeIndiaLocation,
       dateForCacheKey: '2026-04-26',
     });
@@ -128,40 +175,16 @@ describe('Travel-Aware Recalculation & Isolation', () => {
     expect(context.cacheKey).toContain('2026-04-26');
   });
 
-  it('5. Notifications continue using explicitly selected home location unless travel mode is explicitly confirmed for notifications', () => {
-    const savedProfile = {
-      city: 'New Delhi',
-      country: 'India',
-      latitude: 28.6139,
-      longitude: 77.209,
-      timezone: 'Asia/Kolkata',
-    };
-
-    const travelOpt = {
-      travelLocation: {
-        city: 'Bedford',
-        country: 'UK',
-        latitude: 52.1386,
-        longitude: -0.4667,
-        timezone: 'Europe/London',
-      },
-      confirmTravelNotifications: false, // Unconfirmed for push notifications
-    };
-
-    // Default notification scheduling uses home location
-    const notifLocDefault = getNotificationObservanceLocation(savedProfile, travelOpt);
-    expect(notifLocDefault.latitude).toBe(28.6139);
-    expect(notifLocDefault.timezone).toBe('Asia/Kolkata');
-    expect(notifLocDefault.isTravelLocation).toBe(false);
-
-    // Confirmed notification scheduling uses travel location
-    const notifLocConfirmed = getNotificationObservanceLocation(savedProfile, {
-      ...travelOpt,
-      confirmTravelNotifications: true,
+  it('5. A travel preference cannot silently override saved-location calculations', () => {
+    const context = resolveCalendarContext({
+      location: homeIndiaLocation,
+      travelLocation: travelBedfordLocation,
+      confirmTravelLocation: true,
     });
-    expect(notifLocConfirmed.latitude).toBe(52.1386);
-    expect(notifLocConfirmed.timezone).toBe('Europe/London');
-    expect(notifLocConfirmed.isTravelLocation).toBe(true);
+
+    expect(context.isTravelDivergenceDetected).toBe(true);
+    expect(context.isTravelModeActive).toBe(false);
+    expect(context.effectiveCalculationLocation.timezone).toBe('Asia/Kolkata');
   });
 
   it('6. Handles DST boundaries (Europe/London GMT/BST) and International Date Line crossings (Tokyo to Honolulu)', () => {

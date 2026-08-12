@@ -21,6 +21,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 MIGRATION="$ROOT/supabase/migrations/20260811090000_materialisation_identity_and_completeness.sql"
 ROLLBACK="$ROOT/supabase/rollbacks/20260811090000_materialisation_identity_and_completeness_rollback.sql"
+REVIEW_QUEUE_MIGRATION="$ROOT/supabase/migrations/20260811153000_review_queue_variant_identity.sql"
 
 command -v psql >/dev/null 2>&1 || { echo "psql not found -- a local PostgreSQL 15+ is required"; exit 2; }
 
@@ -75,6 +76,11 @@ echo
 echo "=== actual materialiser ================================================"
 build_shadow || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$MIGRATION" || exit 2
+# The current materialiser persists unresolved evaluator output through the
+# profile/tradition-aware queue contract. Apply that additive migration only in
+# this integration stage; the byte-identical rollback assertion above remains
+# scoped to the materialisation migration it is intended to prove.
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$REVIEW_QUEUE_MIGRATION" || exit 2
 (cd "$ROOT" && SHADOW_DATABASE_URL="postgresql:///$DB" npx tsx "$HERE/run-materializer.mts")
 MATERIALISER=$?
 

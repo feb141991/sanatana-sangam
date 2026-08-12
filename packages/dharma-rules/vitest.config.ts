@@ -13,10 +13,12 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'harness/**/*.test.ts'],
     globals: false,
     environment: 'node',
-    // Several invariants compute a full year of panchanga, which lands close to
-    // the 5 s default -- one of them intermittently timed out on a loaded
-    // machine, so a green run here was partly luck. These are integration tests
-    // against real astronomy, not unit tests; the default is the wrong budget.
-    testTimeout: 60_000,
+    pool: 'forks',
+    // Annual astronomy suites repeatedly request the same pure year tables.
+    // One non-isolated worker lets the bounded caches serve later test files
+    // instead of recomputing identical years in competing child processes.
+    maxWorkers: 1,
+    isolate: false,
+    testTimeout: 120_000,
   },
 });

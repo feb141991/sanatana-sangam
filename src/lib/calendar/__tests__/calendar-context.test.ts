@@ -3,7 +3,8 @@
  *
  * Table-driven test suite for resolveCalendarContext.
  * Verifies:
- * - All 11 calendar profiles mapping to month system and era.
+ * - All seeded calendar profiles mapping to month system and era through
+ *   definitions loaded from calendar_profiles.
  * - All 7 tradition profiles mapping to displayed profile vs calculation method profile,
  *   Ekadashi method, and Janmashtami method.
  * - Missing/unknown choices remaining 'unknown'.
@@ -26,13 +27,19 @@ import {
 } from '../calendar-context';
 
 describe('Pure Calendar Context Resolver (resolveCalendarContext)', () => {
-  describe('11 Canonical Calendar Profiles — Table-Driven Tests', () => {
+  describe('Seeded Calendar Profiles — Table-Driven Tests', () => {
     const calendarProfileCases: Array<{
       inputProfile: string;
       expectedId: CalendarProfileId;
       expectedMonthSystem: MonthSystem;
       expectedEra: CalendarEra;
     }> = [
+      {
+        inputProfile: 'legacy-ujjain',
+        expectedId: 'legacy-ujjain',
+        expectedMonthSystem: 'unknown',
+        expectedEra: 'vikram_north',
+      },
       {
         inputProfile: 'north_indian_purnimanta',
         expectedId: 'north_indian_purnimanta',
@@ -94,17 +101,30 @@ describe('Pure Calendar Context Resolver (resolveCalendarContext)', () => {
         expectedEra: 'vikram_north',
       },
       {
-        inputProfile: 'nanakshahi',
-        expectedId: 'nanakshahi',
-        expectedMonthSystem: 'solar',
-        expectedEra: 'nanakshahi',
+        inputProfile: 'kannada_amanta',
+        expectedId: 'kannada_amanta',
+        expectedMonthSystem: 'amanta',
+        expectedEra: 'shaka',
+      },
+      {
+        inputProfile: 'telugu_amanta',
+        expectedId: 'telugu_amanta',
+        expectedMonthSystem: 'amanta',
+        expectedEra: 'shaka',
       },
     ];
 
     it.each(calendarProfileCases)(
       'resolves calendar profile "$inputProfile" to monthSystem=$expectedMonthSystem and era=$expectedEra',
       ({ inputProfile, expectedId, expectedMonthSystem, expectedEra }) => {
-        const ctx = resolveCalendarContext({ calendarProfile: inputProfile });
+        const ctx = resolveCalendarContext({
+          calendarProfile: inputProfile,
+          calendarProfileDefinition: {
+            slug: inputProfile,
+            monthSystem: expectedMonthSystem,
+            era: expectedEra,
+          },
+        });
         expect(ctx.calendarProfile).toBe(expectedId);
         expect(ctx.monthSystem).toBe(expectedMonthSystem);
         expect(ctx.era).toBe(expectedEra);
@@ -112,14 +132,11 @@ describe('Pure Calendar Context Resolver (resolveCalendarContext)', () => {
       }
     );
 
-    it('resolves alias profiles (kannada_amanta, telugu_amanta) to amanta / shaka', () => {
-      const kRes = resolveCalendarContext({ calendarProfile: 'kannada_amanta' });
-      expect(kRes.monthSystem).toBe('amanta');
-      expect(kRes.era).toBe('shaka');
-
-      const tRes = resolveCalendarContext({ calendarProfile: 'telugu_amanta' });
-      expect(tRes.monthSystem).toBe('amanta');
-      expect(tRes.era).toBe('shaka');
+    it('does not accept an unverified slug without its database definition', () => {
+      const context = resolveCalendarContext({ calendarProfile: 'north_indian_purnimanta' });
+      expect(context.calendarProfile).toBe('unknown');
+      expect(context.monthSystem).toBe('unknown');
+      expect(context.disclosureDiagnostics.calendarProfileKnown).toBe(false);
     });
   });
 
@@ -193,7 +210,14 @@ describe('Pure Calendar Context Resolver (resolveCalendarContext)', () => {
     it.each(traditionProfileCases)(
       'resolves tradition "$inputTradition" to displayed=$expectedDisplayed, calc=$expectedCalcMethod',
       ({ inputTradition, expectedDisplayed, expectedCalcMethod, expectedEkadashi, expectedJanmashtami, isUnspecifiedLabel }) => {
-        const ctx = resolveCalendarContext({ traditionProfile: inputTradition });
+        const ctx = resolveCalendarContext({
+          traditionProfile: inputTradition,
+          traditionProfileDefinition: {
+            slug: inputTradition,
+            ekadashiMethod: expectedEkadashi,
+            janmashtamiMethod: expectedJanmashtami,
+          },
+        });
         expect(ctx.displayedTraditionProfile).toBe(expectedDisplayed);
         expect(ctx.calculationMethodProfile).toBe(expectedCalcMethod);
         expect(ctx.ekadashiMethod).toBe(expectedEkadashi);
@@ -204,7 +228,14 @@ describe('Pure Calendar Context Resolver (resolveCalendarContext)', () => {
     );
 
     it('"unspecified" uses approved Smarta calculation behavior BUT remains labelled unspecified', () => {
-      const ctx = resolveCalendarContext({ traditionProfile: 'unspecified' });
+      const ctx = resolveCalendarContext({
+        traditionProfile: 'unspecified',
+        traditionProfileDefinition: {
+          slug: 'unspecified',
+          ekadashiMethod: 'smarta',
+          janmashtamiMethod: 'smarta_nishita',
+        },
+      });
       expect(ctx.displayedTraditionProfile).toBe('unspecified');
       expect(ctx.calculationMethodProfile).toBe('smarta');
       expect(ctx.disclosureDiagnostics.isUnspecifiedLabel).toBe(true);

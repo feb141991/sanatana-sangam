@@ -58,13 +58,19 @@ function quoteIdent(name) {
   return `"${name.replace(/"/g, '""')}"`;
 }
 
+function formatVal(v) {
+  if (v === undefined || v === null) return null;
+  if (typeof v === 'object') return JSON.stringify(v);
+  return v;
+}
+
 function buildInsert(table, rows) {
   const arr = Array.isArray(rows) ? rows : [rows];
   const cols = [...new Set(arr.flatMap(r => Object.keys(r)))];
   const values = [];
   const tuples = arr.map(row => {
     const placeholders = cols.map(c => {
-      values.push(row[c] === undefined ? null : row[c]);
+      values.push(formatVal(row[c]));
       return `$${values.length}`;
     });
     return `(${placeholders.join(', ')})`;
@@ -75,12 +81,12 @@ function buildInsert(table, rows) {
 
 function buildUpdate(table, patch, wheres) {
   const cols = Object.keys(patch);
-  const values = cols.map(c => (patch[c] === undefined ? null : patch[c]));
+  const values = cols.map(c => formatVal(patch[c]));
   const set = cols.map((c, i) => `${quoteIdent(c)} = $${i + 1}`).join(', ');
   const whereSql = wheres
     .map((w, i) => `${quoteIdent(w.col)} = $${cols.length + i + 1}`)
     .join(' AND ');
-  for (const w of wheres) values.push(w.val);
+  for (const w of wheres) values.push(formatVal(w.val));
   return { sql: `UPDATE ${quoteIdent(table)} SET ${set} WHERE ${whereSql}`, values };
 }
 
@@ -186,7 +192,13 @@ function makeQuery(pool, table) {
               if (error) return { data: null, error };
               return { data: data[0], error: null };
             },
+            then(resolve, reject) {
+              return exec(sql + returning, values).then(resolve, reject);
+            },
           };
+        },
+        then(resolve, reject) {
+          return exec(sql, values).then(resolve, reject);
         },
       };
     },

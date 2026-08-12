@@ -14,10 +14,13 @@
  * one-off paste. So `prod_summary.txt` (slug:year:count:min:max, one line per
  * slug-year, pulled read-only) is the fixture and the rows are regenerated.
  *
- * FAITHFUL: row count (557 exactly), the slug set, the year distribution, and
- * the MULTIPLICITY of recurring slugs -- ekadashi 22/23/23, pradosh 23/20/21 --
- * which is what the identity and completeness work is about. The five withheld
- * rows keep their real state.
+ * FAITHFUL: occurrence row count (557 exactly), the production occurrence slug
+ * set, the year distribution, and the MULTIPLICITY of recurring slugs --
+ * ekadashi 22/23/23, pradosh 23/20/21 -- which is what the identity and
+ * completeness work is about. Definitions additionally include every distinct
+ * slug in the current rule catalog. That matters because disputed/deferred
+ * rules can legitimately enter the review queue without having a legacy
+ * occurrence row yet. The five withheld rows keep their real state.
  *
  * NOT FAITHFUL: per-row provenance blobs and timestamps. No check reads them.
  * Stated rather than glossed: this proves the migration is additive and the
@@ -53,13 +56,13 @@ const addDays = (iso, n) => {
 const daysBetween = (a, b) =>
   Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000);
 
-const slugs = new Set();
+const occurrenceSlugs = new Set();
 const rows = [];
 for (const line of summary) {
   const [slug, yearStr, countStr, dmin, dmax] = line.split(':');
   const year = Number(yearStr);
   const count = Number(countStr);
-  slugs.add(slug);
+  occurrenceSlugs.add(slug);
   const span = daysBetween(dmin, dmax);
   for (let i = 0; i < count; i++) {
     rows.push([slug, year, count === 1 ? dmin : addDays(dmin, Math.round((span * i) / (count - 1)))]);
@@ -79,7 +82,8 @@ for (let [slug, year, d] of rows) {
 const q = v => (v === null || v === undefined ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`);
 
 const out = ['BEGIN;'];
-for (const s of [...slugs].sort()) {
+const definitionSlugs = new Set([...occurrenceSlugs, ...rules.keys()]);
+for (const s of [...definitionSlugs].sort()) {
   const r = rules.get(s) ?? {};
   out.push(
     'INSERT INTO observance_definitions (slug, display_name, kind, tradition, active, emoji, description) ' +
@@ -104,4 +108,4 @@ for (const [slug, year, d] of uniq) {
 out.push('COMMIT;');
 
 writeFileSync(join(here, 'shadow-data.sql'), out.join('\n') + '\n');
-console.log(`definitions ${slugs.size}   occurrence rows ${uniq.length}`);
+console.log(`definitions ${definitionSlugs.size}   occurrence rows ${uniq.length}`);

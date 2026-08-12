@@ -1630,7 +1630,7 @@
     "route_slug": "yogini-ekadashi",
     "corrected_skipped_tithi_policy": "previous_day",
     "corrected_prefer_last_match": true,
-    "launch_status": "included",
+    "launch_status": "deferred",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Smarta)' at 2026-07-10.",
     "disputed_years": [
       2026
@@ -1668,7 +1668,7 @@
     "route_slug": "yogini-ekadashi",
     "corrected_skipped_tithi_policy": "following_day",
     "corrected_prefer_last_match": true,
-    "launch_status": "included",
+    "launch_status": "deferred",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
     "disputed_years": [
       2026

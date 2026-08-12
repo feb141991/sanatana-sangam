@@ -343,6 +343,10 @@
             "variant_key": {
               "type": "string"
             },
+            "spiritual_tradition": {
+              "type": "string",
+              "description": "Optional tradition profile when variant_key alone does not identify the recognised reading"
+            },
             "civil_date": {
               "type": "string",
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"

@@ -1,6 +1,11 @@
 import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearCorrected } from './engine';
 import { openBatch, closeBatch, buildSeriesInstanceKey } from './materialisation-batch';
-import { evaluateVariant } from '@sangam/dharma-rules';
+import {
+  evaluateVariant,
+  type EvaluationReason,
+  type RuleCondition,
+  type SourceReference,
+} from '@sangam/dharma-rules';
 import { CANONICAL_RULES } from './rules';
 
 
@@ -100,7 +105,22 @@ function buildGeneratedOccurrenceReviewPatch(slug: string) {
   };
 }
 
-const EVALUATOR_RULES = [
+type EvaluatorVariantDefinition = {
+  variantId: string;
+  spiritualTradition: string | null;
+  isPrimary: boolean;
+  sourceRefs?: SourceReference[];
+  conditions: RuleCondition[];
+};
+
+type EvaluatorRuleDefinition = {
+  slug: string;
+  windowDays: number;
+  isRecurring?: boolean;
+  variants: EvaluatorVariantDefinition[];
+};
+
+const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
   {
     slug: 'maha-shivaratri',
     windowDays: 15,
@@ -152,12 +172,8 @@ const EVALUATOR_RULES = [
       {
         variantId: 'vaishnava',
         // Must match a tradition_profiles.slug — observance_occurrences has a FK
-        // on spiritual_tradition (migration 20260805195000 line 301). The seeded
-        // slugs are smarta, smarta_nishita, nishita, standard and gaudiya_iskcon.
-        // 'vaishnava_gaudiya' is none of them, so committing an evaluator result
-        // for this variant would have failed that constraint the moment
-        // USE_CONDITION_EVALUATOR was enabled. rules.json already uses
-        // gaudiya_iskcon for this same sampradaya.
+        // on spiritual_tradition (migration 20260805195000). Use the persisted
+        // Gaudiya profile slug rather than an evaluator-only alias.
         spiritualTradition: 'gaudiya_iskcon',
         isPrimary: false,
         sourceRefs: [
@@ -184,7 +200,10 @@ const EVALUATOR_RULES = [
     variants: [
       {
         variantId: 'standard',
-        spiritualTradition: 'standard',
+        // Generic rules are not a sampradaya. NULL satisfies the profile FK
+        // without inventing a tradition_profiles row; variant_key still carries
+        // the evaluator's "standard" reading identity.
+        spiritualTradition: null,
         isPrimary: true,
         sourceRefs: [
           {
@@ -210,7 +229,7 @@ const EVALUATOR_RULES = [
     variants: [
       {
         variantId: 'standard',
-        spiritualTradition: 'standard',
+        spiritualTradition: null,
         isPrimary: true,
         sourceRefs: [
           {
@@ -235,7 +254,7 @@ const EVALUATOR_RULES = [
     variants: [
       {
         variantId: 'standard',
-        spiritualTradition: 'standard',
+        spiritualTradition: null,
         isPrimary: true,
         conditions: [
           { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'prevails' },
@@ -249,7 +268,7 @@ const EVALUATOR_RULES = [
     variants: [
       {
         variantId: 'standard',
-        spiritualTradition: 'standard',
+        spiritualTradition: null,
         isPrimary: true,
         conditions: [
           { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
@@ -265,7 +284,7 @@ const EVALUATOR_RULES = [
     variants: [
       {
         variantId: 'standard',
-        spiritualTradition: 'standard',
+        spiritualTradition: null,
         isPrimary: true,
         conditions: [
           { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
@@ -299,51 +318,26 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     instance_anchor: string;
     recurring?: boolean;
     variant_key?: string;
-    spiritual_tradition?: string;
+    spiritual_tradition?: string | null;
     is_primary_variant?: boolean;
-    reasons?: any;
-    diagnostics?: any;
-    source_refs?: any;
+    reasons?: EvaluationReason[] | null;
+    diagnostics?: string[] | null;
+    source_refs?: SourceReference[];
   }>;
-  unresolved: Array<{
-    slug: string;
-    year: number;
-    variant_key: string;
-    calendar_profile: string;
-    /**
-     * Why this occurrence could not be published.
-     *
-     * The first three are things the ENGINE noticed about the sky or the rule:
-     * no date qualified, several did, or a vrddhi tithi spans two sunrises.
-     * Each is a legitimate "we cannot tell yet".
-     *
-     * `engine_error` is different in kind: it means a REVIEWER has determined
-     * that we are wrong -- typically by comparing against an authority, which
-     * is what the 4.3 Tier-1 harness now makes possible. It is never set by the
-     * engine, because an engine cannot know it is wrong; that is the whole
-     * reason external validation exists.
-     *
-     * It is deliberately NOT a fourth user-facing state. To a user, "we are
-     * uncertain", "your location moved it" and "we got it wrong" all mean the
-     * same thing -- this date is not confirmed -- and inviting them to compare
-     * our confessions would be noise. What differs is operational: an
-     * engine_error must WITHHOLD the date (it is known wrong, and the contract
-     * already forbids showing a guessed date with a caveat) and should reach a
-     * person, where the others are ordinary queue items.
-     */
-    ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi' | 'engine_error';
-    reasoning: string;
-    candidate_dates: string[];
-    evaluator_details: any;
-  }>;
+  unresolved: ReviewQueueItem[];
 } {
   const baseline = calculateObservancesForYear(year);
   const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
-  const finalOccurrences: any[] = [];
-  const unresolved: any[] = [];
+  const finalOccurrences: EvaluatorResolvedOccurrence[] = [];
+  const unresolved: ReviewQueueItem[] = [];
 
   for (const occ of baseline) {
     if (!evaluatorSlugs.has(occ.slug)) {
+      const rule = CANONICAL_RULES.find(candidate => {
+        const qualifier = candidate.variant_key ?? candidate.sampradaya;
+        const key = qualifier ? `${candidate.slug}::${qualifier}` : candidate.slug;
+        return key === occ.ruleKey;
+      });
       finalOccurrences.push({
         slug: occ.slug,
         date: occ.date,
@@ -351,8 +345,8 @@ export function calculateOccurrencesWithEvaluator(year: number): {
         // No variants for this rule, so the occurrence is its own instance.
         instance_anchor: occ.date,
         recurring: occ.recurring,
-        variant_key: 'legacy-default',
-        spiritual_tradition: null,
+        variant_key: rule?.variant_key ?? rule?.sampradaya ?? 'legacy-default',
+        spiritual_tradition: rule?.spiritual_tradition ?? null,
         is_primary_variant: true,
         reasons: null,
         diagnostics: null,
@@ -370,9 +364,14 @@ export function calculateOccurrencesWithEvaluator(year: number): {
       const windowSize = eRule.windowDays;
 
       for (const variant of eRule.variants) {
-        const qualified: Array<{ date: string; reasoning: any; diagnostics: string[] }> = [];
-        const vrddhiDates: Array<{ date: string; reasoning: any; diagnostics: string[] }> = [];
-        const allEvaluationResults: any[] = [];
+        const qualified: Array<{ date: string; reasoning: EvaluationReason[]; diagnostics: string[] }> = [];
+        const vrddhiDates: Array<{ date: string; reasoning: EvaluationReason[]; diagnostics: string[] }> = [];
+        const allEvaluationResults: Array<{
+          date: string;
+          qualified: boolean | 'indeterminate';
+          reasons: EvaluationReason[];
+          diagnostics: string[];
+        }> = [];
 
         for (let offset = -windowSize; offset <= windowSize; offset++) {
           const checkDate = offsetDateStr(candidate.date, offset);
@@ -380,7 +379,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             {
               ruleId: variant.variantId,
               festivalId: eRule.slug,
-              traditionProfile: variant.spiritualTradition,
+              traditionProfile: variant.spiritualTradition ?? undefined,
               conditions: variant.conditions,
             },
             checkDate,
@@ -415,9 +414,6 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             slug: eRule.slug,
             date: match.date,
             year: year,
-            // The candidate this variant was evaluated FROM. Every variant in
-            // this inner loop shares it, which is precisely what makes them
-            // readings of one instance rather than separate observances.
             instance_anchor: candidate.date,
             recurring: eRule.isRecurring,
             variant_key: variant.variantId,
@@ -425,10 +421,10 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             is_primary_variant: variant.isPrimary,
             reasons: match.reasoning,
             diagnostics: match.diagnostics,
-            source_refs: (variant as any).sourceRefs || [],
+            source_refs: variant.sourceRefs ?? [],
           });
         } else {
-          let ambiguity_type: 'no_qualified_date' | 'multiple_qualified_dates' | 'vrddhi_tithi' | 'engine_error';
+          let ambiguity_type: ReviewQueueAmbiguityType;
           let reasoning: string;
           let candidate_dates: string[];
 
@@ -450,10 +446,12 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             slug: eRule.slug,
             year: year,
             variant_key: variant.variantId,
+            spiritual_tradition: variant.spiritualTradition,
             calendar_profile: 'legacy-ujjain',
             ambiguity_type,
             reasoning,
             candidate_dates,
+            source_refs: variant.sourceRefs ?? [],
             evaluator_details: {
               ruleId: variant.variantId,
               festivalId: eRule.slug,
@@ -462,16 +460,12 @@ export function calculateOccurrencesWithEvaluator(year: number): {
               diagnostics: vrddhiDates.length > 0 ? ['vrddhi_tithi'] : (qualified.length > 1 ? ['multiple_candidates'] : ['zero_candidates']),
             },
           });
-
-          console.warn(
-            `[Evaluator Integration] Rule ${eRule.slug} (variant ${variant.variantId}) is UNRESOLVED in year ${year}. Ambiguity: ${ambiguity_type}. Qualified: ${qualified.length}, Vrddhi: ${vrddhiDates.length}.`
-          );
         }
       }
     }
   }
 
-  const resolvedOccurrences: any[] = [];
+  const resolvedOccurrences: EvaluatorResolvedOccurrence[] = [];
   for (const occ of finalOccurrences) {
     const rule = CANONICAL_RULES.find(r => r.slug === occ.slug);
     if (rule && rule.rule_family === 'relative_to_other_observance') {
@@ -491,7 +485,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
             variant_key: baseOcc.variant_key,
             spiritual_tradition: baseOcc.spiritual_tradition,
             is_primary_variant: baseOcc.is_primary_variant,
-            source_refs: baseOcc.source_refs || [],
+            source_refs: baseOcc.source_refs ?? [],
           });
         }
       }
@@ -500,9 +494,249 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     }
   }
 
+  const disputedItems = collectDisputedUnresolvedItems(year);
+  for (const dItem of disputedItems) {
+    const exists = unresolved.some(
+      u => u.slug === dItem.slug && u.year === dItem.year &&
+        u.variant_key === dItem.variant_key &&
+        u.spiritual_tradition === dItem.spiritual_tradition,
+    );
+    if (!exists) {
+      unresolved.push(dItem);
+    }
+  }
+
   return { resolved: resolvedOccurrences, unresolved };
 }
 
+export type ReviewQueueAmbiguityType =
+  | 'no_qualified_date'
+  | 'multiple_qualified_dates'
+  | 'vrddhi_tithi'
+  | 'disputed_ratification'
+  | 'engine_error';
+
+export type ReviewQueueItem = {
+  definition_id?: string;
+  slug: string;
+  year: number;
+  variant_key: string;
+  spiritual_tradition: string | null;
+  calendar_profile: string;
+  /**
+   * Why this occurrence could not be published.
+   *
+   * The first three are things the ENGINE noticed about the sky or the rule:
+   * no date qualified, several did, or a vrddhi tithi spans two sunrises.
+   * Each is a legitimate "we cannot tell yet".
+   *
+   * `engine_error` is different in kind: it means a REVIEWER has determined
+   * that we are wrong -- typically by comparing against an authority, which
+   * is what the 4.3 Tier-1 harness now makes possible. It is never set by the
+   * engine, because an engine cannot know it is wrong; that is the whole
+   * reason external validation exists.
+   *
+   * It is deliberately NOT a fourth user-facing state. To a user, "we are
+   * uncertain", "your location moved it" and "we got it wrong" all mean the
+   * same thing -- this date is not confirmed -- and inviting them to compare
+   * our confessions would be noise. What differs is operational: an
+   * engine_error must WITHHOLD the date (it is known wrong, and the contract
+   * already forbids showing a guessed date with a caveat) and should reach a
+   * person, where the others are ordinary queue items.
+   */
+  ambiguity_type: ReviewQueueAmbiguityType;
+  reasoning: string;
+  candidate_dates: string[];
+  evaluator_details: Record<string, unknown>;
+  source_refs: SourceReference[];
+};
+
+type EvaluatorResolvedOccurrence = {
+  slug: string;
+  date: string;
+  year: number;
+  instance_anchor: string;
+  recurring?: boolean;
+  variant_key: string;
+  spiritual_tradition: string | null;
+  is_primary_variant: boolean;
+  reasons: EvaluationReason[] | null;
+  diagnostics: string[] | null;
+  source_refs?: SourceReference[];
+};
+
+type ReviewQueueRow = {
+  definition_id: string;
+  year: number;
+  calendar_profile: string;
+  spiritual_tradition: string | null;
+  variant_key: string;
+  location_label: string;
+  computed_latitude: number;
+  computed_longitude: number;
+  computed_timezone: string;
+  ambiguity_type: ReviewQueueAmbiguityType;
+  reasoning: string;
+  candidate_dates: string[];
+  evaluator_details: Record<string, unknown>;
+  source_refs: SourceReference[];
+  review_status: 'pending_review';
+};
+
+export type ReviewQueuePersistenceClient = {
+  from(table: 'observance_review_queue'): {
+    upsert(
+      rows: ReviewQueueRow[],
+      options: { onConflict: string },
+    ): PromiseLike<{ error: unknown | null }>;
+  };
+};
+
+/**
+ * Matches "<sourceName>, <publisher>, <edition>, <pageOrSection>[ -- <note>]" --
+ * the structural shape every citation/source_ref in rules.json follows today.
+ * `publisher` is pinned to Positional Astronomy Centre because that is the only
+ * Tier-1 publisher this codebase has sourced citations from so far (see
+ * docs/sources/rashtriya-panchang-saka-1948.manifest.md); a new Tier-1 source
+ * needs its own publisher pattern added here deliberately, not a silent match.
+ */
+const RASHTRIYA_PANCHANG_CITATION_RE =
+  /^(.*?),\s*(Positional Astronomy Centre[^,]*\([^)]*\))\s*,\s*(English edition)\s*,\s*(.*?)(?:\s+--\s+|$)/;
+
+export function parseTypedSourceRefs(sourceRefStr?: string, ruleCitation?: string): SourceReference[] {
+  const text = sourceRefStr || ruleCitation;
+  if (!text) return [];
+
+  const match = text.match(RASHTRIYA_PANCHANG_CITATION_RE);
+  if (match) {
+    const [, sourceName, publisher, edition, pageOrSection] = match;
+    return [{
+      sourceName,
+      publisher,
+      edition,
+      pageOrSection,
+      tier: 1,
+    }];
+  }
+
+  // Fail closed: if source tier cannot be verified, throw observable error
+  throw new Error(`[Calendar Governance] Unverified source reference tier for: "${text}"`);
+}
+
+export function collectDisputedUnresolvedItems(year: number): ReviewQueueItem[] {
+  const items: ReviewQueueItem[] = [];
+  const seenKeys = new Set<string>();
+
+  for (const rule of CANONICAL_RULES) {
+    if (!rule.disputed_variants || rule.disputed_variants.length === 0) continue;
+
+    // A disputed variant may be emitted ONLY when the requested year is explicitly in disputed_years.
+    // launch_status = 'deferred' must NEVER replicate dated variants into every year!
+    const isExplicitlyDisputedForYear = Array.isArray(rule.disputed_years) && rule.disputed_years.includes(year);
+    if (!isExplicitlyDisputedForYear) continue;
+
+    for (const dv of rule.disputed_variants) {
+      if (!dv.civil_date || typeof dv.civil_date !== 'string') {
+        throw new Error(`[Calendar Governance] Malformed civil_date on disputed variant for ${rule.slug}`);
+      }
+
+      // Validate civil_date format YYYY-MM-DD
+      const dateMatch = /^\d{4}-\d{2}-\d{2}$/.test(dv.civil_date);
+      const dateYear = parseInt(dv.civil_date.slice(0, 4), 10);
+      if (!dateMatch || Number.isNaN(dateYear)) {
+        throw new Error(`[Calendar Governance] Invalid civil_date format "${dv.civil_date}" on disputed variant for ${rule.slug}`);
+      }
+
+      // Validate civil_date belongs to requested year
+      if (dateYear !== year || !dv.civil_date.startsWith(`${year}-`)) {
+        // Mismatched year — fail closed: do not emit into this year's queue
+        continue;
+      }
+
+      const spiritualTradition = dv.spiritual_tradition ?? rule.spiritual_tradition ?? null;
+      const key = `${rule.slug}|${year}|legacy-ujjain|23.1765,75.7885|${spiritualTradition ?? ''}|${dv.variant_key}`;
+      if (seenKeys.has(key)) continue;
+      seenKeys.add(key);
+
+      // Typed source references with verified Tier
+      const sourceRefs = parseTypedSourceRefs(dv.source_ref, rule.citation);
+
+      items.push({
+        slug: rule.slug,
+        year: year,
+        variant_key: dv.variant_key,
+        spiritual_tradition: spiritualTradition,
+        calendar_profile: 'legacy-ujjain',
+        ambiguity_type: 'disputed_ratification',
+        reasoning: dv.source_ref ? `Disputed variant pending council ratification: ${dv.source_ref}` : 'Disputed variant pending council ratification.',
+        candidate_dates: [dv.civil_date],
+        source_refs: sourceRefs,
+        evaluator_details: {
+          ruleId: dv.variant_key,
+          festivalId: rule.slug,
+          source_refs: sourceRefs,
+          diagnostics: ['disputed_ratification'],
+        },
+      });
+    }
+  }
+
+  return items;
+}
+
+export async function persistReviewQueueItems(
+  supabase: ReviewQueuePersistenceClient,
+  items: ReviewQueueItem[],
+  definitionsBySlug: Map<string, string>,
+): Promise<{ count: number }> {
+  if (items.length === 0) return { count: 0 };
+
+  const queueRows: ReviewQueueRow[] = [];
+  const missingDefinitions = new Set<string>();
+  for (const item of items) {
+    const defId = item.definition_id || definitionsBySlug.get(item.slug);
+    if (!defId) {
+      missingDefinitions.add(item.slug);
+      continue;
+    }
+    queueRows.push({
+      definition_id: defId,
+      year: item.year,
+      calendar_profile: item.calendar_profile || 'legacy-ujjain',
+      spiritual_tradition: item.spiritual_tradition || null,
+      variant_key: item.variant_key,
+      location_label: 'Ujjain, India',
+      computed_latitude: 23.1765,
+      computed_longitude: 75.7885,
+      computed_timezone: 'Asia/Kolkata',
+      ambiguity_type: item.ambiguity_type,
+      reasoning: item.reasoning,
+      candidate_dates: item.candidate_dates,
+      evaluator_details: item.evaluator_details,
+      source_refs: item.source_refs || [],
+      review_status: 'pending_review',
+    });
+  }
+
+  if (missingDefinitions.size > 0) {
+    throw new Error(
+      `[Calendar Governance] Review queue definitions missing for: ${[...missingDefinitions].sort().join(', ')}`,
+    );
+  }
+
+  const { error: queueError } = await supabase
+    .from('observance_review_queue')
+    .upsert(queueRows, {
+      onConflict: 'definition_id,year,calendar_profile,computed_latitude,computed_longitude,spiritual_tradition,variant_key',
+    });
+
+  if (queueError) {
+    console.error('[Materialize Review Queue] Upsert error:', queueError);
+    throw queueError;
+  }
+
+  return { count: queueRows.length };
+}
 
 /**
  * Commits occurrence rows under a materialisation batch.
@@ -1147,38 +1381,7 @@ export async function materializeOccurrencesForYears({
 
       // Upsert unresolved review queue items if we are committing
       if (commit && unresolved.length > 0) {
-        const queueRows = [];
-        for (const item of unresolved) {
-          const definitionId = definitionMap.get(item.slug);
-          if (!definitionId) continue;
-
-          queueRows.push({
-            definition_id: definitionId,
-            year: item.year,
-            calendar_profile: item.calendar_profile,
-            location_label: 'Ujjain, India',
-            computed_latitude: 23.1765,
-            computed_longitude: 75.7885,
-            computed_timezone: 'Asia/Kolkata',
-            ambiguity_type: item.ambiguity_type,
-            reasoning: item.reasoning,
-            candidate_dates: item.candidate_dates,
-            evaluator_details: item.evaluator_details,
-            review_status: 'pending_review',
-          });
-        }
-
-        if (queueRows.length > 0) {
-          const { error: queueError } = await supabase
-            .from('observance_review_queue')
-            .upsert(queueRows, {
-              onConflict: 'definition_id,year,calendar_profile,computed_latitude,computed_longitude',
-            });
-          if (queueError) {
-            console.error('[Materialize Review Queue] Upsert error:', queueError);
-            throw queueError;
-          }
-        }
+        await persistReviewQueueItems(supabase, unresolved, definitionMap);
       }
 
     } else {
@@ -1441,6 +1644,12 @@ export async function materializeOccurrencesForYears({
       summary[year].updated = committed.updated;
       totalInserted += committed.inserted;
       totalUpdated += committed.updated;
+
+      // Upsert canonical disputed review queue items (e.g. Yogini 2026)
+      const disputedItems = collectDisputedUnresolvedItems(year);
+      if (disputedItems.length > 0) {
+        await persistReviewQueueItems(supabase, disputedItems, definitionMap);
+      }
     }
   }
 

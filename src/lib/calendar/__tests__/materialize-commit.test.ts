@@ -206,6 +206,10 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
 const DEFS = [
   { id: 'def-diwali', slug: 'diwali' },
   { id: 'def-holi', slug: 'holi' },
+  // Disputed/deferred rules can produce review-queue work without producing an
+  // occurrence. The commit fixture must therefore model the definition catalog,
+  // not only definitions that happen to insert rows in this launch year.
+  { id: 'def-yogini', slug: 'yogini-ekadashi' },
 ];
 
 /**
@@ -326,6 +330,17 @@ describe('materializeOccurrencesForYears — commit mode', () => {
     expect(inserted).toHaveLength(0);
     expect(updated).toHaveLength(0);
     expect(res.mode).toBe('dry_run');
+  });
+
+  it('persists unresolved evaluator output even when that rule inserts no occurrence', async () => {
+    const { client, inserted, queueUpserts } = makeClient({ definitions: DEFS });
+
+    await materializeOccurrencesForYears({
+      supabase: client as any, targetYears: [2026], calculatedBy: 't', commit: true,
+    });
+
+    expect(inserted.some(row => row.definition_id === 'def-yogini')).toBe(false);
+    expect(queueUpserts.filter(row => row.definition_id === 'def-yogini')).toHaveLength(2);
   });
 
   it('a locked row is never rewritten', async () => {

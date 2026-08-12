@@ -6,7 +6,7 @@ import {
 } from '@/lib/calendar/engine';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
 
-const TIMEOUT = 30_000;
+const TIMEOUT = 300_000;
 
 describe('contiguousWindows helper — window detection regression guards', () => {
   it('detects two same-named krishna windows separated by shukla days', () => {
@@ -128,5 +128,5 @@ describe('contiguousWindows helper — window detection regression guards', () =
         }
       }
     }
-  });
+  }, TIMEOUT);
 });

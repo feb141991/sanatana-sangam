@@ -115,6 +115,8 @@ export async function GET(request: NextRequest) {
         definition_id,
         year,
         calendar_profile,
+        spiritual_tradition,
+        variant_key,
         location_label,
         computed_latitude,
         computed_longitude,
@@ -123,6 +125,7 @@ export async function GET(request: NextRequest) {
         reasoning,
         candidate_dates,
         evaluator_details,
+        source_refs,
         review_status,
         observance_definitions!inner(
           slug,
@@ -170,7 +173,8 @@ export async function GET(request: NextRequest) {
 
     const byDate: Record<string, ClientObservanceResult[]> = {};
     for (const item of formattedResults) {
-      const dateKey = item.date;
+      const dateKey = item.civilDate ?? item.reviewPlacementDate;
+      if (!dateKey) continue;
       if (!byDate[dateKey]) {
         byDate[dateKey] = [];
       }

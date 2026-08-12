@@ -352,8 +352,21 @@ export function findSankrantisBetween(
 }
 
 // ---------------------------------------------------------------------------
-// Internal helper: find the amanta month boundaries containing `instant`
-// ---------------------------------------------------------------------------
+const BOUNDED_SOLVER_CACHE_LIMIT = 4096;
+
+function memoizeBounded<T>(cache: Map<string, T>, key: string, compute: () => T): T {
+  const cached = cache.get(key);
+  if (cached !== undefined) return cached;
+  const result = compute();
+  cache.set(key, result);
+  if (cache.size > BOUNDED_SOLVER_CACHE_LIMIT) {
+    const oldestKey = cache.keys().next().value;
+    if (oldestKey !== undefined) cache.delete(oldestKey);
+  }
+  return result;
+}
+
+const amantaMonthCache = new Map<string, { start: Date; end: Date } | null>();
 
 export function findAmantaMonth(
   instant: Date,
@@ -362,19 +375,24 @@ export function findAmantaMonth(
   start: Date;
   end: Date;
 } | null {
-  const start = findNewMoonBefore(instant, maxSearchHours);
-  if (!start) return null;
+  const cacheKey = `${instant.getTime()}|${maxSearchHours}`;
+  return memoizeBounded(amantaMonthCache, cacheKey, () => {
+    const start = findNewMoonBefore(instant, maxSearchHours);
+    if (!start) return null;
 
-  const searchFrom = new Date(start.getTime() + 12 * 60 * 60 * 1000);
-  const end = findNewMoonAfter(searchFrom, maxSearchHours);
-  if (!end) return null;
+    const searchFrom = new Date(start.getTime() + 12 * 60 * 60 * 1000);
+    const end = findNewMoonAfter(searchFrom, maxSearchHours);
+    if (!end) return null;
 
-  return { start, end };
+    return { start, end };
+  });
 }
 
 // ---------------------------------------------------------------------------
 // Main export: getLunarMonth
 // ---------------------------------------------------------------------------
+
+const lunarMonthResultCache = new Map<string, LunarMonthResult>();
 
 /**
  * Determine the lunar month containing `instant` under the given `system`.
@@ -385,6 +403,17 @@ export function getLunarMonth(
   instant: Date,
   system: MonthSystem,
   maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
+): LunarMonthResult {
+  const cacheKey = `${instant.getTime()}|${system}|${maxSearchHours}`;
+  return memoizeBounded(lunarMonthResultCache, cacheKey, () =>
+    computeLunarMonth(instant, system, maxSearchHours),
+  );
+}
+
+function computeLunarMonth(
+  instant: Date,
+  system: MonthSystem,
+  maxSearchHours: number,
 ): LunarMonthResult {
   const diagnostics: string[] = [];
 

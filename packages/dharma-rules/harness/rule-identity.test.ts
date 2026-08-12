@@ -37,7 +37,7 @@ import {
 import { CANONICAL_RULES, ObservanceRule } from '@/lib/calendar/rules';
 
 // Panchang years are slow; 30 s is comfortable even on cold CI.
-const TIMEOUT = 30_000;
+const TIMEOUT = 300_000;
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -23,12 +23,46 @@ vi.mock('@/lib/supabase-server', () => ({
   createServerSupabaseClient: async () => makeClient(null),
 }));
 
+const calendarDefinitions: Record<string, Record<string, unknown>> = {
+  'legacy-ujjain': { slug: 'legacy-ujjain', month_system: null, era: 'vikram_north' },
+  gujarati_amanta: { slug: 'gujarati_amanta', month_system: 'amanta', era: 'vikram_gujarat' },
+};
+
+const traditionDefinitions: Record<string, Record<string, unknown>> = {
+  gaudiya_iskcon: {
+    slug: 'gaudiya_iskcon',
+    ekadashi_method: 'vaishnava_suddha',
+    janmashtami_method: 'vaishnava_rohini',
+  },
+  swaminarayan: {
+    slug: 'swaminarayan',
+    ekadashi_method: 'vaishnava_suddha',
+    janmashtami_method: 'vaishnava_rohini',
+  },
+  unspecified: {
+    slug: 'unspecified',
+    ekadashi_method: 'smarta',
+    janmashtami_method: 'smarta_nishita',
+  },
+};
+
 function makeClient(profile: Record<string, unknown> | null) {
   return {
-    from: () => ({
+    from: (table: string) => ({
       select: () => ({
-        eq: () => ({
-          single: async () => ({ data: profile, error: null }),
+        eq: (_column: string, value: string) => ({
+          single: async () => ({
+            data: table === 'profiles' ? profile : null,
+            error: null,
+          }),
+          maybeSingle: async () => ({
+            data: table === 'calendar_profiles'
+              ? calendarDefinitions[value] ?? null
+              : table === 'tradition_profiles'
+                ? traditionDefinitions[value] ?? null
+                : null,
+            error: null,
+          }),
         }),
       }),
     }),
@@ -61,6 +95,11 @@ describe('Calendar/Tradition Onboarding & Profile Persistence Audit', () => {
     // User specifies Gujarati Amanta profile explicitly
     const context = resolveCalendarContext({
       calendarProfile: 'gujarati_amanta',
+      calendarProfileDefinition: {
+        slug: 'gujarati_amanta',
+        monthSystem: 'amanta',
+        era: 'vikram_gujarat',
+      },
       location: londonLocation,
     });
 
@@ -110,6 +149,11 @@ describe('Calendar/Tradition Onboarding & Profile Persistence Audit', () => {
 
     const context = resolveCalendarContext({
       traditionProfile: profileRow.sampradaya,
+      traditionProfileDefinition: {
+        slug: 'gaudiya_iskcon',
+        ekadashiMethod: 'vaishnava_suddha',
+        janmashtamiMethod: 'vaishnava_rohini',
+      },
     });
 
     expect(context.displayedTraditionProfile).toBe('gaudiya_iskcon');
@@ -240,5 +284,32 @@ describe('Calendar/Tradition Onboarding & Profile Persistence Audit', () => {
     expect(r.context.observanceLocation.longitude).toBe(72.5714);
     expect(r.context.observanceLocation.timezone).toBe('Asia/Kolkata');
     expect(r.context.observanceLocation.label).toBe('Ahmedabad, India');
+  });
+
+  it('10. Coordinates without a stored timezone remain unknown instead of becoming India time', async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: 'u2' },
+      error: null,
+      supabase: makeClient({
+        calendar_profile: 'gujarati_amanta',
+        tradition: 'hindu',
+        sampradaya: 'unspecified',
+        city: 'Bedford',
+        country: 'United Kingdom',
+        latitude: 52.1364,
+        longitude: -0.4667,
+        timezone: null,
+      }),
+    });
+
+    const r = await resolveRequestProfile(req({ bearer: true }), {
+      tradition: 'all',
+      calendarProfile: '',
+    });
+
+    expect(r.context.disclosureDiagnostics.locationKnown).toBe(false);
+    expect(r.context.observanceLocation.latitude).toBeNull();
+    expect(r.context.observanceLocation.longitude).toBeNull();
+    expect(r.context.observanceLocation.timezone).toBeNull();
   });
 });

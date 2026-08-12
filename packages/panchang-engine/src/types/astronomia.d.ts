@@ -24,9 +24,14 @@ declare module 'astronomia/julian' {
 
 declare module 'astronomia/solar' {
   export function apparentLongitude(t: number): number;
+  export function apparentVSOP87(
+    planet: unknown,
+    jde: number
+  ): { lon: number; lat: number; range: number };
 
   const solar: {
     apparentLongitude: typeof apparentLongitude;
+    apparentVSOP87: typeof apparentVSOP87;
   };
 
   export default solar;

@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X, Globe } from 'lucide-react';
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
+import { WhyTodayCard } from '@/components/calendar/WhyTodayCard';
+import { WhyTodayExplanationModal } from '@/components/calendar/WhyTodayExplanationModal';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { createClient } from '@/lib/supabase';
@@ -219,7 +222,8 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [displayTz, setDisplayTz] = useState<'local' | 'ist'>('local');
-  const [upcomingObservances, setUpcomingObservances] = useState<any[]>([]);
+  const [upcomingObservances, setUpcomingObservances] = useState<ClientObservanceResult[]>([]);
+  const [whyTodayObservance, setWhyTodayObservance] = useState<ClientObservanceResult | null>(null);
   const [dismissedBanner, setDismissedBanner] = useState(false);
 
   useEffect(() => {
@@ -237,6 +241,16 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
   }, [timezone]);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, displayTz === 'ist' ? 'Asia/Kolkata' : timezone);
+
+  const todayObservance = useMemo(() => {
+    const todayIso = localSpiritualDate(timezone, 4);
+    const matches = upcomingObservances.filter((observance) =>
+      observance.civilDate === todayIso ||
+      observance.reviewPlacementDate === todayIso ||
+      observance.candidateDates.includes(todayIso),
+    );
+    return matches.find((observance) => observance.isPrimary) ?? matches[0] ?? null;
+  }, [timezone, upcomingObservances]);
 
   // Auth state check
   useEffect(() => {
@@ -393,26 +407,27 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
         )}
 
         {/* Observance Uncertainty & Status Notice */}
-        {(() => {
-          const todayIso = localSpiritualDate(timezone, 4);
-          const todayObs = upcomingObservances.find(o => o.date === todayIso || o.civilDate === todayIso);
-          if (!todayObs) return null;
-          return (
+        {todayObservance && (
+          <div className="space-y-3 mb-4">
             <ObservanceStatusNotice
-              status={todayObs.status}
-              reviewStatus={todayObs.reviewStatus}
-              alternatives={todayObs.alternatives}
+              status={todayObservance.status}
+              reviewStatus={todayObservance.reviewStatus}
+              primaryDate={todayObservance.civilDate}
+              alternatives={todayObservance.alternatives}
+              sourceRefs={todayObservance.sourceRefs}
               requestedTradition={tradition}
-              className="mb-4"
             />
-          );
-        })()}
+            <WhyTodayCard
+              observance={todayObservance}
+              onOpenModal={() => setWhyTodayObservance(todayObservance)}
+            />
+          </div>
+        )}
 
         {/* Smart Banner */}
         {(() => {
           if (dismissedBanner || upcomingObservances.length === 0) return null;
-          const todayIso = localSpiritualDate(timezone, 4);
-          const todayObs = upcomingObservances.find(o => o.date === todayIso);
+          const todayObs = todayObservance?.status === 'resolved' ? todayObservance : null;
           if (!todayObs) return null;
 
           return (
@@ -567,6 +582,11 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
           </motion.div>
         </div>
       </div>
+      <WhyTodayExplanationModal
+        isOpen={whyTodayObservance != null}
+        onClose={() => setWhyTodayObservance(null)}
+        observance={whyTodayObservance}
+      />
     </div>
   );
 }

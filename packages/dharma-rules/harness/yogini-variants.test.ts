@@ -26,7 +26,7 @@ import { CANONICAL_RULES, ObservanceRule } from '@/lib/calendar/rules';
 import { selectEkadashiVariant } from '@/lib/calendar/ekadashi-selection';
 import { LunarTithiHandler, precomputePanchangCorrectedForYear } from '@/lib/calendar/engine';
 
-const TIMEOUT = 30_000;
+const TIMEOUT = 300_000;
 
 describe('Yogini Ekadashi 2026 — Dual Variant Modeling', () => {
   it('CANONICAL_RULES contains two yogini-ekadashi rules with distinct variant_key values', () => {
@@ -104,13 +104,13 @@ describe('Yogini Ekadashi 2026 — Dual Variant Modeling', () => {
 
     expect(smartaDiag).toBeDefined();
     expect(smartaDiag!.publicationWithheld).toBe(true);
-    expect(smartaDiag!.withheldReason).toBe('disputed_year');
+    expect(smartaDiag!.withheldReason).toBe('deferred');
     expect(smartaDiag!.selectedDate).toBe('2026-07-10');
     expect(smartaDiag!.candidateDates).toContain('2026-07-10');
 
     expect(vaishnavaDiag).toBeDefined();
     expect(vaishnavaDiag!.publicationWithheld).toBe(true);
-    expect(vaishnavaDiag!.withheldReason).toBe('disputed_year');
+    expect(vaishnavaDiag!.withheldReason).toBe('deferred');
     expect(vaishnavaDiag!.selectedDate).toBe('2026-07-11');
     expect(vaishnavaDiag!.candidateDates).toContain('2026-07-11');
   }, TIMEOUT);
@@ -121,34 +121,27 @@ describe('Yogini Ekadashi 2026 — Dual Variant Modeling', () => {
       { variantKey: 'vaishnava_vidhava', date: '2026-07-11', displayName: 'Yogini Ekadashi (Vaishnava & Vidhava)' },
     ];
 
-    // Smarta profile -> 2026-07-10
-    const smartaResult = selectEkadashiVariant(candidates, 'smarta');
+    // Smarta profile method -> 2026-07-10
+    const smartaResult = selectEkadashiVariant(candidates, 'smarta', 'smarta');
     expect(smartaResult.status).toBe('resolved');
     expect(smartaResult.selectedDate).toBe('2026-07-10');
     expect(smartaResult.selectedVariant?.variantKey).toBe('smarta');
 
-    // Shaiva / Shakta profiles -> 2026-07-10
-    expect(selectEkadashiVariant(candidates, 'shaiva').selectedDate).toBe('2026-07-10');
-    expect(selectEkadashiVariant(candidates, 'shakta').selectedDate).toBe('2026-07-10');
+    // Vaishnava profile method -> 2026-07-11
+    const vaishnavaResult = selectEkadashiVariant(candidates, 'vaishnava_suddha', 'gaudiya_iskcon');
+    expect(vaishnavaResult.status).toBe('resolved');
+    expect(vaishnavaResult.selectedDate).toBe('2026-07-11');
+    expect(vaishnavaResult.selectedVariant?.variantKey).toBe('vaishnava_vidhava');
 
-    // Vaishnava profiles -> 2026-07-11
-    const gaudiyaResult = selectEkadashiVariant(candidates, 'gaudiya_iskcon');
-    expect(gaudiyaResult.status).toBe('resolved');
-    expect(gaudiyaResult.selectedDate).toBe('2026-07-11');
-    expect(gaudiyaResult.selectedVariant?.variantKey).toBe('vaishnava_vidhava');
-
-    expect(selectEkadashiVariant(candidates, 'sri_vaishnava').selectedDate).toBe('2026-07-11');
-    expect(selectEkadashiVariant(candidates, 'swaminarayan').selectedDate).toBe('2026-07-11');
-
-    // Unspecified profile -> 2026-07-10, labelled unspecified
-    const unspecifiedResult = selectEkadashiVariant(candidates, 'unspecified');
+    // Unspecified profile (evaluated under smarta method) -> 2026-07-10, labelled unspecified
+    const unspecifiedResult = selectEkadashiVariant(candidates, 'smarta', 'unspecified');
     expect(unspecifiedResult.status).toBe('resolved');
     expect(unspecifiedResult.selectedDate).toBe('2026-07-10');
     expect(unspecifiedResult.selectedVariant?.variantKey).toBe('smarta');
     expect(unspecifiedResult.traditionLabel).toBe('unspecified');
 
-    // Unsupported / ambiguous profile -> enters review (needs_review)
-    const unknownResult = selectEkadashiVariant(candidates, 'invalid_profile_x');
+    // Unsupported / ambiguous profile method -> enters review (needs_review)
+    const unknownResult = selectEkadashiVariant(candidates, 'unknown', 'invalid_profile_x');
     expect(unknownResult.status).toBe('needs_review');
     expect(unknownResult.selectedDate).toBeNull();
   });

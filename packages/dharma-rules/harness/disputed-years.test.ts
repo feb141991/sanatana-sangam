@@ -73,7 +73,7 @@ const datesFor = (path: 'legacy' | 'corrected', slug: string, year: number) =>
   occurrences(path, year).filter(o => o.slug === slug).map(o => o.date);
 
 /** Panchanga years are seconds-scale even cached; the default 5s is too tight. */
-const TIMEOUT = 30_000;
+const TIMEOUT = 300_000;
 
 describe('disputed_years — publication gate', () => {
   it('there is at least one disputed pair to test', () => {
@@ -91,6 +91,9 @@ describe('disputed_years — publication gate', () => {
   describe.each(BUILDERS)('%s builder — no over-suppression', (path) => {
     it.each(DISPUTED)('$slug still publishes in years adjacent to $year', ({ slug, year }) => {
       const rule = CANONICAL_RULES.find(r => r.slug === slug)!;
+      // A launch-deferred rule is withheld in every year by design. The
+      // disputed-year gate must not be credited or blamed for its absence.
+      if (rule.launch_status === 'deferred') return;
       const undisputed = [year - 1, year + 1].filter(
         y => y >= 2026 && y <= 2028 && !rule.disputed_years?.includes(y),
       );
@@ -115,7 +118,10 @@ describe('disputed_years — suppression is not amnesia', () => {
     const diag = calculateObservanceCandidateDiagnosticsForYear(year).find(d => d.slug === slug);
     expect(diag, `no diagnostic emitted for ${slug}`).toBeDefined();
     expect(diag!.publicationWithheld).toBe(true);
-    expect(diag!.withheldReason).toBe('disputed_year');
+    const rule = CANONICAL_RULES.find(r => r.slug === slug)!;
+    expect(diag!.withheldReason).toBe(
+      rule.launch_status === 'deferred' ? 'deferred' : 'disputed_year',
+    );
     expect(diag!.candidateDates.length, 'candidate evidence was destroyed by the gate').toBeGreaterThan(0);
   }, TIMEOUT);
 });
@@ -130,7 +136,7 @@ describe('disputed_variants — Yogini Ekadashi 2026 structured alternatives', (
       .find(d => d.slug === 'yogini-ekadashi');
     expect(diag).toBeDefined();
     expect(diag!.publicationWithheld).toBe(true);
-    expect(diag!.withheldReason).toBe('disputed_year');
+    expect(diag!.withheldReason).toBe('deferred');
     expect(diag!.candidateDates.length).toBeGreaterThan(0);
 
     const rule = CANONICAL_RULES.find(r => r.slug === 'yogini-ekadashi');

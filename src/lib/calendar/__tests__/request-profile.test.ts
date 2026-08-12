@@ -20,18 +20,46 @@ vi.mock('@/lib/supabase-server', () => ({
 }));
 
 function makeClientWithError(error: { code: string; message: string }) {
-  return {
-    from: () => ({ select: () => ({ eq: () => ({ single: async () => ({ data: null, error }) }) }) }),
-  } as any;
+  return makeClient(null, error);
 }
 
-/** Minimal Supabase stand-in returning one profile row. */
-function makeClient(profile: Record<string, unknown> | null) {
+const calendarDefinitions: Record<string, Record<string, unknown>> = {
+  'legacy-ujjain': { slug: 'legacy-ujjain', month_system: null, era: 'vikram_north' },
+  gujarati_amanta: { slug: 'gujarati_amanta', month_system: 'amanta', era: 'vikram_gujarat' },
+  tamil_solar: { slug: 'tamil_solar', month_system: 'solar', era: 'shaka' },
+};
+
+const traditionDefinitions: Record<string, Record<string, unknown>> = {
+  gaudiya_iskcon: {
+    slug: 'gaudiya_iskcon',
+    ekadashi_method: 'vaishnava_suddha',
+    janmashtami_method: 'vaishnava_rohini',
+  },
+  unspecified: {
+    slug: 'unspecified',
+    ekadashi_method: 'smarta',
+    janmashtami_method: 'smarta_nishita',
+  },
+};
+
+/** Minimal table-aware Supabase stand-in for the three reads in the resolver. */
+function makeClient(
+  profile: Record<string, unknown> | null,
+  profileError: { code: string; message: string } | null = null,
+) {
   return {
-    from: () => ({
+    from: (table: string) => ({
       select: () => ({
-        eq: () => ({
-          single: async () => ({ data: profile, error: null }),
+        eq: (_column: string, value: string) => ({
+          single: async () => ({ data: table === 'profiles' ? profile : null, error: profileError }),
+          maybeSingle: async () => ({
+            data: table === 'calendar_profiles'
+              ? calendarDefinitions[value] ?? null
+              : table === 'tradition_profiles'
+                ? traditionDefinitions[value] ?? null
+                : null,
+            error: null,
+          }),
         }),
       }),
     }),
@@ -55,13 +83,13 @@ describe('resolveRequestProfile — authentication', () => {
     getApiUser.mockResolvedValue({
       user: { id: 'u1' },
       error: null,
-      supabase: makeClient({ calendar_profile: 'gujarati-amanta', tradition: 'jain', sampradaya: 'digambara' }),
+      supabase: makeClient({ calendar_profile: 'gujarati_amanta', tradition: 'hindu', sampradaya: 'gaudiya_iskcon' }),
     });
 
     return resolveRequestProfile(req(), { tradition: 'all', calendarProfile: '' }).then(r => {
-      expect(r.calendarProfile).toBe('gujarati-amanta');
-      expect(r.tradition).toBe('jain');
-      expect(r.sampradaya).toBe('digambara');
+      expect(r.calendarProfile).toBe('gujarati_amanta');
+      expect(r.tradition).toBe('hindu');
+      expect(r.sampradaya).toBe('gaudiya_iskcon');
       expect(r.isAuthenticated).toBe(true);
     });
   });
@@ -80,7 +108,7 @@ describe('resolveRequestProfile — the lookup is unconditional', () => {
     getApiUser.mockResolvedValue({
       user: { id: 'u1' },
       error: null,
-      supabase: makeClient({ calendar_profile: 'gujarati-amanta', tradition: 'hindu', sampradaya: 'vaishnava' }),
+      supabase: makeClient({ calendar_profile: 'gujarati_amanta', tradition: 'hindu', sampradaya: 'gaudiya_iskcon' }),
     });
   });
 
@@ -89,13 +117,13 @@ describe('resolveRequestProfile — the lookup is unconditional', () => {
     // exact combination skipped the lookup and returned sampradaya: null. A
     // caller cannot supply sampradaya via the query string, so there was no way
     // to get it at all.
-    const r = await resolveRequestProfile(req(), { tradition: 'sikh', calendarProfile: 'tamil-solar' });
-    expect(r.sampradaya).toBe('vaishnava');
+    const r = await resolveRequestProfile(req(), { tradition: 'sikh', calendarProfile: 'tamil_solar' });
+    expect(r.sampradaya).toBe('gaudiya_iskcon');
   });
 
   it('lets explicit query parameters win over the stored profile', async () => {
-    const r = await resolveRequestProfile(req(), { tradition: 'sikh', calendarProfile: 'tamil-solar' });
-    expect(r.calendarProfile).toBe('tamil-solar');
+    const r = await resolveRequestProfile(req(), { tradition: 'sikh', calendarProfile: 'tamil_solar' });
+    expect(r.calendarProfile).toBe('tamil_solar');
     expect(r.tradition).toBe('sikh');
   });
 
@@ -106,7 +134,7 @@ describe('resolveRequestProfile — the lookup is unconditional', () => {
       req(),
       { tradition: 'all', calendarProfile: '', sampradaya: 'smarta' } as any,
     );
-    expect(r.sampradaya).toBe('vaishnava');
+    expect(r.sampradaya).toBe('gaudiya_iskcon');
   });
 });
 
