@@ -534,9 +534,39 @@ export interface Database {
            *  NOT NULL — populated on insert and backfilled by migration.
            *  Part of unique constraint: (definition_id, year, calendar_profile, occurrence_date, variant_key). */
           occurrence_date: string;
+          /** Stable identity for one observance INSTANCE, written by the materialiser.
+           *  NULL on legacy rows (pre-contract). Never inferred at read time. */
+          series_instance_key: string | null;
+          /** FK to observance_materialisation_batches. NULL for legacy/pre-contract rows. */
+          batch_id: string | null;
         };
         Insert: Omit<Database['public']['Tables']['observance_occurrences']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_occurrences']['Insert']>;
+      };
+      observance_materialisation_batches: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          definition_id: string;
+          year: number;
+          calendar_profile: string;
+          spiritual_tradition: string | null;
+          variant_key: string | null;
+          computed_latitude: number;
+          computed_longitude: number;
+          computed_timezone: string;
+          expected_row_count: number;
+          produced_row_count: number;
+          engine_version: string;
+          rule_version: string;
+          astronomy_version: string | null;
+          status: 'complete' | 'partial' | 'failed';
+          failure_reason: string | null;
+          completed_at: string | null;
+        };
+        Insert: Omit<Database['public']['Tables']['observance_materialisation_batches']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['observance_materialisation_batches']['Insert']>;
       };
       observance_review_queue: {
         Row: {
@@ -784,3 +814,4 @@ export type ObservanceReviewQueue = Database['public']['Tables']['observance_rev
 export type CalendarProfile = Database['public']['Tables']['calendar_profiles']['Row'];
 export type TraditionProfile = Database['public']['Tables']['tradition_profiles']['Row'];
 export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
+export type ObservanceMaterialisationBatch = Database['public']['Tables']['observance_materialisation_batches']['Row'];
