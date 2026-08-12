@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ArrowLeft, CheckCircle2, XCircle, Loader2, Pencil, Save, X,
   BarChart3, ListChecks, FileCheck2, ChevronDown, ChevronRight,
+  Filter, Search, AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
@@ -24,7 +25,6 @@ type GoldenFixtureRow = {
   reviewed_by: string | null;
   reviewed_at: string | null;
   review_notes: string | null;
-  // Enriched server-side from CANONICAL_RULES
   tradition: string;
   kind: string;
   rule_family: string;
@@ -46,13 +46,22 @@ type ReviewQueueRow = {
   observance_definitions: { slug: string; display_name: string } | { slug: string; display_name: string }[] | null;
 };
 
+type CoverageRow = {
+  slug: string;
+  tradition: string;
+  launchStatus: string;
+  hasFixtureFile: boolean;
+  realFixtures: number;
+  approvedFixtures: number;
+};
+
 type CoverageResponse = {
   totalSlugs: number;
   totalFixtureRows: number;
   realFixtureRows: number;
   approvedFixtureRows: number;
   byTradition: Record<string, { total: number; live: number; liveUnfixtured: number; deferred: number }>;
-  rows: Array<{ slug: string; tradition: string; launchStatus: string; hasFixtureFile: boolean; realFixtures: number; approvedFixtures: number }>;
+  rows: CoverageRow[];
 };
 
 type Tab = 'fixtures' | 'review-queue' | 'coverage';
@@ -73,6 +82,15 @@ const isRealFixture = (f: GoldenFixtureRow) =>
 
 export default function CalendarGovernancePage() {
   const [tab, setTab] = useState<Tab>('coverage');
+  const [governanceFilter, setGovernanceFilter] = useState<{
+    tradition?: string;
+    filterType?: SourceFilter;
+  } | null>(null);
+
+  const navigateToFixtures = (tradition?: string, filterType?: SourceFilter) => {
+    setGovernanceFilter({ tradition, filterType });
+    setTab('fixtures');
+  };
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
@@ -98,8 +116,8 @@ export default function CalendarGovernancePage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-10">
-        {tab === 'coverage' && <CoverageSection />}
-        {tab === 'fixtures' && <FixturesSection />}
+        {tab === 'coverage' && <CoverageSection onSelectFilter={navigateToFixtures} />}
+        {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} />}
         {tab === 'review-queue' && <ReviewQueueSection />}
       </div>
     </div>
@@ -121,9 +139,16 @@ function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; on
 
 // ── Coverage ──────────────────────────────────────────────────────────────
 
-function CoverageSection() {
+function CoverageSection({
+  onSelectFilter,
+}: {
+  onSelectFilter: (tradition?: string, filterType?: SourceFilter) => void;
+}) {
   const [data, setData] = useState<CoverageResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTradition, setSelectedTradition] = useState<string | null>(null);
+  const [selectedMetric, setSelectedMetric] = useState<'total' | 'live' | 'liveUnfixtured' | 'deferred' | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetch('/api/admin/calendar-governance/coverage')
@@ -132,65 +157,232 @@ function CoverageSection() {
       .catch(e => setError(String(e)));
   }, []);
 
+  const filteredSlugs = useMemo(() => {
+    if (!data?.rows) return [];
+    return data.rows.filter((row) => {
+      if (selectedTradition && row.tradition !== selectedTradition) return false;
+      if (selectedMetric === 'live' && row.launchStatus !== 'included') return false;
+      if (selectedMetric === 'deferred' && row.launchStatus !== 'deferred') return false;
+      if (selectedMetric === 'liveUnfixtured' && (row.launchStatus !== 'included' || row.realFixtures > 0)) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return row.slug.toLowerCase().includes(q) || row.tradition.toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [data, selectedTradition, selectedMetric, searchQuery]);
+
   if (error) return <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>;
   if (!data) return <LoadingBlock label="Loading coverage..." />;
 
+  const clearFilters = () => {
+    setSelectedTradition(null);
+    setSelectedMetric(null);
+    setSearchQuery('');
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Interactive Top Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Rule slugs" value={data.totalSlugs} />
-        <StatCard label="Fixture rows" value={data.totalFixtureRows} />
-        <StatCard label="Real (sourced) rows" value={data.realFixtureRows} tone={data.realFixtureRows > 0 ? 'ok' : 'warn'} />
-        <StatCard label="Approved rows" value={data.approvedFixtureRows} tone={data.approvedFixtureRows > 0 ? 'ok' : 'danger'} />
+        <StatCard
+          label="Rule Slugs"
+          value={data.totalSlugs}
+          active={selectedTradition === null && selectedMetric === null}
+          onClick={clearFilters}
+        />
+        <StatCard
+          label="Fixture Rows"
+          value={data.totalFixtureRows}
+          onClick={() => onSelectFilter(undefined, 'all')}
+        />
+        <StatCard
+          label="Real (Sourced) Rows"
+          value={data.realFixtureRows}
+          tone={data.realFixtureRows > 0 ? 'ok' : 'warn'}
+          onClick={() => onSelectFilter(undefined, 'real')}
+        />
+        <StatCard
+          label="Approved Rows"
+          value={data.approvedFixtureRows}
+          tone={data.approvedFixtureRows > 0 ? 'ok' : 'danger'}
+          onClick={() => onSelectFilter(undefined, 'approved')}
+        />
       </div>
 
-      <div className="glass-panel rounded-[2rem] border border-black/5 bg-white/40 overflow-hidden">
+      {/* Interactive Tradition Breakdown Table */}
+      <div className="glass-panel rounded-[2rem] border border-black/5 bg-white/40 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-black/5 flex items-center justify-between flex-wrap gap-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--brand-muted)]">
+            Tradition Coverage Matrix (Click any cell to filter rules)
+          </span>
+          {(selectedTradition || selectedMetric) && (
+            <button
+              onClick={clearFilters}
+              className="text-[10px] font-bold uppercase tracking-widest text-[var(--premium-gold)] hover:underline flex items-center gap-1"
+            >
+              <X size={12} /> Clear Filter ({selectedTradition || 'All'} · {selectedMetric || 'All'})
+            </button>
+          )}
+        </div>
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-black/5 text-left text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">
+            <tr className="border-b border-black/5 text-left text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)] bg-black/[0.02]">
               <th className="px-4 py-3">Tradition</th>
-              <th className="px-4 py-3">Total rules</th>
-              <th className="px-4 py-3">Live</th>
-              <th className="px-4 py-3">Live, unfixtured</th>
-              <th className="px-4 py-3">Deferred</th>
+              <th className="px-4 py-3 text-right">Total Rules</th>
+              <th className="px-4 py-3 text-right">Live</th>
+              <th className="px-4 py-3 text-right">Live, Unfixtured</th>
+              <th className="px-4 py-3 text-right">Deferred</th>
             </tr>
           </thead>
           <tbody>
-            {Object.entries(data.byTradition).map(([trad, t]) => (
-              <tr key={trad} className="border-b border-black/5 last:border-0">
-                <td className="px-4 py-3 font-bold theme-ink capitalize">{trad}</td>
-                <td className="px-4 py-3">{t.total}</td>
-                <td className="px-4 py-3">{t.live}</td>
-                <td className={`px-4 py-3 font-bold ${t.liveUnfixtured > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>{t.liveUnfixtured}</td>
-                <td className="px-4 py-3 text-[var(--brand-muted)]">{t.deferred}</td>
-              </tr>
-            ))}
+            {Object.entries(data.byTradition).map(([trad, t]) => {
+              const isTradActive = selectedTradition === trad;
+              return (
+                <tr key={trad} className="border-b border-black/5 last:border-0 hover:bg-black/[0.02] transition-colors">
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => {
+                        setSelectedTradition(isTradActive ? null : trad);
+                        setSelectedMetric(null);
+                      }}
+                      className={`font-bold capitalize transition-all ${
+                        isTradActive ? 'text-[var(--premium-gold)] underline' : 'theme-ink hover:text-[var(--premium-gold)]'
+                      }`}
+                    >
+                      {trad}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => { setSelectedTradition(trad); setSelectedMetric(null); }}
+                      className="px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs font-bold text-[var(--brand-muted)]"
+                    >
+                      {t.total}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => { setSelectedTradition(trad); setSelectedMetric('live'); }}
+                      className={`px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs font-bold ${
+                        selectedTradition === trad && selectedMetric === 'live' ? 'bg-black/10 text-black' : 'text-slate-700'
+                      }`}
+                    >
+                      {t.live}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => { setSelectedTradition(trad); setSelectedMetric('liveUnfixtured'); }}
+                      className={`px-2.5 py-1 rounded-lg font-mono text-xs font-bold transition-all ${
+                        t.liveUnfixtured > 0
+                          ? 'bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white'
+                          : 'bg-emerald-500/10 text-emerald-600'
+                      }`}
+                    >
+                      {t.liveUnfixtured}
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      onClick={() => { setSelectedTradition(trad); setSelectedMetric('deferred'); }}
+                      className="px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs text-[var(--brand-muted)]"
+                    >
+                      {t.deferred}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      <p className="text-xs text-[var(--brand-muted)] leading-relaxed max-w-2xl">
-        &ldquo;Live, unfixtured&rdquo; = rules currently publishing real dates with zero sourced
-        golden fixture behind them. That number is the actual backlog; deferred rules are not
-        reaching users, so their fixture coverage is not urgent.
-      </p>
+      {/* Filtered Rule Slugs Grid */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-widest theme-ink">
+              Matching Rule Slugs ({filteredSlugs.length})
+            </h3>
+            {selectedTradition && (
+              <span className="px-2.5 py-0.5 rounded-full bg-[var(--premium-gold)]/15 text-[var(--premium-gold)] text-[10px] font-bold uppercase">
+                {selectedTradition}
+              </span>
+            )}
+            {selectedMetric && (
+              <span className="px-2.5 py-0.5 rounded-full bg-black/10 text-slate-700 text-[10px] font-bold uppercase">
+                {selectedMetric}
+              </span>
+            )}
+          </div>
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" size={14} />
+            <input
+              type="text"
+              placeholder="Search slug..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-1.5 pl-9 rounded-xl bg-black/[0.03] border border-black/5 text-xs theme-ink focus:outline-none focus:border-[var(--premium-gold)]"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filteredSlugs.map((r) => (
+            <div
+              key={r.slug}
+              onClick={() => onSelectFilter(r.tradition, 'all')}
+              className="glass-panel rounded-2xl p-4 border border-black/5 bg-white/50 hover:border-[var(--premium-gold)]/50 transition-all cursor-pointer space-y-2 group"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h4 className="font-bold text-xs theme-ink truncate group-hover:text-[var(--premium-gold)] transition-colors">{r.slug}</h4>
+                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                  r.launchStatus === 'included' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 text-slate-600'
+                }`}>
+                  {r.launchStatus}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[10px] text-[var(--brand-muted)] font-medium pt-1 border-t border-black/5">
+                <span className="capitalize">{r.tradition}</span>
+                <span className={r.realFixtures > 0 ? 'text-emerald-600 font-bold' : 'text-rose-500 font-bold'}>
+                  {r.realFixtures > 0 ? `${r.realFixtures} Sourced` : 'No Fixture'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatCard({ label, value, tone }: { label: string; value: number; tone?: 'ok' | 'warn' | 'danger' }) {
+function StatCard({
+  label, value, tone, active, onClick,
+}: {
+  label: string;
+  value: number;
+  tone?: 'ok' | 'warn' | 'danger';
+  active?: boolean;
+  onClick?: () => void;
+}) {
   const color = tone === 'ok' ? 'text-emerald-600' : tone === 'danger' ? 'text-rose-600' : tone === 'warn' ? 'text-amber-600' : 'theme-ink';
   return (
-    <div className="glass-panel rounded-2xl border border-black/5 bg-white/40 p-4">
+    <button
+      onClick={onClick}
+      className={`glass-panel rounded-2xl border p-4 text-left transition-all hover:scale-[1.02] ${
+        active
+          ? 'border-2 border-[var(--premium-gold)] ring-2 ring-[var(--premium-gold)]/20 bg-white/80'
+          : 'border-black/5 bg-white/40 hover:border-black/10'
+      }`}
+    >
       <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">{label}</p>
       <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
-    </div>
+    </button>
   );
 }
 
 // ── Category Rail ─────────────────────────────────────────────────────────
-// Two-level: tradition → kind. Counts sourced from CANONICAL_RULES (not
-// fixture rows) so slugs with 0 fixture files still appear with correct counts.
 
 type TraditionStat = {
   live: number;
@@ -304,12 +496,18 @@ function CategoryRail({ rows, sel, onSelect }: {
 
 // ── Golden Fixtures ────────────────────────────────────────────────────────
 
-function FixturesSection() {
+function FixturesSection({
+  initialFilter,
+}: {
+  initialFilter?: { tradition?: string; filterType?: SourceFilter } | null;
+}) {
   const [rows, setRows] = useState<GoldenFixtureRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('real');
-  const [categorySel, setCategorySel] = useState<CategorySel>(null);
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>(initialFilter?.filterType ?? 'real');
+  const [categorySel, setCategorySel] = useState<CategorySel>(
+    initialFilter?.tradition ? { tradition: initialFilter.tradition, kind: null } : null
+  );
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -328,7 +526,6 @@ function FixturesSection() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Category filter — applied first, orthogonal to source filter
   const categoryFiltered = useMemo(() => {
     if (!categorySel) return rows;
     return rows.filter(f => {
@@ -338,7 +535,6 @@ function FixturesSection() {
     });
   }, [rows, categorySel]);
 
-  // Source filter applied on top of category selection
   const filtered = useMemo(() => {
     if (sourceFilter === 'all')      return categoryFiltered;
     if (sourceFilter === 'real')     return categoryFiltered.filter(isRealFixture);
@@ -346,7 +542,6 @@ function FixturesSection() {
     return categoryFiltered.filter(f => f.approved);
   }, [categoryFiltered, sourceFilter]);
 
-  // Pill counts reflect current category selection
   const counts = useMemo(() => ({
     real:     categoryFiltered.filter(isRealFixture).length,
     stub:     categoryFiltered.filter(f => !isRealFixture(f)).length,
@@ -390,7 +585,6 @@ function FixturesSection() {
       {!loading && <CategoryRail rows={rows} sel={categorySel} onSelect={setCategorySel} />}
 
       <div className="flex-1 min-w-0 space-y-4">
-        {/* Source filter pills — orthogonal to category */}
         <div className="flex items-center gap-2 flex-wrap">
           <FilterPill active={sourceFilter === 'real'}     onClick={() => setSourceFilter('real')}     label={`Sourced (${counts.real})`} />
           <FilterPill active={sourceFilter === 'stub'}     onClick={() => setSourceFilter('stub')}     label={`Unsourced stubs (${counts.stub})`} />
@@ -574,7 +768,6 @@ function ReviewQueueSection() {
   if (loading) return <LoadingBlock label="Loading review queue..." />;
   if (rows.length === 0) return <EmptyBlock label="Nothing disputed right now." />;
 
-  // Group by tradition from CANONICAL_RULES
   const byTradition = new Map<string, ReviewQueueRow[]>();
   for (const r of rows) {
     const def = Array.isArray(r.observance_definitions) ? r.observance_definitions[0] : r.observance_definitions;
