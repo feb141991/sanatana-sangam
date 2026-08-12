@@ -8,6 +8,9 @@
  * Run: npm run council:packet
  */
 import { writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { createClient } from '@supabase/supabase-js';
+import { config as loadDotenv } from 'dotenv';
 import {
   calculateObservancesForYearLegacy,
   calculateObservancesForYearCorrected,
@@ -15,7 +18,52 @@ import {
 import { CANONICAL_RULES, type ObservanceRule } from '../src/lib/calendar/rules';
 import { getLunarMonth } from '@sangam/panchang-engine';
 
+loadDotenv({ path: resolve(process.cwd(), '.env.local') });
+
 const YEARS = [2026, 2027, 2028];
+
+// This packet describes what the ENGINE FLAG would do -- it has no visibility
+// into rules that were materialized directly, bypassing USE_CORRECTED_MASA
+// entirely (see the 13 named-Ekadashi scoped materialization, 2026-08-12).
+// Without checking the database, such a rule would be listed as "no current
+// date" here while actually being live in the app -- correct by this script's
+// own narrow definition, misleading to anyone reading it as current status.
+// This queries actual DB state so "new observance" and "disputed variant"
+// sections can say which of their own rows are already live/decided.
+async function fetchLiveState() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    console.warn('No Supabase credentials -- skipping live-DB cross-check (packet will not flag already-materialized rules).');
+    return { liveByYearSlug: new Set<string>(), reviewStatusByVariant: new Map<string, string>() };
+  }
+  const supabase = createClient(url, key);
+
+  const { data: occRows } = await supabase
+    .from('observance_occurrences')
+    .select('year, observance_definitions(slug)')
+    .in('year', YEARS);
+  const liveByYearSlug = new Set<string>();
+  for (const row of occRows ?? []) {
+    const def = Array.isArray((row as any).observance_definitions)
+      ? (row as any).observance_definitions[0]
+      : (row as any).observance_definitions;
+    if (def?.slug) liveByYearSlug.add(`${(row as any).year}:${def.slug}`);
+  }
+
+  const { data: queueRows } = await supabase
+    .from('observance_review_queue')
+    .select('variant_key, review_status, observance_definitions(slug)');
+  const reviewStatusByVariant = new Map<string, string>();
+  for (const row of queueRows ?? []) {
+    const def = Array.isArray((row as any).observance_definitions)
+      ? (row as any).observance_definitions[0]
+      : (row as any).observance_definitions;
+    if (def?.slug) reviewStatusByVariant.set(`${def.slug}:${(row as any).variant_key}`, (row as any).review_status);
+  }
+
+  return { liveByYearSlug, reviewStatusByVariant };
+}
 
 const ruleOf = (slug: string) => CANONICAL_RULES.find(r => r.slug === slug);
 
@@ -54,6 +102,7 @@ interface Row {
   days: number;
   reason: string;
   qualification: string;
+  alreadyLive?: boolean;
 }
 
 const councilRuleOf = (slug: string): CouncilRule | undefined =>
@@ -113,6 +162,9 @@ function reasonFor(slug: string, from: string, to: string, days: number): string
   return `Moves ${days} days. Month ${fromMonth} → ${toMonth}.`;
 }
 
+async function main() {
+const { liveByYearSlug, reviewStatusByVariant } = await fetchLiveState();
+
 let md = `# Ratification packet — corrected lunar-month calendar
 
 **What this is.** Our calendar engine currently names lunar months using a method
@@ -161,15 +213,21 @@ for (const year of YEARS) {
     const name = r?.display_name ?? slug;
     const from = lm.get(slug);
     if (!from) {
-      if (isNewEkadashi(slug)) added.push({
-        slug,
-        name,
-        from: '—',
-        to,
-        days: 0,
-        reason: 'New observance. It has content in the app but never had a scheduled date.',
-        qualification: qualificationFor(slug),
-      });
+      if (isNewEkadashi(slug)) {
+        const alreadyLive = liveByYearSlug.has(`${year}:${slug}`);
+        added.push({
+          slug,
+          name,
+          from: '—',
+          to,
+          days: 0,
+          reason: alreadyLive
+            ? 'Already live in the app — materialized directly against the corrected engine for this rule specifically (not gated by the global engine flag). Nothing further to decide here beyond whether the date itself is correct.'
+            : 'New observance. It has content in the app but never had a scheduled date.',
+          qualification: qualificationFor(slug),
+          alreadyLive,
+        });
+      }
       continue;
     }
     if (from === to) continue;
@@ -197,14 +255,26 @@ for (const year of YEARS) {
   md += `\n`;
 }
 
-md += `---\n\n## New observances (no date today)\n\n`;
-md += `These have written content in the app but no scheduled date, so nothing is
-"moving" — they would simply start appearing. Listed for completeness.\n\n`;
+md += `---\n\n## New observances\n\n`;
+md += `These have written content in the app. Some have no scheduled date yet ("would
+start appearing" if the flag flips); others have already been materialized directly
+for this specific rule, bypassing the flag entirely, and are live in the app today
+regardless of what happens to the flag — those are marked explicitly.\n\n`;
 for (const year of YEARS) {
   const rows = newEntries[year];
   if (!rows.length) continue;
-  md += `**${year}** — ${rows.length} entries: ` +
-    rows.map(r => `${r.name} (${r.to}; ${r.qualification})`).join(', ') + `\n\n`;
+  const live = rows.filter(r => r.alreadyLive);
+  const pending = rows.filter(r => !r.alreadyLive);
+  md += `**${year}** — ${rows.length} entries`;
+  if (live.length > 0) {
+    md += `, ${live.length} already live: ` +
+      live.map(r => `${r.name} (${r.to})`).join(', ');
+  }
+  if (pending.length > 0) {
+    md += `${live.length > 0 ? '; ' : ': '}${pending.length} still pending: ` +
+      pending.map(r => `${r.name} (${r.to}; ${r.qualification})`).join(', ');
+  }
+  md += `\n\n`;
 }
 
 md += `---\n\n## Disputed variants (withheld from single publication)\n\n`;
@@ -228,7 +298,17 @@ for (const [slug, rules] of groupedDisputes.entries()) {
   const baseName = rules[0].display_name.replace(/\s*\([^)]*\)/, '').trim();
   const years = Array.from(new Set(rules.flatMap(r => r.disputed_years ?? [2026]))).join(', ');
 
-  md += `### ${baseName} (${slug}) — Disputed year(s): ${years} [S] Council Pending\n\n`;
+  // Real review_status from observance_review_queue, not a hardcoded label --
+  // this is exactly the field that goes stale the moment someone actually
+  // approves/rejects a variant through /admin/calendar-governance.
+  const variantKeysForSlug = new Set(
+    rules.flatMap(r => (r.disputed_variants ?? []).map(v => v.variant_key))
+      .concat(rules.map(r => r.variant_key).filter((v): v is string => !!v)),
+  );
+  const allDecided = variantKeysForSlug.size > 0 && [...variantKeysForSlug].every(
+    vk => (reviewStatusByVariant.get(`${slug}:${vk}`) ?? 'pending_review') !== 'pending_review',
+  );
+  md += `### ${baseName} (${slug}) — Disputed year(s): ${years}${allDecided ? '' : ' [S] Council Pending'}\n\n`;
   md += `| Variant Key | Applicable Profiles / Ekadashi Method | Civil Date | Source Reference | Review Status |\n|---|---|---|---|---|\n`;
 
   const seenVariants = new Set<string>();
@@ -240,7 +320,12 @@ for (const [slug, rules] of groupedDisputes.entries()) {
       if (seenVariants.has(v.variant_key)) continue;
       seenVariants.add(v.variant_key);
       const appInfo = METHOD_APPLICABILITY[v.variant_key] || 'per tradition profile policy';
-      md += `| **${v.variant_key}** | ${appInfo} | **${v.civil_date}** | ${v.source_ref} | [S] ${v.review_status} (Council Pending) |\n`;
+      const liveStatus = reviewStatusByVariant.get(`${slug}:${v.variant_key}`);
+      const statusLabel = liveStatus === 'approved' ? 'Approved'
+        : liveStatus === 'rejected' ? 'Rejected'
+        : liveStatus === 'pending_review' ? '[S] pending_review (Council Pending)'
+        : `[S] ${v.review_status} (Council Pending)`; // no review-queue row found -- fall back to rule metadata
+      md += `| **${v.variant_key}** | ${appInfo} | **${v.civil_date}** | ${v.source_ref} | ${statusLabel} |\n`;
     }
   }
   md += `\n`;
@@ -284,4 +369,11 @@ for (const y of YEARS) {
 }
 console.log(`  ${'total'.padEnd(4)}   ${String(totalMoved).padStart(12)}   ${String(totalNew).padStart(15)}\n`);
 console.log('  Each changing date needs one answer: is the new date correct?');
-console.log('  New observances have no current date, so nothing moves for them.\n');
+console.log('  "New observances" now flags which ones are already live (materialized');
+console.log('  directly, bypassing the flag) vs genuinely still pending.\n');
+}
+
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

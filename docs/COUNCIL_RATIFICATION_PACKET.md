@@ -56,16 +56,18 @@ further ~29 days in that year only.
 
 ---
 
-## New observances (no date today)
+## New observances
 
-These have written content in the app but no scheduled date, so nothing is
-"moving" — they would simply start appearing. Listed for completeness.
+These have written content in the app. Some have no scheduled date yet ("would
+start appearing" if the flag flips); others have already been materialized directly
+for this specific rule, bypassing the flag entirely, and are live in the app today
+regardless of what happens to the flag — those are marked explicitly.
 
-**2026** — 14 entries: Vijaya Ekadashi (2026-02-13; month system: purnimanta ([S] pending)), Amalaki Ekadashi (2026-02-27; month system: amanta ([S] pending)), Kamada Ekadashi (2026-03-29; month system: amanta ([S] pending)), Papmochani Ekadashi (2026-04-13; month system: amanta ([S] pending)), Apara Ekadashi (2026-05-13; month system: purnimanta ([S] pending)), Nirjala Ekadashi (2026-06-25; month system: amanta ([S] pending)), Devshayani Ekadashi (2026-07-25; month system: amanta ([S] pending)), Kamika Ekadashi (2026-08-09; month system: purnimanta ([S] pending)), Putrada Ekadashi (Shravana) (2026-08-23; month system: amanta ([S] pending)), Aja Ekadashi (2026-09-07; month system: purnimanta ([S] pending)), Parivartini Ekadashi (2026-09-22; month system: amanta ([S] pending)), Rama Ekadashi (2026-11-05; month system: purnimanta ([S] pending)), Devutthana Ekadashi (2026-11-21; month system: amanta ([S] pending)), Utpanna Ekadashi (2026-12-04; month system: purnimanta ([S] pending))
+**2026** — 14 entries, 13 already live: Amalaki Ekadashi (2026-02-27), Kamada Ekadashi (2026-03-29), Papmochani Ekadashi (2026-04-13), Apara Ekadashi (2026-05-13), Nirjala Ekadashi (2026-06-25), Devshayani Ekadashi (2026-07-25), Kamika Ekadashi (2026-08-09), Putrada Ekadashi (Shravana) (2026-08-23), Aja Ekadashi (2026-09-07), Parivartini Ekadashi (2026-09-22), Rama Ekadashi (2026-11-05), Devutthana Ekadashi (2026-11-21), Utpanna Ekadashi (2026-12-04); 1 still pending: Vijaya Ekadashi (2026-02-13; month system: purnimanta ([S] pending))
 
-**2027** — 15 entries: Saphala Ekadashi (2027-01-03; month system: purnimanta ([S] pending)), Vijaya Ekadashi (2027-03-04; month system: purnimanta ([S] pending)), Amalaki Ekadashi (2027-03-18; month system: amanta ([S] pending)), Kamada Ekadashi (2027-04-17; month system: amanta ([S] pending)), Papmochani Ekadashi (2027-05-02; month system: amanta ([S] pending)), Apara Ekadashi (2027-06-01; month system: purnimanta ([S] pending)), Nirjala Ekadashi (2027-06-14; month system: amanta ([S] pending)), Devshayani Ekadashi (2027-07-14; month system: amanta ([S] pending)), Kamika Ekadashi (2027-07-30; month system: purnimanta ([S] pending)), Putrada Ekadashi (Shravana) (2027-08-12; month system: amanta ([S] pending)), Aja Ekadashi (2027-08-28; month system: purnimanta ([S] pending)), Parivartini Ekadashi (2027-09-11; month system: amanta ([S] pending)), Rama Ekadashi (2027-10-25; month system: purnimanta ([S] pending)), Devutthana Ekadashi (2027-11-10; month system: amanta ([S] pending)), Utpanna Ekadashi (2027-11-24; month system: purnimanta ([S] pending))
+**2027** — 15 entries, 13 already live: Saphala Ekadashi (2027-01-03), Amalaki Ekadashi (2027-03-18), Kamada Ekadashi (2027-04-17), Papmochani Ekadashi (2027-05-02), Apara Ekadashi (2027-06-01), Devshayani Ekadashi (2027-07-14), Kamika Ekadashi (2027-07-30), Putrada Ekadashi (Shravana) (2027-08-12), Aja Ekadashi (2027-08-28), Parivartini Ekadashi (2027-09-11), Rama Ekadashi (2027-10-25), Devutthana Ekadashi (2027-11-10), Utpanna Ekadashi (2027-11-24); 2 still pending: Vijaya Ekadashi (2027-03-04; month system: purnimanta ([S] pending)), Nirjala Ekadashi (2027-06-14; month system: amanta ([S] pending))
 
-**2028** — 15 entries: Vijaya Ekadashi (2028-02-20; month system: purnimanta ([S] pending)), Amalaki Ekadashi (2028-03-07; month system: amanta ([S] pending)), Kamada Ekadashi (2028-04-06; month system: amanta ([S] pending)), Papmochani Ekadashi (2028-04-20; month system: amanta ([S] pending)), Apara Ekadashi (2028-05-20; month system: purnimanta ([S] pending)), Nirjala Ekadashi (2028-06-03; month system: amanta ([S] pending)), Devshayani Ekadashi (2028-07-02; month system: amanta ([S] pending)), Kamika Ekadashi (2028-07-18; month system: purnimanta ([S] pending)), Putrada Ekadashi (Shravana) (2028-08-01; month system: amanta ([S] pending)), Aja Ekadashi (2028-08-16; month system: purnimanta ([S] pending)), Parivartini Ekadashi (2028-08-30; month system: amanta ([S] pending)), Rama Ekadashi (2028-10-14; month system: purnimanta ([S] pending)), Devutthana Ekadashi (2028-10-28; month system: amanta ([S] pending)), Utpanna Ekadashi (2028-11-13; month system: purnimanta ([S] pending)), Saphala Ekadashi (2028-12-12; month system: purnimanta ([S] pending))
+**2028** — 15 entries, 13 already live: Amalaki Ekadashi (2028-03-07), Kamada Ekadashi (2028-04-06), Papmochani Ekadashi (2028-04-20), Apara Ekadashi (2028-05-20), Devshayani Ekadashi (2028-07-02), Kamika Ekadashi (2028-07-18), Putrada Ekadashi (Shravana) (2028-08-01), Aja Ekadashi (2028-08-16), Parivartini Ekadashi (2028-08-30), Rama Ekadashi (2028-10-14), Devutthana Ekadashi (2028-10-28), Utpanna Ekadashi (2028-11-13), Saphala Ekadashi (2028-12-12); 2 still pending: Vijaya Ekadashi (2028-02-20; month system: purnimanta ([S] pending)), Nirjala Ekadashi (2028-06-03; month system: amanta ([S] pending))
 
 ---
 
@@ -73,12 +75,12 @@ These have written content in the app but no scheduled date, so nothing is
 
 Observances with recognised variants or contested dates for specific years. Under AGENTS.md rule 7, these are withheld from single universal publication.
 
-### Yogini Ekadashi (yogini-ekadashi) — Disputed year(s): 2026 [S] Council Pending
+### Yogini Ekadashi (yogini-ekadashi) — Disputed year(s): 2026
 
 | Variant Key | Applicable Profiles / Ekadashi Method | Civil Date | Source Reference | Review Status |
 |---|---|---|---|---|
-| **smarta** | smarta, shaiva, shakta, unspecified (ekadashi_method: smarta) | **2026-07-10** | Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 | [S] disputed (Council Pending) |
-| **vaishnava_vidhava** | gaudiya_iskcon, sri_vaishnava, swaminarayan (ekadashi_method: vaishnava_suddha) | **2026-07-11** | Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 | [S] disputed (Council Pending) |
+| **smarta** | smarta, shaiva, shakta, unspecified (ekadashi_method: smarta) | **2026-07-10** | Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 | Approved |
+| **vaishnava_vidhava** | gaudiya_iskcon, sri_vaishnava, swaminarayan (ekadashi_method: vaishnava_suddha) | **2026-07-11** | Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 | Approved |
 
 ---
 
