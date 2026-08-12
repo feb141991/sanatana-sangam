@@ -67,13 +67,17 @@ export async function POST(request: NextRequest) {
   const supabase = adminSupabase();
   const adminUsername = await getAdminUsername(request);
 
+  // reviewed_by is a uuid FK (to auth.users), and there is no auth.users row
+  // for the HMAC-cookie admin session -- same constraint as dharm-veer-review.
+  // Writing the username there fails with a Postgres type error; the name
+  // goes into review_notes instead, same fallback that precedent already uses.
   const { error } = await supabase
     .from('observance_review_queue')
     .update({
       review_status: action === 'approve' ? 'approved' : 'rejected',
-      reviewed_by: adminUsername ?? 'unknown admin',
+      reviewed_by: null,
       reviewed_at: new Date().toISOString(),
-      review_notes: body?.notes ?? null,
+      review_notes: `${action === 'approve' ? 'Approved' : 'Rejected'} by ${adminUsername ?? 'unknown admin'}.${body?.notes ? ` ${body.notes}` : ''}`,
     })
     .eq('id', id);
 
