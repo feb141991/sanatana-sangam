@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 type VerificationStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review';
+type StatFilter = 'pending' | 'ai_mismatch' | 'ai_not_checked' | 'manual_review' | 'audit_failed' | 'unsafe_route';
 
 interface FestivalRow {
   id?: string;
@@ -25,6 +26,10 @@ interface FestivalRow {
   verification_note?: string | null;
   suggested_date?: string | null;
   verification_run_at?: string | null;
+  // Added to support client-side stat-tile filtering:
+  audit_status?: string | null;
+  route_kind?: string | null;
+  route_slug?: string | null;
 }
 
 interface VerificationResult {
@@ -89,6 +94,7 @@ export default function FestivalManagement() {
   const [availableYears, setAvailableYears] = useState<number[]>([]);
   const [stats, setStats]                   = useState<FestivalAdminStats | null>(null);
   const [source, setSource]                 = useState<'database' | 'fallback'>('fallback');
+  const [activeFilter, setActiveFilter]     = useState<StatFilter | null>(null);
 
   const fetchFestivals = useCallback(async (year: number) => {
     setLoading(true);
@@ -120,6 +126,29 @@ export default function FestivalManagement() {
   useEffect(() => {
     fetchFestivals(selectedYear);
   }, [fetchFestivals, selectedYear]);
+
+  const visibleFestivals = useMemo(() => {
+    if (!activeFilter) return festivals;
+    return festivals.filter((f) => {
+      switch (activeFilter) {
+        case 'pending':        return f.review_status !== 'reviewed';
+        case 'ai_mismatch':   return f.verification_status === 'mismatch';
+        case 'ai_not_checked':return f.verification_status === 'not_checked' || !f.verification_status;
+        case 'manual_review': return f.verification_status === 'manual_review';
+        case 'audit_failed':  return f.audit_status === 'failed';
+        case 'unsafe_route':  {
+          if (f.route_kind === 'vrat') return !f.route_slug;
+          if (f.type !== 'vrat') return false;
+          // Mirrors server-side resolveVratSlug check: no route_slug on a vrat-type row
+          return !f.route_slug;
+        }
+      }
+    });
+  }, [festivals, activeFilter]);
+
+  function toggleFilter(f: StatFilter) {
+    setActiveFilter(prev => prev === f ? null : f);
+  }
 
   async function runVerification() {
     setVerifying(true);
@@ -323,20 +352,31 @@ export default function FestivalManagement() {
       <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
-            {[
-              { label: 'Rows', value: stats.total, tone: 'text-slate-700' },
-              { label: 'Pending review', value: stats.pendingReview, tone: 'text-amber-600' },
-              { label: 'AI mismatches', value: stats.aiMismatches, tone: 'text-rose-600' },
-              { label: 'AI not checked', value: stats.aiNotChecked, tone: 'text-slate-600' },
-              { label: 'Manual review', value: stats.aiManualReview, tone: 'text-violet-600' },
-              { label: 'Audit failed', value: stats.auditFailed, tone: 'text-red-700' },
-              { label: 'Unsafe Vrat routes', value: stats.unsafeObservanceRoutes, tone: 'text-orange-600' },
-            ].map((card) => (
-              <div key={card.label} className="glass-panel rounded-3xl p-4 border border-black/5">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">{card.label}</p>
-                <p className={`mt-2 text-2xl font-bold ${card.tone}`}>{card.value}</p>
-              </div>
-            ))}
+            {([
+              { label: 'Rows',              value: stats.total,                  tone: 'text-slate-700',   filter: null            as StatFilter | null },
+              { label: 'Pending review',    value: stats.pendingReview,          tone: 'text-amber-600',   filter: 'pending'       as StatFilter },
+              { label: 'AI mismatches',     value: stats.aiMismatches,           tone: 'text-rose-600',    filter: 'ai_mismatch'   as StatFilter },
+              { label: 'AI not checked',    value: stats.aiNotChecked,           tone: 'text-slate-600',   filter: 'ai_not_checked'as StatFilter },
+              { label: 'Manual review',     value: stats.aiManualReview,         tone: 'text-violet-600',  filter: 'manual_review' as StatFilter },
+              { label: 'Audit failed',      value: stats.auditFailed,            tone: 'text-red-700',     filter: 'audit_failed'  as StatFilter },
+              { label: 'Unsafe Vrat routes',value: stats.unsafeObservanceRoutes, tone: 'text-orange-600',  filter: 'unsafe_route'  as StatFilter },
+            ] as { label: string; value: number; tone: string; filter: StatFilter | null }[]).map((card) => {
+              const isActive = card.filter === null ? activeFilter === null : activeFilter === card.filter;
+              return (
+                <button
+                  key={card.label}
+                  onClick={() => card.filter === null ? setActiveFilter(null) : toggleFilter(card.filter)}
+                  className={`glass-panel rounded-3xl p-4 text-left transition-all ${
+                    isActive
+                      ? 'border-2 border-[var(--premium-gold)] ring-2 ring-[var(--premium-gold)]/20 bg-white/60'
+                      : 'border border-black/5 hover:border-black/10 hover:bg-white/50'
+                  }`}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">{card.label}</p>
+                  <p className={`mt-2 text-2xl font-bold ${card.tone}`}>{card.value}</p>
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -464,14 +504,24 @@ export default function FestivalManagement() {
           <>
             <div className="flex items-center justify-between px-2">
               <h2 className="text-sm font-bold uppercase tracking-widest text-[var(--brand-muted)]">
-                {festivals.length} festivals in {selectedYear}
+                {visibleFestivals.length}{activeFilter ? ` of ${festivals.length}` : ''} festivals in {selectedYear}
               </h2>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">
-                {source === 'database' ? 'live source' : 'fallback source'}
-              </span>
+              <div className="flex items-center gap-3">
+                {activeFilter && (
+                  <button
+                    onClick={() => setActiveFilter(null)}
+                    className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[var(--premium-gold)] hover:opacity-70 transition-opacity"
+                  >
+                    <XCircle size={12} /> Clear filter
+                  </button>
+                )}
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--brand-muted)]">
+                  {source === 'database' ? 'live source' : 'fallback source'}
+                </span>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {festivals.map((fest) => (
+              {visibleFestivals.map((fest) => (
                 <motion.div
                   key={fest.id ?? `${fest.name}-${fest.date}`}
                   className="glass-panel rounded-3xl p-6 border border-black/5 hover:border-emerald-500/30 transition-all"

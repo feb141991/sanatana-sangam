@@ -31,7 +31,14 @@ type FestivalRow = Pick<
   | 'suggested_date'
   | 'verification_run_at'
   | 'verification_type'
->;
+> & {
+  // These fields come from the joined observance_occurrences / observance_definitions
+  // via mapOccurrenceToFestival; they're present in the JSON response even though they
+  // are not columns on the 'festivals' table itself.
+  audit_status?: string | null;
+  route_kind?: string | null;
+  route_slug?: string | null;
+};
 
 type FestivalAdminStats = {
   total: number;
