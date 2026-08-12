@@ -765,7 +765,7 @@ function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
  */
 function buildOccurrencesMapCorrected(
   year: number,
-  opts: { applyPublicationGate?: boolean; forceMonthSystem?: 'amanta' | 'purnimanta' } = {},
+  opts: { applyPublicationGate?: boolean } = {},
 ): Record<string, string[]> {
   // Gated BY DEFAULT. Callers that want raw candidates must ask for them
   // explicitly, so a new publishing call site cannot forget the gate.
@@ -785,10 +785,8 @@ function buildOccurrencesMapCorrected(
     ...d,
     panchang: { ...d.panchang, masaName: d.panchang.masaNamePurnimanta },
   }));
-  const daysFor = (r: ObservanceRule) => {
-    const system = opts.forceMonthSystem ?? r.corrected_month_system;
-    return system === 'purnimanta' ? daysPurnimanta : days;
-  };
+  const daysFor = (r: ObservanceRule) =>
+    r.corrected_month_system === 'purnimanta' ? daysPurnimanta : days;
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {
@@ -859,48 +857,6 @@ function buildOccurrencesMapCorrected(
  */
 export function calculateObservancesForYearCorrected(year: number): CalculatedOccurrence[] {
   const occurrencesMap = buildOccurrencesMapCorrected(year);
-
-  const results: CalculatedOccurrence[] = [];
-  for (const rule of CANONICAL_RULES) {
-    const rk = ruleIdentityKey(rule);
-    const r = toCorrectedRule(rule);
-    const allDates = (occurrencesMap[rk] || []).filter(
-      d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
-    );
-    if (allDates.length === 0) continue;
-    if (r.rule_family === 'lunar_tithi_recurring' || r.rule_family === 'weekday_recurring') {
-      for (const date of allDates) {
-        results.push({ slug: r.slug, ruleKey: rk, date, year, recurring: true });
-      }
-      continue;
-    }
-    const selectedDate = r.prefer_last_match
-      ? allDates[allDates.length - 1]
-      : allDates[0];
-    results.push({ slug: r.slug, ruleKey: rk, date: selectedDate, year });
-  }
-
-  return results;
-}
-
-/**
- * D32 — per-calendar-profile month-system branching.
- *
- * Identical to calculateObservancesForYearCorrected, except every rule is
- * forced to evaluate under `monthSystem` regardless of its own declared
- * `corrected_month_system`. Used to materialize the alternate-system date
- * for calendar_profiles whose own month_system disagrees with a rule's
- * default (e.g. an amanta-declaring profile viewing a purnimanta-default
- * rule) -- see scripts/materialize-per-profile-month-system.mts.
- *
- * calculateObservancesForYearCorrected (no override) is untouched by this;
- * this is a new, additive read path only.
- */
-export function calculateObservancesForYearCorrectedForSystem(
-  year: number,
-  monthSystem: 'amanta' | 'purnimanta',
-): CalculatedOccurrence[] {
-  const occurrencesMap = buildOccurrencesMapCorrected(year, { forceMonthSystem: monthSystem });
 
   const results: CalculatedOccurrence[] = [];
   for (const rule of CANONICAL_RULES) {
