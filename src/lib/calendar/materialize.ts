@@ -764,7 +764,12 @@ export async function persistReviewQueueItems(
  *    older row survives would otherwise let the batch report 1/1 complete with
  *    two rows present.
  */
-async function commitOccurrencesWithBatches(
+// Exported for the same reason as batchIdentityKey above -- lets a scoped
+// script commit real, engine-computed occurrences for specific rules through
+// the exact reviewed batch contract (completeness tracking, series_instance_key,
+// stale-row retirement) without going through materializeOccurrencesForYears's
+// USE_CORRECTED_MASA-gated dispatch.
+export async function commitOccurrencesWithBatches(
   supabase: any,
   args: {
     toInsert: any[];
@@ -1000,7 +1005,11 @@ async function commitOccurrencesWithBatches(
 }
 
 /** The batch identity a row belongs to. One definition, shared by every caller. */
-function batchIdentityKey(row: any): string {
+// Exported so a scoped, non-USE_CORRECTED_MASA materialization run (e.g.
+// committing corrected-engine dates for specific rules the legacy path can't
+// compute at all, without flipping the global flag) can reuse the exact
+// reviewed batch/commit contract instead of hand-rolling inserts.
+export function batchIdentityKey(row: any): string {
   return [
     row.definition_id, row.year, row.calendar_profile,
     row.spiritual_tradition ?? '', row.variant_key ?? '',
