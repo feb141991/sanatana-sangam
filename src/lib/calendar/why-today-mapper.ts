@@ -48,6 +48,8 @@ export interface WhyTodayAlternative {
   note?: string | null;
 }
 
+import { resolveMonthLabelForProfile, type MonthLabelResult } from './month-label-resolver';
+
 export interface WhyTodayExplanation {
   festivalId: string;
   title: string;
@@ -57,6 +59,7 @@ export interface WhyTodayExplanation {
   formattedDate: string;
   profileLabel: string;
   locationLabel: string;
+  monthLabel?: MonthLabelResult | null;
   reasons: WhyTodayReason[];
   ritualWindows: WhyTodayRitualWindow[];
   sources: WhyTodaySource[];
@@ -204,6 +207,16 @@ export function mapWhyTodayExplanation(
   const profileLabel = formatProfileLabel(result.profile?.calendar, result.profile?.tradition);
   const locationLabel = formatLocationLabel(result.location);
 
+  const monthLabel = resolveMonthLabelForProfile(
+    civilDate,
+    {
+      corrected_lunar_masa_name: (result as any).corrected_lunar_masa_name ?? (result as any).lunar_masa_name,
+      corrected_month_system: (result as any).corrected_month_system,
+      lunar_tithi_index: (result as any).lunar_tithi_index,
+    },
+    context?.monthSystem
+  );
+
   // 1. Reasons mapping
   const reasons: WhyTodayReason[] = [];
   if (Array.isArray(result.reasons)) {
@@ -304,6 +317,15 @@ export function mapWhyTodayExplanation(
     }
   }
 
+  if (monthLabel?.isDivergentFromRuleDefault) {
+    disclosures.push({
+      code: 'month_system_label_adjusted',
+      label: `Month System Label (${monthLabel.monthSystem})`,
+      description: `Displayed month name is "${monthLabel.monthName}" under your profile's ${monthLabel.monthSystem} calendar system on this unchanged civil date.`,
+      severity: 'info',
+    });
+  }
+
   // 5. Review State mapping
   const isUnderReview =
     result.status === 'under_review' ||
@@ -346,6 +368,7 @@ export function mapWhyTodayExplanation(
     formattedDate,
     profileLabel,
     locationLabel,
+    monthLabel,
     reasons,
     ritualWindows,
     sources,

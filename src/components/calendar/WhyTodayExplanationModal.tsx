@@ -125,6 +125,18 @@ export function WhyTodayExplanationModal({
                 <div className="text-xs text-[var(--brand-primary-strong)]">
                   <span className="font-semibold">Profile:</span> {explanation.profileLabel}
                 </div>
+                {explanation.monthLabel && (
+                  <div className="text-xs text-[var(--brand-primary-strong)] flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold">Month Label:</span> {explanation.monthLabel.formattedLabel}
+                    </div>
+                    {explanation.monthLabel.isDivergentFromRuleDefault && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-500/20">
+                        Profile Convention
+                      </span>
+                    )}
+                  </div>
+                )}
                 <div className="text-xs text-[var(--brand-primary-strong)] flex items-start gap-1.5">
                   <MapPin size={14} className="text-[var(--premium-gold)] shrink-0 mt-0.5" />
                   <span>
