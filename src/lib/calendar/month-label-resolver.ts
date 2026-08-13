@@ -103,7 +103,15 @@ export function resolveMonthLabelForProfile(
     };
   }
 
-  const isDivergent = normTarget !== ruleSystem;
+  // Divergence must reflect the ACTUAL LABEL, not which system produced it.
+  // Sukla-paksha rules give the identical month name under both systems (per
+  // the conversion law), so comparing `normTarget !== ruleSystem` alone
+  // flags every Sukla-paksha rule as "divergent" whenever a profile's system
+  // merely differs from the rule's own default -- even though the displayed
+  // name is unchanged. That produced a false "Profile Convention" badge on
+  // roughly half of all lunar rules. Compare the resolved name against the
+  // rule's own declared name instead.
+  const isDivergent = defaultMonthName !== '' && dateInfo.monthName !== defaultMonthName;
 
   return {
     monthName: dateInfo.monthName,

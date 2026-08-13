@@ -91,6 +91,14 @@ describe('month-label-resolver', () => {
       expect(amantaRes?.monthName).toBe('Chaitra');
       expect(purnimantaRes?.monthName).toBe('Chaitra');
       expect(amantaRes?.monthName).toBe(purnimantaRes?.monthName); // Conversion law assertion: Shukla paksha is IDENTICAL
+
+      // Regression: divergence must reflect the ACTUAL LABEL, not merely
+      // that the viewing system differs from the rule's own declared
+      // system. The rule's own default is amanta; a purnimanta-profile
+      // viewer sees the SAME name ("Chaitra") and must NOT get a "Profile
+      // Convention" divergence badge for a label that hasn't changed.
+      expect(amantaRes?.isDivergentFromRuleDefault).toBe(false);
+      expect(purnimantaRes?.isDivergentFromRuleDefault).toBe(false);
     });
   });
 });
