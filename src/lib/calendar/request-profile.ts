@@ -48,6 +48,12 @@ export interface RequestProfile {
   calendarProfile: string;
   tradition: string;
   sampradaya: string | null;
+  /**
+   * 'major_only' | 'all_observances' | null. Read straight off the profile
+   * row, no defaulting here -- null means "no filter", same as today's
+   * behaviour for every existing user who has never set this.
+   */
+  calendarScope: string | null;
   ekadashiMethod: EkadashiMethod;
   /** Pure ResolvedCalendarContext resolved once per request */
   context: ResolvedCalendarContext;
@@ -106,6 +112,7 @@ export async function resolveRequestProfile(
   let calendarProfile = requested.calendarProfile;
   let tradition = requested.tradition;
   let sampradaya: string | null = null;
+  let calendarScope: string | null = null;
   let profileError: Error | null = null;
   let userLocation: any = null;
   let calendarProfileDefinition: CalendarProfileDefinition | null = null;
@@ -114,7 +121,7 @@ export async function resolveRequestProfile(
   if (auth.user) {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('calendar_profile, tradition, sampradaya, city, country, latitude, longitude, timezone')
+      .select('calendar_profile, calendar_scope, tradition, sampradaya, city, country, latitude, longitude, timezone')
       .eq('id', auth.user.id)
       .single();
 
@@ -126,6 +133,7 @@ export async function resolveRequestProfile(
       if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
       if (tradition === 'all') tradition = profile.tradition || 'all';
       sampradaya = profile.sampradaya || null;
+      calendarScope = profile.calendar_scope || null;
       userLocation = (
         profile.latitude != null &&
         profile.longitude != null &&
@@ -207,6 +215,7 @@ export async function resolveRequestProfile(
     calendarProfile,
     tradition,
     sampradaya,
+    calendarScope,
     ekadashiMethod: context.ekadashiMethod,
     context,
     isAuthenticated: !!auth.user,

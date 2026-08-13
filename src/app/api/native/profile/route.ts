@@ -5,7 +5,13 @@ import { getApiUser } from '@/lib/api-auth';
 export const runtime = 'nodejs';
 
 const APP_LANGUAGES = new Set(['en', 'hi', 'pa']);
-const EDITABLE_TEXT_FIELDS = new Set(['full_name', 'sampradaya', 'ishta_devata']);
+const GENDER_CONTEXTS = new Set(['male', 'female', 'prefer_not']);
+const LIFE_STAGES = new Set(['brahmacharya', 'grihastha', 'vanaprastha', 'sannyasa']);
+// full_name/sampradaya/ishta_devata predate this route; city/country are the
+// post-onboarding personal-details screen's addition (shoonaya-mobile
+// app/settings/personal-details.tsx) -- profiles.city/country already exist,
+// this route just didn't accept them yet.
+const EDITABLE_TEXT_FIELDS = new Set(['full_name', 'sampradaya', 'ishta_devata', 'city', 'country']);
 const EDITABLE_LANGUAGE_FIELDS = new Set(['app_language', 'meaning_language', 'transliteration_language']);
 const EDITABLE_BOOLEAN_FIELDS = new Set([
   'wants_festival_reminders',
@@ -25,6 +31,19 @@ function sanitizeText(value: unknown, maxLength: number) {
   if (typeof value !== 'string') return undefined;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed.slice(0, maxLength) : null;
+}
+
+const DATE_OF_BIRTH_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function sanitizeDateOfBirth(value: unknown) {
+  if (value === null) return null;
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!DATE_OF_BIRTH_RE.test(trimmed)) return undefined;
+  const parsed = new Date(`${trimmed}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+  if (parsed.getTime() > Date.now()) return undefined;
+  return trimmed;
 }
 
 function sanitizeAvatarUrl(value: unknown) {
@@ -92,6 +111,30 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: `${field} must be a boolean` }, { status: 400 });
       }
       updates[field] = value;
+    }
+
+    if ('date_of_birth' in rawBody) {
+      const value = sanitizeDateOfBirth(rawBody.date_of_birth);
+      if (value === undefined) {
+        return NextResponse.json({ error: 'date_of_birth must be a YYYY-MM-DD string in the past, or null' }, { status: 400 });
+      }
+      updates.date_of_birth = value;
+    }
+
+    if ('gender_context' in rawBody) {
+      const value = rawBody.gender_context;
+      if (value !== null && (typeof value !== 'string' || !GENDER_CONTEXTS.has(value))) {
+        return NextResponse.json({ error: 'gender_context must be one of male, female, prefer_not, or null' }, { status: 400 });
+      }
+      updates.gender_context = value;
+    }
+
+    if ('life_stage' in rawBody) {
+      const value = rawBody.life_stage;
+      if (value !== null && (typeof value !== 'string' || !LIFE_STAGES.has(value))) {
+        return NextResponse.json({ error: 'life_stage must be one of brahmacharya, grihastha, vanaprastha, sannyasa, or null' }, { status: 400 });
+      }
+      updates.life_stage = value;
     }
 
     if (Object.keys(updates).length === 0) {

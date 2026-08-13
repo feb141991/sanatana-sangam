@@ -2,6 +2,7 @@ import { isBatchTrustworthy } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
 import { resolveCalendarContext, type ResolvedCalendarContext } from './calendar-context';
 import { selectTraditionVariant, type EkadashiVariantCandidate } from './ekadashi-selection';
+import { resolveMonthLabelForProfile, type MonthLabelResult } from './month-label-resolver';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -25,6 +26,32 @@ const CITED_VARIANT_SLUGS = new Set<string>(
     .filter(r => !!r.citation)
     .map(r => r.slug)
 );
+
+/**
+ * slug -> the rule's own corrected-masa fields, for month-label resolution
+ * (src/lib/calendar/month-label-resolver.ts). First-match-wins where a slug
+ * has multiple variant rows (e.g. krishna-janmashtami's Smarta/Gaudiya
+ * rows) -- every variant observed shares identical corrected_month_system/
+ * corrected_lunar_masa_name, only citation/sampradaya differ.
+ */
+const RULE_MONTH_FIELDS_BY_SLUG = new Map<
+  string,
+  { corrected_lunar_masa_name?: string; corrected_month_system?: string; lunar_tithi_index?: number }
+>();
+for (const r of rulesData as Array<{
+  slug: string;
+  corrected_lunar_masa_name?: string;
+  corrected_month_system?: string;
+  lunar_tithi_index?: number;
+}>) {
+  if (!RULE_MONTH_FIELDS_BY_SLUG.has(r.slug)) {
+    RULE_MONTH_FIELDS_BY_SLUG.set(r.slug, {
+      corrected_lunar_masa_name: r.corrected_lunar_masa_name,
+      corrected_month_system: r.corrected_month_system,
+      lunar_tithi_index: r.lunar_tithi_index,
+    });
+  }
+}
 
 export interface ClientObservanceResult {
   // Backward compatibility
@@ -70,6 +97,22 @@ export interface ClientObservanceResult {
     rule: string;
   };
   reasons: EvaluationReason[];
+  /**
+   * The rule's own corrected-masa fields, for month-label resolution
+   * (src/lib/calendar/month-label-resolver.ts). Not part of the original
+   * ObservanceResult contract -- added so callers no longer need an `any`
+   * cast to reach these fields (see why-today-mapper.ts).
+   */
+  corrected_lunar_masa_name?: string | null;
+  corrected_month_system?: string | null;
+  lunar_tithi_index?: number | null;
+  /**
+   * Display-layer label for the viewer's own calendar_profile month-system,
+   * resolved against this SAME civilDate (never a different one -- see
+   * month-label-resolver.ts's governing invariant). Null when civilDate is
+   * unresolved/withheld, or when the viewer's profile has no month_system.
+   */
+  monthLabel?: MonthLabelResult | null;
   alternatives: Array<{
     variantKey?: string | null;
     profile: {
@@ -280,6 +323,9 @@ export function formatOccurrencesToResults(
         rule: '1.0.0',
       },
       reasons: (row.reasons as any) || [],
+      corrected_lunar_masa_name: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.corrected_lunar_masa_name ?? null,
+      corrected_month_system: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.corrected_month_system ?? null,
+      lunar_tithi_index: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.lunar_tithi_index ?? null,
       alternatives: [],
       confidence: 'high',
       diagnostics: diagnosticsList,
@@ -382,6 +428,9 @@ export function formatOccurrencesToResults(
             rule: '1.0.0',
           },
           reasons: [{ code: row.ambiguity_type, text: row.reasoning }],
+          corrected_lunar_masa_name: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.corrected_lunar_masa_name ?? null,
+          corrected_month_system: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.corrected_month_system ?? null,
+          lunar_tithi_index: RULE_MONTH_FIELDS_BY_SLUG.get(def.slug)?.lunar_tithi_index ?? null,
           alternatives: [],
           confidence: 'low',
           diagnostics: evalDiagnostics,
@@ -585,6 +634,25 @@ export function formatOccurrencesToResults(
           item.status = 'ambiguous';
         }
       }
+    }
+  }
+
+  // Month-label resolution runs LAST, after grouping/dispute-resolution may
+  // have blanked civilDate for under-review items -- resolving earlier would
+  // compute a label for a date the item no longer carries. Never recomputes
+  // or moves civilDate itself; purely a display label for the same date.
+  if (context.monthSystem === 'amanta' || context.monthSystem === 'purnimanta') {
+    for (const item of results) {
+      if (!item.civilDate) continue;
+      item.monthLabel = resolveMonthLabelForProfile(
+        item.civilDate,
+        {
+          corrected_lunar_masa_name: item.corrected_lunar_masa_name,
+          corrected_month_system: item.corrected_month_system,
+          lunar_tithi_index: item.lunar_tithi_index,
+        },
+        context.monthSystem,
+      );
     }
   }
 

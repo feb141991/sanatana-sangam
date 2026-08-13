@@ -12,6 +12,7 @@ import { SACRED_RELICS } from '@/lib/relics';
 import { getSacredTextLabel, getTraditionMeta } from '@/lib/tradition-config';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
+import { resolveMonthLabelForSlug } from '@/lib/calendar/month-label-resolver';
 
 export const runtime = 'nodejs';
 
@@ -36,6 +37,8 @@ type ProfileRow = {
   nitya_rhythm_mode: string | null;
   shloka_streak: number | null;
   last_shloka_date: string | null;
+  calendar_scope: string | null;
+  calendar_profile: string | null;
 };
 
 type DailySadhanaRow = {
@@ -91,6 +94,7 @@ type ObservanceEntry = {
   routeSlug: string;
   href: string;
   label: string;
+  monthLabel: string | null;
 };
 
 type PracticeRow = {
@@ -243,7 +247,12 @@ function getDefinition(row: ObservanceRow): ObservanceDefinitionJoin | null {
   return row.observance_definitions;
 }
 
-function buildObservanceEntry(row: ObservanceRow, definition: ObservanceDefinitionJoin, today: string): ObservanceEntry {
+function buildObservanceEntry(
+  row: ObservanceRow,
+  definition: ObservanceDefinitionJoin,
+  today: string,
+  monthSystem: string | null,
+): ObservanceEntry {
   const daysLeft = Math.round((new Date(row.date).getTime() - new Date(today).getTime()) / 86_400_000);
   const name = definition.display_name;
   const routeKind = definition.route_kind || 'festival';
@@ -254,6 +263,10 @@ function buildObservanceEntry(row: ObservanceRow, definition: ObservanceDefiniti
     : daysLeft === 1
       ? `Tomorrow is ${name}`
       : `${name} in ${daysLeft} days`;
+  // Display-only label for the viewer's own calendar_profile month-system;
+  // never changes `row.date`/`daysLeft` -- see month-label-resolver.ts's
+  // governing invariant.
+  const monthLabel = resolveMonthLabelForSlug(row.date, definition.slug, monthSystem)?.formattedLabel ?? null;
 
   return {
     name,
@@ -263,6 +276,7 @@ function buildObservanceEntry(row: ObservanceRow, definition: ObservanceDefiniti
     routeSlug,
     href,
     label,
+    monthLabel,
   };
 }
 
@@ -453,7 +467,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profileData } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date')
+    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile')
     .eq('id', user.id)
     .maybeSingle();
 
@@ -472,6 +486,36 @@ export async function GET(request: NextRequest) {
   const tradition = profile?.tradition ?? 'hindu';
   const latitude = profile?.latitude ?? 23.1765;
   const longitude = profile?.longitude ?? 75.7885;
+  const calendarScope = profile?.calendar_scope ?? null;
+
+  // Display-only: which month-system label to show for each observance.
+  // Never affects which occurrences are queried/returned -- see
+  // month-label-resolver.ts's governing invariant.
+  let monthSystem: string | null = null;
+  if (profile?.calendar_profile) {
+    const { data: calendarProfileRow } = await supabase
+      .from('calendar_profiles')
+      .select('month_system')
+      .eq('slug', profile.calendar_profile)
+      .maybeSingle();
+    monthSystem = calendarProfileRow?.month_system ?? null;
+  }
+
+  // 'major_only' thins this to primary festivals/vrats, excluding
+  // 'regional' (Sikh/Jain calendar-specific) observances -- same mapping as
+  // /api/calendar/upcoming. Unset/'all_observances' applies no filter.
+  let observanceQuery = supabase
+    .from('observance_occurrences')
+    .select('date, observance_definitions!inner(slug, display_name, emoji, description, kind, tradition, route_kind, route_slug, active)')
+    .gte('date', today)
+    .lte('date', calendarTo)
+    .eq('observance_definitions.active', true)
+    .in('observance_definitions.tradition', [tradition, 'all'])
+    .eq('publication_status', 'published');
+  if (calendarScope === 'major_only') {
+    observanceQuery = observanceQuery.in('observance_definitions.kind', ['major', 'vrat']);
+  }
+  observanceQuery = observanceQuery.order('date', { ascending: true }).limit(8);
 
   const [
     guidedResult,
@@ -538,19 +582,7 @@ export async function GET(request: NextRequest) {
         .maybeSingle(),
       DB_TIMEOUT,
     ),
-    withTimeout<ObservanceRow[]>(
-      supabase
-        .from('observance_occurrences')
-        .select('date, observance_definitions!inner(slug, display_name, emoji, description, kind, tradition, route_kind, route_slug, active)')
-        .gte('date', today)
-        .lte('date', calendarTo)
-        .eq('observance_definitions.active', true)
-        .in('observance_definitions.tradition', [tradition, 'all'])
-        .eq('publication_status', 'published')
-        .order('date', { ascending: true })
-        .limit(8),
-      DB_TIMEOUT,
-    ),
+    withTimeout<ObservanceRow[]>(observanceQuery, DB_TIMEOUT),
     withTimeout<HeroAssetRow[]>(
       supabase
         .from('hero_assets')
@@ -645,9 +677,10 @@ export async function GET(request: NextRequest) {
       routeSlug,
       href: '/vrat',
       label: `${fallbackPulse.label} Today`,
+      monthLabel: null,
     };
   } else if (firstDefinition && firstObservance) {
-    observance = buildObservanceEntry(firstObservance.row, firstDefinition, today);
+    observance = buildObservanceEntry(firstObservance.row, firstDefinition, today, monthSystem);
   }
 
   const upcomingObservances = (() => {
@@ -666,7 +699,7 @@ export async function GET(request: NextRequest) {
         return true;
       })
       .slice(0, 4)
-      .map(({ row, definition }) => buildObservanceEntry(row, definition, today));
+      .map(({ row, definition }) => buildObservanceEntry(row, definition, today, monthSystem));
   })();
 
   const dbHeroThemes = heroAssetRows

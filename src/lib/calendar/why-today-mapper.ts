@@ -210,9 +210,9 @@ export function mapWhyTodayExplanation(
   const monthLabel = resolveMonthLabelForProfile(
     civilDate,
     {
-      corrected_lunar_masa_name: (result as any).corrected_lunar_masa_name ?? (result as any).lunar_masa_name,
-      corrected_month_system: (result as any).corrected_month_system,
-      lunar_tithi_index: (result as any).lunar_tithi_index,
+      corrected_lunar_masa_name: result.corrected_lunar_masa_name,
+      corrected_month_system: result.corrected_month_system,
+      lunar_tithi_index: result.lunar_tithi_index,
     },
     context?.monthSystem
   );

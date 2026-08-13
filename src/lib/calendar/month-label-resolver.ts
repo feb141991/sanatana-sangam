@@ -18,6 +18,7 @@
 
 import { getLunarMonth, type MonthSystem as EngineMonthSystem } from '@sangam/panchang-engine';
 import type { MonthSystem as ContextMonthSystem } from './calendar-context';
+import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
 export type SupportedMonthSystem = 'amanta' | 'purnimanta';
 
@@ -119,4 +120,40 @@ export function resolveMonthLabelForProfile(
     formattedLabel: `${dateInfo.monthName} (${normTarget})`,
     isDivergentFromRuleDefault: isDivergent,
   };
+}
+
+/**
+ * slug -> the rule's own corrected-masa fields. First-match-wins where a
+ * slug has multiple variant rows (e.g. krishna-janmashtami's Smarta/
+ * Gaudiya rows) -- every variant observed shares identical
+ * corrected_month_system/corrected_lunar_masa_name, only citation/
+ * sampradaya differ. Shared here so any caller resolving a label from just
+ * a slug (rather than already holding the rule) uses the same lookup as
+ * observance-formatter.ts's own copy, instead of re-parsing rules.json.
+ */
+const RULE_MONTH_FIELDS_BY_SLUG = new Map<string, ObservanceRuleMonthInput>();
+for (const r of rulesData as Array<{ slug: string } & ObservanceRuleMonthInput>) {
+  if (!RULE_MONTH_FIELDS_BY_SLUG.has(r.slug)) {
+    RULE_MONTH_FIELDS_BY_SLUG.set(r.slug, {
+      corrected_lunar_masa_name: r.corrected_lunar_masa_name,
+      corrected_month_system: r.corrected_month_system,
+      lunar_tithi_index: r.lunar_tithi_index,
+    });
+  }
+}
+
+/**
+ * Convenience wrapper for callers that only have a rule's slug (not the
+ * rule object itself) -- e.g. a route reading observance_definitions.slug
+ * off a joined DB row. Looks up the rule's corrected-masa fields, then
+ * delegates to resolveMonthLabelForProfile.
+ */
+export function resolveMonthLabelForSlug(
+  publishedDate: string | null | undefined,
+  slug: string,
+  targetSystem: ContextMonthSystem | SupportedMonthSystem | string | null | undefined
+): MonthLabelResult | null {
+  const ruleInput = RULE_MONTH_FIELDS_BY_SLUG.get(slug);
+  if (!ruleInput) return null;
+  return resolveMonthLabelForProfile(publishedDate, ruleInput, targetSystem);
 }

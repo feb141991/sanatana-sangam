@@ -179,7 +179,10 @@ export default function OnboardingClient({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { setPreference } = useThemePreference();
-  const [step, setStep] = useState(1);
+  // 0 is a preface (founder's note) shown before step 1's welcome screen --
+  // excluded from visibleStepsList/progress-dot counting below, same as
+  // mobile onboarding's 'founderNote' sits before its own tracked STEPS.
+  const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [tradition, setTradition] = useState<string>(initialTradition || '');
   const [goals, setGoals] = useState<string[]>([]);
@@ -561,6 +564,43 @@ export default function OnboardingClient({
             transition={SPRING}
             className="w-full max-w-lg"
           >
+            {step === 0 && (
+              <div className="min-h-[65vh] flex flex-col items-center justify-center text-center gap-7">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--premium-gold)]">
+                  Before we begin
+                </p>
+                <h1 className="text-2xl font-medium text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                  A note from our founder
+                </h1>
+                <div className="max-w-sm space-y-4">
+                  <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                    I didn&apos;t set out to build an app. I noticed I&apos;d quietly stopped doing the
+                    things that once grounded me — a few minutes of japa, a shloka before sleep — not
+                    all at once, just the way most things drift over busy years.
+                  </p>
+                  <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                    Shoonaya isn&apos;t meant to be one more app competing for your attention. It&apos;s
+                    the one I wished existed when I noticed — small enough to fit into a real day,
+                    honest enough to know some days you&apos;ll miss.
+                  </p>
+                  <p className="text-[17px] leading-relaxed text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                    If it helps you come back to something you thought you&apos;d lost, it&apos;s done
+                    its job.
+                  </p>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <p className="text-lg font-semibold text-[var(--brand-primary-strong)]" style={{ fontFamily: 'var(--font-serif)' }}>
+                    Prince
+                  </p>
+                  <p className="text-xs text-[var(--brand-muted)]">Founder, Shoonaya</p>
+                </div>
+                <button onClick={() => goNext(1)}
+                  className="w-full rounded-full bg-[var(--premium-gold)] text-white font-bold py-4 px-8 text-[15px] hover:opacity-90 transition-opacity">
+                  Continue →
+                </button>
+              </div>
+            )}
+
             {step === 1 && (
               <div className="min-h-[65vh] flex flex-col items-center justify-center text-center">
                 {/* Rotating greeting */}

@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
     calendarProfile = resolved.calendarProfile;
     tradition = resolved.tradition;
     sampradaya = resolved.sampradaya;
+    const calendarScope = resolved.calendarScope;
 
     let occurrencesQuery = supabase
       .from('observance_occurrences')
@@ -102,6 +103,15 @@ export async function GET(request: NextRequest) {
       occurrencesQuery = occurrencesQuery.in('observance_definitions.tradition', [tradition, 'all']);
     }
 
+    // 'major_only' thins the feed to primary festivals, vrats, and major
+    // fast days (kind IN major/vrat), excluding 'regional' (Sikh/Jain
+    // calendar-specific observances). 'all_observances' or unset (the
+    // default for every existing user who has never chosen) applies no
+    // filter -- current behaviour is unchanged unless a user opts in.
+    if (calendarScope === 'major_only') {
+      occurrencesQuery = occurrencesQuery.in('observance_definitions.kind', ['major', 'vrat']);
+    }
+
     const { data: occurrencesData, error: occError } = await occurrencesQuery.order('date', { ascending: true });
 
     if (occError) {
@@ -148,6 +158,10 @@ export async function GET(request: NextRequest) {
 
     if (tradition && tradition !== 'all') {
       queueQuery = queueQuery.in('observance_definitions.tradition', [tradition, 'all']);
+    }
+
+    if (calendarScope === 'major_only') {
+      queueQuery = queueQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
 
     const { data: queueData, error: queueError } = await queueQuery;
