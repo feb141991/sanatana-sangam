@@ -996,7 +996,8 @@
     "verification_type": "historical_commemoration",
     "solar_month": 1,
     "solar_day": 5,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.99 (daily) -- Guru Gobind Singh’s Birthday listed at 2027-01-16"
   },
   {
     "slug": "lohri",
@@ -1009,7 +1010,8 @@
     "verification_type": "solar_fixed",
     "relative_base_slug": "makar-sankranti",
     "relative_offset_days": -1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #66), p.98 (daily) -- Lohri (Punjab, Jammu & Kashmir) listed at 2027-01-14"
   },
   {
     "slug": "guru-ravidas-jayanti",
@@ -1030,7 +1032,8 @@
     "ratification_note": "DISPUTED, and our own astronomy supports NEITHER prior answer. Purnima 2027 is NOT kshaya -- that was my mischaracterisation. The boundary solver puts the Purnima interval at 2027-02-20T02:30Z to 2027-02-20T23:23Z, nearly 21 hours, entirely within 20 February. It is missed only because the fixed 01:00 UTC daily sample falls before it on the 20th and after it on the 21st. Council ruled 22 Feb, the sampled engine gives 21 Feb, and the astronomy indicates 20 Feb -- which is also what Drik Panchang lists. Withheld pending resolution.",
     "disputed_years": [
       2027
-    ]
+    ],
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.110 (daily) -- Guru Ravidas Jayanti listed at 2026-02-01"
   },
   {
     "slug": "holla-mohalla",
@@ -1056,7 +1059,8 @@
     "verification_type": "solar_fixed",
     "solar_month": 4,
     "solar_day": 14,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.6 (index #12), p.26 (daily) -- Vaisakhi (Punjab, Haryana, H.P, Delhi & Odisha) listed at 2026-04-14"
   },
   {
     "slug": "guru-amar-das-gurpurab",
@@ -1082,7 +1086,8 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Harh",
     "nanakshahi_day": 2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.6 (index #23), p.43 (daily) -- Guru Arjan Dev’s Martyrdom Day (Sikh) listed at 2026-06-19"
   },
   {
     "slug": "guru-har-krishan-gurpurab",
@@ -1121,7 +1126,8 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 0,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.81 (daily) -- Dipavali / Bandhi Chhor Divas date listed at 2026-11-08"
   },
   {
     "slug": "guru-nanak-gurpurab",
@@ -1134,7 +1140,8 @@
     "verification_type": "historical_commemoration",
     "relative_base_slug": "diwali",
     "relative_offset_days": 16,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #60), p.86 (daily) -- Guru Nanak’s Birthday listed at 2026-11-24"
   },
   {
     "slug": "guru-tegh-bahadur-martyrdom",
@@ -1147,7 +1154,8 @@
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Maghar",
     "nanakshahi_day": 10,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.86 (daily) -- Guru Tegh Bahadur’s Martyrdom Day listed at 2026-11-24"
   },
   {
     "slug": "sahibzade-shaheedi-diwas",
@@ -1160,7 +1168,8 @@
     "verification_type": "historical_commemoration",
     "solar_month": 12,
     "solar_day": 26,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.95 (daily) -- Jor Mela-3 days (Punjab) listed at 2026-12-27"
   },
   {
     "slug": "parinirvana-day",
@@ -1356,7 +1365,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 13,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.6 (index #4), p.24 (daily) -- Mahavira Jayanti (Jain) listed at 2026-03-31"
   },
   {
     "slug": "akshaya-tritiya-jain",
@@ -1412,7 +1422,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #42), p.67 (daily) -- Samvatsari (Chaturthi & Panchami Paksha - Jain) listed at 2026-09-15 & 2026-09-16"
   },
   {
     "slug": "das-lakshana-dharma-begins",
