@@ -53,6 +53,8 @@
     "verify:review-queue-shadow": "bash scripts/shadow/verify-review-queue-shadow.sh"
   },
   "dependencies": {
+    "@react-three/drei": "^9.121.5",
+    "@react-three/fiber": "^8.17.14",
     "@sangam/pathshala-engine": "*",
     "@sangam/sadhana-engine": "*",
     "@supabase/ssr": "^0.5.1",
@@ -76,6 +78,7 @@
     "react-hot-toast": "^2.4.1",
     "react-leaflet": "^4.2.1",
     "tailwind-merge": "^2.4.0",
+    "three": "^0.185.1",
     "twilio": "^6.0.2",
     "workflow": "^4.7.0"
   },
@@ -83,8 +86,9 @@
     "@types/leaflet": "^1.9.12",
     "@types/node": "^20",
     "@types/pg": "^8.21.0",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/three": "^0.185.4",
     "autoprefixer": "^10.0.1",
     "critters": "^0.0.23",
     "dotenv": "^17.4.2",

@@ -31,6 +31,7 @@ import NextPracticeCard from '@/components/home/NextPracticeCard';
 import BrahmaMuhurtaCard from '@/components/home/BrahmaMuhurtaCard';
 import MantraPlayer from '@/components/ui/MantraPlayer';
 import ScriptureCorrectionModal from '@/components/ScriptureCorrectionModal';
+import Divine3DDiyaSection from './Divine3DDiyaSection';
 
 const RELIC_BADGE_EMOJI: Record<string, string> = {
   'diya-bronze':         '🪔',
@@ -1035,6 +1036,9 @@ export function HeroSection({
           pathshalaProgress={dailyDharmaStackState.pathshalaProgress}
         />
       )}
+
+      {/* ── Interactive 3D Flame Light Sanctuary ── */}
+      <Divine3DDiyaSection />
 
       {/* ── Brahma Muhurta card ── */}
       {panchang?.brahmaMuhurta && panchang?.sunrise && (
