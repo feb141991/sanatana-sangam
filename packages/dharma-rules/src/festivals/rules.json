@@ -10,7 +10,8 @@
     "verification_type": "solar_fixed",
     "solar_month": 1,
     "solar_day": 14,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #67-#68), p.98 (daily) -- Makara Samkranti (N.India) listed at 2027-01-14."
   },
   {
     "slug": "vasant-panchami",
@@ -331,7 +332,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #35), p.63 (daily) -- Raksha Bandhana / Solono (Rakhi Bandhan) listed at 2026-08-28 (Shravana Purnima)."
   },
   {
     "slug": "krishna-janmashtami",
@@ -398,7 +400,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 4,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.67 (daily) -- Ganesha Chaturthi / Vinayaka Chaturthi listed at 2026-09-15 (Bhadrapada Shukla Chaturthi)."
   },
   {
     "slug": "onam",
@@ -512,7 +515,8 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "navratri-begins",
     "relative_offset_days": 9,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #51), p.75 (daily) -- Vijaya Dasami (Dussehara or Dasahara) listed at 2026-10-20 & 2026-10-21 (Ashvina Shukla Dasami)."
   },
   {
     "slug": "karva-chauth",
@@ -549,7 +553,8 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": -2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.81 (daily) -- Dhana Trayodasi listed at 2026-11-07 (Kartika Krishna Trayodasi)."
   },
   {
     "slug": "diwali",
@@ -581,7 +586,8 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 1,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #56), p.81 (daily) -- Govardhana Puja / Annakuta listed at 2026-11-09 (Kartika Shukla Pratipada)."
   },
   {
     "slug": "bhai-dooj",
@@ -594,7 +600,8 @@
     "verification_type": "lunar_tithi",
     "relative_base_slug": "diwali",
     "relative_offset_days": 2,
-    "launch_status": "included"
+    "launch_status": "included",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #58), p.82 (daily) -- Bhai Duj / Bhratri Dvitiya / Yama Dvitiya listed at 2026-11-11 (Kartika Shukla Dvitiya)."
   },
   {
     "slug": "chhath-puja",
