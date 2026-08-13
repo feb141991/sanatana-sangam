@@ -37,6 +37,7 @@ const partialBatch = (expected: number, produced: number) => ({
 
 const occ = (slug: string, date: string, calendar_profile: string, batch: any = null) => ({
   batch,
+  batch_family_complete: true,
   ...UJJAIN,
   date,
   occurrence_date: date,

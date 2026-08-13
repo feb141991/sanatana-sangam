@@ -1,4 +1,4 @@
-import { isBatchTrustworthy } from './materialisation-batch';
+import { isBatchTrustworthy, type BatchRow } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
 import { resolveCalendarContext, type ResolvedCalendarContext } from './calendar-context';
 import { selectTraditionVariant, type EkadashiVariantCandidate } from './ekadashi-selection';
@@ -173,12 +173,25 @@ function resolveCalendarProfile<T>(
     const fallback = list.filter(r => (r as any).calendar_profile !== calendarProfile);
 
     if (exact.length === 0) {
-      for (const r of list) kept.add(r);
+      for (const r of list) {
+        kept.add(r);
+        const materialisation = r as unknown as { requested_profile_family_incomplete?: boolean };
+        if (materialisation.requested_profile_family_incomplete === true) {
+          (r as unknown as { __incompleteProfileBatch?: string }).__incompleteProfileBatch = calendarProfile;
+        }
+      }
       continue;
     }
 
     const complete = !requireCompleteBatch
-      || (exact.length > 0 && exact.every(r => isBatchTrustworthy((r as any).batch)));
+      || (exact.length > 0 && exact.every(r => {
+        const materialisation = r as unknown as {
+          batch?: BatchRow | null;
+          batch_family_complete?: boolean;
+        };
+        return isBatchTrustworthy(materialisation.batch)
+          && materialisation.batch_family_complete === true;
+      }));
 
     if (!complete && fallback.length > 0) {
       for (const r of fallback) {

@@ -22,6 +22,7 @@ ROOT="$(cd "$HERE/../.." && pwd)"
 MIGRATION="$ROOT/supabase/migrations/20260811090000_materialisation_identity_and_completeness.sql"
 ROLLBACK="$ROOT/supabase/rollbacks/20260811090000_materialisation_identity_and_completeness_rollback.sql"
 REVIEW_QUEUE_MIGRATION="$ROOT/supabase/migrations/20260811153000_review_queue_variant_identity.sql"
+PROFILE_REGISTRY_MIGRATION="$ROOT/supabase/migrations/20260805195000_create_calendar_and_tradition_profiles.sql"
 
 command -v psql >/dev/null 2>&1 || { echo "psql not found -- a local PostgreSQL 15+ is required"; exit 2; }
 
@@ -34,6 +35,10 @@ build_shadow() {
   echo "building shadow database '$DB' ..."
   psql -d postgres -q -c "DROP DATABASE IF EXISTS $DB;" -c "CREATE DATABASE $DB;" || return 1
   psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-schema.sql" || return 1
+  # Use the real registry migration rather than hand-seeding profile slugs in
+  # this harness. That exercises the production foreign keys and keeps the
+  # shadow's accepted profile/tradition vocabulary tied to one source of truth.
+  psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$PROFILE_REGISTRY_MIGRATION" || return 1
   node "$HERE/gen-shadow-data.mjs" || return 1
   psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$HERE/shadow-data.sql" || return 1
 }
@@ -85,7 +90,12 @@ psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$REVIEW_QUEUE_MIGRATION" || exit 2
 MATERIALISER=$?
 
 echo
-if [ "$ACCEPT" -eq 0 ] && [ "$ROLL" -eq 0 ] && [ "$MATERIALISER" -eq 0 ]; then
+echo "=== profile-qualified write/read acceptance ============================"
+(cd "$ROOT" && SHADOW_DATABASE_URL="postgresql:///$DB" npx tsx "$HERE/run-profile-qualified-acceptance.mts")
+PROFILE_ACCEPTANCE=$?
+
+echo
+if [ "$ACCEPT" -eq 0 ] && [ "$ROLL" -eq 0 ] && [ "$MATERIALISER" -eq 0 ] && [ "$PROFILE_ACCEPTANCE" -eq 0 ]; then
   echo "verify:materialisation-shadow PASSED"; exit 0
 else
   echo "verify:materialisation-shadow FAILED"; exit 1

@@ -800,6 +800,12 @@ export async function commitOccurrencesWithBatches(
   let inserted = 0;
   const batchByIdentity = new Map<string, string>();
 
+  // Open EVERY intended identity before inserting ANY occurrence. If the first
+  // insert fails while later identities have not even opened a batch, the read
+  // path has no persisted evidence that those variants were expected. Opening
+  // the whole family first means a crash leaves the not-yet-written identities
+  // visibly partial, so the profile set fails closed instead of looking
+  // complete merely because the missing variant has no row to reference.
   for (const key of identities) {
     const meta = identityMeta.get(key) ?? groups.get(key)?.[0];
     if (!meta) continue;
@@ -822,7 +828,12 @@ export async function commitOccurrencesWithBatches(
       versions,
     );
     batchByIdentity.set(key, batchId);
+  }
 
+  for (const key of identities) {
+    const batchId = batchByIdentity.get(key);
+    if (!batchId) continue;
+    const expected = expectedByIdentity.get(key) ?? (groups.get(key)?.length ?? 0);
     const group = groups.get(key) ?? [];
     if (group.length > 0) {
       const payload = group.map(({ __slug, __anchor, ...rest }) => ({

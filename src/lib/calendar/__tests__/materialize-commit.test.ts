@@ -25,7 +25,11 @@
  * oracle, not a database.
  */
 import { describe, it, expect } from 'vitest';
-import { materializeOccurrencesForYears } from '../materialize';
+import {
+  batchIdentityKey,
+  commitOccurrencesWithBatches,
+  materializeOccurrencesForYears,
+} from '../materialize';
 
 // ---------------------------------------------------------------------------
 // Fake Supabase client
@@ -41,11 +45,16 @@ const NOT_NULL = ['definition_id', 'year', 'date', 'occurrence_date'];
 const uniqueKey = (r: Row) =>
   `${r.definition_id}|${r.year}|${r.calendar_profile ?? 'legacy-ujjain'}|${r.occurrence_date}|${r.variant_key ?? 'legacy-default'}`;
 
-function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; existing?: Row[] }) {
+function makeClient(opts: {
+  definitions: Array<{ id: string; slug: string }>;
+  existing?: Row[];
+  failFirstOccurrenceInsert?: boolean;
+}) {
   const existing = (opts.existing ?? []).map((r, i) => ({ id: r.id ?? `existing-${i}`, ...r }));
   const inserted: Row[] = [];
   const updated: Array<{ id: string; patch: Row }> = [];
   const queueUpserts: Row[] = [];
+  let occurrenceInsertAttempts = 0;
 
   /** Stands in for Postgres. Throws the way the real constraints would. */
   const enforce = (row: Row) => {
@@ -144,6 +153,10 @@ function makeClient(opts: { definitions: Array<{ id: string; slug: string }>; ex
           const arr = Array.isArray(rows) ? rows : [rows];
           return {
             select: async () => {
+              occurrenceInsertAttempts += 1;
+              if (opts.failFirstOccurrenceInsert && occurrenceInsertAttempts === 1) {
+                return { data: null, error: { message: 'forced first-insert failure' } };
+              }
               for (const r of arr) {
                 enforce(r);
                 inserted.push({ id: `new-${inserted.length}`, ...r });
@@ -237,6 +250,48 @@ const DEFS_WITH_RECURRING = [
 // ---------------------------------------------------------------------------
 
 describe('materializeOccurrencesForYears — commit mode', () => {
+  it('opens every intended variant batch before the first occurrence insert', async () => {
+    const c = makeClient({ definitions: DEFS, failFirstOccurrenceInsert: true });
+    const base = {
+      definition_id: 'def-diwali',
+      year: 2026,
+      date: '2026-11-08',
+      occurrence_date: '2026-11-08',
+      calendar_profile: 'north_indian_purnimanta',
+      computed_latitude: 23.1765,
+      computed_longitude: 75.7885,
+      computed_timezone: 'Asia/Kolkata',
+      final_date_source: 'calculation_engine_reviewed',
+      __slug: 'diwali',
+      __anchor: '2026-11-08',
+    };
+    const rows = [
+      { ...base, spiritual_tradition: 'smarta', variant_key: 'smarta' },
+      { ...base, spiritual_tradition: 'gaudiya_iskcon', variant_key: 'gaudiya_iskcon' },
+    ];
+    const expectedByIdentity = new Map<string, number>();
+    const identityMeta = new Map<string, Row>();
+    for (const row of rows) {
+      const key = batchIdentityKey(row);
+      expectedByIdentity.set(key, 1);
+      identityMeta.set(key, row);
+    }
+
+    await expect(commitOccurrencesWithBatches(c.client, {
+      toInsert: rows,
+      toUpdate: [],
+      toStamp: [],
+      expectedByIdentity,
+      identityMeta,
+      versions: { engine: 'test', rule: 'test' },
+    })).rejects.toEqual({ message: 'forced first-insert failure' });
+
+    const batches = [...c.batches.values()];
+    expect(batches).toHaveLength(2);
+    expect(batches.filter(batch => batch.status === 'failed')).toHaveLength(1);
+    expect(batches.filter(batch => batch.status === 'partial')).toHaveLength(1);
+  });
+
   it('every inserted row satisfies the NOT NULL columns, including occurrence_date', async () => {
     const { client, inserted } = makeClient({ definitions: DEFS });
 

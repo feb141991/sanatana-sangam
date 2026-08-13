@@ -80,6 +80,7 @@ describe('calendar profile resolution', () => {
     date: '2026-09-04',
     calendar_profile: 'gujarati_amanta',
     batch: { id: 'b', status: 'complete', expected_row_count: 1, produced_row_count: 1 },
+    batch_family_complete: true,
   });
   const legacy   = row({ date: '2026-09-03', calendar_profile: 'legacy-ujjain' });
 

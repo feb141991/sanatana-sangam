@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
+import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
 
 export const runtime = 'nodejs';
 
@@ -49,37 +50,7 @@ export async function GET(request: NextRequest) {
 
     let occurrencesQuery = supabase
       .from('observance_occurrences')
-      .select(`
-        date,
-        occurrence_date,
-        review_status,
-        verification_status,
-        audit_status,
-        calendar_profile,
-        spiritual_tradition,
-        variant_key,
-        is_primary_variant,
-        reasons,
-        diagnostics,
-        source_refs,
-        computed_latitude,
-        computed_longitude,
-        computed_timezone,
-        rule_version,
-        astronomy_version,
-        day_boundary_version,
-        observance_definitions!inner(
-          slug,
-          display_name,
-          emoji,
-          description,
-          kind,
-          tradition,
-          route_kind,
-          route_slug,
-          active
-        )
-      `)
+      .select(CALENDAR_OCCURRENCE_SELECT)
       // A single-day request still needs the surrounding window: the chosen
       // profile's row for this festival may sit a day either side, and only by
       // seeing it can we tell 'not materialised' from 'just outside the range'.
@@ -103,6 +74,13 @@ export async function GET(request: NextRequest) {
       console.error('[API Calendar Day] Occurrences error:', occError);
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
+
+    const occurrencesWithBatches = await attachMaterialisationBatches(
+      occurrencesData || [],
+      undefined,
+      calendarProfile,
+      resolved.context.effectiveCalculationLocation,
+    );
 
     // Query unresolved items from the review queue
     let queueQuery = supabase
@@ -158,7 +136,7 @@ export async function GET(request: NextRequest) {
     }
 
     const formattedResults = formatOccurrencesToResults(
-      occurrencesData || [],
+      occurrencesWithBatches,
       queueData || [],
       tradition,
       calendarProfile,

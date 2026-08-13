@@ -96,7 +96,7 @@ function buildUpdate(table, patch, wheres) {
  * that) never share mutable state.
  */
 function makeQuery(pool, table) {
-  const state = { wheres: [], inClause: null, selectCols: null };
+  const state = { wheres: [], inClauses: [], selectCols: null };
 
   const exec = async (sql, values) => {
     try {
@@ -116,12 +116,12 @@ function makeQuery(pool, table) {
       values.push(w.val);
       clauses.push(`${quoteIdent(w.col)} = $${values.length}`);
     }
-    if (state.inClause) {
-      const placeholders = state.inClause.vals.map((v, i) => {
+    for (const inClause of state.inClauses) {
+      const placeholders = inClause.vals.map(v => {
         values.push(v);
         return `$${values.length}`;
       });
-      clauses.push(`${quoteIdent(state.inClause.col)} IN (${placeholders.join(', ')})`);
+      clauses.push(`${quoteIdent(inClause.col)} IN (${placeholders.join(', ')})`);
     }
     if (clauses.length) sql += ` WHERE ${clauses.join(' AND ')}`;
     return { sql, values };
@@ -137,7 +137,7 @@ function makeQuery(pool, table) {
       return builder;
     },
     in(col, vals) {
-      state.inClause = { col, vals };
+      state.inClauses.push({ col, vals });
       return builder;
     },
     single() {
