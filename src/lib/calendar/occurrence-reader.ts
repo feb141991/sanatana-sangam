@@ -200,7 +200,9 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
 
   const batches = new Map<string, MaterialisationBatchLookupRow>();
   const batchFamilies = new Map<string, MaterialisationBatchLookupRow[]>();
-  for (const row of data ?? []) {
+  // Retired rows remain in the database as audit evidence but are no longer
+  // expected members of the active profile family.
+  for (const row of (data ?? []).filter(batch => batch.status !== 'retired')) {
     batches.set(row.id, row);
     const key = batchFamilyKey(row);
     if (!key) continue;

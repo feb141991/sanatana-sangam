@@ -21,6 +21,8 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 MIGRATION="$ROOT/supabase/migrations/20260811090000_materialisation_identity_and_completeness.sql"
 ROLLBACK="$ROOT/supabase/rollbacks/20260811090000_materialisation_identity_and_completeness_rollback.sql"
+RETIREMENT_MIGRATION="$ROOT/supabase/migrations/20260814002825_retire_obsolete_materialisation_batches.sql"
+RETIREMENT_ROLLBACK="$ROOT/supabase/rollbacks/20260814002825_retire_obsolete_materialisation_batches_rollback.sql"
 REVIEW_QUEUE_MIGRATION="$ROOT/supabase/migrations/20260811153000_review_queue_variant_identity.sql"
 PROFILE_REGISTRY_MIGRATION="$ROOT/supabase/migrations/20260805195000_create_calendar_and_tradition_profiles.sql"
 
@@ -59,12 +61,32 @@ psql -d "$DB" -tAc "select md5(string_agg(column_name||':'||data_type, ',' ORDER
 
 echo "applying migration ..."
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$MIGRATION" || exit 2
+# Seed one uniquely tagged D32 rollback batch and one unrelated failure before
+# the retirement migration. This proves the data migration is selective rather
+# than merely proving the new schema accepts a manually inserted retired row.
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -c "
+  INSERT INTO observance_materialisation_batches
+    (definition_id, year, calendar_profile, computed_latitude, computed_longitude,
+     computed_timezone, expected_row_count, produced_row_count, engine_version,
+     rule_version, status, failure_reason)
+  SELECT id, 2034, 'global_sanatan', 1, 1, 'Asia/Kolkata', 1, 0, '2.0.0', 'd32',
+         'failed', 'D32 per-profile month-system materialization was conceptually wrong (shadow fixture)'
+  FROM observance_definitions LIMIT 1;
+  INSERT INTO observance_materialisation_batches
+    (definition_id, year, calendar_profile, computed_latitude, computed_longitude,
+     computed_timezone, expected_row_count, produced_row_count, engine_version,
+     rule_version, status, failure_reason)
+  SELECT id, 2035, 'global_sanatan', 1, 1, 'Asia/Kolkata', 1, 0, '2.0.0', 'other',
+         'failed', 'unrelated shadow failure'
+  FROM observance_definitions LIMIT 1;" || exit 2
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$RETIREMENT_MIGRATION" || exit 2
 
 bash "$HERE/shadow-acceptance.sh"
 ACCEPT=$?
 
 echo
 echo "=== rollback ============================================================"
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$RETIREMENT_ROLLBACK" || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$ROLLBACK" || exit 2
 AFTER=$(psql -d "$DB" -tAc "select md5(string_agg(column_name||':'||data_type, ',' ORDER BY table_name, ordinal_position)) from information_schema.columns where table_schema='public';" | tr -d ' ')
 BEFORE=$(cat "$HERE/baseline-schema.md5")
@@ -81,6 +103,7 @@ echo
 echo "=== actual materialiser ================================================"
 build_shadow || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$MIGRATION" || exit 2
+psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$RETIREMENT_MIGRATION" || exit 2
 # The current materialiser persists unresolved evaluator output through the
 # profile/tradition-aware queue contract. Apply that additive migration only in
 # this integration stage; the byte-identical rollback assertion above remains

@@ -78,9 +78,59 @@ export function buildSeriesInstanceKey(args: {
 
 export interface BatchRow {
   id: string;
-  status: 'complete' | 'partial' | 'failed';
+  status: 'complete' | 'partial' | 'failed' | 'retired';
   expected_row_count: number;
   produced_row_count: number;
+}
+
+export interface MaterialisationFamilyIdentity {
+  definitionId: string;
+  year: number;
+  calendarProfile: string;
+  lat: number;
+  lon: number;
+  tz: string;
+}
+
+export interface ActiveVariantIdentity {
+  spiritualTradition: string | null;
+  variantKey: string | null;
+}
+
+interface RetirementRecord {
+  id: string;
+  status?: BatchRow['status'];
+  spiritual_tradition?: string | null;
+  variant_key?: string | null;
+  batch_id?: string | null;
+}
+
+interface RetirementQueryResult {
+  data: RetirementRecord[] | null;
+  error: { message: string } | null;
+}
+
+interface RetirementQuery extends PromiseLike<RetirementQueryResult> {
+  eq(column: string, value: string | number): RetirementQuery;
+  in(column: string, values: string[]): RetirementQuery;
+}
+
+interface RetirementUpdateQuery extends PromiseLike<{ error: { message: string } | null }> {}
+
+interface RetirementTable {
+  select(columns: string): RetirementQuery;
+  update(patch: Record<string, unknown>): {
+    eq(column: string, value: string): RetirementUpdateQuery;
+    in(column: string, values: string[]): RetirementUpdateQuery;
+  };
+}
+
+export interface MaterialisationRetirementClient {
+  from(table: 'observance_materialisation_batches' | 'observance_occurrences'): RetirementTable;
+}
+
+function variantIdentityKey(identity: ActiveVariantIdentity): string {
+  return `${identity.spiritualTradition ?? ''}|${identity.variantKey ?? ''}`;
 }
 
 /**
@@ -134,6 +184,8 @@ export async function openBatch(
         status: 'partial',
         failure_reason: null,
         completed_at: null,
+        retired_at: null,
+        retirement_reason: null,
         updated_at: new Date().toISOString(),
       },
       {
@@ -181,4 +233,76 @@ export async function closeBatch(
 
   if (error) throw error;
   return status;
+}
+
+/**
+ * Retires identities that a COMPLETE catalog reconciliation proves obsolete.
+ *
+ * This is deliberately not part of the ordinary materialisation commit. A
+ * scoped, partial, or failed run cannot know that a missing identity was
+ * intentionally removed. The caller must explicitly assert `complete_family`
+ * and provide the active identity set. Linked occurrences block retirement,
+ * so this helper can never hide a still-published row.
+ */
+export async function retireObsoleteBatchesForCompleteFamily(
+  client: MaterialisationRetirementClient,
+  args: {
+    scope: 'complete_family';
+    family: MaterialisationFamilyIdentity;
+    activeIdentities: readonly ActiveVariantIdentity[];
+    reason: string;
+  },
+): Promise<{ retired: number; alreadyRetired: number }> {
+  if (args.scope !== 'complete_family') {
+    throw new Error('Materialisation retirement requires a complete-family reconciliation');
+  }
+  const reason = args.reason.trim();
+  if (!reason) throw new Error('A non-empty retirement reason is required');
+
+  const { family } = args;
+  const { data, error } = await client
+    .from('observance_materialisation_batches')
+    .select('id, status, spiritual_tradition, variant_key')
+    .eq('definition_id', family.definitionId)
+    .eq('year', family.year)
+    .eq('calendar_profile', family.calendarProfile)
+    .eq('computed_latitude', family.lat)
+    .eq('computed_longitude', family.lon)
+    .eq('computed_timezone', family.tz);
+
+  if (error) throw new Error(`Materialisation retirement lookup failed: ${error.message}`);
+
+  const active = new Set(args.activeIdentities.map(variantIdentityKey));
+  const obsolete = (data ?? []).filter(row => !active.has(variantIdentityKey({
+    spiritualTradition: row.spiritual_tradition ?? null,
+    variantKey: row.variant_key ?? null,
+  })));
+  const alreadyRetired = obsolete.filter(row => row.status === 'retired').length;
+  const candidates = obsolete.filter(row => row.status !== 'retired');
+  if (candidates.length === 0) return { retired: 0, alreadyRetired };
+
+  const candidateIds = candidates.map(row => row.id);
+  const { data: linked, error: linkedError } = await client
+    .from('observance_occurrences')
+    .select('id, batch_id')
+    .in('batch_id', candidateIds);
+  if (linkedError) throw new Error(`Materialisation retirement link check failed: ${linkedError.message}`);
+  if ((linked ?? []).length > 0) {
+    throw new Error('Cannot retire a materialisation batch while occurrence rows still reference it');
+  }
+
+  const retiredAt = new Date().toISOString();
+  const { error: updateError } = await client
+    .from('observance_materialisation_batches')
+    .update({
+      status: 'retired',
+      retired_at: retiredAt,
+      retirement_reason: reason,
+      completed_at: null,
+      updated_at: retiredAt,
+    })
+    .in('id', candidateIds);
+  if (updateError) throw new Error(`Materialisation retirement failed: ${updateError.message}`);
+
+  return { retired: candidates.length, alreadyRetired };
 }

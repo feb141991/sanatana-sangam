@@ -20,6 +20,10 @@ import {
   batchIdentityKey,
   commitOccurrencesWithBatches,
 } from '../../src/lib/calendar/materialize';
+import {
+  openBatch,
+  retireObsoleteBatchesForCompleteFamily,
+} from '../../src/lib/calendar/materialisation-batch';
 import { attachMaterialisationBatches } from '../../src/lib/calendar/occurrence-reader';
 import { formatOccurrencesToResults } from '../../src/lib/calendar/observance-formatter';
 import { resolveCalendarContext } from '../../src/lib/calendar/calendar-context';
@@ -87,6 +91,8 @@ interface AcceptanceBatchRow {
   status: string;
   expected_row_count: number;
   produced_row_count: number;
+  retired_at?: string | null;
+  retirement_reason?: string | null;
 }
 
 function check(name: string, ok: boolean, detail?: string) {
@@ -187,11 +193,39 @@ async function main() {
     console.log(`  INFO  shadow fixture reuses existing legacy civil date ${civilDate}; no date is derived here`);
 
     const variants = [
-      { spiritualTradition: 'smarta', variantKey: 'smarta' },
-      { spiritualTradition: 'gaudiya_iskcon', variantKey: 'gaudiya_iskcon' },
+      {
+        spiritualTradition: 'smarta',
+        variantKey: 'smarta',
+        sourceReference: {
+          sourceName: 'Nirnaya Sindhu',
+          textName: 'Krishna Janmashtami Nirnaya',
+          pageOrSection: 'Krishna Janmashtami Nirnaya',
+          tier: 2,
+          tradition: 'Smarta',
+          scholarNotes: 'Canonical rule source; 2026 civil date is council-confirmed.',
+          copyrightStatus: 'traditional_text_reference',
+          usagePermitted: 'rule_citation_only',
+          url: null,
+        },
+      },
+      {
+        spiritualTradition: 'gaudiya_iskcon',
+        variantKey: 'gaudiya_iskcon',
+        sourceReference: {
+          sourceName: 'Hari Bhakti Vilasa',
+          textName: 'Krishna Janmashtami Rohini Vrata',
+          pageOrSection: 'Krishna Janmashtami Rohini Vrata',
+          tier: 2,
+          tradition: 'Gaudiya Vaishnava',
+          scholarNotes: 'Canonical rule source; 2026 civil date is council-confirmed.',
+          copyrightStatus: 'traditional_text_reference',
+          usagePermitted: 'rule_citation_only',
+          url: null,
+        },
+      },
     ];
 
-    const toInsert = variants.map(({ spiritualTradition, variantKey }) => ({
+    const toInsert = variants.map(({ spiritualTradition, variantKey, sourceReference }) => ({
       definition_id: definitionRow.id,
       year: YEAR,
       date: civilDate,
@@ -218,7 +252,7 @@ async function main() {
       day_boundary_version: 'shadow-profile-contract-1',
       reasons: [],
       diagnostics: [],
-      source_refs: [],
+      source_refs: [sourceReference],
       __slug: SLUG,
       __anchor: civilDate,
     }));
@@ -270,6 +304,10 @@ async function main() {
     check('both rows carry a bounded series-instance key', storedRows.every(row => /^[a-f0-9]{32}$/.test(row.series_instance_key ?? '')));
     check('both traditions share one writer-owned instance identity', new Set(storedRows.map(row => row.series_instance_key)).size === 1);
     check('stored is_primary_variant does not preselect a tradition', storedRows.every(row => row.is_primary_variant === false));
+    check('both variants retain a typed Tier 2 source reference', storedRows.every(row => {
+      const first = Array.isArray(row.source_refs) ? row.source_refs[0] : null;
+      return !!first && typeof first === 'object' && 'tier' in first && first.tier === 2;
+    }));
 
     const batchIds = [...new Set(
       storedRows
@@ -336,6 +374,28 @@ async function main() {
       .update({ status: 'partial', produced_row_count: 0, completed_at: null })
       .eq('id', partialBatchId);
     if (partialError) throw partialError;
+
+    let linkedRetirementBlocked = false;
+    try {
+      await retireObsoleteBatchesForCompleteFamily(client, {
+        scope: 'complete_family',
+        family: {
+          definitionId: definitionRow.id,
+          year: YEAR,
+          calendarProfile: PROFILE,
+          lat: LAT,
+          lon: LON,
+          tz: TZ,
+        },
+        activeIdentities: [{ spiritualTradition: 'smarta', variantKey: 'smarta' }],
+        reason: 'Shadow catalog removed the Gaudiya identity.',
+      });
+    } catch (error) {
+      linkedRetirementBlocked = error instanceof Error
+        && error.message.includes('occurrence rows still reference it');
+    }
+    check('retirement refuses to hide a still-linked occurrence', linkedRetirementBlocked);
+
     const { error: deleteVariantError } = await client
       .from('observance_occurrences')
       .delete()
@@ -365,6 +425,79 @@ async function main() {
     check('one absent partial variant fails the whole profile set closed', fallbackResults.length === 1, `${fallbackResults.length}`);
     check('partial profile materialisation keeps the legacy row', fallbackResults[0]?.profile.calendar === 'legacy-ujjain', fallbackResults[0]?.profile.calendar ?? 'none');
     check('legacy fallback discloses incomplete profile materialisation', fallbackResults[0]?.diagnostics.includes('incomplete_profile_materialisation') === true);
+
+    const retirement = await retireObsoleteBatchesForCompleteFamily(client, {
+      scope: 'complete_family',
+      family: {
+        definitionId: definitionRow.id,
+        year: YEAR,
+        calendarProfile: PROFILE,
+        lat: LAT,
+        lon: LON,
+        tz: TZ,
+      },
+      activeIdentities: [{ spiritualTradition: 'smarta', variantKey: 'smarta' }],
+      reason: 'Shadow catalog removed the Gaudiya identity.',
+    });
+    check('complete-family reconciliation retires one unlinked obsolete identity', retirement.retired === 1, JSON.stringify(retirement));
+
+    const { data: retiredBatches, error: retiredError } = await client
+      .from('observance_materialisation_batches')
+      .select('id, status, expected_row_count, produced_row_count, retired_at, retirement_reason')
+      .eq('id', partialBatchId);
+    if (retiredError) throw retiredError;
+    const retiredBatch = ((retiredBatches ?? []) as unknown as AcceptanceBatchRow[])[0];
+    check('retired identity preserves an explicit audit trail', retiredBatch?.status === 'retired'
+      && !!retiredBatch.retired_at
+      && retiredBatch.retirement_reason === 'Shadow catalog removed the Gaudiya identity.');
+
+    const retirementHydrated = await attachMaterialisationBatches(
+      [
+        ...storedRows.filter(row => row.id !== partialOccurrenceId),
+        legacyRow,
+      ].map(row => ({ ...row, observance_definitions: definitionRow })),
+      client,
+    );
+    const retirementResults = formatOccurrencesToResults(
+      retirementHydrated,
+      [],
+      'hindu',
+      PROFILE,
+      'smarta',
+      `${YEAR}-01-01`,
+      `${YEAR}-12-31`,
+      smartaContext,
+    );
+    check('retired identity no longer poisons the active profile family', retirementResults.length === 1
+      && retirementResults[0]?.profile.calendar === PROFILE);
+    check('typed-source pilot keeps exactly one read-time primary', retirementResults.filter(result => result.isPrimary).length === 1);
+    check('typed-source pilot exposes the source tier', retirementResults[0]?.sourceRefs[0]?.tier === 2);
+
+    await openBatch(
+      client,
+      {
+        definitionId: definitionRow.id,
+        slug: SLUG,
+        year: YEAR,
+        calendarProfile: PROFILE,
+        spiritualTradition: 'gaudiya_iskcon',
+        variantKey: 'gaudiya_iskcon',
+        lat: LAT,
+        lon: LON,
+        tz: TZ,
+      },
+      1,
+      { engine: 'shadow-profile-contract-1', rule: 'shadow-profile-contract-1' },
+    );
+    const { data: reopenedBatches, error: reopenedError } = await client
+      .from('observance_materialisation_batches')
+      .select('id, status, expected_row_count, produced_row_count, retired_at, retirement_reason')
+      .eq('id', partialBatchId);
+    if (reopenedError) throw reopenedError;
+    const reopenedBatch = ((reopenedBatches ?? []) as unknown as AcceptanceBatchRow[])[0];
+    check('reopening a retired identity clears retirement state', reopenedBatch?.status === 'partial'
+      && reopenedBatch.retired_at === null
+      && reopenedBatch.retirement_reason === null);
 
     const completeBatchId = storedRows.find(row => row.variant_key === 'smarta')?.batch_id;
     const completeOccurrenceId = storedRows.find(row => row.variant_key === 'smarta')?.id;

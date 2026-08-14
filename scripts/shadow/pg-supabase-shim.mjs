@@ -168,6 +168,17 @@ function makeQuery(pool, table) {
           const { sql, values } = buildUpdate(table, patch, [...state.wheres, { col, val }]);
           return exec(sql, values);
         },
+        in(col, vals) {
+          const columns = Object.keys(patch);
+          const values = columns.map(column => formatVal(patch[column]));
+          const set = columns.map((column, index) => `${quoteIdent(column)} = $${index + 1}`).join(', ');
+          const placeholders = vals.map(value => {
+            values.push(formatVal(value));
+            return `$${values.length}`;
+          });
+          const sql = `UPDATE ${quoteIdent(table)} SET ${set} WHERE ${quoteIdent(col)} IN (${placeholders.join(', ')})`;
+          return exec(sql, values);
+        },
       };
     },
     upsert(rows, opts = {}) {

@@ -179,6 +179,42 @@ describe('attachMaterialisationBatches', () => {
     expect(out[0].diagnostics).toContain('incomplete_profile_materialisation');
   });
 
+  it('ignores an audited retired sibling when evaluating the active family', async () => {
+    const smarta = {
+      ...completeBatch('batch-smarta'),
+      spiritual_tradition: 'smarta',
+      variant_key: 'smarta',
+      expected_row_count: 1,
+      produced_row_count: 1,
+    };
+    const retiredGaudiya = {
+      ...completeBatch('batch-gaudiya'),
+      spiritual_tradition: 'gaudiya_iskcon',
+      variant_key: 'gaudiya_iskcon',
+      status: 'retired' as const,
+      expected_row_count: 1,
+      produced_row_count: 0,
+    };
+    const { client } = batchClient({ data: [smarta, retiredGaudiya], error: null });
+    const rows = await attachMaterialisationBatches([
+      occurrence('2026-09-04', 'gujarati-amanta', 'batch-smarta'),
+      occurrence('2026-09-03', 'legacy-ujjain', null),
+    ], client);
+
+    expect(rows[0].batch_family_complete).toBe(true);
+    const out = formatOccurrencesToResults(
+      rows,
+      [],
+      'hindu',
+      'gujarati-amanta',
+      'smarta',
+      '2026-09-01',
+      '2026-09-30',
+    );
+    expect(out).toHaveLength(1);
+    expect(out[0].profile.calendar).toBe('gujarati-amanta');
+  });
+
   it('discloses a failed requested profile even when every occurrence insert is absent', async () => {
     const failedSmarta = {
       ...completeBatch('batch-smarta'),

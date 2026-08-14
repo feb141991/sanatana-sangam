@@ -110,9 +110,42 @@ check "RLS forced (owner not exempt)" "t" "$(q "select relforcerowsecurity from 
 check "no policy exists -> deny by default" "0" "$(q "select count(*) from pg_policies where tablename='observance_materialisation_batches'")"
 
 echo
-echo "=== 4d. rollback lives outside the migrations directory =================="
+echo "=== 4d. retired lifecycle is auditable ================================="
+check "D32 rollback fixture is retired by the migration" "retired" "$(q "select status from observance_materialisation_batches where year=2034")"
+check "D32 retirement records its timestamp and reason" "1" "$(q "select count(*) from observance_materialisation_batches where year=2034 and retired_at is not null and retirement_reason like 'D32 rollback:%'")"
+check "unrelated failed batch is not retired" "failed" "$(q "select status from observance_materialisation_batches where year=2035")"
+
+BAD_RETIRED=$(psql -d "$DB" -tAc "
+  INSERT INTO observance_materialisation_batches
+    (definition_id, year, calendar_profile, computed_latitude, computed_longitude, computed_timezone,
+     expected_row_count, produced_row_count, engine_version, rule_version, status)
+  SELECT id, 2033, 'global_sanatan', 1, 1, 'Asia/Kolkata', 0, 0, 'e', 'r', 'retired'
+  FROM observance_definitions LIMIT 1;" 2>&1 | grep -c "observance_materialisation_batches_retired_has_audit")
+check "retired batch without audit reason is rejected" "1" "$BAD_RETIRED"
+
+NULL_REASON=$(psql -d "$DB" -tAc "
+  INSERT INTO observance_materialisation_batches
+    (definition_id, year, calendar_profile, computed_latitude, computed_longitude, computed_timezone,
+     expected_row_count, produced_row_count, engine_version, rule_version, status, retired_at)
+  SELECT id, 2033, 'global_sanatan', 2, 2, 'Asia/Kolkata', 0, 0, 'e', 'r', 'retired', now()
+  FROM observance_definitions LIMIT 1;" 2>&1 | grep -c "observance_materialisation_batches_retired_has_audit")
+check "retired batch with timestamp but NULL reason is rejected" "1" "$NULL_REASON"
+
+GOOD_RETIRED=$(psql -d "$DB" -tAc "
+  INSERT INTO observance_materialisation_batches
+    (definition_id, year, calendar_profile, computed_latitude, computed_longitude, computed_timezone,
+     expected_row_count, produced_row_count, engine_version, rule_version, status,
+     retired_at, retirement_reason)
+  SELECT id, 2033, 'global_sanatan', 1, 1, 'Asia/Kolkata', 0, 0, 'e', 'r', 'retired',
+         now(), 'shadow obsolete identity'
+  FROM observance_definitions LIMIT 1 RETURNING 1;" 2>/dev/null | grep -x 1 | tail -1)
+check "retired batch with audit reason is accepted" "1" "$GOOD_RETIRED"
+psql -d "$DB" -q -c "DELETE FROM observance_materialisation_batches WHERE year=2033;"
+
+echo
+echo "=== 4e. rollback lives outside the migrations directory =================="
 check "no .down.sql under supabase/migrations" "0" "$(ls "$ROOT/supabase/migrations" | grep -c 'down.sql')"
-check "rollback present in supabase/rollbacks" "1" "$(ls "$ROOT/supabase/rollbacks" | grep -c '20260811090000')"
+check "both batch rollbacks are in supabase/rollbacks" "2" "$(ls "$ROOT/supabase/rollbacks" | grep -Ec '20260811090000|20260814002825')"
 
 echo
 echo "=== 5. engine flags untouched ==========================================="

@@ -561,9 +561,11 @@ export interface Database {
           engine_version: string;
           rule_version: string;
           astronomy_version: string | null;
-          status: 'complete' | 'partial' | 'failed';
+          status: 'complete' | 'partial' | 'failed' | 'retired';
           failure_reason: string | null;
           completed_at: string | null;
+          retired_at: string | null;
+          retirement_reason: string | null;
         };
         Insert: Omit<Database['public']['Tables']['observance_materialisation_batches']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_materialisation_batches']['Insert']>;
