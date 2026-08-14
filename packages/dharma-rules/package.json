@@ -4,6 +4,11 @@
   "description": "Golden-fixture harness and calendar correctness tests for the Shoonaya calendar engine",
   "private": true,
   "license": "UNLICENSED",
+  "main": "./src/conditions/index.ts",
+  "exports": {
+    ".": "./src/conditions/index.ts",
+    "./*": "./*"
+  },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",

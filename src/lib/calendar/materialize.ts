@@ -1,4 +1,4 @@
-import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearCorrected } from './engine';
+import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, USE_CORRECTED_MASA, calculateObservancesForYearCorrected, calculateObservancesForYearLegacy } from './engine';
 import { openBatch, closeBatch, buildSeriesInstanceKey, retireObsoleteBatchesForCompleteFamily } from './materialisation-batch';
 import {
   evaluateVariant,
@@ -6,6 +6,7 @@ import {
   type RuleCondition,
   type SourceReference,
 } from '@sangam/dharma-rules';
+import { type LocationInput } from '@sangam/panchang-engine';
 import { CANONICAL_RULES } from './rules';
 
 
@@ -302,7 +303,10 @@ function offsetDateStr(dateStr: string, offsetDays: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-export function calculateOccurrencesWithEvaluator(year: number): {
+export function calculateOccurrencesWithEvaluator(
+  year: number,
+  location: LocationInput = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
+): {
   resolved: Array<{
     slug: string;
     date: string;
@@ -326,7 +330,9 @@ export function calculateOccurrencesWithEvaluator(year: number): {
   }>;
   unresolved: ReviewQueueItem[];
 } {
-  const baseline = calculateObservancesForYear(year);
+  const baseline = USE_CORRECTED_MASA
+    ? calculateObservancesForYearCorrected(year, location)
+    : calculateObservancesForYearLegacy(year);
   const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
   const finalOccurrences: EvaluatorResolvedOccurrence[] = [];
   const unresolved: ReviewQueueItem[] = [];
@@ -354,10 +360,8 @@ export function calculateOccurrencesWithEvaluator(year: number): {
     }
   }
 
-  const ujjain = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
-
   for (const eRule of EVALUATOR_RULES) {
-    const candidates = baseline.filter(occ => occ.slug === eRule.slug);
+    const candidates = baseline.filter((occ: { slug: string }) => occ.slug === eRule.slug);
     if (candidates.length === 0) continue;
 
     for (const candidate of candidates) {
@@ -383,7 +387,7 @@ export function calculateOccurrencesWithEvaluator(year: number): {
               conditions: variant.conditions,
             },
             checkDate,
-            ujjain
+            location
           );
 
           allEvaluationResults.push({

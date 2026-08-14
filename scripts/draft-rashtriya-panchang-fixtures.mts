@@ -72,7 +72,7 @@ export const MANIFEST_SOURCED_ENTRIES: SourcedManifestFixture[] = [
     festival_id: 'maha-shivaratri',
     year: 2027,
     location: { label: 'Ujjain, India', lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' },
-    profile: { calendar: 'legacy-ujjain', tradition: 'smarta' },
+    profile: { calendar: 'north_indian_purnimanta', tradition: 'smarta' },
     expected: { civilDate: '2027-03-06', monthLabel: 'Magha (amanta)' },
     tolerance: { windowMinutes: 2 },
     source: {

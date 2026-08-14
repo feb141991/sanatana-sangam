@@ -105,11 +105,17 @@ function getEffectiveLocation(lat: number, lon: number): { lat: number; lon: num
   return { lat, lon, isProxy: false };
 }
 
+const sunriseCache = new Map<string, { sunrise: Date; sunset: Date | null; diagnostics: string[]; effectiveLat: number }>();
+
 /** Obtains sunrise for a given civil date and location with high-latitude §8 fallback */
 export function getSunriseForDateStr(
   dateStr: string,
   location: LocationInput
 ): { sunrise: Date; sunset: Date | null; diagnostics: string[]; effectiveLat: number } {
+  const cacheKey = `${dateStr}:${location.lat}:${location.lon}:${location.tz}`;
+  if (sunriseCache.has(cacheKey)) {
+    return sunriseCache.get(cacheKey)!;
+  }
   const diagnostics: string[] = [];
   const { lat: effLat, isProxy } = getEffectiveLocation(location.lat, location.lon);
   if (isProxy) {
@@ -149,12 +155,14 @@ export function getSunriseForDateStr(
     }
   }
 
-  return {
+  const res = {
     sunrise: riseSet.sunrise,
     sunset: riseSet.sunset,
     diagnostics,
     effectiveLat,
   };
+  sunriseCache.set(cacheKey, res);
+  return res;
 }
 
 /**

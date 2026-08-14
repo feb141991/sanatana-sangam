@@ -1,6 +1,7 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
-import { getLunarMonth } from '@sangam/panchang-engine';
+import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, type LocationInput } from '@sangam/panchang-engine';
+import { calculateOccurrencesWithEvaluator } from './materialize';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
 export const UJJAIN_LAT = REFERENCE_LOCATION_UJJAIN.lat;
@@ -179,7 +180,8 @@ export function ruleIdentityKey(rule: ObservanceRule): string {
 }
 
 const legacyPanchangCache = new Map<number, Array<{ dateStr: string; panchang: any }>>();
-const correctedPanchangCache = new Map<number, Array<{ dateStr: string; panchang: any }>>();
+const DEFAULT_LOCATION: LocationInput = { lat: UJJAIN_LAT, lon: UJJAIN_LON, tz: 'Asia/Kolkata' };
+const correctedPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any; sunriseUtc?: string }>>();
 
 /**
  * Computes panchang for all days of the target Gregorian year.
@@ -222,48 +224,40 @@ export function precomputePanchangForYear(year: number): Array<{ dateStr: string
  * Rules must use corrected_lunar_masa_name (and corrected_lunar_tithi_index where different)
  * when this path is active.
  */
-export function precomputePanchangCorrectedForYear(year: number): Array<{ dateStr: string; panchang: any }> {
-  if (correctedPanchangCache.has(year)) {
-    return correctedPanchangCache.get(year)!;
+export function precomputePanchangCorrectedForYear(
+  year: number,
+  location: LocationInput = DEFAULT_LOCATION,
+): Array<{ dateStr: string; panchang: any; sunriseUtc?: string }> {
+  const cacheKey = `${year}:${location.lat}:${location.lon}:${location.tz}`;
+  if (correctedPanchangCache.has(cacheKey)) {
+    return correctedPanchangCache.get(cacheKey)!;
   }
   const numDays = isLeapYear(year) ? 366 : 365;
-  const days: Array<{ dateStr: string; panchang: any }> = [];
+  const days: Array<{ dateStr: string; panchang: any; sunriseUtc?: string }> = [];
+  let currentCivilDate = `${year}-01-01`;
 
   for (let i = 0; i < numDays; i++) {
-    const current = new Date(Date.UTC(year, 0, i + 1, 1, 0, 0));
-    const panchang = calculatePanchang(current, UJJAIN_LAT, UJJAIN_LON);
+    const { sunrise } = getSunriseForDateStr(currentCivilDate, location);
+    const panchang = calculatePanchang(sunrise, location.lat, location.lon, location.tz);
+    const vedicDay = resolveVedicDayForInstant(sunrise, location);
 
-    // Replace masaName with the correct amanta month from getLunarMonth().
-    // On solver failure (extremely rare) fall back to empty string so rules
-    // that need a specific month simply produce no match rather than a wrong one.
-    // D32: BOTH month systems are computed. A rule's `corrected_month_system`
-    // selects which one it is matched against.
-    //
-    // Previously only amanta was computed and `corrected_month_system` was never
-    // read -- line ~219 tests it for `!== undefined` as a "is this the corrected
-    // path" boolean and discards the value. So a rule declaring 'purnimanta' was
-    // silently evaluated as amanta.
-    //
-    // For SHUKLA-paksha rules the two systems agree, so this was invisible. For
-    // KRISHNA paksha they differ by exactly one month (purnimanta = amanta + 1),
-    // and every such rule was therefore a month out if its tradition reckons
-    // purnimanta -- which North India does. Vat Savitri / Shani Jayanti is the
-    // confirmed case: Jyeshtha Amavasya is 2026-05-16 purnimanta (correct) but
-    // 2026-07-14 amanta (which is really Ashadha Amavasya).
-    const amanta = getLunarMonth(current, 'amanta');
-    const purnimanta = getLunarMonth(current, 'purnimanta');
+    const amanta = getLunarMonth(sunrise, 'amanta');
+    const purnimanta = getLunarMonth(sunrise, 'purnimanta');
 
     days.push({
-      dateStr: formatUtcDate(current),
+      dateStr: vedicDay.owningCivilDate,
       panchang: {
         ...panchang,
         masaName: amanta.ok ? amanta.monthName : '',
         masaNamePurnimanta: purnimanta.ok ? purnimanta.monthName : '',
       },
+      sunriseUtc: sunrise.toISOString(),
     });
+
+    currentCivilDate = offsetCivilDateStr(currentCivilDate, 1);
   }
 
-  correctedPanchangCache.set(year, days);
+  correctedPanchangCache.set(cacheKey, days);
   return days;
 }
 
@@ -665,13 +659,29 @@ export function calculateObservancesForYearLegacy(year: number): CalculatedOccur
  * path must name it — `calculateObservancesForYearLegacy` or
  * `calculateObservancesForYearCorrected` — so their meaning survives a gate flip.
  */
-export function calculateObservancesForYear(year: number): CalculatedOccurrence[] {
+export function calculateObservancesForYear(
+  year: number,
+  location?: LocationInput,
+): CalculatedOccurrence[] {
+  if (USE_CONDITION_EVALUATOR) {
+    const { resolved } = calculateOccurrencesWithEvaluator(year, location);
+    return resolved.map(o => ({
+      slug: o.slug,
+      ruleKey: o.variant_key ? `${o.slug}::${o.variant_key}` : o.slug,
+      date: o.date,
+      year: o.year,
+      recurring: o.recurring,
+    }));
+  }
   return USE_CORRECTED_MASA
-    ? calculateObservancesForYearCorrected(year)
+    ? calculateObservancesForYearCorrected(year, location)
     : calculateObservancesForYearLegacy(year);
 }
 
-export function calculateObservanceCandidateDiagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
+export function calculateObservanceCandidateDiagnosticsForYear(
+  year: number,
+  location?: LocationInput,
+): ObservanceCandidateDiagnostic[] {
   // UNGATED on purpose. A review caught that routing this through the gated
   // builder made every withheld rule report zero candidates -- so the tool whose
   // entire job is explaining what the engine did was reporting that it did
@@ -683,7 +693,7 @@ export function calculateObservanceCandidateDiagnosticsForYear(year: number): Ob
   // slug. Two same-slug variant rows each produce their own entry, so a reviewer
   // can distinguish which variant computed which candidate dates.
   const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false });
-  const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false });
+  const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false, location });
 
   return CANONICAL_RULES.map((rule) => {
     const rk = ruleIdentityKey(rule);
@@ -765,12 +775,11 @@ function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
  */
 function buildOccurrencesMapCorrected(
   year: number,
-  opts: { applyPublicationGate?: boolean } = {},
+  opts: { applyPublicationGate?: boolean; location?: LocationInput } = {},
 ): Record<string, string[]> {
-  // Gated BY DEFAULT. Callers that want raw candidates must ask for them
-  // explicitly, so a new publishing call site cannot forget the gate.
   const gate = opts.applyPublicationGate !== false;
-  const days = precomputePanchangCorrectedForYear(year);
+  const location = opts.location ?? DEFAULT_LOCATION;
+  const days = precomputePanchangCorrectedForYear(year, location);
   // Keyed by ruleIdentityKey(rule) — same reasoning as buildOccurrencesMap.
   const occurrencesMap: Record<string, string[]> = {};
 
@@ -855,8 +864,11 @@ function buildOccurrencesMapCorrected(
  *
  * Each rule's prefer_last_match applies as in the legacy path.
  */
-export function calculateObservancesForYearCorrected(year: number): CalculatedOccurrence[] {
-  const occurrencesMap = buildOccurrencesMapCorrected(year);
+export function calculateObservancesForYearCorrected(
+  year: number,
+  location: LocationInput = DEFAULT_LOCATION,
+): CalculatedOccurrence[] {
+  const occurrencesMap = buildOccurrencesMapCorrected(year, { location });
 
   const results: CalculatedOccurrence[] = [];
   for (const rule of CANONICAL_RULES) {
