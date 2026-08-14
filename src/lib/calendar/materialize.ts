@@ -1,5 +1,5 @@
 import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearCorrected } from './engine';
-import { openBatch, closeBatch, buildSeriesInstanceKey } from './materialisation-batch';
+import { openBatch, closeBatch, buildSeriesInstanceKey, retireObsoleteBatchesForCompleteFamily } from './materialisation-batch';
 import {
   evaluateVariant,
   type EvaluationReason,
@@ -1010,6 +1010,104 @@ export async function commitOccurrencesWithBatches(
       .eq('batch_id', batchId);
     if (error) throw error;
     await closeBatch(supabase, batchId, data?.length ?? 0, expected);
+  }
+
+  // RETIRE stale/obsolete batches for complete families reconciled in this run.
+  const activeFamiliesMap = new Map<string, {
+    family: {
+      definitionId: string;
+      year: number;
+      calendarProfile: string;
+      lat: number;
+      lon: number;
+      tz: string;
+    };
+    activeIdentities: Array<{ spiritualTradition: string | null; variantKey: string | null }>;
+  }>();
+
+  for (const key of identities) {
+    const meta = identityMeta.get(key) ?? groups.get(key)?.[0];
+    if (!meta) continue;
+    const famKey = [
+      meta.definition_id,
+      meta.year,
+      meta.calendar_profile,
+      meta.computed_latitude,
+      meta.computed_longitude,
+      meta.computed_timezone,
+    ].join('|');
+
+    if (!activeFamiliesMap.has(famKey)) {
+      activeFamiliesMap.set(famKey, {
+        family: {
+          definitionId: meta.definition_id,
+          year: meta.year,
+          calendarProfile: meta.calendar_profile,
+          lat: meta.computed_latitude,
+          lon: meta.computed_longitude,
+          tz: meta.computed_timezone,
+        },
+        activeIdentities: [],
+      });
+    }
+
+    const fam = activeFamiliesMap.get(famKey)!;
+    const variantIdKey = `${meta.spiritual_tradition ?? ''}|${meta.variant_key ?? ''}`;
+    if (!fam.activeIdentities.some(i => `${i.spiritualTradition ?? ''}|${i.variantKey ?? ''}` === variantIdKey)) {
+      fam.activeIdentities.push({
+        spiritualTradition: meta.spiritual_tradition ?? null,
+        variantKey: meta.variant_key ?? null,
+      });
+    }
+  }
+
+  for (const { family, activeIdentities } of activeFamiliesMap.values()) {
+    try {
+      await retireObsoleteBatchesForCompleteFamily(supabase, {
+        scope: 'complete_family',
+        family,
+        activeIdentities,
+        reason: 'Variant identity no longer present in rule set during complete family materialisation reconciliation.',
+      });
+    } catch (retireErr) {
+      const { data: obsoleteBatches } = await supabase
+        .from('observance_materialisation_batches')
+        .select('id, spiritual_tradition, variant_key')
+        .eq('definition_id', family.definitionId)
+        .eq('year', family.year)
+        .eq('calendar_profile', family.calendarProfile)
+        .eq('computed_latitude', family.lat)
+        .eq('computed_longitude', family.lon)
+        .eq('computed_timezone', family.tz);
+
+      const activeSet = new Set(activeIdentities.map(i => `${i.spiritualTradition ?? ''}|${i.variantKey ?? ''}`));
+      const obsoleteIds = (obsoleteBatches ?? [])
+        .filter((b: any) => !activeSet.has(`${b.spiritual_tradition ?? ''}|${b.variant_key ?? ''}`))
+        .map((b: any) => b.id);
+
+      if (obsoleteIds.length > 0) {
+        const { data: linkedStale } = await supabase
+          .from('observance_occurrences')
+          .select('id, locked_for_regeneration, manual_date_override, final_date_source')
+          .in('batch_id', obsoleteIds);
+
+        for (const row of linkedStale ?? []) {
+          const r = row as any;
+          if (r.locked_for_regeneration || r.manual_date_override || !canUpdateGeneratedRow(r)) {
+            await supabase.from('observance_occurrences').update({ batch_id: null }).eq('id', r.id);
+          } else {
+            await supabase.from('observance_occurrences').delete().eq('id', r.id);
+          }
+        }
+
+        await retireObsoleteBatchesForCompleteFamily(supabase, {
+          scope: 'complete_family',
+          family,
+          activeIdentities,
+          reason: 'Variant identity no longer present in rule set during complete family materialisation reconciliation.',
+        }).catch(() => null);
+      }
+    }
   }
 
   return { inserted, updated };

@@ -322,4 +322,59 @@ describe('attachMaterialisationBatches', () => {
     expect(out[0].profile.calendar).toBe('legacy-ujjain');
     expect(out[0].diagnostics).toContain('incomplete_profile_materialisation');
   });
+
+  it('proves that a retired failed batch for a removed variant does not mark the active profile family incomplete', async () => {
+    const smarta = {
+      ...completeBatch('batch-smarta'),
+      spiritual_tradition: 'smarta',
+      variant_key: 'smarta',
+      expected_row_count: 1,
+      produced_row_count: 1,
+    };
+    const retiredFailedVariant = {
+      ...completeBatch('batch-removed-variant'),
+      spiritual_tradition: 'removed_tradition',
+      variant_key: 'removed_variant',
+      status: 'retired' as const,
+      expected_row_count: 1,
+      produced_row_count: 0,
+    };
+    const { client } = batchClient({ data: [smarta, retiredFailedVariant], error: null });
+    const rows = await attachMaterialisationBatches([
+      occurrence('2026-09-04', 'gujarati-amanta', 'batch-smarta'),
+      occurrence('2026-09-03', 'legacy-ujjain', null),
+    ], client);
+
+    expect(rows[0].batch_family_complete).toBe(true);
+    const out = formatOccurrencesToResults(
+      rows,
+      [],
+      'hindu',
+      'gujarati-amanta',
+      'smarta',
+      '2026-09-01',
+      '2026-09-30',
+    );
+    expect(out).toHaveLength(1);
+    expect(out[0].profile.calendar).toBe('gujarati-amanta');
+  });
+
+  it('does not flag all-absent incomplete when only retired batches exist for requested location', async () => {
+    const retiredBatch = {
+      ...completeBatch('batch-retired-only'),
+      status: 'retired' as const,
+      expected_row_count: 1,
+      produced_row_count: 0,
+    };
+    const { client } = batchClient({ data: [retiredBatch], error: null });
+    const rows = await attachMaterialisationBatches(
+      [occurrence('2026-09-03', 'legacy-ujjain', null)],
+      client,
+      'gujarati-amanta',
+      { latitude: 23.1765, longitude: 75.7885, timezone: 'Asia/Kolkata' },
+    );
+
+    expect(rows[0].requested_profile_family_incomplete).toBe(false);
+  });
 });
+

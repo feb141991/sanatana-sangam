@@ -1,5 +1,6 @@
-import Link from 'next/link';
 'use client';
+
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
