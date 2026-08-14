@@ -1,3 +1,4 @@
+import Link from 'next/link';
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import {
   ShieldAlert, ShieldCheck, Trash2, 
   UserMinus, MessageCircle, MoreHorizontal,
   ChevronRight, AlertCircle, CheckCircle,
-  XCircle, Filter
+  XCircle, Filter, ArrowLeft
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import toast from 'react-hot-toast';
@@ -93,6 +94,9 @@ export default function ModerationClient({ initialReports }: { initialReports: R
       <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
+              <ArrowLeft size={20} />
+            </Link>
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
               <ShieldAlert size={24} />
             </div>

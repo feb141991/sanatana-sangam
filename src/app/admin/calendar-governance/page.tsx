@@ -385,18 +385,18 @@ function StatCard({
 // ── Category Rail ─────────────────────────────────────────────────────────
 
 type TraditionStat = {
-  live: number;
-  fixtured: number;
-  kinds: Record<string, { live: number; fixtured: number }>;
+  liveRules: number;
+  fixtureCount: number;
+  kinds: Record<string, { liveRules: number; fixtureCount: number }>;
 };
 
 function buildCategoryStats(rows: GoldenFixtureRow[]): Record<string, TraditionStat> {
-  const fixturedSlugs = new Set(rows.map(r => r.festival_id));
   const stats: Record<string, TraditionStat> = {};
   const ensure = (trad: string, kind: string) => {
-    if (!stats[trad]) stats[trad] = { live: 0, fixtured: 0, kinds: {} };
-    if (!stats[trad].kinds[kind]) stats[trad].kinds[kind] = { live: 0, fixtured: 0 };
+    if (!stats[trad]) stats[trad] = { liveRules: 0, fixtureCount: 0, kinds: {} };
+    if (!stats[trad].kinds[kind]) stats[trad].kinds[kind] = { liveRules: 0, fixtureCount: 0 };
   };
+
   const seenSlugs = new Set<string>();
   for (const rule of CANONICAL_RULES) {
     if (seenSlugs.has(rule.slug)) continue;
@@ -405,13 +405,18 @@ function buildCategoryStats(rows: GoldenFixtureRow[]): Record<string, TraditionS
     const trad = rule.tradition ?? 'unknown';
     const kind = rule.kind ?? 'unknown';
     ensure(trad, kind);
-    stats[trad].live++;
-    stats[trad].kinds[kind].live++;
-    if (fixturedSlugs.has(rule.slug)) {
-      stats[trad].fixtured++;
-      stats[trad].kinds[kind].fixtured++;
-    }
+    stats[trad].liveRules++;
+    stats[trad].kinds[kind].liveRules++;
   }
+
+  for (const r of rows) {
+    const trad = r.tradition ?? 'unknown';
+    const kind = r.kind ?? 'unknown';
+    ensure(trad, kind);
+    stats[trad].fixtureCount++;
+    stats[trad].kinds[kind].fixtureCount++;
+  }
+
   return stats;
 }
 
@@ -420,7 +425,7 @@ function CategoryRail({ rows, sel, onSelect }: {
   sel: CategorySel;
   onSelect: (s: CategorySel) => void;
 }) {
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(['hindu']));
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(['hindu', 'sikh', 'buddhist', 'jain']));
   const stats = useMemo(() => buildCategoryStats(rows), [rows]);
 
   const toggle = (trad: string) => {
@@ -432,14 +437,14 @@ function CategoryRail({ rows, sel, onSelect }: {
   };
 
   return (
-    <div className="w-48 shrink-0 space-y-1">
+    <div className="w-52 shrink-0 space-y-1">
       <button
         onClick={() => onSelect(null)}
         className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${
           !sel ? 'bg-[var(--premium-gold)] text-white' : 'text-[var(--brand-muted)] hover:bg-black/5'
         }`}
       >
-        All traditions
+        All traditions ({rows.length})
       </button>
 
       {TRADITION_ORDER.filter(t => stats[t]).map(trad => {
@@ -456,7 +461,7 @@ function CategoryRail({ rows, sel, onSelect }: {
                 }`}
               >
                 <span className="capitalize">{TRADITION_LABELS[trad] ?? trad}</span>
-                <span className={`text-[10px] ${tradActive ? 'opacity-80' : 'opacity-60'}`}>{s.fixtured}/{s.live}</span>
+                <span className={`text-[10px] ${tradActive ? 'opacity-80' : 'opacity-60'}`}>{s.fixtureCount} cases</span>
               </button>
               <button
                 onClick={() => toggle(trad)}
@@ -481,7 +486,7 @@ function CategoryRail({ rows, sel, onSelect }: {
                       }`}
                     >
                       <span>{KIND_LABELS[kind] ?? kind}</span>
-                      <span className="text-[10px] opacity-60">{ks.fixtured}/{ks.live}</span>
+                      <span className="text-[10px] opacity-60">{ks.fixtureCount}</span>
                     </button>
                   );
                 })}
@@ -535,6 +540,16 @@ function FixturesSection({
     });
   }, [rows, categorySel]);
 
+  const handleSelectCategory = (sel: CategorySel) => {
+    setCategorySel(sel);
+    // Switch filter to "all" if there are stubs/fixtures but 0 real fixtures for this selection
+    const match = !sel ? rows : rows.filter(f => f.tradition === sel.tradition && (!sel.kind || f.kind === sel.kind));
+    const realCount = match.filter(isRealFixture).length;
+    if (realCount === 0 && match.length > 0) {
+      setSourceFilter("all");
+    }
+  };
+
   const filtered = useMemo(() => {
     if (sourceFilter === 'all')      return categoryFiltered;
     if (sourceFilter === 'real')     return categoryFiltered.filter(isRealFixture);
@@ -582,7 +597,7 @@ function FixturesSection({
 
   return (
     <div className="flex gap-6 items-start">
-      {!loading && <CategoryRail rows={rows} sel={categorySel} onSelect={setCategorySel} />}
+      {!loading && <CategoryRail rows={rows} sel={categorySel} onSelect={handleSelectCategory} />}
 
       <div className="flex-1 min-w-0 space-y-4">
         <div className="flex items-center gap-2 flex-wrap">

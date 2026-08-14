@@ -1,3 +1,4 @@
+import Link from 'next/link';
 'use client';
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +7,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, UserMinus, UserCheck, Shield,
+  Search, UserMinus, UserCheck, Shield, ArrowLeft, Trash2, ShieldOff,
   MapPin, Flame, Mail, Calendar,
   ChevronRight, Filter, MoreVertical,
   AlertCircle, Users, History, UserPlus, Heart,
@@ -134,6 +135,34 @@ export default function UserManagement() {
     fetchRecent();
   }, []);
 
+  const handleDeleteUser = async (user: UserProfile, mode: 'complete' | 'pii') => {
+    const title = mode === 'complete' ? 'Complete Hard Delete' : 'PI (PII Scrub) Delete';
+    const confirmMsg = mode === 'complete'
+      ? `Are you sure you want to PERMANENTLY DELETE @${user.username}? This will hard purge their account and profile.`
+      : `Are you sure you want to SCRUB ALL PII for @${user.username}? This will remove personal identifiers (name, avatar, location, etc.) and disable login.`;
+
+    if (!confirm(`${title}\n\n${confirmMsg}`)) return;
+
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}?mode=${mode}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Deletion failed');
+
+      toast.success(
+        mode === 'complete' ? 'User permanently purged' : 'User PII scrubbed & account disabled'
+      );
+
+      setUsers(prev => prev.filter(u => u.id !== user.id));
+      if (selectedUser?.id === user.id) {
+        setSelectedUser(null);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Deletion failed');
+    }
+  };
+
   const toggleBan = async (user: UserProfile) => {
     const action = user.is_banned ? 'unban' : 'ban';
     if (!confirm(`Are you sure you want to ${action} @${user.username}?`)) return;
@@ -162,6 +191,9 @@ export default function UserManagement() {
       <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-[rgba(197, 160, 89,0.15)] px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Link href="/admin" className="p-2 rounded-xl hover:bg-black/5 text-[var(--brand-muted)] transition-all">
+              <ArrowLeft size={20} />
+            </Link>
             <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
               <Users size={24} />
             </div>
@@ -360,6 +392,28 @@ export default function UserManagement() {
                     <button className="w-full py-4 rounded-2xl border border-black/5 font-bold text-[var(--brand-muted)] hover:bg-black/5 transition-all flex items-center justify-center gap-2">
                       <AlertCircle size={20} /> Reset Sadhana Streak
                     </button>
+
+                    <div className="pt-4 border-t border-black/5 space-y-2">
+                      <p className="text-[10px] text-[var(--brand-muted)] font-bold uppercase tracking-widest text-left">
+                        Account Deletion Governance
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => handleDeleteUser(selectedUser, 'pii')}
+                          className="py-3 px-3 rounded-2xl bg-amber-500/10 text-amber-700 hover:bg-amber-500 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                          title="Scrubs personal identifiers, disables login, retains anonymized data"
+                        >
+                          <ShieldOff size={16} /> Scrub PII
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(selectedUser, 'complete')}
+                          className="py-3 px-3 rounded-2xl bg-rose-500/10 text-rose-700 hover:bg-rose-500 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all"
+                          title="Hard purges account from Supabase Auth and removes profile row"
+                        >
+                          <Trash2 size={16} /> Hard Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ) : (
