@@ -42,6 +42,7 @@ export interface Database {
         Row: {
           slug: string;
           display_name: string;
+          effective_from: string | null;
           region: string;
           month_system: 'amanta' | 'purnimanta' | 'solar' | null;
           solar_month_rule: 'sunset_rule' | 'aparahna_rule' | 'midnight_rule' | 'same_day_rule' | null;
@@ -51,6 +52,9 @@ export interface Database {
           month_name_locale: string;
           version: string;
           scholarly_status: string;
+          review_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
           citation: string;
           created_at: string;
           updated_at: string;
@@ -58,6 +62,7 @@ export interface Database {
         Insert: {
           slug: string;
           display_name: string;
+          effective_from?: string | null;
           region: string;
           month_system?: 'amanta' | 'purnimanta' | 'solar' | null;
           solar_month_rule?: 'sunset_rule' | 'aparahna_rule' | 'midnight_rule' | 'same_day_rule' | null;
@@ -67,6 +72,9 @@ export interface Database {
           month_name_locale: string;
           version?: string;
           scholarly_status?: string;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
           citation: string;
           created_at?: string;
           updated_at?: string;
@@ -77,28 +85,75 @@ export interface Database {
         Row: {
           slug: string;
           display_name: string;
+          effective_from: string | null;
           ekadashi_method: 'smarta' | 'vaishnava_suddha';
           janmashtami_method: 'smarta_nishita' | 'vaishnava_rohini';
           shivaratri_method: 'nishita';
           paran_rule: 'standard' | 'vaishnava_strict';
           version: string;
           scholarly_status: string;
+          review_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           slug: string;
           display_name: string;
+          effective_from?: string | null;
           ekadashi_method: 'smarta' | 'vaishnava_suddha';
           janmashtami_method: 'smarta_nishita' | 'vaishnava_rohini';
           shivaratri_method: 'nishita';
           paran_rule: 'standard' | 'vaishnava_strict';
           version?: string;
           scholarly_status?: string;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['tradition_profiles']['Insert']>;
+      };
+      golden_fixtures: {
+        Row: {
+          approved: boolean;
+          case_id: string;
+          created_at: string;
+          effective_from: string | null;
+          expected: Json | null;
+          festival_id: string;
+          location: Json;
+          profile: Json;
+          reasoning: string;
+          review_notes: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          source: Json;
+          tolerance: Json;
+          updated_at: string;
+          year: number;
+        };
+        Insert: {
+          approved?: boolean;
+          case_id: string;
+          created_at?: string;
+          effective_from?: string | null;
+          expected?: Json | null;
+          festival_id: string;
+          location: Json;
+          profile: Json;
+          reasoning: string;
+          review_notes?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          source: Json;
+          tolerance: Json;
+          updated_at?: string;
+          year: number;
+        };
+        Update: Partial<Database['public']['Tables']['golden_fixtures']['Insert']>;
       };
       profiles: {
         Row: {

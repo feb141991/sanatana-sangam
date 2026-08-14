@@ -39,6 +39,7 @@ import {
   getCanonicalFixtureKey,
   analyzeLogicalFixtureIdentity,
   isApprovedGolden,
+  loadCalendarProfileFixtureDefinitions,
 } from './fixture-loader';
 
 import {
@@ -50,6 +51,7 @@ import {
 
 import { calculateObservancesForYear } from '@/lib/calendar/engine';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
+import { evaluateApprovedFixture } from '@/lib/calendar/approved-fixture-engine';
 
 type CalculatedOccurrence = { slug: string; date: string; year: number; recurring?: boolean };
 
@@ -80,6 +82,10 @@ export const PHASE2_OBSERVANCE_SLUGS: string[] = [
 
 const goldenFixtures: GoldenFixture[] = await loadGoldenFixtures();
 const snapshotFixtures: SnapshotFixture[] = loadSnapshotFixtures();
+const calendarProfileDefinitions = await loadCalendarProfileFixtureDefinitions();
+const calendarProfileBySlug = new Map(
+  calendarProfileDefinitions.map(profile => [profile.slug, profile]),
+);
 
 // ── Engine Evaluation Cache ──────────────────────────────────────────────────
 
@@ -100,6 +106,20 @@ function getEngineDate(slug: string, year: number): string | null {
     engineYearCache.set(year, yearMap);
   }
   return yearMap.get(slug) ?? null;
+}
+
+function getApprovedFixtureEngineDate(fixture: GoldenFixture): string {
+  const profile = calendarProfileBySlug.get(fixture.profile.calendar);
+  if (!profile) {
+    throw new Error(`Golden fixture ${fixture.caseId} references unknown calendar profile ${fixture.profile.calendar}`);
+  }
+  if (profile.scholarlyStatus !== 'approved') {
+    throw new Error(`Golden fixture ${fixture.caseId} references unapproved calendar profile ${profile.slug}`);
+  }
+  if (!profile.monthSystem) {
+    throw new Error(`Golden fixture ${fixture.caseId} references a profile with no ratified month system`);
+  }
+  return evaluateApprovedFixture(fixture, profile.monthSystem).civilDate;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -389,7 +409,7 @@ describe('Golden fixtures — correctness assertions', () => {
 
   for (const fixture of approvedGolden) {
     it(`[GOLDEN] ${fixture.caseId} — expects civilDate ${fixture.expected!.civilDate}`, () => {
-      const engineDate = getEngineDate(fixture.festivalId, fixture.year);
+      const engineDate = getApprovedFixtureEngineDate(fixture);
       expect(engineDate).toBe(fixture.expected!.civilDate);
     });
   }

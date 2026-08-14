@@ -75,8 +75,9 @@ letters. Verified date range covered: 395 consecutive days, 2026-03-22 through
 | `karva-chauth` | Karaka Chaturthi | 7 (index #54), 79 (daily) | 2026-10-29 | **purnimanta** — already correct, confirmed |
 | `diwali` | Dipavali | 7 (index #55), 81 (daily) | 2026-11-08 | **purnimanta** — already correct, confirmed |
 | `maha-shivaratri` | Maha Shivaratri | 8 (index #81), 112–113 (daily) | 2027-03-06 (mainstream/S.India) | **amanta** — already correct, confirmed; independently matches the council ruling recorded 2026-08-09 |
-| `yogini-ekadashi` | Yogini Ekadasi (Vaishnava & Vidhava) | 30 (daily) | 2026-07-11 | amanta → **purnimanta**, plus an engine fix (see below) |
-| `vijaya-ekadashi` | Vijaya Ekadasi | 113 (daily) | 2027-03-04 | amanta → **purnimanta** + `corrected_prefer_last_match: true` |
+| `yogini-ekadashi` (`smarta`) | Yogini Ekadasi (Smarta) | printed 29 (PDF file page 49) | 2026-07-10 | amanta → **purnimanta**, previous-day skipped-tithi policy |
+| `yogini-ekadashi` (`vaishnava_vidhava`) | Yogini Ekadasi (Vaishnava & Vidhava) | printed 30 (PDF file page 50) | 2026-07-11 | amanta → **purnimanta**, following-day skipped-tithi policy |
+| `vijaya-ekadashi` | Vijaya Ekadasi | printed 92 (PDF file page 112) | 2027-03-04 | amanta → **purnimanta** + `corrected_prefer_last_match: true` |
 
 Note on `maha-shivaratri`: the daily entries (pages 112–113) split by region —
 "Maha Shivaratri (Kashmir)" falls on the *preceding* day, **2027-03-05**, while

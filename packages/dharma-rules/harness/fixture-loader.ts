@@ -118,6 +118,12 @@ export interface GoldenFixture {
   _filePath: string; // "db:golden_fixtures" for DB-backed golden rows; a real path for snapshot files
 }
 
+export interface CalendarProfileFixtureDefinition {
+  slug: string;
+  monthSystem: 'amanta' | 'purnimanta' | 'solar' | null;
+  scholarlyStatus: string;
+}
+
 export interface SnapshotCaptured {
   civilDate: string | null;
   slug: string;
@@ -325,6 +331,23 @@ export async function loadGoldenFixtures(): Promise<GoldenFixture[]> {
 
     return { ...(raw as unknown as GoldenFixture), _filePath: virtualPath };
   });
+}
+
+export async function loadCalendarProfileFixtureDefinitions(): Promise<CalendarProfileFixtureDefinition[]> {
+  const supabase = goldenFixturesClient();
+  const { data, error } = await supabase
+    .from('calendar_profiles')
+    .select('slug, month_system, scholarly_status');
+
+  if (error) {
+    throw new Error(`Failed to load calendar_profiles from Supabase: ${error.message}`);
+  }
+
+  return (data ?? []).map(row => ({
+    slug: row.slug,
+    monthSystem: row.month_system,
+    scholarlyStatus: row.scholarly_status,
+  })) as CalendarProfileFixtureDefinition[];
 }
 
 /**

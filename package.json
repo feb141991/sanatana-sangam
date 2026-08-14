@@ -50,7 +50,11 @@
     "check:adhika": "npx tsx scripts/check-adhika.ts",
     "measure:ayanamsha-charts": "npx tsx scripts/measure-ayanamsha-charts.ts",
     "verify:materialisation-shadow": "bash scripts/shadow/verify-materialisation-shadow.sh",
-    "verify:review-queue-shadow": "bash scripts/shadow/verify-review-queue-shadow.sh"
+    "verify:review-queue-shadow": "bash scripts/shadow/verify-review-queue-shadow.sh",
+    "verify:council-approval-shadow": "bash scripts/shadow/verify-council-approval-shadow.sh",
+    "verify:approved-calendar-pilot-shadow": "bash scripts/shadow/verify-approved-calendar-pilot-shadow.sh",
+    "calendar:pilot:dry-run": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-pilot.mts",
+    "calendar:pilot:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-pilot.mts --commit"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",

@@ -963,8 +963,8 @@
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
     "corrected_prefer_last_match": true,
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.113 -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
+    "ratification_note": "Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates."
   },
   {
     "slug": "gupt-navratri-magha-begins",
@@ -1631,7 +1631,8 @@
     "corrected_skipped_tithi_policy": "previous_day",
     "corrected_prefer_last_match": true,
     "launch_status": "deferred",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Smarta)' at 2026-07-10.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.29 (PDF file page 49) -- lists 'Yogini Ekadasi (Smarta)' at 2026-07-10.",
+    "ratification_note": "Council decision batch 0 approved only the 2026-07-10 Smarta Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. The general rule remains deferred and 2026 remains disputed outside that exact fixture scope.",
     "disputed_years": [
       2026
     ],
@@ -1669,7 +1670,8 @@
     "corrected_skipped_tithi_policy": "following_day",
     "corrected_prefer_last_match": true,
     "launch_status": "deferred",
-    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.30 -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.30 (PDF file page 50) -- lists 'Yogini Ekadasi (Vaishnava & Vidhava)' at 2026-07-11.",
+    "ratification_note": "Council decision batch 0 approved only the 2026-07-11 Vaishnava/Vidhava Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. The general rule remains deferred and 2026 remains disputed outside that exact fixture scope.",
     "disputed_years": [
       2026
     ],
