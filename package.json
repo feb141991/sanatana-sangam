@@ -53,8 +53,10 @@
     "verify:review-queue-shadow": "bash scripts/shadow/verify-review-queue-shadow.sh",
     "verify:council-approval-shadow": "bash scripts/shadow/verify-council-approval-shadow.sh",
     "verify:approved-calendar-pilot-shadow": "bash scripts/shadow/verify-approved-calendar-pilot-shadow.sh",
-    "calendar:pilot:dry-run": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-pilot.mts",
-    "calendar:pilot:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-pilot.mts --commit"
+    "calendar:approved-fixtures:dry-run": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-fixtures.mts",
+    "calendar:approved-fixtures:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-fixtures.mts --commit",
+    "calendar:approved-fixtures:rollback:dry-run": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/rollback-approved-calendar-fixtures.mts",
+    "calendar:approved-fixtures:rollback:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/rollback-approved-calendar-fixtures.mts --commit"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",

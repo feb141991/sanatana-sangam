@@ -98,6 +98,7 @@ describe('attachMaterialisationBatches', () => {
       batch_id: null,
       batch: null,
       batch_family_complete: true,
+      fixture_approval_complete: false,
       requested_profile_family_incomplete: false,
     }]);
   });

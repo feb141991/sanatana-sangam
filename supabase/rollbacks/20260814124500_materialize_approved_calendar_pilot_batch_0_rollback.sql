@@ -1,4 +1,5 @@
--- Operational rollback for `npm run calendar:pilot:commit`.
+-- Operational rollback for the original council batch-0 run. New manifests
+-- use `npm run calendar:approved-fixtures:rollback:commit`.
 -- Delete only rows owned by this exact pilot and preserve failed batch records
 -- as an audit trail.
 

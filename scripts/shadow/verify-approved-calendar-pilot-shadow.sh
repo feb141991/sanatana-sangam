@@ -84,6 +84,27 @@ SQL
 BASELINE="$(psql -d "$DB" -tAc "SELECT COUNT(*) FROM observance_occurrences" | tr -d ' ')"
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$APPROVAL_MIGRATION" || exit 2
 psql -d "$DB" -q -v ON_ERROR_STOP=1 -f "$SOURCE_MIGRATION" || exit 2
+psql -d "$DB" -q -v ON_ERROR_STOP=1 <<'SQL' || exit 2
+INSERT INTO public.golden_fixtures
+  (case_id, festival_id, year, location, profile, expected, tolerance, source,
+   reasoning, approved, reviewed_by, reviewed_at, review_notes, effective_from)
+VALUES (
+  'shadow-engine-mismatch',
+  'vijaya-ekadashi',
+  2027,
+  '{"label":"Ujjain, India","lat":23.1765,"lon":75.7885,"tz":"Asia/Kolkata"}',
+  '{"calendar":"north_indian_purnimanta","tradition":"unspecified"}',
+  '{"civilDate":"2027-03-05","reasonCodes":["shadow_negative_control"]}',
+  '{"windowMinutes":2}',
+  '{"tier":1,"ref":"shadow-negative-control","citation":"Shadow negative control, p.1"}',
+  'Approved-looking negative control; engine must exclude it.',
+  true,
+  'Shadow Council',
+  '2026-08-14T00:00:00Z',
+  'Negative control only.',
+  '2026-08-14'
+);
+SQL
 
 (cd "$ROOT" && SHADOW_DATABASE_URL="postgresql:///$DB" npx tsx "$HERE/run-approved-calendar-pilot-shadow.mts")
 RESULT=$?

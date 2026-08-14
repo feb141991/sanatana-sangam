@@ -10,6 +10,7 @@ const approvedRow = {
   audit_status: 'completed',
   publication_status: 'published',
   batch_family_complete: true,
+  fixture_approval_complete: true,
   calculated_by: 'approved-golden-pilot-v1',
   final_date_source: 'calculation_engine_reviewed',
   source_provenance: {
@@ -31,7 +32,7 @@ describe('fixture-scoped publication exception', () => {
     ['review status', { review_status: 'needs_review' }],
     ['complete batch family', { batch_family_complete: false }],
     ['fixture provenance', { source_provenance: {} }],
-    ['approved case identity', { source_provenance: { caseId: 'unapproved-fixture' } }],
+    ['current database approval', { fixture_approval_complete: false }],
     ['fixture diagnostic', { diagnostics: [] }],
   ])('fails closed when %s is absent', (_label, patch) => {
     expect(filterWithheldJoinedRows([{ ...approvedRow, ...patch }])).toHaveLength(0);

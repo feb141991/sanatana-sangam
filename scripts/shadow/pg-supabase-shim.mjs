@@ -28,7 +28,8 @@
  * SCOPE: implements only the chains `materialize.ts` and
  * `materialisation-batch.ts` actually call -- `.from(table).select(cols)`,
  * `.eq()`, `.in()`, `.insert(rows).select()`, `.update(patch).eq()`,
- * `.upsert(row, { onConflict }).select().single()`, `.delete().eq()`. Not a
+ * `.upsert(row, { onConflict }).select().single()`, `.delete().eq()` and
+ * `.delete().in()`. Not a
  * general PostgREST reimplementation, and not meant to be one.
  */
 import pg from 'pg';
@@ -223,6 +224,16 @@ function makeQuery(pool, table) {
       return {
         eq(col, val) {
           return exec(`DELETE FROM ${quoteIdent(table)} WHERE ${quoteIdent(col)} = $1`, [val]);
+        },
+        in(col, vals) {
+          if (!Array.isArray(vals) || vals.length === 0) {
+            return Promise.resolve({ data: [], error: null });
+          }
+          const placeholders = vals.map((_, index) => `$${index + 1}`).join(', ');
+          return exec(
+            `DELETE FROM ${quoteIdent(table)} WHERE ${quoteIdent(col)} IN (${placeholders})`,
+            vals.map(formatVal),
+          );
         },
       };
     },

@@ -1,36 +1,20 @@
+import { createHash } from 'node:crypto';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { type SourceReference } from '@sangam/dharma-rules';
+import type { Database } from '@/types/database';
+import { evaluateApprovedFixture } from './approved-fixture-engine';
+import type { ApprovedFixtureEvaluation } from './approved-fixture-engine';
 import {
-  APPROVED_CALENDAR_PILOT_CASE_IDS,
-  evaluateApprovedFixture,
-  type ApprovedFixtureMonthSystem,
-} from './approved-fixture-engine';
+  APPROVED_FIXTURE_ENGINE_VERSION,
+  APPROVED_FIXTURE_WRITER,
+  fixtureEligibilityReasons,
+  parseCalendarProfileDecision,
+  parseGoldenFixtureDecision,
+  type CalendarProfileDecision,
+  type GoldenFixtureDecision,
+} from './approved-fixture-governance';
 import { RULE_ENGINE_VERSION } from './engine';
 import { batchIdentityKey, commitOccurrencesWithBatches } from './materialize';
-
-const CALCULATED_BY = 'approved-golden-pilot-v1';
-const PILOT_VERSION = 'approved-golden-pilot-1.0.0';
-
-interface GoldenFixtureRow {
-  case_id: string;
-  festival_id: string;
-  year: number;
-  location: { label: string; lat: number; lon: number; tz: string };
-  profile: { calendar: string; tradition: string; variantKey?: string };
-  expected: { civilDate: string | null; reasonCodes?: string[] | null } | null;
-  source: { tier: number; ref: string; citation: string };
-  approved: boolean;
-  reviewed_by: string | null;
-  reviewed_at: string | null;
-  review_notes: string | null;
-  effective_from: string | null;
-}
-
-interface CalendarProfileRow {
-  slug: string;
-  month_system: ApprovedFixtureMonthSystem | null;
-  scholarly_status: string;
-  effective_from: string | null;
-}
 
 interface DefinitionRow {
   id: string;
@@ -54,7 +38,15 @@ interface ExistingOccurrenceRow {
   final_date_source: string | null;
 }
 
-export interface ApprovedCalendarPilotPlanItem {
+interface StoredOccurrenceRow {
+  id?: string;
+  batch_id: string | null;
+  source_provenance?: Database['public']['Tables']['observance_occurrences']['Row']['source_provenance'];
+  series_instance_key: string | null;
+  is_primary_variant: boolean | null;
+}
+
+export interface ApprovedFixturePlanItem {
   caseId: string;
   festivalId: string;
   year: number;
@@ -68,44 +60,74 @@ export interface ApprovedCalendarPilotPlanItem {
   action: 'insert' | 'update';
 }
 
-export interface ApprovedCalendarPilotResult {
+export interface ApprovedFixtureMaterializationResult {
   mode: 'dry_run' | 'commit';
+  approvedFixtureCount: number;
   fixtureCount: number;
+  manifestHash: string;
+  excluded: Array<{ caseId: string; reasons: string[] }>;
   inserted: number;
   updated: number;
   storedCount: number;
-  items: ApprovedCalendarPilotPlanItem[];
+  items: ApprovedFixturePlanItem[];
+}
+
+export interface ApprovedFixtureRollbackResult {
+  mode: 'dry_run' | 'commit';
+  manifestHash: string;
+  occurrenceCount: number;
+  batchCount: number;
 }
 
 interface PlannedWrite {
-  public: ApprovedCalendarPilotPlanItem;
+  public: ApprovedFixturePlanItem;
   row: Record<string, unknown>;
   existingId: string | null;
   identityKey: string;
 }
 
-function requireExactCaseSet(fixtures: GoldenFixtureRow[]): void {
-  const expected = [...APPROVED_CALENDAR_PILOT_CASE_IDS].sort();
-  const actual = fixtures.map(row => row.case_id).sort();
-  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-    throw new Error(`Approved pilot requires exactly ${expected.join(', ')}; found ${actual.join(', ')}`);
-  }
+interface ApprovedFixturePlan {
+  approvedFixtureCount: number;
+  manifestHash: string;
+  excluded: Array<{ caseId: string; reasons: string[] }>;
+  writes: PlannedWrite[];
 }
 
-function sourceReference(fixture: GoldenFixtureRow): SourceReference {
+interface BatchRollbackUpdateQuery extends PromiseLike<{
+  error: { message: string } | null;
+}> {
+  in(column: 'id', values: string[]): BatchRollbackUpdateQuery;
+}
+
+interface BatchRollbackTable {
+  update(values: {
+    status: 'failed';
+    produced_row_count: 0;
+    failure_reason: string;
+    completed_at: null;
+  }): BatchRollbackUpdateQuery;
+}
+
+function sourceReference(fixture: GoldenFixtureDecision): SourceReference {
   const page = fixture.source.citation.match(/p\.(\d+)/i)?.[1] ?? null;
+  const isRashtriyaPanchang = fixture.source.citation.startsWith('Rashtriya Panchang');
+  const sourceName = isRashtriyaPanchang
+    ? 'Rashtriya Panchang'
+    : fixture.source.citation.split(',')[0]?.trim() || fixture.source.ref;
   return {
-    sourceName: 'Rashtriya Panchang',
-    textName: 'Rashtriya Panchang, Saka 1948 (2026-27 A.D.)',
-    publisher: 'Positional Astronomy Centre / India Meteorological Department, Government of India',
-    edition: 'English edition',
+    sourceName,
+    textName: isRashtriyaPanchang ? 'Rashtriya Panchang, Saka 1948 (2026-27 A.D.)' : sourceName,
+    publisher: isRashtriyaPanchang
+      ? 'Positional Astronomy Centre / India Meteorological Department, Government of India'
+      : null,
+    edition: isRashtriyaPanchang ? 'English edition' : null,
     pageOrSection: page ? `printed p.${page}` : fixture.source.ref,
     tier: fixture.source.tier as 1,
-    tradition: 'Hindu',
-    region: 'India',
+    tradition: isRashtriyaPanchang ? 'Hindu' : null,
+    region: isRashtriyaPanchang ? 'India' : null,
     scholarNotes: fixture.source.citation,
-    copyrightStatus: 'government_publication',
-    usagePermitted: 'citation_and_factual_date_reference',
+    copyrightStatus: isRashtriyaPanchang ? 'government_publication' : null,
+    usagePermitted: isRashtriyaPanchang ? 'citation_and_factual_date_reference' : null,
     url: null,
   };
 }
@@ -114,59 +136,151 @@ function coordinateMatches(left: number | null, right: number): boolean {
   return typeof left === 'number' && Math.abs(left - right) < 0.000001;
 }
 
-function profileTradition(fixture: GoldenFixtureRow): string | null {
+function profileTradition(fixture: GoldenFixtureDecision): string | null {
   return fixture.profile.tradition === 'unspecified' ? null : fixture.profile.tradition;
 }
 
-function groupKey(fixture: GoldenFixtureRow): string {
+function groupKey(fixture: GoldenFixtureDecision): string {
   const { location, profile } = fixture;
-  return [fixture.festival_id, fixture.year, profile.calendar, location.lat, location.lon, location.tz].join('|');
+  return [fixture.festivalId, fixture.year, profile.calendar, location.lat, location.lon, location.tz].join('|');
 }
 
-export async function planApprovedCalendarPilot(client: any): Promise<PlannedWrite[]> {
+function manifestHash(
+  fixtures: GoldenFixtureDecision[],
+  profiles: Map<string, CalendarProfileDecision>,
+  excluded: Array<{ caseId: string; reasons: string[] }>,
+  evaluations: Map<string, ApprovedFixtureEvaluation>,
+): string {
+  const excludedByCaseId = new Map(excluded.map(item => [item.caseId, item.reasons]));
+  const payload = fixtures
+    .map(fixture => {
+      const profile = profiles.get(fixture.profile.calendar);
+      return {
+        caseId: fixture.caseId,
+        festivalId: fixture.festivalId,
+        year: fixture.year,
+        location: fixture.location,
+        fixtureProfile: fixture.profile,
+        civilDate: fixture.expected?.civilDate ?? null,
+        reasonCodes: fixture.expected?.reasonCodes ?? [],
+        source: fixture.source,
+        reviewedBy: fixture.reviewedBy,
+        reviewedAt: fixture.reviewedAt,
+        reviewNotes: fixture.reviewNotes,
+        effectiveFrom: fixture.effectiveFrom,
+        profile: profile
+          ? {
+              slug: profile.slug,
+              monthSystem: profile.monthSystem,
+              version: profile.version,
+              scholarlyStatus: profile.scholarlyStatus,
+              reviewedBy: profile.reviewedBy,
+              reviewedAt: profile.reviewedAt,
+              effectiveFrom: profile.effectiveFrom,
+            }
+          : null,
+        engine: {
+          materializerVersion: APPROVED_FIXTURE_ENGINE_VERSION,
+          ruleVersion: RULE_ENGINE_VERSION,
+          evaluation: evaluations.get(fixture.caseId) ?? null,
+        },
+        eligibility: excludedByCaseId.get(fixture.caseId) ?? [],
+      };
+    })
+    .sort((left, right) => left.caseId.localeCompare(right.caseId));
+  return createHash('sha256').update(JSON.stringify(payload)).digest('hex');
+}
+
+export async function planApprovedFixtures(
+  client: SupabaseClient<Database>,
+): Promise<ApprovedFixturePlan> {
   const { data: fixtureData, error: fixtureError } = await client
     .from('golden_fixtures')
     .select('case_id, festival_id, year, location, profile, expected, source, approved, reviewed_by, reviewed_at, review_notes, effective_from')
-    .in('case_id', [...APPROVED_CALENDAR_PILOT_CASE_IDS]);
+    .eq('approved', true);
   if (fixtureError) throw fixtureError;
-  const fixtures = (fixtureData ?? []) as GoldenFixtureRow[];
-  requireExactCaseSet(fixtures);
-
-  const today = new Date().toISOString().slice(0, 10);
-  for (const fixture of fixtures) {
-    if (!fixture.approved || !fixture.expected?.civilDate || fixture.source.tier !== 1) {
-      throw new Error(`Fixture ${fixture.case_id} is not an approved Tier-1 dated decision`);
-    }
-    if (!fixture.reviewed_by || !fixture.reviewed_at || !fixture.effective_from || fixture.effective_from > today) {
-      throw new Error(`Fixture ${fixture.case_id} lacks effective council review metadata`);
-    }
+  const fixtures = (fixtureData ?? [])
+    .map(parseGoldenFixtureDecision)
+    .sort((left, right) => left.caseId.localeCompare(right.caseId));
+  if (fixtures.length === 0) {
+    throw new Error('No council-approved golden fixtures exist');
   }
 
+  const today = new Date().toISOString().slice(0, 10);
   const profileSlugs = [...new Set(fixtures.map(row => row.profile.calendar))];
   const { data: profileData, error: profileError } = await client
     .from('calendar_profiles')
-    .select('slug, month_system, scholarly_status, effective_from')
+    .select('slug, month_system, version, scholarly_status, reviewed_by, reviewed_at, effective_from')
     .in('slug', profileSlugs);
   if (profileError) throw profileError;
   const profileBySlug = new Map(
-    ((profileData ?? []) as CalendarProfileRow[]).map(profile => [profile.slug, profile]),
+    (profileData ?? [])
+      .map(parseCalendarProfileDecision)
+      .map(profile => [profile.slug, profile]),
   );
 
-  const slugs = [...new Set(fixtures.map(row => row.festival_id))];
+  const excluded = fixtures
+    .map(fixture => ({
+      caseId: fixture.caseId,
+      reasons: fixtureEligibilityReasons(fixture, profileBySlug.get(fixture.profile.calendar), today),
+    }))
+    .filter(item => item.reasons.length > 0);
+  const evaluationByCaseId = new Map<string, ApprovedFixtureEvaluation>();
+  const initiallyExcludedCaseIds = new Set(excluded.map(item => item.caseId));
+  for (const fixture of fixtures.filter(item => !initiallyExcludedCaseIds.has(item.caseId))) {
+    const profile = profileBySlug.get(fixture.profile.calendar);
+    if (!profile?.monthSystem) continue;
+    try {
+      evaluationByCaseId.set(fixture.caseId, evaluateApprovedFixture({
+        caseId: fixture.caseId,
+        festivalId: fixture.festivalId,
+        year: fixture.year,
+        profile: fixture.profile,
+        expected: fixture.expected,
+        approved: fixture.approved,
+      }, profile.monthSystem));
+    } catch (error) {
+      excluded.push({
+        caseId: fixture.caseId,
+        reasons: [`engine_reproduction_failed:${error instanceof Error ? error.message : 'unknown_error'}`],
+      });
+    }
+  }
+  excluded.sort((left, right) => left.caseId.localeCompare(right.caseId));
+  const excludedCaseIds = new Set(excluded.map(item => item.caseId));
+  const eligibleFixtures = fixtures.filter(fixture => !excludedCaseIds.has(fixture.caseId));
+  const decisionManifestHash = manifestHash(
+    fixtures,
+    profileBySlug,
+    excluded,
+    evaluationByCaseId,
+  );
+
+  if (eligibleFixtures.length === 0) {
+    return {
+      approvedFixtureCount: fixtures.length,
+      manifestHash: decisionManifestHash,
+      excluded,
+      writes: [],
+    };
+  }
+
+  const slugs = [...new Set(eligibleFixtures.map(row => row.festivalId))];
   const { data: definitionData, error: definitionError } = await client
     .from('observance_definitions')
     .select('id, slug')
     .in('slug', slugs);
   if (definitionError) throw definitionError;
+  const definitions = (definitionData ?? []) as unknown as DefinitionRow[];
   const definitionBySlug = new Map(
-    ((definitionData ?? []) as DefinitionRow[]).map(definition => [definition.slug, definition]),
+    definitions.map(definition => [definition.slug, definition]),
   );
   if (definitionBySlug.size !== slugs.length) {
-    throw new Error(`Pilot definitions are incomplete: expected ${slugs.length}, found ${definitionBySlug.size}`);
+    throw new Error(`Approved fixture definitions are incomplete: expected ${slugs.length}, found ${definitionBySlug.size}`);
   }
 
   const definitionIds = [...definitionBySlug.values()].map(definition => definition.id);
-  const years = [...new Set(fixtures.map(row => row.year))];
+  const years = [...new Set(eligibleFixtures.map(row => row.year))];
   const { data: existingData, error: existingError } = await client
     .from('observance_occurrences')
     .select('id, definition_id, year, date, calendar_profile, spiritual_tradition, variant_key, computed_latitude, computed_longitude, computed_timezone, calculated_by, locked_for_regeneration, manual_date_override, final_date_source')
@@ -177,34 +291,26 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
   const existingRows = (existingData ?? []) as ExistingOccurrenceRow[];
 
   const anchorByGroup = new Map<string, string>();
-  for (const fixture of fixtures) {
+  for (const fixture of eligibleFixtures) {
     const key = groupKey(fixture);
-    const date = fixture.expected!.civilDate!;
+    const date = fixture.expected?.civilDate;
+    if (!date) throw new Error(`Eligible fixture ${fixture.caseId} has no civil date`);
     const current = anchorByGroup.get(key);
     if (!current || date < current) anchorByGroup.set(key, date);
   }
 
-  return fixtures
-    .sort((a, b) => a.case_id.localeCompare(b.case_id))
+  const writes = eligibleFixtures
     .map(fixture => {
       const profile = profileBySlug.get(fixture.profile.calendar);
-      if (!profile || profile.scholarly_status !== 'approved' || !profile.month_system) {
-        throw new Error(`Fixture ${fixture.case_id} references a calendar profile that is not council-approved`);
-      }
-      if (!profile.effective_from || profile.effective_from > today) {
-        throw new Error(`Calendar profile ${profile.slug} is not effective for materialisation`);
+      if (!profile?.monthSystem) {
+        throw new Error(`Eligible fixture ${fixture.caseId} has no approved month system`);
       }
 
-      const evaluation = evaluateApprovedFixture({
-        caseId: fixture.case_id,
-        festivalId: fixture.festival_id,
-        year: fixture.year,
-        profile: fixture.profile,
-        expected: fixture.expected,
-        approved: fixture.approved,
-      }, profile.month_system);
+      const evaluation = evaluationByCaseId.get(fixture.caseId);
+      if (!evaluation) throw new Error(`Eligible fixture ${fixture.caseId} has no engine evaluation`);
 
-      const definition = definitionBySlug.get(fixture.festival_id)!;
+      const definition = definitionBySlug.get(fixture.festivalId);
+      if (!definition) throw new Error(`Definition ${fixture.festivalId} disappeared during planning`);
       const variantKey = fixture.profile.variantKey ?? null;
       const spiritualTradition = profileTradition(fixture);
       const matches = existingRows.filter(row =>
@@ -218,11 +324,11 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
         && row.computed_timezone === fixture.location.tz
       );
       if (matches.length > 1) {
-        throw new Error(`Fixture ${fixture.case_id} has ${matches.length} stored rows for one materialisation identity`);
+        throw new Error(`Fixture ${fixture.caseId} has ${matches.length} stored rows for one materialisation identity`);
       }
       const existing = matches[0] ?? null;
-      if (existing && existing.calculated_by !== CALCULATED_BY) {
-        throw new Error(`Fixture ${fixture.case_id} would overwrite a row owned by ${existing.calculated_by}`);
+      if (existing && existing.calculated_by !== APPROVED_FIXTURE_WRITER) {
+        throw new Error(`Fixture ${fixture.caseId} would overwrite a row owned by ${existing.calculated_by}`);
       }
 
       const sourceRefs = [sourceReference(fixture)];
@@ -236,8 +342,8 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
         spiritual_tradition: spiritualTradition,
         variant_key: variantKey,
         is_primary_variant: false,
-        calculation_version: PILOT_VERSION,
-        calculated_by: CALCULATED_BY,
+        calculation_version: APPROVED_FIXTURE_ENGINE_VERSION,
+        calculated_by: APPROVED_FIXTURE_WRITER,
         manual_date_override: null,
         manual_override_reason: null,
         locked_for_regeneration: true,
@@ -245,20 +351,21 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
         audit_status: 'completed',
         audit_failure_reason: null,
         audit_retry_count: 0,
-        last_audited_at: fixture.reviewed_at,
+        last_audited_at: fixture.reviewedAt,
         verification_status: 'verified',
-        verification_note: `Engine result matches approved golden fixture ${fixture.case_id}.`,
+        verification_note: `Engine result matches approved golden fixture ${fixture.caseId}.`,
         verification_confidence: 'high',
-        verification_run_at: fixture.reviewed_at,
+        verification_run_at: fixture.reviewedAt,
         review_status: 'reviewed',
-        reviewed_at: fixture.reviewed_at,
-        review_notes: fixture.review_notes,
+        reviewed_at: fixture.reviewedAt,
+        review_notes: fixture.reviewNotes,
         publication_status: 'published',
         source_provenance: {
-          caseId: fixture.case_id,
+          caseId: fixture.caseId,
           sourceRef: fixture.source.ref,
-          councilReviewer: fixture.reviewed_by,
-          effectiveFrom: fixture.effective_from,
+          councilReviewer: fixture.reviewedBy,
+          effectiveFrom: fixture.effectiveFrom,
+          approvalManifestHash: decisionManifestHash,
         },
         computed_latitude: fixture.location.lat,
         computed_longitude: fixture.location.lon,
@@ -266,24 +373,24 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
         rule_version: RULE_ENGINE_VERSION,
         astronomy_version: '1.0.0',
         day_boundary_version: '1.0.0',
-        reasons: (fixture.expected!.reasonCodes ?? []).map(code => ({
+        reasons: (fixture.expected?.reasonCodes ?? []).map(code => ({
           code,
           text: 'Council-approved Tier-1 fixture decision.',
-          details: { caseId: fixture.case_id },
+          details: { caseId: fixture.caseId },
         })),
         diagnostics: evaluation.publicationWithheld
           ? ['fixture_scoped_approval', `global_gate_${evaluation.withheldReason ?? 'active'}`]
           : ['fixture_scoped_approval'],
         source_refs: sourceRefs,
-        __slug: fixture.festival_id,
+        __slug: fixture.festivalId,
         __anchor: anchor,
       };
       const identityKey = batchIdentityKey(row);
 
       return {
         public: {
-          caseId: fixture.case_id,
-          festivalId: fixture.festival_id,
+          caseId: fixture.caseId,
+          festivalId: fixture.festivalId,
           year: fixture.year,
           civilDate: evaluation.civilDate,
           calendarProfile: fixture.profile.calendar,
@@ -292,30 +399,47 @@ export async function planApprovedCalendarPilot(client: any): Promise<PlannedWri
           engineRuleKey: evaluation.ruleKey,
           engineCandidateDates: evaluation.candidateDates,
           publicationGatePreserved: evaluation.publicationWithheld,
-          action: existing ? 'update' : 'insert',
+          action: existing ? 'update' as const : 'insert' as const,
         },
         row,
         existingId: existing?.id ?? null,
         identityKey,
       };
     });
+
+  return {
+    approvedFixtureCount: fixtures.length,
+    manifestHash: decisionManifestHash,
+    excluded,
+    writes,
+  };
 }
 
-export async function materializeApprovedCalendarPilot(
-  client: any,
-  commit: boolean,
-): Promise<ApprovedCalendarPilotResult> {
-  const writes = await planApprovedCalendarPilot(client);
-  if (!commit) {
+export async function materializeApprovedFixtures(
+  client: SupabaseClient<Database>,
+  options: { commit: boolean; expectedManifestHash?: string },
+): Promise<ApprovedFixtureMaterializationResult> {
+  const plan = await planApprovedFixtures(client);
+  const { writes } = plan;
+  if (!options.commit) {
     return {
       mode: 'dry_run',
+      approvedFixtureCount: plan.approvedFixtureCount,
       fixtureCount: writes.length,
+      manifestHash: plan.manifestHash,
+      excluded: plan.excluded,
       inserted: 0,
       updated: 0,
       storedCount: 0,
       items: writes.map(write => write.public),
     };
   }
+  if (!options.expectedManifestHash || options.expectedManifestHash !== plan.manifestHash) {
+    throw new Error(
+      `Commit manifest mismatch: expected ${plan.manifestHash}, received ${options.expectedManifestHash ?? 'none'}`,
+    );
+  }
+  if (writes.length === 0) throw new Error('Approved fixture manifest contains no eligible writes');
 
   const toInsert = writes.filter(write => !write.existingId).map(write => write.row);
   const toUpdate = writes
@@ -334,7 +458,7 @@ export async function materializeApprovedCalendarPilot(
     expectedByIdentity,
     identityMeta,
     versions: {
-      engine: PILOT_VERSION,
+      engine: APPROVED_FIXTURE_ENGINE_VERSION,
       rule: RULE_ENGINE_VERSION,
       astronomy: '1.0.0',
     },
@@ -349,21 +473,104 @@ export async function materializeApprovedCalendarPilot(
     .in('definition_id', definitionIds)
     .in('year', years)
     .in('calendar_profile', profiles)
-    .eq('calculated_by', CALCULATED_BY);
+    .eq('calculated_by', APPROVED_FIXTURE_WRITER);
   if (error) throw error;
-  if ((stored ?? []).length !== writes.length) {
-    throw new Error(`Approved pilot expected ${writes.length} stored rows; found ${(stored ?? []).length}`);
+  const storedRows = (stored ?? []) as unknown as StoredOccurrenceRow[];
+  if (storedRows.length !== writes.length) {
+    throw new Error(`Approved fixture manifest expected ${writes.length} stored rows; found ${storedRows.length}`);
   }
-  if ((stored ?? []).some((row: any) => !row.batch_id || !row.series_instance_key || row.is_primary_variant !== false)) {
-    throw new Error('Approved pilot stored rows violate batch, instance, or read-time-primary contract');
+  if (storedRows.some(row => !row.batch_id || !row.series_instance_key || row.is_primary_variant !== false)) {
+    throw new Error('Approved fixture rows violate batch, instance, or read-time-primary contract');
   }
 
   return {
     mode: 'commit',
+    approvedFixtureCount: plan.approvedFixtureCount,
     fixtureCount: writes.length,
+    manifestHash: plan.manifestHash,
+    excluded: plan.excluded,
     inserted: committed.inserted,
     updated: committed.updated,
-    storedCount: (stored ?? []).length,
+    storedCount: storedRows.length,
     items: writes.map(write => write.public),
+  };
+}
+
+function provenanceManifestHash(value: StoredOccurrenceRow['source_provenance']): string | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const hash = value.approvalManifestHash;
+  return typeof hash === 'string' ? hash : null;
+}
+
+export async function rollbackApprovedFixtureManifest(
+  client: SupabaseClient<Database>,
+  options: { manifestHash: string; commit: boolean },
+): Promise<ApprovedFixtureRollbackResult> {
+  if (!/^[a-f0-9]{64}$/.test(options.manifestHash)) {
+    throw new Error('Rollback requires a lowercase SHA-256 approval manifest hash');
+  }
+
+  const { data, error } = await client
+    .from('observance_occurrences')
+    .select('id, batch_id, source_provenance, series_instance_key, is_primary_variant')
+    .eq('calculated_by', APPROVED_FIXTURE_WRITER);
+  if (error) throw error;
+  const rows = ((data ?? []) as unknown as StoredOccurrenceRow[])
+    .filter(row => provenanceManifestHash(row.source_provenance) === options.manifestHash);
+  const occurrenceIds = rows
+    .map(row => row.id)
+    .filter((id): id is string => typeof id === 'string');
+  const batchIds = [...new Set(
+    rows.map(row => row.batch_id).filter((id): id is string => typeof id === 'string'),
+  )];
+
+  if (!options.commit) {
+    return {
+      mode: 'dry_run',
+      manifestHash: options.manifestHash,
+      occurrenceCount: occurrenceIds.length,
+      batchCount: batchIds.length,
+    };
+  }
+  if (occurrenceIds.length === 0) {
+    throw new Error(`No approved-fixture rows belong to manifest ${options.manifestHash}`);
+  }
+
+  const { error: deleteError } = await client
+    .from('observance_occurrences')
+    .delete()
+    .in('id', occurrenceIds);
+  if (deleteError) throw deleteError;
+
+  if (batchIds.length > 0) {
+    const batchTable = client
+      .from('observance_materialisation_batches') as unknown as BatchRollbackTable;
+    const { error: batchError } = await batchTable
+      .update({
+        status: 'failed',
+        produced_row_count: 0,
+        failure_reason: `Approved fixture manifest ${options.manifestHash} rolled back.`,
+        completed_at: null,
+      })
+      .in('id', batchIds);
+    if (batchError) throw batchError;
+  }
+
+  const { data: remaining, error: remainingError } = await client
+    .from('observance_occurrences')
+    .select('id, batch_id, source_provenance, series_instance_key, is_primary_variant')
+    .eq('calculated_by', APPROVED_FIXTURE_WRITER);
+  if (remainingError) throw remainingError;
+  const remainingForManifest = ((remaining ?? []) as unknown as StoredOccurrenceRow[])
+    .filter(row => provenanceManifestHash(row.source_provenance) === options.manifestHash);
+  if (remainingForManifest.length > 0) {
+    throw new Error(`Rollback left ${remainingForManifest.length} occurrence rows for manifest ${options.manifestHash}`);
+  }
+
+  return {
+    mode: 'commit',
+    manifestHash: options.manifestHash,
+    occurrenceCount: occurrenceIds.length,
+    batchCount: batchIds.length,
   };
 }

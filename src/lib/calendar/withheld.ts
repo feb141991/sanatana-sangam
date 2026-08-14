@@ -25,7 +25,7 @@
  */
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { isPublishableForYear, ruleIdentityKey } from './engine';
-import { isApprovedCalendarPilotCaseId } from './approved-fixture-engine';
+import { APPROVED_FIXTURE_WRITER } from './approved-fixture-governance';
 
 /** ruleIdentityKey -> rule, for variant-qualified O(1) lookup. */
 const BY_RULE_KEY = new Map<string, ObservanceRule>(
@@ -139,6 +139,7 @@ export function filterWithheldJoinedRows<T>(rows: T[]): T[] {
       calculated_by?: string | null;
       final_date_source?: string | null;
       batch_family_complete?: boolean;
+      fixture_approval_complete?: boolean;
       source_provenance?: { caseId?: string | null } | null;
       diagnostics?: unknown;
       source_refs?: unknown;
@@ -151,23 +152,24 @@ export function filterWithheldJoinedRows<T>(rows: T[]): T[] {
     // An exact fixture decision may override a GENERAL rule gate without
     // changing that rule for every year/profile/location. This is deliberately
     // strict: all persisted governance signals must agree, including a typed
-    // Tier-1 source and the writer identity reserved for council batch 0.
+    // Tier-1 source and a current database-backed fixture/profile decision.
     const fixtureScopedApproval =
-      r.calculated_by === 'approved-golden-pilot-v1'
+      r.calculated_by === APPROVED_FIXTURE_WRITER
       && r.final_date_source === 'calculation_engine_reviewed'
       && r.review_status === 'reviewed'
       && r.verification_status === 'verified'
       && r.audit_status === 'completed'
       && r.publication_status === 'published'
       && r.batch_family_complete === true
-      && isApprovedCalendarPilotCaseId(r.source_provenance?.caseId)
+      && r.fixture_approval_complete === true
+      && typeof r.source_provenance?.caseId === 'string'
       && Array.isArray(r.diagnostics)
       && r.diagnostics.includes('fixture_scoped_approval')
       && Array.isArray(r.source_refs)
       && r.source_refs.some(source =>
         !!source && typeof source === 'object' && 'tier' in source && source.tier === 1
       );
-    if (fixtureScopedApproval) return true;
+    if (r.calculated_by === APPROVED_FIXTURE_WRITER) return fixtureScopedApproval;
 
     return !isWithheldOccurrence(
       def?.slug,

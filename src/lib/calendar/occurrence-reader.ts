@@ -1,4 +1,15 @@
 import { createAdminClient } from '@/lib/supabase-admin';
+import type { Database } from '@/types/database';
+import {
+  APPROVED_FIXTURE_WRITER,
+  fixtureCaseIdFromOccurrence,
+  fixtureDecisionMatchesOccurrence,
+  parseCalendarProfileDecision,
+  parseGoldenFixtureDecision,
+  type CalendarProfileDecision,
+  type FixtureGovernedOccurrence,
+  type GoldenFixtureDecision,
+} from './approved-fixture-governance';
 import { isBatchTrustworthy, type BatchRow } from './materialisation-batch';
 
 /**
@@ -75,6 +86,49 @@ export interface BatchLookupClient {
   };
 }
 
+type GoldenFixtureLookupRow = Pick<
+  Database['public']['Tables']['golden_fixtures']['Row'],
+  | 'case_id'
+  | 'festival_id'
+  | 'year'
+  | 'location'
+  | 'profile'
+  | 'expected'
+  | 'source'
+  | 'approved'
+  | 'reviewed_by'
+  | 'reviewed_at'
+  | 'review_notes'
+  | 'effective_from'
+>;
+
+type CalendarProfileLookupRow = Pick<
+  Database['public']['Tables']['calendar_profiles']['Row'],
+  | 'slug'
+  | 'month_system'
+  | 'version'
+  | 'scholarly_status'
+  | 'reviewed_by'
+  | 'reviewed_at'
+  | 'effective_from'
+>;
+
+interface FixtureLookupQuery<T> extends PromiseLike<{
+  data: T[] | null;
+  error: { message: string } | null;
+}> {
+  in(column: string, values: string[]): FixtureLookupQuery<T>;
+}
+
+export interface FixtureApprovalLookupClient {
+  from(table: 'golden_fixtures'): {
+    select(columns: string): FixtureLookupQuery<GoldenFixtureLookupRow>;
+  };
+  from(table: 'calendar_profiles'): {
+    select(columns: string): FixtureLookupQuery<CalendarProfileLookupRow>;
+  };
+}
+
 export interface RequestedBatchLocation {
   latitude: number | null;
   longitude: number | null;
@@ -92,9 +146,60 @@ export type OccurrenceWithBatch = {
   batch?: BatchRow | null;
   batch_family_complete?: boolean;
   requested_profile_family_incomplete?: boolean;
-};
+} & FixtureGovernedOccurrence;
 
 const LEGACY_PROFILE = 'legacy-ujjain';
+
+export async function attachApprovedFixtureDecisions<T extends FixtureGovernedOccurrence>(
+  rows: readonly T[],
+  admin?: FixtureApprovalLookupClient,
+): Promise<Array<T & { fixture_approval_complete: boolean }>> {
+  const governedRows = rows.filter(row => row.calculated_by === APPROVED_FIXTURE_WRITER);
+  const caseIds = [...new Set(
+    governedRows
+      .map(fixtureCaseIdFromOccurrence)
+      .filter((caseId): caseId is string => !!caseId),
+  )];
+  if (caseIds.length === 0) {
+    return rows.map(row => ({ ...row, fixture_approval_complete: false }));
+  }
+
+  const fixtureClient = admin ?? createAdminClient() as unknown as FixtureApprovalLookupClient;
+  const { data: fixtureData, error: fixtureError } = await fixtureClient
+    .from('golden_fixtures')
+    .select('case_id, festival_id, year, location, profile, expected, source, approved, reviewed_by, reviewed_at, review_notes, effective_from')
+    .in('case_id', caseIds);
+  if (fixtureError) throw new Error(`Golden fixture approval lookup failed: ${fixtureError.message}`);
+
+  const fixtures = (fixtureData ?? []).map(parseGoldenFixtureDecision);
+  const fixtureByCaseId = new Map<string, GoldenFixtureDecision>(
+    fixtures.map(fixture => [fixture.caseId, fixture]),
+  );
+  const profileSlugs = [...new Set(fixtures.map(fixture => fixture.profile.calendar))];
+  const { data: profileData, error: profileError } = await fixtureClient
+    .from('calendar_profiles')
+    .select('slug, month_system, version, scholarly_status, reviewed_by, reviewed_at, effective_from')
+    .in('slug', profileSlugs);
+  if (profileError) throw new Error(`Calendar profile approval lookup failed: ${profileError.message}`);
+
+  const profileBySlug = new Map<string, CalendarProfileDecision>(
+    (profileData ?? [])
+      .map(parseCalendarProfileDecision)
+      .map(profile => [profile.slug, profile]),
+  );
+  const today = new Date().toISOString().slice(0, 10);
+
+  return rows.map(row => {
+    const caseId = fixtureCaseIdFromOccurrence(row);
+    const fixture = caseId ? fixtureByCaseId.get(caseId) : undefined;
+    const profile = fixture ? profileBySlug.get(fixture.profile.calendar) : undefined;
+    return {
+      ...row,
+      fixture_approval_complete: !!fixture
+        && fixtureDecisionMatchesOccurrence(fixture, profile, row, today),
+    };
+  });
+}
 
 function coordinate(value: number | null | undefined): string {
   return typeof value === 'number' && Number.isFinite(value) ? value.toFixed(6) : 'unknown';
@@ -143,6 +248,7 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
   batch: BatchRow | null;
   batch_family_complete: boolean;
   requested_profile_family_incomplete: boolean;
+  fixture_approval_complete: boolean;
 }>> {
   const profileRows = rows.filter(row => row.calendar_profile && row.calendar_profile !== LEGACY_PROFILE);
   const requestedProfile = requestedCalendarProfile && requestedCalendarProfile !== LEGACY_PROFILE
@@ -150,12 +256,12 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
     : null;
 
   if (profileRows.length === 0 && !requestedProfile) {
-    return rows.map(row => ({
+    return attachApprovedFixtureDecisions(rows.map(row => ({
       ...row,
       batch: null,
       batch_family_complete: true,
       requested_profile_family_incomplete: false,
-    }));
+    })), admin as unknown as FixtureApprovalLookupClient);
   }
 
   // When every profile insert failed, only legacy rows remain visible. They
@@ -182,12 +288,12 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
 
   // Missing family identity is not recoverable by guessing from the date.
   if (definitionIds.length === 0 || years.length === 0 || profiles.length === 0) {
-    return rows.map(row => ({
+    return attachApprovedFixtureDecisions(rows.map(row => ({
       ...row,
       batch: null,
       batch_family_complete: row.calendar_profile === LEGACY_PROFILE,
       requested_profile_family_incomplete: false,
-    }));
+    })), admin as unknown as FixtureApprovalLookupClient);
   }
 
   const batchClient = admin ?? createAdminClient() as unknown as BatchLookupClient;
@@ -215,7 +321,7 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
     batchFamilies.set(key, family);
   }
 
-  return rows.map(row => {
+  const rowsWithBatches = rows.map(row => {
     const ownBatch = row.batch_id ? batches.get(row.batch_id) ?? null : null;
     if (!row.calendar_profile || row.calendar_profile === LEGACY_PROFILE) {
       const hasRequestedLocation = typeof requestedLocation?.latitude === 'number'
@@ -254,4 +360,8 @@ export async function attachMaterialisationBatches<T extends OccurrenceWithBatch
       requested_profile_family_incomplete: false,
     };
   });
+  return attachApprovedFixtureDecisions(
+    rowsWithBatches,
+    admin as unknown as FixtureApprovalLookupClient,
+  );
 }

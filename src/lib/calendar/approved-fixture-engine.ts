@@ -4,20 +4,7 @@ import {
   type ObservanceCandidateDiagnostic,
 } from './engine';
 import { CANONICAL_RULES, type ObservanceRule } from './rules';
-
-export const APPROVED_CALENDAR_PILOT_CASE_IDS = [
-  'vijaya-ekadashi__2027__ujjain_india__north_indian_purnimanta',
-  'yogini-ekadashi__2026__ujjain_india__north_indian_purnimanta__smarta',
-  'yogini-ekadashi__2026__ujjain_india__north_indian_purnimanta__vaishnava_vidhava',
-] as const;
-
-const APPROVED_CALENDAR_PILOT_CASE_ID_SET = new Set<string>(APPROVED_CALENDAR_PILOT_CASE_IDS);
-
-export function isApprovedCalendarPilotCaseId(caseId: unknown): caseId is typeof APPROVED_CALENDAR_PILOT_CASE_IDS[number] {
-  return typeof caseId === 'string' && APPROVED_CALENDAR_PILOT_CASE_ID_SET.has(caseId);
-}
-
-export type ApprovedFixtureMonthSystem = 'amanta' | 'purnimanta' | 'solar';
+import type { ApprovedFixtureMonthSystem } from './approved-fixture-governance';
 
 export interface ApprovedFixtureEvaluationInput {
   caseId: string;
