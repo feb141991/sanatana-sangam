@@ -9,7 +9,7 @@ export async function POST(
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
-  const admin = await requireAdminAccess();
+  const admin = await requireAdminAccess(request);
   if ('response' in admin) return admin.response;
   const { userId } = await params;
 
@@ -45,7 +45,6 @@ export async function POST(
 
   if (notifError) {
     console.error('Failed to send warning notification:', notifError);
-    // We don't fail the whole request if notification fails, since the warning is recorded
   }
 
   return NextResponse.json({ success: true });

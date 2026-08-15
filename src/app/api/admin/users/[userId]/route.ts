@@ -9,7 +9,7 @@ export async function PATCH(
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
-  const admin = await requireAdminAccess();
+  const admin = await requireAdminAccess(request);
   if ("response" in admin) return admin.response;
   const { userId } = await params;
 
@@ -45,7 +45,7 @@ export async function DELETE(
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
-  const admin = await requireAdminAccess();
+  const admin = await requireAdminAccess(request);
   if ("response" in admin) return admin.response;
   const { userId } = await params;
 
@@ -53,9 +53,23 @@ export async function DELETE(
   const body = await request.json().catch(() => ({}));
   const mode = (url.searchParams.get("mode") || body?.mode || "complete").toLowerCase();
 
+  // Fetch target profile snapshot before deletion/anonymization for audit trail
+  const { data: targetProfile } = await admin.supabase
+    .from("profiles")
+    .select("id, username, full_name, created_at")
+    .eq("id", userId)
+    .maybeSingle();
+
   if (mode === "pii") {
     // 1. Scrub Personally Identifiable Information (PII) from profiles
     const anonymizedUsername = `deleted_${userId.slice(0, 8)}`;
+    const scrubbedFields = [
+      "full_name", "username", "avatar_url", "bio", "city", "country",
+      "gotra", "kul_devata", "date_of_birth", "legacy_family_name",
+      "home_town", "home_city", "home_country", "custom_greeting",
+      "onesignal_player_id", "latitude", "longitude", "home_latitude", "home_longitude"
+    ];
+
     const { error: profileUpdateError } = await admin.supabase
       .from("profiles")
       .update({
@@ -90,15 +104,83 @@ export async function DELETE(
     // 2. Remove/disable Supabase Auth user record so user cannot log in
     await admin.supabase.auth.admin.deleteUser(userId).catch(() => null);
 
-    return NextResponse.json({ success: true, mode: "pii", userId });
+    // 3. Log PII scrub transaction to audit log
+    try {
+      await admin.supabase
+        .from("user_activity_log")
+        .insert({
+          action: "admin_user_pii_scrubbed",
+          entity_type: "profiles",
+          entity_id: userId,
+          target_id: userId,
+          metadata: {
+            admin_username: admin.username,
+            mode: "pii",
+            target_user_id: userId,
+            original_username: targetProfile?.username ?? null,
+            original_full_name: targetProfile?.full_name ?? null,
+            tables_affected: ["public.profiles", "auth.users"],
+            fields_scrubbed: scrubbedFields,
+            timestamp: new Date().toISOString(),
+          },
+        });
+    } catch {
+      // Ignore logging failures
+    }
+
+    return NextResponse.json({
+      success: true,
+      mode: "pii",
+      userId,
+      tablesAffected: ["public.profiles", "auth.users"],
+      fieldsScrubbed: scrubbedFields,
+    });
   }
 
-  // Complete Deletion (Default): Purge Auth user + hard delete profile row
+  // Complete Deletion (Default):
+  // 1. Log transaction audit record BEFORE deleting profile row
+  const tablesAffected = [
+    "auth.users (User Auth Record Purged)",
+    "public.profiles (Profile Row Hard Deleted)",
+    "public.user_activity_log (Activity Log FK target_id set NULL)",
+    "public.user_warnings (Warnings associated with user)",
+    "public.push_tokens (Push Notification Tokens)",
+    "public.notifications (User Notifications)",
+  ];
+
+  try {
+    await admin.supabase
+      .from("user_activity_log")
+      .insert({
+        action: "admin_user_deleted",
+        entity_type: "profiles",
+        entity_id: userId,
+        metadata: {
+          admin_username: admin.username,
+          mode: "complete",
+          target_user_id: userId,
+          deleted_profile_snapshot: targetProfile
+            ? {
+                username: targetProfile.username,
+                full_name: targetProfile.full_name,
+                created_at: targetProfile.created_at,
+              }
+            : null,
+          tables_affected: tablesAffected,
+          timestamp: new Date().toISOString(),
+        },
+      });
+  } catch {
+    // Ignore logging failures
+  }
+
+  // 2. Purge Auth user record
   const { error: authDeleteError } = await admin.supabase.auth.admin.deleteUser(userId);
   if (authDeleteError && !authDeleteError.message.includes("User not found")) {
     return NextResponse.json({ error: authDeleteError.message }, { status: 500 });
   }
 
+  // 3. Hard delete profile row
   const { error: profileDeleteError } = await admin.supabase
     .from("profiles")
     .delete()
@@ -108,5 +190,10 @@ export async function DELETE(
     return NextResponse.json({ error: profileDeleteError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, mode: "complete", userId });
+  return NextResponse.json({
+    success: true,
+    mode: "complete",
+    userId,
+    tablesAffected,
+  });
 }

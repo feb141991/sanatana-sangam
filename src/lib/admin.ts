@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
@@ -27,9 +27,16 @@ type AdminContext =
   | { response: NextResponse }
   | { username: string; supabase: ReturnType<typeof createServiceRoleSupabaseClient> };
 
-export async function requireAdminAccess(): Promise<AdminContext> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_COOKIE)?.value ?? '';
+export async function requireAdminAccess(req?: NextRequest): Promise<AdminContext> {
+  let token = req ? (req.cookies.get(ADMIN_COOKIE)?.value ?? '') : '';
+  if (!token) {
+    try {
+      const cookieStore = await cookies();
+      token = cookieStore.get(ADMIN_COOKIE)?.value ?? '';
+    } catch {
+      // Ignore errors reading cookies() outside request context
+    }
+  }
   const session = await verifyAdminToken(token);
 
   if (!session) {

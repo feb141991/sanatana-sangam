@@ -332,7 +332,7 @@ export function calculateOccurrencesWithEvaluator(
 } {
   const baseline = USE_CORRECTED_MASA
     ? calculateObservancesForYearCorrected(year, location)
-    : calculateObservancesForYearLegacy(year);
+    : calculateObservancesForYearLegacy(year, location);
   const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
   const finalOccurrences: EvaluatorResolvedOccurrence[] = [];
   const unresolved: ReviewQueueItem[] = [];

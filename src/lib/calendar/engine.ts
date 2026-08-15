@@ -179,7 +179,7 @@ export function ruleIdentityKey(rule: ObservanceRule): string {
   return rule.slug;
 }
 
-const legacyPanchangCache = new Map<number, Array<{ dateStr: string; panchang: any }>>();
+const legacyPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any }>>();
 const DEFAULT_LOCATION: LocationInput = { lat: UJJAIN_LAT, lon: UJJAIN_LON, tz: 'Asia/Kolkata' };
 const correctedPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any; sunriseUtc?: string }>>();
 
@@ -189,23 +189,27 @@ const correctedPanchangCache = new Map<string, Array<{ dateStr: string; panchang
  * LEGACY PATH — uses masaName from sun sidereal position (D1-calibrated).
  * Byte-identical to pre-v2.0.0 when USE_CORRECTED_MASA is false.
  */
-export function precomputePanchangForYear(year: number): Array<{ dateStr: string; panchang: any }> {
-  if (legacyPanchangCache.has(year)) {
-    return legacyPanchangCache.get(year)!;
+export function precomputePanchangForYear(
+  year: number,
+  location: LocationInput = DEFAULT_LOCATION,
+): Array<{ dateStr: string; panchang: any }> {
+  const cacheKey = `${year}:${location.lat}:${location.lon}:${location.tz}`;
+  if (legacyPanchangCache.has(cacheKey)) {
+    return legacyPanchangCache.get(cacheKey)!;
   }
   const numDays = isLeapYear(year) ? 366 : 365;
   const days: Array<{ dateStr: string; panchang: any }> = [];
 
   for (let i = 0; i < numDays; i++) {
     const current = new Date(Date.UTC(year, 0, i + 1, 1, 0, 0)); // 1am UTC = ~6:30am IST ≈ Ujjain sunrise
-    const panchang = calculatePanchang(current, UJJAIN_LAT, UJJAIN_LON);
+    const panchang = calculatePanchang(current, location.lat, location.lon, location.tz);
     days.push({
       dateStr: formatUtcDate(current),
       panchang,
     });
   }
 
-  legacyPanchangCache.set(year, days);
+  legacyPanchangCache.set(cacheKey, days);
   return days;
 }
 
@@ -527,12 +531,13 @@ export interface RegionalCalendarRule {
 
 function buildOccurrencesMap(
   year: number,
-  opts: { applyPublicationGate?: boolean } = {},
+  opts: { applyPublicationGate?: boolean; location?: LocationInput } = {},
 ): Record<string, string[]> {
   // Gated BY DEFAULT. Callers that want raw candidates must ask for them
   // explicitly, so a new publishing call site cannot forget the gate.
   const gate = opts.applyPublicationGate !== false;
-  const days = precomputePanchangForYear(year);
+  const location = opts.location ?? DEFAULT_LOCATION;
+  const days = precomputePanchangForYear(year, location);
   // Keyed by ruleIdentityKey(rule), NOT rule.slug.
   //
   // Using rule.slug as the key meant that two rules sharing a slug (same-slug
@@ -622,8 +627,11 @@ function buildOccurrencesMap(
  * That is not hypothetical: `scripts/verify-masa-gate.ts` measures 74 differing
  * (slug@date) pairs for 2026 with the gate off, and 0 with it on.
  */
-export function calculateObservancesForYearLegacy(year: number): CalculatedOccurrence[] {
-  const occurrencesMap = buildOccurrencesMap(year);
+export function calculateObservancesForYearLegacy(
+  year: number,
+  location: LocationInput = DEFAULT_LOCATION,
+): CalculatedOccurrence[] {
+  const occurrencesMap = buildOccurrencesMap(year, { location });
 
   // 3. Assemble results — one occurrence per rule per year.
   // When multiple dates match (e.g. a dark-half tithi that spans two lunar months within
@@ -675,7 +683,7 @@ export function calculateObservancesForYear(
   }
   return USE_CORRECTED_MASA
     ? calculateObservancesForYearCorrected(year, location)
-    : calculateObservancesForYearLegacy(year);
+    : calculateObservancesForYearLegacy(year, location);
 }
 
 export function calculateObservanceCandidateDiagnosticsForYear(
@@ -692,7 +700,7 @@ export function calculateObservanceCandidateDiagnosticsForYear(
   // One diagnostic entry is emitted PER RULE ROW (per ruleIdentityKey), not per
   // slug. Two same-slug variant rows each produce their own entry, so a reviewer
   // can distinguish which variant computed which candidate dates.
-  const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false });
+  const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false, location });
   const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false, location });
 
   return CANONICAL_RULES.map((rule) => {

@@ -1,7 +1,15 @@
--- Shadow mirror of the four production tables under test.
+-- Shadow mirror of the production tables under test.
 -- Column types, nullability, defaults and CHECK/UNIQUE constraints copied from
 -- production information_schema + pg_constraint, so a migration that applies
 -- here is exercising the real shape rather than a convenient approximation.
+
+CREATE SCHEMA IF NOT EXISTS auth;
+CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
+
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  is_admin boolean DEFAULT false
+);
 
 CREATE TABLE calendar_profiles (
   slug              text PRIMARY KEY,

@@ -11,14 +11,10 @@ export async function GET(
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
 
-  const admin = await requireAdminAccess();
+  const admin = await requireAdminAccess(request);
   if ('response' in admin) return admin.response;
   const { userId } = await params;
 
-  // userId flows into a raw .or() filter string below (PostgREST's JS
-  // client has no parameterized form for .or()), so it must be validated
-  // as a UUID first -- otherwise a crafted path segment could inject
-  // extra filter clauses.
   if (!UUID_RE.test(userId)) {
     return NextResponse.json({ error: 'Invalid user id' }, { status: 400 });
   }
