@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 import { ADMIN_COOKIE, verifyAdminCookieAuth, verifyAdminToken } from '@/lib/admin-auth';
+import { computeEngineHint } from '@/lib/calendar/fixture-engine-hint';
 
 // Untyped for the same reason as dharm-veer-review: golden_fixtures is a new
 // table this repo's hand-written Database type doesn't model yet, and the
@@ -44,14 +45,22 @@ export async function GET(request: NextRequest) {
   // Enrich each row with rule-level facets so the client can group/filter
   // without a second fetch. Rows whose festival_id has no matching rule
   // (shouldn't happen in practice) get sentinel values so rendering never crashes.
+  //
+  // engineHint is a read-only convenience so a reviewer can see what the
+  // engine currently computes right next to the (possibly still-TODO)
+  // sourced `expected` date, without running the engine by hand -- see
+  // fixture-engine-hint.ts for why this can never become `expected` itself.
   const enriched = (data ?? []).map(row => {
     const rule = rulesBySlug.get(row.festival_id as string);
+    const profile = row.profile as { tradition?: string } | null;
+    const variantKey = profile?.tradition && profile.tradition !== 'unspecified' ? profile.tradition : null;
     return {
       ...row,
       tradition:    rule?.tradition    ?? 'unknown',
       kind:         rule?.kind         ?? 'unknown',
       rule_family:  rule?.rule_family  ?? 'unknown',
       launch_status: rule?.launch_status ?? 'included',
+      engineHint: computeEngineHint(row.festival_id as string, row.year as number, variantKey),
     };
   });
 
@@ -85,21 +94,77 @@ export async function POST(request: NextRequest) {
   }
 
   const supabase = adminSupabase();
-  const adminUsername = await getAdminUsername(request);
+  const adminUsername = await getAdminUsername(request) ?? 'unknown admin';
+  const nowIso = new Date().toISOString();
+
+  // 1. Fetch target fixture state before modification for diff & audit trail
+  const { data: existing, error: fetchErr } = await supabase
+    .from('golden_fixtures')
+    .select('*')
+    .eq('case_id', caseId)
+    .maybeSingle();
+
+  if (fetchErr || !existing) {
+    return NextResponse.json(
+      { error: fetchErr?.message || `Fixture with case_id '${caseId}' not found` },
+      { status: 404 },
+    );
+  }
 
   if (action === 'approve' || action === 'reject') {
-    const { error } = await supabase
+    const willApprove = action === 'approve';
+    const wasApproved = existing.approved === true;
+    const transition = willApprove
+      ? (wasApproved ? 're_confirmed' : 'newly_approved')
+      : 'rejected';
+
+    const { error: updateError } = await supabase
       .from('golden_fixtures')
       .update({
-        approved: action === 'approve',
-        reviewed_by: adminUsername ?? 'unknown admin',
-        reviewed_at: new Date().toISOString(),
+        approved: willApprove,
+        reviewed_by: adminUsername,
+        reviewed_at: nowIso,
         review_notes: body?.notes ?? null,
       })
       .eq('case_id', caseId);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ ok: true, caseId, action });
+    if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+
+    // Record immutable entry in audit log table
+    try {
+      await supabase.from('golden_fixture_audit_logs').insert({
+        case_id: caseId,
+        festival_id: existing.festival_id,
+        year: existing.year,
+        actor: adminUsername,
+        action: transition,
+        previous_approved: wasApproved,
+        new_approved: willApprove,
+        review_notes: body?.notes ?? null,
+        diff: {
+          previous_reviewed_by: existing.reviewed_by ?? null,
+          previous_reviewed_at: existing.reviewed_at ?? null,
+          new_reviewed_by: adminUsername,
+          transition,
+        },
+      });
+    } catch {
+      // Non-fatal if logging fails
+    }
+
+    return NextResponse.json({
+      ok: true,
+      caseId,
+      action,
+      diff: {
+        previousApproved: wasApproved,
+        newApproved: willApprove,
+        transition,
+        reviewer: adminUsername,
+        timestamp: nowIso,
+        reviewNotes: body?.notes ?? null,
+      },
+    });
   }
 
   // action === 'update': content edit. Only these fields may change here --
@@ -116,12 +181,48 @@ export async function POST(request: NextRequest) {
 
   // An edit invalidates any prior approval -- the reviewer who approved the
   // OLD citation/date did not sign off on this one.
+  const wasApproved = existing.approved === true;
   update.approved = false;
   update.reviewed_by = null;
   update.reviewed_at = null;
-  update.review_notes = `Content edited by ${adminUsername ?? 'unknown admin'}; approval reset, pending re-review.`;
+  update.review_notes = `Content edited by ${adminUsername}; approval reset, pending re-review.`;
 
-  const { error } = await supabase.from('golden_fixtures').update(update).eq('case_id', caseId);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true, caseId, action: 'update' });
+  const { error: updateError } = await supabase.from('golden_fixtures').update(update).eq('case_id', caseId);
+  if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
+
+  // Record audit log entry for content update
+  try {
+    await supabase.from('golden_fixture_audit_logs').insert({
+      case_id: caseId,
+      festival_id: existing.festival_id,
+      year: existing.year,
+      actor: adminUsername,
+      action: 'content_updated',
+      previous_approved: wasApproved,
+      new_approved: false,
+      review_notes: `Content edited by ${adminUsername}; approval reset, pending re-review.`,
+      diff: {
+        changed_fields: Object.keys(update).filter(k => !['approved', 'reviewed_by', 'reviewed_at', 'review_notes'].includes(k)),
+        previous_expected: existing.expected ?? null,
+        new_expected: update.expected ?? existing.expected ?? null,
+        previous_source: existing.source ?? null,
+        new_source: update.source ?? existing.source ?? null,
+      },
+    });
+  } catch {
+    // Non-fatal if logging fails
+  }
+
+  return NextResponse.json({
+    ok: true,
+    caseId,
+    action: 'update',
+    diff: {
+      previousApproved: wasApproved,
+      newApproved: false,
+      transition: 'content_updated',
+      reviewer: adminUsername,
+      timestamp: nowIso,
+    },
+  });
 }

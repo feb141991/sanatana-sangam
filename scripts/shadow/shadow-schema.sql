@@ -148,3 +148,36 @@ CREATE TABLE observance_review_queue (
   CONSTRAINT uq_observance_review_queue_location
     UNIQUE (definition_id, year, calendar_profile, computed_latitude, computed_longitude)
 );
+
+-- ── golden_fixtures & golden_fixture_audit_logs STUBS ────────────────────────
+CREATE TABLE IF NOT EXISTS public.golden_fixtures (
+  case_id text PRIMARY KEY,
+  festival_id text NOT NULL,
+  year integer NOT NULL CHECK (year >= 2000 AND year <= 2100),
+  location jsonb NOT NULL,
+  profile jsonb NOT NULL,
+  expected jsonb,
+  tolerance jsonb NOT NULL,
+  source jsonb NOT NULL,
+  reasoning text NOT NULL,
+  approved boolean NOT NULL DEFAULT false,
+  reviewed_by text,
+  reviewed_at timestamptz,
+  review_notes text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.golden_fixture_audit_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  case_id text NOT NULL,
+  festival_id text NOT NULL,
+  year integer NOT NULL,
+  actor text NOT NULL,
+  action text NOT NULL CHECK (action IN ('newly_approved', 're_confirmed', 'rejected', 'content_updated')),
+  previous_approved boolean,
+  new_approved boolean,
+  review_notes text,
+  diff jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_at timestamptz NOT NULL DEFAULT now()
+);

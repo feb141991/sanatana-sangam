@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ArrowLeft, CheckCircle2, XCircle, Loader2, Pencil, Save, X,
   BarChart3, ListChecks, FileCheck2, ChevronDown, ChevronRight,
-  Filter, Search, AlertCircle
+  Filter, Search, AlertCircle, History, Clock, RefreshCw, FileEdit,
+  Sparkles, Info
 } from 'lucide-react';
 import Link from 'next/link';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
@@ -29,6 +30,9 @@ type GoldenFixtureRow = {
   kind: string;
   rule_family: string;
   launch_status: string;
+  // Read-only engine convenience -- never the sourced answer key itself.
+  // See src/lib/calendar/fixture-engine-hint.ts for why.
+  engineHint?: { civilDate: string | null; candidateDates: string[]; publicationWithheld: boolean; error?: string };
 };
 
 type ReviewQueueRow = {
@@ -64,7 +68,32 @@ type CoverageResponse = {
   rows: CoverageRow[];
 };
 
-type Tab = 'fixtures' | 'review-queue' | 'coverage';
+type AuditLogRow = {
+  id: string;
+  case_id: string;
+  festival_id: string;
+  year: number;
+  actor: string;
+  action: 'newly_approved' | 're_confirmed' | 'rejected' | 'content_updated';
+  previous_approved: boolean | null;
+  new_approved: boolean | null;
+  review_notes: string | null;
+  diff: Record<string, unknown>;
+  created_at: string;
+  display_name: string;
+  emoji: string;
+  tradition: string;
+};
+
+type ToastFeedback = {
+  id: string;
+  tone: 'ok' | 'info' | 'warn' | 'danger';
+  title: string;
+  detail: string;
+  timestamp: string;
+};
+
+type Tab = 'fixtures' | 'review-queue' | 'coverage' | 'activity';
 type SourceFilter = 'all' | 'real' | 'stub' | 'approved';
 type CategorySel = { tradition: string; kind: string | null } | null;
 
@@ -82,10 +111,18 @@ const isRealFixture = (f: GoldenFixtureRow) =>
 
 export default function CalendarGovernancePage() {
   const [tab, setTab] = useState<Tab>('coverage');
+  const [toasts, setToasts] = useState<ToastFeedback[]>([]);
   const [governanceFilter, setGovernanceFilter] = useState<{
     tradition?: string;
     filterType?: SourceFilter;
   } | null>(null);
+
+  const addToast = useCallback((t: ToastFeedback) => {
+    setToasts(prev => [t, ...prev.slice(0, 4)]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(item => item.id !== t.id));
+    }, 6000);
+  }, []);
 
   const navigateToFixtures = (tradition?: string, filterType?: SourceFilter) => {
     setGovernanceFilter({ tradition, filterType });
@@ -94,6 +131,7 @@ export default function CalendarGovernancePage() {
 
   return (
     <div className="min-h-screen bg-[var(--divine-bg)] pb-24 font-outfit">
+      {/* Top Sticky Header */}
       <div className="sticky top-0 z-50 bg-[var(--divine-bg)]/80 backdrop-blur-xl border-b border-black/5 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
@@ -103,7 +141,7 @@ export default function CalendarGovernancePage() {
             <div>
               <h1 className="text-xl font-bold font-serif theme-ink">Calendar Governance</h1>
               <p className="text-[10px] text-[var(--brand-muted)] uppercase tracking-[0.2em] font-bold">
-                Golden Fixtures · Review Queue · Coverage
+                Golden Fixtures · Review Queue · Activity Log · Coverage
               </p>
             </div>
           </div>
@@ -111,14 +149,43 @@ export default function CalendarGovernancePage() {
             <TabButton active={tab === 'coverage'} onClick={() => setTab('coverage')} icon={BarChart3} label="Coverage" />
             <TabButton active={tab === 'fixtures'} onClick={() => setTab('fixtures')} icon={FileCheck2} label="Fixtures" />
             <TabButton active={tab === 'review-queue'} onClick={() => setTab('review-queue')} icon={ListChecks} label="Review Queue" />
+            <TabButton active={tab === 'activity'} onClick={() => setTab('activity')} icon={History} label="Activity Log" />
           </div>
         </div>
       </div>
 
+      {/* Floating Real-Time Action Feedback Toasts */}
+      <div className="fixed bottom-6 right-6 z-50 space-y-2 max-w-sm w-full pointer-events-none">
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            className={`pointer-events-auto p-4 rounded-2xl shadow-xl border backdrop-blur-xl transition-all animate-in slide-in-from-bottom-5 duration-300 ${
+              t.tone === 'ok' ? 'bg-emerald-950/90 text-emerald-100 border-emerald-500/30'
+              : t.tone === 'warn' ? 'bg-amber-950/90 text-amber-100 border-amber-500/30'
+              : t.tone === 'danger' ? 'bg-rose-950/90 text-rose-100 border-rose-500/30'
+              : 'bg-stone-900/90 text-stone-100 border-white/10'
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2 font-bold text-xs">
+                {t.tone === 'ok' && <CheckCircle2 size={14} className="text-emerald-400" />}
+                {t.tone === 'warn' && <FileEdit size={14} className="text-amber-400" />}
+                {t.tone === 'danger' && <XCircle size={14} className="text-rose-400" />}
+                {t.tone === 'info' && <Info size={14} className="text-sky-400" />}
+                <span>{t.title}</span>
+              </div>
+              <span className="text-[9px] opacity-60 shrink-0">{t.timestamp}</span>
+            </div>
+            <p className="text-xs opacity-90 mt-1 leading-relaxed">{t.detail}</p>
+          </div>
+        ))}
+      </div>
+
       <div className="max-w-6xl mx-auto px-6 py-10">
         {tab === 'coverage' && <CoverageSection onSelectFilter={navigateToFixtures} />}
-        {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} />}
-        {tab === 'review-queue' && <ReviewQueueSection />}
+        {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} onToast={addToast} />}
+        {tab === 'review-queue' && <ReviewQueueSection onToast={addToast} />}
+        {tab === 'activity' && <ActivitySection />}
       </div>
     </div>
   );
@@ -253,40 +320,34 @@ function CoverageSection({
                       {trad}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right font-mono text-xs">
                     <button
                       onClick={() => { setSelectedTradition(trad); setSelectedMetric(null); }}
-                      className="px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs font-bold text-[var(--brand-muted)]"
+                      className="hover:underline"
                     >
                       {t.total}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right font-mono text-xs">
                     <button
                       onClick={() => { setSelectedTradition(trad); setSelectedMetric('live'); }}
-                      className={`px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs font-bold ${
-                        selectedTradition === trad && selectedMetric === 'live' ? 'bg-black/10 text-black' : 'text-slate-700'
-                      }`}
+                      className="text-emerald-600 hover:underline font-bold"
                     >
                       {t.live}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right font-mono text-xs">
                     <button
                       onClick={() => { setSelectedTradition(trad); setSelectedMetric('liveUnfixtured'); }}
-                      className={`px-2.5 py-1 rounded-lg font-mono text-xs font-bold transition-all ${
-                        t.liveUnfixtured > 0
-                          ? 'bg-rose-500/10 text-rose-600 hover:bg-rose-500 hover:text-white'
-                          : 'bg-emerald-500/10 text-emerald-600'
-                      }`}
+                      className={`${t.liveUnfixtured > 0 ? 'text-amber-600 font-bold' : 'text-[var(--brand-muted)]'} hover:underline`}
                     >
                       {t.liveUnfixtured}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right font-mono text-xs">
                     <button
                       onClick={() => { setSelectedTradition(trad); setSelectedMetric('deferred'); }}
-                      className="px-2 py-1 rounded-lg hover:bg-black/5 font-mono text-xs text-[var(--brand-muted)]"
+                      className="text-[var(--brand-muted)] hover:underline"
                     >
                       {t.deferred}
                     </button>
@@ -298,59 +359,73 @@ function CoverageSection({
         </table>
       </div>
 
-      {/* Filtered Rule Slugs Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+      {/* Filtered Rule Slugs Interactive Inspector */}
+      <div className="glass-panel rounded-[2rem] border border-black/5 bg-white/40 p-6 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold uppercase tracking-widest theme-ink">
-              Matching Rule Slugs ({filteredSlugs.length})
-            </h3>
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--brand-muted)]">
+              Filtered Rule Inspector ({filteredSlugs.length})
+            </span>
             {selectedTradition && (
-              <span className="px-2.5 py-0.5 rounded-full bg-[var(--premium-gold)]/15 text-[var(--premium-gold)] text-[10px] font-bold uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-[var(--premium-gold)]/10 text-[var(--premium-gold)] text-[10px] font-bold uppercase">
                 {selectedTradition}
               </span>
             )}
             {selectedMetric && (
-              <span className="px-2.5 py-0.5 rounded-full bg-black/10 text-slate-700 text-[10px] font-bold uppercase">
+              <span className="px-2 py-0.5 rounded-full bg-black/5 text-[var(--brand-muted)] text-[10px] font-bold uppercase">
                 {selectedMetric}
               </span>
             )}
           </div>
-          <div className="relative w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" size={14} />
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" />
             <input
               type="text"
-              placeholder="Search slug..."
+              placeholder="Search rule slugs..."
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-1.5 pl-9 rounded-xl bg-black/[0.03] border border-black/5 text-xs theme-ink focus:outline-none focus:border-[var(--premium-gold)]"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-3 py-1.5 rounded-xl bg-black/[0.03] border border-black/5 text-xs theme-ink focus:outline-none focus:border-[var(--premium-gold)] w-48 transition-all"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           {filteredSlugs.map((r) => (
-            <div
+            <button
               key={r.slug}
               onClick={() => onSelectFilter(r.tradition, 'all')}
-              className="glass-panel rounded-2xl p-4 border border-black/5 bg-white/50 hover:border-[var(--premium-gold)]/50 transition-all cursor-pointer space-y-2 group"
+              className="text-left p-3 rounded-xl bg-black/[0.02] border border-black/5 hover:bg-black/[0.04] transition-all flex items-center justify-between group"
             >
-              <div className="flex items-start justify-between gap-2">
-                <h4 className="font-bold text-xs theme-ink truncate group-hover:text-[var(--premium-gold)] transition-colors">{r.slug}</h4>
-                <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                  r.launchStatus === 'included' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-slate-200 text-slate-600'
-                }`}>
-                  {r.launchStatus}
-                </span>
+              <div className="min-w-0 pr-2">
+                <p className="text-xs font-bold theme-ink truncate group-hover:text-[var(--premium-gold)]">
+                  {r.slug}
+                </p>
+                <p className="text-[10px] text-[var(--brand-muted)] capitalize">
+                  {r.tradition} · {r.launchStatus}
+                </p>
               </div>
-              <div className="flex items-center justify-between text-[10px] text-[var(--brand-muted)] font-medium pt-1 border-t border-black/5">
-                <span className="capitalize">{r.tradition}</span>
-                <span className={r.realFixtures > 0 ? 'text-emerald-600 font-bold' : 'text-rose-500 font-bold'}>
-                  {r.realFixtures > 0 ? `${r.realFixtures} Sourced` : 'No Fixture'}
-                </span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {r.approvedFixtures > 0 ? (
+                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+                    ✓ {r.approvedFixtures}
+                  </span>
+                ) : r.realFixtures > 0 ? (
+                  <span className="px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-600 text-[10px] font-bold">
+                    {r.realFixtures} src
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.5 rounded-md bg-black/5 text-[var(--brand-muted)] text-[10px]">
+                    0
+                  </span>
+                )}
               </div>
-            </div>
+            </button>
           ))}
+          {filteredSlugs.length === 0 && (
+            <p className="text-xs text-[var(--brand-muted)] col-span-full py-4 text-center">
+              No rule slugs match the active filter.
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -360,41 +435,33 @@ function CoverageSection({
 function StatCard({
   label, value, tone, active, onClick,
 }: {
-  label: string;
-  value: number;
-  tone?: 'ok' | 'warn' | 'danger';
-  active?: boolean;
-  onClick?: () => void;
+  label: string; value: number; tone?: 'ok' | 'warn' | 'danger'; active?: boolean; onClick?: () => void;
 }) {
-  const color = tone === 'ok' ? 'text-emerald-600' : tone === 'danger' ? 'text-rose-600' : tone === 'warn' ? 'text-amber-600' : 'theme-ink';
   return (
     <button
       onClick={onClick}
-      className={`glass-panel rounded-2xl border p-4 text-left transition-all hover:scale-[1.02] ${
-        active
-          ? 'border-2 border-[var(--premium-gold)] ring-2 ring-[var(--premium-gold)]/20 bg-white/80'
-          : 'border-black/5 bg-white/40 hover:border-black/10'
+      className={`text-left glass-panel rounded-2xl border p-4 space-y-1 transition-all ${
+        active ? 'border-[var(--premium-gold)] ring-1 ring-[var(--premium-gold)] bg-white/60' : 'border-black/5 bg-white/40 hover:bg-white/60'
       }`}
     >
       <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">{label}</p>
-      <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
+      <p className={`text-2xl font-bold font-serif ${
+        tone === 'ok' ? 'text-emerald-600' : tone === 'warn' ? 'text-amber-600' : tone === 'danger' ? 'text-rose-600' : 'theme-ink'
+      }`}>
+        {value}
+      </p>
     </button>
   );
 }
 
-// ── Category Rail ─────────────────────────────────────────────────────────
+// ── Category Rail ──────────────────────────────────────────────────────────
 
-type TraditionStat = {
-  liveRules: number;
-  fixtureCount: number;
-  kinds: Record<string, { liveRules: number; fixtureCount: number }>;
-};
+function buildCategoryStats(rows: GoldenFixtureRow[]) {
+  const stats: Record<string, { fixtureCount: number; liveRules: number; kinds: Record<string, { fixtureCount: number; liveRules: number }> }> = {};
 
-function buildCategoryStats(rows: GoldenFixtureRow[]): Record<string, TraditionStat> {
-  const stats: Record<string, TraditionStat> = {};
   const ensure = (trad: string, kind: string) => {
-    if (!stats[trad]) stats[trad] = { liveRules: 0, fixtureCount: 0, kinds: {} };
-    if (!stats[trad].kinds[kind]) stats[trad].kinds[kind] = { liveRules: 0, fixtureCount: 0 };
+    if (!stats[trad]) stats[trad] = { fixtureCount: 0, liveRules: 0, kinds: {} };
+    if (!stats[trad].kinds[kind]) stats[trad].kinds[kind] = { fixtureCount: 0, liveRules: 0 };
   };
 
   const seenSlugs = new Set<string>();
@@ -503,8 +570,10 @@ function CategoryRail({ rows, sel, onSelect }: {
 
 function FixturesSection({
   initialFilter,
+  onToast,
 }: {
   initialFilter?: { tradition?: string; filterType?: SourceFilter } | null;
+  onToast?: (t: ToastFeedback) => void;
 }) {
   const [rows, setRows] = useState<GoldenFixtureRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -542,7 +611,6 @@ function FixturesSection({
 
   const handleSelectCategory = (sel: CategorySel) => {
     setCategorySel(sel);
-    // Switch filter to "all" if there are stubs/fixtures but 0 real fixtures for this selection
     const match = !sel ? rows : rows.filter(f => f.tradition === sel.tradition && (!sel.kind || f.kind === sel.kind));
     const realCount = match.filter(isRealFixture).length;
     if (realCount === 0 && match.length > 0) {
@@ -573,6 +641,26 @@ function FixturesSection({
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || `Failed to ${action}`);
+
+      if (json.diff) {
+        const transition = json.diff.transition;
+        const isReconfirm = transition === 're_confirmed';
+        const isNewlyApproved = transition === 'newly_approved';
+        onToast?.({
+          id: `${caseId}-${Date.now()}`,
+          tone: action === 'approve' ? 'ok' : 'danger',
+          title: isReconfirm
+            ? `Re-confirmed: ${caseId}`
+            : isNewlyApproved
+            ? `Newly Approved: ${caseId}`
+            : `Rejected: ${caseId}`,
+          detail: isReconfirm
+            ? `Approval verified & re-stamped by ${json.diff.reviewer}`
+            : `Status changed to ${json.diff.newApproved ? 'Approved' : 'Unapproved'} by ${json.diff.reviewer}`,
+          timestamp: new Date().toLocaleTimeString(),
+        });
+      }
+
       await fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to ${action}`);
@@ -589,6 +677,15 @@ function FixturesSection({
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || 'Failed to save');
       setEditing(null);
+
+      onToast?.({
+        id: `${caseId}-${Date.now()}`,
+        tone: 'warn',
+        title: `Content Updated: ${caseId}`,
+        detail: `Citation/Expected date updated by ${json.diff?.reviewer ?? 'admin'} (Approval reset to false pending re-review)`,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+
       await fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save');
@@ -687,6 +784,8 @@ function FixtureCard({
         </div>
       </div>
 
+      <VerifyPanel fixture={fixture} onUseEngineDate={editing ? () => setCivilDate(fixture.engineHint?.civilDate ?? '') : undefined} />
+
       {editing ? (
         <div className="space-y-2 border-t border-black/5 pt-3">
           <LabeledInput label="civilDate (YYYY-MM-DD)" value={civilDate} onChange={setCivilDate} />
@@ -708,7 +807,6 @@ function FixtureCard({
         </div>
       ) : (
         <>
-          <p className="text-sm theme-ink"><span className="font-bold">{fixture.expected?.civilDate ?? '(no expected date)'}</span></p>
           <p className="text-xs text-[var(--brand-muted)] leading-relaxed">{fixture.source.citation}</p>
           {fixture.reviewed_by && (
             <p className="text-[10px] text-[var(--brand-muted)]">
@@ -716,6 +814,50 @@ function FixtureCard({
             </p>
           )}
         </>
+      )}
+    </div>
+  );
+}
+
+// Two independent answers, shown side by side so a reviewer can eyeball
+// agreement before approving: what the engine currently computes (a hint,
+// never authoritative) vs. what the saved citation currently states (the
+// actual sourced answer key, blank on an unsourced stub). Never auto-fills
+// or auto-approves anything -- "Use engine date" only pre-fills the edit
+// form's input for the reviewer to accept or overwrite themselves, and only
+// appears while editing.
+function VerifyPanel({ fixture, onUseEngineDate }: { fixture: GoldenFixtureRow; onUseEngineDate?: () => void }) {
+  const engineDate = fixture.engineHint?.civilDate ?? null;
+  const engineError = fixture.engineHint?.error;
+  const citationDate = fixture.expected?.civilDate ?? null;
+  const bothPresent = engineDate && citationDate;
+  const agree = bothPresent && engineDate === citationDate;
+  const disagree = bothPresent && engineDate !== citationDate;
+
+  return (
+    <div className="grid grid-cols-2 gap-2 rounded-xl border border-black/5 bg-black/[0.02] p-3">
+      <div>
+        <p className="text-[9px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">Engine computes</p>
+        <p className={`text-sm font-semibold ${engineDate ? 'theme-ink' : 'text-[var(--brand-muted)]'}`}>
+          {engineDate ?? (engineError ? '(engine error)' : '(no candidate)')}
+        </p>
+        {onUseEngineDate && engineDate && (
+          <button onClick={onUseEngineDate} className="mt-1 text-[10px] font-bold text-[var(--premium-gold)] hover:underline">
+            Use this date →
+          </button>
+        )}
+      </div>
+      <div>
+        <p className="text-[9px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">Citation states</p>
+        <p className={`text-sm font-semibold ${citationDate ? 'theme-ink' : 'text-[var(--brand-muted)]'}`}>
+          {citationDate ?? '(no expected date)'}
+        </p>
+      </div>
+      {agree && (
+        <p className="col-span-2 text-[10px] font-bold text-emerald-600">✓ Engine and citation agree</p>
+      )}
+      {disagree && (
+        <p className="col-span-2 text-[10px] font-bold text-rose-600">⚠ Engine and citation disagree — check the citation before approving</p>
       )}
     </div>
   );
@@ -743,7 +885,7 @@ function LabeledTextarea({ label, value, onChange }: { label: string; value: str
 
 // ── Review Queue ───────────────────────────────────────────────────────────
 
-function ReviewQueueSection() {
+function ReviewQueueSection({ onToast }: { onToast?: (t: ToastFeedback) => void }) {
   const [rows, setRows] = useState<ReviewQueueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -773,6 +915,15 @@ function ReviewQueueSection() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || `Failed to ${action}`);
+
+      onToast?.({
+        id: `${id}-${Date.now()}`,
+        tone: action === 'approve' ? 'ok' : 'danger',
+        title: `${action === 'approve' ? 'Approved' : 'Rejected'} Review Item`,
+        detail: `Review queue item '${id}' marked as ${action}d`,
+        timestamp: new Date().toLocaleTimeString(),
+      });
+
       await fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to ${action}`);
@@ -839,6 +990,164 @@ function ReviewQueueSection() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ── Activity Log (Audit History) ───────────────────────────────────────────
+
+function ActivitySection() {
+  const [logs, setLogs] = useState<AuditLogRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [actionFilter, setActionFilter] = useState<'all' | 'newly_approved' | 're_confirmed' | 'rejected' | 'content_updated'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const fetchLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await fetch('/api/admin/calendar-governance/activity');
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || 'Failed to fetch activity log');
+      setLogs(Array.isArray(json) ? json : []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch activity log');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  const filteredLogs = useMemo(() => {
+    return logs.filter(log => {
+      if (actionFilter !== 'all' && log.action !== actionFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          log.case_id.toLowerCase().includes(q) ||
+          log.festival_id.toLowerCase().includes(q) ||
+          log.display_name.toLowerCase().includes(q) ||
+          log.actor.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [logs, actionFilter, searchQuery]);
+
+  if (error) return <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>;
+
+  return (
+    <div className="space-y-6">
+      {/* Action Filters & Refresh Bar */}
+      <div className="flex items-center justify-between flex-wrap gap-4 glass-panel rounded-2xl p-4 border border-black/5 bg-white/40">
+        <div className="flex items-center gap-2 flex-wrap">
+          <FilterPill active={actionFilter === 'all'} onClick={() => setActionFilter('all')} label={`All Activities (${logs.length})`} />
+          <FilterPill active={actionFilter === 'newly_approved'} onClick={() => setActionFilter('newly_approved')} label="Newly Approved" />
+          <FilterPill active={actionFilter === 're_confirmed'} onClick={() => setActionFilter('re_confirmed')} label="Re-confirmed" />
+          <FilterPill active={actionFilter === 'rejected'} onClick={() => setActionFilter('rejected')} label="Rejected" />
+          <FilterPill active={actionFilter === 'content_updated'} onClick={() => setActionFilter('content_updated')} label="Content Edited" />
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" />
+            <input
+              type="text"
+              placeholder="Search case, festival, reviewer..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-3 py-1.5 rounded-xl bg-black/[0.03] border border-black/5 text-xs theme-ink focus:outline-none focus:border-[var(--premium-gold)] w-56"
+            />
+          </div>
+          <button
+            onClick={fetchLogs}
+            disabled={loading}
+            className="p-2 rounded-xl bg-black/5 hover:bg-black/10 text-[var(--brand-muted)] transition-all disabled:opacity-50"
+            title="Refresh logs"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
+      </div>
+
+      {/* Activity Timeline Feed */}
+      {loading ? (
+        <LoadingBlock label="Loading audit activity..." />
+      ) : filteredLogs.length === 0 ? (
+        <EmptyBlock label="No governance actions recorded yet. Every click on Approve, Reject, or Edit will record an immutable log entry here." />
+      ) : (
+        <div className="space-y-3">
+          {filteredLogs.map(log => (
+            <div key={log.id} className="glass-panel rounded-[1.75rem] border border-black/5 bg-white/40 p-5 space-y-3 shadow-sm hover:bg-white/60 transition-all">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-base">{log.emoji}</span>
+                    <h3 className="font-bold theme-ink">{log.display_name}</h3>
+                    <span className="text-xs text-[var(--brand-muted)]">{log.year}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{log.tradition}</span>
+                    
+                    {/* Status transition badge */}
+                    {log.action === 'newly_approved' && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                        <CheckCircle2 size={10} /> Newly Approved
+                      </span>
+                    )}
+                    {log.action === 're_confirmed' && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                        <Sparkles size={10} /> Re-confirmed Active
+                      </span>
+                    )}
+                    {log.action === 'rejected' && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                        <XCircle size={10} /> Rejected
+                      </span>
+                    )}
+                    {log.action === 'content_updated' && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                        <FileEdit size={10} /> Content Edited (Reset)
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] uppercase tracking-widest font-mono font-bold text-[var(--brand-muted)] mt-1">{log.case_id}</p>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[var(--brand-muted)] flex items-center gap-1 justify-end">
+                    <Clock size={12} /> {new Date(log.created_at).toLocaleString()}
+                  </span>
+                  <span className="text-[10px] font-bold text-[var(--premium-gold)] uppercase tracking-wider">
+                    Actor: {log.actor}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Diff & Notes Body */}
+              <div className="pt-2 border-t border-black/5 text-xs space-y-1.5">
+                {log.review_notes && (
+                  <p className="theme-ink italic bg-black/[0.02] p-2.5 rounded-xl border border-black/5">
+                    "{log.review_notes}"
+                  </p>
+                )}
+
+                <div className="flex items-center gap-4 text-[11px] text-[var(--brand-muted)] flex-wrap">
+                  <span className="flex items-center gap-1 font-mono">
+                    State: {log.previous_approved ? 'Approved (true)' : 'Unapproved (false)'} → <span className="font-bold text-emerald-600">{log.new_approved ? 'Approved (true)' : 'Unapproved (false)'}</span>
+                  </span>
+                  {log.diff && typeof log.diff === 'object' && 'changed_fields' in log.diff && Array.isArray((log.diff as any).changed_fields) && (
+                    <span className="font-mono text-amber-600">
+                      Modified: {(log.diff as any).changed_fields.join(', ')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
