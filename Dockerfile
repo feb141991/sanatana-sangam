@@ -5,15 +5,15 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy root & package manifests
+# Copy package manifests for workspace caching
 COPY package.json package-lock.json ./
 COPY packages/dharma-rules/package.json ./packages/dharma-rules/
 COPY packages/panchang-engine/package.json ./packages/panchang-engine/
 COPY packages/pathshala-engine/package.json ./packages/pathshala-engine/
 COPY packages/sadhana-engine/package.json ./packages/sadhana-engine/
 
-# Install dependencies
-RUN npm install
+# Install dependencies (ignore-scripts prevents prebuild running before source files are copied)
+RUN npm install --ignore-scripts
 
 # ── Stage 2: Builder ──────────────────────────────────────────────────────────
 FROM base AS builder
@@ -25,8 +25,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build panchang-engine & application
-RUN npm run build --workspace=@sangam/panchang-engine
+# Build workspaces and Next.js standalone application
 RUN npm run build
 
 # ── Stage 3: Runner (Production Cloud Run Image) ──────────────────────────────
@@ -38,11 +37,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy static assets and standalone server output
+# Copy public assets & prerender cache
 COPY --from=builder /app/public ./public
+
+# Copy standalone output from Next.js build
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
