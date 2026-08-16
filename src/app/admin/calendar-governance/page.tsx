@@ -1129,7 +1129,7 @@ function ActivitySection() {
               <div className="pt-2 border-t border-black/5 text-xs space-y-1.5">
                 {log.review_notes && (
                   <p className="theme-ink italic bg-black/[0.02] p-2.5 rounded-xl border border-black/5">
-                    "{log.review_notes}"
+                    &ldquo;{log.review_notes}&rdquo;
                   </p>
                 )}
 
