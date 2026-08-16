@@ -1,0 +1,13 @@
+.git
+.gitignore
+.next
+node_modules
+scratch
+graphify-out
+*.log
+.env
+.env*.local
+.DS_Store
+README.md
+docs
+*.py

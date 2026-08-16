@@ -3,6 +3,7 @@ const path = require('path');
 const kathaAliases = require('./src/lib/katha-aliases.json');
 
 const nextConfig = {
+  output: 'standalone',
   async redirects() {
     return [
       {
