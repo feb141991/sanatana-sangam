@@ -5,7 +5,16 @@ import {
   getMoonPosition,
   getNutation,
   getSunriseSunsetTimes,
+  type PanchangTrustMeta,
+  PANCHANG_TRUST_META,
 } from '@sangam/panchang-engine';
+
+// Re-exported, not redeclared -- was previously duplicated verbatim in both
+// this file and packages/panchang-engine/src/index.ts, with no single
+// source of truth. The package is canonical (matches the direction every
+// other shared primitive already flows in this file).
+export type { PanchangTrustMeta };
+export { PANCHANG_TRUST_META };
 
 export interface PanchangData {
   tithi: string;
@@ -29,18 +38,6 @@ export interface PanchangData {
   samvatYear: number;
   samvatName: string;
 }
-
-export interface PanchangTrustMeta {
-  methodLabel: string;
-  precisionLabel: string;
-  guidanceNote: string;
-}
-
-export const PANCHANG_TRUST_META: PanchangTrustMeta = {
-  methodLabel: 'Astronomy-backed Panchang estimate',
-  precisionLabel: 'Higher precision for daily guidance; observance rules still under validation',
-  guidanceNote: 'This Panchang now uses astronomy-backed solar and lunar positions plus solved transition windows. It is materially stronger than the older in-app estimate, but temple- or guru-specific observances should still win when exact vrata timing matters.',
-};
 
 const TITHIS = [
   'Pratipada', 'Dwitiya', 'Tritiya', 'Chaturthi', 'Panchami',

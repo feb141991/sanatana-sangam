@@ -3,12 +3,13 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X, Globe } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowLeft, Share2, X, Globe, ShieldCheck } from 'lucide-react';
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 import { WhyTodayCard } from '@/components/calendar/WhyTodayCard';
 import { WhyTodayExplanationModal } from '@/components/calendar/WhyTodayExplanationModal';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { localSpiritualDate } from '@/lib/sacred-time';
+import { PANCHANG_TRUST_META } from '@/lib/panchang';
 import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
@@ -22,6 +23,16 @@ interface Props {
   timezone:  string;
   isReference: boolean;
 }
+
+// The two hex values repeated throughout this page's inline `style={{...}}`
+// objects (the many Tailwind `text-[#C5A059]`/`border-[#F2EAD6]`-style
+// arbitrary-value classes elsewhere in this file are intentionally left as
+// literal strings -- Tailwind's build-time content scanner needs the exact
+// hex in source to generate that class; a JS template-literal interpolation
+// there would silently produce no CSS at all).
+const PANCHANG_GOLD = '#C5A059';
+const PANCHANG_GOLD_RGB = '197, 160, 89';
+const PANCHANG_CREAM = '#F2EAD6';
 
 const TRADITION_META: Record<string, { badge: string; note: string; accent: string; accentLight: string }> = {
   hindu:    { badge: '🕉️ Vedic',     note: 'Vikram Samvat',         accent: '#B8541B', accentLight: 'rgba(184,84,27,0.15)' },
@@ -357,7 +368,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
           </Link>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: '#F2EAD6', letterSpacing: '-0.01em', lineHeight: 1.2 }}>Today&apos;s Panchang</h1>
+              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 600, color: PANCHANG_CREAM, letterSpacing: '-0.01em', lineHeight: 1.2 }}>Today&apos;s Panchang</h1>
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white/90"
                 style={{ background: tradMeta.accent }}>
                 {tradMeta.badge}
@@ -436,8 +447,8 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
               animate={{ opacity: 1, y: 0 }}
               className="relative overflow-hidden rounded-xl p-3 border"
               style={{
-                background: 'linear-gradient(135deg, rgba(197, 160, 89, 0.15), rgba(197, 160, 89, 0.05))',
-                borderColor: 'rgba(197, 160, 89, 0.3)',
+                background: `linear-gradient(135deg, rgba(${PANCHANG_GOLD_RGB}, 0.15), rgba(${PANCHANG_GOLD_RGB}, 0.05))`,
+                borderColor: `rgba(${PANCHANG_GOLD_RGB}, 0.3)`,
               }}
             >
               <button
@@ -538,6 +549,19 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                   Today
                 </span>
               )}
+            </div>
+
+            {/* Confidence & trust surface (Phase 6.6) — about the calculation
+                method as a whole, not any one element, so it sits above the
+                element rows rather than beside one of them. */}
+            <div className="rounded-xl px-4 py-3 flex items-start gap-3"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <ShieldCheck size={16} className="text-[#C5A059] shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-white/90">{PANCHANG_TRUST_META.methodLabel}</p>
+                <p className="text-[11px] text-white/50 mt-0.5">{PANCHANG_TRUST_META.precisionLabel}</p>
+                <p className="text-[10px] text-white/35 leading-relaxed mt-1.5">{PANCHANG_TRUST_META.guidanceNote}</p>
+              </div>
             </div>
 
             <GlassCard className="p-4 space-y-2">
