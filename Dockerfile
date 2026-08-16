@@ -1,5 +1,5 @@
 # ── Stage 1: Base & Dependencies ──────────────────────────────────────────────
-FROM node:20-alpine AS base
+FROM node:22-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
@@ -13,7 +13,7 @@ COPY packages/pathshala-engine/package.json ./packages/pathshala-engine/
 COPY packages/sadhana-engine/package.json ./packages/sadhana-engine/
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # ── Stage 2: Builder ──────────────────────────────────────────────────────────
 FROM base AS builder
