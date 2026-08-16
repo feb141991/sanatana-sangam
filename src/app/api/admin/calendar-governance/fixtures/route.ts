@@ -118,14 +118,26 @@ export async function POST(request: NextRequest) {
       ? (wasApproved ? 're_confirmed' : 'newly_approved')
       : 'rejected';
 
+    // golden_fixtures_approval_evidence_check requires effective_from to be
+    // set whenever approved = true (along with expected/source.tier/
+    // reviewed_by/reviewed_at, which were already set below) -- this route
+    // never set it, so every *new* approval through this endpoint failed
+    // the DB constraint. Only touched on approve; a reject leaves whatever
+    // effective_from was already there untouched, same as review_notes'
+    // history isn't erased either.
+    const updatePayload: Record<string, unknown> = {
+      approved: willApprove,
+      reviewed_by: adminUsername,
+      reviewed_at: nowIso,
+      review_notes: body?.notes ?? null,
+    };
+    if (willApprove) {
+      updatePayload.effective_from = nowIso.slice(0, 10);
+    }
+
     const { error: updateError } = await supabase
       .from('golden_fixtures')
-      .update({
-        approved: willApprove,
-        reviewed_by: adminUsername,
-        reviewed_at: nowIso,
-        review_notes: body?.notes ?? null,
-      })
+      .update(updatePayload)
       .eq('case_id', caseId);
 
     if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
