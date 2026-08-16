@@ -95,6 +95,7 @@ type ObservanceEntry = {
   href: string;
   label: string;
   monthLabel: string | null;
+  description: string | null;
 };
 
 type PracticeRow = {
@@ -277,6 +278,7 @@ function buildObservanceEntry(
     href,
     label,
     monthLabel,
+    description: definition.description ?? null,
   };
 }
 
@@ -678,6 +680,7 @@ export async function GET(request: NextRequest) {
       href: '/vrat',
       label: `${fallbackPulse.label} Today`,
       monthLabel: null,
+      description: null,
     };
   } else if (firstDefinition && firstObservance) {
     observance = buildObservanceEntry(firstObservance.row, firstDefinition, today, monthSystem);
