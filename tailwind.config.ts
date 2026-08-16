@@ -35,6 +35,15 @@ const config: Config = {
           saffron: "#B98A4A",
           orange:  "#8E5E2A",
         },
+        // The gold/cream accent for the Panchang "living sky" glass page
+        // (src/app/(main)/panchang/today/PanchangDetail.tsx) -- a real
+        // Tailwind theme color so the many `text-panchang-gold`-style
+        // classes there resolve through one named source instead of
+        // scattering `text-[#C5A059]` arbitrary-value literals. Distinct
+        // from `sacred.gold`/`sacred.cream` above (different page, different
+        // dark-glass visual language, not the light saffron/sacred system).
+        "panchang-gold": "#C5A059",
+        "panchang-cream": "#F2EAD6",
       },
       fontFamily: {
         sans:    ["var(--font-inter)", "system-ui", "sans-serif"],

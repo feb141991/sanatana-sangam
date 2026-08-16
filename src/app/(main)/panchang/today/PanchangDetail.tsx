@@ -24,12 +24,12 @@ interface Props {
   isReference: boolean;
 }
 
-// The two hex values repeated throughout this page's inline `style={{...}}`
-// objects (the many Tailwind `text-[#C5A059]`/`border-[#F2EAD6]`-style
-// arbitrary-value classes elsewhere in this file are intentionally left as
-// literal strings -- Tailwind's build-time content scanner needs the exact
-// hex in source to generate that class; a JS template-literal interpolation
-// there would silently produce no CSS at all).
+// `panchang-gold`/`panchang-cream` are registered as real Tailwind theme
+// colors (tailwind.config.ts) -- every `text-panchang-gold`-style class in
+// this file resolves through that one definition. These two JS constants
+// stay separate because they feed genuinely computed values a static class
+// can't express: an inline `style={{ color: ... }}` and an interpolated
+// `rgba(${PANCHANG_GOLD_RGB}, alpha)` gradient below.
 const PANCHANG_GOLD = '#C5A059';
 const PANCHANG_GOLD_RGB = '197, 160, 89';
 const PANCHANG_CREAM = '#F2EAD6';
@@ -96,6 +96,13 @@ function isSameDay(a: Date, b: Date) {
          a.getMonth()    === b.getMonth()    &&
          a.getDate()     === b.getDate();
 }
+
+// Shared dark-glass surface tokens -- Row, the trust card, and the header's
+// icon buttons all rendered their own near-duplicate rgba glass values
+// before this (0.05 vs 0.06 alpha drift between Row and the trust card was
+// almost certainly unintentional). One named pair each, reused everywhere.
+const GLASS_ICON_BUTTON = { background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' };
+const GLASS_ROW = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' };
 
 function GlassCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
@@ -176,8 +183,8 @@ function Row({ emoji, label, value, upto, warn = false, infoKey, isLocal = false
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
       style={{
-        background: warn ? 'rgba(200,80,20,0.18)' : 'rgba(255,255,255,0.06)',
-        border: `1px solid ${warn ? 'rgba(200,80,20,0.3)' : 'rgba(255,255,255,0.08)'}`,
+        background: warn ? 'rgba(200,80,20,0.18)' : GLASS_ROW.background,
+        border: warn ? '1px solid rgba(200,80,20,0.3)' : GLASS_ROW.border,
       }}>
       <span className="text-lg w-6 text-center flex-shrink-0 leading-none">{emoji}</span>
       <div className="flex-1 min-w-0">
@@ -363,7 +370,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
         <div className="flex items-center gap-3">
           <Link href="/panchang"
             className="w-9 h-9 rounded-xl flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
+            style={GLASS_ICON_BUTTON}>
             <ArrowLeft size={16} className="text-white/80" />
           </Link>
           <div className="flex-1">
@@ -388,31 +395,31 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                     color: 'rgba(255,255,255,0.8)',
                   }}
                 >
-                  <span className={displayTz === 'local' ? 'text-[#C5A059]' : 'opacity-60'}>Your time</span>
+                  <span className={displayTz === 'local' ? 'text-panchang-gold' : 'opacity-60'}>Your time</span>
                   <span className="opacity-40">↔</span>
-                  <span className={displayTz === 'ist' ? 'text-[#C5A059]' : 'opacity-60'}>IST</span>
+                  <span className={displayTz === 'ist' ? 'text-panchang-gold' : 'opacity-60'}>IST</span>
                 </button>
               </div>
             )}
           </div>
           <button onClick={share}
             className="w-11 h-11 rounded-xl flex items-center justify-center transition"
-            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }} aria-label="Share">
+            style={GLASS_ICON_BUTTON} aria-label="Share">
             <Share2 size={15} className="text-white/80" />
           </button>
         </div>
 
         {/* Location Notice (Defect D24 / §8) */}
         {isReference && (
-          <div className="clay-card rounded-2xl p-4 mb-4 border-[#C5A059]/30 bg-gradient-to-br from-[#C5A059]/10 to-transparent flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#C5A059]/15 border border-[#C5A059]/30 flex items-center justify-center flex-shrink-0">
-              <Globe className="text-[#C5A059]" size={18} />
+          <div className="clay-card rounded-2xl p-4 mb-4 border-panchang-gold/30 bg-gradient-to-br from-panchang-gold/10 to-transparent flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-panchang-gold/15 border border-panchang-gold/30 flex items-center justify-center flex-shrink-0">
+              <Globe className="text-panchang-gold" size={18} />
             </div>
             <p className="text-xs text-[color:var(--brand-muted)]">
               Showing Ujjain reference timings — set your location for local times.
             </p>
             {!isLoggedIn && (
-              <Link href="/auth" className="text-[11px] font-bold text-[#C5A059] px-2 py-1 rounded bg-white/5 whitespace-nowrap ml-auto">Sign in</Link>
+              <Link href="/auth" className="text-[11px] font-bold text-panchang-gold px-2 py-1 rounded bg-white/5 whitespace-nowrap ml-auto">Sign in</Link>
             )}
           </div>
         )}
@@ -456,15 +463,15 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                   try { sessionStorage.setItem('shoonaya_dismissed_ekadashi', 'true'); } catch {}
                   setDismissedBanner(true);
                 }}
-                className="absolute top-2 right-2 text-[#C5A059]/60 hover:text-[#C5A059]"
+                className="absolute top-2 right-2 text-panchang-gold/60 hover:text-panchang-gold"
               >
                 <X size={14} />
               </button>
               <div className="flex items-center gap-2.5">
                 <span className="text-xl leading-none">{todayObs.emoji}</span>
                 <div>
-                  <p className="text-sm font-semibold text-[#F2EAD6]">{todayObs.display_name}</p>
-                  <p className="text-[11px] text-[#C5A059] font-medium opacity-90 mt-0.5">Today in your timezone</p>
+                  <p className="text-sm font-semibold text-panchang-cream">{todayObs.display_name}</p>
+                  <p className="text-[11px] text-panchang-gold font-medium opacity-90 mt-0.5">Today in your timezone</p>
                 </div>
               </div>
             </motion.div>
@@ -494,7 +501,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
           {/* Interactive Date Picker & Calendar Strip */}
           <GlassCard className="p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-[#F2EAD6] font-serif text-base font-bold flex items-center gap-2">
+              <h2 className="text-panchang-cream font-serif text-base font-bold flex items-center gap-2">
                 <span>🗓️</span> {MONTHS[viewMonth]} {viewYear}
               </h2>
               <div className="flex items-center gap-1.5">
@@ -521,9 +528,9 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                     onClick={() => { setSelected(date); playHaptic('light'); }}
                     className={`h-9 rounded-xl flex flex-col items-center justify-center text-xs font-semibold transition ${
                       isSel
-                        ? 'bg-[#C5A059] text-[#1c1c1a] font-bold shadow-md'
+                        ? 'bg-panchang-gold text-[#1c1c1a] font-bold shadow-md'
                         : isCurToday
-                        ? 'bg-white/10 border border-[#C5A059]/40 text-white font-bold'
+                        ? 'bg-white/10 border border-panchang-gold/40 text-white font-bold'
                         : 'text-white/75 hover:bg-white/5'
                     }`}
                   >
@@ -542,10 +549,10 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
             className="space-y-3"
           >
             <div className="text-center py-1">
-              <p className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.16em]">Spiritual Alignment</p>
-              <h3 className="font-serif text-lg font-bold text-[#F2EAD6] mt-0.5">{dateLabel}</h3>
+              <p className="text-panchang-gold text-[10px] font-bold uppercase tracking-[0.16em]">Spiritual Alignment</p>
+              <h3 className="font-serif text-lg font-bold text-panchang-cream mt-0.5">{dateLabel}</h3>
               {isToday && (
-                <span className="inline-block mt-1 text-[9px] font-bold text-[#C5A059] bg-[#C5A059]/10 border border-[#C5A059]/20 px-2 py-0.5 rounded-full">
+                <span className="inline-block mt-1 text-[9px] font-bold text-panchang-gold bg-panchang-gold/10 border border-panchang-gold/20 px-2 py-0.5 rounded-full">
                   Today
                 </span>
               )}
@@ -555,8 +562,8 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                 method as a whole, not any one element, so it sits above the
                 element rows rather than beside one of them. */}
             <div className="rounded-xl px-4 py-3 flex items-start gap-3"
-              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <ShieldCheck size={16} className="text-[#C5A059] shrink-0 mt-0.5" />
+              style={GLASS_ROW}>
+              <ShieldCheck size={16} className="text-panchang-gold shrink-0 mt-0.5" />
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-white/90">{PANCHANG_TRUST_META.methodLabel}</p>
                 <p className="text-[11px] text-white/50 mt-0.5">{PANCHANG_TRUST_META.precisionLabel}</p>
