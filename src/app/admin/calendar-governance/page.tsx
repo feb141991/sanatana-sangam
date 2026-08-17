@@ -105,6 +105,10 @@ const KIND_LABELS: Record<string, string> = {
 };
 const TRADITION_ORDER = ['hindu', 'sikh', 'buddhist', 'jain', 'all'];
 const KIND_ORDER = ['major', 'vrat', 'regional'];
+const MONTH_LABELS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
 
 const isRealFixture = (f: GoldenFixtureRow) =>
   f.expected != null && !(f.source?.ref ?? '').startsWith('TODO');
@@ -582,6 +586,12 @@ function FixturesSection({
   const [categorySel, setCategorySel] = useState<CategorySel>(
     initialFilter?.tradition ? { tradition: initialFilter.tradition, kind: null } : null
   );
+  // 0 = "all" for both -- year=0 means every year, month=0 means whole-year
+  // (don't narrow by month at all). A specific year with month=0 shows that
+  // year's rows across all months; a specific month with year=0 shows that
+  // month across every year.
+  const [yearFilter, setYearFilter] = useState(0);
+  const [monthFilter, setMonthFilter] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -618,19 +628,44 @@ function FixturesSection({
     }
   };
 
+  const availableYears = useMemo(
+    () => [...new Set(rows.map(f => f.year))].sort((a, b) => a - b),
+    [rows]
+  );
+
+  // A row's "month" for filtering purposes comes from whichever date it
+  // actually has -- the sourced expected date if approved/pending review,
+  // else the (new-engine-only, see fixture-engine-hint.ts) engineHint date
+  // so unsourced stubs are still filterable by month instead of only ever
+  // matching "All months".
+  const rowMonth = (f: GoldenFixtureRow): number | null => {
+    const dateStr = f.expected?.civilDate ?? f.engineHint?.civilDate ?? null;
+    if (!dateStr) return null;
+    const month = Number(dateStr.slice(5, 7));
+    return Number.isFinite(month) && month >= 1 && month <= 12 ? month : null;
+  };
+
+  const yearMonthFiltered = useMemo(() => {
+    return categoryFiltered.filter(f => {
+      if (yearFilter !== 0 && f.year !== yearFilter) return false;
+      if (monthFilter !== 0 && rowMonth(f) !== monthFilter) return false;
+      return true;
+    });
+  }, [categoryFiltered, yearFilter, monthFilter]);
+
   const filtered = useMemo(() => {
-    if (sourceFilter === 'all')      return categoryFiltered;
-    if (sourceFilter === 'real')     return categoryFiltered.filter(isRealFixture);
-    if (sourceFilter === 'stub')     return categoryFiltered.filter(f => !isRealFixture(f));
-    return categoryFiltered.filter(f => f.approved);
-  }, [categoryFiltered, sourceFilter]);
+    if (sourceFilter === 'all')      return yearMonthFiltered;
+    if (sourceFilter === 'real')     return yearMonthFiltered.filter(isRealFixture);
+    if (sourceFilter === 'stub')     return yearMonthFiltered.filter(f => !isRealFixture(f));
+    return yearMonthFiltered.filter(f => f.approved);
+  }, [yearMonthFiltered, sourceFilter]);
 
   const counts = useMemo(() => ({
-    real:     categoryFiltered.filter(isRealFixture).length,
-    stub:     categoryFiltered.filter(f => !isRealFixture(f)).length,
-    approved: categoryFiltered.filter(f => f.approved).length,
-    all:      categoryFiltered.length,
-  }), [categoryFiltered]);
+    real:     yearMonthFiltered.filter(isRealFixture).length,
+    stub:     yearMonthFiltered.filter(f => !isRealFixture(f)).length,
+    approved: yearMonthFiltered.filter(f => f.approved).length,
+    all:      yearMonthFiltered.length,
+  }), [yearMonthFiltered]);
 
   async function act(caseId: string, action: 'approve' | 'reject') {
     setBusyId(caseId);
@@ -702,6 +737,26 @@ function FixturesSection({
           <FilterPill active={sourceFilter === 'stub'}     onClick={() => setSourceFilter('stub')}     label={`Unsourced stubs (${counts.stub})`} />
           <FilterPill active={sourceFilter === 'approved'} onClick={() => setSourceFilter('approved')} label={`Approved (${counts.approved})`} />
           <FilterPill active={sourceFilter === 'all'}      onClick={() => setSourceFilter('all')}      label={`All (${counts.all})`} />
+
+          <div className="w-px h-5 bg-black/10 mx-1" />
+
+          <select
+            value={yearFilter}
+            onChange={(e) => setYearFilter(Number(e.target.value))}
+            className="text-xs font-bold rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-[var(--brand-muted)]"
+          >
+            <option value={0}>All years</option>
+            {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+
+          <select
+            value={monthFilter}
+            onChange={(e) => setMonthFilter(Number(e.target.value))}
+            className="text-xs font-bold rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-[var(--brand-muted)]"
+          >
+            <option value={0}>Whole year (all months)</option>
+            {MONTH_LABELS.map((label, i) => <option key={label} value={i + 1}>{label}</option>)}
+          </select>
         </div>
 
         {error && <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>}

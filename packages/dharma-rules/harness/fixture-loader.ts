@@ -83,7 +83,12 @@ export interface Location {
 }
 
 export interface Profile {
-  calendar: string;
+  // null for rules with no amanta/purnimanta/solar axis at all (e.g. Sikh
+  // Nanakshahi rules) -- was typed as non-nullable `string` while real DB
+  // rows already had null, which is exactly why nothing caught the two
+  // `.toLowerCase()` crashes this type lied past. See D34-adjacent fix,
+  // 2026-08-17.
+  calendar: string | null;
   tradition: string;
   variantKey?: string;
 }
@@ -174,7 +179,10 @@ export function getCanonicalFixtureKey(fixture: {
   const latStr = Number(fixture.location.lat).toFixed(4);
   const lonStr = Number(fixture.location.lon).toFixed(4);
   const tz = fixture.location.tz.toLowerCase().trim();
-  const cal = fixture.profile.calendar.toLowerCase().trim();
+  // profile.calendar is null for rules with no month-system axis at all
+  // (e.g. Sikh Nanakshahi rules) -- '(none)' keeps the key stable and distinct
+  // from any real profile slug rather than crashing on a legitimate null.
+  const cal = fixture.profile.calendar?.toLowerCase().trim() ?? '(none)';
   const trad = fixture.profile.tradition.toLowerCase().trim();
   const vk = (fixture.profile.variantKey ?? '').toLowerCase().trim();
 

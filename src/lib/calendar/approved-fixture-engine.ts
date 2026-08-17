@@ -11,7 +11,9 @@ export interface ApprovedFixtureEvaluationInput {
   festivalId: string;
   year: number;
   profile: {
-    calendar: string;
+    // null for rules with no amanta/purnimanta/solar axis at all -- see the
+    // profileMonthSystem doc below.
+    calendar: string | null;
     tradition: string;
     variantKey?: string;
   };
@@ -65,7 +67,13 @@ function fixtureRule(input: ApprovedFixtureEvaluationInput): ObservanceRule {
  */
 export function evaluateApprovedFixture(
   input: ApprovedFixtureEvaluationInput,
-  profileMonthSystem: ApprovedFixtureMonthSystem,
+  // null is only safe for rules that declare no corrected_month_system at all
+  // (solar_fixed, relative_to_other_observance, regional_calendar -- e.g. the
+  // Nanakshahi-based Sikh rules, which have no amanta/purnimanta axis to be
+  // ratified in the first place). The mismatch guard below still throws for
+  // any rule that DOES declare a system, so this can't silently paper over a
+  // fixture that genuinely needs a ratified calendar_profile.
+  profileMonthSystem: ApprovedFixtureMonthSystem | null,
 ): ApprovedFixtureEvaluation {
   if (!input.approved || !input.expected?.civilDate) {
     throw new Error(`Fixture ${input.caseId} is not an approved dated decision`);

@@ -22,7 +22,12 @@ const diagnosticsByYear = new Map<number, ObservanceCandidateDiagnostic[]>();
 function diagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
   let diagnostics = diagnosticsByYear.get(year);
   if (!diagnostics) {
-    diagnostics = calculateObservanceCandidateDiagnosticsForYear(year);
+    // 'corrected' -- this admin surface is for sourcing/reviewing the NEW
+    // engine's output against citations, not for reproducing what legacy
+    // currently ships (that's integrity.ts's job, against production data).
+    // Falls back to legacy per-rule only when the corrected path produced
+    // zero candidates for that rule (see engine.ts's enginePreference doc).
+    diagnostics = calculateObservanceCandidateDiagnosticsForYear(year, undefined, 'corrected');
     diagnosticsByYear.set(year, diagnostics);
   }
   return diagnostics;

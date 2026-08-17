@@ -689,6 +689,13 @@ export function calculateObservancesForYear(
 export function calculateObservanceCandidateDiagnosticsForYear(
   year: number,
   location?: LocationInput,
+  // 'legacy' (default) is what production actually ships today
+  // (USE_CORRECTED_MASA=false) -- integrity.ts diffs stored dates against
+  // this because that's the engine that wrote them. 'corrected' is for
+  // callers that explicitly want the new-engine candidate set instead (e.g.
+  // fixture-engine-hint.ts, so admin reviewers aren't shown legacy output
+  // while sourcing NEW-engine fixtures) -- it does NOT change what ships.
+  enginePreference: 'legacy' | 'corrected' = 'legacy',
 ): ObservanceCandidateDiagnostic[] {
   // UNGATED on purpose. A review caught that routing this through the gated
   // builder made every withheld rule report zero candidates -- so the tool whose
@@ -705,9 +712,9 @@ export function calculateObservanceCandidateDiagnosticsForYear(
 
   return CANONICAL_RULES.map((rule) => {
     const rk = ruleIdentityKey(rule);
-    const rawDates = (legacyMap[rk] && legacyMap[rk].length > 0)
-      ? legacyMap[rk]
-      : (correctedMap[rk] || []);
+    const rawDates = enginePreference === 'corrected'
+      ? ((correctedMap[rk] && correctedMap[rk].length > 0) ? correctedMap[rk] : (legacyMap[rk] || []))
+      : ((legacyMap[rk] && legacyMap[rk].length > 0) ? legacyMap[rk] : (correctedMap[rk] || []));
     const candidateDates = rawDates.filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );

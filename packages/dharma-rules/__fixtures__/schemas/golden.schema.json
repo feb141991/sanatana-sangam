@@ -50,18 +50,23 @@
       "additionalProperties": false,
       "properties": {
         "calendar": {
-          "type": "string",
+          "description": "A calendar_profiles slug, or null for rules with no amanta/purnimanta/solar axis at all (solar_fixed, relative_to_other_observance, regional_calendar -- e.g. Sikh Nanakshahi rules, which have no month system for a profile to ratify).",
+          "type": ["string", "null"],
           "enum": [
             "north_indian_purnimanta",
             "gujarati_amanta",
             "marathi_amanta",
+            "kannada_amanta",
+            "telugu_amanta",
             "kannada_telugu_amanta",
             "tamil_solar",
             "malayalam_solar",
             "bengali_solar",
             "odia",
             "nepali_bikram",
-            "global_sanatan"
+            "global_sanatan",
+            "legacy-ujjain",
+            null
           ]
         },
         "tradition": {

@@ -417,11 +417,12 @@
     "rule_family": "nakshatra_based",
     "verification_type": "nakshatra_based",
     "lunar_masa_name": "Ashadha",
-    "corrected_lunar_masa_name": "Bhadrapada",
+    "corrected_lunar_masa_name": "Shravana",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
     "nakshatra_name": "Shravana",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "D33 fix, 2026-08-17: corrected_lunar_masa_name was 'Bhadrapada', searching the WRONG amanta month for the Shravana nakshatra -- landed a lunation late (2026-09-23 instead of the real 2026-08-26 Onam date). Root cause: confusable naming -- 'Shravana' is both the target nakshatra AND the correct search month, and the masa field had been set to the following month by mistake. Fixed to 'Shravana' (matching nag-panchami, same year/system, whose sourced 2026-08-17 date sits in the same window only 9 days before Onam). Verified: corrected engine now computes 2026-08-26, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #33, Onam/Thiru Onam Day) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 for the original diagnosis."
   },
   {
     "slug": "hartalika-teej",

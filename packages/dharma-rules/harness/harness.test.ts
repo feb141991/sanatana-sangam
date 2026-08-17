@@ -109,6 +109,19 @@ function getEngineDate(slug: string, year: number): string | null {
 }
 
 function getApprovedFixtureEngineDate(fixture: GoldenFixture): string {
+  // profile.calendar === null means the fixture is for a rule with no
+  // amanta/purnimanta axis at all (solar_fixed / relative_to_other_observance /
+  // regional_calendar, e.g. Sikh Nanakshahi rules) -- there is nothing for a
+  // calendar_profile to ratify, so requiring one here would block a fixture
+  // that structurally can never have one. evaluateApprovedFixture(fixture, null)
+  // is still safe for a rule that DOES declare corrected_month_system: its own
+  // mismatch guard throws in that case, so a Jain lunar_tithi fixture like
+  // mahavir-jayanti (profile.calendar: null today, but corrected_month_system:
+  // 'amanta') still fails loudly here -- correctly, since it genuinely needs a
+  // ratified amanta profile that doesn't exist yet, not a free pass.
+  if (fixture.profile.calendar === null) {
+    return evaluateApprovedFixture(fixture, null).civilDate;
+  }
   const profile = calendarProfileBySlug.get(fixture.profile.calendar);
   if (!profile) {
     throw new Error(`Golden fixture ${fixture.caseId} references unknown calendar profile ${fixture.profile.calendar}`);
