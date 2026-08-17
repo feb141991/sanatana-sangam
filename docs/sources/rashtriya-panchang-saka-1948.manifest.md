@@ -235,3 +235,35 @@ not get smoothed over:
 `validate:rules` 96/96, `verify:calendar` unchanged (no rule logic touched,
 only `ratification_note` strings and `golden_fixtures.expected`/`source`/
 `reasoning` for already-`approved: false` rows), `tsc --noEmit` clean.
+
+---
+
+## Batch 3 (2026-08-17): four rules re-checked after a founder question ("why doesn't RP have diwali/dussehra/guru-purnima/janmashtami?")
+
+Prompted by the founder asking why several rules had no citation. On
+inspection: they were never actually missing from the source — `diwali`
+had already been cited in batch 1's daily-entry table (2026-11-08) but that
+citation was never written to `golden_fixtures` (still carried
+`TODO_diwali_2026`); `dussehra` and `krishna-janmashtami` were simply never
+checked in batch 2's sweep; and `guru-purnima` isn't in the 96-entry
+"Principal Festivals" summary index at all (which is why batch 2's
+summary-only search missed it) but **is** in the daily tithi grid.
+
+| Rule | Where in source | Sourced date | Engine (corrected) date | `golden_fixtures` |
+|---|---|---|---|---|
+| `diwali` | Index #55 (Naraka Chaturdasi (Purvarunodaya), Dipavali (S.India), Kali Puja, Dipavali) | 2026-11-08 | 2026-11-08 ✓ | 4 rows, **approved** 2026-08-17 |
+| `dussehra` | Index #50 (Durga Puja (Mahanavami, Bengal), Vijaya Dasami (Dussehara or Dasahara)) | 2026-10-20 | 2026-10-20 ✓ | 4 rows, **approved** 2026-08-17 |
+| `guru-purnima` | **Daily entry**, Wed 29 July 2026 (7 Sravana): "Guru Purnima, Vyasa Puja, Asadhi Purnima" — not in the summary index | 2026-07-29 | 2026-07-29 ✓ (also matches the existing 2026-08-10 council ratification) | SQL sent to founder 2026-08-17, **not yet landed** — the other three rows in this batch confirmed written and approved; this one still shows `TODO_guru-purnima_2026` as of this writing. Re-send pending. |
+| `krishna-janmashtami` (Smarta, 2026 only) | Index #37 (Janmashtami(Smarta), Janmashtami (vaishnava), Sri Jayanti (Ramanuja)) | 2026-09-04 | 2026-09-04 ✓ (also matches the existing council ratification) | 4 rows, **approved** 2026-08-17 |
+
+**Also checked and confirmed genuinely absent, not missed** — `gudi-padwa`,
+`holi`, `maha-shivaratri`, `vasant-panchami` all have their **2026**
+occurrence before this edition's daily coverage starts (2026-03-22); only
+their 2027 dates are in-window, which is exactly what batch 2 already
+cited. Not a sourcing gap, a real document-coverage boundary.
+
+## Guards run after batch 3
+
+`validate:rules` 97/97, `tsc --noEmit` clean. No rule logic touched, only
+`golden_fixtures.expected`/`source`/`reasoning` for four already-existing
+`TODO` stub rows.
