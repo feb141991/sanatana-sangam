@@ -1,6 +1,6 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
-import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, type LocationInput } from '@sangam/panchang-engine';
+import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
@@ -661,6 +661,40 @@ export const NanakshahiHandler = {
     return [formatUtcDate(observanceDate)];
   }
 };
+
+/**
+ * Handler for true solar-transit (sāṅkrānti) rules -- makar-sankranti,
+ * baisakhi. Previously both were `solar_fixed` with a hand-maintained
+ * Gregorian date, a stand-in for a real transit computation that drifts by
+ * precession over centuries. This computes the actual moment the sun
+ * crosses into the target rāśi via findSankrantisBetween (already used
+ * internally for adhika/kshaya masa determination) and takes the IST
+ * calendar date of that instant -- verified against known public dates,
+ * including Makar Sankranti 2024's well-known shift to 15 Jan (the transit
+ * fell at 2024-01-15 02:39 IST, after midnight), with no sunrise/sunset
+ * cutoff needed. This is a single pan-India date, not location-dependent,
+ * matching the behaviour of the solar_fixed rules it replaces.
+ */
+export const SolarSankrantiHandler = {
+  evaluate(rule: ObservanceRule, year: number): string[] {
+    if (rule.sankranti_rashi_index === undefined) return [];
+    // Padding on both ends: a transit can fall in the very first or last
+    // days of the Gregorian year (a late-Dec/early-Jan transit's IST civil
+    // date can differ from its UTC search-window day).
+    const start = new Date(Date.UTC(year - 1, 11, 20));
+    const end = new Date(Date.UTC(year + 1, 0, 10));
+    const sankrantis = findSankrantisBetween(start, end);
+    const matches: string[] = [];
+    for (const s of sankrantis) {
+      if (s.rashi !== rule.sankranti_rashi_index) continue;
+      const istInstant = new Date(s.at.getTime() + 5.5 * 60 * 60 * 1000);
+      const dateStr = formatUtcDate(istInstant);
+      if (Number(dateStr.slice(0, 4)) === year) matches.push(dateStr);
+    }
+    return matches;
+  }
+};
+
 export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
@@ -706,6 +740,8 @@ function buildOccurrencesMap(
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(rule, days);
     } else if (rule.rule_family === 'regional_calendar') {
       occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year);
+    } else if (rule.rule_family === 'solar_sankranti') {
+      occurrencesMap[rk] = SolarSankrantiHandler.evaluate(rule, year);
     } else {
       occurrencesMap[rk] = [];
     }
@@ -1037,6 +1073,8 @@ function buildOccurrencesMapCorrected(
       occurrencesMap[rk] = NakshatraBasedHandler.evaluate(r, d);
     } else if (r.rule_family === 'regional_calendar') {
       occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year);
+    } else if (r.rule_family === 'solar_sankranti') {
+      occurrencesMap[rk] = SolarSankrantiHandler.evaluate(r, year);
     } else {
       occurrencesMap[rk] = [];
     }

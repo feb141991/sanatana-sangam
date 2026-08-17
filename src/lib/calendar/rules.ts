@@ -17,10 +17,16 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar';
-  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti';
+  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
+  // 0=Mesha..11=Meena (sidereal rashi index, Math.floor(sunSidereal/30)%12).
+  // The observed civil date is the IST calendar date of the sankranti
+  // transit instant -- verified against known public dates (Makar Sankranti
+  // 2024's well-known shift to Jan 15, 2025/2026 both on Jan 14) with no
+  // sunrise/sunset cutoff needed. See SolarSankrantiHandler in engine.ts.
+  sankranti_rashi_index?: number;
   lunar_tithi_index?: number; // 1-30
   lunar_masa_name?: string;   // IMPORTANT: must match panchang.ts masaName output (shifted 2 months behind traditional)
   nanakshahi_month?: string;  // e.g. 'Vaisakh'

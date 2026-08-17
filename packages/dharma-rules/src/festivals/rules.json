@@ -6,11 +6,13 @@
     "description": "Harvest festival marking the sun's transition into Capricorn",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "solar_fixed",
-    "verification_type": "solar_fixed",
+    "rule_family": "solar_sankranti",
+    "verification_type": "solar_sankranti",
     "solar_month": 1,
     "solar_day": 14,
-    "launch_status": "included"
+    "launch_status": "included",
+    "sankranti_rashi_index": 9,
+    "ratification_note": "D37 fix, 2026-08-17: was solar_fixed with a hand-maintained Gregorian date (solar_fixed 1/14), a stand-in for a real solar-transit computation that drifts by precession over centuries. Migrated to solar_sankranti (target rashi: Makara (Capricorn)), which computes the actual sun-transit instant via findSankrantisBetween and takes its IST civil date. Verified byte-identical to the prior hardcoded date for 2024-2035 except where the prior hardcoded value was itself already known-stale for a shift year (see docs/CALENDAR_ENGINE_ASSESSMENT.md D37)."
   },
   {
     "slug": "vasant-panchami",
@@ -1065,11 +1067,13 @@
     "description": "Harvest festival and founding of the Khalsa Panth by Guru Gobind Singh Ji in 1699 — one of the most joyous Sikh celebrations",
     "kind": "major",
     "tradition": "sikh",
-    "rule_family": "solar_fixed",
-    "verification_type": "solar_fixed",
+    "rule_family": "solar_sankranti",
+    "verification_type": "solar_sankranti",
     "solar_month": 4,
     "solar_day": 14,
-    "launch_status": "included"
+    "launch_status": "included",
+    "sankranti_rashi_index": 0,
+    "ratification_note": "D37 fix, 2026-08-17: was solar_fixed with a hand-maintained Gregorian date (solar_fixed 4/14), a stand-in for a real solar-transit computation that drifts by precession over centuries. Migrated to solar_sankranti (target rashi: Mesha (Aries)), which computes the actual sun-transit instant via findSankrantisBetween and takes its IST civil date. Verified byte-identical to the prior hardcoded date for 2024-2035 except where the prior hardcoded value was itself already known-stale for a shift year (see docs/CALENDAR_ENGINE_ASSESSMENT.md D37)."
   },
   {
     "slug": "guru-amar-das-gurpurab",

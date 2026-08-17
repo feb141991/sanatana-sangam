@@ -48,7 +48,7 @@ export type FestivalSourceKind = 'curated' | 'official' | 'partner' | 'community
 export type FestivalReviewStatus = 'needs_review' | 'reviewed';
 export type FestivalVerificationStoredStatus = 'verified' | 'mismatch' | 'uncertain' | 'not_checked' | 'manual_review';
 export type FestivalVerificationConfidence = 'high' | 'medium' | 'low';
-export type FestivalVerificationType = 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration';
+export type FestivalVerificationType = 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti';
 
 export interface FestivalSourceRow {
   name: string;

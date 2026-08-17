@@ -78,7 +78,8 @@
           "weekday_recurring",
           "relative_to_other_observance",
           "nakshatra_based",
-          "regional_calendar"
+          "regional_calendar",
+          "solar_sankranti"
         ]
       },
       "verification_type": {
@@ -88,7 +89,8 @@
           "lunar_tithi",
           "nakshatra_based",
           "regional_calendar",
-          "historical_commemoration"
+          "historical_commemoration",
+          "solar_sankranti"
         ]
       },
       "solar_month": {
@@ -102,6 +104,12 @@
         "minimum": 1,
         "maximum": 31,
         "description": "Day of the Gregorian/Solar month (1-31)"
+      },
+      "sankranti_rashi_index": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 11,
+        "description": "0=Mesha..11=Meena sidereal rashi index for solar_sankranti rules"
       },
       "lunar_tithi_index": {
         "type": "integer",

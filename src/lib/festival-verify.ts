@@ -440,6 +440,8 @@ export async function verifyFestivalDatesWithAI(
         customNote = 'Needs manual calendar review — this observance is nakshatra-based.';
       } else if (item.verificationType === 'historical_commemoration') {
         customNote = 'Needs manual review — historical commemoration date.';
+      } else if (item.verificationType === 'solar_sankranti') {
+        customNote = 'Solar transit (sankranti) date — computed from the sun\'s actual rashi crossing, not manually maintained.';
       } else if (item.note) {
         customNote = `Needs manual review. ${item.note}`;
       }
