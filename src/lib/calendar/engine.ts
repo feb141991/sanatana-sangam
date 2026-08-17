@@ -491,19 +491,31 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
 
+// Source: docs/sources/sgpc-nanakshahi-558.manifest.md (SGPC Nanakshahi
+// Calendar, Samvat 558, 2026-27 A.D., verified checksum ad9ff9ad...). This
+// table was wrong for 6 of 12 months (Bhadon through Phagan, drifting -1 to
+// -2 days) from whenever it was first written until 2026-08-17 -- it used
+// the naive "first 5 months = 31 days, rest = 30" pattern the manifest had
+// already documented as wrong for THIS cycle (Sawan is genuinely 32 days,
+// Bhadon 31, not 31/30), but that correction never made it from the
+// manifest into this constant. Found via a user report of specific festival
+// dates disagreeing with cited SGPC citations; re-derived directly from the
+// source PDF and verified against two independently-confirmed public dates
+// (Bandi Chhor Divas 2026-11-08, Guru Nanak Gurpurab 2026-11-24) already
+// recorded in the manifest.
 const NANAKSHAHI_GREGORIAN_START: Record<string, { month: number; day: number }> = {
   'Chet':    { month: 3,  day: 14 },
   'Vaisakh': { month: 4,  day: 14 },
   'Jeth':    { month: 5,  day: 15 },
   'Harh':    { month: 6,  day: 15 },
   'Sawan':   { month: 7,  day: 16 },
-  'Bhadon':  { month: 8,  day: 16 },
-  'Assu':    { month: 9,  day: 15 },
-  'Katik':   { month: 10, day: 15 },
-  'Maghar':  { month: 11, day: 14 },
-  'Poh':     { month: 12, day: 14 },
-  'Magh':    { month: 1,  day: 13 },
-  'Phagan':  { month: 2,  day: 12 },
+  'Bhadon':  { month: 8,  day: 17 },
+  'Assu':    { month: 9,  day: 17 },
+  'Katak':   { month: 10, day: 17 },
+  'Maghar':  { month: 11, day: 16 },
+  'Poh':     { month: 12, day: 16 },
+  'Magh':    { month: 1,  day: 14 },
+  'Phagan':  { month: 2,  day: 13 },
 };
 
 export const NanakshahiHandler = {

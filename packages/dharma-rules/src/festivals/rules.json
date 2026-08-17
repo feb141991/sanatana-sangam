@@ -1076,9 +1076,10 @@
     "tradition": "sikh",
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
-    "nanakshahi_month": "Jeth",
-    "nanakshahi_day": 9,
-    "launch_status": "deferred"
+    "nanakshahi_month": "Vaisakh",
+    "nanakshahi_day": 17,
+    "launch_status": "deferred",
+    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Jeth 9), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "guru-arjan-dev-martyrdom",
@@ -1090,8 +1091,9 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Harh",
-    "nanakshahi_day": 2,
-    "launch_status": "included"
+    "nanakshahi_day": 4,
+    "launch_status": "included",
+    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Harh 2), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "guru-har-krishan-gurpurab",
@@ -1103,8 +1105,9 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Sawan",
-    "nanakshahi_day": 8,
-    "launch_status": "deferred"
+    "nanakshahi_day": 23,
+    "launch_status": "deferred",
+    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Sawan 8), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "guru-ram-das-gurpurab",
@@ -1115,9 +1118,10 @@
     "tradition": "sikh",
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
-    "nanakshahi_month": "Assu",
-    "nanakshahi_day": 25,
-    "launch_status": "deferred"
+    "nanakshahi_month": "Katak",
+    "nanakshahi_day": 11,
+    "launch_status": "deferred",
+    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Assu 25), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "bandhi-chhor-divas",
@@ -1155,8 +1159,9 @@
     "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
     "nanakshahi_month": "Maghar",
-    "nanakshahi_day": 10,
-    "launch_status": "included"
+    "nanakshahi_day": 29,
+    "launch_status": "included",
+    "ratification_note": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Maghar 10), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "sahibzade-shaheedi-diwas",
