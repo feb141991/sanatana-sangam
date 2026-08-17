@@ -27,7 +27,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-02-11, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #76) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "maha-shivaratri",
@@ -63,7 +64,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2."
   },
   {
     "slug": "gudi-padwa",
@@ -80,7 +82,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 1,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Chaitra Sukladi/Gudi Padava) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "chaitra-navratri-begins",
@@ -99,7 +102,8 @@
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "chaitra-navratri",
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2027-04-07, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #90, Vasanta Navaratrambha) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "ugadi",
@@ -133,7 +137,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 9,
     "allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. 2027 CONFIRMED: corrected engine independently computes 2027-04-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #95) exactly. 2026 UNRESOLVED: engine gives 2026-03-27 but the same source's entry #3 prints 2026-03-26 -- a one-day divergence not yet diagnosed (needs the same vriddhi/boundary investigation given to vijaya-ekadashi). See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only."
   },
   {
     "slug": "hanuman-jayanti",
@@ -167,7 +172,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 3,
     "allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-04-20, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #13) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "narasimha-jayanti",
@@ -331,7 +337,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-08-28, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #35) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "krishna-janmashtami",
@@ -611,7 +618,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 6,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "deferred"
+    "launch_status": "deferred",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-11-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #59, Surya Shashthi/Chhat Bihar) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "kartik-purnima",
@@ -1356,7 +1364,8 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 13,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. CONFIRMED for both 2026 and 2027: corrected engine independently computes 2026-03-31 and 2027-04-19, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entries #4 and #96) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
   },
   {
     "slug": "akshaya-tritiya-jain",

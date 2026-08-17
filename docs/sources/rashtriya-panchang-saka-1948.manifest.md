@@ -154,3 +154,84 @@ day-by-day tithi tables. Both were checked and agree for every row above.
 
 `validate:rules` 96/96, `verify:calendar` 596/0, `verify:harness` 574/666
 (unchanged — no golden fixture references these slugs), `tsc --noEmit` clean.
+
+---
+
+## Batch 2 (2026-08-17): "Principal Festivals and Anniversaries" summary page
+
+Started in response to the tracker's 2.6 row ("🟡 pending sourced golden
+validation only, everything") — this is the answer to "how do we cite it":
+same PDF (SHA-256 re-verified above), a different section. Page ii–v carries
+a 96-entry numbered table, "PRINCIPAL FESTIVALS AND ANNIVERSARIES, 1948 SAKA
+ERA... (2026-2027 A.D.)", giving festival name → Gregorian civil date
+directly (not a daily tithi grid), covering 2026-03-22 through 2027-04-20 —
+the same source, extracted from `/private/tmp/shoonaya-rp1948/all.txt`
+(already committed to this session's history, checksum-verified against the
+same PDF as batch 1). This section is government-holiday-list style
+(mixes Hindu, Sikh, Jain, Islamic, Christian, and civil observances in one
+numbered sequence) rather than a day-by-day tithi table, so citation is a
+direct name→date lookup, not a tithi/masa conversion.
+
+**Method:** for each remaining unsourced `lunar_tithi`/`nakshatra_based`
+rule, searched the 96 entries for a matching festival name, then ran the
+corrected engine (`calculateObservanceCandidateDiagnosticsForYear(year,
+undefined, 'corrected')`) for the same civil year and compared its
+`selectedDate` against the source's printed date. Only entries where the two
+agreed exactly were written back to `golden_fixtures`/`rules.json`; anything
+that disagreed was left uncited and is logged below instead of forced to
+match either value — the whole point of this exercise is to let citations
+catch engine bugs, not paper over them.
+
+### Citations — resolved (10 of 14 checked)
+
+| Rule | Entry # / name in source | Sourced date | Engine (corrected) date | `golden_fixtures` rows updated |
+|---|---|---|---|---|
+| `vasant-panchami` | #76 Sri Panchami, Vasanta Panchami, Saraswati Puja | 2027-02-11 | 2027-02-11 ✓ | 4 (2 locations × 2 profiles) |
+| `gudi-padwa` | #90 Chaitra Sukladi (Gudi Padava, Ugadi) | 2027-04-07 | 2027-04-07 ✓ | 4 |
+| `chaitra-navratri-begins` | #90 Vasanta Navaratrambha | 2027-04-07 | 2027-04-07 ✓ | 4 |
+| `ram-navami` (2027 only) | #95 Ram Navami | 2027-04-15 | 2027-04-15 ✓ | 4 |
+| `akshaya-tritiya` | #13 Akshaya Tritiya | 2026-04-20 | 2026-04-20 ✓ | 4 |
+| `raksha-bandhan` | #35 Raksha Bandhan, Amarnath Yatra | 2026-08-28 | 2026-08-28 ✓ | 4 |
+| `chhath-puja` | #59 Pratihara Shashthi / Surya Shashthi (Chhat Bihar) | 2026-11-15 | 2026-11-15 ✓ | 4 |
+| `mahavir-jayanti` (2026) | #4 Mahavira Jayanti | 2026-03-31 | 2026-03-31 ✓ | 2 (unspecified-profile rows) |
+| `mahavir-jayanti` (2027) | #96 Mahabira Jayanti | 2027-04-19 | 2027-04-19 ✓ | 2 |
+| `holi` (2027) | #85 "...Holikadahana..." | 2027-03-22 | 2027-03-22 ✓ | 4 |
+
+**Caveat on `holi`:** the rule's `lunar_tithi_index: 15` targets Phalguna
+Purnima — the bonfire night (Holika Dahan), which the source labels
+"Holikadahana" at 2027-03-22, separately from "Holi" (the color-throwing day,
+entry #86, 2027-03-23, the day after). The engine's tithi-15 output matches
+the *Holikadahana* date exactly, not the printed "Holi" entry — cited as
+correct for what the rule's own tithi definition computes, but whether
+`holi`'s `display_name`/user-facing date should represent Holika Dahan
+(Purnima) or Rangwali Holi (Pratipada, the next day) is a content/product
+question outside this citation's scope, not something this manifest decides.
+
+`akshaya-tritiya-jain`, `jagannath-rath-yatra`, `nag-panchami`, and `ugadi`
+had matching source entries and matching engine dates too (`nag-panchami`:
+#31, 2026-08-17, engine 2026-08-17 ✓; `jagannath-rath-yatra`: #26, 2026-07-16,
+engine 2026-07-16 ✓; `ugadi`: same #90 entry as `gudi-padwa`, 2027-04-07 ✓;
+`akshaya-tritiya-jain`: same #13 entry as `akshaya-tritiya`, shared tithi,
+2026-04-20 ✓) but **no `golden_fixtures` rows exist yet for these four
+slugs/years** — confirmed via direct query, not assumed. Not written anywhere
+yet; needs fixture rows seeded first (same shape as the Sikh/Jain stub batch)
+before a citation has anywhere to attach.
+
+### Flagged — real divergences found, deliberately NOT cited
+
+The whole reason to source against a primary document instead of trusting
+engine output is that divergences like these are exactly what should surface,
+not get smoothed over:
+
+| Rule (year) | Source says | Engine (corrected) says | Gap | Status |
+|---|---|---|---|---|
+| `ram-navami` (2026) | #3, 2026-03-26 (Thu) | 2026-03-27 | 1 day | Unresolved — needs the same vṛddhi/boundary diagnosis given to `vijaya-ekadashi` in batch 1 before either value is trusted |
+| `ganesh-chaturthi` (2026) | #41, 2026-09-14 (Mon) | 2026-09-15 | 1 day | Unresolved, same category |
+| `samvatsari-paryushana-ends` (2026) | #42, 2026-09-15 (Tue) — but the source itself lists two paksha variants (Chaturthi-paksha, Panchami-paksha) at the same single printed date, which is itself suspicious (these usually differ by a day in real Jain practice) | 2026-09-16 | 1 day, plus source-internal ambiguity | Unresolved — source row itself needs a second citation before trusting it over the engine |
+| `onam` (2026 & 2027) | #33, 2026-08-26 (Wed) | 2026-09-23 | **~28 days — a full lunar month** | **Likely a rule-data bug, not a boundary case.** `onam`'s `corrected_lunar_masa_name` is set to `"Bhadrapada"`, but `nag-panchami` — same year, same `amanta` system, tithi 5, sourced above to 2026-08-17 — sits in amānta **Shravana**, and Onam's real date (26 Aug) is only 9 days later, well inside that same lunar month. Strong circumstantial evidence `onam`'s `corrected_lunar_masa_name` should read `"Shravana"`, not `"Bhadrapada"` — searching Bhadrapada picks up the *next* month's Shravana-nakshatra occurrence, landing a month late. Not changed here: this is an engine/rule-data fix, deserving the same regression-test rigor as the `yogini-ekadashi` adhika-māsa fix in batch 1, not a drive-by edit inside a sourcing pass. |
+
+## Guards run after batch 2
+
+`validate:rules` 96/96, `verify:calendar` unchanged (no rule logic touched,
+only `ratification_note` strings and `golden_fixtures.expected`/`source`/
+`reasoning` for already-`approved: false` rows), `tsc --noEmit` clean.

@@ -1,16 +1,20 @@
 /**
  * lunar-month-tier1-golden.test.ts
  *
- * Sourced Golden Accuracy Suite for Layer B Lunar Month Determination (Section 2.6 & 4.2).
- * Validated against Tier-1 Official Ephemeris:
- * Primary Source: Rashtriya Panchang, Saka 1948 (2026–27 A.D.),
- * Positional Astronomy Centre, India Meteorological Department (IMD), Govt of India.
- *
- * Verifies:
- * 1. Amānta vs Pūrṇimānta month naming across all 12 lunar months of 2026–2027.
- * 2. Exact Śukla/Kṛṣṇa Pakṣa concordance laws.
- * 3. Sourced Adhika Māsa detection for 2026 Adhika Jyeṣṭha and 2023 Adhika Śrāvaṇa.
- * 4. Zero-drift boundary timestamp alignment at Saṅkrānti and lunation events.
+ * NOT A SOURCED VALIDATION -- see D33 in docs/CALENDAR_ENGINE_ASSESSMENT.md.
+ * This file's original header claimed Tier-1 sourcing against the Rashtriya
+ * Panchang and was used to flip tracker items 2.6/2.7 to (checkmark) on
+ * 2026-08-17. On review: test 15 cites a 2023 edition never obtained by this
+ * repo; tests 1-14's cited pages for the 2026-27 edition (the only edition we
+ * actually hold, SHA-256 a8816abe...) don't correspond to verifiable content
+ * in the real extracted text; and every test only asserts getLunarMonth's own
+ * output against itself at a hand-picked timestamp, never a printed civil
+ * date -- so it cannot fail regardless of whether the engine is right. Left
+ * in place because it's a harmless month-boundary regression check, not
+ * because it validates anything against a real source. Do not cite this file
+ * as sourced evidence for 2.6/2.7; see
+ * docs/sources/rashtriya-panchang-saka-1948.manifest.md for the real, cited
+ * validation work.
  */
 
 import { describe, it, expect } from 'vitest';
