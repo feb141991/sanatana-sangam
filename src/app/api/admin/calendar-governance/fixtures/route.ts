@@ -105,12 +105,11 @@ export async function POST(request: NextRequest) {
   if (authError) return authError;
 
   const body = await request.json().catch(() => null);
-  const caseId = body?.caseId;
   const action = body?.action;
 
-  if (!caseId || !['approve', 'reject', 'update'].includes(action)) {
+  if (!action || !['approve', 'reject', 'update', 'bulk_approve'].includes(action)) {
     return NextResponse.json(
-      { error: 'Body must include { caseId: string, action: "approve" | "reject" | "update" }' },
+      { error: 'Body must include action ("approve" | "reject" | "update" | "bulk_approve")' },
       { status: 400 },
     );
   }
@@ -118,6 +117,130 @@ export async function POST(request: NextRequest) {
   const supabase = adminSupabase();
   const adminUsername = await getAdminUsername(request) ?? 'unknown admin';
   const nowIso = new Date().toISOString();
+
+  // Handle bulk_approve action
+  if (action === 'bulk_approve') {
+    const caseIds: string[] = Array.isArray(body?.caseIds) ? body.caseIds : [];
+    if (caseIds.length === 0) {
+      return NextResponse.json(
+        { error: 'Body must include a non-empty caseIds array for bulk_approve' },
+        { status: 400 },
+      );
+    }
+
+    const results: Array<{
+      caseId: string;
+      ok: boolean;
+      error?: string;
+      diff?: {
+        previousApproved: boolean;
+        newApproved: boolean;
+        transition: string;
+        reviewer: string;
+        timestamp: string;
+        reviewNotes: string | null;
+      };
+    }> = [];
+
+    for (const caseId of caseIds) {
+      try {
+        const { data: existing, error: fetchErr } = await supabase
+          .from('golden_fixtures')
+          .select('*')
+          .eq('case_id', caseId)
+          .maybeSingle();
+
+        if (fetchErr || !existing) {
+          results.push({
+            caseId,
+            ok: false,
+            error: fetchErr?.message || `Fixture '${caseId}' not found`,
+          });
+          continue;
+        }
+
+        const wasApproved = existing.approved === true;
+        const transition = wasApproved ? 're_confirmed' : 'newly_approved';
+        const updatePayload: Record<string, unknown> = {
+          approved: true,
+          reviewed_by: adminUsername,
+          reviewed_at: nowIso,
+          review_notes: body?.notes ?? null,
+          effective_from: nowIso.slice(0, 10),
+        };
+
+        const { error: updateError } = await supabase
+          .from('golden_fixtures')
+          .update(updatePayload)
+          .eq('case_id', caseId);
+
+        if (updateError) {
+          results.push({
+            caseId,
+            ok: false,
+            error: updateError.message,
+          });
+          continue;
+        }
+
+        // Audit log insert per fixture
+        try {
+          await supabase.from('golden_fixture_audit_logs').insert({
+            case_id: caseId,
+            festival_id: existing.festival_id,
+            year: existing.year,
+            actor: adminUsername,
+            action: transition,
+            previous_approved: wasApproved,
+            new_approved: true,
+            review_notes: body?.notes ?? null,
+            diff: {
+              previous_reviewed_by: existing.reviewed_by ?? null,
+              previous_reviewed_at: existing.reviewed_at ?? null,
+              new_reviewed_by: adminUsername,
+              transition,
+            },
+          });
+        } catch {
+          // Non-fatal if logging fails
+        }
+
+        results.push({
+          caseId,
+          ok: true,
+          diff: {
+            previousApproved: wasApproved,
+            newApproved: true,
+            transition,
+            reviewer: adminUsername,
+            timestamp: nowIso,
+            reviewNotes: body?.notes ?? null,
+          },
+        });
+      } catch (err) {
+        results.push({
+          caseId,
+          ok: false,
+          error: err instanceof Error ? err.message : 'Unknown error',
+        });
+      }
+    }
+
+    invalidateFixturesCache();
+    return NextResponse.json({
+      ok: true,
+      action: 'bulk_approve',
+      results,
+    });
+  }
+
+  const caseId = body?.caseId;
+  if (!caseId) {
+    return NextResponse.json(
+      { error: 'Body must include caseId: string' },
+      { status: 400 },
+    );
+  }
 
   // 1. Fetch target fixture state before modification for diff & audit trail
   const { data: existing, error: fetchErr } = await supabase

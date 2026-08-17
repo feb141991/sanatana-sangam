@@ -595,6 +595,8 @@ function FixturesSection({
   const [monthFilter, setMonthFilter] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -670,6 +672,78 @@ function FixturesSection({
     all:      yearMonthFiltered.length,
   }), [yearMonthFiltered]);
 
+  // "Eligible" for bulk approval: real fixture (expected date not null, not a TODO stub)
+  // and not yet approved.
+  const bulkEligibleRows = useMemo(() => {
+    return yearMonthFiltered.filter(f => isRealFixture(f) && !f.approved);
+  }, [yearMonthFiltered]);
+
+  async function handleBulkApprove(notes?: string) {
+    if (bulkEligibleRows.length === 0) return;
+    setBulkProcessing(true);
+    try {
+      const caseIds = bulkEligibleRows.map(r => r.case_id);
+      const res = await fetch("/api/admin/calendar-governance/fixtures", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "bulk_approve", caseIds, notes }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Failed to bulk approve fixtures");
+
+      const results: Array<{
+        caseId: string;
+        ok: boolean;
+        diff?: {
+          previousApproved: boolean;
+          newApproved: boolean;
+          transition: string;
+          reviewer: string;
+          timestamp: string;
+          reviewNotes: string | null;
+        };
+        error?: string;
+      }> = json.results ?? [];
+
+      const successMap = new Map(
+        results.filter(r => r.ok && r.diff).map(r => [r.caseId, r.diff])
+      );
+      const approvedCount = successMap.size;
+      const failedCount = results.filter(r => !r.ok).length;
+      const skippedCount = yearMonthFiltered.length - bulkEligibleRows.length;
+
+      if (approvedCount > 0) {
+        setRows(prev =>
+          prev.map(row => {
+            const diff = successMap.get(row.case_id);
+            if (!diff) return row;
+            return {
+              ...row,
+              approved: diff.newApproved,
+              reviewed_by: diff.reviewer,
+              reviewed_at: diff.timestamp,
+              review_notes: diff.reviewNotes ?? row.review_notes,
+            };
+          })
+        );
+      }
+
+      setShowBulkModal(false);
+
+      onToast?.({
+        id: "bulk-" + Date.now(),
+        tone: failedCount > 0 ? "warn" : "ok",
+        title: failedCount > 0 ? ("Bulk Approval: " + approvedCount + " approved, " + failedCount + " failed") : "Bulk Approval Complete",
+        detail: approvedCount + " approved" + (skippedCount > 0 ? (", " + skippedCount + " skipped (already approved or unsourced stubs)") : "") + (failedCount > 0 ? (" (" + failedCount + " failed constraint validation)") : ""),
+        timestamp: new Date().toLocaleTimeString(),
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to bulk approve");
+    } finally {
+      setBulkProcessing(false);
+    }
+  }
+
   async function act(caseId: string, action: 'approve' | 'reject') {
     setBusyId(caseId);
     try {
@@ -697,9 +771,24 @@ function FixturesSection({
             : `Status changed to ${json.diff.newApproved ? 'Approved' : 'Unapproved'} by ${json.diff.reviewer}`,
           timestamp: new Date().toLocaleTimeString(),
         });
-      }
 
-      await fetchData();
+        // Patch local state directly from the write response instead of
+        // re-fetching the whole list. The server already invalidated its
+        // own cache (so the NEXT full page load is fresh), but a full
+        // client refetch here means every single approve/reject pays the
+        // ~15-20s cold-cache engine recompute -- brutal when reviewing many
+        // fixtures in a row. The API's diff already carries everything
+        // needed to reflect this one row's new state locally.
+        setRows(prev => prev.map(r => r.case_id === caseId ? {
+          ...r,
+          approved: json.diff.newApproved,
+          reviewed_by: json.diff.reviewer,
+          reviewed_at: json.diff.timestamp,
+          review_notes: json.diff.reviewNotes ?? r.review_notes,
+        } : r));
+      } else {
+        await fetchData();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : `Failed to ${action}`);
     } finally { setBusyId(null); }
@@ -762,6 +851,22 @@ function FixturesSection({
             <option value={0}>Whole year (all months)</option>
             {MONTH_LABELS.map((label, i) => <option key={label} value={i + 1}>{label}</option>)}
           </select>
+
+          {(yearFilter !== 0 || monthFilter !== 0) && (
+            <button
+              type="button"
+              onClick={() => setShowBulkModal(true)}
+              disabled={bulkEligibleRows.length === 0}
+              className={"flex items-center gap-1.5 text-xs font-bold rounded-full px-3.5 py-1.5 transition-all shadow-sm " + (
+                bulkEligibleRows.length > 0
+                  ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  : "bg-black/5 text-[var(--brand-muted)] opacity-50 cursor-not-allowed"
+              )}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Bulk approve {bulkEligibleRows.length} eligible</span>
+            </button>
+          )}
         </div>
 
         {error && <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>}
@@ -787,6 +892,165 @@ function FixturesSection({
             ))}
           </div>
         )}
+
+        <BulkApproveModal
+          isOpen={showBulkModal}
+          onClose={() => setShowBulkModal(false)}
+          eligibleRows={bulkEligibleRows}
+          allFilteredCount={yearMonthFiltered.length}
+          yearFilter={yearFilter}
+          monthFilter={monthFilter}
+          categorySel={categorySel}
+          onConfirm={handleBulkApprove}
+          processing={bulkProcessing}
+        />
+      </div>
+    </div>
+  );
+}
+
+function BulkApproveModal({
+  isOpen,
+  onClose,
+  eligibleRows,
+  allFilteredCount,
+  yearFilter,
+  monthFilter,
+  categorySel,
+  onConfirm,
+  processing,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  eligibleRows: GoldenFixtureRow[];
+  allFilteredCount: number;
+  yearFilter: number;
+  monthFilter: number;
+  categorySel: CategorySel;
+  onConfirm: (notes?: string) => Promise<void>;
+  processing: boolean;
+}) {
+  const [notes, setNotes] = useState("");
+
+  if (!isOpen) return null;
+
+  const alreadyApprovedCount = allFilteredCount - eligibleRows.length;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm">
+      <div className="fixed inset-0" onClick={processing ? undefined : onClose} />
+
+      <div className="relative w-full max-w-3xl max-h-[85vh] rounded-3xl bg-[var(--divine-bg)] border border-black/10 shadow-2xl flex flex-col overflow-hidden z-10">
+        {/* Header */}
+        <div className="p-6 border-b border-black/10 flex items-start justify-between gap-4 bg-white/40">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg font-bold theme-ink">Bulk Approve Golden Fixtures</h2>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-xs font-bold">
+                {eligibleRows.length} eligible
+              </span>
+            </div>
+            <p className="text-xs text-[var(--brand-muted)] mt-1">
+              Scope: {yearFilter === 0 ? "All years" : "Year " + yearFilter}
+              {monthFilter !== 0 && (" · " + MONTH_LABELS[monthFilter - 1])}
+              {categorySel && (" · " + (TRADITION_LABELS[categorySel.tradition] ?? categorySel.tradition) + (categorySel.kind ? " (" + categorySel.kind + ")" : ""))}
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={processing}
+            onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-black/5 text-[var(--brand-muted)] transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Content list */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 leading-relaxed">
+            <span className="font-bold">Human sign-off confirmation:</span> You are about to sign off on the following{" "}
+            <span className="font-bold">{eligibleRows.length}</span> eligible fixtures. Each will be stamped as Approved and recorded in the audit trail under your admin credentials.
+          </div>
+
+          <div className="space-y-2">
+            {eligibleRows.map((f, idx) => (
+              <div
+                key={f.case_id}
+                className="p-3 rounded-2xl bg-white/60 border border-black/5 flex items-start justify-between gap-4 text-xs"
+              >
+                <div className="space-y-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold theme-ink">{idx + 1}. {f.festival_id}</span>
+                    <span className="text-[var(--brand-muted)]">({f.year})</span>
+                    <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-semibold text-[var(--brand-muted)] capitalize">
+                      {f.tradition}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-semibold text-[var(--brand-muted)] capitalize">
+                      {f.kind}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 text-[var(--brand-muted)] text-[11px] flex-wrap">
+                    <span>📍 {f.location.label}</span>
+                    <span>🗓️ {f.profile.calendar}</span>
+                    <span>📖 Tier {f.source.tier}: {f.source.ref}</span>
+                  </div>
+                </div>
+                <div className="shrink-0 text-right">
+                  <span className="font-mono font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
+                    {f.expected?.civilDate ?? "—"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {alreadyApprovedCount > 0 && (
+            <p className="text-[11px] text-[var(--brand-muted)] text-center pt-2">
+              Note: {alreadyApprovedCount} other fixture{alreadyApprovedCount > 1 ? "s" : ""} in this filtered view (already approved or unsourced stubs) will be skipped.
+            </p>
+          )}
+
+          <div className="pt-2">
+            <label className="block text-xs font-bold theme-ink mb-1">
+              Review Notes (Optional)
+            </label>
+            <input
+              type="text"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="e.g. Bulk approved after verifying 2026 Drik Panchang fixtures"
+              disabled={processing}
+              className="w-full text-xs rounded-xl border border-black/10 bg-white/80 px-3.5 py-2 text-[var(--brand-muted)] focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="p-4 border-t border-black/10 bg-white/50 flex items-center justify-between gap-4">
+          <span className="text-xs text-[var(--brand-muted)]">
+            Total to approve: <strong className="theme-ink">{eligibleRows.length}</strong>
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={processing}
+              onClick={onClose}
+              className="rounded-full px-4 py-2 text-xs font-semibold text-[var(--brand-muted)] hover:bg-black/5 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={processing || eligibleRows.length === 0}
+              onClick={() => onConfirm(notes.trim() || undefined)}
+              className="rounded-full px-5 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+            >
+              {processing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              <span>{processing ? "Approving..." : "Confirm & Approve All (" + eligibleRows.length + ")"}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
