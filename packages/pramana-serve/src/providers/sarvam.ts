@@ -241,7 +241,7 @@ export class SarvamProvider implements PramanaInferenceProvider {
     if (request.groundingContext && request.groundingContext.length > 0) {
       const contextText = request.groundingContext
         .map(
-          (c, i) =>
+          (c: any, i: number) =>
             `Source [${i + 1}]: ${c.metadata?.sourceName || ''} - ${c.metadata?.chunkId || ''}\n${c.content}`
         )
         .join('\n\n');
