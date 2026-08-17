@@ -5,14 +5,18 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package manifests for workspace caching
+# Copy root manifest and ALL workspace package manifests for accurate workspace link generation
 COPY package.json package-lock.json ./
 COPY packages/dharma-rules/package.json ./packages/dharma-rules/
 COPY packages/panchang-engine/package.json ./packages/panchang-engine/
 COPY packages/pathshala-engine/package.json ./packages/pathshala-engine/
 COPY packages/sadhana-engine/package.json ./packages/sadhana-engine/
+COPY packages/pramana-core/package.json ./packages/pramana-core/
+COPY packages/pramana-serve/package.json ./packages/pramana-serve/
+COPY packages/pramana-eval/package.json ./packages/pramana-eval/
+COPY packages/pramana-corpus/package.json ./packages/pramana-corpus/
 
-# Install dependencies (ignore-scripts prevents prebuild running before source files are copied)
+# Install dependencies (ignore-scripts prevents build running before source code is copied)
 RUN npm install --ignore-scripts
 
 # ── Stage 2: Builder ──────────────────────────────────────────────────────────
