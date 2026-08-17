@@ -590,7 +590,8 @@ function FixturesSection({
   // (don't narrow by month at all). A specific year with month=0 shows that
   // year's rows across all months; a specific month with year=0 shows that
   // month across every year.
-  const [yearFilter, setYearFilter] = useState(0);
+  const currentYear = new Date().getFullYear();
+  const [yearFilter, setYearFilter] = useState(currentYear);
   const [monthFilter, setMonthFilter] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -628,10 +629,12 @@ function FixturesSection({
     }
   };
 
-  const availableYears = useMemo(
-    () => [...new Set(rows.map(f => f.year))].sort((a, b) => a - b),
-    [rows]
-  );
+  const availableYears = useMemo(() => {
+    const cy = new Date().getFullYear();
+    const baseYears = Array.from({ length: 16 }, (_, i) => cy - 5 + i);
+    const fixtureYears = rows.map(f => f.year).filter(y => Number.isFinite(y));
+    return [...new Set([...baseYears, ...fixtureYears])].sort((a, b) => a - b);
+  }, [rows]);
 
   // A row's "month" for filtering purposes comes from whichever date it
   // actually has -- the sourced expected date if approved/pending review,
@@ -745,8 +748,10 @@ function FixturesSection({
             onChange={(e) => setYearFilter(Number(e.target.value))}
             className="text-xs font-bold rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-[var(--brand-muted)]"
           >
+            {availableYears.map(y => (
+              <option key={y} value={y}>{y}{y === currentYear ? " (Current)" : ""}</option>
+            ))}
             <option value={0}>All years</option>
-            {availableYears.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
 
           <select
@@ -941,10 +946,24 @@ function LabeledTextarea({ label, value, onChange }: { label: string; value: str
 // ── Review Queue ───────────────────────────────────────────────────────────
 
 function ReviewQueueSection({ onToast }: { onToast?: (t: ToastFeedback) => void }) {
+  const currentYear = new Date().getFullYear();
   const [rows, setRows] = useState<ReviewQueueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [yearFilter, setYearFilter] = useState<number>(currentYear);
+
+  const availableYears = useMemo(() => {
+    const cy = new Date().getFullYear();
+    const baseYears = Array.from({ length: 16 }, (_, i) => cy - 5 + i);
+    const rowYears = rows.map(r => r.year).filter(y => Number.isFinite(y));
+    return [...new Set([...baseYears, ...rowYears])].sort((a, b) => a - b);
+  }, [rows]);
+
+  const filteredRows = useMemo(() => {
+    if (yearFilter === 0) return rows;
+    return rows.filter(r => r.year === yearFilter);
+  }, [rows, yearFilter]);
 
   const rulesBySlug = useMemo(() => new Map(CANONICAL_RULES.map(r => [r.slug, r])), []);
 
@@ -990,7 +1009,7 @@ function ReviewQueueSection({ onToast }: { onToast?: (t: ToastFeedback) => void 
   if (rows.length === 0) return <EmptyBlock label="Nothing disputed right now." />;
 
   const byTradition = new Map<string, ReviewQueueRow[]>();
-  for (const r of rows) {
+  for (const r of filteredRows) {
     const def = Array.isArray(r.observance_definitions) ? r.observance_definitions[0] : r.observance_definitions;
     const slug = def?.slug ?? '';
     const trad = rulesBySlug.get(slug)?.tradition ?? 'unknown';
@@ -1000,6 +1019,19 @@ function ReviewQueueSection({ onToast }: { onToast?: (t: ToastFeedback) => void 
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <span className="text-xs font-bold text-[var(--brand-muted)]">Filter Year:</span>
+        <select
+          value={yearFilter}
+          onChange={(e) => setYearFilter(Number(e.target.value))}
+          className="text-xs font-bold rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-[var(--brand-muted)]"
+        >
+          {availableYears.map(y => (
+            <option key={y} value={y}>{y}{y === currentYear ? " (Current)" : ""}</option>
+          ))}
+          <option value={0}>All years</option>
+        </select>
+      </div>
       {[...byTradition.entries()].map(([trad, tradRows]) => (
         <div key={trad}>
           <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)] mb-3 capitalize">

@@ -182,8 +182,11 @@ export async function GET(request: NextRequest) {
       if (dbFestivals.length === 0) source = 'fallback';
     }
 
+    const currentYear = new Date().getFullYear();
+    const baseYears = Array.from({ length: 16 }, (_, i) => currentYear - 5 + i);
     const availableYears = Array.from(
       new Set([
+        ...baseYears,
         ...((yearsData ?? []).map((row) => row.year).filter((value): value is number => Number.isFinite(value))),
         ...(festivals.length > 0 ? [requestedYear] : []),
       ]),
