@@ -707,14 +707,21 @@ export function calculateObservanceCandidateDiagnosticsForYear(
   // One diagnostic entry is emitted PER RULE ROW (per ruleIdentityKey), not per
   // slug. Two same-slug variant rows each produce their own entry, so a reviewer
   // can distinguish which variant computed which candidate dates.
-  const legacyMap = buildOccurrencesMap(year, { applyPublicationGate: false, location });
-  const correctedMap = buildOccurrencesMapCorrected(year, { applyPublicationGate: false, location });
+  // The non-preferred map is only ever consulted as a per-rule fallback (when
+  // the preferred map has zero candidates for that rule), so it's computed
+  // lazily -- most callers asking for 'corrected' never trigger the legacy
+  // fallback at all, and legacy's own full-year computation is real, non-
+  // trivial work (~3-4s/year) worth skipping when nothing needs it.
+  let _legacyMap: Record<string, string[]> | null = null;
+  const getLegacyMap = () => (_legacyMap ??= buildOccurrencesMap(year, { applyPublicationGate: false, location }));
+  let _correctedMap: Record<string, string[]> | null = null;
+  const getCorrectedMap = () => (_correctedMap ??= buildOccurrencesMapCorrected(year, { applyPublicationGate: false, location }));
 
   return CANONICAL_RULES.map((rule) => {
     const rk = ruleIdentityKey(rule);
     const rawDates = enginePreference === 'corrected'
-      ? ((correctedMap[rk] && correctedMap[rk].length > 0) ? correctedMap[rk] : (legacyMap[rk] || []))
-      : ((legacyMap[rk] && legacyMap[rk].length > 0) ? legacyMap[rk] : (correctedMap[rk] || []));
+      ? (() => { const c = getCorrectedMap()[rk]; return (c && c.length > 0) ? c : (getLegacyMap()[rk] || []); })()
+      : (() => { const l = getLegacyMap()[rk]; return (l && l.length > 0) ? l : (getCorrectedMap()[rk] || []); })();
     const candidateDates = rawDates.filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );

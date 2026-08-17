@@ -20,6 +20,23 @@ async function getAdminUsername(request: NextRequest): Promise<string | null> {
   return result?.username ?? null;
 }
 
+// Enriching every row calls computeEngineHint, which -- even after the
+// 2026-08-17 perf fix collapsing its underlying per-year computation from
+// ~25s to ~4-7s -- still means a genuinely cold GET (fresh server process,
+// e.g. a dev-mode reload) pays that cost once per distinct year present in
+// golden_fixtures (currently 3 years, so up to ~15-20s). fixture-engine-
+// hint.ts's own per-year cache already makes every GET after the first one
+// fast within a warm process; this wraps the full enriched response too, so
+// concurrent/rapid page loads on a warm process don't even re-do the row
+// mapping and JSON work. Short TTL, and explicitly invalidated on any
+// successful POST below so an edit is never served stale.
+const FIXTURES_CACHE_TTL_MS = 5 * 60 * 1000;
+let fixturesCache: { data: unknown[]; expiresAt: number } | null = null;
+
+function invalidateFixturesCache() {
+  fixturesCache = null;
+}
+
 // GET /api/admin/calendar-governance/fixtures
 // Returns every golden_fixtures row, each enriched with tradition/kind/
 // rule_family/launch_status from CANONICAL_RULES (same join the /coverage
@@ -27,6 +44,10 @@ async function getAdminUsername(request: NextRequest): Promise<string | null> {
 export async function GET(request: NextRequest) {
   const authError = await verifyAdminCookieAuth(request);
   if (authError) return authError;
+
+  if (fixturesCache && fixturesCache.expiresAt > Date.now()) {
+    return NextResponse.json(fixturesCache.data);
+  }
 
   // In-memory join against rules.json — canonical_rules is a JSON file,
   // not a DB table; Supabase can't join it.
@@ -64,6 +85,7 @@ export async function GET(request: NextRequest) {
     };
   });
 
+  fixturesCache = { data: enriched, expiresAt: Date.now() + FIXTURES_CACHE_TTL_MS };
   return NextResponse.json(enriched);
 }
 
@@ -164,6 +186,7 @@ export async function POST(request: NextRequest) {
       // Non-fatal if logging fails
     }
 
+    invalidateFixturesCache();
     return NextResponse.json({
       ok: true,
       caseId,
@@ -225,6 +248,7 @@ export async function POST(request: NextRequest) {
     // Non-fatal if logging fails
   }
 
+  invalidateFixturesCache();
   return NextResponse.json({
     ok: true,
     caseId,

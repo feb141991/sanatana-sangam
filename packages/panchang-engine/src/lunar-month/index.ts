@@ -316,39 +316,51 @@ export function findFullMoonAfter(
  * Returns an array of { rashi: 0–11, at: Date } sorted ascending.
  * rashi 0 = Mesha (Aries), 1 = Vrishabha (Taurus), …, 11 = Meena (Pisces).
  */
+const sankrantisBetweenCache = new Map<string, Array<{ rashi: number; at: Date }>>();
+
 export function findSankrantisBetween(
   start: Date,
   end: Date,
 ): Array<{ rashi: number; at: Date }> {
-  const results: Array<{ rashi: number; at: Date }> = [];
+  // Pure function of (start, end) -- both callers (computeLunarMonth's main
+  // window and its zero-sankranti lookahead) pass the SAME window for every
+  // day within one lunation, so a day-by-day year loop calls this with an
+  // identical (start, end) pair ~29-30 times in a row before it ever
+  // changes. No caching existed here at all before this fix (2026-08-17
+  // perf pass) -- this is a plain memoization, output is unchanged, only
+  // the redundant boundary-solver work is skipped on repeat windows.
+  const cacheKey = `${start.getTime()}|${end.getTime()}`;
+  return memoizeBounded(sankrantisBetweenCache, cacheKey, () => {
+    const results: Array<{ rashi: number; at: Date }> = [];
 
-  const startSnap = computeAstronomy(start);
-  let cursor      = start;
-  let cursorValue = startSnap.sunSidereal;
+    const startSnap = computeAstronomy(start);
+    let cursor      = start;
+    let cursorValue = startSnap.sunSidereal;
 
-  const endMs = end.getTime();
+    const endMs = end.getTime();
 
-  while (cursor.getTime() < endMs) {
-    const boundary = solveBoundary(
-      cursor,
-      cursorValue,
-      30,
-      (d) => computeAstronomy(d).sunSidereal,
-      40 * 24,
-    );
+    while (cursor.getTime() < endMs) {
+      const boundary = solveBoundary(
+        cursor,
+        cursorValue,
+        30,
+        (d) => computeAstronomy(d).sunSidereal,
+        40 * 24,
+      );
 
-    if (!boundary || boundary.getTime() >= endMs) break;
+      if (!boundary || boundary.getTime() >= endMs) break;
 
-    const rashiSnap = computeAstronomy(new Date(boundary.getTime() + 30_000));
-    const rashi = Math.floor(rashiSnap.sunSidereal / 30) % 12;
+      const rashiSnap = computeAstronomy(new Date(boundary.getTime() + 30_000));
+      const rashi = Math.floor(rashiSnap.sunSidereal / 30) % 12;
 
-    results.push({ rashi, at: boundary });
+      results.push({ rashi, at: boundary });
 
-    cursor      = new Date(boundary.getTime() + 60_000);
-    cursorValue = computeAstronomy(cursor).sunSidereal;
-  }
+      cursor      = new Date(boundary.getTime() + 60_000);
+      cursorValue = computeAstronomy(cursor).sunSidereal;
+    }
 
-  return results;
+    return results;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -368,6 +380,18 @@ function memoizeBounded<T>(cache: Map<string, T>, key: string, compute: () => T)
 
 const amantaMonthCache = new Map<string, { start: Date; end: Date } | null>();
 
+// Sequential-scan fast path: a day-by-day year loop (precomputePanchang...)
+// calls findAmantaMonth ~365x/year for a handful of distinct ~29.5-day
+// windows. The exact-instant cache above never hits across different days,
+// so every call re-ran two bisection searches (findNewMoonBefore/After).
+// This reuses the most recently solved window whenever the new instant
+// still falls inside it, skipping the search entirely. Safe for ANY call
+// order -- it's a membership test against an already-solved, already-cached
+// window, not an assumption about how callers iterate; it can only ever
+// return a window that a real bisection search already produced. Added
+// 2026-08-17 as a perf fix, verified byte-identical output before/after.
+let lastAmantaWindow: { start: Date; end: Date } | null = null;
+
 export function findAmantaMonth(
   instant: Date,
   maxSearchHours = DEFAULT_LUNATION_SEARCH_HOURS,
@@ -376,13 +400,27 @@ export function findAmantaMonth(
   end: Date;
 } | null {
   const cacheKey = `${instant.getTime()}|${maxSearchHours}`;
+  const exact = amantaMonthCache.get(cacheKey);
+  if (exact !== undefined) return exact;
+
+  const instantMs = instant.getTime();
+  if (
+    lastAmantaWindow &&
+    instantMs >= lastAmantaWindow.start.getTime() &&
+    instantMs < lastAmantaWindow.end.getTime()
+  ) {
+    amantaMonthCache.set(cacheKey, lastAmantaWindow);
+    return lastAmantaWindow;
+  }
+
   return memoizeBounded(amantaMonthCache, cacheKey, () => {
     const start = findNewMoonBefore(instant, maxSearchHours);
     if (!start) return null;
 
     const searchFrom = new Date(start.getTime() + 12 * 60 * 60 * 1000);
     const end = findNewMoonAfter(searchFrom, maxSearchHours);
-    if (!end) return null;
+    if (!end) { lastAmantaWindow = null; return null; }
+    lastAmantaWindow = { start, end };
 
     return { start, end };
   });
