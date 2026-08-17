@@ -60,7 +60,7 @@ function goldenFixturesClient() {
 
 // ── Schema loader ───────────────────────────────────────────────────────────
 
-const ajv = new Ajv({ allErrors: true, strict: false });
+const ajv = new (Ajv as any)({ allErrors: true, strict: false });
 
 function loadSchema(name: string) {
   const raw = readFileSync(join(SCHEMAS_DIR, name), 'utf-8');
