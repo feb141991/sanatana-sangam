@@ -1,6 +1,6 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
-import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, type LocationInput } from '@sangam/panchang-engine';
+import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
@@ -695,6 +695,38 @@ export const SolarSankrantiHandler = {
   }
 };
 
+/**
+ * Handler for regional solar-calendar month-day rules -- Tamil/Malayalam/
+ * Bengali/Odia new-years and other day-N-of-a-solar-month observances (e.g.
+ * Puthandu, Vishu, Poila Boishakh). Unlike SolarSankrantiHandler (a single
+ * pan-India IST date), which civil day a Sankranti belongs to is genuinely
+ * regional -- @sangam/panchang-engine's solar-month module implements all
+ * four documented day-assignment rules (sunset/aparahna/midnight/same-day)
+ * but nothing consumed it until this handler. `[S]`: unratified, same as
+ * every result assignSankrantiToCivilDay/getSolarMonth themselves return.
+ */
+export const SolarMonthDayHandler = {
+  evaluate(rule: ObservanceRule, year: number, location: LocationInput): string[] {
+    if (!rule.solar_month_profile || rule.solar_month_target_rashi === undefined) return [];
+    const assignmentRule = PROFILE_RULE[rule.solar_month_profile];
+    const dayOfMonth = rule.solar_month_day_of_month ?? 1;
+    // Padding on both ends, same reasoning as SolarSankrantiHandler: a
+    // transit near a year boundary can assign to a civil day in the
+    // adjacent Gregorian year once the regional rule's offset is applied.
+    const start = new Date(Date.UTC(year - 1, 11, 1));
+    const end = new Date(Date.UTC(year + 1, 0, 31));
+    const sankrantis = findSankrantisBetween(start, end);
+    const matches: string[] = [];
+    for (const s of sankrantis) {
+      if (s.rashi !== rule.solar_month_target_rashi) continue;
+      const { civilDate: monthStart } = assignSankrantiToCivilDay(s.at, assignmentRule, location);
+      const dateStr = offsetCivilDateStr(monthStart, dayOfMonth - 1);
+      if (Number(dateStr.slice(0, 4)) === year) matches.push(dateStr);
+    }
+    return matches;
+  }
+};
+
 export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
@@ -742,6 +774,8 @@ function buildOccurrencesMap(
       occurrencesMap[rk] = NanakshahiHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(rule, year);
+    } else if (rule.rule_family === 'solar_month_day') {
+      occurrencesMap[rk] = SolarMonthDayHandler.evaluate(rule, year, location);
     } else {
       occurrencesMap[rk] = [];
     }
@@ -1075,6 +1109,8 @@ function buildOccurrencesMapCorrected(
       occurrencesMap[rk] = NanakshahiHandler.evaluate(r, year);
     } else if (r.rule_family === 'solar_sankranti') {
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(r, year);
+    } else if (r.rule_family === 'solar_month_day') {
+      occurrencesMap[rk] = SolarMonthDayHandler.evaluate(r, year, location);
     } else {
       occurrencesMap[rk] = [];
     }

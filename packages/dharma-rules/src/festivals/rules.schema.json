@@ -79,7 +79,8 @@
           "relative_to_other_observance",
           "nakshatra_based",
           "regional_calendar",
-          "solar_sankranti"
+          "solar_sankranti",
+          "solar_month_day"
         ]
       },
       "verification_type": {
@@ -90,7 +91,8 @@
           "nakshatra_based",
           "regional_calendar",
           "historical_commemoration",
-          "solar_sankranti"
+          "solar_sankranti",
+          "solar_month_day"
         ]
       },
       "solar_month": {
@@ -110,6 +112,23 @@
         "minimum": 0,
         "maximum": 11,
         "description": "0=Mesha..11=Meena sidereal rashi index for solar_sankranti rules"
+      },
+      "solar_month_profile": {
+        "type": "string",
+        "enum": ["tamil", "malayalam", "bengali", "odia"],
+        "description": "Regional solar-calendar profile for solar_month_day rules"
+      },
+      "solar_month_target_rashi": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 11,
+        "description": "0=Mesha..11=Meena -- which solar month (by rashi) a solar_month_day rule falls in"
+      },
+      "solar_month_day_of_month": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 32,
+        "description": "1-based day within the solar month for solar_month_day rules (1 = new year / month-start day)"
       },
       "lunar_tithi_index": {
         "type": "integer",

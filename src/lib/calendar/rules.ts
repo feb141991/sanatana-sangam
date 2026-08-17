@@ -17,8 +17,8 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti';
-  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti' | 'solar_month_day';
+  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti' | 'solar_month_day';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
   // 0=Mesha..11=Meena (sidereal rashi index, Math.floor(sunSidereal/30)%12).
@@ -27,6 +27,19 @@ export interface ObservanceRule {
   // 2024's well-known shift to Jan 15, 2025/2026 both on Jan 14) with no
   // sunrise/sunset cutoff needed. See SolarSankrantiHandler in engine.ts.
   sankranti_rashi_index?: number;
+  // solar_month_day rules (Tamil/Malayalam/Bengali/Odia regional solar new
+  // years and month-day observances -- e.g. Puthandu, Vishu, Poila Boishakh).
+  // Unlike solar_sankranti (a single pan-India IST date), which CIVIL DAY a
+  // Sankranti belongs to is a regional convention -- see
+  // @sangam/panchang-engine's solar-month module. `[S]`: the four
+  // day-assignment rules are documented but not council-ratified, so every
+  // result these produce also carries `ratified: false`. See
+  // SolarMonthDayHandler in engine.ts.
+  solar_month_profile?: 'tamil' | 'malayalam' | 'bengali' | 'odia';
+  // Target rashi (0=Mesha..11=Meena) of the solar month this rule falls in.
+  solar_month_target_rashi?: number;
+  // 1-based day within that solar month (1 = new year / month-start day).
+  solar_month_day_of_month?: number;
   lunar_tithi_index?: number; // 1-30
   lunar_masa_name?: string;   // IMPORTANT: must match panchang.ts masaName output (shifted 2 months behind traditional)
   nanakshahi_month?: string;  // e.g. 'Vaisakh'

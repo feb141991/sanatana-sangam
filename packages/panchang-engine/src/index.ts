@@ -50,6 +50,19 @@ export {
 } from './core/muhurta.js';
 
 export type {
+  SolarMonthRule,
+  SolarProfile,
+  SolarMonthResult,
+  SolarMonthSuccess,
+} from './solar-month/index.js';
+export {
+  PROFILE_RULE,
+  assignSankrantiToCivilDay,
+  getSolarMonth,
+  compareAssignments,
+} from './solar-month/index.js';
+
+export type {
   RiseSetResult,
   MoonRiseSetResult,
 } from './core/moon-rise-set.js';
