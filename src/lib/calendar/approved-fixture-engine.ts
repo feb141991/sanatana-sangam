@@ -1,5 +1,6 @@
 import {
   calculateObservanceCandidateDiagnosticsForYear,
+  isMonthSystemInvariantForDate,
   ruleIdentityKey,
   type ObservanceCandidateDiagnostic,
 } from './engine';
@@ -37,7 +38,19 @@ const diagnosticsByYear = new Map<number, ObservanceCandidateDiagnostic[]>();
 function diagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
   let diagnostics = diagnosticsByYear.get(year);
   if (!diagnostics) {
-    diagnostics = calculateObservanceCandidateDiagnosticsForYear(year);
+    // 'corrected' -- this evaluator's entire purpose is validating a
+    // council-approved fixture (a sourced citation for the NEW engine)
+    // against what the engine actually computes. The default 'legacy'
+    // preference silently masked this: it only "worked" by accident for
+    // rules where legacy happens to produce zero candidates (the 16 newly
+    // added ekadashis, whose lunar_masa_name was deliberately left unset)
+    // and fell back to corrected -- but for any older rule where legacy
+    // computes a real, non-empty (and possibly wrong) date, that wrong
+    // legacy value silently won instead of the sourced/corrected one. Found
+    // via raksha-bandhan: legacy gave 2026-07-29 (a full masa off), while
+    // the approved fixture's citation and the corrected engine both agree
+    // on 2026-08-28. Fixed 2026-08-17.
+    diagnostics = calculateObservanceCandidateDiagnosticsForYear(year, undefined, 'corrected');
     diagnosticsByYear.set(year, diagnostics);
   }
   return diagnostics;
@@ -80,13 +93,6 @@ export function evaluateApprovedFixture(
   }
 
   const rule = fixtureRule(input);
-  const ruleMonthSystem = rule.corrected_month_system ?? null;
-  if (ruleMonthSystem && ruleMonthSystem !== profileMonthSystem) {
-    throw new Error(
-      `Fixture ${input.caseId} requests ${profileMonthSystem}, but ${ruleIdentityKey(rule)} is ${ruleMonthSystem}`,
-    );
-  }
-
   const ruleKey = ruleIdentityKey(rule);
   const diagnostic = diagnosticsForYear(input.year)
     .find(candidate => candidate.ruleKey === ruleKey);
@@ -97,6 +103,21 @@ export function evaluateApprovedFixture(
   if (!diagnostic.selectedDate) {
     throw new Error(`Engine produced no selected date for ${input.caseId} (${ruleKey})`);
   }
+
+  const ruleMonthSystem = rule.corrected_month_system ?? null;
+  if (ruleMonthSystem && ruleMonthSystem !== profileMonthSystem) {
+    // Not necessarily a real mismatch: amanta and purnimanta agree exactly
+    // whenever the occurrence falls in śukla-pakṣa (D32's documented
+    // conversion law). Only reject when the two systems could actually
+    // have produced a different date -- kṛṣṇa-pakṣa occurrences, where the
+    // system genuinely changes the answer, still require an exact match.
+    if (!isMonthSystemInvariantForDate(rule, diagnostic.selectedDate)) {
+      throw new Error(
+        `Fixture ${input.caseId} requests ${profileMonthSystem}, but ${ruleKey} is ${ruleMonthSystem}`,
+      );
+    }
+  }
+
   if (diagnostic.selectedDate !== input.expected.civilDate) {
     throw new Error(
       `Approved fixture ${input.caseId} expects ${input.expected.civilDate}; engine selected ${diagnostic.selectedDate}`,

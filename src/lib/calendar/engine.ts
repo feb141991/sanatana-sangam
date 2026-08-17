@@ -180,7 +180,7 @@ export function ruleIdentityKey(rule: ObservanceRule): string {
 }
 
 const legacyPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any }>>();
-const DEFAULT_LOCATION: LocationInput = { lat: UJJAIN_LAT, lon: UJJAIN_LON, tz: 'Asia/Kolkata' };
+export const DEFAULT_LOCATION: LocationInput = { lat: UJJAIN_LAT, lon: UJJAIN_LON, tz: 'Asia/Kolkata' };
 const correctedPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any; sunriseUtc?: string }>>();
 
 /**
@@ -320,6 +320,40 @@ export function precomputeMadhyahnaPanchangForYear(
 
   madhyahnaPanchangCache.set(cacheKey, days);
   return days;
+}
+
+/**
+ * True when a rule's civil date on `dateStr` is provably the same under
+ * amanta and purnimanta labeling, so a fixture's calendar_profile month
+ * system genuinely does not matter for this specific occurrence.
+ *
+ * Per the documented conversion law (D32, docs/calendar-profiles.md §1.3):
+ * śukla-pakṣa → purnimantaMonth = amantaMonth (identical); kṛṣṇa-pakṣa →
+ * purnimantaMonth = amantaMonth + 1 (genuinely different). So checking the
+ * paksha active at the rule's own reference instant (sunrise, or noon for a
+ * D34 madhyahna rule) is sufficient -- no need to independently recompute
+ * the date under the other system.
+ *
+ * Used by evaluateApprovedFixture (approved-fixture-engine.ts) to avoid
+ * rejecting a fixture whose profile's month system differs from the rule's
+ * declared one, but whose computed date is unaffected by that difference --
+ * e.g. raksha-bandhan (Shravana Purnima, tithi 15) or onam (a nakshatra
+ * that happens to fall in śukla-pakṣa that year) approved against a
+ * north_indian_purnimanta profile even though the rule declares amanta.
+ * A rule occurring in kṛṣṇa-pakṣa still correctly requires an exact
+ * ruleMonthSystem === profileMonthSystem match.
+ */
+export function isMonthSystemInvariantForDate(
+  rule: ObservanceRule,
+  dateStr: string,
+  location: LocationInput = DEFAULT_LOCATION,
+): boolean {
+  const { sunrise, sunset } = getSunriseForDateStr(dateStr, location);
+  const instant = rule.corrected_tithi_reference_time === 'madhyahna' && sunset
+    ? new Date(sunrise.getTime() + (sunset.getTime() - sunrise.getTime()) / 2)
+    : sunrise;
+  const amanta = getLunarMonth(instant, 'amanta');
+  return amanta.ok && amanta.paksha === 'shukla';
 }
 
 /**
