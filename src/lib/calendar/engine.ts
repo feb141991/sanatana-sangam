@@ -51,10 +51,27 @@ export const RULE_ENGINE_VERSION = '2.0.0'; // D1+D2 Stage 2: corrected masa pat
 export const USE_CORRECTED_MASA: boolean = true;
 
 /**
- * Gate integration behind USE_CONDITION_EVALUATOR, default OFF.
- * Set true to route time-of-day/muhurta dependent rules to the condition evaluator.
+ * Gate integration behind USE_CONDITION_EVALUATOR.
+ *
+ * FLIPPED TRUE 2026-08-17, same session and same founder decision as
+ * USE_CORRECTED_MASA. Routes materialize.ts's EVALUATOR_RULES-covered slugs
+ * (maha-shivaratri, krishna-janmashtami, karva-chauth, sankashti-chaturthi,
+ * pradosh-vrat, diwali, dhanteras) through real muhurta/prevalence window
+ * evaluation instead of a naive first-candidate date. Ambiguous windows
+ * (vrddhi tithi, zero or multiple qualified dates) route to
+ * observance_review_queue instead of guessing -- confirmed via direct run:
+ * pradosh-vrat resolved 24-26 of its ~26 yearly occurrences cleanly in
+ * 2026/2027, the rest correctly queued for review, not silently wrong.
+ *
+ * Found and fixed before flipping: calculateOccurrencesWithEvaluator's
+ * baseline independently re-derived USE_CORRECTED_MASA rather than calling
+ * calculateObservancesForYearMasaGated, which meant purnima-vrat/
+ * amavasya-vrat (not yet in EVALUATOR_RULES) would have silently lost their
+ * legacy-fallback protection the moment this flag flipped -- regressing
+ * from "safely held on legacy" to "raw corrected-engine first-candidate."
+ * Both functions now share the one masa-gated dispatch.
  */
-export const USE_CONDITION_EVALUATOR: boolean = false;
+export const USE_CONDITION_EVALUATOR: boolean = true;
 
 
 export interface CalculatedOccurrence {
@@ -792,7 +809,13 @@ export function calculateObservancesForYearLegacy(
 // an artifact of how the diagnostic reports a single date for a recurring
 // rule. Genuinely still needs USE_CONDITION_EVALUATOR's muhurta-window
 // resolution (see docs/MASA_CORRECTION_DIFF_REPORT.md NEEDS_MUHURTA_EVAL).
-// Kept on the legacy path even after USE_CORRECTED_MASA flips.
+// Kept on the legacy path in calculateObservancesForYearMasaGated (used
+// directly when USE_CONDITION_EVALUATOR is off, AND as the baseline
+// calculateOccurrencesWithEvaluator builds on when it's on) for any slug
+// NOT covered by materialize.ts's own EVALUATOR_RULES -- pradosh-vrat IS
+// covered there, so once the evaluator is on it gets a real per-occurrence
+// answer instead of this fallback; purnima-vrat/amavasya-vrat are not yet
+// covered, so they stay protected here regardless of which flag is on.
 //
 // The diff report also flags the whole Diwali cluster (diwali,
 // bandhi-chhor-divas, dhanteras, govardhan-puja, bhai-dooj,
@@ -801,7 +824,33 @@ export function calculateObservancesForYearLegacy(
 // against real Tier-1 citations this session (see ratification_note / D33 /
 // D35), or trivially derived via a fixed relative_offset_days from Diwali's
 // already-verified anchor date. Not excluded.
-const LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR = new Set(['pradosh-vrat', 'purnima-vrat', 'amavasya-vrat']);
+export const LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR = new Set(['pradosh-vrat', 'purnima-vrat', 'amavasya-vrat']);
+
+/**
+ * Masa-gated dispatch, WITHOUT the condition-evaluator branch: exactly
+ * "legacy, or corrected-with-the-muhurta-pending-slugs-held-back." Exists as
+ * its own function (not inlined in calculateObservancesForYear) so
+ * materialize.ts's calculateOccurrencesWithEvaluator can use the SAME
+ * baseline instead of independently reimplementing the USE_CORRECTED_MASA
+ * ternary (which it did until 2026-08-17, and which meant
+ * purnima-vrat/amavasya-vrat silently lost their legacy protection the
+ * moment USE_CONDITION_EVALUATOR flipped on, since that code path never
+ * saw LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR at all).
+ */
+export function calculateObservancesForYearMasaGated(
+  year: number,
+  location?: LocationInput,
+): CalculatedOccurrence[] {
+  if (!USE_CORRECTED_MASA) {
+    return calculateObservancesForYearLegacy(year, location);
+  }
+  const corrected = calculateObservancesForYearCorrected(year, location);
+  const legacy = calculateObservancesForYearLegacy(year, location);
+  return [
+    ...corrected.filter(o => !LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
+    ...legacy.filter(o => LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
+  ];
+}
 
 export function calculateObservancesForYear(
   year: number,
@@ -817,15 +866,7 @@ export function calculateObservancesForYear(
       recurring: o.recurring,
     }));
   }
-  if (!USE_CORRECTED_MASA) {
-    return calculateObservancesForYearLegacy(year, location);
-  }
-  const corrected = calculateObservancesForYearCorrected(year, location);
-  const legacy = calculateObservancesForYearLegacy(year, location);
-  return [
-    ...corrected.filter(o => !LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
-    ...legacy.filter(o => LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
-  ];
+  return calculateObservancesForYearMasaGated(year, location);
 }
 
 export function calculateObservanceCandidateDiagnosticsForYear(

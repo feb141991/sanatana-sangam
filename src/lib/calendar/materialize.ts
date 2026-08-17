@@ -1,4 +1,4 @@
-import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, USE_CORRECTED_MASA, calculateObservancesForYearCorrected, calculateObservancesForYearLegacy } from './engine';
+import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearMasaGated } from './engine';
 import { openBatch, closeBatch, buildSeriesInstanceKey, retireObsoleteBatchesForCompleteFamily } from './materialisation-batch';
 import {
   evaluateVariant,
@@ -330,9 +330,14 @@ export function calculateOccurrencesWithEvaluator(
   }>;
   unresolved: ReviewQueueItem[];
 } {
-  const baseline = USE_CORRECTED_MASA
-    ? calculateObservancesForYearCorrected(year, location)
-    : calculateObservancesForYearLegacy(year, location);
+  // Shared with calculateObservancesForYear's non-evaluator branch -- see
+  // LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR in engine.ts. Using the same
+  // function here (rather than re-deriving USE_CORRECTED_MASA locally, as
+  // this used to) means a slug the evaluator doesn't cover yet (e.g.
+  // purnima-vrat/amavasya-vrat) still gets the same legacy protection it
+  // gets when the evaluator is off, instead of silently falling back to
+  // raw corrected-engine output the moment USE_CONDITION_EVALUATOR flips on.
+  const baseline = calculateObservancesForYearMasaGated(year, location);
   const evaluatorSlugs = new Set(EVALUATOR_RULES.map(r => r.slug));
   const finalOccurrences: EvaluatorResolvedOccurrence[] = [];
   const unresolved: ReviewQueueItem[] = [];
