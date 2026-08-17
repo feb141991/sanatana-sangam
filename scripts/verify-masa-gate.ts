@@ -24,10 +24,20 @@ import {
   USE_CORRECTED_MASA,
 } from '../src/lib/calendar/engine';
 
+// 2026-08-17: calculateObservancesForYear's dispatch stopped being a clean
+// binary switch when USE_CORRECTED_MASA flipped true -- pradosh-vrat/
+// purnima-vrat/amavasya-vrat deliberately stay on the legacy path pending
+// USE_CONDITION_EVALUATOR (see LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR in
+// engine.ts). Excluded from every set here too, so this tripwire keeps
+// catching a REAL gate malfunction instead of permanently flagging that
+// known, deliberate exception.
+const KNOWN_MIXED_DISPATCH_SLUGS = new Set(['pradosh-vrat', 'purnima-vrat', 'amavasya-vrat']);
+
 const YEAR = 2026;
 
 const key = (o: { slug: string; date: string }) => `${o.slug}@${o.date}`;
-const setOf = (list: Array<{ slug: string; date: string }>) => new Set(list.map(key));
+const setOf = (list: Array<{ slug: string; date: string }>) =>
+  new Set(list.filter(o => !KNOWN_MIXED_DISPATCH_SLUGS.has(o.slug)).map(key));
 
 function countDiff(a: Set<string>, b: Set<string>): number {
   let n = 0;

@@ -7,8 +7,8 @@ This report quantifies and segregates the date shifts resulting from month name 
 Authoritative lunar month determination for May/June 2026 using the corrected engine path:
 
 - **Month Name**: `Adhika Jyeshtha`
-- **Month Start (UTC)**: `2026-05-16T20:01:57.563Z`
-- **Month End (UTC)**: `2026-06-15T02:54:49.951Z`
+- **Month Start (UTC)**: `2026-05-16T20:01:11.581Z`
+- **Month End (UTC)**: `2026-06-15T02:54:15.863Z`
 - **Sankranti Count in Interval**: `0`
 - **Is Adhika**: `true`
 
@@ -19,103 +19,79 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 ## Year 2026
 
 ### Summary Metrics
-- **Total Legacy Observances**: 180
-- **Total Corrected Observances**: 174
-- **Unchanged Dates**: 105
-- **Shifted Dates**: 69
-- **Inserted Dates**: 0
-- **Removed Dates**: 6
-- **Average Absolute Shift**: 29.7 days
-- **Maximum Absolute Shift**: 59 days
-- **First Changed Date**: 2026-02-16
+- **Total Legacy Observances**: 103
+- **Total Corrected Observances**: 113
+- **Unchanged Dates**: 66
+- **Shifted Dates**: 33
+- **Inserted Dates**: 14
+- **Removed Dates**: 4
+- **Average Absolute Shift**: 26.9 days
+- **Maximum Absolute Shift**: 30 days
+- **First Changed Date**: 2026-02-13
 - **Last Changed Date**: 2026-12-24
 
 ### Movement Classification Summary
 | Classification | Count (Moved Rows) | Rationale |
 | :--- | :--- | :--- |
-| **D1_CORRECTION** | 19 | Date moved purely due to month-name correction shifting the calendar window. |
+| **D1_CORRECTION** | 11 | Date moved purely due to month-name correction shifting the calendar window. |
 | **ADHIKA_POLICY** | 0 | Date moved purely due to the Adhika month selection policy. |
-| **BOTH** | 3 | Date moved due to a combination of month-name correction and Adhika selection policy. |
-| **UNEXPLAINED** | 0 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
-| **NEEDS_MUHURTA_EVAL** | 53 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
+| **BOTH** | 2 | Date moved due to a combination of month-name correction and Adhika selection policy. |
+| **UNEXPLAINED** | 6 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
+| **NEEDS_MUHURTA_EVAL** | 32 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
 
 ### Detailed Shifts
 
 | Observance Slug | Legacy Date | Corrected Date | Shift (Days) | Status | Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `maha-shivaratri` | 2026-02-15 | 2026-02-16 | +1 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-05-20 | 2026-06-18 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `vijaya-ekadashi` | — | 2026-02-13 | — | **INSERTED** | `UNEXPLAINED` |
+| `amalaki-ekadashi` | — | 2026-02-27 | — | **INSERTED** | `UNEXPLAINED` |
+| `ram-navami` | 2026-03-27 | 2026-03-26 | -1 | **SHIFTED** | `D1_CORRECTION` |
+| `kamada-ekadashi` | — | 2026-03-29 | — | **INSERTED** | `UNEXPLAINED` |
+| `papmochani-ekadashi` | — | 2026-04-13 | — | **INSERTED** | `UNEXPLAINED` |
+| `apara-ekadashi` | — | 2026-05-13 | — | **INSERTED** | `BOTH` |
+| `nirjala-ekadashi` | — | 2026-06-25 | — | **INSERTED** | `BOTH` |
 | `pradosh-vrat` | 2026-05-29 | 2026-06-27 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vat-savitri-purnima` | 2026-05-31 | 2026-06-29 | +29 | **SHIFTED** | `BOTH` |
 | `purnima-vrat` | 2026-05-31 | 2026-06-29 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `pradosh-vrat` | 2026-06-13 | 2026-07-12 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `shani-jayanti` | 2026-05-16 | 2026-07-14 | +59 | **SHIFTED** | `BOTH` |
-| `vat-savitri-amavasya` | 2026-05-16 | 2026-07-14 | +59 | **SHIFTED** | `BOTH` |
 | `amavasya-vrat` | 2026-06-15 | 2026-07-14 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `jagannath-rath-yatra` | 2026-06-16 | 2026-07-16 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `vinayaka-chaturthi` | 2026-06-18 | 2026-07-17 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `devshayani-ekadashi` | — | 2026-07-25 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-06-27 | 2026-07-27 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `purnima-vrat` | 2026-06-29 | 2026-07-29 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `kamika-ekadashi` | — | 2026-08-09 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-07-12 | 2026-08-11 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-07-14 | 2026-08-12 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-07-17 | 2026-08-16 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `shravan-somvar` | 2026-07-20 | 2026-08-17 | +28 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2026-08-17 | — | — | **REMOVED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2026-07-21 | 2026-08-18 | +28 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2026-07-27 | 2026-08-24 | +28 | **SHIFTED** | `D1_CORRECTION` |
-| `pradosh-vrat` | 2026-07-27 | 2026-08-25 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `mangala-gauri-vrat` | 2026-07-28 | 2026-08-25 | +28 | **SHIFTED** | `D1_CORRECTION` |
-| `guru-purnima` | 2026-07-29 | 2026-08-28 | +30 | **SHIFTED** | `D1_CORRECTION` |
+| `shravana-putrada-ekadashi` | — | 2026-08-23 | — | **INSERTED** | `D1_CORRECTION` |
+| `pradosh-vrat` | 2026-07-27 | 2026-08-26 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `raksha-bandhan` | 2026-07-29 | 2026-08-28 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `ullambana-ancestor-day` | 2026-07-29 | 2026-08-28 | +30 | **SHIFTED** | `D1_CORRECTION` |
 | `purnima-vrat` | 2026-07-29 | 2026-08-28 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `shravan-somvar` | 2026-08-03 | 2026-08-31 | +28 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2026-08-04 | 2026-09-01 | +28 | **SHIFTED** | `D1_CORRECTION` |
 | `krishna-janmashtami` | 2026-08-06 | 2026-09-04 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `krishna-janmashtami` | 2026-08-06 | 2026-09-04 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `shravan-somvar` | 2026-08-10 | 2026-09-07 | +28 | **SHIFTED** | `D1_CORRECTION` |
+| `aja-ekadashi` | — | 2026-09-07 | — | **INSERTED** | `D1_CORRECTION` |
 | `paryushana-parva-begins` | 2026-08-10 | 2026-09-08 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2026-08-11 | 2026-09-08 | +28 | **SHIFTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-08-11 | 2026-09-09 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-08-12 | 2026-09-11 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-08-16 | 2026-09-15 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `onam` | 2026-08-26 | 2026-09-23 | +28 | **SHIFTED** | `D1_CORRECTION` |
+| `ganesh-chaturthi` | 2026-09-15 | 2026-09-14 | -1 | **SHIFTED** | `UNEXPLAINED` |
+| `samvatsari-paryushana-ends` | 2026-09-16 | 2026-09-15 | -1 | **SHIFTED** | `UNEXPLAINED` |
+| `parivartini-ekadashi` | — | 2026-09-22 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-08-25 | 2026-09-24 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `purnima-vrat` | 2026-08-28 | 2026-09-26 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `pradosh-vrat` | 2026-09-09 | 2026-10-08 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-09-11 | 2026-10-10 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-09-15 | 2026-10-14 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `pradosh-vrat` | 2026-09-24 | 2026-10-24 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `pavarana-end-of-vassa` | 2026-09-26 | 2026-10-26 | +30 | **SHIFTED** | `D1_CORRECTION` |
 | `purnima-vrat` | 2026-09-26 | 2026-10-26 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `kathina` | 2026-09-27 | 2026-10-27 | +30 | **SHIFTED** | `D1_CORRECTION` |
+| `rama-ekadashi` | — | 2026-11-05 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-10-08 | 2026-11-07 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-10-10 | 2026-11-09 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-10-14 | 2026-11-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `devutthana-ekadashi` | — | 2026-11-21 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-10-24 | 2026-11-22 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `purnima-vrat` | 2026-10-26 | 2026-11-24 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `karva-chauth` | 2026-10-29 | 2026-11-28 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `dhanteras` | 2026-11-06 | 2026-12-05 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `utpanna-ekadashi` | — | 2026-12-04 | — | **INSERTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-11-07 | 2026-12-06 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `pradosh-vrat` | 2026-12-06 | — | — | **REMOVED** | `NEEDS_MUHURTA_EVAL` |
-| `diwali` | 2026-11-08 | 2026-12-07 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `bandhi-chhor-divas` | 2026-11-08 | 2026-12-07 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `jain-diwali-nirvana-ladnun` | 2026-11-08 | 2026-12-07 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `govardhan-puja` | 2026-11-09 | 2026-12-08 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `jain-new-year-pratipada` | 2026-11-09 | 2026-12-08 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-11-09 | 2026-12-08 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `amavasya-vrat` | 2026-12-08 | — | — | **REMOVED** | `NEEDS_MUHURTA_EVAL` |
-| `bhai-dooj` | 2026-11-10 | 2026-12-09 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-11-13 | 2026-12-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `vinayaka-chaturthi` | 2026-12-13 | — | — | **REMOVED** | `NEEDS_MUHURTA_EVAL` |
-| `gita-jayanti` | 2026-11-21 | 2026-12-20 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `vaikunta-ekadashi` | 2026-11-21 | 2026-12-20 | +29 | **SHIFTED** | `D1_CORRECTION` |
 | `pradosh-vrat` | 2026-11-22 | 2026-12-22 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `pradosh-vrat` | 2026-12-22 | — | — | **REMOVED** | `NEEDS_MUHURTA_EVAL` |
-| `kartik-purnima` | 2026-11-24 | 2026-12-23 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `guru-nanak-gurpurab` | 2026-11-24 | 2026-12-23 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `sangha-day-loy-krathong` | 2026-11-24 | 2026-12-23 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `kartik-purnima-jain` | 2026-11-24 | 2026-12-23 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `purnima-vrat` | 2026-11-24 | 2026-12-24 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
 | `purnima-vrat` | 2026-12-24 | — | — | **REMOVED** | `NEEDS_MUHURTA_EVAL` |
 
@@ -124,117 +100,105 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 ## Year 2027
 
 ### Summary Metrics
-- **Total Legacy Observances**: 179
-- **Total Corrected Observances**: 180
-- **Unchanged Dates**: 140
-- **Shifted Dates**: 38
-- **Inserted Dates**: 2
-- **Removed Dates**: 1
-- **Average Absolute Shift**: 26.0 days
+- **Total Legacy Observances**: 98
+- **Total Corrected Observances**: 115
+- **Unchanged Dates**: 95
+- **Shifted Dates**: 3
+- **Inserted Dates**: 17
+- **Removed Dates**: 0
+- **Average Absolute Shift**: 29.7 days
 - **Maximum Absolute Shift**: 30 days
-- **First Changed Date**: 2027-02-21
-- **Last Changed Date**: 2027-12-13
+- **First Changed Date**: 2027-01-03
+- **Last Changed Date**: 2027-11-24
 
 ### Movement Classification Summary
 | Classification | Count (Moved Rows) | Rationale |
 | :--- | :--- | :--- |
-| **D1_CORRECTION** | 26 | Date moved purely due to month-name correction shifting the calendar window. |
+| **D1_CORRECTION** | 20 | Date moved purely due to month-name correction shifting the calendar window. |
 | **ADHIKA_POLICY** | 0 | Date moved purely due to the Adhika month selection policy. |
 | **BOTH** | 0 | Date moved due to a combination of month-name correction and Adhika selection policy. |
 | **UNEXPLAINED** | 0 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
-| **NEEDS_MUHURTA_EVAL** | 15 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
+| **NEEDS_MUHURTA_EVAL** | 0 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
 
 ### Detailed Shifts
 
 | Observance Slug | Legacy Date | Corrected Date | Shift (Days) | Status | Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `guru-ravidas-jayanti` | 2027-01-22 | 2027-02-21 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `magha-puja` | 2027-01-22 | 2027-02-21 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `maha-shivaratri` | 2027-03-06 | 2027-03-07 | +1 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `saphala-ekadashi` | — | 2027-01-03 | — | **INSERTED** | `D1_CORRECTION` |
+| `vijaya-ekadashi` | — | 2027-03-04 | — | **INSERTED** | `D1_CORRECTION` |
+| `amalaki-ekadashi` | — | 2027-03-18 | — | **INSERTED** | `D1_CORRECTION` |
 | `holi` | — | 2027-03-22 | — | **INSERTED** | `D1_CORRECTION` |
 | `holla-mohalla` | — | 2027-03-23 | — | **INSERTED** | `D1_CORRECTION` |
 | `ram-navami` | 2027-03-17 | 2027-04-15 | +29 | **SHIFTED** | `D1_CORRECTION` |
+| `kamada-ekadashi` | — | 2027-04-17 | — | **INSERTED** | `D1_CORRECTION` |
 | `mahavir-jayanti` | 2027-03-20 | 2027-04-19 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `hanuman-jayanti` | 2027-03-22 | 2027-04-20 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `narasimha-jayanti` | 2027-04-19 | 2027-05-19 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `vesak-buddha-purnima` | 2027-04-20 | 2027-05-20 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `vat-savitri-purnima` | 2027-05-20 | 2027-06-18 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `shani-jayanti` | 2027-06-04 | 2027-07-04 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `vat-savitri-amavasya` | 2027-06-04 | 2027-07-04 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2027-07-20 | 2027-08-03 | +14 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2027-07-19 | 2027-08-09 | +21 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2027-07-27 | 2027-08-10 | +14 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2027-07-26 | 2027-08-16 | +21 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2027-08-16 | — | — | **REMOVED** | `D1_CORRECTION` |
-| `guru-purnima` | 2027-07-18 | 2027-08-17 | +30 | **SHIFTED** | `D1_CORRECTION` |
+| `papmochani-ekadashi` | — | 2027-05-02 | — | **INSERTED** | `D1_CORRECTION` |
+| `apara-ekadashi` | — | 2027-06-01 | — | **INSERTED** | `D1_CORRECTION` |
+| `nirjala-ekadashi` | — | 2027-06-14 | — | **INSERTED** | `D1_CORRECTION` |
+| `devshayani-ekadashi` | — | 2027-07-14 | — | **INSERTED** | `D1_CORRECTION` |
+| `kamika-ekadashi` | — | 2027-07-30 | — | **INSERTED** | `D1_CORRECTION` |
+| `shravana-putrada-ekadashi` | — | 2027-08-12 | — | **INSERTED** | `D1_CORRECTION` |
 | `raksha-bandhan` | 2027-07-18 | 2027-08-17 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `ullambana-ancestor-day` | 2027-07-18 | 2027-08-17 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2027-08-03 | 2027-08-17 | +14 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2027-08-02 | 2027-08-23 | +21 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2027-08-10 | 2027-08-24 | +14 | **SHIFTED** | `D1_CORRECTION` |
-| `krishna-janmashtami` | 2027-07-27 | 2027-08-25 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `krishna-janmashtami` | 2027-07-27 | 2027-08-25 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `paryushana-parva-begins` | 2027-07-30 | 2027-08-29 | +30 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2027-08-09 | 2027-08-30 | +21 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2027-08-17 | 2027-08-31 | +14 | **SHIFTED** | `D1_CORRECTION` |
-| `karva-chauth` | 2027-10-19 | 2027-11-17 | +29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `dhanteras` | 2027-10-26 | 2027-11-25 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `diwali` | 2027-10-28 | 2027-11-27 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `bandhi-chhor-divas` | 2027-10-28 | 2027-11-27 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `jain-diwali-nirvana-ladnun` | 2027-10-28 | 2027-11-27 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `govardhan-puja` | 2027-10-29 | 2027-11-28 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `jain-new-year-pratipada` | 2027-10-29 | 2027-11-28 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `bhai-dooj` | 2027-10-30 | 2027-11-29 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `kartik-purnima` | 2027-11-13 | 2027-12-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `guru-nanak-gurpurab` | 2027-11-13 | 2027-12-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `sangha-day-loy-krathong` | 2027-11-13 | 2027-12-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `kartik-purnima-jain` | 2027-11-13 | 2027-12-13 | +30 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `aja-ekadashi` | — | 2027-08-28 | — | **INSERTED** | `D1_CORRECTION` |
+| `parivartini-ekadashi` | — | 2027-09-11 | — | **INSERTED** | `D1_CORRECTION` |
+| `rama-ekadashi` | — | 2027-10-25 | — | **INSERTED** | `D1_CORRECTION` |
+| `devutthana-ekadashi` | — | 2027-11-10 | — | **INSERTED** | `D1_CORRECTION` |
+| `utpanna-ekadashi` | — | 2027-11-24 | — | **INSERTED** | `D1_CORRECTION` |
 
 ---
 
 ## Year 2028
 
 ### Summary Metrics
-- **Total Legacy Observances**: 181
-- **Total Corrected Observances**: 179
-- **Unchanged Dates**: 165
-- **Shifted Dates**: 14
-- **Inserted Dates**: 0
-- **Removed Dates**: 2
-- **Average Absolute Shift**: 14.6 days
+- **Total Legacy Observances**: 102
+- **Total Corrected Observances**: 117
+- **Unchanged Dates**: 92
+- **Shifted Dates**: 10
+- **Inserted Dates**: 15
+- **Removed Dates**: 0
+- **Average Absolute Shift**: 20.7 days
 - **Maximum Absolute Shift**: 30 days
-- **First Changed Date**: 2028-02-24
-- **Last Changed Date**: 2028-08-17
+- **First Changed Date**: 2028-02-08
+- **Last Changed Date**: 2028-12-12
 
 ### Movement Classification Summary
 | Classification | Count (Moved Rows) | Rationale |
 | :--- | :--- | :--- |
-| **D1_CORRECTION** | 15 | Date moved purely due to month-name correction shifting the calendar window. |
+| **D1_CORRECTION** | 17 | Date moved purely due to month-name correction shifting the calendar window. |
 | **ADHIKA_POLICY** | 0 | Date moved purely due to the Adhika month selection policy. |
 | **BOTH** | 0 | Date moved due to a combination of month-name correction and Adhika selection policy. |
 | **UNEXPLAINED** | 0 | Movements not matching D1 shift or Adhika policy bounds (shipped findings). |
-| **NEEDS_MUHURTA_EVAL** | 1 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
+| **NEEDS_MUHURTA_EVAL** | 8 | Muhurta/moonrise-dependent rules. Masa correction shifts these rows but the final date must be set by the condition evaluator (see ENGINE_RECONCILIATION_REPORT.md). |
 
 ### Detailed Shifts
 
 | Observance Slug | Legacy Date | Corrected Date | Shift (Days) | Status | Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `maha-shivaratri` | 2028-02-23 | 2028-02-24 | +1 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
-| `shani-jayanti` | 2028-05-24 | 2028-06-22 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `vat-savitri-amavasya` | 2028-05-24 | 2028-06-22 | +29 | **SHIFTED** | `D1_CORRECTION` |
-| `asalha-puja` | 2028-08-05 | 2028-07-06 | -30 | **SHIFTED** | `D1_CORRECTION` |
-| `vassa-begins-rains-retreat` | 2028-08-06 | 2028-07-07 | -30 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2028-07-17 | 2028-07-24 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2028-07-18 | 2028-07-25 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2028-07-24 | 2028-07-31 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2028-07-25 | 2028-08-01 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2028-07-31 | 2028-08-07 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2028-08-01 | 2028-08-08 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2028-08-07 | 2028-08-14 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `shravan-somvar` | 2028-08-14 | — | — | **REMOVED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2028-08-08 | 2028-08-15 | +7 | **SHIFTED** | `D1_CORRECTION` |
-| `mangala-gauri-vrat` | 2028-08-15 | — | — | **REMOVED** | `D1_CORRECTION` |
-| `paryushana-parva-begins` | 2028-07-19 | 2028-08-17 | +29 | **SHIFTED** | `D1_CORRECTION` |
+| `pradosh-vrat` | 2028-02-09 | 2028-02-08 | -1 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `vijaya-ekadashi` | — | 2028-02-20 | — | **INSERTED** | `D1_CORRECTION` |
+| `amalaki-ekadashi` | — | 2028-03-07 | — | **INSERTED** | `D1_CORRECTION` |
+| `ram-navami` | 2028-04-04 | 2028-04-03 | -1 | **SHIFTED** | `D1_CORRECTION` |
+| `kamada-ekadashi` | — | 2028-04-06 | — | **INSERTED** | `D1_CORRECTION` |
+| `papmochani-ekadashi` | — | 2028-04-20 | — | **INSERTED** | `D1_CORRECTION` |
+| `apara-ekadashi` | — | 2028-05-20 | — | **INSERTED** | `D1_CORRECTION` |
+| `nirjala-ekadashi` | — | 2028-06-03 | — | **INSERTED** | `D1_CORRECTION` |
+| `devshayani-ekadashi` | — | 2028-07-02 | — | **INSERTED** | `D1_CORRECTION` |
+| `guru-purnima` | 2028-08-05 | 2028-07-06 | -30 | **SHIFTED** | `D1_CORRECTION` |
+| `kamika-ekadashi` | — | 2028-07-18 | — | **INSERTED** | `D1_CORRECTION` |
+| `shravana-putrada-ekadashi` | — | 2028-08-01 | — | **INSERTED** | `D1_CORRECTION` |
+| `aja-ekadashi` | — | 2028-08-16 | — | **INSERTED** | `D1_CORRECTION` |
+| `parivartini-ekadashi` | — | 2028-08-30 | — | **INSERTED** | `D1_CORRECTION` |
+| `rama-ekadashi` | — | 2028-10-14 | — | **INSERTED** | `D1_CORRECTION` |
+| `dhanteras` | 2028-11-13 | 2028-10-15 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `diwali` | 2028-11-15 | 2028-10-17 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `bandhi-chhor-divas` | 2028-11-15 | 2028-10-17 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `govardhan-puja` | 2028-11-16 | 2028-10-18 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `bhai-dooj` | 2028-11-17 | 2028-10-19 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `devutthana-ekadashi` | — | 2028-10-28 | — | **INSERTED** | `D1_CORRECTION` |
+| `guru-nanak-gurpurab` | 2028-12-01 | 2028-11-02 | -29 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `utpanna-ekadashi` | — | 2028-11-13 | — | **INSERTED** | `D1_CORRECTION` |
+| `purnima-vrat` | 2028-12-02 | 2028-12-01 | -1 | **SHIFTED** | `NEEDS_MUHURTA_EVAL` |
+| `saphala-ekadashi` | — | 2028-12-12 | — | **INSERTED** | `D1_CORRECTION` |
 
 ---
 
@@ -245,15 +209,24 @@ Authoritative lunar month determination for May/June 2026 using the corrected en
 
 | Rule Slug | Legacy Date | Corrected Date | Shift (Days) | Reason |
 | :--- | :--- | :--- | :--- | :--- |
-| `shani-jayanti` | 2026-05-16 | 2026-07-14 | +59 | Rule maps to Amanta `Jyeshtha`. Shifts by 59 days due to combination of month name correction and Adhika month selection policy (`nija`). |
-| `vat-savitri-amavasya` | 2026-05-16 | 2026-07-14 | +59 | Rule maps to Amanta `Jyeshtha`. Shifts by 59 days due to combination of month name correction and Adhika month selection policy (`nija`). |
-| `vat-savitri-purnima` | 2026-05-31 | 2026-06-29 | +29 | Rule maps to Amanta `Jyeshtha`. Shifts by 29 days due to combination of month name correction and Adhika month selection policy (`nija`). |
+| `nirjala-ekadashi` | — | 2026-06-25 | — | Rule maps to Amanta `Jyeshtha`. Shifts by null days due to combination of month name correction and Adhika month selection policy (`nija`). |
+| `apara-ekadashi` | — | 2026-05-13 | — | Rule maps to Amanta `Jyeshtha`. Shifts by null days due to combination of month name correction and Adhika month selection policy (`nija`). |
 
 ---
 
 ## Programmatic Findings: UNEXPLAINED Shifts
 
-**Zero unexplained shifts detected.** All date movements align with month corrections or the 2026 Adhika Jyeshtha window.
+> [!CAUTION]
+> **UNEXPLAINED SHIFTS DETECTED**: The following date movements do not fit standard month or Adhika boundary shifts. This represents structural regressions:
+
+| Year | Rule Slug | Legacy Date | Corrected Date | Shift (Days) |
+| :--- | :--- | :--- | :--- | :--- |
+| 2026 | `ganesh-chaturthi` | 2026-09-15 | 2026-09-14 | -1 |
+| 2026 | `samvatsari-paryushana-ends` | 2026-09-16 | 2026-09-15 | -1 |
+| 2026 | `kamada-ekadashi` | — | 2026-03-29 | — |
+| 2026 | `amalaki-ekadashi` | — | 2026-02-27 | — |
+| 2026 | `papmochani-ekadashi` | — | 2026-04-13 | — |
+| 2026 | `vijaya-ekadashi` | — | 2026-02-13 | — |
 
 ---
 
@@ -264,7 +237,7 @@ Out of all lunar rules, only the following rules have calculated dates in 2026 t
 | Rule Slug | Actual Policy | Alternative Policy Tested | Alternate Date(s) | Impact |
 | :--- | :--- | :--- | :--- | :--- |
 | `vasant-panchami` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-01-23` to `None` |
-| `maha-shivaratri` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-02-16` to `None` |
+| `maha-shivaratri` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-02-15` to `None` |
 | `holi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-03-03` to `None` |
 | `gudi-padwa` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-03-20` to `None` |
 | `chaitra-navratri-begins` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-03-20` to `None` |
@@ -281,12 +254,12 @@ Out of all lunar rules, only the following rules have calculated dates in 2026 t
 | `vat-savitri-purnima` | `nija` | `both` | `2026-05-31, 2026-06-29` | Changing policy to `both` shifts the date from `2026-06-29` to `2026-05-31, 2026-06-29` |
 | `jagannath-rath-yatra` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-07-16` to `None` |
 | `gupt-navratri-ashadha-begins` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-07-15` to `None` |
-| `guru-purnima` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-28` to `None` |
+| `guru-purnima` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-07-29` to `None` |
 | `nag-panchami` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-17` to `None` |
 | `raksha-bandhan` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-28` to `None` |
 | `krishna-janmashtami` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-04` to `None` |
 | `ganesh-chaturthi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-15` to `None` |
-| `onam` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-23` to `None` |
+| `onam` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-26` to `None` |
 | `hartalika-teej` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-14` to `None` |
 | `navratri-begins` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-10-11` to `None` |
 | `karva-chauth` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-11-28` to `None` |
@@ -295,6 +268,22 @@ Out of all lunar rules, only the following rules have calculated dates in 2026 t
 | `vivah-panchami` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-12-14` to `None` |
 | `gita-jayanti` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-12-20` to `None` |
 | `vaikunta-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-12-20` to `None` |
+| `kamada-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-03-29` to `None` |
+| `nirjala-ekadashi` | `nija` | `adhika` | `2026-05-26, 2026-05-27` | Changing policy to `adhika` shifts the date from `2026-06-25` to `2026-05-26, 2026-05-27` |
+| `nirjala-ekadashi` | `nija` | `both` | `2026-05-26, 2026-05-27, 2026-06-25` | Changing policy to `both` shifts the date from `2026-06-25` to `2026-05-26, 2026-05-27, 2026-06-25` |
+| `devshayani-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-07-25` to `None` |
+| `shravana-putrada-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-23` to `None` |
+| `parivartini-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-22` to `None` |
+| `devutthana-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-11-21` to `None` |
+| `amalaki-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-02-27` to `None` |
+| `papmochani-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-04-13` to `None` |
+| `apara-ekadashi` | `nija` | `adhika` | `2026-06-11` | Changing policy to `adhika` shifts the date from `2026-07-11` to `2026-06-11` |
+| `apara-ekadashi` | `nija` | `both` | `2026-06-11, 2026-07-11` | Changing policy to `both` shifts the date from `2026-07-11` to `2026-06-11, 2026-07-11` |
+| `kamika-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-09-07` to `None` |
+| `aja-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-10-06` to `None` |
+| `rama-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-12-04` to `None` |
+| `saphala-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-01-14` to `None` |
+| `vijaya-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-03-15` to `None` |
 | `gupt-navratri-magha-begins` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-01-19` to `None` |
 | `guru-ravidas-jayanti` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-02-01` to `None` |
 | `losar-tibetan-new-year` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-02-18` to `None` |
@@ -316,6 +305,7 @@ Out of all lunar rules, only the following rules have calculated dates in 2026 t
 | `sankashti-chaturthi` | `both` | `adhika` | `2026-06-04` | Changing policy to `adhika` shifts the date from `2026-01-07, 2026-02-05, 2026-03-07, 2026-04-06, 2026-05-05, 2026-06-04, 2026-07-04, 2026-08-02, 2026-09-01, 2026-09-30, 2026-10-29, 2026-11-28, 2026-12-27` to `2026-06-04` |
 | `shravan-somvar` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-17, 2026-08-24, 2026-08-31, 2026-09-07` to `None` |
 | `mangala-gauri-vrat` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-18, 2026-08-25, 2026-09-01, 2026-09-08` to `None` |
+| `yogini-ekadashi` | `nija` | `adhika` | `None` | Changing policy to `adhika` shifts the date from `2026-08-09` to `None` |
 
 ### Relative Rules Affected by the Above Base Policies
 

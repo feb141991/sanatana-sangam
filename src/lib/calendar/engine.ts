@@ -20,19 +20,35 @@ export const RULE_ENGINE_VERSION = '2.0.0'; // D1+D2 Stage 2: corrected masa pat
 /**
  * D1+D2 (Tracker 3.7) — Corrected lunar month path.
  *
- * DEFAULT: false  — legacy masaName path is active, byte-identical to v1.2.2.
- * Set true for Stage 3 (live switch, re-materialisation). NOT in scope now.
+ * FLIPPED TRUE 2026-08-17 — Stage 3 live switch. Decided directly by the
+ * founder after reviewing docs/MASA_CORRECTION_DIFF_REPORT.md's full diff
+ * (33/3/10 shifted dates across 2026-2028) with the real coverage numbers in
+ * hand: 19 of 67 sourced golden_fixtures rows are human-approved, only
+ * north_indian_purnimanta is council-ratified among 13 calendar_profiles,
+ * ~60 of 69 masa-sensitive rules still have zero human-approved validation.
+ * Sourcing and admin approval continue in parallel post-flip, not blocking
+ * on full coverage first -- see docs/CALENDAR_ENGINE_ASSESSMENT.md 2.6/2.7.
  *
- * When false:
+ * calculateObservancesForYear's dispatch is NOT a clean binary switch here:
+ * pradosh-vrat/purnima-vrat/amavasya-vrat stay on the legacy path even with
+ * this flag true (see LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR below) --
+ * they're recurring rules with 11-23 real candidate days per year and no
+ * per-occurrence day-selection logic yet, genuinely still needing
+ * USE_CONDITION_EVALUATOR, not just the masa correction.
+ *
+ * When false (legacy):
  *   - precomputePanchangForYear runs exactly as before (masaIndex via sun sidereal + 11)
  *   - CANONICAL_RULES use lunar_masa_name (legacy, D1-calibrated)
- *   - verify:harness MUST be 988 passed / 216 skipped — invariant
- * When true:
+ * When true (now, corrected):
  *   - precomputePanchangCorrectedForYear replaces masaName with getLunarMonth() amanta result
  *   - CANONICAL_RULES use corrected_lunar_masa_name and corrected_lunar_tithi_index
- *   - Requires re-materialisation and full date diff before going live [S]
+ *   - integrity.ts's default 'legacy' diagnostic preference is UNCHANGED here
+ *     on purpose -- it diffs stored production dates against whatever
+ *     actually wrote them, and re-materialisation against the new baseline
+ *     is a separate, deliberate step, not an automatic consequence of this
+ *     flag flipping.
  */
-export const USE_CORRECTED_MASA: boolean = false;
+export const USE_CORRECTED_MASA: boolean = true;
 
 /**
  * Gate integration behind USE_CONDITION_EVALUATOR, default OFF.
@@ -770,6 +786,23 @@ export function calculateObservancesForYearLegacy(
  * path must name it — `calculateObservancesForYearLegacy` or
  * `calculateObservancesForYearCorrected` — so their meaning survives a gate flip.
  */
+// Recurring tithi rules where the corrected engine reports many (11-23)
+// candidate civil days per year with no real per-occurrence day-selection
+// logic yet -- picking "the first candidate" isn't a considered answer, it's
+// an artifact of how the diagnostic reports a single date for a recurring
+// rule. Genuinely still needs USE_CONDITION_EVALUATOR's muhurta-window
+// resolution (see docs/MASA_CORRECTION_DIFF_REPORT.md NEEDS_MUHURTA_EVAL).
+// Kept on the legacy path even after USE_CORRECTED_MASA flips.
+//
+// The diff report also flags the whole Diwali cluster (diwali,
+// bandhi-chhor-divas, dhanteras, govardhan-puja, bhai-dooj,
+// guru-nanak-gurpurab) and krishna-janmashtami this way, but that's stale --
+// all of those are single-annual-occurrence rules independently re-verified
+// against real Tier-1 citations this session (see ratification_note / D33 /
+// D35), or trivially derived via a fixed relative_offset_days from Diwali's
+// already-verified anchor date. Not excluded.
+const LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR = new Set(['pradosh-vrat', 'purnima-vrat', 'amavasya-vrat']);
+
 export function calculateObservancesForYear(
   year: number,
   location?: LocationInput,
@@ -784,9 +817,15 @@ export function calculateObservancesForYear(
       recurring: o.recurring,
     }));
   }
-  return USE_CORRECTED_MASA
-    ? calculateObservancesForYearCorrected(year, location)
-    : calculateObservancesForYearLegacy(year, location);
+  if (!USE_CORRECTED_MASA) {
+    return calculateObservancesForYearLegacy(year, location);
+  }
+  const corrected = calculateObservancesForYearCorrected(year, location);
+  const legacy = calculateObservancesForYearLegacy(year, location);
+  return [
+    ...corrected.filter(o => !LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
+    ...legacy.filter(o => LEGACY_ONLY_PENDING_MUHURTA_EVALUATOR.has(o.slug)),
+  ];
 }
 
 export function calculateObservanceCandidateDiagnosticsForYear(
