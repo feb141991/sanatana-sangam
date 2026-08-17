@@ -57,6 +57,13 @@ export interface ObservanceRule {
   corrected_prefer_last_match?: boolean;
   corrected_allow_skipped_tithi?: boolean;
   corrected_skipped_tithi_policy?: SkippedTithiPolicy;
+  // D34: which instant of the civil day determines the prevailing tithi.
+  // Undefined/'sunrise' (default) matches every other lunar_tithi rule.
+  // 'madhyahna' (solar noon) is a real, separately-documented dharma-śāstra
+  // convention a handful of rules use instead -- see
+  // docs/CALENDAR_ENGINE_ASSESSMENT.md D34. Corrected-engine only, matching
+  // every other corrected_* field's scope.
+  corrected_tithi_reference_time?: 'sunrise' | 'madhyahna';
 
   // ── Publication gating ────────────────────────────────────────────────────
   // These three decide whether a rule reaches a user, so they belong in the

@@ -265,6 +265,63 @@ export function precomputePanchangCorrectedForYear(
   return days;
 }
 
+const madhyahnaPanchangCache = new Map<string, Array<{ dateStr: string; panchang: any }>>();
+
+/**
+ * D34: parallel to precomputePanchangCorrectedForYear, but samples each civil
+ * day's panchang/masa at solar noon (madhyahna) instead of sunrise. Exists
+ * because a handful of rules (ram-navami, ganesh-chaturthi,
+ * samvatsari-paryushana-ends, guru-ravidas-jayanti -- see D34 in
+ * docs/CALENDAR_ENGINE_ASSESSMENT.md) are traditionally defined by
+ * "madhyahna-vyapini" tithi -- whichever tithi prevails at solar noon, not
+ * sunrise -- and disagree with their own cited sources by exactly one day
+ * under the sunrise-only default. Computed and cached lazily, separately
+ * from the sunrise array, since only rules that declare
+ * corrected_tithi_reference_time: 'madhyahna' ever need it -- most years/
+ * calls never touch this function at all.
+ *
+ * noon = sunrise + (sunset - sunrise) / 2, the same definition
+ * getMuhurtaWindows uses. Falls back to that day's sunrise instant (i.e.
+ * behaves like the sunrise-based array for that one day) on the rare
+ * high-latitude edge case where sunset is unavailable -- degrading to the
+ * existing default rather than producing a hole in the year.
+ */
+export function precomputeMadhyahnaPanchangForYear(
+  year: number,
+  location: LocationInput = DEFAULT_LOCATION,
+): Array<{ dateStr: string; panchang: any }> {
+  const cacheKey = `${year}:${location.lat}:${location.lon}:${location.tz}`;
+  if (madhyahnaPanchangCache.has(cacheKey)) {
+    return madhyahnaPanchangCache.get(cacheKey)!;
+  }
+  const numDays = isLeapYear(year) ? 366 : 365;
+  const days: Array<{ dateStr: string; panchang: any }> = [];
+  let currentCivilDate = `${year}-01-01`;
+
+  for (let i = 0; i < numDays; i++) {
+    const { sunrise, sunset } = getSunriseForDateStr(currentCivilDate, location);
+    const instant = sunset ? new Date(sunrise.getTime() + (sunset.getTime() - sunrise.getTime()) / 2) : sunrise;
+    const panchang = calculatePanchang(instant, location.lat, location.lon, location.tz);
+
+    const amanta = getLunarMonth(instant, 'amanta');
+    const purnimanta = getLunarMonth(instant, 'purnimanta');
+
+    days.push({
+      dateStr: currentCivilDate,
+      panchang: {
+        ...panchang,
+        masaName: amanta.ok ? amanta.monthName : '',
+        masaNamePurnimanta: purnimanta.ok ? purnimanta.monthName : '',
+      },
+    });
+
+    currentCivilDate = offsetCivilDateStr(currentCivilDate, 1);
+  }
+
+  madhyahnaPanchangCache.set(cacheKey, days);
+  return days;
+}
+
 /**
  * Rule handler interface for future rule extensions
  */
@@ -828,8 +885,24 @@ function buildOccurrencesMapCorrected(
     ...d,
     panchang: { ...d.panchang, masaName: d.panchang.masaNamePurnimanta },
   }));
-  const daysFor = (r: ObservanceRule) =>
-    r.corrected_month_system === 'purnimanta' ? daysPurnimanta : days;
+
+  // D34: lazy, since only a handful of rules ever declare
+  // corrected_tithi_reference_time: 'madhyahna' -- most calls never touch
+  // precomputeMadhyahnaPanchangForYear at all.
+  let _daysMadhyahna: typeof days | null = null;
+  let _daysMadhyahnaPurnimanta: typeof days | null = null;
+  const getDaysMadhyahna = () => (_daysMadhyahna ??= precomputeMadhyahnaPanchangForYear(year, location));
+  const getDaysMadhyahnaPurnimanta = () => (_daysMadhyahnaPurnimanta ??= getDaysMadhyahna().map(d => ({
+    ...d,
+    panchang: { ...d.panchang, masaName: d.panchang.masaNamePurnimanta },
+  })));
+
+  const daysFor = (r: ObservanceRule) => {
+    if (r.corrected_tithi_reference_time === 'madhyahna') {
+      return r.corrected_month_system === 'purnimanta' ? getDaysMadhyahnaPurnimanta() : getDaysMadhyahna();
+    }
+    return r.corrected_month_system === 'purnimanta' ? daysPurnimanta : days;
+  };
 
   // 1. First Pass: Evaluate absolute rules using corrected rule fields
   for (const rule of CANONICAL_RULES) {

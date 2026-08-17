@@ -253,6 +253,14 @@
         ],
         "description": "Corrected engine kshaya-tithi observance policy"
       },
+      "corrected_tithi_reference_time": {
+        "type": "string",
+        "enum": [
+          "sunrise",
+          "madhyahna"
+        ],
+        "description": "D34: which instant of the civil day determines the prevailing tithi (corrected engine only). Undefined/sunrise is the default; madhyahna (solar noon) is a real dharma-sastra convention a handful of rules use instead."
+      },
       "variant_id": {
         "type": "string",
         "description": "Identity of variant (e.g. smarta, vaishnava)"

@@ -138,7 +138,8 @@
     "lunar_tithi_index": 9,
     "allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. 2027 CONFIRMED: corrected engine independently computes 2027-04-15, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #95) exactly. 2026 UNRESOLVED: engine gives 2026-03-27 but the same source's entry #3 prints 2026-03-26 -- a one-day divergence not yet diagnosed (needs the same vriddhi/boundary investigation given to vijaya-ekadashi). See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only."
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. CONFIRMED for both 2026 and 2027. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Navami begins ~11:30-12:00 IST on 2026-03-26, absent at that day's sunrise). Corrected engine independently computes 2026-03-26 and 2027-04-15, matching Rashtriya Panchang 1948 SE entries #3 and #95 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34/D33 in docs/CALENDAR_ENGINE_ASSESSMENT.md.",
+    "corrected_tithi_reference_time": "madhyahna"
   },
   {
     "slug": "hanuman-jayanti",
@@ -405,7 +406,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 4,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "corrected_tithi_reference_time": "madhyahna",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Chaturthi begins ~07:00-07:30 IST on 2026-09-14, absent at that day's sunrise). Corrected engine independently computes 2026-09-14, matching Rashtriya Panchang 1948 SE entry #41 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
   },
   {
     "slug": "onam",
@@ -1036,10 +1039,11 @@
     "lunar_tithi_index": 15,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "DISPUTED, and our own astronomy supports NEITHER prior answer. Purnima 2027 is NOT kshaya -- that was my mischaracterisation. The boundary solver puts the Purnima interval at 2027-02-20T02:30Z to 2027-02-20T23:23Z, nearly 21 hours, entirely within 20 February. It is missed only because the fixed 01:00 UTC daily sample falls before it on the 20th and after it on the 21st. Council ruled 22 Feb, the sampled engine gives 21 Feb, and the astronomy indicates 20 Feb -- which is also what Drik Panchang lists. Withheld pending resolution.",
+    "ratification_note": "D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Magha/Phalguna Purnima begins ~06:00-09:00 IST on 2027-02-20, absent at that day's sunrise). Corrected engine independently computes 2027-02-20, matching the SGPC Nanakshahi Samvat 558 citation (08 Phagun) exactly. See D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md.",
     "disputed_years": [
       2027
-    ]
+    ],
+    "corrected_tithi_reference_time": "madhyahna"
   },
   {
     "slug": "holla-mohalla",
@@ -1427,7 +1431,9 @@
     "adhika_policy": "nija",
     "lunar_tithi_index": 5,
     "corrected_allow_skipped_tithi": true,
-    "launch_status": "included"
+    "launch_status": "included",
+    "corrected_tithi_reference_time": "madhyahna",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Panchami begins ~07:30-08:00 IST on 2026-09-15, absent at that day's sunrise). Corrected engine independently computes 2026-09-15, matching Rashtriya Panchang 1948 SE entry #42 exactly -- though that source entry itself lists two paksha variants (Chaturthi-paksha, Panchami-paksha) at the same printed date, an unresolved source-internal ambiguity separate from this engine fix. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
   },
   {
     "slug": "das-lakshana-dharma-begins",
