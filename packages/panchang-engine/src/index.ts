@@ -7,6 +7,7 @@ import {
 } from './core/astronomy.js';
 import { dateToJde, getSunriseSunsetTimes, getSolarApparentLongitude, binaryRoot } from './core/astronomy-adapter.js';
 import { findNewMoonBefore, findNewMoonAfter } from './lunar-month/index.js';
+import { TZ_REFERENCE_COORDINATES } from './data/tz-reference-coordinates.js';
 
 
 
@@ -433,6 +434,79 @@ export function resolveObservanceLocation(input?: {
     source: 'reference',
     isReference: true,
     label: 'Ujjain (reference)',
+  };
+}
+
+/** Coarse bucket size for `resolveObservanceLocationBucket`, in degrees.
+ *  City-scale (~55km), not exact-GPS-point: sunrise-boundary effects that
+ *  matter for a civil-day tithi assignment don't need finer than this, and
+ *  a coarser bucket keeps the number of distinct materialized locations
+ *  bounded to real geographic clustering rather than growing per exact
+ *  user coordinate. */
+const LOCATION_BUCKET_DEGREES = 0.5;
+
+function roundToLocationBucket(value: number): number {
+  return Math.round(value / LOCATION_BUCKET_DEGREES) * LOCATION_BUCKET_DEGREES;
+}
+
+export type LocationBucketSource = 'device_bucketed' | 'saved_bucketed' | 'timezone_reference' | 'reference';
+
+export interface ResolvedLocationBucket {
+  lat: number;
+  lon: number;
+  tz: string;
+  source: LocationBucketSource;
+}
+
+/**
+ * Resolves a location for MATERIALIZATION (not display) — a coarse,
+ * bounded bucket rather than an exact point, so festival-date computation
+ * can be cached and shared across every user who happens to fall in the
+ * same bucket. Independent of `resolveObservanceLocation` (display-facing,
+ * exact-point, unchanged) so existing callers of that function are
+ * unaffected by this addition.
+ *
+ * Precedence: real device/saved coordinates (rounded to
+ * `LOCATION_BUCKET_DEGREES`) -> a known IANA timezone's reference
+ * coordinate (`tz-reference-coordinates.ts`, already coarse) -> Ujjain.
+ */
+export function resolveObservanceLocationBucket(input?: {
+  coords?: { lat?: number | null; lon?: number | null; tz?: string | null } | null;
+  saved?:  { lat?: number | null; lon?: number | null; tz?: string | null } | null;
+}): ResolvedLocationBucket {
+  const resolved = resolveObservanceLocation(input);
+
+  if (resolved.source === 'device') {
+    return {
+      lat: roundToLocationBucket(resolved.lat),
+      lon: roundToLocationBucket(resolved.lon),
+      tz: resolved.tz,
+      source: 'device_bucketed',
+    };
+  }
+
+  if (resolved.source === 'saved') {
+    return {
+      lat: roundToLocationBucket(resolved.lat),
+      lon: roundToLocationBucket(resolved.lon),
+      tz: resolved.tz,
+      source: 'saved_bucketed',
+    };
+  }
+
+  // resolveObservanceLocation found no coordinates at all. Before accepting
+  // the Ujjain fallback, check whether a bare timezone (no coords) is known.
+  const tzOnly = input?.coords?.tz || input?.saved?.tz;
+  const tzRef = tzOnly ? TZ_REFERENCE_COORDINATES[tzOnly] : undefined;
+  if (tzOnly && tzRef) {
+    return { lat: tzRef.lat, lon: tzRef.lon, tz: tzOnly, source: 'timezone_reference' };
+  }
+
+  return {
+    lat: REFERENCE_LOCATION_UJJAIN.lat,
+    lon: REFERENCE_LOCATION_UJJAIN.lon,
+    tz: REFERENCE_LOCATION_UJJAIN.tz,
+    source: 'reference',
   };
 }
 

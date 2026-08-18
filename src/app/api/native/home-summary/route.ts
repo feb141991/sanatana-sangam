@@ -13,6 +13,8 @@ import { getSacredTextLabel, getTraditionMeta } from '@/lib/tradition-config';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { resolveMonthLabelForSlug } from '@/lib/calendar/month-label-resolver';
+import { getOrMaterializeOccurrences } from '@/lib/calendar/resolve-occurrences';
+import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
 
 export const runtime = 'nodejs';
 
@@ -506,18 +508,31 @@ export async function GET(request: NextRequest) {
   // 'major_only' thins this to primary festivals/vrats, excluding
   // 'regional' (Sikh/Jain calendar-specific) observances -- same mapping as
   // /api/calendar/upcoming. Unset/'all_observances' applies no filter.
-  let observanceQuery = supabase
-    .from('observance_occurrences')
-    .select('date, observance_definitions!inner(slug, display_name, emoji, description, kind, tradition, route_kind, route_slug, active)')
-    .gte('date', today)
-    .lte('date', calendarTo)
-    .eq('observance_definitions.active', true)
-    .in('observance_definitions.tradition', [tradition, 'all'])
-    .eq('publication_status', 'published');
-  if (calendarScope === 'major_only') {
-    observanceQuery = observanceQuery.in('observance_definitions.kind', ['major', 'vrat']);
-  }
-  observanceQuery = observanceQuery.order('date', { ascending: true }).limit(8);
+  //
+  // calendar_profile + location: this used to be an unfiltered query, which
+  // meant every user regardless of tradition/profile/location saw the same
+  // (legacy-ujjain, Ujjain-computed) festival list. Resolving the caller's
+  // own profile and a coarse location bucket, then lazily materializing that
+  // exact (profile, bucket) combination on first read, fixes both at once —
+  // see resolve-occurrences.ts.
+  const observanceCalendarProfile = profile?.calendar_profile ?? 'legacy-ujjain';
+  const observanceLocation = resolveObservanceLocationBucket({
+    saved: { lat: profile?.latitude ?? null, lon: profile?.longitude ?? null, tz: profile?.timezone ?? null },
+  });
+  const observancePromise = getOrMaterializeOccurrences({
+    supabase,
+    fromDate: today,
+    toDate: calendarTo,
+    tradition,
+    calendarScope,
+    calendarProfile: observanceCalendarProfile,
+    location: observanceLocation,
+  })
+    .then((data) => ({ data }))
+    .catch((err) => {
+      console.error('[home-summary] getOrMaterializeOccurrences failed:', err);
+      return { data: null };
+    });
 
   const [
     guidedResult,
@@ -584,7 +599,7 @@ export async function GET(request: NextRequest) {
         .maybeSingle(),
       DB_TIMEOUT,
     ),
-    withTimeout<ObservanceRow[]>(observanceQuery, DB_TIMEOUT),
+    withTimeout<ObservanceRow[]>(observancePromise, DB_TIMEOUT),
     withTimeout<HeroAssetRow[]>(
       supabase
         .from('hero_assets')

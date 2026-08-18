@@ -1,6 +1,6 @@
 {
   "name": "@sangam/panchang-engine",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "High-precision Panchang engine lane for Sanatana Sangam",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
