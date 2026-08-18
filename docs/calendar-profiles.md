@@ -164,6 +164,30 @@ widely documented form, pending council ratification.
 | `midnight_rule` | Sankranti **before midnight** → next day is day 1 | Bengal, Assam |
 | `same_day_rule` | Sankranti day is always day 1 | Odisha |
 
+**Sourcing attempt 2026-08-18 (not ratification-grade -- flagging, not resolving):**
+searched for real citations to back these three unratified profiles
+(`tamil_solar`, `malayalam_solar`, `bengali_solar` -- `odia`'s `same_day_rule`
+was not part of this pass). Every hit was a Tier 5 commercial panchang
+aggregator (prokerala, drikpanchang, myzodiaq, etc.) -- per
+`source-governance.md` these are QA signal only, never a citation, so **none
+of the three profiles can be ratified from this research**. One concrete,
+checkable discrepancy did surface and is worth recording rather than
+silently discarding: a Malayalam-calendar description (myzodiaq.in, still
+Tier 5) states the aparāhna threshold as **3/5 of the day**, matching this
+codebase's own `3 * dayFifth` (§2 table's "4th day-fifth" phrasing is the
+same boundary, just named from the other side), **but describes a two-tier
+outcome — Sankranti before aparāhna → next day; after aparāhna → two days
+later** — not this codebase's current two-way split (before → same day;
+after → next day only, see `assignSankrantiToCivilDay`'s `aparahna_rule`
+branch in `packages/panchang-engine/src/solar-month/index.ts`). No Tamil or
+Bengali source was found that specifically corroborated or contradicted
+`sunset_rule`/`midnight_rule` as coded. **Still needed before ratification**:
+a real Tier 1-4 source per region -- a state/regional almanac board (parallel
+to how Rashtriya Panchang anchors the amānta batch), a recognized Jyotiṣa
+text, or a Council member with direct access to a primary regional
+panchangam -- not further web search, which has now been tried and tops out
+at Tier 5.
+
 This is why Makar Sankranti / Pongal / Maghi / Magh Bihu / Uttarayan can fall on
 different civil dates from the same astronomical ingress. The engine must model
 this, not average it away.

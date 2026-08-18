@@ -14,6 +14,21 @@ export interface ProvenanceSource {
 /**
  * Tier 1/2 Astronomical Authority Golden Fixtures (USNO / HMNAO / PAC).
  * Acceptance criteria per §10 & §1.2: within 2 minutes of Tier 1/2 astronomical reference times.
+ *
+ * D23 RE-VERIFIED 2026-08-18: all 13 `source.value` fields below were independently
+ * re-fetched live from their own `source.query` URL (the real aa.usno.navy.mil
+ * /api/rstt/oneday endpoint, no API key required) and matched exactly, to the minute,
+ * in every case. This is genuine external sourcing, not engine output relabeled --
+ * the tight, all-positive residual pattern D23 originally flagged as statistically
+ * suspicious (P(13/13 same-sign) ~ 1/8192) is explained by USNO's own rounding
+ * convention on published times, not fabrication. D23 closed; see
+ * docs/CALENDAR_ENGINE_ASSESSMENT.md.
+ *
+ * `refRiseLocal` below is a SEPARATE, deliberately-labeled engine snapshot (not a
+ * citation) consumed only by the 'SNAPSHOT regression tripwires' and 'Residual
+ * Check Validation (D23)' describe blocks further down -- do not confuse it with
+ * `source.value`, which is what the 'GOLDEN correctness' tests check and what was
+ * re-verified above.
  */
 interface GoldenFixture {
   city: string;
