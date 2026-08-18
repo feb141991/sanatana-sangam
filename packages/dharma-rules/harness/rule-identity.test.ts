@@ -194,15 +194,32 @@ describe('two same-slug variants retain distinct identities', () => {
     TIMEOUT,
   );
 
-  it('deferred (disputed_year 2027) krishna-janmashtami remains withheld for both variants',
+  it('2027 krishna-janmashtami: smarta un-gated (D32-adjacent fix 2026-08-17), gaudiya still withheld',
     () => {
+      // The smarta variant's disputed_years was cleared after directly
+      // verifying the real nishitha-touches evaluator condition qualifies
+      // exactly 2027-08-24, matching the council ruling -- the raw
+      // sunrise-sampled engine's 08-25 was the sampling artifact, not the
+      // ruling. calculateObservancesForYear (the production entry point,
+      // USE_CONDITION_EVALUATOR=true) now correctly resolves this to
+      // 2027-08-24; see materialize.test.ts / harness.test.ts for that
+      // assertion. These raw builders below don't run the evaluator at all,
+      // so smarta now surfaces its un-evaluated sunrise-tithi candidate
+      // (08-25, not the final published date) simply because the publish
+      // gate no longer blocks it -- confirming the gate opened for exactly
+      // the row intended, not confirming the date itself.
+      // The gaudiya/ISKCON variant's own sunrise+rohini condition was never
+      // separately re-verified and remains genuinely disputed, so it stays
+      // gated at this layer too.
       const legacyOccs = calculateObservancesForYearLegacy(2027)
         .filter(o => o.slug === 'krishna-janmashtami');
-      expect(legacyOccs).toEqual([]);
+      expect(legacyOccs.map(o => o.ruleKey)).toEqual(['krishna-janmashtami::smarta_nishita']);
 
       const correctedOccs = calculateObservancesForYearCorrected(2027)
         .filter(o => o.slug === 'krishna-janmashtami');
-      expect(correctedOccs).toEqual([]);
+      expect(correctedOccs).toEqual([
+        { slug: 'krishna-janmashtami', ruleKey: 'krishna-janmashtami::smarta_nishita', date: '2027-08-25', year: 2027 },
+      ]);
     },
     TIMEOUT,
   );
@@ -226,20 +243,30 @@ describe('diagnostics retain both variant identities', () => {
     TIMEOUT,
   );
 
-  it('both 2027 krishna-janmashtami diagnostics are labelled withheld=disputed_year and still carry candidate dates',
+  it('2027 krishna-janmashtami diagnostics: smarta no longer withheld, gaudiya still labelled disputed_year',
     () => {
+      // smarta_nishita's disputed_years was cleared 2026-08-17 after direct
+      // evaluator verification (see the 'un-gated' test above); gaudiya's
+      // sunrise+rohini condition was never separately re-verified.
       const diags = calculateObservanceCandidateDiagnosticsForYear(2027)
         .filter(d => d.slug === 'krishna-janmashtami');
 
       expect(diags).toHaveLength(2);
-
+      // Candidate evidence must be retained regardless of withheld status --
+      // this diagnostic surface is deliberately ungated (see its own doc
+      // comment in engine.ts).
       for (const d of diags) {
-        expect(d.publicationWithheld).toBe(true);
-        expect(d.withheldReason).toBe('disputed_year');
-        // Candidate evidence must be retained even when publication is withheld
         expect(d.candidateDates.length).toBeGreaterThan(0);
         expect(d.ruleKey).toContain('krishna-janmashtami');
       }
+
+      const smarta = diags.find(d => d.ruleKey === 'krishna-janmashtami::smarta_nishita');
+      expect(smarta?.publicationWithheld).toBe(false);
+      expect(smarta?.withheldReason).toBe(null);
+
+      const gaudiya = diags.find(d => d.ruleKey === 'krishna-janmashtami::gaudiya_iskcon');
+      expect(gaudiya?.publicationWithheld).toBe(true);
+      expect(gaudiya?.withheldReason).toBe('disputed_year');
     },
     TIMEOUT,
   );

@@ -363,10 +363,8 @@
     "prefer_last_match": true,
     "corrected_allow_skipped_tithi": true,
     "launch_status": "included",
-    "ratification_note": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator.",
-    "disputed_years": [
-      2027
-    ]
+    "ratification_note": "RESOLVED 2026-08-17. Council ruled 2027-08-24 (Smarta); the raw sunrise-sampled engine gave 08-25 and Drik Panchang agreed with the raw engine, not the ruling -- exactly the sunrise-vs-nishitha sampling gap this rule's own EVALUATOR_RULES condition (tithi_presence tithi:8, period:'nishita', mode:'touches') exists to fix. Directly verified with USE_CONDITION_EVALUATOR's real logic (bypassing the disputed-year publish gate to let it run): the nishitha-touches condition qualifies exactly 2027-08-24, matching the council ruling precisely. 2027 removed from disputed_years. 2026 (09-04) remains council-confirmed and reproduces. The Vaishnava variant's own sunrise+rohini condition has NOT been separately re-verified and remains disputed for 2027 -- see that row.",
+    "disputed_years": []
   },
   {
     "slug": "krishna-janmashtami",

@@ -33,17 +33,28 @@ import {
   calculateObservancesForYearLegacy,
   calculateObservancesForYearCorrected,
   calculateObservanceCandidateDiagnosticsForYear,
+  ruleIdentityKey,
 } from '@/lib/calendar/engine';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
 
-/** Every disputed (slug, year) pair, read from the rules rather than hardcoded. */
-const DISPUTED: Array<{ slug: string; year: number }> = [
+/**
+ * Every disputed (ruleKey, year) pair, read from the rules rather than
+ * hardcoded. Keyed by ruleIdentityKey rather than slug: two same-slug
+ * variants (e.g. krishna-janmashtami's smarta and gaudiya rows) can and do
+ * disagree on which years are disputed for THEM specifically -- smarta's
+ * 2027 dispute was resolved 2026-08-17 via direct evaluator verification
+ * while gaudiya's own sunrise+rohini condition remains unverified for that
+ * year. A slug-level check would mix a published row's date with a withheld
+ * row's absence and produce a false failure the moment variants diverge --
+ * exactly what happened here.
+ */
+const DISPUTED: Array<{ slug: string; ruleKey: string; year: number }> = [
   ...new Set(
-    CANONICAL_RULES.flatMap(r => (r.disputed_years ?? []).map(y => `${r.slug}|${y}`)),
+    CANONICAL_RULES.flatMap(r => (r.disputed_years ?? []).map(y => `${r.slug}|${ruleIdentityKey(r)}|${y}`)),
   ),
 ].map(k => {
-  const [slug, year] = k.split('|');
-  return { slug, year: Number(year) };
+  const [slug, ruleKey, year] = k.split('|');
+  return { slug, ruleKey, year: Number(year) };
 });
 
 /**
@@ -69,8 +80,8 @@ const occurrences = (path: 'legacy' | 'corrected', year: number) => {
 
 const BUILDERS = ['legacy', 'corrected'] as const;
 
-const datesFor = (path: 'legacy' | 'corrected', slug: string, year: number) =>
-  occurrences(path, year).filter(o => o.slug === slug).map(o => o.date);
+const datesFor = (path: 'legacy' | 'corrected', ruleKey: string, year: number) =>
+  occurrences(path, year).filter(o => o.ruleKey === ruleKey).map(o => o.date);
 
 /** Panchanga years are seconds-scale even cached; the default 5s is too tight. */
 const TIMEOUT = 300_000;
@@ -83,14 +94,14 @@ describe('disputed_years — publication gate', () => {
   });
 
   describe.each(BUILDERS)('%s builder', (path) => {
-    it.each(DISPUTED)('withholds $slug in $year', ({ slug, year }) => {
-      expect(datesFor(path, slug, year)).toEqual([]);
+    it.each(DISPUTED)('withholds $ruleKey in $year', ({ ruleKey, year }) => {
+      expect(datesFor(path, ruleKey, year)).toEqual([]);
     }, TIMEOUT);
   });
 
   describe.each(BUILDERS)('%s builder — no over-suppression', (path) => {
-    it.each(DISPUTED)('$slug still publishes in years adjacent to $year', ({ slug, year }) => {
-      const rule = CANONICAL_RULES.find(r => r.slug === slug)!;
+    it.each(DISPUTED)('$ruleKey still publishes in years adjacent to $year', ({ slug, ruleKey, year }) => {
+      const rule = CANONICAL_RULES.find(r => ruleIdentityKey(r) === ruleKey)!;
       // A launch-deferred rule is withheld in every year by design. The
       // disputed-year gate must not be credited or blamed for its absence.
       if (rule.launch_status === 'deferred') return;
@@ -103,22 +114,22 @@ describe('disputed_years — publication gate', () => {
       if (undisputed.length === 0) return;
 
       for (const y of undisputed) {
-        expect(datesFor(path, slug, y), `${slug} vanished from undisputed ${y}`).not.toEqual([]);
+        expect(datesFor(path, ruleKey, y), `${slug} (${ruleKey}) vanished from undisputed ${y}`).not.toEqual([]);
       }
     }, TIMEOUT);
   });
 });
 
 describe('disputed_years — suppression is not amnesia', () => {
-  it.each(DISPUTED)('still reports candidate dates for $slug $year, labelled as withheld', ({ slug, year }) => {
+  it.each(DISPUTED)('still reports candidate dates for $ruleKey $year, labelled as withheld', ({ ruleKey, year }) => {
     // Withholding is a decision about PUBLICATION. The diagnostic surface must
     // keep the evidence, or the dispute becomes unresolvable: a reviewer asking
     // "what date did the engine actually compute?" would get "none", which is
     // both false and useless.
-    const diag = calculateObservanceCandidateDiagnosticsForYear(year).find(d => d.slug === slug);
-    expect(diag, `no diagnostic emitted for ${slug}`).toBeDefined();
+    const diag = calculateObservanceCandidateDiagnosticsForYear(year).find(d => d.ruleKey === ruleKey);
+    expect(diag, `no diagnostic emitted for ${ruleKey}`).toBeDefined();
     expect(diag!.publicationWithheld).toBe(true);
-    const rule = CANONICAL_RULES.find(r => r.slug === slug)!;
+    const rule = CANONICAL_RULES.find(r => ruleIdentityKey(r) === ruleKey)!;
     expect(diag!.withheldReason).toBe(
       rule.launch_status === 'deferred' ? 'deferred' : 'disputed_year',
     );
