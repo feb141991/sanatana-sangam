@@ -267,14 +267,18 @@ this, not average it away.
 | **Bikram Sambat (Nepal)** | CE + 56/57 | Baisakh 1 (~13/14 Apr) | Solar-based, distinct from Indian VS |
 | **Nanakshahi** | CE − 1468 | Chet 1 (14 Mar) | `[S]` — see §3.1 |
 
-### 3.1 ⚠ Nanakshahi `[S]`
+### 3.1 Nanakshahi -- RESOLVED (P2)
 
-The engine currently hardcodes the **2003 Nanakshahi** fixed-solar month starts
-(`packages/panchang-engine/src/index.ts:70-83`). A 2010 revision returned several
-Gurpurab dates to Bikrami reckoning, and the two systems remain in parallel use by
-different Sikh institutions. **The council must decide** whether Shoonaya defaults
-to 2003 Nanakshahi, Bikrami, or offers both as selectable profiles. Until then,
-Sikh observances must be labelled with which system produced them.
+**Council ruling 2026-08-18 (founder):** Shoonaya defaults to **2003 Nanakshahi**
+(the engine's existing fixed-solar month starts, `packages/panchang-engine/src/
+index.ts:70-83`), not Bikrami and not a dual-variant offering. A 2010 revision
+returned several Gurpurab dates to Bikrami reckoning, and the two systems remain
+in parallel use by different Sikh institutions -- that real-world split is
+acknowledged, not modeled as separate rule variants; 2003 Nanakshahi is simply
+the one system this product produces. No engine change was required by this
+ruling (it ratifies the status quo). This unblocks Sikh sourcing against SGPC
+as a Tier-1 authority (`docs/sources/candidate-sources-sikh-buddhist-jain.md`),
+which was previously blocked on this fork, not on missing sources.
 
 ### 3.2 ⚠ Current Samvat implementation
 
