@@ -1,5 +1,13 @@
 # Candidate sources — Sikh, Buddhist, Jain (unverified, for council review)
 
+**PARKED 2026-08-18 (founder decision): Buddhist and Jain sourcing/verification
+is a deprioritized body of work, to be picked up together later.** This affects
+`paryushana-parva-begins` (Jain, disputed for 2027/2028), `vassa-begins-rains-retreat`
+and `kathina` (Buddhist, both deferred) in `rules.json` — no further engineering
+action on any of these pending a real Tier 1-4 source. Sikh sourcing (SGPC) is
+NOT parked by this decision — see the Sikh section below, which already has a
+real Tier-1 candidate; only the fork question (P2) blocks it.
+
 **Status: research only — none of this has been verified against a primary
 document, and none of it has been entered into any `golden_fixtures` row.**
 Per `docs/source-governance.md` §2, only a human with the actual publication
