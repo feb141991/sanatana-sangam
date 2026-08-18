@@ -9,7 +9,7 @@ import { WhyTodayCard } from '@/components/calendar/WhyTodayCard';
 import { WhyTodayExplanationModal } from '@/components/calendar/WhyTodayExplanationModal';
 import { useSacredCalendar, type SacredCalendarData } from '@/hooks/useSacredCalendar';
 import { localSpiritualDate } from '@/lib/sacred-time';
-import { PANCHANG_TRUST_META } from '@/lib/panchang';
+import { PANCHANG_TRUST_META, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
@@ -259,6 +259,14 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
   }, [timezone]);
 
   const p: SacredCalendarData = useSacredCalendar(selected, lat, lon, tradition, displayTz === 'ist' ? 'Asia/Kolkata' : timezone);
+
+  // Phase 6.5: reference-city comparison. Always computed (hooks must run
+  // unconditionally) but only rendered when the viewer has a real, non-
+  // reference location -- otherwise `p` above IS already the Ujjain
+  // reference and there is nothing to compare against.
+  const ujjainReference: SacredCalendarData = useSacredCalendar(
+    selected, REFERENCE_LOCATION_UJJAIN.lat, REFERENCE_LOCATION_UJJAIN.lon, tradition, REFERENCE_LOCATION_UJJAIN.tz,
+  );
 
   const todayObservance = useMemo(() => {
     const todayIso = localSpiritualDate(timezone, 4);
@@ -570,6 +578,40 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                 <p className="text-[10px] text-white/35 leading-relaxed mt-1.5">{PANCHANG_TRUST_META.guidanceNote}</p>
               </div>
             </div>
+
+            {/* Location + reference-city comparison (Phase 6.5) — shows the
+                viewer their own resolved location's panchang alongside the
+                Ujjain reference, since the same tithi/day can genuinely
+                differ by location (sunrise-boundary timing, not error).
+                Only meaningful once the viewer has a real, non-reference
+                location -- when isReference is true, `p` above already IS
+                the Ujjain reference, so there is nothing to compare. */}
+            {!isReference && (
+              <div className="rounded-xl px-4 py-3 flex items-start gap-3" style={GLASS_ROW}>
+                <Globe size={16} className="text-panchang-gold shrink-0 mt-0.5" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-white/90">
+                    {city || 'Your location'} vs. Ujjain (reference)
+                  </p>
+                  <div className="grid grid-cols-2 gap-x-3 mt-1.5 text-[11px]">
+                    <div>
+                      <p className="text-white/40 text-[10px] uppercase tracking-wide">{city || 'Your location'}</p>
+                      <p className="text-white/70 mt-0.5">{p.tithi} · Sunrise {p.sunrise}</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-[10px] uppercase tracking-wide">Ujjain</p>
+                      <p className="text-white/70 mt-0.5">{ujjainReference.tithi} · Sunrise {ujjainReference.sunrise}</p>
+                    </div>
+                  </div>
+                  {p.tithi !== ujjainReference.tithi && (
+                    <p className="text-[10px] text-panchang-gold/80 leading-relaxed mt-1.5">
+                      Your tithi differs from the Ujjain reference — this is a real effect of your
+                      location's own sunrise timing, not an error.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             <GlassCard className="p-4 space-y-2">
               <Row emoji="⏳" label="Tithi (Lunar Day)" value={p.tithi} upto={p.tithiUpto} accent={tradMeta.accent} infoKey="Tithi" />
