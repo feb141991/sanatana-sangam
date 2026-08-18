@@ -188,6 +188,42 @@ text, or a Council member with direct access to a primary regional
 panchangam -- not further web search, which has now been tried and tops out
 at Tier 5.
 
+**Second pass, same day:** searched specifically for named institutional/
+scholarly authorities rather than general terms, and found three real
+candidates -- upgraded from "nothing but Tier 5" to "real leads, still not
+a checkable citation":
+
+- **Bengal**: the **Calendar Reform Committee**, a government-appointed body
+  chaired by physicist Meghnad Saha, reported in 1955 and led to the Śaka-
+  based Rashtriya Panchāṅga for civil use nationally. Real, named, Tier 1
+  in category -- but its scope is the *national* civil calendar unifying
+  ~30 regional calendars, not a ruling on the Bengali *panjika* tradition's
+  own internal Sankranti day-assignment convention specifically. Does not
+  confirm or deny `midnight_rule` as coded.
+- **Tamil**: confirmed a real, named methodological fork -- **Vākya**
+  (traditional, Sūrya Siddhānta-based) vs. **Dṛk/Tirukaṇita** (modern
+  astronomical) Panchangam traditions, both still actively published. No
+  specific source located (in this pass) that states the day-assignment
+  rule itself with a page/section citable the way the Rashtriya Panchang
+  batches were.
+- **Kerala**: **Gaṇeśa Daivajña's Grahalāghava** (c. 1520, Wikipedia:
+  "the most popular [karaṇa text] among pañcāṅga makers in most parts of
+  India") is a real, named, historically central Tier 2 candidate text --
+  but nothing found confirms it specifically documents the aparāhna
+  day-assignment rule (vs. being a general planetary-computation manual
+  popular with panchang-makers for other reasons). Would need someone with
+  direct access to the text to check.
+
+None of these three closes the gap -- each is a genuine, named, chaseable
+lead rather than a Tier 5 aggregator, which is real progress over the first
+pass, but still not something with a page number or URL to cite the way
+Rashtriya Panchang or the USNO fixtures are cited elsewhere in this project.
+Locating the exact passage in any of the three (a 1955 government committee
+report, a specific Vākya/Dṛk Tamil Panchangam publication, or a 500-year-old
+Sanskrit karaṇa text) is archival/library work, not something further web
+search will resolve -- the next step is a human with access to one of these
+three, not another search pass.
+
 This is why Makar Sankranti / Pongal / Maghi / Magh Bihu / Uttarayan can fall on
 different civil dates from the same astronomical ingress. The engine must model
 this, not average it away.
