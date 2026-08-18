@@ -731,6 +731,133 @@ export interface RegionalCalendarRule {
   evaluate(rule: ObservanceRule, year: number): string[];
 }
 
+export interface ResolvedSpan {
+  /** Map of tithi index (1..30) to observed civil date string (YYYY-MM-DD) */
+  tithiDates: Map<number, string>;
+  /** Map of sub-observance slug to observed civil date string */
+  subObservanceDates: Map<string, string>;
+  /** All unique dates included in this span */
+  spanDates: string[];
+  /** Primary start date (first tithi of the span) */
+  startDate: string | null;
+  /** End date (last tithi of the span) */
+  endDate: string | null;
+  /** Diagnostics for tithis that were kshaya (skipped) or vrddhi (extended) */
+  diagnostics: Array<{ tithi: number; type: 'kshaya' | 'vrddhi'; dateStr: string }>;
+}
+
+/**
+ * Handler for multi-day lunar-tithi spans (e.g. Sharad Navratri / Durga Puja,
+ * Chaitra Navratri).
+ *
+ * Rather than approximating sub-observances or end-dates via naive `start + N days`
+ * offsets, this handler walks the actual astronomical daily panchang array for the
+ * target masa, mapping each tithi in `span_tithis` to its observed civil date.
+ * It detects and handles both kṣaya (skipped) and vṛddhi (extended) tithis,
+ * assigning every named sub-observance its true civil date.
+ */
+export const LunarTithiSpanHandler = {
+  resolveSpan(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): ResolvedSpan {
+    const isCorrected = rule.corrected_month_system !== undefined;
+    const masa = (isCorrected ? rule.corrected_lunar_masa_name : null) ?? rule.lunar_masa_name;
+    const spanTithis = rule.span_tithis ?? (rule.lunar_tithi_index !== undefined ? [rule.lunar_tithi_index] : []);
+    const result: ResolvedSpan = {
+      tithiDates: new Map(),
+      subObservanceDates: new Map(),
+      spanDates: [],
+      startDate: null,
+      endDate: null,
+      diagnostics: [],
+    };
+
+    if (!masa || spanTithis.length === 0) return result;
+
+    const policy = rule.skipped_tithi_policy ?? 'following_day';
+
+    // 1. Scan for exact sunrise tithi matches in the target masa
+    const sunriseTithiMap = new Map<number, string[]>();
+    for (const d of days) {
+      if (isMasaMatching(d.panchang.masaName, masa, rule.adhika_policy)) {
+        const t = d.panchang.tithiIndex;
+        if (spanTithis.includes(t)) {
+          const list = sunriseTithiMap.get(t) ?? [];
+          list.push(d.dateStr);
+          sunriseTithiMap.set(t, list);
+        }
+      }
+    }
+
+    // 2. Scan for skipped (kṣaya) tithis within the span
+    const skippedTithiMap = new Map<number, string>();
+    for (let i = 1; i < days.length; i++) {
+      const prev = days[i - 1].panchang;
+      const curr = days[i].panchang;
+      for (const target of spanTithis) {
+        if (sunriseTithiMap.has(target) && sunriseTithiMap.get(target)!.length > 0) {
+          continue; // Already matched at sunrise
+        }
+        let skipped = false;
+        if (target === 1) {
+          skipped = prev.tithiIndex === 30 && curr.tithiIndex === 2;
+        } else if (isCorrected && target === 16) {
+          skipped = prev.tithiIndex === 15 && curr.tithiIndex === 17;
+        } else if (isCorrected && target === 30) {
+          skipped = prev.tithiIndex === 29 && curr.tithiIndex === 1;
+        } else {
+          skipped = prev.tithiIndex === target - 1 && curr.tithiIndex === target + 1;
+        }
+
+        if (skipped) {
+          const targetDay = (policy === 'previous_day' || policy === 'day_before') ? days[i - 1] : days[i];
+          if (isMasaMatching(targetDay.panchang.masaName, masa, rule.adhika_policy)) {
+            skippedTithiMap.set(target, targetDay.dateStr);
+            result.diagnostics.push({ tithi: target, type: 'kshaya', dateStr: targetDay.dateStr });
+          }
+        }
+      }
+    }
+
+    // 3. For each tithi in the span, assign its civil date
+    for (const t of spanTithis) {
+      const matches = sunriseTithiMap.get(t);
+      if (matches && matches.length > 0) {
+        if (matches.length > 1) {
+          result.diagnostics.push({ tithi: t, type: 'vrddhi', dateStr: matches[0] });
+        }
+        const selected = rule.prefer_last_match ? matches[matches.length - 1] : matches[0];
+        result.tithiDates.set(t, selected);
+      } else if (skippedTithiMap.has(t)) {
+        result.tithiDates.set(t, skippedTithiMap.get(t)!);
+      }
+    }
+
+    // 4. Populate sub-observances
+    if (rule.sub_observances) {
+      for (const sub of rule.sub_observances) {
+        const d = result.tithiDates.get(sub.tithi);
+        if (d) {
+          result.subObservanceDates.set(sub.slug, d);
+        }
+      }
+    }
+
+    // 5. Populate start date, end date, and spanDates in chronological order
+    const allDates = [...new Set(Array.from(result.tithiDates.values()))].sort();
+    result.spanDates = allDates;
+    if (spanTithis.length > 0) {
+      result.startDate = result.tithiDates.get(spanTithis[0]) ?? (allDates[0] ?? null);
+      result.endDate = result.tithiDates.get(spanTithis[spanTithis.length - 1]) ?? (allDates[allDates.length - 1] ?? null);
+    }
+
+    return result;
+  },
+
+  evaluate(rule: ObservanceRule, days: Array<{ dateStr: string; panchang: any }>): string[] {
+    const span = LunarTithiSpanHandler.resolveSpan(rule, days);
+    return span.startDate ? [span.startDate] : [];
+  }
+};
+
 function buildOccurrencesMap(
   year: number,
   opts: { applyPublicationGate?: boolean; location?: LocationInput } = {},
@@ -776,6 +903,20 @@ function buildOccurrencesMap(
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(rule, year);
     } else if (rule.rule_family === 'solar_month_day') {
       occurrencesMap[rk] = SolarMonthDayHandler.evaluate(rule, year, location);
+    } else if (rule.rule_family === 'lunar_tithi_span') {
+      const span = LunarTithiSpanHandler.resolveSpan(rule, days);
+      occurrencesMap[rk] = span.startDate ? [span.startDate] : [];
+      if (rule.sub_observances) {
+        for (const sub of rule.sub_observances) {
+          if (gate && sub.launch_status === 'deferred') {
+            occurrencesMap[sub.slug] = [];
+          } else {
+            const subDate = span.subObservanceDates.get(sub.slug);
+            occurrencesMap[sub.slug] = subDate ? [subDate] : [];
+          }
+          slugIndex.set(sub.slug, [...(slugIndex.get(sub.slug) ?? []), sub.slug]);
+        }
+      }
     } else {
       occurrencesMap[rk] = [];
     }
@@ -861,6 +1002,21 @@ export function calculateObservancesForYearLegacy(
       ? allDates[allDates.length - 1]
       : allDates[0];
     results.push({ slug: rule.slug, ruleKey: rk, date: selectedDate, year });
+
+    if (rule.rule_family === 'lunar_tithi_span' && rule.sub_observances) {
+      for (const sub of rule.sub_observances) {
+        if (sub.launch_status === 'deferred') continue;
+        const subDates = (occurrencesMap[sub.slug] || []).filter(
+          d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+        );
+        if (subDates.length > 0) {
+          const hasStandalone = CANONICAL_RULES.some(cr => cr.slug === sub.slug && cr.rule_family !== 'lunar_tithi_span');
+          if (!hasStandalone) {
+            results.push({ slug: sub.slug, ruleKey: sub.slug, date: subDates[0], year });
+          }
+        }
+      }
+    }
   }
 
   return results;
@@ -1185,6 +1341,20 @@ function buildOccurrencesMapCorrected(
       occurrencesMap[rk] = SolarSankrantiHandler.evaluate(r, year);
     } else if (r.rule_family === 'solar_month_day') {
       occurrencesMap[rk] = SolarMonthDayHandler.evaluate(r, year, location);
+    } else if (r.rule_family === 'lunar_tithi_span') {
+      const span = LunarTithiSpanHandler.resolveSpan(r, d);
+      occurrencesMap[rk] = span.startDate ? [span.startDate] : [];
+      if (r.sub_observances) {
+        for (const sub of r.sub_observances) {
+          if (gate && sub.launch_status === 'deferred') {
+            occurrencesMap[sub.slug] = [];
+          } else {
+            const subDate = span.subObservanceDates.get(sub.slug);
+            occurrencesMap[sub.slug] = subDate ? [subDate] : [];
+          }
+          slugIndex.set(sub.slug, [...(slugIndex.get(sub.slug) ?? []), sub.slug]);
+        }
+      }
     } else {
       occurrencesMap[rk] = [];
     }
@@ -1257,6 +1427,21 @@ export function calculateObservancesForYearCorrected(
       ? allDates[allDates.length - 1]
       : allDates[0];
     results.push({ slug: r.slug, ruleKey: rk, date: selectedDate, year });
+
+    if (r.rule_family === 'lunar_tithi_span' && r.sub_observances) {
+      for (const sub of r.sub_observances) {
+        if (sub.launch_status === 'deferred') continue;
+        const subDates = (occurrencesMap[sub.slug] || []).filter(
+          d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+        );
+        if (subDates.length > 0) {
+          const hasStandalone = CANONICAL_RULES.some(cr => cr.slug === sub.slug && cr.rule_family !== 'lunar_tithi_span');
+          if (!hasStandalone) {
+            results.push({ slug: sub.slug, ruleKey: sub.slug, date: subDates[0], year });
+          }
+        }
+      }
+    }
   }
 
   return results;

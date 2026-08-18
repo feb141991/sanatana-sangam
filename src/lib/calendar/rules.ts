@@ -10,6 +10,19 @@ export interface DisputedVariant {
 
 export type SkippedTithiPolicy = 'previous_day' | 'following_day' | 'day_before' | 'day_after';
 
+export interface SubObservance {
+  tithi: number; // 1-15 within paksha or 1-30 absolute
+  slug: string;
+  display_name: string;
+  emoji?: string;
+  description?: string;
+  devi_form?: string;
+  rituals?: string[];
+  kind?: 'major' | 'vrat' | 'regional';
+  launch_status?: 'included' | 'deferred';
+  citation?: string;
+}
+
 export interface ObservanceRule {
   slug: string;
   display_name: string;
@@ -17,8 +30,8 @@ export interface ObservanceRule {
   description: string;
   kind: 'major' | 'vrat' | 'regional';
   tradition: 'hindu' | 'sikh' | 'buddhist' | 'jain' | 'all';
-  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti' | 'solar_month_day';
-  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti' | 'solar_month_day';
+  rule_family: 'solar_fixed' | 'lunar_tithi' | 'lunar_tithi_recurring' | 'weekday_recurring' | 'relative_to_other_observance' | 'nakshatra_based' | 'regional_calendar' | 'solar_sankranti' | 'solar_month_day' | 'lunar_tithi_span';
+  verification_type: 'solar_fixed' | 'lunar_tithi' | 'nakshatra_based' | 'regional_calendar' | 'historical_commemoration' | 'solar_sankranti' | 'solar_month_day' | 'lunar_tithi_span';
   solar_month?: number; // 1-12
   solar_day?: number;   // 1-31
   // 0=Mesha..11=Meena (sidereal rashi index, Math.floor(sunSidereal/30)%12).
@@ -40,6 +53,10 @@ export interface ObservanceRule {
   solar_month_target_rashi?: number;
   // 1-based day within that solar month (1 = new year / month-start day).
   solar_month_day_of_month?: number;
+  // lunar_tithi_span fields (multi-day observance clusters such as Sharad/Chaitra Navratri)
+  span_tithis?: number[];
+  sub_observances?: SubObservance[];
+  cluster_slug?: string;
   lunar_tithi_index?: number; // 1-30
   lunar_masa_name?: string;   // IMPORTANT: must match panchang.ts masaName output (shifted 2 months behind traditional)
   nanakshahi_month?: string;  // e.g. 'Vaisakh'

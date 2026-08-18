@@ -444,6 +444,8 @@ export async function verifyFestivalDatesWithAI(
         customNote = 'Solar transit (sankranti) date — computed from the sun\'s actual rashi crossing, not manually maintained.';
       } else if (item.verificationType === 'solar_month_day') {
         customNote = 'Regional solar-calendar month-day date — the Sankranti\'s civil-day assignment is a regional convention `[S]`, not council-ratified.';
+      } else if (item.verificationType === 'lunar_tithi_span') {
+        customNote = 'Multi-day observance cluster — a span of consecutive tithis, not a single point date.';
       } else if (item.note) {
         customNote = `Needs manual review. ${item.note}`;
       }

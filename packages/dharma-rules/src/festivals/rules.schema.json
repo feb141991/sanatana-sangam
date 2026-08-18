@@ -80,7 +80,8 @@
           "nakshatra_based",
           "regional_calendar",
           "solar_sankranti",
-          "solar_month_day"
+          "solar_month_day",
+          "lunar_tithi_span"
         ]
       },
       "verification_type": {
@@ -92,8 +93,84 @@
           "regional_calendar",
           "historical_commemoration",
           "solar_sankranti",
-          "solar_month_day"
+          "solar_month_day",
+          "lunar_tithi_span"
         ]
+      },
+      "span_tithis": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "description": "Sequence of tithis (1-15 Shukla, 16-30 Krishna) spanned by a lunar_tithi_span rule"
+      },
+      "cluster_slug": {
+        "type": "string",
+        "description": "Optional parent cluster slug grouping multi-day observances"
+      },
+      "sub_observances": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "tithi",
+            "slug",
+            "display_name"
+          ],
+          "properties": {
+            "tithi": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Tithi index within the span"
+            },
+            "slug": {
+              "type": "string",
+              "description": "Unique identifier of the sub-observance"
+            },
+            "display_name": {
+              "type": "string",
+              "description": "Human readable name of the sub-observance"
+            },
+            "emoji": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "devi_form": {
+              "type": "string"
+            },
+            "rituals": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "major",
+                "vrat",
+                "regional"
+              ]
+            },
+            "launch_status": {
+              "type": "string",
+              "enum": [
+                "included",
+                "deferred"
+              ]
+            },
+            "citation": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "description": "Named daily sub-observances within a lunar_tithi_span rule"
       },
       "solar_month": {
         "type": "integer",

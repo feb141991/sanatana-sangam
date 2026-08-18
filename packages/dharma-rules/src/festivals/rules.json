@@ -468,17 +468,110 @@
     "description": "Nine nights of worship of Goddess Durga, Lakshmi and Saraswati",
     "kind": "major",
     "tradition": "hindu",
-    "rule_family": "lunar_tithi",
-    "verification_type": "lunar_tithi",
+    "rule_family": "lunar_tithi_span",
+    "verification_type": "lunar_tithi_span",
     "lunar_masa_name": "Shravana",
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "lunar_tithi_index": 1,
+    "span_tithis": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "cluster_slug": "sharad-navratri",
+    "sub_observances": [
+      {
+        "tithi": 1,
+        "slug": "navratri-day-1-shailaputri",
+        "display_name": "Navratri Day 1 — Shailaputri",
+        "devi_form": "Shailaputri",
+        "rituals": ["Ghatasthapana"],
+        "kind": "major",
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Pratipada"
+      },
+      {
+        "tithi": 2,
+        "slug": "navratri-day-2-brahmacharini",
+        "display_name": "Navratri Day 2 — Brahmacharini",
+        "devi_form": "Brahmacharini",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 3,
+        "slug": "navratri-day-3-chandraghanta",
+        "display_name": "Navratri Day 3 — Chandraghanta",
+        "devi_form": "Chandraghanta",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 4,
+        "slug": "navratri-day-4-kushmanda",
+        "display_name": "Navratri Day 4 — Kushmanda",
+        "devi_form": "Kushmanda",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 5,
+        "slug": "navratri-day-5-skandamata",
+        "display_name": "Navratri Day 5 — Skandamata",
+        "devi_form": "Skandamata",
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 6,
+        "slug": "navratri-day-6-katyayani",
+        "display_name": "Navratri Day 6 — Katyayani (Durga Sasthi)",
+        "devi_form": "Katyayani",
+        "rituals": ["Bilva Nimantran", "Sasthi Bodhon"],
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 7,
+        "slug": "navratri-day-7-kalaratri",
+        "display_name": "Navratri Day 7 — Kalaratri (Maha Saptami)",
+        "devi_form": "Kalaratri",
+        "rituals": ["Maha Saptami Puja", "Kola Bou / Nabapatrika"],
+        "kind": "major",
+        "launch_status": "included"
+      },
+      {
+        "tithi": 8,
+        "slug": "durga-ashtami",
+        "display_name": "Durga Ashtami (Maha Ashtami)",
+        "devi_form": "Mahagauri",
+        "rituals": ["Maha Ashtami Puja", "Sandhi Puja", "Kanya Pujan"],
+        "kind": "major",
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Ashtami"
+      },
+      {
+        "tithi": 9,
+        "slug": "maha-navami",
+        "display_name": "Maha Navami",
+        "devi_form": "Siddhidatri",
+        "rituals": ["Maha Navami Puja", "Ayudha Puja", "Chandi Havan"],
+        "kind": "major",
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Navami"
+      },
+      {
+        "tithi": 10,
+        "slug": "dussehra",
+        "display_name": "Vijayadashami / Dussehra",
+        "rituals": ["Dussehra", "Durga Visarjan", "Sindoor Khela", "Vidyarambham"],
+        "kind": "major",
+        "launch_status": "included",
+        "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Dashami (Index #51, Vijaya Dasami, Bengal & Kerala, 2026-10-21) -- DISPUTED against Index #50's mainstream reading, see ratification_note"
+      }
+    ],
     "allow_skipped_tithi": true,
     "route_kind": "vrat",
     "route_slug": "sharad-navratri",
-    "launch_status": "included"
+    "launch_status": "included",
+    "ratification_note": "OPEN DISPUTE (flagged 2026-08-18, not resolved -- engineering may document, not ratify): the span's tithi-at-sunrise computation for tithi 10 gives 2026-10-21, independently reproduced by a raw elongation-based sunrise scan bypassing all handler code, and matches RP Saka 1948 Index #51 ('Vijaya Dasami, Bengal & Kerala') exactly. But RP's own Index #50 bundles 'Mahanavami' with 'Vijaya Dasami (Dussehara or Dasahara) mainstream' on 2026-10-20 -- the same civil day as Navami, not Dashami's own sunrise day -- implying mainstream Vijayadashami follows a different convention (likely a muhurta/dashami-vyapini-style rule, not yet modeled, analogous to Diwali's pradosh condition). The already-approved golden_fixtures citation for dussehra (2026-10-20, Batch 3, approved 2026-08-17) reflects Index #50's mainstream reading and now conflicts with what this engine computes. This is NOT a computation bug -- both the span and a prior duplicate standalone lunar_tithi rule (removed 2026-08-18, was dead-code redundant, computed the identical 2026-10-21 despite its own stale citation text saying 2026-10-20) independently agree on 10-21. Needs a Council decision: either build a real mainstream-Vijayadashami evaluator condition (if the muhurta convention can be sourced), or split mainstream vs. Bengal/Kerala as declared regional variants, or re-review the approved fixture."
   },
   {
     "slug": "chintpurni-mata-chaitra-navratri",
@@ -511,19 +604,6 @@
     "route_slug": "chintpurni-mata-navratri",
     "region": "Himachal Pradesh / Chintpurni Shakti Peeth",
     "launch_status": "deferred"
-  },
-  {
-    "slug": "dussehra",
-    "display_name": "Dussehra",
-    "emoji": "🎇",
-    "description": "Victory of Rama over Ravana — triumph of good over evil",
-    "kind": "major",
-    "tradition": "hindu",
-    "rule_family": "relative_to_other_observance",
-    "verification_type": "lunar_tithi",
-    "relative_base_slug": "navratri-begins",
-    "relative_offset_days": 9,
-    "launch_status": "included"
   },
   {
     "slug": "karva-chauth",

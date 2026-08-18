@@ -61,14 +61,18 @@ try {
   // only krishna-paksha rules are at risk -- and why this went unnoticed until
   // Shani Jayanti was found to be a month late.
   // ---------------------------------------------------------------------------
-  const KRISHNA = (r: any) => Number(r.lunar_tithi_index) > 15;
+  const KRISHNA = (r: any) => {
+    if (Number(r.lunar_tithi_index) > 15) return true;
+    if (Array.isArray(r.span_tithis) && r.span_tithis.some((t: number) => t > 15)) return true;
+    return false;
+  };
 
   // Guard 1: a krishna-paksha rule that names a corrected month MUST state its
   // system explicitly. Inheriting a default is what produced D32.
   for (const rule of rules as any[]) {
     if (rule.corrected_lunar_masa_name && KRISHNA(rule) && !rule.corrected_month_system) {
       console.error(
-        `❌ "${rule.slug}" is krishna-paksha (tithi ${rule.lunar_tithi_index}) and names ` +
+        `❌ "${rule.slug}" is krishna-paksha (tithi ${rule.lunar_tithi_index ?? rule.span_tithis}) and names ` +
         `corrected month "${rule.corrected_lunar_masa_name}", but does not declare ` +
         `corrected_month_system. Amanta and purnimanta name this fortnight differently, ` +
         `so the date is ambiguous by exactly one month. Declare it explicitly.`
