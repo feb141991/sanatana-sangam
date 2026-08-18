@@ -1312,9 +1312,8 @@ export default function OnboardingClient({
                     { slug: 'marathi_amanta', label: 'Marathi', system: 'Amanta', era: 'Śaka Samvat' },
                     { slug: 'kannada_amanta', label: 'Kannada', system: 'Amanta', era: 'Śaka Samvat' },
                     { slug: 'telugu_amanta', label: 'Telugu', system: 'Amanta', era: 'Śaka Samvat' },
-                    { slug: 'tamil_solar', label: 'Tamil', system: 'Solar (Month begins on Sankranti)', era: 'Tamil Era' },
-                    { slug: 'malayalam_solar', label: 'Malayalam', system: 'Solar', era: 'Kollam Era' },
-                    { slug: 'bengali_solar', label: 'Bengali', system: 'Solar', era: 'Bengali San' },
+                    // tamil_solar / malayalam_solar / bengali_solar deliberately omitted:
+                    // parked, unratified day-assignment rules (docs/calendar-profiles.md).
                     { slug: 'odia', label: 'Odia', system: 'Amanta / Solar Rule', era: 'Śaka Samvat' },
                     { slug: 'nepali_bikram', label: 'Nepali', system: 'Purnimanta', era: 'Bikram Sambat (Nepal)' },
                     { slug: 'global_sanatan', label: 'Global', system: 'Amanta (English Transliterated)', era: 'Vikram Samvat' }

@@ -164,6 +164,22 @@ widely documented form, pending council ratification.
 | `midnight_rule` | Sankranti **before midnight** → next day is day 1 | Bengal, Assam |
 | `same_day_rule` | Sankranti day is always day 1 | Odisha |
 
+**PARKED 2026-08-18 (founder decision, second sourcing pass): `tamil_solar`,
+`malayalam_solar`, `bengali_solar` join Jain/Buddhist as deprioritized
+sourcing work, picked up together later.** Two sourcing passes found real,
+named candidate authorities (see below) but nothing citable with a page/URL
+the way Rashtriya Panchang or the USNO fixtures are cited elsewhere in this
+project -- closing the gap needs a human with archival/library access to one
+of the three leads, not another search pass. `[S]`/`ratified: false` stays
+on all four assignment rules in `packages/panchang-engine/src/solar-month/
+index.ts` and none of the three profiles are council-ratified, so no
+festival rule in `rules.json` uses them and nothing currently ships on them
+-- **also confirmed they must not be user-selectable** in any calendar
+profile picker (onboarding, settings) until ratified; if a picker enumerates
+`calendar_profiles` without filtering on ratification/approval status, that
+is a bug to fix, not a UI decision to make per-profile. See
+`docs/CALENDAR_ENGINE_ASSESSMENT.md`'s 2026-08-18 changelog entry.
+
 **Sourcing attempt 2026-08-18 (not ratification-grade -- flagging, not resolving):**
 searched for real citations to back these three unratified profiles
 (`tamil_solar`, `malayalam_solar`, `bengali_solar` -- `odia`'s `same_day_rule`

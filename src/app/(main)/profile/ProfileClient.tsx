@@ -2027,9 +2027,8 @@ export default function ProfileClient({
                   <option value="marathi_amanta">Marathi (Amanta)</option>
                   <option value="kannada_amanta">Kannada (Amanta)</option>
                   <option value="telugu_amanta">Telugu (Amanta)</option>
-                  <option value="tamil_solar">Tamil (Solar)</option>
-                  <option value="malayalam_solar">Malayalam (Solar)</option>
-                  <option value="bengali_solar">Bengali (Solar)</option>
+                  {/* tamil_solar / malayalam_solar / bengali_solar deliberately omitted:
+                      parked, unratified day-assignment rules (docs/calendar-profiles.md). */}
                   <option value="odia">Odia (Amanta)</option>
                   <option value="nepali_bikram">Nepali (Bikram)</option>
                   <option value="global_sanatan">Global (Amanta / Neutral)</option>
