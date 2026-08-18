@@ -1,6 +1,6 @@
 import { CANONICAL_RULES, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
-import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, type LocationInput } from '@sangam/panchang-engine';
+import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
 
 // Coordinates of Ujjain - traditional meridian for Hindu calendar calculations
@@ -1029,7 +1029,7 @@ export function calculateObservanceCandidateDiagnosticsForYear(
  * This adapter is used ONLY by buildOccurrencesMapCorrected. It never touches
  * the legacy path. The original rule object is never mutated.
  */
-function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
+export function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
   return {
     ...rule,
     lunar_masa_name: rule.corrected_lunar_masa_name ?? rule.lunar_masa_name,
@@ -1038,6 +1038,80 @@ function toCorrectedRule(rule: ObservanceRule): ObservanceRule {
     allow_skipped_tithi: rule.corrected_allow_skipped_tithi !== undefined ? rule.corrected_allow_skipped_tithi : rule.allow_skipped_tithi,
     skipped_tithi_policy: rule.corrected_skipped_tithi_policy ?? rule.skipped_tithi_policy,
   };
+}
+
+/**
+ * D32 fixture-validation fix: what date would this rule select under an
+ * EXPLICIT month system, regardless of what the rule itself declares?
+ *
+ * `corrected_month_system` lives on the rule, not the calendar_profile --
+ * meaning today a single rule can only ever be checked against one system,
+ * even though 7 of 13 ratified profiles declare amanta and 2 declare
+ * purnimanta. For a kṛṣṇa-pakṣa rule (where the two systems genuinely
+ * disagree, per D32's conversion law) that meant any approved golden
+ * fixture citing a profile whose system differs from the rule's own could
+ * never be validated at all -- evaluateApprovedFixture had no way to ask
+ * "what would THIS profile's system have computed?", only "does the rule's
+ * own declared system match?"
+ *
+ * This does NOT change what ships in production -- buildOccurrencesMapCorrected
+ * and calculateObservancesForYear are untouched, so every user still sees the
+ * date driven by the rule's own corrected_month_system exactly as before.
+ * This is scoped to fixture verification only: given a specific profile's
+ * declared system, compute the date THAT system would produce, so a fixture
+ * citing e.g. diwali under gujarati_amanta can be checked against what
+ * amanta actually gives, not silently rejected for disagreeing with
+ * diwali's own (purnimanta) default. Widening this to affect real
+ * materialization is the separate, deliberately-deferred 3.6 Phase B
+ * decision (per-profile production dates) -- not made here.
+ */
+export function calculateObservanceSelectedDateForMonthSystem(
+  rule: ObservanceRule,
+  year: number,
+  monthSystem: 'amanta' | 'purnimanta',
+  location: LocationInput = DEFAULT_LOCATION,
+): string | null {
+  if (rule.rule_family !== 'lunar_tithi' && rule.rule_family !== 'lunar_tithi_recurring') {
+    return null;
+  }
+  const r = toCorrectedRule(rule);
+  const ruleSystem = rule.corrected_month_system ?? 'amanta';
+  const tithiIndex = rule.corrected_lunar_tithi_index ?? rule.lunar_tithi_index;
+  const isKrishnaPaksha = tithiIndex !== undefined && tithiIndex > 15;
+
+  // D32's conversion law shifts the MONTH NAME itself for kṛṣṇa-pakṣa
+  // (purnimantaMonth = amantaMonth + 1) -- for śukla-pakṣa the two systems
+  // name the month identically. r.lunar_masa_name is written for the rule's
+  // OWN declared system; if the requested system differs and the occurrence
+  // is kṛṣṇa-pakṣa, searching for that name unshifted in the other system's
+  // day-array finds a different month's worth of days entirely (this is
+  // exactly the ~1-month-off bug a naive swap produced before this shift).
+  let targetMasaName = r.lunar_masa_name;
+  if (isKrishnaPaksha && targetMasaName && monthSystem !== ruleSystem) {
+    const idx = MONTH_NAMES.indexOf(targetMasaName);
+    if (idx !== -1) {
+      targetMasaName = monthSystem === 'purnimanta'
+        ? MONTH_NAMES[nextMonthIndex(idx)]
+        : MONTH_NAMES[(idx - 1 + MONTH_NAMES.length) % MONTH_NAMES.length];
+    }
+    // idx === -1 (e.g. an 'Adhika X' name): leave targetMasaName unshifted --
+    // fails closed to "no match" rather than guessing at an adhika shift.
+  }
+  const rWithTarget = { ...r, lunar_masa_name: targetMasaName };
+
+  const baseDays = r.corrected_tithi_reference_time === 'madhyahna'
+    ? precomputeMadhyahnaPanchangForYear(year, location)
+    : precomputePanchangCorrectedForYear(year, location);
+  const days = monthSystem === 'purnimanta'
+    ? baseDays.map(d => ({ ...d, panchang: { ...d.panchang, masaName: d.panchang.masaNamePurnimanta } }))
+    : baseDays;
+  const dates = rule.rule_family === 'lunar_tithi'
+    ? LunarTithiHandler.evaluate(rWithTarget, days)
+    : RecurringLunarTithiHandler.evaluate(rWithTarget, days);
+  const candidateDates = dates.filter(d => Number(d.slice(0, 4)) === year);
+  if (candidateDates.length === 0) return null;
+  const preferLast = r.corrected_prefer_last_match ?? r.prefer_last_match;
+  return preferLast ? candidateDates[candidateDates.length - 1] : candidateDates[0];
 }
 
 /**

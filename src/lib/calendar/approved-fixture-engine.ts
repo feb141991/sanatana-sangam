@@ -1,5 +1,6 @@
 import {
   calculateObservanceCandidateDiagnosticsForYear,
+  calculateObservanceSelectedDateForMonthSystem,
   isMonthSystemInvariantForDate,
   ruleIdentityKey,
   type ObservanceCandidateDiagnostic,
@@ -105,29 +106,45 @@ export function evaluateApprovedFixture(
   }
 
   const ruleMonthSystem = rule.corrected_month_system ?? null;
+  let effectiveSelectedDate = diagnostic.selectedDate;
+
   if (ruleMonthSystem && ruleMonthSystem !== profileMonthSystem) {
     // Not necessarily a real mismatch: amanta and purnimanta agree exactly
     // whenever the occurrence falls in śukla-pakṣa (D32's documented
-    // conversion law). Only reject when the two systems could actually
+    // conversion law). Only recompute when the two systems could actually
     // have produced a different date -- kṛṣṇa-pakṣa occurrences, where the
-    // system genuinely changes the answer, still require an exact match.
+    // system genuinely changes the answer.
     if (!isMonthSystemInvariantForDate(rule, diagnostic.selectedDate)) {
-      throw new Error(
-        `Fixture ${input.caseId} requests ${profileMonthSystem}, but ${ruleKey} is ${ruleMonthSystem}`,
-      );
+      // D32 fixture-validation fix: corrected_month_system lives on the
+      // rule, not the profile, so the rule's own selected date is simply
+      // the wrong thing to check a differently-systemed profile's citation
+      // against. Recompute under the fixture's OWN declared system instead
+      // of rejecting outright -- see
+      // calculateObservanceSelectedDateForMonthSystem's doc comment.
+      // 'solar'-system profiles have no amanta/purnimanta axis to recompute
+      // under, so they fall through to the original rejection.
+      const profileDate = (profileMonthSystem === 'amanta' || profileMonthSystem === 'purnimanta')
+        ? calculateObservanceSelectedDateForMonthSystem(rule, input.year, profileMonthSystem)
+        : null;
+      if (!profileDate) {
+        throw new Error(
+          `Fixture ${input.caseId} requests ${profileMonthSystem}, but ${ruleKey} is ${ruleMonthSystem} (and produced no date under ${profileMonthSystem} for ${input.year})`,
+        );
+      }
+      effectiveSelectedDate = profileDate;
     }
   }
 
-  if (diagnostic.selectedDate !== input.expected.civilDate) {
+  if (effectiveSelectedDate !== input.expected.civilDate) {
     throw new Error(
-      `Approved fixture ${input.caseId} expects ${input.expected.civilDate}; engine selected ${diagnostic.selectedDate}`,
+      `Approved fixture ${input.caseId} expects ${input.expected.civilDate}; engine selected ${effectiveSelectedDate}`,
     );
   }
 
   return {
     rule,
     ruleKey,
-    civilDate: diagnostic.selectedDate,
+    civilDate: effectiveSelectedDate,
     candidateDates: diagnostic.candidateDates,
     publicationWithheld: diagnostic.publicationWithheld,
     withheldReason: diagnostic.withheldReason,

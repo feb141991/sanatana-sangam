@@ -25,6 +25,7 @@ export {
   findFullMoonAfter,
   findSankrantisBetween,
 } from './lunar-month/index.js';
+export { MONTH_NAMES, nextMonthIndex } from './lunar-month/names.js';
 
 export {
   DAY_BOUNDARY_VERSION,
