@@ -252,7 +252,7 @@ summary-only search missed it) but **is** in the daily tithi grid.
 | Rule | Where in source | Sourced date | Engine (corrected) date | `golden_fixtures` |
 |---|---|---|---|---|
 | `diwali` | Index #55 (Naraka Chaturdasi (Purvarunodaya), Dipavali (S.India), Kali Puja, Dipavali) | 2026-11-08 | 2026-11-08 ✓ | 4 rows, **approved** 2026-08-17 |
-| `dussehra` | Index #50 (Durga Puja (Mahanavami, Bengal), Vijaya Dasami (Dussehara or Dasahara)) | 2026-10-20 | 2026-10-20 ✓ | 4 rows, **approved** 2026-08-17 |
+| `dussehra` | Index #50 (Durga Puja (Mahanavami, Bengal), Vijaya Dasami (Dussehara or Dasahara)) | 2026-10-20 | 2026-10-20 ✓ | 4 rows, **approved** 2026-08-17. **Superseded 2026-08-18 — see Batch 4 below**: after the Multi-Day/Cluster Festival Engine (D41) landed, the engine's tithi-at-sunrise computation for tithi 10 moved to 2026-10-21, and the citation was reassigned to Index #51 instead. |
 | `guru-purnima` | **Daily entry**, Wed 29 July 2026 (7 Sravana): "Guru Purnima, Vyasa Puja, Asadhi Purnima" — not in the summary index | 2026-07-29 | 2026-07-29 ✓ (also matches the existing 2026-08-10 council ratification) | SQL sent to founder 2026-08-17, **not yet landed** — the other three rows in this batch confirmed written and approved; this one still shows `TODO_guru-purnima_2026` as of this writing. Re-send pending. |
 | `krishna-janmashtami` (Smarta, 2026 only) | Index #37 (Janmashtami(Smarta), Janmashtami (vaishnava), Sri Jayanti (Ramanuja)) | 2026-09-04 | 2026-09-04 ✓ (also matches the existing council ratification) | 4 rows, **approved** 2026-08-17 |
 
@@ -267,3 +267,41 @@ cited. Not a sourcing gap, a real document-coverage boundary.
 `validate:rules` 97/97, `tsc --noEmit` clean. No rule logic touched, only
 `golden_fixtures.expected`/`source`/`reasoning` for four already-existing
 `TODO` stub rows.
+
+## Batch 4 (2026-08-18): `dussehra` 2026 reassigned from Index #50 to Index #51 (D41, founder-ratified)
+
+The Multi-Day/Cluster Festival Engine (D41, see `CALENDAR_ENGINE_ASSESSMENT.md`)
+replaced `dussehra`'s naive-approximation rule with a real 10-day Navratri
+tithi span. Verified two independent ways (`LunarTithiSpanHandler`'s span
+resolution, and a raw elongation-based sunrise scan bypassing all handler
+code) that the plain tithi-10-at-sunrise date for 2026 is **2026-10-21**,
+not the 2026-10-20 batch-3 cited. Re-checked against this source directly:
+RP has **two** relevant entries, not one —
+
+- **Index #50**: "Durga Puja (Mahanavami, Bengal), Vijaya Dasami (Dussehara
+  or Dasahara)" — 20 Oct. 2026, the mainstream reading, bundled with
+  Mahanavami's own day. This is what batch 3 cited.
+- **Index #51**: "Vijaya Dasami (Bengal & Kerala)" — 21 Oct. 2026, matching
+  the engine's plain tithi-at-sunrise computation exactly.
+
+Batch 3 cited #50 without checking #51 existed. Founder ratified in chat
+("I, Prince Sharma, as council approve it, go ahead") reassigning the
+`dussehra` 2026 citation to #51: `golden_fixtures.expected.civilDate`
+updated 2026-10-20 → 2026-10-21 on all 4 approved 2026 rows, `source`/
+`reasoning`/`review_notes` updated to record the supersession,
+`reviewed_by`/`reviewed_at` re-stamped.
+
+**Not resolved by this ratification**: #50's mainstream reading has no
+rule or variant in this codebase at all — it was never built, only ever
+present as a citation string. If the mainstream civil day is wanted
+alongside the Bengal/Kerala one, it needs its own sourced rule (a real
+muhurta/dashami-vyapini-style condition, analogous to Diwali's pradosh
+condition — not simple tithi-at-sunrise).
+
+## Guards run after batch 4
+
+`validate:rules` 96/96 (one fewer rule than batch 3's 97 — the redundant
+standalone `dussehra` rule was removed as dead code during D41, see
+`CALENDAR_ENGINE_ASSESSMENT.md`). `tsc --noEmit` clean. `golden_fixtures`
+DB write confirmed via `returning`: all 4 case_ids now show
+`expected.civilDate = "2026-10-21"`.
