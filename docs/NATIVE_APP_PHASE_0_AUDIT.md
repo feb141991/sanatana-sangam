@@ -2,6 +2,12 @@
 
 Last updated: 2026-07-04
 
+> **Superseded by `NATIVE_DAILY_COMPLETION_MATRIX.md` (2026-07-08).** That
+> doc explicitly states live code is "well past Phase 0 audit" -- this file
+> is a historical snapshot of the app's state at the start of the native
+> migration, not a description of current state. Kept for record, not for
+> current-state reference.
+
 Repos audited:
 
 - Web / planning repo: `/Users/Business(C)/Sanatan Sangam/Shoonaya`

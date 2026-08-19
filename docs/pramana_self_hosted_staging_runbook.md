@@ -3,6 +3,13 @@
 This document describes how to stand up a local or remote self-hosted inference runtime for Pramana staging and how to run parity evaluations against it.
 
 > [!NOTE]
+> **Stale, checked 2026-08-19: the default is no longer Gemini.**
+> `src/lib/ai/providers/inference.ts` now defaults `PRAMANA_INFERENCE_PROVIDER`
+> to `'sarvam-hosted'`, not Gemini. The env-var name and self-hosted
+> contract (`PRAMANA_SELF_HOSTED_URL`, `PRAMANA_SELF_HOSTED_MODEL`, value
+> `'self-hosted'`) below still match code — only the "defaults to Gemini"
+> claim is wrong.
+>
 > Pramana defaults to the **Gemini hosted provider** in production.  
 > Self-hosted mode is opt-in via a single environment variable. No committed code hard-switches to self-hosted.
 

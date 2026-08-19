@@ -1,5 +1,15 @@
 # Sarvam AI Rollout Plan for Shoonaya
 
+> **This rollout has completed and drifted from the plan, checked
+> 2026-08-19.** `src/app/api/ai/chat/route.ts` now calls Sarvam
+> (`providerOverride: 'sarvam-hosted'`) as the PRIMARY path, falling back
+> to Gemini only on error -- the reverse of any "current: Gemini, future:
+> Sarvam" language below. TTS fallback is Bhashini (Sanskrit) / Sarvam
+> (everything else) -- there is no Google Cloud TTS code path at all, contra
+> any mention below. The "build a precompute script" next-step is done
+> (`scripts/precompute-hot-content.ts`). Read this as a historical plan,
+> not current architecture.
+
 This plan outlines the staged rollout strategy for integrating Sarvam AI across Shoonaya's features. It defines the recommended provider, caching strategy, necessity of AI, and fallback mechanisms for each major application lane.
 
 ## 1. Feature-by-Feature Rollout Strategy

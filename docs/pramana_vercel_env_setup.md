@@ -1,5 +1,13 @@
 # Vercel Environment Setup for Sarvam AI
 
+> **Stale, checked 2026-08-19: "defaults to Gemini" is no longer true.**
+> `src/lib/ai/providers/inference.ts` defaults `PRAMANA_INFERENCE_PROVIDER`
+> to `'sarvam-hosted'` -- Sarvam is the default reasoning path today, not
+> the opt-in. There is also no Google Cloud TTS fallback in code (Bhashini
+> for Sanskrit, Sarvam otherwise) -- the "TTS will gracefully fallback to
+> Google Cloud TTS" line below is wrong. Env var names/setup steps
+> otherwise still apply.
+
 This document outlines the environment configuration required to safely deploy Shoonaya with Sarvam AI integrations across Vercel environments.
 
 ## 1. Environment Variables

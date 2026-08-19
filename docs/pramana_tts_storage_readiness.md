@@ -1,5 +1,12 @@
 # Pramana TTS Object Storage Readiness Plan
 
+> **Implemented, checked 2026-08-19 — this is no longer a readiness plan.**
+> `src/lib/tts/cache.ts` already implements `fetchFromStorage`/
+> `uploadToStorage` against the `shoonaya-tts-cache` bucket described below
+> (bucket name matches), fully wired into `/api/tts/route.ts`. What this
+> doc frames as a future "Immediate Next Step" has shipped. Read as a
+> historical design doc, not a pending-work list.
+
 This document prepares the Shoonaya text-to-speech (TTS) system for migration from inline, on-the-fly audio generation toward a fully cached, object-storage-backed asset pipeline.
 
 ## 1. Current Storage Landscape

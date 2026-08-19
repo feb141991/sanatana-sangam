@@ -3,10 +3,22 @@
 **Baseline taken:** 2026-07-30
 **Assessed against:** the Shoonaya Dharma Calendar product specification
 (universal astronomical engine + customisable traditional rule sets)
-**Companion specs:** `calendar-domain-model.md` · `astronomy-conventions.md` ·
-`calendar-profiles.md` · `festival-rule-schema.md` · `calculation-examples.md` ·
-`source-governance.md`
 
+> **Start here.** This file is the current-state tracker for the calendar
+> engine -- read it first, then the companion spec below relevant to what
+> you're doing. None of the seven is optional context; each covers a
+> distinct layer and none restates another.
+>
+> | File | Covers |
+> |---|---|
+> | **This file** | Current state: what's built, what's broken, what's disputed, changelog of every fix/ratification |
+> | `calendar-domain-model.md` | Core domain concepts -- tithi/nakshatra/yoga/masa, what the engine actually computes |
+> | `astronomy-conventions.md` | The underlying astronomy: ayanamsha, ephemeris source, precision budgets, ADRs for astronomy-level decisions |
+> | `calendar-profiles.md` | Layer B -- amanta/purnimanta, regional solar day-assignment rules, era systems (Vikram Samvat, Nanakshahi, etc.) |
+> | `festival-rule-schema.md` | The `rules.json` schema itself -- rule_family types, required fields, what a valid rule row looks like |
+> | `calculation-examples.md` | Worked examples proving two labels for the same astronomical fact aren't a bug (the canonical amanta/purnimanta Shivaratri case) |
+> | `source-governance.md` | Tier 1-6 source authority, council ratification process -- what counts as a real citation |
+>
 > **How to use this document.** §3 is the live tracker — update `Status` and
 > `Evidence` as work lands. §2 is a frozen baseline: **do not edit it.** It is the
 > "before" picture we compare against when the work is done.

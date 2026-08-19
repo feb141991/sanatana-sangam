@@ -9,7 +9,7 @@ import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 import { FESTIVALS_2026 } from '@/lib/festivals';
-import { dharamVeerRetriever } from '@/lib/ai/retrieval';
+import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
 // ─── Config ────────────────────────────────────────────────────────────────
@@ -446,6 +446,59 @@ User Question: ${message}
         });
     } catch(err) {
         return NextResponse.json({ error: 'AI service error' }, { status: 500 });
+    }
+  }
+
+  if (mode === 'calendar_rules_lookup') {
+    // Retrieval-augmented "why is this festival on this date" answers,
+    // grounded in the same citations the calendar engine is governed by
+    // (source-governance.md tiers) -- distinct from isUpcomingVratQuery
+    // below, which only answers "when", not "why", with no citations.
+    const result = await festivalRulesRetriever.retrieve({
+      text: message,
+      topK: 5,
+    });
+
+    if (!result.documents || result.documents.length === 0) {
+      const text = "I do not have enough approved, sourced material to answer this calendar question safely yet. We are continuously expanding sourced coverage of the festival rules.";
+      return new Response(textAsStream(text), {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    }
+
+    const passages = result.documents
+      .map((document) => `- [${document.metadata?.sourceName || 'Source'}]: ${document.content}`)
+      .join('\n');
+
+    const rulesPrompt = `
+You are an AI assistant answering questions about Shoonaya's Hindu/Sikh/Buddhist/Jain calendar and festival dates.
+You MUST base your response ONLY on the following approved source passages -- they come directly from the calendar engine's own governed rule data and source citations.
+Do not invent astronomical reasoning, citations, or dates not present in the passages below.
+If the passages don't fully answer the question, say so explicitly rather than filling the gap with assumption.
+
+Source Passages:
+${passages}
+
+User Question: ${message}
+`;
+
+    const sysPrompt = "You are a Dharmic calendar assistant. Adhere strictly to the provided source text and forbid unsupported claims about festival dates or astronomy.";
+
+    try {
+      const genResult = await generateWithProvider(
+        { system: sysPrompt, user: rulesPrompt, maxOutputTokens: 900 }
+      );
+      return new Response(textAsStream(genResult.text), {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-store',
+        },
+      });
+    } catch (err) {
+      return NextResponse.json({ error: 'AI service error' }, { status: 500 });
     }
   }
 

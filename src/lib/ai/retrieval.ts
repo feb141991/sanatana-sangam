@@ -1345,3 +1345,239 @@ export class PramanaDharamVeerEmbeddingRetriever implements PramanaRetriever<Ret
 
 PramanaRetrieverSelector.register('dharam_veer_reflection', new PramanaDharamVeerEmbeddingRetriever(dharamVeerManifestRetriever));
 export const dharamVeerRetriever = new PramanaDharamVeerEmbeddingRetriever(dharamVeerManifestRetriever);
+
+// ─── Festival Rules Retriever (calendar-grounded RAG) ──────────────────────
+//
+// Unlike the scripture retrievers above, this indexes structured, small
+// (under 100 rows) JSON directly -- packages/dharma-rules/src/festivals/
+// rules.json -- plus the source manifests under docs/sources/. No offline
+// embedding pipeline: the corpus is small enough to tokenize and TF-IDF
+// vectorize in-memory on first use, cached for the process lifetime. This
+// grounds calendar/festival "why is X on this date" questions in the same
+// citations the engine itself is governed by (source-governance.md tiers),
+// instead of the model guessing from training data.
+
+interface FestivalRuleChunk {
+  id: string;
+  content: string;
+  /** Festival name only (e.g. "Karva Chauth"), used to boost title-term
+   *  weight at index time -- see TITLE_BOOST_REPEATS below. Undefined for
+   *  non-rule chunks (source manifests), which have no equivalent title. */
+  title?: string;
+  tradition?: string;
+  sourceName: string;
+  sourceClass: string;
+}
+
+// A rule's `ratification_note` can run over a thousand characters of shared
+// governance/methodology prose (citation tiers, profile-validation status,
+// etc.) that recurs across many rules. Plain TF-IDF L2-normalizes the whole
+// chunk, so a long note dilutes an otherwise exact display_name match --
+// verified directly: "karva chauth" scored below two unrelated rules whose
+// shorter chunks happened to share other query tokens. Standard IR fix:
+// weight the title field higher than body text (how real search engines
+// treat a document title vs. its body) by repeating title tokens at index
+// time only -- the returned `content` stays the original, undupli­cated text.
+const TITLE_BOOST_REPEATS = 4;
+
+// Common English function words. Without filtering these, a nonsense query
+// sharing only stopwords with the corpus (e.g. "what is the best X in Y")
+// still produces a nonzero cosine score against nearly every chunk, since
+// stopwords appear in almost all English prose -- IDF smoothing alone
+// isn't enough to zero them out. Verified directly: without this filter,
+// an out-of-corpus query returned 3 spurious matches instead of 0.
+const RETRIEVAL_STOPWORDS = new Set([
+  'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+  'this', 'that', 'these', 'those', 'it', 'its', 'of', 'in', 'on', 'at',
+  'to', 'for', 'and', 'or', 'but', 'not', 'no', 'do', 'does', 'did',
+  'what', 'why', 'how', 'when', 'where', 'who', 'which', 'with', 'by',
+  'from', 'as', 'if', 'so', 'than', 'then', 'there', 'here', 'i', 'you',
+  'he', 'she', 'we', 'they', 'my', 'your', 'his', 'her', 'our', 'their',
+  'about', 'into', 'over', 'under', 'again', 'further', 'can', 'will',
+  'just', 'should', 'now', 'have', 'has', 'had', 'me', 'us', 'them',
+]);
+
+export class PramanaFestivalRulesRetriever implements PramanaRetriever<RetrievalChunkMetadata> {
+  private chunks: FestivalRuleChunk[] | null = null;
+  private idf: Record<string, number> | null = null;
+  private docVectors: Map<string, SparseVector> | null = null;
+
+  private tokenize(text: string): string[] {
+    const raw = text.toLowerCase().match(/[a-z0-9]+/g) || [];
+    return raw.filter((t) => !RETRIEVAL_STOPWORDS.has(t) && t.length > 1);
+  }
+
+  private loadChunks(): FestivalRuleChunk[] {
+    if (this.chunks) return this.chunks;
+    const chunks: FestivalRuleChunk[] = [];
+
+    const rulesPath = path.join(process.cwd(), 'packages/dharma-rules/src/festivals/rules.json');
+    try {
+      const rules = JSON.parse(fs.readFileSync(rulesPath, 'utf-8'));
+      if (Array.isArray(rules)) {
+        for (const rule of rules) {
+          if (!isRecord(rule) || typeof rule.slug !== 'string') continue;
+          const variantSuffix = typeof rule.variant_key === 'string' ? `_${rule.variant_key}`
+            : typeof rule.sampradaya === 'string' ? `_${rule.sampradaya}` : '';
+          const parts = [
+            typeof rule.display_name === 'string' ? rule.display_name : '',
+            typeof rule.description === 'string' ? rule.description : '',
+            typeof rule.tradition === 'string' ? `Tradition: ${rule.tradition}` : '',
+            typeof rule.citation === 'string' ? `Citation: ${rule.citation}` : '',
+            typeof rule.ratification_note === 'string' ? `Ratification note: ${rule.ratification_note}` : '',
+          ].filter(Boolean);
+          if (parts.length === 0) continue;
+          chunks.push({
+            id: `rule_${rule.slug}${variantSuffix}`,
+            content: parts.join('. '),
+            title: typeof rule.display_name === 'string' ? rule.display_name : undefined,
+            tradition: typeof rule.tradition === 'string' ? rule.tradition : undefined,
+            sourceName: 'rules.json',
+            sourceClass: 'calendar_rule',
+          });
+        }
+      }
+    } catch {
+      // Fail closed -- no fabricated content if rules.json is unreadable.
+    }
+
+    const manifestsDir = path.join(process.cwd(), 'docs/sources');
+    try {
+      if (fs.existsSync(manifestsDir)) {
+        for (const fn of fs.readdirSync(manifestsDir)) {
+          if (!fn.endsWith('.md')) continue;
+          try {
+            chunks.push({
+              id: `manifest_${fn}`,
+              content: fs.readFileSync(path.join(manifestsDir, fn), 'utf-8'),
+              sourceName: fn,
+              sourceClass: 'source_manifest',
+            });
+          } catch {
+            // skip unreadable manifest, do not fabricate
+          }
+        }
+      }
+    } catch {
+      // manifests directory missing -- rules.json chunks alone still work
+    }
+
+    this.chunks = chunks;
+    return chunks;
+  }
+
+  /** Tokens used for indexing/scoring -- content tokens plus title tokens
+   *  repeated TITLE_BOOST_REPEATS times, so an exact festival-name match
+   *  isn't drowned out by a long shared-boilerplate ratification_note. */
+  private indexTokensFor(chunk: FestivalRuleChunk): string[] {
+    const tokens = this.tokenize(chunk.content);
+    if (chunk.title) {
+      const titleTokens = this.tokenize(chunk.title);
+      for (let i = 0; i < TITLE_BOOST_REPEATS; i++) tokens.push(...titleTokens);
+    }
+    return tokens;
+  }
+
+  private buildIndex() {
+    if (this.idf && this.docVectors) return;
+    const chunks = this.loadChunks();
+    const df: Record<string, number> = {};
+    const chunkTokens = new Map<string, string[]>();
+
+    for (const chunk of chunks) {
+      const tokens = this.indexTokensFor(chunk);
+      chunkTokens.set(chunk.id, tokens);
+      for (const t of new Set(tokens)) df[t] = (df[t] || 0) + 1;
+    }
+
+    const N = chunks.length || 1;
+    const idf: Record<string, number> = {};
+    for (const t in df) idf[t] = Math.log((N + 1) / (df[t] + 1)) + 1;
+
+    const docVectors = new Map<string, SparseVector>();
+    for (const chunk of chunks) {
+      const tokens = chunkTokens.get(chunk.id) || [];
+      const tf: Record<string, number> = {};
+      for (const t of tokens) tf[t] = (tf[t] || 0) + 1;
+      const vec: SparseVector = {};
+      let sumSq = 0;
+      for (const t in tf) {
+        const w = tf[t] * (idf[t] || 0);
+        vec[t] = w;
+        sumSq += w * w;
+      }
+      const norm = Math.sqrt(sumSq) || 1;
+      for (const t in vec) vec[t] = vec[t] / norm;
+      docVectors.set(chunk.id, vec);
+    }
+
+    this.idf = idf;
+    this.docVectors = docVectors;
+  }
+
+  async retrieve(query: PramanaRetrievalQuery): Promise<PramanaRetrievalResult<RetrievalChunkMetadata>> {
+    this.buildIndex();
+    const chunks = this.chunks || [];
+    const idf = this.idf || {};
+    const docVectors = this.docVectors || new Map<string, SparseVector>();
+
+    const queryText = query.text.trim();
+    if (!queryText || chunks.length === 0) return { documents: [] };
+
+    const tokens = this.tokenize(queryText);
+    if (tokens.length === 0) return { documents: [] };
+
+    const tf: Record<string, number> = {};
+    for (const t of tokens) tf[t] = (tf[t] || 0) + 1;
+
+    const queryVec: SparseVector = {};
+    let sumSq = 0;
+    for (const t in tf) {
+      const w = tf[t] * (idf[t] || 0);
+      if (w > 0) { queryVec[t] = w; sumSq += w * w; }
+    }
+    const qNorm = Math.sqrt(sumSq);
+    if (qNorm === 0) return { documents: [] };
+    for (const t in queryVec) queryVec[t] = queryVec[t] / qNorm;
+
+    const scored: Array<{ chunk: FestivalRuleChunk; score: number }> = [];
+    for (const chunk of chunks) {
+      const vec = docVectors.get(chunk.id);
+      if (!vec) continue;
+      let score = 0;
+      for (const t in queryVec) {
+        if (vec[t]) score += queryVec[t] * vec[t];
+      }
+      if (score > 0) scored.push({ chunk, score });
+    }
+
+    // Fail closed: a nonzero-but-weak overlap is not real grounding -- see
+    // route.ts's "not enough approved source material" fallback, same
+    // policy already used for dharam_veer_reflection above.
+    const RELEVANCE_THRESHOLD = 0.12;
+    const relevant = scored.filter((s) => s.score >= RELEVANCE_THRESHOLD);
+    if (relevant.length === 0) return { documents: [] };
+
+    relevant.sort((a, b) => b.score - a.score);
+    const top = relevant.slice(0, query.topK || 5);
+
+    const documents: RetrievalChunk[] = top.map(({ chunk, score }) => ({
+      id: chunk.id,
+      content: chunk.content,
+      score,
+      metadata: {
+        chunkId: chunk.id,
+        docId: chunk.id,
+        tradition: chunk.tradition ?? null,
+        sourceName: chunk.sourceName,
+        sourceClass: chunk.sourceClass,
+        rightsStatus: 'internal_governed',
+      },
+    }));
+
+    return { documents, provider: 'festival-rules-tfidf' };
+  }
+}
+
+export const festivalRulesRetriever = new PramanaFestivalRulesRetriever();
+PramanaRetrieverSelector.register('calendar_festival_rules', festivalRulesRetriever);

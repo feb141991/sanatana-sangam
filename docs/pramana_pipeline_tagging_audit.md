@@ -1,5 +1,14 @@
 # Pramana Pipeline Tagging Audit
 
+> **Its own recommendations are now implemented, checked 2026-08-19.**
+> `src/lib/ai/pipeline-tags.ts` and `src/lib/ai/validate-pipeline-tags.ts`
+> now exist and are wired into `/api/tts/route.ts` (`validatePipelineTags`,
+> `canGenerateTTS`), matching what this audit's "Next Steps" proposed. One
+> drift: the shipped `tradition` enum is `'hindu'|'buddhist'|'jain'|'sikh'|
+> 'generic'`, not the `'sanatana_dharma'|'buddhism'|...` values proposed
+> below. Read the "Current State" analysis as historically accurate; the
+> "Next Steps" section is done, not pending.
+
 This document reviews how data and requests are currently marked across Shoonaya to determine AI pipeline routing, highlighting risks and recommending a normalized tagging model.
 
 ## 1. Current State & Heuristics

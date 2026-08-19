@@ -1,5 +1,13 @@
 # Pramana Cache & AI Budget Policy
 
+> **Drifted from code, checked 2026-08-19.** DharmaChat quotas here (Free
+> 5/day, Pro 100/day) are stale -- `src/lib/ai/chat-limits.ts` sets
+> `FREE_DAILY_LIMIT = 25`, `PRO_DAILY_LIMIT = 200`. The "requires a
+> circuit-breaker wrapper" item is done (`src/lib/monitoring/circuit-breaker.ts`,
+> already wired into `generateWithProvider`). Treat specific numbers/status
+> here as historical intent, not current state -- verify against the cited
+> code before relying on a figure.
+
 This document defines the exact cache and AI-spend policies for Shoonaya, specifically focusing on a Sarvam-first architecture. It dictates what must be cached globally, per-user, or avoided entirely to ensure scalability, cost efficiency, and low latency.
 
 ## 1. Global Caching (Shared Across All Users)

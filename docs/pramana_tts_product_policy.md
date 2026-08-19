@@ -1,5 +1,11 @@
 # Pramana TTS Product Policy
 
+> **Stale, checked 2026-08-19: no Google TTS path exists in code.**
+> `/api/tts/route.ts` uses Bhashini for Sanskrit and Sarvam for everything
+> else -- every "or Google" provider-preference line below is aspirational,
+> not implemented. Voice profile names (`pandit`/`akash`/`standard`) below
+> do match the live `quality` values in code.
+
 This document standardizes how Text-To-Speech (TTS) is used across the Shoonaya application, aligning voice profiles with tradition correctness, provider capabilities, and cost efficiency.
 
 ## 1. Voice Profiles
