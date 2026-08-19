@@ -343,13 +343,18 @@ produces exactly the silent divergence that created D1/D2. **Do 2.1 first.**
 
 ### Operational: vendored copy drift
 
-The mobile app consumes `@sangam/panchang-engine` as a vendored tarball
-(`shoonaya-mobile/vendor/sangam-panchang-engine-0.1.0.tgz`, **dated 5 Jul**) while
-the source has moved on (**last modified 30 Jul**). Mobile is therefore running an
-engine without the lunar-month module or the public-contract fix. Not urgent —
-nothing in the app calls the new code yet — but **re-vendor before shipping any
-calendar change to mobile**, and treat the tarball as a release artefact, not a
-copy to edit.
+**Re-vendored 2026-08-19** — `shoonaya-mobile/vendor/` was on `0.1.1`
+(itself already stale relative to this note's prior "0.1.0, dated 5 Jul"
+claim — the note wasn't kept current either). Packed fresh from source and
+vendored `0.2.4`, `shoonaya-mobile`'s `package.json` updated, `npm install`
+run, `npx tsc --noEmit` clean in the mobile repo. Mobile's own festival/vrat
+*dates* come from the web backend over `/api/calendar/upcoming`, not from
+this package — the vendored tarball only affects mobile's offline daily
+panchang screen (`calculatePanchang()`), so this re-vendor is what actually
+brings D14/D18-22/D30/D31/D32/D38 and today's location-bucket work to that
+one screen. **Re-vendor before shipping any calendar change that should
+reach the offline daily-panchang screen**, and treat the tarball as a
+release artefact, not a copy to edit.
 
 ---
 
@@ -357,6 +362,7 @@ copy to edit.
 
 | Date | Change | By |
 |---|---|---|
+| 2026-08-19 | **`ekadashi`/`purnima-vrat`/`amavasya-vrat` migrated to the real evaluator (`EVALUATOR_RULES` in `materialize.ts`), closing the legacy-fallback gap for good.** All three were plain, undisputed sunrise-tithi-prevails conventions (no citation to source, unlike e.g. `paryushana`) -- the migration was 3 new registrations following `pradosh-vrat`'s existing pattern, not new sourcing work. Verified against a full year (2026/2027) for each: the evaluator reproduces legacy's complete occurrence set exactly (23/24, 24/25, 12/13, 11/12, 12/12, 13/13 across the three rules and two years) while correctly queuing the one genuinely ambiguous vrddhi/kshaya case per rule to `observance_review_queue` instead of guessing -- something legacy never did. Also found in passing: the intermediate `corrected` (masa-gated, non-evaluator) path was silently undercounting `purnima-vrat`/`amavasya-vrat` by one occurrence in years with two tithi-15 sunrises in one Gregorian month -- a real pre-existing bug in that path, not something this change introduced; not chased further since `USE_CONDITION_EVALUATOR` is already true in production, so that intermediate path isn't live for these slugs anymore. **Closed the loop**: `validate-rules.ts` now fails the build if any `launch_status: 'included'` lunar-family rule lacks `corrected_lunar_masa_name` and isn't evaluator-covered -- checked directly, only 6 of 67 lunar rules lacked the field before this session (2 already deferred, 3 fixed here, 1 -- `ekadashi` -- found missing from `EVALUATOR_RULES` only because this new guard caught it, corrected in the same pass). The silent runtime fallback to a rule's legacy attribute is no longer load-bearing for any live rule; converted from silent to a loud build-time check rather than deleted outright. `EVALUATOR_RULES`/`EvaluatorRuleDefinition` exported from `materialize.ts` so `validate-rules.ts` can check membership without a second hardcoded list. `tsc --noEmit` clean, `validate-rules.ts` passes 96/96. | User (founder) + Claude (Sonnet 5) |
 | 2026-08-18 | **P2 (Nanakshahi vs. Bikrami fork) ratified: Shoonaya defaults to 2003 Nanakshahi, no dual-variant offering.** This was the sole blocker on Sikh sourcing (`docs/sources/candidate-sources-sikh-buddhist-jain.md` already names SGPC as a real Tier-1 candidate) — ratifies the engine's existing behavior, no code change. See `docs/calendar-profiles.md` §3.1. Sikh sourcing against SGPC can now proceed. | User (founder) |
 | 2026-08-18 | **Founder decision: `tamil_solar`/`malayalam_solar`/`bengali_solar` parked alongside Jain/Buddhist (deprioritized sourcing, see the entry below), and removed from user-facing calendar-profile pickers.** Two sourcing passes (documented in `docs/calendar-profiles.md`) found real, named candidate authorities but nothing citable — closing the gap needs a human with archival access, not more search. Checking for UI exposure found the three slugs genuinely WERE user-selectable: hardcoded in both `OnboardingClient.tsx`'s regional-calendar step and `ProfileClient.tsx`'s calendar-profile `<select>`, with no ratification-status filter at all — any user could already have picked one of these three unratified profiles. Removed the three `<option>`/list entries from both pickers (`odia`, already ratified, is unaffected and stays). Checked `profiles.calendar_profile` directly: zero existing users have any of the three set — nothing to migrate or backfill. `tsc --noEmit` clean after the removal. | User (founder) + Claude (Sonnet 5) |
 | 2026-08-18 | **Founder decision: Buddhist and Jain calendar sourcing/verification parked as a deprioritized body of work, to be picked up together later.** Affects `paryushana-parva-begins` (Jain, disputed 2027/2028 — see its ratification_note for the precise, now-falsifiable open question found this session), `vassa-begins-rains-retreat` and `kathina` (Buddhist, both already `deferred`). No Tier 1-4 source for any of the three has ever been identified (`docs/sources/candidate-sources-sikh-buddhist-jain.md`); no further engineering action pending on them. Sikh sourcing is NOT parked — SGPC is a real candidate Tier-1 authority, blocked only on the 2003-Nanakshahi-vs-Bikrami fork (P2), a separate policy question. Also closed the same day: `krishna-janmashtami` Gaudiya/ISKCON 2027 — engineering directly verified (ran the real evaluator condition day-by-day) that Ashtami-at-sunrise and Rohiṇī-at-sunrise never coincide in 2027; nothing further to find without a dharma-śāstra ruling on tie-breaking, so this is closed pending a new source rather than left as an open action item. | User (founder) |

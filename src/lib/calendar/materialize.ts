@@ -114,14 +114,14 @@ type EvaluatorVariantDefinition = {
   conditions: RuleCondition[];
 };
 
-type EvaluatorRuleDefinition = {
+export type EvaluatorRuleDefinition = {
   slug: string;
   windowDays: number;
   isRecurring?: boolean;
   variants: EvaluatorVariantDefinition[];
 };
 
-const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
+export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
   {
     slug: 'maha-shivaratri',
     windowDays: 15,
@@ -259,6 +259,63 @@ const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
         isPrimary: true,
         conditions: [
           { type: 'tithi_presence', tithi: 13, period: 'pradosha', mode: 'prevails' },
+        ],
+      },
+    ],
+  },
+  {
+    // Fortnightly (~24/year), both pakshas -- paksha-ambiguous by design
+    // (rules.json's recurring_tithi_indices: [11, 26] is the same tithi in
+    // both pakshas), matching the exact case evaluator.ts's own docstring
+    // names as the paksha-ambiguous example: no `paksha` condition, so
+    // isTithiMatching accepts either. No citation/dispute to model.
+    slug: 'ekadashi',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'tithi_presence', tithi: 11, period: 'sunrise', mode: 'at' },
+        ],
+      },
+    ],
+  },
+  {
+    // Standard tithi-prevailing-at-sunrise monthly vrat, no dispute/citation
+    // in rules.json to model (unlike e.g. janmashtami) -- the evaluator's
+    // 'sunrise' period already handles vrddhi detection (queues for review)
+    // and kshaya fallback (checks the prior day) generically, which the
+    // legacy path this migrates off of does not do per-occurrence.
+    slug: 'purnima-vrat',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'paksha', value: 'shukla' },
+          { type: 'tithi_presence', tithi: 15, period: 'sunrise', mode: 'at' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'amavasya-vrat',
+    windowDays: 5,
+    isRecurring: true,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        conditions: [
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 15, period: 'sunrise', mode: 'at' },
         ],
       },
     ],

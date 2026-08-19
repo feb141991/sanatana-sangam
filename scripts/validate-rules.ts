@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import Ajv from 'ajv';
+import { EVALUATOR_RULES } from '../src/lib/calendar/materialize';
 
 try {
   const root = join(__dirname, '..');
@@ -107,6 +108,38 @@ try {
         `should never match -- this is the corrected value copied into the legacy ` +
         `field, and it will publish a wrong date while USE_CORRECTED_MASA is false. ` +
         `Omit lunar_masa_name for observances that have no calibrated legacy name.`
+      );
+      process.exit(1);
+    }
+  }
+
+  // Guard: an included lunar-family rule must declare corrected_lunar_masa_name,
+  // unless it's fully evaluator-covered (in which case the evaluator's own
+  // lunar_month/paksha conditions govern it directly, bypassing this field
+  // entirely -- see USE_CONDITION_EVALUATOR's dispatch in engine.ts).
+  //
+  // This used to be a silent runtime fallback to the rule's legacy attribute
+  // instead of a build-time error. That was a deliberate safety net while the
+  // amanta/purnimanta migration was in progress and most rules genuinely
+  // lacked the field -- but checked directly on 2026-08-19, only 6 of 67
+  // lunar-family rules were missing it, and after migrating purnima-vrat/
+  // amavasya-vrat to the evaluator that day, the only rules left relying on
+  // the fallback are already `deferred` (not live). At that coverage level
+  // the silent fallback isn't protecting anything anymore, it's just hiding
+  // the next rule author's mistake -- so it's now a loud, build-time check.
+  const evaluatorCoveredSlugs = new Set(EVALUATOR_RULES.map((r) => r.slug));
+  const LUNAR_FAMILIES = new Set(['lunar_tithi', 'lunar_tithi_recurring', 'lunar_tithi_span']);
+  for (const rule of rules as any[]) {
+    if (rule.launch_status !== 'included') continue;
+    if (!LUNAR_FAMILIES.has(rule.rule_family)) continue;
+    if (evaluatorCoveredSlugs.has(rule.slug)) continue;
+    if (!rule.corrected_lunar_masa_name) {
+      console.error(
+        `❌ "${rule.slug}" (rule_family: ${rule.rule_family}) is launch_status: 'included' ` +
+        `but has no corrected_lunar_masa_name and is not evaluator-covered. It would silently ` +
+        `fall back to its legacy (D1-shifted) attribute -- either add the corrected field, ` +
+        `add it to EVALUATOR_RULES in materialize.ts, or set launch_status to 'deferred' ` +
+        `until one of those is done.`
       );
       process.exit(1);
     }
