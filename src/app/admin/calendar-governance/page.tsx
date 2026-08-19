@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   ArrowLeft, CheckCircle2, XCircle, Loader2, Pencil, Save, X,
-  BarChart3, ListChecks, FileCheck2, ChevronDown, ChevronRight,
+  BarChart3, ListChecks, FileCheck2, ChevronDown, ChevronUp, ChevronRight,
   Filter, Search, AlertCircle, History, Clock, RefreshCw, FileEdit,
-  Sparkles, Info
+  Sparkles, Info, RotateCcw, Check, Layers
 } from 'lucide-react';
 import Link from 'next/link';
 import { CANONICAL_RULES } from '@/lib/calendar/rules';
@@ -74,7 +74,7 @@ type AuditLogRow = {
   festival_id: string;
   year: number;
   actor: string;
-  action: 'newly_approved' | 're_confirmed' | 'rejected' | 'content_updated';
+  action: 'newly_approved' | 're_confirmed' | 'rejected' | 'unapproved' | 'content_updated';
   previous_approved: boolean | null;
   new_approved: boolean | null;
   review_notes: string | null;
@@ -94,7 +94,7 @@ type ToastFeedback = {
 };
 
 type Tab = 'fixtures' | 'review-queue' | 'coverage' | 'activity';
-type SourceFilter = 'all' | 'real' | 'stub' | 'approved';
+type SourceFilter = 'needs_review' | 'all' | 'real' | 'stub' | 'approved';
 type CategorySel = { tradition: string; kind: string | null } | null;
 
 const TRADITION_LABELS: Record<string, string> = {
@@ -582,7 +582,7 @@ function FixturesSection({
   const [rows, setRows] = useState<GoldenFixtureRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sourceFilter, setSourceFilter] = useState<SourceFilter>(initialFilter?.filterType ?? 'real');
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>(initialFilter?.filterType ?? 'needs_review');
   const [categorySel, setCategorySel] = useState<CategorySel>(
     initialFilter?.tradition ? { tradition: initialFilter.tradition, kind: null } : null
   );
@@ -659,18 +659,60 @@ function FixturesSection({
   }, [categoryFiltered, yearFilter, monthFilter]);
 
   const filtered = useMemo(() => {
-    if (sourceFilter === 'all')      return yearMonthFiltered;
-    if (sourceFilter === 'real')     return yearMonthFiltered.filter(isRealFixture);
-    if (sourceFilter === 'stub')     return yearMonthFiltered.filter(f => !isRealFixture(f));
+    if (sourceFilter === 'needs_review') return yearMonthFiltered.filter(f => isRealFixture(f) && !f.approved);
+    if (sourceFilter === 'all')          return yearMonthFiltered;
+    if (sourceFilter === 'real')         return yearMonthFiltered.filter(isRealFixture);
+    if (sourceFilter === 'stub')         return yearMonthFiltered.filter(f => !isRealFixture(f));
     return yearMonthFiltered.filter(f => f.approved);
   }, [yearMonthFiltered, sourceFilter]);
 
   const counts = useMemo(() => ({
-    real:     yearMonthFiltered.filter(isRealFixture).length,
-    stub:     yearMonthFiltered.filter(f => !isRealFixture(f)).length,
-    approved: yearMonthFiltered.filter(f => f.approved).length,
-    all:      yearMonthFiltered.length,
+    needs_review: yearMonthFiltered.filter(f => isRealFixture(f) && !f.approved).length,
+    real:         yearMonthFiltered.filter(isRealFixture).length,
+    stub:         yearMonthFiltered.filter(f => !isRealFixture(f)).length,
+    approved:     yearMonthFiltered.filter(f => f.approved).length,
+    all:          yearMonthFiltered.length,
   }), [yearMonthFiltered]);
+
+  const groupedFixtures = useMemo(() => {
+    const map = new Map<string, {
+      key: string;
+      festival_id: string;
+      year: number;
+      locationLabel: string;
+      tradition: string;
+      kind: string;
+      items: GoldenFixtureRow[];
+      totalCount: number;
+      approvedCount: number;
+    }>();
+
+    for (const f of filtered) {
+      const key = `${f.festival_id}::${f.year}::${f.location.label}`;
+      let grp = map.get(key);
+      if (!grp) {
+        grp = {
+          key,
+          festival_id: f.festival_id,
+          year: f.year,
+          locationLabel: f.location.label,
+          tradition: f.tradition,
+          kind: f.kind,
+          items: [],
+          totalCount: 0,
+          approvedCount: 0,
+        };
+        map.set(key, grp);
+      }
+      grp.items.push(f);
+      grp.totalCount++;
+      if (f.approved) {
+        grp.approvedCount++;
+      }
+    }
+
+    return Array.from(map.values());
+  }, [filtered]);
 
   // "Eligible" for bulk approval: real fixture (expected date not null, not a TODO stub)
   // and not yet approved.
@@ -825,10 +867,11 @@ function FixturesSection({
 
       <div className="flex-1 min-w-0 space-y-4">
         <div className="flex items-center gap-2 flex-wrap">
-          <FilterPill active={sourceFilter === 'real'}     onClick={() => setSourceFilter('real')}     label={`Sourced (${counts.real})`} />
-          <FilterPill active={sourceFilter === 'stub'}     onClick={() => setSourceFilter('stub')}     label={`Unsourced stubs (${counts.stub})`} />
-          <FilterPill active={sourceFilter === 'approved'} onClick={() => setSourceFilter('approved')} label={`Approved (${counts.approved})`} />
-          <FilterPill active={sourceFilter === 'all'}      onClick={() => setSourceFilter('all')}      label={`All (${counts.all})`} />
+          <FilterPill active={sourceFilter === 'needs_review'} onClick={() => setSourceFilter('needs_review')} label={`Needs review (${counts.needs_review})`} />
+          <FilterPill active={sourceFilter === 'real'}         onClick={() => setSourceFilter('real')}         label={`Sourced (${counts.real})`} />
+          <FilterPill active={sourceFilter === 'approved'}     onClick={() => setSourceFilter('approved')}     label={`Approved (${counts.approved})`} />
+          <FilterPill active={sourceFilter === 'stub'}         onClick={() => setSourceFilter('stub')}         label={`Unsourced stubs (${counts.stub})`} />
+          <FilterPill active={sourceFilter === 'all'}          onClick={() => setSourceFilter('all')}          label={`All (${counts.all})`} />
 
           <div className="w-px h-5 bg-black/10 mx-1" />
 
@@ -873,23 +916,78 @@ function FixturesSection({
 
         {loading ? (
           <LoadingBlock label="Loading fixtures..." />
-        ) : filtered.length === 0 ? (
+        ) : groupedFixtures.length === 0 ? (
           <EmptyBlock label="Nothing in this filter." />
         ) : (
-          <div className="space-y-3">
-            {filtered.map(f => (
-              <FixtureCard
-                key={f.case_id}
-                fixture={f}
-                busy={busyId === f.case_id}
-                editing={editing === f.case_id}
-                onEdit={() => setEditing(f.case_id)}
-                onCancelEdit={() => setEditing(null)}
-                onApprove={() => act(f.case_id, 'approve')}
-                onReject={() => act(f.case_id, 'reject')}
-                onSave={(patch) => saveEdit(f.case_id, patch)}
-              />
-            ))}
+          <div className="space-y-4">
+            {groupedFixtures.map(group => {
+              if (group.items.length === 1) {
+                const f = group.items[0];
+                return (
+                  <FixtureCard
+                    key={f.case_id}
+                    fixture={f}
+                    busy={busyId === f.case_id}
+                    editing={editing === f.case_id}
+                    onEdit={() => setEditing(f.case_id)}
+                    onCancelEdit={() => setEditing(null)}
+                    onApprove={() => act(f.case_id, 'approve')}
+                    onReject={() => act(f.case_id, 'reject')}
+                    onSave={(patch) => saveEdit(f.case_id, patch)}
+                    isGrouped={false}
+                  />
+                );
+              }
+
+              return (
+                <div key={group.key} className="glass-panel rounded-[2rem] border border-black/10 bg-white/30 p-4 sm:p-5 space-y-3.5 shadow-sm">
+                  <div className="flex items-center justify-between gap-3 flex-wrap border-b border-black/5 pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[var(--premium-gold)]" />
+                      <h3 className="font-bold text-base theme-ink">{group.festival_id}</h3>
+                      <span className="text-xs text-[var(--brand-muted)] font-semibold">{group.year}</span>
+                      <span className="text-xs text-[var(--brand-muted)]">· {group.locationLabel}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{group.tradition}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{group.kind}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 ${
+                        group.approvedCount === group.totalCount
+                          ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20'
+                          : group.approvedCount > 0
+                          ? 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                          : 'bg-black/5 text-[var(--brand-muted)] border border-black/5'
+                      }`}>
+                        <Layers size={12} />
+                        {group.approvedCount === group.totalCount ? (
+                          <span>All {group.totalCount} profile variants approved</span>
+                        ) : (
+                          <span>{group.approvedCount} of {group.totalCount} profile variants approved</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {group.items.map(f => (
+                      <FixtureCard
+                        key={f.case_id}
+                        fixture={f}
+                        busy={busyId === f.case_id}
+                        editing={editing === f.case_id}
+                        onEdit={() => setEditing(f.case_id)}
+                        onCancelEdit={() => setEditing(null)}
+                        onApprove={() => act(f.case_id, 'approve')}
+                        onReject={() => act(f.case_id, 'reject')}
+                        onSave={(patch) => saveEdit(f.case_id, patch)}
+                        isGrouped={true}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -1057,7 +1155,7 @@ function BulkApproveModal({
 }
 
 function FixtureCard({
-  fixture, busy, editing, onEdit, onCancelEdit, onApprove, onReject, onSave,
+  fixture, busy, editing, onEdit, onCancelEdit, onApprove, onReject, onSave, isGrouped = false,
 }: {
   fixture: GoldenFixtureRow;
   busy: boolean;
@@ -1067,77 +1165,197 @@ function FixtureCard({
   onApprove: () => void;
   onReject: () => void;
   onSave: (patch: Record<string, unknown>) => void;
+  isGrouped?: boolean;
 }) {
   const real = isRealFixture(fixture);
+  const isApproved = fixture.approved;
+  const isNeedsReview = real && !isApproved;
+  const isStub = !real;
+
+  const [expanded, setExpanded] = useState(!isApproved);
   const [civilDate, setCivilDate] = useState(fixture.expected?.civilDate ?? '');
   const [citation, setCitation] = useState(fixture.source.citation);
   const [tier, setTier] = useState(String(fixture.source.tier));
   const [ref, setRef] = useState(fixture.source.ref);
   const [reasoning, setReasoning] = useState(fixture.reasoning);
 
+  // Keep expanded if in edit mode
+  const showDetails = expanded || editing;
+
+  // Visual classes based on state
+  const cardBorderClass = isApproved
+    ? 'border-emerald-500/25 border-l-4 border-l-emerald-500 bg-emerald-500/[0.02]'
+    : isNeedsReview
+    ? 'border-black/10 border-l-4 border-l-amber-500 bg-white/90 shadow-sm'
+    : 'border-dashed border-amber-500/30 border-l-4 border-l-amber-400 bg-amber-500/[0.03]';
+
   return (
-    <div className={`glass-panel rounded-[1.75rem] border p-5 space-y-3 ${real ? 'border-black/5 bg-white/40' : 'border-amber-500/20 bg-amber-500/[0.03]'}`}>
+    <div className={`relative overflow-hidden glass-panel rounded-[1.5rem] border p-4 sm:p-5 transition-all space-y-3 ${cardBorderClass}`}>
+      {/* Translucent checkmark watermark for approved cards */}
+      {isApproved && (
+        <CheckCircle2
+          size={110}
+          className="absolute -right-4 -bottom-4 text-emerald-500/[0.04] pointer-events-none stroke-[1.5]"
+        />
+      )}
+
+      {/* Header Row */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-bold theme-ink">{fixture.festival_id}</h3>
-            <span className="text-xs text-[var(--brand-muted)]">{fixture.year}</span>
-            <span className="text-xs text-[var(--brand-muted)]">· {fixture.location.label}</span>
-            <span className="text-xs text-[var(--brand-muted)]">· {fixture.profile.calendar}</span>
-            <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{fixture.tradition}</span>
-            <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{fixture.kind}</span>
-            {fixture.approved && <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase">Approved</span>}
-            {!real && <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-bold uppercase">Unsourced stub</span>}
+        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+          {/* Expand / Collapse Button */}
+          <button
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            disabled={editing}
+            className="p-1 mt-0.5 rounded-lg hover:bg-black/5 text-[var(--brand-muted)] transition-colors shrink-0 cursor-pointer"
+            title={showDetails ? 'Collapse details' : 'Expand details'}
+          >
+            {showDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+
+          <div className="min-w-0 space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              {!isGrouped && (
+                <>
+                  <h4 className={`font-bold ${isApproved ? 'theme-ink/80' : 'theme-ink'}`}>{fixture.festival_id}</h4>
+                  <span className="text-xs text-[var(--brand-muted)]">{fixture.year}</span>
+                  <span className="text-xs text-[var(--brand-muted)]">· {fixture.location.label}</span>
+                </>
+              )}
+              <span className="px-2.5 py-0.5 rounded-full bg-[var(--premium-gold)]/10 text-[var(--premium-gold)] font-bold text-xs">
+                {fixture.profile.calendar}
+              </span>
+              {!isGrouped && (
+                <>
+                  <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{fixture.tradition}</span>
+                  <span className="px-2 py-0.5 rounded-full bg-black/5 text-[10px] font-bold uppercase text-[var(--brand-muted)] capitalize">{fixture.kind}</span>
+                </>
+              )}
+              {isApproved && (
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 text-[10px] font-bold uppercase flex items-center gap-1">
+                  <Check size={11} className="stroke-[3]" /> Approved
+                </span>
+              )}
+              {isNeedsReview && (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 text-[10px] font-bold uppercase">
+                  Needs Review
+                </span>
+              )}
+              {isStub && (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-700 text-[10px] font-bold uppercase">
+                  Unsourced stub
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 text-[10px] text-[var(--brand-muted)] flex-wrap">
+              <span className="uppercase tracking-widest font-mono font-semibold">{fixture.case_id}</span>
+              {fixture.reviewed_by && (
+                <span>
+                  Reviewed by <strong className="font-semibold text-emerald-800/90">{fixture.reviewed_by}</strong>
+                  {fixture.reviewed_at ? ` on ${new Date(fixture.reviewed_at).toLocaleDateString()}` : ''}
+                </span>
+              )}
+              {!showDetails && fixture.expected?.civilDate && (
+                <span className="font-semibold theme-ink/90">
+                  · Date: <span className="font-mono text-emerald-700 font-bold">{fixture.expected.civilDate}</span>
+                </span>
+              )}
+            </div>
           </div>
-          <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)] mt-1">{fixture.case_id}</p>
         </div>
+
+        {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
           {!editing && (
-            <button onClick={onEdit} disabled={busy} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 text-[var(--brand-muted)] text-xs font-bold hover:bg-black/10 transition-all disabled:opacity-50">
-              <Pencil size={12} /> Edit
+            <button
+              onClick={onEdit}
+              disabled={busy}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 text-[var(--brand-muted)] hover:bg-black/10 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+            >
+              <Pencil size={11} /> Edit
             </button>
           )}
-          <button onClick={onApprove} disabled={busy || !real} title={!real ? 'Cannot approve an unsourced stub' : undefined}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50">
-            <CheckCircle2 size={14} /> Approve
-          </button>
-          <button onClick={onReject} disabled={busy}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50">
-            <XCircle size={14} /> Reject
-          </button>
+
+          {isApproved ? (
+            <>
+              {/* Disabled Approved Badge Button */}
+              <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-700 text-xs font-bold cursor-default select-none border border-emerald-500/20">
+                <CheckCircle2 size={13} className="fill-emerald-600 text-white" />
+                <span>Approved</span>
+              </div>
+              {/* Secondary subtle Revoke / Unapprove button */}
+              <button
+                onClick={onReject}
+                disabled={busy}
+                title="Revoke approval / mark as unapproved"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black/5 hover:bg-rose-500/10 hover:text-rose-600 text-[var(--brand-muted)] text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <RotateCcw size={11} /> Unapprove
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={onApprove}
+                disabled={busy || !real}
+                title={!real ? 'Cannot approve an unsourced stub' : undefined}
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <CheckCircle2 size={14} /> Approve
+              </button>
+              <button
+                onClick={onReject}
+                disabled={busy}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-600 text-xs font-bold hover:bg-rose-600 hover:text-white transition-all disabled:opacity-50 cursor-pointer"
+              >
+                <XCircle size={14} /> Reject
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      <VerifyPanel fixture={fixture} onUseEngineDate={editing ? () => setCivilDate(fixture.engineHint?.civilDate ?? '') : undefined} />
+      {/* Expanded Details Body */}
+      {showDetails && (
+        <div className="space-y-3 pt-1 border-t border-black/5">
+          <VerifyPanel fixture={fixture} onUseEngineDate={editing ? () => setCivilDate(fixture.engineHint?.civilDate ?? '') : undefined} />
 
-      {editing ? (
-        <div className="space-y-2 border-t border-black/5 pt-3">
-          <LabeledInput label="civilDate (YYYY-MM-DD)" value={civilDate} onChange={setCivilDate} />
-          <LabeledInput label="Source tier (1-4)" value={tier} onChange={setTier} />
-          <LabeledInput label="Source ref" value={ref} onChange={setRef} />
-          <LabeledTextarea label="Citation" value={citation} onChange={setCitation} />
-          <LabeledTextarea label="Reasoning" value={reasoning} onChange={setReasoning} />
-          <div className="flex items-center gap-2 pt-1">
-            <button onClick={() => onSave({ expected: civilDate ? { ...fixture.expected, civilDate } : null, source: { ...fixture.source, tier: Number(tier), ref, citation }, reasoning })}
-              disabled={busy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--premium-gold)] text-white text-xs font-bold hover:opacity-90 transition-all disabled:opacity-50">
-              <Save size={12} /> Save (resets approval)
-            </button>
-            <button onClick={onCancelEdit} disabled={busy}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 text-[var(--brand-muted)] text-xs font-bold hover:bg-black/10 transition-all disabled:opacity-50">
-              <X size={12} /> Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <p className="text-xs text-[var(--brand-muted)] leading-relaxed">{fixture.source.citation}</p>
-          {fixture.reviewed_by && (
-            <p className="text-[10px] text-[var(--brand-muted)]">
-              Last reviewed by {fixture.reviewed_by}{fixture.reviewed_at ? ` on ${new Date(fixture.reviewed_at).toLocaleDateString()}` : ''}
-            </p>
+          {editing ? (
+            <div className="space-y-2 border-t border-black/5 pt-3">
+              <LabeledInput label="civilDate (YYYY-MM-DD)" value={civilDate} onChange={setCivilDate} />
+              <LabeledInput label="Source tier (1-4)" value={tier} onChange={setTier} />
+              <LabeledInput label="Source ref" value={ref} onChange={setRef} />
+              <LabeledTextarea label="Citation" value={citation} onChange={setCitation} />
+              <LabeledTextarea label="Reasoning" value={reasoning} onChange={setReasoning} />
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  onClick={() => onSave({ expected: civilDate ? { ...fixture.expected, civilDate } : null, source: { ...fixture.source, tier: Number(tier), ref, citation }, reasoning })}
+                  disabled={busy}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--premium-gold)] text-white text-xs font-bold hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Save size={12} /> Save (resets approval)
+                </button>
+                <button
+                  onClick={onCancelEdit}
+                  disabled={busy}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-black/5 text-[var(--brand-muted)] text-xs font-bold hover:bg-black/10 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <X size={12} /> Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-1.5 pt-1">
+              <p className="text-xs text-[var(--brand-muted)] leading-relaxed">{fixture.source.citation}</p>
+              {fixture.reasoning && (
+                <p className="text-[11px] text-[var(--brand-muted)]/80 italic leading-relaxed">
+                  Reasoning: {fixture.reasoning}
+                </p>
+              )}
+            </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
@@ -1351,7 +1569,7 @@ function ActivitySection() {
   const [logs, setLogs] = useState<AuditLogRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionFilter, setActionFilter] = useState<'all' | 'newly_approved' | 're_confirmed' | 'rejected' | 'content_updated'>('all');
+  const [actionFilter, setActionFilter] = useState<'all' | 'newly_approved' | 're_confirmed' | 'rejected' | 'unapproved' | 'content_updated'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchLogs = useCallback(async () => {
@@ -1399,6 +1617,7 @@ function ActivitySection() {
           <FilterPill active={actionFilter === 'newly_approved'} onClick={() => setActionFilter('newly_approved')} label="Newly Approved" />
           <FilterPill active={actionFilter === 're_confirmed'} onClick={() => setActionFilter('re_confirmed')} label="Re-confirmed" />
           <FilterPill active={actionFilter === 'rejected'} onClick={() => setActionFilter('rejected')} label="Rejected" />
+          <FilterPill active={actionFilter === 'unapproved'} onClick={() => setActionFilter('unapproved')} label="Unapproved" />
           <FilterPill active={actionFilter === 'content_updated'} onClick={() => setActionFilter('content_updated')} label="Content Edited" />
         </div>
 
@@ -1455,6 +1674,11 @@ function ActivitySection() {
                     {log.action === 'rejected' && (
                       <span className="px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-600 text-[10px] font-bold uppercase flex items-center gap-1">
                         <XCircle size={10} /> Rejected
+                      </span>
+                    )}
+                    {log.action === 'unapproved' && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-[10px] font-bold uppercase flex items-center gap-1">
+                        <RotateCcw size={10} /> Unapproved
                       </span>
                     )}
                     {log.action === 'content_updated' && (
