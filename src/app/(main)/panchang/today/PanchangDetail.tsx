@@ -606,7 +606,7 @@ export default function PanchangDetail({ lat, lon, city, tradition, timezone, is
                   {p.tithi !== ujjainReference.tithi && (
                     <p className="text-[10px] text-panchang-gold/80 leading-relaxed mt-1.5">
                       Your tithi differs from the Ujjain reference — this is a real effect of your
-                      location's own sunrise timing, not an error.
+                      location&apos;s own sunrise timing, not an error.
                     </p>
                   )}
                 </div>
