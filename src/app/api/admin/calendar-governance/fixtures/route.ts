@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
   // engine currently computes right next to the (possibly still-TODO)
   // sourced `expected` date, without running the engine by hand -- see
   // fixture-engine-hint.ts for why this can never become `expected` itself.
-  const enriched = (data ?? []).map(row => {
+  const enriched = await Promise.all((data ?? []).map(async row => {
     const rule = rulesBySlug.get(row.festival_id as string);
     const profile = row.profile as { tradition?: string } | null;
     const variantKey = profile?.tradition && profile.tradition !== 'unspecified' ? profile.tradition : null;
@@ -81,9 +81,9 @@ export async function GET(request: NextRequest) {
       kind:         rule?.kind         ?? 'unknown',
       rule_family:  rule?.rule_family  ?? 'unknown',
       launch_status: rule?.launch_status ?? 'included',
-      engineHint: computeEngineHint(row.festival_id as string, row.year as number, variantKey),
+      engineHint: await computeEngineHint(row.festival_id as string, row.year as number, variantKey),
     };
-  });
+  }));
 
   fixturesCache = { data: enriched, expiresAt: Date.now() + FIXTURES_CACHE_TTL_MS };
   return NextResponse.json(enriched);
@@ -259,9 +259,16 @@ export async function POST(request: NextRequest) {
   if (action === 'approve' || action === 'reject') {
     const willApprove = action === 'approve';
     const wasApproved = existing.approved === true;
+    // A 'reject' on an already-approved fixture is a reviewer revoking their
+    // own (or a prior reviewer's) sign-off -- e.g. wanting a second look --
+    // not a claim that the sourced citation is wrong. Recording both as
+    // 'rejected' would conflate "walked back an approval" with "found a bad
+    // citation" (the actual D33 scenario) in the one audit trail this
+    // governance system exists to keep trustworthy, so they get distinct
+    // transition values.
     const transition = willApprove
       ? (wasApproved ? 're_confirmed' : 'newly_approved')
-      : 'rejected';
+      : (wasApproved ? 'unapproved' : 'rejected');
 
     // golden_fixtures_approval_evidence_check requires effective_from to be
     // set whenever approved = true (along with expected/source.tier/
