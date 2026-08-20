@@ -1,147 +1,168 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { emitEvent } from "@/lib/monitoring/events";
+import { getNextLocalHourUtc, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
 
-// ─── Mood Check-In Reminder Cron ─────────────────────────────────────────────
-// Schedule: 30 6 * * * (6:30 AM UTC = ~noon IST, midday UK time)
+// ─── Mood Check-In Enqueuer Cron ─────────────────────────────────────────────
+// Schedule: runs once daily (30 3 * * * = 3:30 AM UTC).
 //
-// Sends a gentle midday nudge to users who have NOT set a mood today.
-// Mood state is stored in localStorage (home_mood_date / home_mood_key) on the
-// client, so we can't query it server-side. Instead we send a universal noon
-// notification to all users who have push enabled — it acts as a friendly
-// "how are you feeling?" check-in that deep-links to /discover/mood.
+// Computes the NEXT upcoming local noon (12:00 PM) for each user across all
+// global timezones and enqueues a deterministic pending row into
+// `notification_schedule` with unique key `mood_checkin:${user_id}:${local_date}`.
 //
-// Idempotency: uses notification_key "mood-checkin:<date>" so the row is
-// inserted only once per local date even if the cron fires twice.
+// The shared `notification-dispatch` cron claims and delivers due rows every 10 mins.
+
+const TARGET_LOCAL_HOUR = 12; // noon local time
+
+const MOOD_PROMPTS_BY_TRADITION: Record<string, string[]> = {
+  hindu:    [
+    "How is your inner space today?",
+    "How does your heart feel in this moment?",
+    "Take a breath — what is your mood right now?"
+  ],
+  sikh:     [
+    "Waheguru's grace is with you — how do you feel?",
+    "Pause for a moment. What does your heart say?"
+  ],
+  buddhist: [
+    "Notice this moment — what feelings are present?",
+    "Be present — how is your mind right now?"
+  ],
+  jain:     [
+    "In this moment of awareness — how are you?",
+    "Pause and observe — what is your inner state?"
+  ],
+  other:    [
+    "How are you feeling right now?",
+    "Take a quiet breath — what is your mood?"
+  ],
+};
 
 export async function GET(request: Request) {
+  const startTime = Date.now();
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get("authorization");
     if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
 
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
-    return NextResponse.json({ error: 'Missing Supabase env vars' }, { status: 500 });
+    return NextResponse.json({ error: "Missing Supabase env vars" }, { status: 500 });
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
-  const safetyState = getNotificationSafetyState('general', request);
+  const now      = new Date();
 
   try {
-    const baseUrl   = new URL(request.url).origin;
-    const actionPath = '/discover/mood';
-    const actionUrl  = new URL(actionPath, baseUrl).toString();
-    const now        = new Date();
-    const targetLocalHour = 12; // noon local time
-
-    // Fetch all users with notifications enabled
+    // 1. Fetch all active users (excluding accounts marked for deletion)
     const { data: users, error: usersError } = await supabase
-      .from('profiles')
-      .select('id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end');
+      .from("profiles")
+      .select("id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting")
+      .or("is_deleting.is.null,is_deleting.eq.false");
 
     if (usersError) {
+      console.error("[mood-reminder/enqueuer] Fetch profiles error:", usersError);
       return NextResponse.json({ error: usersError.message }, { status: 500 });
     }
+
     if (!users || users.length === 0) {
-      return NextResponse.json({ message: 'No users found', sent: 0 });
+      return NextResponse.json({ message: "No active users found", enqueued: 0 });
     }
 
-    const MOOD_PROMPTS_BY_TRADITION: Record<string, string[]> = {
-      hindu:    ['How is your inner space today?', 'How does your heart feel in this moment?', 'Take a breath — what is your mood right now?'],
-      sikh:     ['Waheguru\'s grace is with you — how do you feel?', 'Pause for a moment. What does your heart say?'],
-      buddhist: ['Notice this moment — what feelings are present?', 'Be present — how is your mind right now?'],
-      jain:     ['In this moment of awareness — how are you?', 'Pause and observe — what is your inner state?'],
-      other:    ['How are you feeling right now?', 'Take a quiet breath — what is your mood?'],
-    };
+    const scheduledRows: Array<{
+      user_id: string;
+      title: string;
+      body: string;
+      send_at: string;
+      notification_type: string;
+      status: "pending";
+      metadata: Record<string, any>;
+      notification_key: string;
+      retry_count: number;
+    }> = [];
 
-    const eligibleUsers = users.filter((user) => {
-      const tz = resolveTimeZone((user as any).timezone);
-      return canSendInLocalWindow(
-        now,
-        tz,
-        targetLocalHour,
-        (user as any).notification_quiet_hours_start ?? null,
-        (user as any).notification_quiet_hours_end ?? null
-      );
-    });
+    // 2. Compute the NEXT occurrence of local noon for each user
+    for (const u of users) {
+      const tz = resolveTimeZone(u.timezone);
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, tz, TARGET_LOCAL_HOUR, 0);
 
-    if (eligibleUsers.length === 0) {
-      return NextResponse.json({ message: 'No users in noon window', sent: 0 });
-    }
+      // Check quiet hours: skip scheduling if 12:00 noon falls in their quiet hours window
+      const quietStart = u.notification_quiet_hours_start !== null ? Number(u.notification_quiet_hours_start) : null;
+      const quietEnd   = u.notification_quiet_hours_end !== null ? Number(u.notification_quiet_hours_end) : null;
 
-    const notifications = eligibleUsers.map((u) => {
-      const tz        = resolveTimeZone((u as any).timezone);
-      const localDate = getLocalDateIso(now, tz);
-      const tradition = ((u as any).tradition ?? 'hindu') as string;
+      if (isHourInQuietWindow(TARGET_LOCAL_HOUR, quietStart, quietEnd)) {
+        continue;
+      }
+
+      const tradition = (u.tradition ?? "hindu") as string;
       const prompts   = MOOD_PROMPTS_BY_TRADITION[tradition] ?? MOOD_PROMPTS_BY_TRADITION.other;
       const prompt    = prompts[Math.floor(Math.random() * prompts.length)];
 
-      return {
-        user_id:          u.id,
-        title:            '🌿 Midday check-in',
-        body:             `${prompt} Let scripture meet your mood.`,
-        emoji:            '🌿',
-        type:             'general' as const,
-        action_url:       actionPath,
-        notification_key: `mood-checkin:${localDate}`,
-        local_date:       localDate,
-        sent_timezone:    tz,
-      };
-    });
+      const dedupeKey = `mood_checkin:${u.id}:${localDateIso}`;
 
-    if (safetyState.isDryRun || safetyState.skipDelivery) {
-      return NextResponse.json(buildNotificationSafetyResponse('general', safetyState, {
-        eligibleCount: eligibleUsers.length,
-        wouldInsertCount: notifications.length,
-        wouldSendCount: notifications.length,
-        preview: notifications.slice(0, 10).map((notification) => ({
-          user_id: notification.user_id,
-          title: notification.title,
-          notification_key: notification.notification_key,
-        })),
-      }));
+      scheduledRows.push({
+        user_id:           u.id,
+        title:             "Midday check-in 🌿",
+        body:              `${prompt} Let scripture meet your mood.`,
+        send_at:           sendAt.toISOString(),
+        notification_type: "mood_checkin",
+        status:            "pending",
+        metadata: {
+          tradition,
+          prompt,
+          action_url: "/discover/mood",
+          timezone:   tz,
+          local_date: localDateIso,
+        },
+        notification_key: dedupeKey,
+        retry_count:      0,
+      });
     }
 
-    let totalInserted  = 0;
-    const insertedIds: string[] = [];
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: rows, error: insertErr } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-      if (insertErr) {
-        console.error('mood-reminder insert error:', insertErr);
-        return NextResponse.json({ error: insertErr.message }, { status: 500 });
+    // 3. Upsert scheduled rows in batches of 100 with deduplication
+    let totalEnqueued = 0;
+    for (let i = 0; i < scheduledRows.length; i += 100) {
+      const batch = scheduledRows.slice(i, i + 100);
+      const { data: upserted, error: upsertError } = await supabase
+        .from("notification_schedule")
+        .upsert(batch, { onConflict: "notification_key", ignoreDuplicates: true })
+        .select("id");
+
+      if (upsertError) {
+        console.error("[mood-reminder/enqueuer] Upsert error:", upsertError.message);
+        return NextResponse.json({ error: upsertError.message }, { status: 500 });
       }
-      totalInserted += rows?.length ?? 0;
-      insertedIds.push(...((rows ?? []).map((r: { user_id: string }) => r.user_id)));
+
+      totalEnqueued += upserted?.length ?? 0;
     }
 
-    const pushResult = await sendPushNotification({
-      userIds: insertedIds,
-      title:   'Midday check-in 🌿',
-      body:    'How are you feeling? Let scripture meet your mood.',
-      url:     actionUrl,
-      data:    { type: 'general' },
+    emitEvent({
+      severity: "P3",
+      domain: "notifications",
+      route: "/api/cron/mood-reminder",
+      latency_ms: Date.now() - startTime,
+      context: {
+        status: "enqueued",
+        total_eligible: users.length,
+        scheduled_candidates: scheduledRows.length,
+        enqueued_count: totalEnqueued,
+      },
     });
 
     return NextResponse.json({
-      message:      'Mood reminders sent',
-      reminded:     totalInserted,
-      push_targets: pushResult.sent,
+      message: "Mood check-ins enqueued successfully",
+      total_eligible: users.length,
+      scheduled_candidates: scheduledRows.length,
+      enqueued: totalEnqueued,
     });
-  } catch (error) {
-    console.error('mood-reminder cron crashed:', error);
+  } catch (error: any) {
+    console.error("[mood-reminder/enqueuer] Cron crashed:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Cron crashed' },
+      { error: error instanceof Error ? error.message : "Enqueuer crashed" },
       { status: 500 }
     );
   }

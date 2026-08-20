@@ -139,3 +139,53 @@ export function buildSpiritualDateRange(
   }
   return result;
 }
+
+/**
+ * Computes the NEXT upcoming occurrence of a target local hour (e.g. 12:00 noon)
+ * for a user in their timezone, returned as a UTC Date along with the local date ISO string.
+ *
+ * If today's target local hour has already passed relative to `now`, tomorrow's
+ * target local hour is scheduled instead.
+ */
+export function getNextLocalHourUtc(
+  now: Date,
+  timeZone: string | null | undefined,
+  targetHour = 12,
+  targetMinute = 0
+): { sendAt: Date; localDateIso: string; localHour: number } {
+  const tz = resolveTimeZone(timeZone);
+  const parts = getParts(now, tz);
+
+  const toUtcDate = (y: number, m: number, d: number, h: number, min: number): Date => {
+    const utcEstimate = new Date(Date.UTC(y, m - 1, d, h, min, 0));
+    const p = getParts(utcEstimate, tz);
+    const localTimestamp = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, 0);
+    const targetLocalTimestamp = Date.UTC(y, m - 1, d, h, min, 0);
+    const diff = targetLocalTimestamp - localTimestamp;
+    return new Date(utcEstimate.getTime() + diff);
+  };
+
+  // Candidate 1: Today local target hour
+  const todayCandidate = toUtcDate(parts.year, parts.month, parts.day, targetHour, targetMinute);
+  const todayLocalDateIso = `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`;
+
+  if (todayCandidate.getTime() > now.getTime()) {
+    return {
+      sendAt: todayCandidate,
+      localDateIso: todayLocalDateIso,
+      localHour: targetHour,
+    };
+  }
+
+  // Candidate 2: Tomorrow local target hour
+  const tomorrowLocal = new Date(Date.UTC(parts.year, parts.month - 1, parts.day + 1, 12, 0, 0));
+  const tmParts = getParts(tomorrowLocal, 'UTC');
+  const tomorrowCandidate = toUtcDate(tmParts.year, tmParts.month, tmParts.day, targetHour, targetMinute);
+  const tomorrowLocalDateIso = `${tmParts.year}-${String(tmParts.month).padStart(2, '0')}-${String(tmParts.day).padStart(2, '0')}`;
+
+  return {
+    sendAt: tomorrowCandidate,
+    localDateIso: tomorrowLocalDateIso,
+    localHour: targetHour,
+  };
+}
