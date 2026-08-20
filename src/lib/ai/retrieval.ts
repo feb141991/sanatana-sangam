@@ -81,6 +81,7 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
   private tradition: string;
   private maxChapters: number;
   private fileNames?: string[];
+  private manifestCache: Map<string, any> = new Map();
 
   constructor(options: PramanaManifestRetrieverOptions) {
     this.manifestsDir = options.manifestsDir || path.join(process.cwd(), 'python/ai_pipeline/corpus/manifests');
@@ -102,10 +103,15 @@ export class PramanaManifestRetriever implements PramanaRetriever<RetrievalChunk
         filePath = path.join(this.manifestsDir, `${this.prefix}.json`);
       }
     }
+    if (this.manifestCache.has(filePath)) {
+      return this.manifestCache.get(filePath);
+    }
     if (!fs.existsSync(filePath)) return null;
     try {
       const data = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      this.manifestCache.set(filePath, parsed);
+      return parsed;
     } catch {
       return null;
     }

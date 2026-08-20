@@ -10,6 +10,37 @@ import type { PathshalaExplainInput } from '@/lib/ai/contracts';
 
 const BUCKET_NAME = 'shoonaya-reasoning-cache';
 const CACHE_VERSION = '1'; // Bump to invalidate all cache keys
+const L1_CACHE_MAX_SIZE = 500;
+
+// Bounded in-memory L1 cache with LRU eviction
+const l1Cache = new Map<string, Record<string, any>>();
+
+function getL1Key(task: string, key: string): string {
+  return `v${CACHE_VERSION}:${task}:${key}`;
+}
+
+function getFromL1(task: string, key: string): Record<string, any> | null {
+  const l1Key = getL1Key(task, key);
+  if (!l1Cache.has(l1Key)) return null;
+  const value = l1Cache.get(l1Key)!;
+  // Move to end (most recently used)
+  l1Cache.delete(l1Key);
+  l1Cache.set(l1Key, value);
+  return value;
+}
+
+function setToL1(task: string, key: string, value: Record<string, any>): void {
+  const l1Key = getL1Key(task, key);
+  if (l1Cache.has(l1Key)) {
+    l1Cache.delete(l1Key);
+  } else if (l1Cache.size >= L1_CACHE_MAX_SIZE) {
+    const oldestKey = l1Cache.keys().next().value;
+    if (oldestKey !== undefined) {
+      l1Cache.delete(oldestKey);
+    }
+  }
+  l1Cache.set(l1Key, value);
+}
 
 /**
  * Generate a stable cache key for a reasoning task.
@@ -42,12 +73,22 @@ function getStoragePath(task: string, key: string): string {
 }
 
 /**
- * Fetch cached reasoning output from Supabase Storage.
+ * Fetch cached reasoning output from L1 memory or L2 Supabase Storage.
  */
 export async function fetchReasoningCache(
   task: string,
   key: string
 ): Promise<Record<string, any> | null> {
+  const l1Result = getFromL1(task, key);
+  if (l1Result) {
+    emitEvent({
+      severity: 'P3',
+      domain: 'ai',
+      context: { action: 'reasoning_cache_hit_l1', task, key },
+    });
+    return l1Result;
+  }
+
   try {
     const supabase = createAdminClient();
     const path = getStoragePath(task, key);
@@ -76,10 +117,11 @@ export async function fetchReasoningCache(
 
     const text = await data.text();
     const cached = JSON.parse(text);
+    setToL1(task, key, cached);
     emitEvent({
       severity: 'P3',
       domain: 'ai',
-      context: { action: 'reasoning_cache_hit', task, key },
+      context: { action: 'reasoning_cache_hit_l2', task, key },
     });
     return cached;
   } catch (err) {
@@ -100,6 +142,9 @@ export async function storeReasoningCache(
   key: string,
   output: Record<string, any>
 ): Promise<void> {
+  // Populate L1 cache immediately so same-process subsequent reads hit memory in 0ms
+  setToL1(task, key, output);
+
   try {
     const supabase = createAdminClient();
     const path = getStoragePath(task, key);

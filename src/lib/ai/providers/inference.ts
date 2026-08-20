@@ -1,4 +1,4 @@
-import { selectProvider, selectProviders, GeminiProvider } from '@sangam/pramana-serve';
+import { selectProvider, selectProviders } from '@sangam/pramana-serve';
 import type { PramanaInferenceProvider, InferenceRequest, InferenceResponse } from '@sangam/pramana-core';
 import type { AIPromptSpec, AITextResult } from '@/lib/ai/contracts';
 import { isCircuitOpen, recordSuccess, recordFailure } from '@/lib/monitoring/circuit-breaker';
@@ -22,15 +22,12 @@ function readEnvConfig() {
     selfHostedUrl: process.env.PRAMANA_SELF_HOSTED_URL?.trim() || undefined,
     selfHostedModel: process.env.PRAMANA_SELF_HOSTED_MODEL?.trim() || undefined,
     selfHostedApiKey: process.env.PRAMANA_SELF_HOSTED_API_KEY?.trim() || undefined,
-    geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
-    geminiModel: process.env.PRAMANA_GEMINI_MODEL?.trim() || undefined,
   };
 }
 
 type InferenceProviderOverride =
   | 'sarvam-hosted'
-  | 'self-hosted'
-  | 'google-gemini';
+  | 'self-hosted';
 
 /**
  * Returns the active inference providers, resolved from environment config.
@@ -150,24 +147,6 @@ export async function generateWithProvider(
         // A client error (e.g. 400 Bad Request) means the payload is wrong. Don't retry this on another provider.
         throw err;
       }
-    }
-  }
-
-  // Google Gemini as final fallback when all pramana providers are exhausted
-  const geminiKey = process.env.GEMINI_API_KEY?.trim();
-  if (geminiKey && !isCircuitOpen('google-gemini', breakerConfig)) {
-    const geminiProvider = new GeminiProvider({
-      apiKey: geminiKey,
-      model: process.env.PRAMANA_GEMINI_MODEL?.trim(),
-    });
-    try {
-      const response: InferenceResponse = await geminiProvider.generate(request);
-      recordSuccess('google-gemini');
-      return { text: response.text, modelUsed: response.modelUsed, provider: response.provider, finishReason: response.finishReason };
-    } catch (err: any) {
-      recordFailure('google-gemini', err.message, breakerConfig);
-      emitError('ai', err, 'P1', { provider: 'google-gemini', context: { action: 'gemini_fallback' } });
-      lastError = err;
     }
   }
 

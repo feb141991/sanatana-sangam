@@ -13,7 +13,6 @@ import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval'
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
 // ─── Config ────────────────────────────────────────────────────────────────
-const GEMINI_MODEL       = process.env.PRAMANA_GEMINI_MODEL?.trim() || 'gemini-2.0-flash';
 const MAX_CHAT_BODY_BYTES = 32 * 1024;
 const MAX_CHAT_MESSAGE_CHARS = 4_000;
 const MAX_CHAT_HISTORY_ITEMS = 12;
@@ -122,7 +121,7 @@ function buildSystemPrompt(input: {
   ].join('\n');
 }
 
-// ─── Build conversation text for Pramana / Gemini format ───────────────────
+// ─── Build conversation text for Pramana format ─────────────────────────────
 function buildPramanaUserMessage(history: ChatHistoryMessage[], message: string) {
   const recent = history
     .filter((item) => item.text?.trim())
@@ -310,9 +309,8 @@ export async function POST(req: NextRequest) {
 
   // Determine which providers are available
   const sarvamKey = process.env.SARVAM_API_KEY?.trim();
-  const geminiKey = process.env.GEMINI_API_KEY?.trim();
 
-  if (!sarvamKey && !geminiKey) {
+  if (!sarvamKey) {
     return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
   }
 
@@ -543,87 +541,16 @@ User Question: ${message}
     });
   }
 
-  // ── Path A: Sarvam / Pramana (default) ─────────────────────────────────────
-  // Sarvam is the primary provider. When configured it handles the request and
-  // returns a complete text response emitted as a single-chunk plain-text stream
-  // (the client reads chunks progressively so single-chunk works correctly).
-  if (sarvamKey) {
-    try {
-      const userMessage = buildPramanaUserMessage(history, message);
-      const result = await generateWithProvider(
-        // Backstop against the model ignoring the "keep it short" system
-        // instruction — 500 tokens (~350-400 words) still leaves real room
-        // for an explicitly-requested deep answer, but stops runaway replies.
-        { system: systemPrompt, user: userMessage, maxOutputTokens: 500 },
-        { providerOverride: 'sarvam-hosted' }
-      );
-
-      await recordAiChatEvent(supabase, user.id);
-      emitEvent({
-        severity: 'P3',
-        domain: 'ai',
-        route: '/api/ai/chat',
-        latency_ms: Date.now() - startTime,
-        provider: result.provider ?? 'sarvam-hosted',
-        model: result.modelUsed ?? 'sarvam',
-        context: { status: 'generated', output_length: result.text.length },
-      });
-
-      return new Response(textAsStream(result.text), {
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'Cache-Control': 'no-store',
-        },
-      });
-    } catch (err: any) {
-      // If Sarvam fails and Gemini is available, fall through to Path B.
-      if (!geminiKey) {
-        emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', latency_ms: Date.now() - startTime });
-        return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
-      }
-      emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'sarvam-hosted', context: { action: 'fallback_to_gemini' } });
-    }
-  }
-
-  // ── Path B: Gemini (fallback / Sarvam not configured) ──────────────────────
+  // ── Path: Sarvam / Pramana (primary & sole provider) ──────────────────────
   try {
     const userMessage = buildPramanaUserMessage(history, message);
-    const payload = {
-      contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      // See the matching comment on Path A above — same backstop, same value.
-      generationConfig: { maxOutputTokens: 500, temperature: 0.6 },
-    };
-
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${geminiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }
+    const result = await generateWithProvider(
+      // Backstop against the model ignoring the "keep it short" system
+      // instruction — 500 tokens (~350-400 words) still leaves real room
+      // for an explicitly-requested deep answer, but stops runaway replies.
+      { system: systemPrompt, user: userMessage, maxOutputTokens: 500 },
+      { providerOverride: 'sarvam-hosted' }
     );
-
-    if (!geminiResponse.ok) {
-      const errorBody = await geminiResponse.text().catch(() => '');
-      emitError('ai', new Error(`Gemini ${geminiResponse.status}: ${errorBody}`), 'P2', {
-        route: '/api/ai/chat',
-        provider: 'google-gemini',
-      });
-      return NextResponse.json(
-        { error: geminiResponse.status === 429 ? 'AI service is busy. Try again shortly.' : 'AI service error' },
-        { status: geminiResponse.status === 429 ? 429 : 500 }
-      );
-    }
-
-    const data = await geminiResponse.json() as {
-      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> }; finishReason?: string }>;
-    };
-    const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ?? '';
-
-    if (!text.trim()) {
-      return NextResponse.json({ error: 'AI service error' }, { status: 500 });
-    }
 
     await recordAiChatEvent(supabase, user.id);
     emitEvent({
@@ -631,23 +558,23 @@ User Question: ${message}
       domain: 'ai',
       route: '/api/ai/chat',
       latency_ms: Date.now() - startTime,
-      provider: 'google-gemini',
-      model: GEMINI_MODEL,
-      context: { status: 'generated', output_length: text.length },
+      provider: result.provider ?? 'sarvam-hosted',
+      model: result.modelUsed ?? 'sarvam',
+      context: { status: 'generated', output_length: result.text.length },
     });
 
-    const encoder = new TextEncoder();
-    return new Response(
-      new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(encoder.encode(text));
-          controller.close();
-        },
-      }),
-      { headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } }
-    );
+    return new Response(textAsStream(result.text), {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+      },
+    });
   } catch (err: any) {
-    emitError('ai', err, 'P2', { route: '/api/ai/chat', provider: 'google-gemini', latency_ms: Date.now() - startTime });
+    emitError('ai', err, 'P2', {
+      route: '/api/ai/chat',
+      provider: 'sarvam-hosted',
+      latency_ms: Date.now() - startTime,
+    });
     return NextResponse.json({ error: err?.message || 'AI service error' }, { status: 500 });
   }
 }
