@@ -11,6 +11,16 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/vichaar-sabha/:path*',
+        destination: '/mandali',
+        permanent: true,
+      },
+      {
+        source: '/vichaar-sabha',
+        destination: '/mandali',
+        permanent: true,
+      },
       ...Object.entries(kathaAliases).map(([alias, canonicalId]) => ({
         source: `/bhakti/katha/${alias}`,
         destination: `/bhakti/katha/${canonicalId}`,

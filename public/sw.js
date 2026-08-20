@@ -24,7 +24,6 @@ const OFFLINE_URL = '/offline';
 const PRECACHE_ASSETS = [
   '/',
   '/home',
-  '/vichaar-sabha',
   '/manifest.json',
 ];
 

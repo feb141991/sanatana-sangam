@@ -1,3 +1,6 @@
+export const maxDuration = 300;
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { materializeOccurrencesForYears } from '@/lib/calendar/materialize';
@@ -86,7 +89,7 @@ export async function GET(request: NextRequest) {
 
   if (targetYears.length === 0) {
     const currentYear = new Date().getFullYear();
-    targetYears = [currentYear, currentYear + 1, currentYear + 2];
+    targetYears = [currentYear, currentYear + 1];
   }
 
   try {
