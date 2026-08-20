@@ -4,6 +4,8 @@ import { sendPushNotification } from '@/lib/push-server';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
 import { getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
 
+export const dynamic = 'force-dynamic';
+
 type JapaNotificationInsert = {
   user_id: string;
   title: string;
@@ -14,6 +16,12 @@ type JapaNotificationInsert = {
   notification_key: string;
   local_date: string;
   sent_timezone: string;
+};
+
+type UserDateGroup = {
+  id: string;
+  tz: string;
+  localDate: string;
 };
 
 export async function GET(request: Request) {
@@ -46,41 +54,60 @@ export async function GET(request: Request) {
 
     if (usersError) throw usersError;
 
+    // Group users by their computed localDate (accounts for different user timezones)
+    const groupsByDate = new Map<string, UserDateGroup[]>();
+    for (const user of users || []) {
+      const tz = resolveTimeZone(user.timezone);
+      const localDate = getLocalDateIso(now, tz);
+      const group = groupsByDate.get(localDate) ?? [];
+      group.push({ id: user.id, tz, localDate });
+      groupsByDate.set(localDate, group);
+    }
+
     let eligibleCount = 0;
     let wouldInsertCount = 0;
     const notificationsToInsert: JapaNotificationInsert[] = [];
     const userIdsToPush: string[] = [];
 
-    for (const user of users || []) {
-      const tz = resolveTimeZone(user.timezone);
-      const localDate = getLocalDateIso(now, tz);
+    // Run one batched query per distinct localDate group (turns N sequential queries into 1-3 batched queries)
+    for (const [groupLocalDate, groupUsers] of groupsByDate.entries()) {
+      const groupUserIds = groupUsers.map((u) => u.id);
 
-      const { data: sadhana } = await supabase
+      const { data: sadhanaRows, error: sadhanaErr } = await supabase
         .from('daily_sadhana')
-        .select('japa_done')
-        .eq('user_id', user.id)
-        .eq('date', localDate)
-        .maybeSingle();
+        .select('user_id, japa_done')
+        .in('user_id', groupUserIds)
+        .eq('date', groupLocalDate);
 
-      if (sadhana?.japa_done) continue;
-      eligibleCount++;
+      if (sadhanaErr) {
+        console.warn(`[japa-reminder] sadhana batch fetch warning for date ${groupLocalDate}:`, sadhanaErr.message);
+      }
 
-      const title = '🔔 Time for Japa';
-      const body = "Your daily Japa practice awaits. Keep your streak alive 🙏";
+      const completedUserIds = new Set(
+        (sadhanaRows ?? []).filter((r) => r.japa_done).map((r) => r.user_id),
+      );
 
-      notificationsToInsert.push({
-        user_id: user.id,
-        title,
-        body,
-        emoji: '🔔',
-        type: 'japa',
-        action_url: '/japa',
-        notification_key: `japa-reminder:${localDate}`,
-        local_date: localDate,
-        sent_timezone: tz,
-      });
-      wouldInsertCount++;
-      userIdsToPush.push(user.id);
+      for (const user of groupUsers) {
+        if (completedUserIds.has(user.id)) continue;
+        eligibleCount++;
+
+        const title = '🔔 Time for Japa';
+        const body = "Your daily Japa practice awaits. Keep your streak alive 🙏";
+
+        notificationsToInsert.push({
+          user_id: user.id,
+          title,
+          body,
+          emoji: '🔔',
+          type: 'japa',
+          action_url: '/japa',
+          notification_key: `japa-reminder:${user.localDate}`,
+          local_date: user.localDate,
+          sent_timezone: user.tz,
+        });
+        wouldInsertCount++;
+        userIdsToPush.push(user.id);
+      }
     }
 
     if (isDryRun || skipDelivery) {

@@ -58,26 +58,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: 'No due milestone notifications', processed: 0 });
   }
 
-  let sent    = 0;
-  let failed  = 0;
+  const succeededRows: Array<{
+    id: string;
+    notification: {
+      user_id: string;
+      title: string;
+      body: string;
+      emoji: string;
+      type: string;
+      action_url: string;
+      notification_key: string;
+    };
+  }> = [];
+
+  const failedRows: Array<{ id: string; error: string }> = [];
 
   for (const row of dueRows) {
     try {
-      // ── 2. Write to the in-app notifications bell ──────────────────────────
-      const meta      = (row.metadata ?? {}) as Record<string, unknown>;
+      const meta = (row.metadata ?? {}) as Record<string, unknown>;
       const actionPath = '/kul/sanskara';
 
-      await supabase.from('notifications').insert({
-        user_id:    row.user_id,
-        title:      row.title,
-        body:       row.body,
-        emoji:      '🕉️',
-        type:       'sanskar_milestone',
-        action_url: actionPath,
-        notification_key: `sanskar_milestone:${row.id}`,
-      });
-
-      // ── 3. Send OneSignal push ─────────────────────────────────────────────
+      // ── 2. Send OneSignal push (per-recipient personalized content) ─────────
       await sendPushNotification({
         userIds: [row.user_id],
         title:   row.title,
@@ -90,24 +91,62 @@ export async function GET(request: Request) {
         },
       });
 
-      // ── 4. Mark sent ───────────────────────────────────────────────────────
-      await supabase
-        .from('notification_schedule')
-        .update({ status: 'sent', sent_at: new Date().toISOString() })
-        .eq('id', row.id);
-
-      sent++;
+      succeededRows.push({
+        id: row.id,
+        notification: {
+          user_id:    row.user_id,
+          title:      row.title,
+          body:       row.body,
+          emoji:      '🕉️',
+          type:       'sanskar_milestone',
+          action_url: actionPath,
+          notification_key: `sanskar_milestone:${row.id}`,
+        },
+      });
     } catch (err) {
       console.error('[sanskar-milestone] Row error:', row.id, err);
-
-      await supabase
-        .from('notification_schedule')
-        .update({ status: 'failed', error: String(err) })
-        .eq('id', row.id);
-
-      failed++;
+      failedRows.push({ id: row.id, error: String(err) });
     }
   }
+
+  // ── 3. Bulk insert succeeded in-app notifications ─────────────────────────
+  if (succeededRows.length > 0) {
+    const { error: insertError } = await supabase
+      .from('notifications')
+      .insert(succeededRows.map((r) => r.notification));
+
+    if (insertError) {
+      console.error('[sanskar-milestone] Bulk notifications insert error:', insertError.message);
+    }
+
+    // ── 4. Bulk mark schedule rows as sent ─────────────────────────────────
+    const sentAt = new Date().toISOString();
+    const succeededIds = succeededRows.map((r) => r.id);
+    const { error: updateError } = await supabase
+      .from('notification_schedule')
+      .update({ status: 'sent', sent_at: sentAt })
+      .in('id', succeededIds);
+
+    if (updateError) {
+      console.error('[sanskar-milestone] Bulk notification_schedule update error:', updateError.message);
+    }
+  }
+
+  // ── 5. Bulk mark failed schedule rows ────────────────────────────────────
+  if (failedRows.length > 0) {
+    const failedIds = failedRows.map((r) => r.id);
+    const { error: failedUpdateError } = await supabase
+      .from('notification_schedule')
+      .update({ status: 'failed', error: 'Push delivery failed' })
+      .in('id', failedIds);
+
+    if (failedUpdateError) {
+      console.error('[sanskar-milestone] Bulk failed schedule update error:', failedUpdateError.message);
+    }
+  }
+
+  const sent = succeededRows.length;
+  const failed = failedRows.length;
 
   return NextResponse.json({
     message:   'Sanskar milestone cron complete',

@@ -51,7 +51,7 @@ export async function GET(request: Request) {
   try {
     const occRows = await supabase
       .from('observance_occurrences')
-      .select('*, observance_definitions(*)')
+      .select('id, date, year, final_date_source, manual_date_override, locked_for_regeneration, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(slug, display_name, kind, tradition, emoji, description, verification_type, route_kind, route_slug, active)')
       .eq('year', year)
       .order('date', { ascending: true });
 

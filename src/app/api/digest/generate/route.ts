@@ -229,6 +229,10 @@ export async function GET(request: Request) {
   let generated = 0;
   let notified  = 0;
 
+  // Memoize LLM generation per run by the exact (tradition, level, userToday) triple.
+  // Preserves per-user spiritual timezone date boundaries while eliminating duplicate AI calls.
+  const digestCache = new Map<string, Promise<DigestPayload>>();
+
   for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     const batch = rows.slice(i, i + BATCH_SIZE);
     
@@ -266,8 +270,14 @@ export async function GET(request: Request) {
         // Panchang computed for the user's local day, not server UTC
         const userPanchang = getTodayPanchang(undefined, user.timezone ?? 'Asia/Kolkata');
 
-        // a. Generate digest
-        const digest = await generateDigest(tradition, level, userPanchang);
+        // a. Generate digest with timezone-aware memoization
+        const cacheKey = `${tradition}|${level}|${userToday}`;
+        let digestPromise = digestCache.get(cacheKey);
+        if (!digestPromise) {
+          digestPromise = generateDigest(tradition, level, userPanchang);
+          digestCache.set(cacheKey, digestPromise);
+        }
+        const digest = await digestPromise;
 
         // b. Upsert into recommendations (use userToday, not the global UTC today)
         const { error: upsertErr } = await supabase.from('recommendations').upsert(

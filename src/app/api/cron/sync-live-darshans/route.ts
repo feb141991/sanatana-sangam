@@ -2,13 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 300;
 
-type SyncRow = { id: string; youtube_channel_id: string | null };
+type SyncRow = { id: string; youtube_channel_id: string | null; current_video_id: string | null };
 
-/**
- * Supabase postgrest-js v2 resolves .update() to `never` for live_darshans due to
- * deferred conditional types in complex generic chains. Cast through unknown.
- */
 type SyncChainableUpdate = {
   eq(col: string, val: string): PromiseLike<{ error: { message: string } | null }>;
 };
@@ -20,13 +17,59 @@ function liveSyncUpdate(
     update(v: Record<string, unknown>): SyncChainableUpdate;
   }).update(values);
 }
+
 type SyncResult =
   | { id: string; status: 'updated'; videoId: string }
   | { id: string; status: 'not_live' }
   | { id: string; status: 'error'; reason: string };
 
+/**
+ * Fetches recent video candidates via YouTube channel public RSS feed (0 quota cost).
+ */
+async function getRecentCandidateVideoIds(channelId: string): Promise<string[]> {
+  try {
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`;
+    const res = await fetch(rssUrl, {
+      headers: { 'User-Agent': 'Shoonaya-LiveDarshan-Sync/1.0' },
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    const matches = Array.from(xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)).map(m => m[1]);
+    return matches.slice(0, 3);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Checks candidate videos for live broadcast status using YouTube videos.list (1 quota unit).
+ */
+async function findLiveVideoId(
+  candidateIds: string[],
+  apiKey: string,
+): Promise<string | null> {
+  if (candidateIds.length === 0) return null;
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${candidateIds.join(',')}&key=${apiKey}`;
+  const response = await fetch(url);
+  if (!response.ok) return null;
+  const data = (await response.json()) as {
+    items?: Array<{
+      id: string;
+      snippet?: { liveBroadcastContent?: string };
+      liveStreamingDetails?: { actualStartTime?: string; actualEndTime?: string };
+    }>;
+  };
+
+  for (const item of data.items ?? []) {
+    const isLive =
+      item.snippet?.liveBroadcastContent === 'live' ||
+      Boolean(item.liveStreamingDetails?.actualStartTime && !item.liveStreamingDetails?.actualEndTime);
+    if (isLive) return item.id;
+  }
+  return null;
+}
+
 export async function GET(request: NextRequest) {
-  // Unconditionally locked — fails safely if CRON_SECRET is unset.
   const cronSecret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization');
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
@@ -41,10 +84,9 @@ export async function GET(request: NextRequest) {
   const supabase = createAdminClient();
   const now = new Date().toISOString();
 
-  // Fetch all active channels — we sync even suspect streams so they can recover.
   const { data: darshans, error: fetchError } = await supabase
     .from('live_darshans')
-    .select('id, youtube_channel_id')
+    .select('id, youtube_channel_id, current_video_id')
     .eq('is_active', true);
 
   if (fetchError || !darshans) {
@@ -60,14 +102,16 @@ export async function GET(request: NextRequest) {
     if (!row.youtube_channel_id) continue;
 
     try {
-      const url = `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${row.youtube_channel_id}&eventType=live&type=video&key=${YOUTUBE_API_KEY}`;
-      const response = await fetch(url);
-      const data = (await response.json()) as { items?: Array<{ id: { videoId: string } }> };
+      // 1. Check zero-quota RSS feed for recent candidate videos + include current_video_id if present
+      const rssCandidates = await getRecentCandidateVideoIds(row.youtube_channel_id);
+      const candidates = Array.from(
+        new Set([...(row.current_video_id ? [row.current_video_id] : []), ...rssCandidates]),
+      );
 
-      if (data.items && data.items.length > 0) {
-        const liveVideoId = data.items[0].id.videoId;
+      // 2. Validate live status via low-cost videos.list (1 unit)
+      const liveVideoId = await findLiveVideoId(candidates, YOUTUBE_API_KEY);
 
-        // Reset health to healthy when a confirmed live video is found.
+      if (liveVideoId) {
         const { error: updateError } = await liveSyncUpdate(supabase, {
           current_video_id:      liveVideoId,
           last_synced_at:        now,
@@ -84,14 +128,11 @@ export async function GET(request: NextRequest) {
           updates.push({ id: row.id, status: 'updated', videoId: liveVideoId });
         }
       } else {
-        // Channel is not currently live.
-        // Do NOT touch current_video_id — the old video becomes a VOD and is still
-        // watchable. Do NOT set health_status — let check-live-darshans own that.
         updates.push({ id: row.id, status: 'not_live' });
       }
     } catch (err) {
       const reason = err instanceof Error ? err.message : 'unknown error';
-      console.error(`[sync-live-darshans] YouTube API error for ${row.id}:`, reason);
+      console.error(`[sync-live-darshans] Error for ${row.id}:`, reason);
       updates.push({ id: row.id, status: 'error', reason });
     }
   }

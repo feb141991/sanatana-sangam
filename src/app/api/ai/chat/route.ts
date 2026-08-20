@@ -8,7 +8,7 @@ import { getTierFromScore } from '@/lib/seva-tiers';
 import { SEVA_TIER_PERKS } from '@/lib/seva-perks';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
-import { FESTIVALS_2026 } from '@/lib/festivals';
+import { getFallbackFestivalCalendar } from '@/lib/festivals';
 import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
 
@@ -274,7 +274,12 @@ async function getUpcomingVrats(input: {
     return { vrats, to, source: 'calendar' };
   } catch (error) {
     console.warn('[ai/chat] calendar-backed vrat lookup failed, using fallback:', error);
-    const fallback = FESTIVALS_2026
+    const fromYear = new Date(input.from || new Date()).getFullYear();
+    const toYear = new Date(to).getFullYear();
+    const fallbackList = fromYear === toYear
+      ? getFallbackFestivalCalendar(fromYear)
+      : [...getFallbackFestivalCalendar(fromYear), ...getFallbackFestivalCalendar(toYear)];
+    const fallback = fallbackList
       .filter((festival) =>
         festival.date >= input.from &&
         festival.date <= to &&

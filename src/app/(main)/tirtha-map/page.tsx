@@ -37,7 +37,7 @@ import { getTraditionMeta } from '@/lib/tradition-config';
 import { createClient } from '@/lib/supabase';
 import {
   mapOccurrenceToFestival,
-  FESTIVALS_2026,
+  getFallbackFestivalCalendar,
   type Festival,
 } from '@/lib/festivals';
 import {
@@ -130,7 +130,7 @@ function safeErrorMessage(error: unknown) {
 export default function TirthaMapPage() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const [festivals, setFestivals] = useState<Festival[]>(FESTIVALS_2026);
+  const [festivals, setFestivals] = useState<Festival[]>(() => getFallbackFestivalCalendar(new Date().getFullYear()));
   const {
     coords,
     city: liveCity,

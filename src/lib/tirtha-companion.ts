@@ -1,5 +1,5 @@
 import type { Temple } from '@/lib/overpass';
-import { FESTIVALS_2026, daysUntil, type Festival } from '@/lib/festivals';
+import { getFallbackFestivalCalendar, daysUntil, type Festival } from '@/lib/festivals';
 import { getTraditionMeta } from '@/lib/tradition-config';
 
 export type TirthaPrivacy = 'private' | 'family' | 'mandali' | 'public';
@@ -121,7 +121,7 @@ function normalize(input: string) {
   return input.toLowerCase();
 }
 
-export function getSeasonalTirthaCue(tradition?: string | null, today: Date = new Date(), festivals: Festival[] = FESTIVALS_2026) {
+export function getSeasonalTirthaCue(tradition?: string | null, today: Date = new Date(), festivals: Festival[] = getFallbackFestivalCalendar(today.getFullYear())) {
   const relevant = festivals
     .map((festival) => ({ festival, days: daysUntil(festival.date, today) }))
     .filter(({ festival, days }) => days >= 0 && days <= 14 && (!tradition || tradition === 'other' || festival.tradition === tradition || festival.tradition === 'all'))

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
 import { resolveVratSlug } from '@/lib/vrat-data';
-import { mapOccurrenceToFestival, FESTIVALS_2026 } from '@/lib/festivals';
+import { mapOccurrenceToFestival, getFallbackFestivalCalendar } from '@/lib/festivals';
 import { buildCalendarIntegrityReport, type CalendarIntegrityRow } from '@/lib/calendar/integrity';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -63,17 +63,17 @@ export async function GET(request: Request) {
 
   const currentYear = new Date().getFullYear();
 
-  let festivals = FESTIVALS_2026;
+  let festivals = getFallbackFestivalCalendar(currentYear);
   let rawOccurrenceRows: CalendarIntegrityRow[] = [];
   const occRows = await supabase
     .from('observance_occurrences')
-    .select('*, observance_definitions(*)')
+    .select('id, date, year, final_date_source, manual_date_override, locked_for_regeneration, source_provenance, review_status, verification_status, verification_confidence, verification_note, suggested_date, verification_run_at, audit_status, audit_failure_reason, audit_retry_count, last_audited_at, observance_definitions(slug, display_name, kind, tradition, emoji, description, verification_type, route_kind, route_slug, active)')
     .order('date', { ascending: true });
 
   if (!occRows.error) {
     rawOccurrenceRows = (occRows.data ?? []) as CalendarIntegrityRow[];
     const festivalsFromDb = (occRows.data ?? []).map((row) => mapOccurrenceToFestival(row));
-    festivals = festivalsFromDb.length > 0 ? festivalsFromDb : FESTIVALS_2026;
+    festivals = festivalsFromDb.length > 0 ? festivalsFromDb : getFallbackFestivalCalendar(currentYear);
   } else if (!isMissingObservanceModel(occRows.error)) {
     return NextResponse.json({ error: occRows.error.message }, { status: 500 });
   }

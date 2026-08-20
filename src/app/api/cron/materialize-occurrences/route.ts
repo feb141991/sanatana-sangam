@@ -44,23 +44,30 @@ async function extendInUseLocationCombinations(supabase: any, targetYears: numbe
     });
   }
 
-  await Promise.all(
-    uniqueCombos.flatMap((combo) =>
-      targetYears.map((year) =>
-        ensureYearMaterialized({
+  const tasks = uniqueCombos.flatMap((combo) =>
+    targetYears.map((year) => async () => {
+      try {
+        await ensureYearMaterialized({
           supabase,
           year,
           calendarProfile: combo.calendarProfile,
           location: { lat: combo.lat, lon: combo.lon, tz: combo.tz },
-        }).catch((err) => {
-          console.error(
-            `[materialize-occurrences cron] Failed to extend ${combo.calendarProfile} @ (${combo.lat},${combo.lon}) into ${year}:`,
-            err,
-          );
-        }),
-      ),
-    ),
+        });
+      } catch (err) {
+        console.error(
+          `[materialize-occurrences cron] Failed to extend ${combo.calendarProfile} @ (${combo.lat},${combo.lon}) into ${year}:`,
+          err,
+        );
+      }
+    }),
   );
+
+  // Run with concurrency limit of 2 to prevent memory spikes and DB pool exhaustion
+  const CONCURRENCY_LIMIT = 2;
+  for (let i = 0; i < tasks.length; i += CONCURRENCY_LIMIT) {
+    const chunk = tasks.slice(i, i + CONCURRENCY_LIMIT);
+    await Promise.all(chunk.map((task) => task()));
+  }
 
   return { combinationsExtended: uniqueCombos.length };
 }
