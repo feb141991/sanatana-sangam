@@ -275,14 +275,21 @@ describe('Prompt 4 End-to-End: Yogini Ekadashi Variant Selection & Governance', 
     expect(gaudiyaWithheld2026).toBe(false);
     expect(diagnostics2026).not.toContain('legacy-insufficient-identity');
 
-    // Both rows are disputed for 2027 (real data has no asymmetric pair today --
-    // see test 18 for the synthetic case that proves the mechanism CAN
-    // discriminate), but the point here is that this year genuinely differs
-    // from 2026 above for the identical identity, which the old test's fake
-    // variant_key strings could never have shown either.
+    // 2027 is now the real asymmetric pair: smarta_nishita's dispute was
+    // resolved and cleared (disputed_years: []), while gaudiya_iskcon's own
+    // sunrise+rohini condition was never separately re-verified and stays
+    // disputed (disputed_years: [2027]) -- "same file, same festival,
+    // genuinely different evidentiary state per variant" (D39). Before the
+    // 2026-08-20 fix this asymmetry was invisible: both variants fell
+    // through to the conservative slug-wide fallback and returned true/true
+    // regardless of the real per-row state, which is exactly why this test
+    // originally asserted true/true here. The fix makes the mechanism
+    // correctly discriminate them on real, not synthetic, data for the
+    // first time -- see test 18 for the synthetic case proving the
+    // mechanism CAN discriminate, which this test now confirms it DOES.
     const smartaWithheld2027 = isWithheldOccurrence('krishna-janmashtami', '2027-09-04', null, 'smarta_nishita', undefined, diagnostics2027);
     const gaudiyaWithheld2027 = isWithheldOccurrence('krishna-janmashtami', '2027-09-05', null, 'gaudiya_iskcon', undefined, diagnostics2027);
-    expect(smartaWithheld2027).toBe(true);
+    expect(smartaWithheld2027).toBe(false);
     expect(gaudiyaWithheld2027).toBe(true);
     expect(diagnostics2027).not.toContain('legacy-insufficient-identity');
   });

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
-import { calculateObservanceCandidateDiagnosticsForYear, ruleIdentityKey, type ObservanceCandidateDiagnostic } from './engine';
+import { calculateOccurrencesWithEvaluator, type ReviewQueueItem } from './materialize';
 import { CANONICAL_RULES } from './rules';
 
 // Untyped for the same reason as fixtures/route.ts: this table is new and
@@ -39,10 +39,25 @@ export interface EngineHint {
   error?: string;
 }
 
-// In-process cache: fast path within one warm serverless instance. Keyed by
-// ruleKey (not the raw diagnostic array) so computeEngineHint's per-row
-// lookup is O(1) instead of an O(rules) Array.find, run once per fixture row.
-const diagnosticsByYear = new Map<number, Map<string, ObservanceCandidateDiagnostic>>();
+type ResolvedOccurrence = ReturnType<typeof calculateOccurrencesWithEvaluator>['resolved'][number];
+
+type YearOccurrences = {
+  resolvedBySlug: Map<string, ResolvedOccurrence[]>;
+  unresolvedBySlug: Map<string, ReviewQueueItem[]>;
+};
+
+function indexBySlug<T extends { slug: string }>(items: T[]): Map<string, T[]> {
+  const map = new Map<string, T[]>();
+  for (const item of items) {
+    const list = map.get(item.slug);
+    if (list) list.push(item);
+    else map.set(item.slug, [item]);
+  }
+  return map;
+}
+
+// In-process cache: fast path within one warm serverless instance.
+const occurrencesByYear = new Map<number, YearOccurrences>();
 // computeEngineHint is called once per fixture row with no await between
 // calls (fixtures/route.ts awaits them all via Promise.all), so ~70+ rows
 // sharing one year can request that year concurrently before the first
@@ -50,19 +65,33 @@ const diagnosticsByYear = new Map<number, Map<string, ObservanceCandidateDiagnos
 // means the second-through-Nth concurrent caller for the same year await
 // the same computation instead of each starting (and DB-upserting) their
 // own redundant copy.
-const inFlightByYear = new Map<number, Promise<Map<string, ObservanceCandidateDiagnostic>>>();
+const inFlightByYear = new Map<number, Promise<YearOccurrences>>();
 
-// Computing a full year's diagnostics is genuine ephemeris work across 365
-// days x ~96 rules (~4-7s, occasionally ~8-14s on a legacy-map fallback --
-// see engine.ts's enginePreference doc). A cold serverless instance paid
-// this on the very first admin request that needed it, once per distinct
-// year present in golden_fixtures (currently 3), serially, blocking the
-// request for 12-21s. Persisting the result keyed by (year, rules_hash)
-// means only the *first* request ever pays this, and the warm-diagnostics
-// cron (src/app/api/cron/warm-calendar-governance-diagnostics) can pre-pay
-// it on a schedule so no real admin request ever does.
-async function diagnosticsForYear(year: number): Promise<Map<string, ObservanceCandidateDiagnostic>> {
-  const inMemory = diagnosticsByYear.get(year);
+// Computing a full year's occurrences is genuine ephemeris work across 365
+// days x ~96 rules, plus per-EVALUATOR_RULES window search (~4-7s baseline,
+// occasionally ~8-14s on a legacy-map fallback -- see engine.ts's
+// enginePreference doc). A cold serverless instance paid this on the very
+// first admin request that needed it, once per distinct year present in
+// golden_fixtures (currently several), serially, blocking the request for
+// many seconds. Persisting the result keyed by (year, rules_hash) means
+// only the *first* request ever pays this, and the warm-diagnostics cron
+// (src/app/api/cron/warm-calendar-governance-diagnostics) can pre-pay it on
+// a schedule so no real admin request ever does.
+//
+// Uses calculateOccurrencesWithEvaluator -- the SAME function the real
+// materialization pipeline uses to decide what actually gets published --
+// rather than the raw per-rule diagnostic. The raw diagnostic reflects only
+// the baseline masa-engine candidate, which for evaluator-covered rules
+// (e.g. diwali) is documented as "never the final answer": the evaluator
+// re-searches a +/-N-day window and frequently corrects it by a day or
+// more. Using the raw diagnostic here produced false "engine and citation
+// disagree" warnings on fixtures that were actually correct (diwali,
+// bandhi-chhor-divas, guru-nanak-gurpurab all confirmed to genuinely
+// disagree with the raw diagnostic while exactly matching the real
+// evaluator-resolved production date) -- found 2026-08-20 while reviewing
+// live fixture data.
+async function occurrencesForYear(year: number): Promise<YearOccurrences> {
+  const inMemory = occurrencesByYear.get(year);
   if (inMemory) return inMemory;
 
   const inFlight = inFlightByYear.get(year);
@@ -79,31 +108,34 @@ async function diagnosticsForYear(year: number): Promise<Map<string, ObservanceC
       .eq('rules_hash', hash)
       .maybeSingle();
 
-    let list: ObservanceCandidateDiagnostic[];
+    let resolved: ResolvedOccurrence[];
+    let unresolved: ReviewQueueItem[];
     if (cached?.diagnostics) {
-      list = cached.diagnostics as ObservanceCandidateDiagnostic[];
+      const parsed = cached.diagnostics as { resolved: ResolvedOccurrence[]; unresolved: ReviewQueueItem[] };
+      resolved = parsed.resolved;
+      unresolved = parsed.unresolved;
     } else {
-      // 'corrected' -- this admin surface is for sourcing/reviewing the NEW
-      // engine's output against citations, not for reproducing what legacy
-      // currently ships (that's integrity.ts's job, against production data).
-      // Falls back to legacy per-rule only when the corrected path produced
-      // zero candidates for that rule (see engine.ts's enginePreference doc).
-      list = calculateObservanceCandidateDiagnosticsForYear(year, undefined, 'corrected');
+      const result = calculateOccurrencesWithEvaluator(year);
+      resolved = result.resolved;
+      unresolved = result.unresolved;
 
       // Best-effort write-back -- a failed insert just means the next cold
       // instance recomputes too, not a correctness issue, so it isn't
       // awaited into the request's critical path beyond this fire-and-forget.
       supabase
         .from('calendar_governance_diagnostics_cache')
-        .upsert({ year, rules_hash: hash, diagnostics: list, computed_at: new Date().toISOString() })
+        .upsert({ year, rules_hash: hash, diagnostics: { resolved, unresolved }, computed_at: new Date().toISOString() })
         .then(({ error }) => {
           if (error) console.error(`[fixture-engine-hint] Failed to persist diagnostics cache for ${year}:`, error.message);
         });
     }
 
-    const byRuleKey = new Map(list.map((d) => [d.ruleKey, d]));
-    diagnosticsByYear.set(year, byRuleKey);
-    return byRuleKey;
+    const yearOccurrences: YearOccurrences = {
+      resolvedBySlug: indexBySlug(resolved),
+      unresolvedBySlug: indexBySlug(unresolved),
+    };
+    occurrencesByYear.set(year, yearOccurrences);
+    return yearOccurrences;
   })();
 
   inFlightByYear.set(year, promise);
@@ -115,60 +147,83 @@ async function diagnosticsForYear(year: number): Promise<Map<string, ObservanceC
 }
 
 // Called by the warm-diagnostics cron to pre-pay the computation ahead of
-// any real admin request. Same path as diagnosticsForYear -- a cron run
+// any real admin request. Same path as occurrencesForYear -- a cron run
 // after rules.json changes will recompute and refresh the persisted cache
 // exactly once, same as an ordinary cache miss would.
 export async function warmDiagnosticsForYear(year: number): Promise<void> {
-  await diagnosticsForYear(year);
+  await occurrencesForYear(year);
 }
 
-const rulesIndexCache = new Map<string, typeof CANONICAL_RULES>();
-function rulesFor(festivalId: string, qualifier: string | null) {
-  const key = `${festivalId}::${qualifier ?? ''}`;
-  let matches = rulesIndexCache.get(key);
-  if (!matches) {
-    matches = CANONICAL_RULES.filter((rule) => {
-      if (rule.slug !== festivalId) return false;
-      const ruleQualifier = rule.variant_key ?? rule.sampradaya ?? null;
-      return qualifier ? ruleQualifier === qualifier : ruleQualifier === null;
-    });
-    rulesIndexCache.set(key, matches);
+const knownSlugs = new Set(CANONICAL_RULES.map((rule) => rule.slug));
+
+// Picks the item matching `qualifier` out of a same-slug list. Evaluator-
+// assigned variant_key values (e.g. 'standard' for a single-variant rule)
+// don't always literally equal the rule-table qualifier convention
+// (rule.variant_key ?? rule.sampradaya, often null for single-variant
+// rules) -- so a single-item list is used directly regardless of its
+// variant_key string, and only a genuinely multi-variant list (e.g.
+// krishna-janmashtami's smarta/vaishnava split, where variantId does match
+// the qualifier convention) gets disambiguated by qualifier, falling back
+// to the primary variant if the qualifier doesn't match any of them.
+function pickByQualifier<T extends { variant_key?: string; is_primary_variant?: boolean }>(
+  items: T[],
+  qualifier: string | null,
+): T | null {
+  if (items.length === 0) return null;
+  if (items.length === 1) return items[0];
+  if (qualifier) {
+    const exact = items.find((item) => item.variant_key === qualifier);
+    if (exact) return exact;
   }
-  return matches;
+  return items.find((item) => item.is_primary_variant) ?? items[0];
 }
 
 export async function computeEngineHint(festivalId: string, year: number, variantKey?: string | null): Promise<EngineHint> {
   const qualifier = variantKey?.trim() || null;
-  // golden_fixtures.profile.tradition carries a real variant qualifier for
-  // multi-variant rules (e.g. yogini-ekadashi's smarta/vaishnava_vidhava
-  // split) but is just a generic default ("smarta", "unspecified") for the
-  // majority of single-variant rules that have no variant_key/sampradaya at
-  // all -- so a qualifier that matches nothing is retried unqualified rather
-  // than treated as an error.
-  let matches = rulesFor(festivalId, qualifier);
-  if (matches.length === 0 && qualifier) {
-    matches = rulesFor(festivalId, null);
-  }
 
-  if (matches.length !== 1) {
+  if (!knownSlugs.has(festivalId)) {
     return {
       civilDate: null,
       candidateDates: [],
       publicationWithheld: false,
-      error: `Expected exactly one rule for ${festivalId}${qualifier ? ` (${qualifier})` : ''}; found ${matches.length}`,
+      error: `No rule found for slug "${festivalId}"`,
     };
   }
 
-  const ruleKey = ruleIdentityKey(matches[0]);
-  const diagnostic = (await diagnosticsForYear(year)).get(ruleKey);
+  // Real variant disambiguation happens in pickByQualifier below, against
+  // the occurrence's own variant_key -- which for an evaluator-covered rule
+  // is EVALUATOR_RULES' variantId (e.g. krishna-janmashtami's 'smarta'/
+  // 'vaishnava', matching golden_fixtures.profile.tradition exactly), and
+  // for a baseline-only rule is rules.json's own variant_key/sampradaya
+  // (e.g. yogini-ekadashi's 'smarta'/'vaishnava_vidhava'). A prior version
+  // of this function pre-validated the qualifier against rules.json's
+  // variant_key/sampradaya unconditionally, which silently broke every
+  // krishna-janmashtami lookup: EVALUATOR_RULES declares 'smarta'/
+  // 'vaishnava' for it, but rules.json's own sampradaya field for the same
+  // two rows is 'smarta_nishita'/'gaudiya_iskcon' -- a different naming
+  // convention nobody had reconciled. Trusting the occurrence data's own
+  // variant_key here instead of re-deriving it from rules.json avoids that
+  // whole class of mismatch.
+  const { resolvedBySlug, unresolvedBySlug } = await occurrencesForYear(year);
 
-  if (!diagnostic) {
-    return { civilDate: null, candidateDates: [], publicationWithheld: false, error: 'No engine diagnostic for this rule/year' };
+  const resolved = pickByQualifier(resolvedBySlug.get(festivalId) ?? [], qualifier);
+  if (resolved) {
+    return {
+      civilDate: resolved.date,
+      candidateDates: [resolved.date],
+      publicationWithheld: false,
+    };
   }
 
-  return {
-    civilDate: diagnostic.selectedDate,
-    candidateDates: diagnostic.candidateDates,
-    publicationWithheld: diagnostic.publicationWithheld,
-  };
+  const unresolved = pickByQualifier(unresolvedBySlug.get(festivalId) ?? [], qualifier);
+  if (unresolved) {
+    return {
+      civilDate: null,
+      candidateDates: unresolved.candidate_dates,
+      publicationWithheld: true,
+      error: unresolved.reasoning,
+    };
+  }
+
+  return { civilDate: null, candidateDates: [], publicationWithheld: false, error: 'No engine occurrence for this rule/year' };
 }

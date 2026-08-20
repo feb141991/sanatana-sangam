@@ -95,16 +95,31 @@ export async function ensureYearMaterialized({
   // not just defensive padding -- last-wins is fine since they're
   // identical in every column that matters to the identity key.
   const rowsByKey = new Map<string, ReturnType<typeof buildRow>>();
+  // 'standard' is EVALUATOR_RULES' generic variantId for every single-
+  // variant rule (diwali, karva-chauth, etc. -- there's no real sampradaya
+  // split to record for these), so it's excluded here the same way
+  // 'legacy-default' already is, rather than writing a nonsense literal
+  // 'standard' into spiritual_tradition.
+  const GENERIC_VARIANT_KEYS = new Set(['legacy-default', 'standard']);
+
   function buildRow(occ: (typeof calculated)[number]) {
     const definitionId = definitionIdBySlug.get(occ.slug);
     if (!definitionId) return null;
     const variantKey = occ.ruleKey.includes('::') ? occ.ruleKey.split('::')[1] : 'legacy-default';
+    // occ.ruleKey's variant suffix is already normalized to rules.json's own
+    // qualifier convention by calculateObservancesForYear (see engine.ts's
+    // evaluatorVariantToRuleQualifier use) -- spiritual_tradition mirrors
+    // that same value directly instead of re-deriving it via a second,
+    // separately-maintained mapping that could drift from the crosswalk in
+    // variant-qualifier.ts.
+    const spiritualTradition = GENERIC_VARIANT_KEYS.has(variantKey) ? null : variantKey;
     return {
       definition_id: definitionId,
       year,
       date: occ.date,
       occurrence_date: occ.date,
       calendar_profile: calendarProfile,
+      spiritual_tradition: spiritualTradition,
       variant_key: variantKey,
       computed_latitude: location.lat,
       computed_longitude: location.lon,

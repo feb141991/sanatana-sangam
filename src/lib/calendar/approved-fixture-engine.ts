@@ -5,7 +5,7 @@ import {
   ruleIdentityKey,
   type ObservanceCandidateDiagnostic,
 } from './engine';
-import { CANONICAL_RULES, type ObservanceRule } from './rules';
+import { CANONICAL_RULES, evaluatorVariantToRuleQualifier, type ObservanceRule } from './rules';
 import type { ApprovedFixtureMonthSystem } from './approved-fixture-governance';
 
 export interface ApprovedFixtureEvaluationInput {
@@ -58,19 +58,36 @@ function diagnosticsForYear(year: number): ObservanceCandidateDiagnostic[] {
 }
 
 function fixtureRule(input: ApprovedFixtureEvaluationInput): ObservanceRule {
-  const variantKey = input.profile.variantKey?.trim() || null;
-  const matches = CANONICAL_RULES.filter(rule => {
+  const rawVariantKey = input.profile.variantKey?.trim() || null;
+  const rawMatches = CANONICAL_RULES.filter(rule => {
     if (rule.slug !== input.festivalId) return false;
     const qualifier = rule.variant_key ?? rule.sampradaya ?? null;
-    return variantKey ? qualifier === variantKey : qualifier === null;
+    return rawVariantKey ? qualifier === rawVariantKey : qualifier === null;
   });
 
-  if (matches.length !== 1) {
-    throw new Error(
-      `Approved fixture ${input.caseId} must identify exactly one rule row; found ${matches.length}`,
-    );
+  if (rawMatches.length === 1) {
+    return rawMatches[0];
   }
-  return matches[0];
+
+  // Crosswalk fallback for known divergent naming conventions (e.g. krishna-janmashtami's
+  // EVALUATOR_RULES/profile 'smarta'/'vaishnava' vs rules.json 'smarta_nishita'/'gaudiya_iskcon'):
+  if (rawVariantKey) {
+    const crosswalked = evaluatorVariantToRuleQualifier(input.festivalId, rawVariantKey);
+    if (crosswalked && crosswalked !== rawVariantKey) {
+      const crossMatches = CANONICAL_RULES.filter(rule => {
+        if (rule.slug !== input.festivalId) return false;
+        const qualifier = rule.variant_key ?? rule.sampradaya ?? null;
+        return qualifier === crosswalked;
+      });
+      if (crossMatches.length === 1) {
+        return crossMatches[0];
+      }
+    }
+  }
+
+  throw new Error(
+    `Approved fixture ${input.caseId} must identify exactly one rule row; found ${rawMatches.length}`,
+  );
 }
 
 /**

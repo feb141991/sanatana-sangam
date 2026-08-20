@@ -1,3 +1,4 @@
+export * from './variant-qualifier';
 import rulesJson from '../../../packages/dharma-rules/src/festivals/rules.json';
 
 export interface DisputedVariant {

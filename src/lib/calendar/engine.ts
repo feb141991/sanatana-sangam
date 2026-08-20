@@ -1,4 +1,4 @@
-import { CANONICAL_RULES, ObservanceRule } from './rules';
+import { CANONICAL_RULES, evaluatorVariantToRuleQualifier, ObservanceRule } from './rules';
 import { calculatePanchang, REFERENCE_LOCATION_UJJAIN } from '../panchang';
 import { getLunarMonth, getSunriseForDateStr, resolveVedicDayForInstant, offsetCivilDateStr, findSankrantisBetween, assignSankrantiToCivilDay, PROFILE_RULE, MONTH_NAMES, nextMonthIndex, type LocationInput } from '@sangam/panchang-engine';
 import { calculateOccurrencesWithEvaluator } from './materialize';
@@ -1084,13 +1084,18 @@ export function calculateObservancesForYear(
 ): CalculatedOccurrence[] {
   if (USE_CONDITION_EVALUATOR) {
     const { resolved } = calculateOccurrencesWithEvaluator(year, location);
-    return resolved.map(o => ({
-      slug: o.slug,
-      ruleKey: o.variant_key ? `${o.slug}::${o.variant_key}` : o.slug,
-      date: o.date,
-      year: o.year,
-      recurring: o.recurring,
-    }));
+    return resolved.map(o => {
+      const canonicalQualifier = o.variant_key
+        ? evaluatorVariantToRuleQualifier(o.slug, o.variant_key)
+        : null;
+      return {
+        slug: o.slug,
+        ruleKey: canonicalQualifier ? `${o.slug}::${canonicalQualifier}` : o.slug,
+        date: o.date,
+        year: o.year,
+        recurring: o.recurring,
+      };
+    });
   }
   return calculateObservancesForYearMasaGated(year, location);
 }
