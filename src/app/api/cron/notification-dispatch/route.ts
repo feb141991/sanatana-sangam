@@ -7,20 +7,20 @@ import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred
 // ─── Notification Dispatcher Cron ───────────────────────────────────────────
 // Schedule: runs every 10 minutes (*/10 * * * *).
 //
-// Atomically claims due rows from `notification_schedule` where:
+// Atomically claims due rows across all scheduled notification types from
+// `notification_schedule` where:
 //   - status = 'pending'
 //   - send_at <= NOW()
 //   - send_at > NOW() - 2 hours (grace window)
 //
 // For each claimed row:
 //   1. Re-verifies live user eligibility (active account, not in quiet hours right now).
-//   2. Dispatches push notifications.
-//   3. Inserts in-app bell record.
+//   2. Dispatches push notifications with type-specific title, body, and action URL.
+//   3. Inserts in-app bell record with matching emoji and category.
 //   4. Updates row status to 'sent', 'skipped', or retries up to 3 times before 'failed'.
 //   5. Automatically purges records older than 90 days (hourly check).
 
 const BATCH_LIMIT = 200;
-const NOTIFICATION_TYPE = "mood_checkin";
 
 export async function GET(request: Request) {
   const startTime = Date.now();
@@ -44,14 +44,14 @@ export async function GET(request: Request) {
   const twoHoursAgoIso = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
 
   try {
-    // ── 1. Atomically claim due rows ───────────────────────────────────────────
+    // ── 1. Atomically claim due rows (across all notification types) ───────────
     let claimedRows: any[] = [];
 
-    // Try PostgreSQL RPC first (FOR UPDATE SKIP LOCKED)
+    // Try PostgreSQL RPC first (FOR UPDATE SKIP LOCKED with p_notification_type = NULL)
     const { data: rpcRows, error: rpcError } = await supabase.rpc(
       "claim_due_scheduled_notifications",
       {
-        p_notification_type: NOTIFICATION_TYPE,
+        p_notification_type: null,
         p_batch_limit: BATCH_LIMIT,
       }
     );
@@ -65,7 +65,6 @@ export async function GET(request: Request) {
         .from("notification_schedule")
         .update({ status: "failed", error: "expired_grace_window" })
         .eq("status", "pending")
-        .eq("notification_type", NOTIFICATION_TYPE)
         .lte("send_at", twoHoursAgoIso);
 
       // Claim pending rows within grace window
@@ -73,7 +72,6 @@ export async function GET(request: Request) {
         .from("notification_schedule")
         .select("*")
         .eq("status", "pending")
-        .eq("notification_type", NOTIFICATION_TYPE)
         .lte("send_at", nowIso)
         .gt("send_at", twoHoursAgoIso)
         .order("send_at", { ascending: true })
@@ -156,6 +154,8 @@ export async function GET(request: Request) {
       user_id: string;
       title: string;
       body: string;
+      emoji: string;
+      type: "festival" | "mandali" | "streak" | "seva" | "general" | "nitya";
       notification_key: string;
       action_url: string;
       sent_timezone: string;
@@ -167,7 +167,13 @@ export async function GET(request: Request) {
     for (const row of eligibleRows) {
       try {
         const meta = (row.metadata ?? {}) as Record<string, any>;
-        const actionPath = meta.action_url ?? "/discover/mood";
+        const notifType = row.notification_type ?? "generic";
+        const defaultActionPath = notifType === "sattvic_reminder"
+          ? "/bhakti/zen"
+          : notifType.startsWith("nitya")
+          ? "/nitya-karma"
+          : "/discover/mood";
+        const actionPath = meta.action_url ?? defaultActionPath;
         const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
 
         await sendPushNotification({
@@ -176,16 +182,29 @@ export async function GET(request: Request) {
           body:    row.body,
           url:     actionUrl,
           data: {
-            type: row.notification_type ?? NOTIFICATION_TYPE,
+            type: notifType,
             notification_key: row.notification_key ?? "",
           },
         });
+
+        const emoji = meta.emoji ?? (
+          notifType === "mood_checkin" ? "🌿" :
+          notifType === "nitya_madhyahn" ? "🌞" :
+          notifType === "nitya_sandhya" ? "🪔" :
+          notifType === "sattvic_reminder" ? "🕉️" : "🔔"
+        );
+
+        const bellType = (meta.type as "festival" | "mandali" | "streak" | "seva" | "general" | "nitya") ?? (
+          notifType.startsWith("nitya") || notifType === "sattvic_reminder" ? "nitya" : "general"
+        );
 
         succeededRows.push({
           id:               row.id,
           user_id:          row.user_id,
           title:            row.title,
           body:             row.body,
+          emoji,
+          type:             bellType,
           notification_key: row.notification_key,
           action_url:       actionPath,
           sent_timezone:    meta.timezone ?? "UTC",
@@ -207,8 +226,8 @@ export async function GET(request: Request) {
         user_id:          r.user_id,
         title:            r.title,
         body:             r.body,
-        emoji:            "🌿",
-        type:             "general",
+        emoji:            r.emoji,
+        type:             r.type,
         action_url:       r.action_url,
         notification_key: r.notification_key,
         local_date:       r.local_date,

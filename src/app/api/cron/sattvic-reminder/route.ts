@@ -1,141 +1,163 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { sendPushNotification } from '@/lib/push-server';
-import { canSendInLocalWindow, getLocalDateIso, resolveTimeZone } from '@/lib/sacred-time';
-import { isInWindow, getPanchangTimes } from '@/lib/panchang';
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { emitEvent } from "@/lib/monitoring/events";
+import { getNextLocalHourUtc, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
 
-// ─── Sattvic Mode Evening Reminder Cron ──────────────────────────────────────
-// Schedule: runs at 11 AM UTC (≈ 4:30 PM IST — evening sandhyā window).
-// Sends a reminder to open Sattvic Mode for evening prānāyāma or kīrtana.
-// Skips users who have already received this notification today.
-// Respects Rahu Kalam (no nudge during inauspicious window).
+// ─── Sattvic Mode Evening Reminder Enqueuer Cron ────────────────────────────
+// Schedule: runs daily (e.g. 11:00 AM UTC ≈ 4:30 PM IST).
+//
+// Computes the NEXT upcoming local 17:00 (5:00 PM) for each user across all
+// global timezones and enqueues a deterministic pending row into
+// `notification_schedule` with unique key `sattvic_reminder:${user_id}:${local_date}`.
+//
+// The shared `notification-dispatch` cron claims and delivers due rows every 10 mins.
 
-const TARGET_LOCAL_HOUR   = 17; // ~5 PM in user's local timezone
-const RAHU_TOLERANCE_MS   = 5 * 60_000;
+const TARGET_LOCAL_HOUR = 17; // ~5:00 PM local time
+
+const SANDHYA_NUDGE: Record<string, { title: string; body: string }> = {
+  hindu: {
+    title: "🌅 Evening Sandhyā — Sattvic Mode Awaits",
+    body: "The day softens. Step into Sattvic Mode for prānāyāma, kīrtana, or silent svādhyāya before the evening meal.",
+  },
+  sikh: {
+    title: "☬ Evening Rehras Sahib Time",
+    body: "The ambrosial hour of dusk approaches. Open Sattvic Mode for Rehras Sahib or naam simran.",
+  },
+  buddhist: {
+    title: "☸️ Evening Sitting Practice",
+    body: "As the day quietens, your sitting practice awaits. Five minutes of Sattvic presence before the evening.",
+  },
+  jain: {
+    title: "🤲 Evening Pratikraman Reminder",
+    body: "The evening hour calls for pratikraman. Open Sattvic Mode to sit, breathe, and reflect on today's actions.",
+  },
+};
 
 export async function GET(request: Request) {
+  const startTime = Date.now();
   const cronSecret = process.env.CRON_SECRET;
   if (cronSecret) {
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get("authorization");
     if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
 
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceRoleKey) {
-    return NextResponse.json({ error: 'Missing env vars' }, { status: 500 });
+    return NextResponse.json({ error: "Missing Supabase env vars" }, { status: 500 });
   }
 
   const supabase = createClient(supabaseUrl, serviceRoleKey);
   const now      = new Date();
-  const actionUrl = new URL('/bhakti/zen', new URL(request.url).origin).toString();
 
   try {
-    // Fetch users who have opted into nitya reminders. Evening Zen follows the
-    // same sacred-practice preference instead of piggybacking on shloka.
+    // 1. Fetch all active users who opted into nitya reminders
     const { data: users, error: usersError } = await supabase
-      .from('profiles')
-      .select('id, tradition, timezone, latitude, longitude, wants_nitya_reminders, notification_quiet_hours_start, notification_quiet_hours_end')
-      .eq('wants_nitya_reminders', true);
+      .from("profiles")
+      .select("id, full_name, tradition, timezone, notification_quiet_hours_start, notification_quiet_hours_end, wants_nitya_reminders, is_deleting")
+      .eq("wants_nitya_reminders", true)
+      .or("is_deleting.is.null,is_deleting.eq.false");
 
-    if (usersError || !users?.length) {
-      return NextResponse.json({ message: 'No users or query failed', sent: 0 });
+    if (usersError) {
+      console.error("[sattvic-reminder/enqueuer] Fetch profiles error:", usersError);
+      return NextResponse.json({ error: usersError.message }, { status: 500 });
     }
 
-    // Filter: evening window
-    const windowUsers = users.filter((user: any) => {
-      const tz = resolveTimeZone(user.timezone);
-      return canSendInLocalWindow(
-        now, tz, TARGET_LOCAL_HOUR,
-        user.notification_quiet_hours_start ?? null,
-        user.notification_quiet_hours_end ?? null,
-        2,
-      );
-    });
-
-    // Filter: skip Rahu Kalam
-    const eligibleUsers = windowUsers.filter((user: any) => {
-      try {
-        const times = getPanchangTimes(now, user.latitude ?? null, user.longitude ?? null);
-        if (isInWindow(now, times.rahuKaalStart, times.rahuKaalEnd, RAHU_TOLERANCE_MS)) return false;
-        return true;
-      } catch { return true; }
-    });
-
-    if (!eligibleUsers.length) {
-      return NextResponse.json({ message: 'No eligible users', sent: 0 });
+    if (!users || users.length === 0) {
+      return NextResponse.json({ message: "No eligible sattvic reminder users found", enqueued: 0 });
     }
 
-    const SANDHYA_NUDGE: Record<string, { title: string; body: string }> = {
-      hindu:    { title: '🌅 Evening Sandhyā — Sattvic Mode Awaits', body: 'The day softens. Step into Sattvic Mode for prānāyāma, kīrtana, or silent svādhyāya before the evening meal.' },
-      sikh:     { title: '☬ Evening Rehras Sahib Time',              body: 'The ambrosial hour of dusk approaches. Open Sattvic Mode for Rehras Sahib or naam simran.' },
-      buddhist: { title: '☸️ Evening Sitting Practice',               body: 'As the day quietens, your sitting practice awaits. Five minutes of Sattvic presence before the evening.' },
-      jain:     { title: '🤲 Evening Pratikraman Reminder',          body: 'The evening hour calls for pratikraman. Open Sattvic Mode to sit, breathe, and reflect on today\'s actions.' },
-    };
+    const scheduledRows: Array<{
+      user_id: string;
+      title: string;
+      body: string;
+      send_at: string;
+      notification_type: string;
+      status: "pending";
+      metadata: Record<string, any>;
+      notification_key: string;
+      retry_count: number;
+    }> = [];
 
-    const notifications = eligibleUsers.map((user: any) => {
-      const tz        = resolveTimeZone(user.timezone);
-      const localDate = getLocalDateIso(now, tz);
-      const tradition = user.tradition ?? 'hindu';
+    // 2. Compute the NEXT occurrence of local 17:00 for each user
+    for (const u of users) {
+      const tz = resolveTimeZone(u.timezone);
+      const { sendAt, localDateIso } = getNextLocalHourUtc(now, tz, TARGET_LOCAL_HOUR, 0);
+
+      // Check quiet hours: skip scheduling if 17:00 falls in their quiet hours window
+      const quietStart = u.notification_quiet_hours_start !== null ? Number(u.notification_quiet_hours_start) : null;
+      const quietEnd   = u.notification_quiet_hours_end !== null ? Number(u.notification_quiet_hours_end) : null;
+
+      if (isHourInQuietWindow(TARGET_LOCAL_HOUR, quietStart, quietEnd)) {
+        continue;
+      }
+
+      const tradition = (u.tradition ?? "hindu") as string;
       const nudge     = SANDHYA_NUDGE[tradition] ?? SANDHYA_NUDGE.hindu;
+      const dedupeKey = `sattvic_reminder:${u.id}:${localDateIso}`;
 
-      return {
-        user_id:          user.id,
-        title:            nudge.title,
-        body:             nudge.body,
-        emoji:            '🕉️',
-        type:             'nitya',
-        action_url:       '/bhakti/zen',
-        notification_key: `sattvic:evening:${localDate}`,
-        local_date:       localDate,
-        sent_timezone:    tz,
-      };
+      scheduledRows.push({
+        user_id:           u.id,
+        title:             nudge.title,
+        body:              nudge.body,
+        send_at:           sendAt.toISOString(),
+        notification_type: "sattvic_reminder",
+        status:            "pending",
+        metadata: {
+          tradition,
+          emoji:      "🕉️",
+          type:       "nitya",
+          action_url: "/bhakti/zen",
+          timezone:   tz,
+          local_date: localDateIso,
+        },
+        notification_key: dedupeKey,
+        retry_count:      0,
+      });
+    }
+
+    // 3. Upsert scheduled rows in batches of 100 with deduplication
+    let totalEnqueued = 0;
+    for (let i = 0; i < scheduledRows.length; i += 100) {
+      const batch = scheduledRows.slice(i, i + 100);
+      const { data: upserted, error: upsertError } = await supabase
+        .from("notification_schedule")
+        .upsert(batch, { onConflict: "notification_key", ignoreDuplicates: true })
+        .select("id");
+
+      if (upsertError) {
+        console.error("[sattvic-reminder/enqueuer] Upsert error:", upsertError.message);
+        return NextResponse.json({ error: upsertError.message }, { status: 500 });
+      }
+
+      totalEnqueued += upserted?.length ?? 0;
+    }
+
+    emitEvent({
+      severity: "P3",
+      domain: "notifications",
+      route: "/api/cron/sattvic-reminder",
+      latency_ms: Date.now() - startTime,
+      context: {
+        status: "enqueued",
+        total_eligible: users.length,
+        scheduled_candidates: scheduledRows.length,
+        enqueued_count: totalEnqueued,
+      },
     });
-
-    // Insert with deduplication
-    let totalInserted    = 0;
-    const insertedUserIds: string[] = [];
-
-    for (let i = 0; i < notifications.length; i += 100) {
-      const batch = notifications.slice(i, i + 100);
-      const { data: insertedRows, error: insertError } = await supabase
-        .from('notifications')
-        .upsert(batch, { onConflict: 'user_id,notification_key', ignoreDuplicates: true })
-        .select('user_id');
-
-      if (insertError) { console.error('Sattvic cron insert failed:', insertError); continue; }
-      totalInserted += insertedRows?.length ?? 0;
-      insertedUserIds.push(...(insertedRows ?? []).map((r: { user_id: string }) => r.user_id));
-    }
-
-    // OneSignal push
-    const toSend = eligibleUsers.filter((u: any) => insertedUserIds.includes(u.id));
-    const byTradition = new Map<string, string[]>();
-    for (const u of toSend as any[]) {
-      const t = u.tradition ?? 'hindu';
-      if (!byTradition.has(t)) byTradition.set(t, []);
-      byTradition.get(t)!.push(u.id);
-    }
-
-    let totalPushTargets = 0;
-    for (const [tradition, userIds] of byTradition.entries()) {
-      const nudge = SANDHYA_NUDGE[tradition] ?? SANDHYA_NUDGE.hindu;
-      const result = await sendPushNotification({ userIds, title: nudge.title, body: nudge.body, url: actionUrl, data: { type: 'nitya', subtype: 'sattvic-evening' } });
-      totalPushTargets += result.sent;
-    }
 
     return NextResponse.json({
-      message:      'Sattvic evening reminders sent',
-      eligible:     eligibleUsers.length,
-      inserted:     totalInserted,
-      push_targets: totalPushTargets,
+      message: "Sattvic evening reminders enqueued successfully",
+      total_eligible: users.length,
+      scheduled_candidates: scheduledRows.length,
+      enqueued: totalEnqueued,
     });
-  } catch (error) {
-    console.error('Sattvic cron crashed:', error);
+  } catch (error: any) {
+    console.error("[sattvic-reminder/enqueuer] Cron crashed:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Sattvic cron crashed' },
+      { error: error instanceof Error ? error.message : "Enqueuer crashed" },
       { status: 500 }
     );
   }
