@@ -6,14 +6,14 @@ import { resolveTimeZone } from '@/lib/sacred-time';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-function authFailed(request: Request): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return false; // Default to allow if not configured locally for testing
-  return request.headers.get('authorization') !== `Bearer ${cronSecret}`;
-}
 
 export async function GET(request: Request) {
-  if (authFailed(request)) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  }
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

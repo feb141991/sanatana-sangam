@@ -26,11 +26,6 @@ type DailySadhanaRow = {
 
 const TITLE = '🪔 Saptah Saar — Weekly Reflection';
 
-function authFailed(request: Request): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return true;
-  return request.headers.get('authorization') !== `Bearer ${cronSecret}`;
-}
 
 function compareIso(a: string, b: string) {
   return a.localeCompare(b);
@@ -77,7 +72,12 @@ function buildPrompt(tradition: string, totalDays: number, perfectDays: number, 
 }
 
 export async function GET(request: Request) {
-  if (authFailed(request)) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  }
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

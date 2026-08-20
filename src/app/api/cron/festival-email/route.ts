@@ -8,11 +8,6 @@ const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-function authFailed(request: Request): boolean {
-  const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) return true;
-  return request.headers.get('authorization') !== `Bearer ${cronSecret}`;
-}
 
 function chunk<T>(arr: T[], size: number): T[][] {
   const chunks: T[][] = [];
@@ -23,7 +18,12 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 export async function GET(request: Request) {
-  if (authFailed(request)) {
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 500 });
+  }
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

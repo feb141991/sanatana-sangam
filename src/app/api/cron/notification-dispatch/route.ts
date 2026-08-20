@@ -8,28 +8,30 @@ import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred
 // Schedule: runs every 10 minutes (*/10 * * * *).
 //
 // Atomically claims due rows across all scheduled notification types from
-// `notification_schedule` where:
-//   - status = 'pending'
-//   - send_at <= NOW()
-//   - send_at > NOW() - 2 hours (grace window)
+// `notification_schedule` with a 15-minute lease and crash recovery:
+//   - status = 'pending' AND send_at <= NOW() AND send_at > NOW() - 2 hours
+//   OR
+//   - status = 'sending' AND claimed_at <= NOW() - 15 minutes (stuck lease recovery)
 //
-// For each claimed row:
+// Delivery ordering:
 //   1. Re-verifies live user eligibility (active account, not in quiet hours right now).
-//   2. Dispatches push notifications with type-specific title, body, and action URL.
-//   3. Inserts in-app bell record with matching emoji and category.
-//   4. Updates row status to 'sent', 'skipped', or retries up to 3 times before 'failed'.
-//   5. Automatically purges records older than 90 days (hourly check).
+//   2. Persists in-app bell notification record IDEMPOTENTLY first (onConflict: user_id,notification_key).
+//   3. Dispatches push notification.
+//   4. Updates row status to 'sent'.
+//   5. Purges records older than 90 days (hourly check).
 
 const BATCH_LIMIT = 200;
 
 export async function GET(request: Request) {
   const startTime = Date.now();
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!cronSecret) {
+    return NextResponse.json({ error: "CRON_SECRET is not configured" }, { status: 500 });
+  }
+
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== "Bearer " + cronSecret) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabaseUrl    = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -42,9 +44,10 @@ export async function GET(request: Request) {
   const now      = new Date();
   const nowIso   = now.toISOString();
   const twoHoursAgoIso = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
+  const fifteenMinutesAgoIso = new Date(now.getTime() - 15 * 60 * 1000).toISOString();
 
   try {
-    // ── 1. Atomically claim due rows (across all notification types) ───────────
+    // ── 1. Atomically claim due rows (with lease recovery) ─────────────────────
     let claimedRows: any[] = [];
 
     // Try PostgreSQL RPC first (FOR UPDATE SKIP LOCKED with p_notification_type = NULL)
@@ -60,20 +63,18 @@ export async function GET(request: Request) {
       claimedRows = rpcRows;
     } else {
       // Fallback: direct atomic update in JS/PostgREST
-      // First, expire rows older than 2-hour grace window
+      // First, expire pending rows older than 2-hour grace window
       await supabase
         .from("notification_schedule")
         .update({ status: "failed", error: "expired_grace_window" })
         .eq("status", "pending")
         .lte("send_at", twoHoursAgoIso);
 
-      // Claim pending rows within grace window
+      // Claim pending rows within grace window OR stuck sending rows older than 15 mins
       const { data: pendingRows } = await supabase
         .from("notification_schedule")
         .select("*")
-        .eq("status", "pending")
-        .lte("send_at", nowIso)
-        .gt("send_at", twoHoursAgoIso)
+        .or("and(status.eq.pending,send_at.lte." + nowIso + ",send_at.gt." + twoHoursAgoIso + "),and(status.eq.sending,claimed_at.lte." + fifteenMinutesAgoIso + ")")
         .order("send_at", { ascending: true })
         .limit(BATCH_LIMIT);
 
@@ -81,9 +82,8 @@ export async function GET(request: Request) {
         const ids = pendingRows.map((r: any) => r.id);
         const { data: lockedRows } = await supabase
           .from("notification_schedule")
-          .update({ status: "sending" })
+          .update({ status: "sending", claimed_at: nowIso })
           .in("id", ids)
-          .eq("status", "pending")
           .select("*");
 
         claimedRows = lockedRows ?? [];
@@ -97,7 +97,6 @@ export async function GET(request: Request) {
       });
 
       if (rpcCleanErr) {
-        // Fallback: direct delete
         const ninetyDaysAgoIso = new Date(now.getTime() - 90 * 86_400_000).toISOString();
         await supabase
           .from("notification_schedule")
@@ -134,7 +133,6 @@ export async function GET(request: Request) {
         continue;
       }
 
-      // Check quiet hours right now at dispatch time
       const tz = resolveTimeZone(profile.timezone);
       const currentLocalHour = getLocalHour(now, tz);
       const quietStart = profile.notification_quiet_hours_start !== null ? Number(profile.notification_quiet_hours_start) : null;
@@ -148,20 +146,50 @@ export async function GET(request: Request) {
       eligibleRows.push(row);
     }
 
-    // ── 4. Send pushes with per-row error isolation ────────────────────────────
-    const succeededRows: Array<{
-      id: string;
-      user_id: string;
-      title: string;
-      body: string;
-      emoji: string;
-      type: "festival" | "mandali" | "streak" | "seva" | "general" | "nitya";
-      notification_key: string;
-      action_url: string;
-      sent_timezone: string;
-      local_date: string;
-    }> = [];
+    // ── 4. Idempotent In-App Bell Record Insertion BEFORE Push Delivery ─────────
+    if (eligibleRows.length > 0) {
+      const bellNotifications = eligibleRows.map((row) => {
+        const meta = (row.metadata ?? {}) as Record<string, any>;
+        const notifType = row.notification_type ?? "generic";
+        const defaultActionPath = notifType === "sattvic_reminder"
+          ? "/bhakti/zen"
+          : notifType.startsWith("nitya")
+          ? "/nitya-karma"
+          : "/discover/mood";
+        const actionPath = meta.action_url ?? defaultActionPath;
+        const emoji = meta.emoji ?? (
+          notifType === "mood_checkin" ? "🌿" :
+          notifType === "nitya_madhyahn" ? "🌞" :
+          notifType === "nitya_sandhya" ? "🪔" :
+          notifType === "sattvic_reminder" ? "🕉️" : "🔔"
+        );
+        const bellType = (meta.type as "festival" | "mandali" | "streak" | "seva" | "general" | "nitya") ?? (
+          notifType.startsWith("nitya") || notifType === "sattvic_reminder" ? "nitya" : "general"
+        );
 
+        return {
+          user_id:          row.user_id,
+          title:            row.title,
+          body:             row.body,
+          emoji,
+          type:             bellType,
+          action_url:       actionPath,
+          notification_key: row.notification_key,
+          local_date:       meta.local_date ?? nowIso.slice(0, 10),
+          sent_timezone:    meta.timezone ?? "UTC",
+        };
+      });
+
+      for (let i = 0; i < bellNotifications.length; i += 100) {
+        const batch = bellNotifications.slice(i, i + 100);
+        await supabase
+          .from("notifications")
+          .upsert(batch, { onConflict: "user_id,notification_key", ignoreDuplicates: true });
+      }
+    }
+
+    // ── 5. Send pushes with per-row error isolation ────────────────────────────
+    const succeededIds: string[] = [];
     const failedRows: Array<{ id: string; retry_count: number; error: string }> = [];
 
     for (const row of eligibleRows) {
@@ -187,29 +215,7 @@ export async function GET(request: Request) {
           },
         });
 
-        const emoji = meta.emoji ?? (
-          notifType === "mood_checkin" ? "🌿" :
-          notifType === "nitya_madhyahn" ? "🌞" :
-          notifType === "nitya_sandhya" ? "🪔" :
-          notifType === "sattvic_reminder" ? "🕉️" : "🔔"
-        );
-
-        const bellType = (meta.type as "festival" | "mandali" | "streak" | "seva" | "general" | "nitya") ?? (
-          notifType.startsWith("nitya") || notifType === "sattvic_reminder" ? "nitya" : "general"
-        );
-
-        succeededRows.push({
-          id:               row.id,
-          user_id:          row.user_id,
-          title:            row.title,
-          body:             row.body,
-          emoji,
-          type:             bellType,
-          notification_key: row.notification_key,
-          action_url:       actionPath,
-          sent_timezone:    meta.timezone ?? "UTC",
-          local_date:       meta.local_date ?? nowIso.slice(0, 10),
-        });
+        succeededIds.push(row.id);
       } catch (err: any) {
         const nextRetry = (row.retry_count ?? 0) + 1;
         failedRows.push({
@@ -220,31 +226,10 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── 5. Bulk insert in-app bell notifications ───────────────────────────────
-    if (succeededRows.length > 0) {
-      const bellNotifications = succeededRows.map((r) => ({
-        user_id:          r.user_id,
-        title:            r.title,
-        body:             r.body,
-        emoji:            r.emoji,
-        type:             r.type,
-        action_url:       r.action_url,
-        notification_key: r.notification_key,
-        local_date:       r.local_date,
-        sent_timezone:    r.sent_timezone,
-      }));
-
-      for (let i = 0; i < bellNotifications.length; i += 100) {
-        const batch = bellNotifications.slice(i, i + 100);
-        await supabase
-          .from("notifications")
-          .upsert(batch, { onConflict: "user_id,notification_key", ignoreDuplicates: true });
-      }
-
-      // Mark status = 'sent' in bulk batches of 100
-      const successIds = succeededRows.map((r) => r.id);
-      for (let i = 0; i < successIds.length; i += 100) {
-        const batchIds = successIds.slice(i, i + 100);
+    // ── 6. Update succeeded rows to status='sent' in batches of 100 ─────────
+    if (succeededIds.length > 0) {
+      for (let i = 0; i < succeededIds.length; i += 100) {
+        const batchIds = succeededIds.slice(i, i + 100);
         await supabase
           .from("notification_schedule")
           .update({ status: "sent", sent_at: nowIso, error: null })
@@ -252,7 +237,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── 6. Batch update skipped rows (grouped by reason) ──────────────────────
+    // ── 7. Batch update skipped rows (grouped by reason) ──────────────────────
     if (skippedRows.length > 0) {
       const skippedByReason = new Map<string, string[]>();
       for (const s of skippedRows) {
@@ -270,12 +255,12 @@ export async function GET(request: Request) {
       }
     }
 
-    // ── 7. Batch update failed rows (grouped by status, retry_count, error) ───
+    // ── 8. Batch update failed rows (grouped by status, retry_count, error) ───
     if (failedRows.length > 0) {
       const failedGroups = new Map<string, { status: string; retry_count: number; error: string; ids: string[] }>();
       for (const f of failedRows) {
         const status = f.retry_count >= 3 ? "failed" : "pending";
-        const key = `${status}:${f.retry_count}:${f.error}`;
+        const key = status + ":" + f.retry_count + ":" + f.error;
         if (!failedGroups.has(key)) {
           failedGroups.set(key, { status, retry_count: f.retry_count, error: f.error, ids: [] });
         }
@@ -300,7 +285,7 @@ export async function GET(request: Request) {
       context: {
         status: "dispatched",
         claimed: claimedRows.length,
-        succeeded: succeededRows.length,
+        succeeded: succeededIds.length,
         skipped: skippedRows.length,
         failed: failedRows.length,
       },
@@ -309,7 +294,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       message: "Notification dispatch completed",
       claimed: claimedRows.length,
-      succeeded: succeededRows.length,
+      succeeded: succeededIds.length,
       skipped: skippedRows.length,
       failed: failedRows.length,
     });

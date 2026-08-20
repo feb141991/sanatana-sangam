@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 type Bucket = {
   count: number;
@@ -8,9 +8,9 @@ type Bucket = {
 const buckets = new Map<string, Bucket>();
 const MAX_RATE_LIMIT_BUCKETS = 5000;
 
-function clientIp(req: Request): string {
-  const forwarded = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
-  return forwarded || req.headers.get('x-real-ip') || 'unknown';
+export function clientIp(req: Request): string {
+  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return forwarded || req.headers.get("x-real-ip") || "unknown";
 }
 
 function pruneBuckets(now: number) {
@@ -28,16 +28,16 @@ function pruneBuckets(now: number) {
 }
 
 export function rejectLargeRequest(req: Request, maxBytes: number) {
-  const rawLength = req.headers.get('content-length');
+  const rawLength = req.headers.get("content-length");
   if (!rawLength) return null;
 
   const length = Number(rawLength);
   if (!Number.isFinite(length) || length < 0) {
-    return NextResponse.json({ error: 'Invalid content length' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid content length" }, { status: 400 });
   }
 
   if (length > maxBytes) {
-    return NextResponse.json({ error: 'Request body too large' }, { status: 413 });
+    return NextResponse.json({ error: "Request body too large" }, { status: 413 });
   }
 
   return null;
@@ -48,7 +48,7 @@ export function rateLimitByIp(
   options: { keyPrefix: string; limit: number; windowMs: number },
 ) {
   const now = Date.now();
-  const key = `${options.keyPrefix}:${clientIp(req)}`;
+  const key = options.keyPrefix + ":" + clientIp(req);
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt <= now) {
@@ -61,8 +61,60 @@ export function rateLimitByIp(
   if (bucket.count > options.limit) {
     const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
     return NextResponse.json(
-      { error: 'Too many requests' },
-      { status: 429, headers: { 'Retry-After': String(retryAfter) } },
+      { error: "Too many requests" },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
+  }
+
+  return null;
+}
+
+export async function checkDurableRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number,
+  supabaseClient?: any
+): Promise<NextResponse | null> {
+  const now = Date.now();
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient.rpc("check_and_increment_rate_limit", {
+        p_key: key,
+        p_limit: limit,
+        p_window_seconds: Math.ceil(windowMs / 1000),
+      });
+
+      if (!error && data && typeof data === "object") {
+        const allowed = Boolean(data.allowed);
+        if (!allowed) {
+          const resetAt = data.reset_at ? new Date(data.reset_at).getTime() : now + windowMs;
+          const retryAfter = Math.max(1, Math.ceil((resetAt - now) / 1000));
+          return NextResponse.json(
+            { error: "Too many requests" },
+            { status: 429, headers: { "Retry-After": String(retryAfter) } }
+          );
+        }
+        return null;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  const bucket = buckets.get(key);
+  if (!bucket || bucket.resetAt <= now) {
+    pruneBuckets(now);
+    buckets.set(key, { count: 1, resetAt: now + windowMs });
+    return null;
+  }
+
+  bucket.count += 1;
+  if (bucket.count > limit) {
+    const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
     );
   }
 
@@ -74,7 +126,7 @@ export function truncateString(value: string, maxLength: number): string {
 }
 
 export function asBoundedString(value: unknown, maxLength: number): string | null {
-  if (typeof value !== 'string') return null;
+  if (typeof value !== "string") return null;
   const trimmed = value.trim();
   if (!trimmed || trimmed.length > maxLength) return null;
   return trimmed;
