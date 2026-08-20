@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import KathaClient from './KathaClient';
-import { ALL_KATHAS, getKathasByTradition } from '@/lib/katha-library';
+import { ALL_KATHAS, getKathasByTradition, toKathaSummary } from '@/lib/katha-library';
 
 export const metadata: Metadata = {
   title: 'Sacred Kathas & Spiritual Stories with Meaning | Shoonaya',
@@ -50,10 +50,10 @@ export default async function KathaPage() {
 
   return (
     <KathaClient
-      todayKatha={todayKatha}
-      weekKathas={weekKathas}
-      traditionKathas={traditionKathas}
-      allKathas={ALL_KATHAS}
+      todayKatha={toKathaSummary(todayKatha)}
+      weekKathas={weekKathas.map(toKathaSummary)}
+      traditionKathas={traditionKathas.map(toKathaSummary)}
+      allKathas={ALL_KATHAS.map(toKathaSummary)}
       tradition={tradition}
       userName={userName}
     />

@@ -6,13 +6,13 @@ import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, BookOpen, Clock, Search, Sparkles, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import type { Katha, KathaTradition } from '@/lib/katha-library';
+import type { KathaTradition, KathaSummary } from '@/lib/katha-library';
 
 interface Props {
-  todayKatha: Katha;
-  weekKathas: Katha[];
-  traditionKathas: Katha[];
-  allKathas: Katha[];
+  todayKatha: KathaSummary;
+  weekKathas: KathaSummary[];
+  traditionKathas: KathaSummary[];
+  allKathas: KathaSummary[];
   tradition: string;
   userName: string;
 }
@@ -41,7 +41,7 @@ const TRADITIONS = ['all', 'hindu', 'sikh', 'buddhist', 'jain'] as const;
 interface ViewConfig {
   heading: string;
   sub: string;
-  filter: (k: Katha) => boolean;
+  filter: (k: KathaSummary) => boolean;
   /** Hide the tradition tabs when a specific view is active */
   lockTabs: boolean;
 }
@@ -434,7 +434,7 @@ export default function KathaClient({
   );
 }
 
-function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' | 'compact' }) {
+function KathaCard({ katha, size = 'normal' }: { katha: KathaSummary; size?: 'normal' | 'compact' }) {
   const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
 
   if (size === 'compact') {
@@ -512,7 +512,7 @@ function KathaCard({ katha, size = 'normal' }: { katha: Katha; size?: 'normal' |
 }
 
 // ── Hero portrait card — compact 2-col grid for Heroes of Bharat view ──────
-function HeroCard({ katha }: { katha: Katha }) {
+function HeroCard({ katha }: { katha: KathaSummary }) {
   const trad = TRADITION_LABELS[katha.tradition] ?? TRADITION_LABELS.hindu;
   // Extract the hero's short name — everything before the em-dash
   const shortName = katha.title.includes('—')

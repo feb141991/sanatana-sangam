@@ -1684,3 +1684,11 @@ export function searchEntries(query: string): LibraryEntry[] {
     e.tags.some((t) => t.includes(q))
   );
 }
+
+export {
+  type LibraryEntrySummary,
+  LIBRARY_ENTRY_SUMMARIES,
+  getEntrySummariesBySection,
+  getEntrySummariesByTradition,
+  getEntrySummaryById,
+} from "./library-content-summary";

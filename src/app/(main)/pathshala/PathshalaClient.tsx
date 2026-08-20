@@ -32,10 +32,11 @@ import { useLocation } from '@/lib/LocationContext';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import CircularProgress from '@/components/ui/CircularProgress';
 import {
-  ALL_LIBRARY_ENTRIES, LIBRARY_SECTIONS,
-  getEntriesBySection, getPathshalaSectionDetail,
-  type LibraryEntry,
-} from '@/lib/library-content';
+  LIBRARY_SECTIONS,
+  getEntrySummariesBySection, getPathshalaSectionDetail,
+  type LibraryEntrySummary,
+} from '@/lib/library-content-summary';
+import type { LibraryEntry } from '@/lib/library-content';
 import {
   SEED_PATHS as SEED_PATHS_LIB,
   PATHSHALA_PATH_IDS,
@@ -125,11 +126,11 @@ function getReaderPalette(tradition: string, accent: string) {
   return base;
 }
 
-function getEntryText(entry: LibraryEntry, meaningLabel: string) {
+function getEntryText(entry: LibraryEntry | LibraryEntrySummary, meaningLabel: string) {
   return [
     `${entry.title} — ${entry.source}`,
-    entry.original,
-    entry.meaning ? `${meaningLabel}: ${entry.meaning}` : '',
+    'original' in entry ? entry.original : '',
+    'meaning' in entry && entry.meaning ? `${meaningLabel}: ${entry.meaning}` : '',
   ].filter(Boolean).join('\n\n');
 }
 
@@ -137,7 +138,7 @@ function getEntryText(entry: LibraryEntry, meaningLabel: string) {
 export const SEED_PATHS: PathshalaPath[] = SEED_PATHS_LIB;
 
 // ── Scripture Entry Card ───────────────────────────────────────────────────────
-function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour: string }) {
+function EntryCard({ entry, accentColour }: { entry: LibraryEntrySummary; accentColour: string }) {
   const { t } = useLanguage();
   return (
     <motion.button
@@ -149,7 +150,7 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
         border: '1px solid var(--card-border)',
         boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
       }}
-      onClick={() => window.dispatchEvent(new CustomEvent('open-reader', { detail: { entry } }))}
+      onClick={() => window.dispatchEvent(new CustomEvent('open-reader', { detail: { entryId: entry.id, summary: entry } }))}
     >
       {/* Decorative Gradient Background */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -174,10 +175,12 @@ function EntryCard({ entry, accentColour }: { entry: LibraryEntry; accentColour:
         </div>
       </div>
       <div className="mt-5 pt-4 border-t relative" style={{ borderColor: 'var(--card-border)' }}>
-        <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
-          style={{ color: accentColour }}>
-          {entry.original.split('\n')[0]}
-        </p>
+        {entry.firstLine && (
+          <p className="text-sm font-[family:var(--font-deva)] leading-relaxed line-clamp-1 opacity-60 italic"
+            style={{ color: accentColour }}>
+            {entry.firstLine}
+          </p>
+        )}
       </div>
     </motion.button>
   );
@@ -324,20 +327,22 @@ function ScriptureTab({
     if (!drillSection) {
       if (!q) return [];
       // Global search across all allowed sections for this tradition
-      const allTraditionEntries = allowedSections.flatMap(sectionId => getEntriesBySection(sectionId));
+      const allTraditionEntries = allowedSections.flatMap(sectionId => getEntrySummariesBySection(sectionId));
       return allTraditionEntries.filter(e => (
         e.title.toLowerCase().includes(q) ||
-        e.meaning.toLowerCase().includes(q) ||
         e.source.toLowerCase().includes(q) ||
+        (e.preview && e.preview.toLowerCase().includes(q)) ||
+        (e.firstLine && e.firstLine.toLowerCase().includes(q)) ||
         e.tags.some(t => t.includes(q))
       ));
     }
-    const base = getEntriesBySection(drillSection);
+    const base = getEntrySummariesBySection(drillSection);
     if (!q) return base;
     return base.filter(e =>
       e.title.toLowerCase().includes(q) ||
-      e.meaning.toLowerCase().includes(q) ||
       e.source.toLowerCase().includes(q) ||
+      (e.preview && e.preview.toLowerCase().includes(q)) ||
+      (e.firstLine && e.firstLine.toLowerCase().includes(q)) ||
       e.tags.some(t => t.includes(q))
     );
   }, [drillSection, query, allowedSections]);
@@ -653,8 +658,21 @@ export default function PathshalaClient({
   const [readingChapter, setReadingChapter] = useState<(EpicChapter & { kandaTitle?: string }) | undefined>();
 
   useEffect(() => {
-    const handleOpen = (e: any) => {
-      if (e.detail.entry) setReadingEntry(e.detail.entry);
+    const handleOpen = async (e: any) => {
+      if (e.detail.entry && e.detail.entry.original) {
+        setReadingEntry(e.detail.entry);
+      } else if (e.detail.entryId || (e.detail.entry && e.detail.entry.id)) {
+        const id = e.detail.entryId || e.detail.entry.id;
+        try {
+          const res = await fetch(`/api/pathshala/entry/${encodeURIComponent(id)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.entry) setReadingEntry(data.entry);
+          }
+        } catch (err) {
+          console.error('Failed to load entry:', err);
+        }
+      }
       if (e.detail.chapter) setReadingChapter(e.detail.chapter);
     };
     window.addEventListener('open-reader', handleOpen);
@@ -663,8 +681,12 @@ export default function PathshalaClient({
 
   useEffect(() => {
     if (initialEntryId) {
-      const entry = ALL_LIBRARY_ENTRIES.find(e => e.id === initialEntryId);
-      if (entry) setReadingEntry(entry);
+      fetch(`/api/pathshala/entry/${encodeURIComponent(initialEntryId)}`)
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data?.entry) setReadingEntry(data.entry);
+        })
+        .catch(err => console.error('Failed to load initial entry:', err));
     }
   }, [initialEntryId]);
 
@@ -1396,7 +1418,7 @@ export default function PathshalaClient({
   // ── Calculate total scriptures across allowed tradition sections ──────────────
   const totalScripturesCount = useMemo(() => {
     const allowed = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
-    return allowed.reduce((sum, sectionId) => sum + getEntriesBySection(sectionId).length, 0);
+    return allowed.reduce((sum, sectionId) => sum + getEntrySummariesBySection(sectionId).length, 0);
   }, [tradition]);
 
   // ── Compute Level Progression details ─────────────────────────────────────────
@@ -1432,10 +1454,13 @@ export default function PathshalaClient({
     const q = globalQuery.toLowerCase().trim();
     if (q.length < 2) return [];
     const allowed = SECTIONS_BY_TRADITION[tradition] ?? SECTIONS_BY_TRADITION.other;
-    const allTraditionEntries = allowed.flatMap(sectionId => getEntriesBySection(sectionId));
+    const allTraditionEntries = allowed.flatMap(sectionId => getEntrySummariesBySection(sectionId));
     return allTraditionEntries.filter(e =>
-      e.original.toLowerCase().includes(q) ||
-      e.meaning.toLowerCase().includes(q)
+      e.title.toLowerCase().includes(q) ||
+      e.source.toLowerCase().includes(q) ||
+      (e.preview && e.preview.toLowerCase().includes(q)) ||
+      (e.firstLine && e.firstLine.toLowerCase().includes(q)) ||
+      e.tags.some(t => t.includes(q))
     );
   }, [globalQuery, tradition]);
 

@@ -16,7 +16,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { ALL_LIBRARY_ENTRIES, type LibraryEntry } from '@/lib/library-content';
+import type { LibraryEntry } from '@/lib/library-content';
 import { SEED_PATHS } from '@/lib/pathshala-paths';
 import { usePathshala, useSadhana } from '@/contexts/EngineContext';
 import { usePremium } from '@/hooks/usePremium';

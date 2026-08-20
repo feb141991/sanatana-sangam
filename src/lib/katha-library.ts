@@ -7665,3 +7665,43 @@ export function getKathasForVrat(vratId: string): Katha[] {
   if (!occasion) return [];
   return getKathasByOccasion(occasion);
 }
+
+export type KathaSummary = {
+  id: string;
+  tradition: KathaTradition;
+  occasion: KathaOccasion;
+  deity?: string;
+  title: string;
+  titleHi?: string;
+  titlePa?: string;
+  preview: string;
+  previewHi?: string;
+  previewPa?: string;
+  durationMin: number;
+  tags: string[];
+  portrait?: string;
+  relatedJapaMantra?: string;
+  relatedPathshalaId?: string;
+};
+
+export function toKathaSummary(k: Katha): KathaSummary {
+  return {
+    id: k.id,
+    tradition: k.tradition,
+    occasion: k.occasion,
+    deity: k.deity,
+    title: k.title,
+    titleHi: k.titleHi,
+    titlePa: k.titlePa,
+    preview: k.preview,
+    previewHi: k.previewHi,
+    previewPa: k.previewPa,
+    durationMin: k.durationMin,
+    tags: k.tags || [],
+    portrait: k.portrait,
+    relatedJapaMantra: k.relatedJapaMantra,
+    relatedPathshalaId: k.relatedPathshalaId,
+  };
+}
+
+export const KATHA_SUMMARIES: KathaSummary[] = ALL_KATHAS.map(toKathaSummary);

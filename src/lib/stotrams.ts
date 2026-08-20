@@ -10672,3 +10672,31 @@ export const MOOD_META: Record<string, { label: string; emoji: string; desc: str
   festival:   { label: 'Festival',        emoji: '', desc: 'Celebration & sacred joy' },
   difficult:  { label: 'Difficult Times', emoji: '', desc: 'Strength, healing & protection' },
 };
+
+export interface StotramSummary {
+  id: string;
+  title: string;
+  titleDevanagari: string;
+  deity: string;
+  deityEmoji: string;
+  tradition: "hindu" | "sikh" | "buddhist" | "jain" | "all" | "vaishnava" | "shaiva" | "shakta";
+  type: "mantra" | "stotram" | "bhajan" | "kirtan" | "dhyana" | "simran" | "aarti";
+  mood?: "devotional" | "meditative" | "energetic" | "grief" | "gratitude" | "protective" | "celebratory";
+  description: string;
+  audioTrackId?: string;
+  verseCount: number;
+}
+
+export const STOTRAM_SUMMARIES: StotramSummary[] = STOTRAMS.map((s) => ({
+  id: s.id,
+  title: s.title,
+  titleDevanagari: s.titleDevanagari,
+  deity: s.deity,
+  deityEmoji: s.deityEmoji,
+  tradition: s.tradition,
+  type: s.type,
+  mood: s.mood,
+  description: s.description,
+  audioTrackId: s.audioTrackId,
+  verseCount: s.verses ? s.verses.length : 1,
+}));
