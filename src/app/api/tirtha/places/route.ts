@@ -48,9 +48,12 @@ async function fetchFromGeoapify(lat: number, lon: number, radiusM: number): Pro
         const raw = p.datasource?.raw ?? {};
         const religion = (raw.religion ?? '').toLowerCase();
         const coords = f.geometry?.coordinates ?? [];
+        const osmType = raw.osm_type ?? 'node';
+        const osmId = raw.osm_id ?? stableId(p.place_id ?? `${p.lat ?? coords[1]},${p.lon ?? coords[0]}`);
         return {
           _religion: religion,
-          id: stableId(p.place_id ?? `${p.lat ?? coords[1]},${p.lon ?? coords[0]}`),
+          type: osmType,
+          id: osmId,
           lat: p.lat ?? coords[1] ?? 0,
           lon: p.lon ?? coords[0] ?? 0,
           tags: {
@@ -117,7 +120,7 @@ out center tags;
 // ── Curated (always instant) ─────────────────────────────────────────────────
 function getCuratedElements(lat: number, lon: number, radiusM: number) {
   return getCuratedNearbyTemples(lat, lon, radiusM).map((t) => ({
-    id: parseInt(t.id.replace(/[^0-9]/g, '').slice(0, 8) || '0', 10),
+    id: t.id,
     lat: t.lat,
     lon: t.lon,
     _curated: true,

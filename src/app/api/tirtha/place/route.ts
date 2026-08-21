@@ -84,7 +84,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (source !== 'overpass' || id !== `overpass:${sourceId}` || !/^\d+$/.test(sourceId)) {
+    const isCurated = source === 'curated' && id === `curated:${sourceId}` && /^[a-z0-9-_]+$/i.test(sourceId);
+    const isOsm = source === 'osm' && id === `osm:${sourceId}` && /^(node|way|relation):[0-9]+$/.test(sourceId);
+    // Temporary backward compatibility for existing mobile builds sending overpass:<digits>
+    const isLegacyOverpass = source === 'overpass' && id === `overpass:${sourceId}` && /^\d+$/.test(sourceId);
+
+    if (!isCurated && !isOsm && !isLegacyOverpass) {
       return NextResponse.json({ error: 'Invalid place source' }, { status: 400 });
     }
 
