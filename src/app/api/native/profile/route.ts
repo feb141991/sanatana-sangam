@@ -5,7 +5,7 @@ import { getApiUser } from '@/lib/api-auth';
 export const runtime = 'nodejs';
 
 const APP_LANGUAGES = new Set(['en', 'hi', 'pa']);
-const GENDER_CONTEXTS = new Set(['male', 'female', 'prefer_not']);
+const GENDER_CONTEXTS = new Set(['female', 'general']);
 const LIFE_STAGES = new Set(['brahmacharya', 'grihastha', 'vanaprastha', 'sannyasa']);
 // full_name/sampradaya/ishta_devata predate this route; city/country are the
 // post-onboarding personal-details screen's addition (shoonaya-mobile
@@ -124,7 +124,7 @@ export async function PATCH(req: NextRequest) {
     if ('gender_context' in rawBody) {
       const value = rawBody.gender_context;
       if (value !== null && (typeof value !== 'string' || !GENDER_CONTEXTS.has(value))) {
-        return NextResponse.json({ error: 'gender_context must be one of male, female, prefer_not, or null' }, { status: 400 });
+        return NextResponse.json({ error: 'gender_context must be one of female, general, or null' }, { status: 400 });
       }
       updates.gender_context = value;
     }
