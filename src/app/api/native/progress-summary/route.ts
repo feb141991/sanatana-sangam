@@ -190,6 +190,22 @@ export async function GET(request: NextRequest) {
   const malaRows = malaResult.data ?? [];
   const malaHistory = malaHistoryResult.data ?? [];
   const pathshalaStateRows = pathshalaStateResult.data ?? [];
+  const hasMeaningfulPracticeHistory =
+    malaHistory.length > 0
+    || nityaRows.length > 0
+    || pathshalaStateRows.length > 0
+    || guidedPathProgress.some((entry) =>
+      entry.status === "completed"
+      || (entry.current_lesson ?? 0) > 0
+      || (entry.completed_lessons?.length ?? 0) > 0
+    )
+    || sadhanaRows.some((entry) =>
+      Boolean(entry.japa_done)
+      || Boolean(entry.quiz_done)
+      || Boolean(entry.nitya_done)
+      || Boolean(entry.pathshala_done)
+      || Boolean(entry.dharmveer_done)
+    );
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
   const latestStreakRow = sadhanaRows
@@ -258,7 +274,7 @@ export async function GET(request: NextRequest) {
       suggestions.push({
         key: "nakshatra",
         label: "Birth Nakshatra",
-        reason: "Receive nakshatra-specific daily timings",
+        reason: "Keep your birth-star detail with your personal profile",
         route: "/settings/personalisation",
         priority: 3,
         context: "personalisation",
@@ -268,7 +284,7 @@ export async function GET(request: NextRequest) {
       suggestions.push({
         key: "gotra",
         label: "Gotra (Lineage)",
-        reason: "Include your lineage in sankalpa prayers",
+        reason: "Keep your lineage available for family and Kul records",
         route: "/settings/personalisation",
         priority: 4,
         context: "personalisation",
@@ -307,7 +323,7 @@ export async function GET(request: NextRequest) {
       context: "personal_details",
     });
   }
-  if (!profile?.onboarding_goal) {
+  if (!profile?.onboarding_goal && hasMeaningfulPracticeHistory) {
     suggestions.push({
       key: "onboarding_goal",
       label: "Practice Goals",

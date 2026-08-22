@@ -7,6 +7,7 @@ vi.mock("@/lib/api-auth", () => ({ getApiUser: (...a: unknown[]) => getApiUser(.
 
 describe("GET /api/native/progress-summary - Truthful Profile Completion Model", () => {
   let profileRow: Record<string, unknown> | null = null;
+  let sadhanaRows: Record<string, unknown>[] = [];
 
   const mockSupabase = {
     from: (table: string) => {
@@ -15,6 +16,15 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
           select: () => ({
             eq: () => ({
               maybeSingle: async () => ({ data: profileRow, error: null }),
+            }),
+          }),
+        };
+      }
+      if (table === "daily_sadhana") {
+        return {
+          select: () => ({
+            eq: () => ({
+              order: () => ({ limit: () => Promise.resolve({ data: sadhanaRows }) }),
             }),
           }),
         };
@@ -35,6 +45,7 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
   beforeEach(() => {
     getApiUser.mockReset();
     profileRow = null;
+    sadhanaRows = [];
   });
 
   it("returns 401 Unauthorized when unauthenticated", async () => {
@@ -86,7 +97,7 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     expect(suggestionKeys).toContain("calendar_scope");
     expect(suggestionKeys).toContain("city");
     expect(suggestionKeys).toContain("life_stage");
-    expect(suggestionKeys).toContain("onboarding_goal");
+    expect(suggestionKeys).not.toContain("onboarding_goal");
 
     // Check routes
     for (const s of body.completion.suggestions) {
@@ -133,7 +144,38 @@ describe("GET /api/native/progress-summary - Truthful Profile Completion Model",
     expect(suggestionKeys).not.toContain("calendar_scope");
 
     // Only general suggestions present
-    expect(suggestionKeys).toEqual(["city", "life_stage", "onboarding_goal"]);
+    expect(suggestionKeys).toEqual(["city", "life_stage"]);
+  });
+
+  it("suggests practice goals only after meaningful practice history exists", async () => {
+    profileRow = {
+      id: "user-practice-history",
+      full_name: "Seeker",
+      tradition: "sikh",
+      app_language: "pa",
+      city: "London",
+      life_stage: "grihastha",
+      onboarding_goal: null,
+    };
+    sadhanaRows = [{
+      date: "2026-08-22",
+      japa_done: true,
+      quiz_done: false,
+      nitya_done: false,
+      pathshala_done: false,
+      dharmveer_done: false,
+      streak_count: 1,
+    }];
+    getApiUser.mockResolvedValue({
+      user: { id: "user-practice-history" },
+      error: null,
+      supabase: mockSupabase,
+    });
+
+    const res = await GET(new NextRequest("http://localhost:3000/api/native/progress-summary"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.completion.suggestions.map((item: { key: string }) => item.key)).toEqual(["onboarding_goal"]);
   });
 
   it("returns zero suggestions and 100% completion for fully enriched profile", async () => {

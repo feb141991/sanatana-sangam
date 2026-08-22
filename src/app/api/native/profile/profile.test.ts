@@ -51,6 +51,95 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
     expect(res.status).toBe(401);
   });
 
+  it.each(["female", "general", null])(
+    "accepts canonical gender_context value %s with an ownership-scoped update",
+    async (genderContext) => {
+      getApiUser.mockResolvedValue({
+        user: { id: "user-gender" },
+        error: null,
+        supabase: mockSupabase,
+      });
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ gender_context: genderContext }),
+      }));
+
+      expect(res.status).toBe(200);
+      expect(updatedPayload).toEqual({ gender_context: genderContext });
+      expect(updatedUserFilter).toBe("user-gender");
+    },
+  );
+
+  it.each(["male", "prefer_not", "unknown"])(
+    "rejects non-canonical gender_context value %s",
+    async (genderContext) => {
+      getApiUser.mockResolvedValue({
+        user: { id: "user-gender" },
+        error: null,
+        supabase: mockSupabase,
+      });
+      const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ gender_context: genderContext }),
+      }));
+      expect(res.status).toBe(400);
+    },
+  );
+
+  it("preserves independent English, Hindi, and Punjabi language fields", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-language" },
+      error: null,
+      supabase: mockSupabase,
+    });
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({
+        app_language: "pa",
+        meaning_language: "hi",
+        transliteration_language: "en",
+      }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({
+      app_language: "pa",
+      meaning_language: "hi",
+      transliteration_language: "en",
+    });
+  });
+
+  it("rejects an unsupported profile language", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-language" },
+      error: null,
+      supabase: mockSupabase,
+    });
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ app_language: "fr" }),
+    }));
+    expect(res.status).toBe(400);
+  });
+
+  it("does not overwrite language fields during an unrelated profile update", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-language" },
+      error: null,
+      supabase: mockSupabase,
+    });
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ city: "Bedford" }),
+    }));
+
+    expect(res.status).toBe(200);
+    expect(updatedPayload).toEqual({ city: "Bedford" });
+    expect(updatedPayload).not.toHaveProperty("app_language");
+    expect(updatedPayload).not.toHaveProperty("meaning_language");
+    expect(updatedPayload).not.toHaveProperty("transliteration_language");
+  });
+
   it("accepts valid personalisation fields for Hindu profile", async () => {
     getApiUser.mockResolvedValue({
       user: { id: "user-hindu-1" },
@@ -105,18 +194,6 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
       error: null,
       supabase: mockSupabase,
     });
-    const req = new NextRequest("http://localhost:3000/api/native/profile", {
-      method: "PATCH",
-      body: JSON.stringify({
-        rashi: null,
-        nakshatra: null,
-        gotra: null,
-        calendar_profile: null,
-        calendar_scope: null,
-        onboarding_goal: "mindfulness" // invalid goal test will catch this, let us use peace
-      }),
-    });
-    // With peace:
     const validReq = new NextRequest("http://localhost:3000/api/native/profile", {
       method: "PATCH",
       body: JSON.stringify({
