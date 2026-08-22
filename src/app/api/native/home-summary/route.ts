@@ -460,8 +460,88 @@ function getPulseRouteSlug(label: string) {
   return 'vrat';
 }
 
+
+
+type CachedGlobal<T> = {
+  data: T;
+  timestamp: number;
+};
+
+const GLOBAL_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes bounded TTL for slow-changing global content
+
+let heroAssetsCache: CachedGlobal<HeroAssetRow[]> | null = null;
+let dharmVeerRosterCache: CachedGlobal<any[]> | null = null;
+
+async function getCachedHeroAssets(supabase: any, timeoutMs: number): Promise<HeroAssetRow[]> {
+  const now = Date.now();
+  if (heroAssetsCache && now - heroAssetsCache.timestamp < GLOBAL_CACHE_TTL_MS) {
+    return heroAssetsCache.data;
+  }
+  try {
+    const res = await withTimeout<HeroAssetRow[]>(
+      supabase
+        .from('hero_assets')
+        .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active')
+        .eq('is_active', true)
+        .order('priority', { ascending: false }),
+      timeoutMs,
+    );
+    const data = res.data ?? [];
+    if (data.length > 0) {
+      heroAssetsCache = { data, timestamp: now };
+    }
+    return data;
+  } catch {
+    return heroAssetsCache?.data ?? [];
+  }
+}
+
+async function getCachedDharmVeerRoster(supabase: any): Promise<any[]> {
+  const now = Date.now();
+  if (dharmVeerRosterCache && now - dharmVeerRosterCache.timestamp < GLOBAL_CACHE_TTL_MS) {
+    return dharmVeerRosterCache.data;
+  }
+  try {
+    const roster = await getDharmVeerRoster(supabase);
+    if (roster && roster.length > 0) {
+      dharmVeerRosterCache = { data: roster, timestamp: now };
+    }
+    return roster ?? [];
+  } catch {
+    return dharmVeerRosterCache?.data ?? [];
+  }
+}
+
+class ServerTimingCollector {
+  private stages: Array<{ name: string; dur: number; desc?: string }> = [];
+  private startTime: number = performance.now();
+
+  async measure<T>(name: string, desc: string, fn: () => PromiseLike<T> | T): Promise<T> {
+    const start = performance.now();
+    try {
+      return await fn();
+    } finally {
+      const dur = performance.now() - start;
+      this.stages.push({ name, dur: Math.round(dur * 100) / 100, desc });
+    }
+  }
+
+  record(name: string, dur: number, desc?: string) {
+    this.stages.push({ name, dur: Math.round(dur * 100) / 100, desc });
+  }
+
+  toHeaderValue(): string {
+    const totalDur = Math.round((performance.now() - this.startTime) * 100) / 100;
+    const parts = this.stages.map((s) => `${s.name};dur=${s.dur}${s.desc ? `;desc="${s.desc}"` : ''}`);
+    parts.push(`total;dur=${totalDur};desc="Total"`);
+    return parts.join(', ');
+  }
+}
+
 export async function GET(request: NextRequest) {
-  const { user, error, supabase } = await getApiUser(request);
+  const timings = new ServerTimingCollector();
+
+  const { user, error, supabase } = await timings.measure('auth', 'Authentication', async () => getApiUser(request));
 
   if (error || !user || !supabase) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -469,20 +549,15 @@ export async function GET(request: NextRequest) {
 
   const DB_TIMEOUT = 4_000;
 
-  const { data: profileData } = await supabase
-    .from('profiles')
-    .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile')
-    .eq('id', user.id)
-    .maybeSingle();
+  const { data: profileData } = await timings.measure('profile', 'Profile Fetch', async () =>
+    supabase
+      .from('profiles')
+      .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile')
+      .eq('id', user.id)
+      .maybeSingle()
+  );
 
   const profile = profileData as ProfileRow | null;
-  // Fallback must match every write route this reads from (nitya-karma,
-  // japa/complete, pathshala/progress, quiz/save, dharm-veer/submit,
-  // panchang-viewed all fall back to 'UTC' when profiles.timezone is null).
-  // This previously fell back to 'Asia/Kolkata' — a user with no stored
-  // timezone could log a practice as done under a UTC "today" and this
-  // route would look for it under an IST "today" up to ~5.5h ahead, so a
-  // just-completed practice would appear not done on the Home card.
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
@@ -492,33 +567,24 @@ export async function GET(request: NextRequest) {
   const longitude = profile?.longitude ?? 75.7885;
   const calendarScope = profile?.calendar_scope ?? null;
 
-  // Display-only: which month-system label to show for each observance.
-  // Never affects which occurrences are queried/returned -- see
-  // month-label-resolver.ts's governing invariant.
   let monthSystem: string | null = null;
   if (profile?.calendar_profile) {
-    const { data: calendarProfileRow } = await supabase
-      .from('calendar_profiles')
-      .select('month_system')
-      .eq('slug', profile.calendar_profile)
-      .maybeSingle();
+    const { data: calendarProfileRow } = await timings.measure('calendar_profile', 'Calendar Profile', async () =>
+      supabase
+        .from('calendar_profiles')
+        .select('month_system')
+        .eq('slug', profile.calendar_profile)
+        .maybeSingle()
+    );
     monthSystem = calendarProfileRow?.month_system ?? null;
   }
 
-  // 'major_only' thins this to primary festivals/vrats, excluding
-  // 'regional' (Sikh/Jain calendar-specific) observances -- same mapping as
-  // /api/calendar/upcoming. Unset/'all_observances' applies no filter.
-  //
-  // calendar_profile + location: this used to be an unfiltered query, which
-  // meant every user regardless of tradition/profile/location saw the same
-  // (legacy-ujjain, Ujjain-computed) festival list. Resolving the caller's
-  // own profile and a coarse location bucket, then lazily materializing that
-  // exact (profile, bucket) combination on first read, fixes both at once —
-  // see resolve-occurrences.ts.
   const observanceCalendarProfile = profile?.calendar_profile ?? 'legacy-ujjain';
   const observanceLocation = resolveObservanceLocationBucket({
     saved: { lat: profile?.latitude ?? null, lon: profile?.longitude ?? null, tz: profile?.timezone ?? null },
   });
+
+  const occurrenceStart = performance.now();
   const observancePromise = getOrMaterializeOccurrences({
     supabase,
     fromDate: today,
@@ -528,11 +594,86 @@ export async function GET(request: NextRequest) {
     calendarProfile: observanceCalendarProfile,
     location: observanceLocation,
   })
-    .then((data) => ({ data }))
+    .then((data) => {
+      timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution');
+      return { data };
+    })
     .catch((err) => {
       console.error('[home-summary] getOrMaterializeOccurrences failed:', err);
+      timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution (Failed)');
       return { data: null };
     });
+
+  const [
+    personalizedBatchResult,
+    globalContentResult,
+  ] = await Promise.all([
+    timings.measure('personalized_batch', 'Personalized Data Batch', async () =>
+      Promise.all([
+        withTimeout<GuidedPathProgressRow[]>(
+          supabase
+            .from('guided_path_progress')
+            .select('path_id, status, updated_at, current_lesson, completed_lessons')
+            .eq('user_id', user.id),
+          DB_TIMEOUT,
+        ),
+        withTimeout<DailySadhanaRow[]>(
+          supabase
+            .from('daily_sadhana')
+            .select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done, panchang_viewed')
+            .eq('user_id', user.id)
+            .gte('date', historyFrom)
+            .lte('date', today),
+          DB_TIMEOUT,
+        ),
+        withTimeout<Array<{ log_date: string; step_id: string | null }>>(
+          supabase
+            .from('nitya_karma_log')
+            .select('log_date, step_id')
+            .eq('user_id', user.id)
+            .gte('log_date', historyFrom)
+            .lte('log_date', today),
+          DB_TIMEOUT,
+        ),
+        withTimeout<{ current_streak: number | null }>(
+          supabase
+            .from('nitya_karma_streaks')
+            .select('current_streak')
+            .eq('user_id', user.id)
+            .maybeSingle(),
+          DB_TIMEOUT,
+        ),
+        withTimeout<Array<{ id: string }>>(
+          supabase
+            .from('mala_sessions')
+            .select('id')
+            .eq('user_id', user.id)
+            .gte('completed_at', `${today}T00:00:00Z`)
+            .lte('completed_at', `${today}T23:59:59Z`)
+            .limit(1),
+          DB_TIMEOUT,
+        ),
+        withTimeout<SankalpaRow>(
+          supabase
+            .from('sankalpas')
+            .select('id, text, start_date, target_days, tradition, related_practice')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle(),
+          DB_TIMEOUT,
+        ),
+        withTimeout<ObservanceRow[]>(observancePromise, DB_TIMEOUT),
+      ])
+    ),
+    timings.measure('global_lookup', 'Global Roster & Assets Lookup', async () =>
+      Promise.all([
+        getCachedHeroAssets(supabase, DB_TIMEOUT),
+        getCachedDharmVeerRoster(supabase),
+      ])
+    ),
+  ]);
 
   const [
     guidedResult,
@@ -542,74 +683,14 @@ export async function GET(request: NextRequest) {
     malaResult,
     sankalpaResult,
     observanceResult,
-    heroAssetResult,
+  ] = personalizedBatchResult;
+
+  const [
+    heroAssetRows,
     dharmVeerRoster,
-  ] = await Promise.all([
-    withTimeout<GuidedPathProgressRow[]>(
-      supabase
-        .from('guided_path_progress')
-        .select('path_id, status, updated_at, current_lesson, completed_lessons')
-        .eq('user_id', user.id),
-      DB_TIMEOUT,
-    ),
-    withTimeout<DailySadhanaRow[]>(
-      supabase
-        .from('daily_sadhana')
-        .select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done, panchang_viewed')
-        .eq('user_id', user.id)
-        .gte('date', historyFrom)
-        .lte('date', today),
-      DB_TIMEOUT,
-    ),
-    withTimeout<Array<{ log_date: string; step_id: string | null }>>(
-      supabase
-        .from('nitya_karma_log')
-        .select('log_date, step_id')
-        .eq('user_id', user.id)
-        .gte('log_date', historyFrom)
-        .lte('log_date', today),
-      DB_TIMEOUT,
-    ),
-    withTimeout<{ current_streak: number | null }>(
-      supabase
-        .from('nitya_karma_streaks')
-        .select('current_streak')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    withTimeout<Array<{ id: string }>>(
-      supabase
-        .from('mala_sessions')
-        .select('id')
-        .eq('user_id', user.id)
-        .gte('completed_at', `${today}T00:00:00Z`)
-        .lte('completed_at', `${today}T23:59:59Z`)
-        .limit(1),
-      DB_TIMEOUT,
-    ),
-    withTimeout<SankalpaRow>(
-      supabase
-        .from('sankalpas')
-        .select('id, text, start_date, target_days, tradition, related_practice')
-        .eq('user_id', user.id)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-      DB_TIMEOUT,
-    ),
-    withTimeout<ObservanceRow[]>(observancePromise, DB_TIMEOUT),
-    withTimeout<HeroAssetRow[]>(
-      supabase
-        .from('hero_assets')
-        .select('id, label, hero_image, hero_alt, object_position, traditions, sampradayas, ishta_devatas, festival_slugs, priority, is_active')
-        .eq('is_active', true)
-        .order('priority', { ascending: false }),
-      DB_TIMEOUT,
-    ),
-    getDharmVeerRoster(supabase).catch(() => []),
-  ]);
+  ] = globalContentResult;
+
+  const composeStart = performance.now();
 
   const guidedPathProgress = guidedResult.data ?? [];
   const firstWeek = (profile?.shloka_streak ?? 0) === 0 && !profile?.last_shloka_date && guidedPathProgress.length === 0;
@@ -618,23 +699,13 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  // Home is the highest-traffic surface in the app; a withheld date reaching
-  // it would be the most-seen version of the mistake.
   const observanceRows = filterWithheldJoinedRows(observanceResult.data ?? []);
-  const heroAssetRows = heroAssetResult.data ?? [];
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
   const activePathshala = guidedPathProgress.find(
     (progress) => progress.status === 'active' && PATHSHALA_PATH_IDS.includes(progress.path_id),
   );
   const pathshalaDoneToday = guidedPathProgress.some((progress) => progress.updated_at?.startsWith(today));
-  // Native has no literal "/lesson" resolver route (web's
-  // `/pathshala/[pathId]/lesson/page.tsx` does, native's `[lessonId].tsx`
-  // expects a numeric lesson index and shows "Lesson not found" for the
-  // literal string "lesson"). Native's `app/pathshala/[pathId].tsx` already
-  // reads enrollment progress and highlights the correct next lesson itself,
-  // so the plain path-detail route is the correct, working destination
-  // whether or not today's lesson is already done.
   const pathshalaHref = activePathshala
     ? `/pathshala/${activePathshala.path_id}`
     : '/pathshala';
@@ -800,9 +871,12 @@ export async function GET(request: NextRequest) {
     firstWeek,
   };
 
+  timings.record('compose', performance.now() - composeStart, 'Response Composition');
+
   return NextResponse.json(response, {
     headers: {
       'Cache-Control': 'private, no-store',
+      'Server-Timing': timings.toHeaderValue(),
     },
   });
 }

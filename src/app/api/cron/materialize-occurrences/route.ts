@@ -86,7 +86,7 @@ export async function GET(request: NextRequest) {
 
   const searchParams = request.nextUrl.searchParams;
   const yearParam = searchParams.get('year');
-  
+
   let targetYears: number[] = [];
   if (yearParam) {
     const y = parseInt(yearParam, 10);
