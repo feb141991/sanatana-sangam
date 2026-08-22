@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-import { getApiUser } from '@/lib/api-auth';
-import { countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
-import { localSpiritualDate } from '@/lib/sacred-time';
-import { SACRED_RELICS } from '@/lib/relics';
-import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
-import { NATIVE_NITYA_STEP_ORDER } from '@/lib/native-nitya-karma';
+import { getApiUser } from "@/lib/api-auth";
+import { countCompletedNativeNityaSteps } from "@/lib/native-nitya-karma";
+import { localSpiritualDate } from "@/lib/sacred-time";
+import { SACRED_RELICS } from "@/lib/relics";
+import { PATHSHALA_PATH_IDS } from "@/lib/pathshala-paths";
+import { NATIVE_NITYA_STEP_ORDER } from "@/lib/native-nitya-karma";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 type ProfileRow = {
   id: string;
@@ -32,6 +32,12 @@ type ProfileRow = {
   is_pro: boolean | null;
   subscription_status: string | null;
   timezone: string | null;
+  rashi: string | null;
+  nakshatra: string | null;
+  gotra: string | null;
+  calendar_profile: string | null;
+  calendar_scope: string | null;
+  onboarding_goal: string | null;
 };
 
 type DailySadhanaRow = {
@@ -68,6 +74,15 @@ type PathshalaStateRow = {
   last_opened_at: string | null;
 };
 
+export type PersonalisationSuggestion = {
+  key: string;
+  label: string;
+  reason: string;
+  route: string;
+  priority: number;
+  context: "personal_details" | "personalisation" | "general";
+};
+
 function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
   return Promise.race([
     Promise.resolve(promise),
@@ -79,31 +94,23 @@ function isPresentString(value: string | null): value is string {
   return Boolean(value);
 }
 
-const COMPLETION_FIELDS: { key: keyof ProfileRow; label: string }[] = [
-  { key: 'full_name', label: 'Name' },
-  { key: 'tradition', label: 'Tradition' },
-  { key: 'city', label: 'Location' },
-  { key: 'app_language', label: 'Language Preference' },
-  { key: 'wants_community_notifications', label: 'Notification Preference' },
-];
-
 export async function GET(request: NextRequest) {
   const { user, error, supabase } = await getApiUser(request);
 
   if (error || !user || !supabase) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const DB_TIMEOUT = 4_000;
 
   const { data: profileData } = await supabase
-    .from('profiles')
-    .select('id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone')
-    .eq('id', user.id)
+    .from("profiles")
+    .select("id, full_name, username, avatar_url, tradition, sampradaya, ishta_devata, city, country, life_stage, app_language, active_symbol_id, seva_score, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications, shloka_streak, is_pro, subscription_status, timezone, rashi, nakshatra, gotra, calendar_profile, calendar_scope, onboarding_goal")
+    .eq("id", user.id)
     .maybeSingle();
 
   const profile = profileData as ProfileRow | null;
-  const timezone = profile?.timezone ?? 'Asia/Kolkata';
+  const timezone = profile?.timezone ?? "Asia/Kolkata";
   const today = localSpiritualDate(timezone, 4);
 
   const [
@@ -117,60 +124,60 @@ export async function GET(request: NextRequest) {
   ] = await Promise.all([
     withTimeout<GuidedPathProgressRow[]>(
       supabase
-        .from('guided_path_progress')
-        .select('path_id, status, updated_at, current_lesson, completed_lessons')
-        .eq('user_id', user.id),
+        .from("guided_path_progress")
+        .select("path_id, status, updated_at, current_lesson, completed_lessons")
+        .eq("user_id", user.id),
       DB_TIMEOUT,
     ),
     withTimeout<DailySadhanaRow[]>(
       supabase
-        .from('daily_sadhana')
-        .select('date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
+        .from("daily_sadhana")
+        .select("date, streak_count, japa_done, quiz_done, nitya_done, pathshala_done, dharmveer_done")
+        .eq("user_id", user.id)
+        .order("date", { ascending: false })
         .limit(30),
       DB_TIMEOUT,
     ),
     withTimeout<Array<{ log_date: string; step_id: string | null }>>(
       supabase
-        .from('nitya_karma_log')
-        .select('log_date, step_id')
-        .eq('user_id', user.id)
-        .eq('log_date', today),
+        .from("nitya_karma_log")
+        .select("log_date, step_id")
+        .eq("user_id", user.id)
+        .eq("log_date", today),
       DB_TIMEOUT,
     ),
     withTimeout<{ current_streak: number | null, longest_streak: number | null }>(
       supabase
-        .from('nitya_karma_streaks')
-        .select('current_streak, longest_streak')
-        .eq('user_id', user.id)
+        .from("nitya_karma_streaks")
+        .select("current_streak, longest_streak")
+        .eq("user_id", user.id)
         .maybeSingle(),
       DB_TIMEOUT,
     ),
     withTimeout<Array<{ id: string }>>(
       supabase
-        .from('mala_sessions')
-        .select('id')
-        .eq('user_id', user.id)
-        .gte('completed_at', `${today}T00:00:00Z`)
-        .lte('completed_at', `${today}T23:59:59Z`)
+        .from("mala_sessions")
+        .select("id")
+        .eq("user_id", user.id)
+        .gte("completed_at", `${today}T00:00:00Z`)
+        .lte("completed_at", `${today}T23:59:59Z`)
         .limit(1),
       DB_TIMEOUT,
     ),
     withTimeout<MalaSessionRow[]>(
       supabase
-        .from('mala_sessions')
-        .select('mantra, count, bead_count, completed_beads, rounds, completed_rounds, duration_seconds, duration_secs')
-        .eq('user_id', user.id)
-        .order('completed_at', { ascending: false })
+        .from("mala_sessions")
+        .select("mantra, count, bead_count, completed_beads, rounds, completed_rounds, duration_seconds, duration_secs")
+        .eq("user_id", user.id)
+        .order("completed_at", { ascending: false })
         .limit(1000),
       DB_TIMEOUT,
     ),
     withTimeout<PathshalaStateRow[]>(
       supabase
-        .from('pathshala_user_state')
-        .select('bookmarked_at, last_opened_at')
-        .eq('user_id', user.id),
+        .from("pathshala_user_state")
+        .select("bookmarked_at, last_opened_at")
+        .eq("user_id", user.id),
       DB_TIMEOUT,
     ),
   ]);
@@ -196,7 +203,7 @@ export async function GET(request: NextRequest) {
   );
 
   const activePathshala = guidedPathProgress.find(
-    (progress) => progress.status === 'active' && PATHSHALA_PATH_IDS.includes(progress.path_id),
+    (progress) => progress.status === "active" && PATHSHALA_PATH_IDS.includes(progress.path_id),
   );
   const pathshalaDoneToday = guidedPathProgress.some((progress) => progress.updated_at?.startsWith(today));
 
@@ -208,15 +215,117 @@ export async function GET(request: NextRequest) {
   );
   const nityaCompletedCount = countCompletedNativeNityaSteps(nityaDoneIdsToday);
 
-  let pct = 0;
-  let missing: string[] = [];
-  if (profile) {
-    const missingKeys = COMPLETION_FIELDS.filter(f => profile[f.key] == null || profile[f.key] === '');
-    missing = missingKeys.map(f => f.label);
-    pct = Math.round(((COMPLETION_FIELDS.length - missing.length) / COMPLETION_FIELDS.length) * 100);
-  } else {
-    missing = COMPLETION_FIELDS.map(f => f.label);
+  // --- Truthful, Tradition-Aware Profile Model ---
+  // Core Profile: Required identity fields only (name, tradition, app language)
+  const hasFullName = Boolean(profile?.full_name?.trim());
+  const hasTradition = Boolean(profile?.tradition?.trim());
+  const hasLanguage = Boolean(profile?.app_language?.trim());
+  const isCoreComplete = hasFullName && hasTradition && hasLanguage;
+
+  const coreProfile = {
+    isComplete: isCoreComplete,
+    fullName: profile?.full_name ?? "",
+    tradition: profile?.tradition ?? "hindu",
+    appLanguage: profile?.app_language ?? "en",
+  };
+
+  // Personalisation Suggestions (Optional, tradition-aware enhancements)
+  const isHindu = (profile?.tradition ?? "hindu") === "hindu";
+  const suggestions: PersonalisationSuggestion[] = [];
+
+  if (isHindu) {
+    if (!profile?.calendar_profile) {
+      suggestions.push({
+        key: "calendar_profile",
+        label: "Regional Calendar",
+        reason: "Select your regional tradition calendar for accurate vrat dates",
+        route: "/settings/personalisation",
+        priority: 1,
+        context: "personalisation",
+      });
+    }
+    if (!profile?.rashi) {
+      suggestions.push({
+        key: "rashi",
+        label: "Birth Rashi (Moon Sign)",
+        reason: "Personalise your daily rashiphala and astrological timing",
+        route: "/settings/personalisation",
+        priority: 2,
+        context: "personalisation",
+      });
+    }
+    if (!profile?.nakshatra) {
+      suggestions.push({
+        key: "nakshatra",
+        label: "Birth Nakshatra",
+        reason: "Receive nakshatra-specific daily timings",
+        route: "/settings/personalisation",
+        priority: 3,
+        context: "personalisation",
+      });
+    }
+    if (!profile?.gotra) {
+      suggestions.push({
+        key: "gotra",
+        label: "Gotra (Lineage)",
+        reason: "Include your lineage in sankalpa prayers",
+        route: "/settings/personalisation",
+        priority: 4,
+        context: "personalisation",
+      });
+    }
+    if (!profile?.calendar_scope) {
+      suggestions.push({
+        key: "calendar_scope",
+        label: "Calendar Scope",
+        reason: "Choose major festivals only or complete observances",
+        route: "/settings/personalisation",
+        priority: 5,
+        context: "personalisation",
+      });
+    }
   }
+
+  // All Traditions suggestions
+  if (!profile?.city) {
+    suggestions.push({
+      key: "city",
+      label: "Location",
+      reason: "Set your city for accurate sunrise and prayer timings",
+      route: "/settings/personal-details",
+      priority: 10,
+      context: "personal_details",
+    });
+  }
+  if (!profile?.life_stage) {
+    suggestions.push({
+      key: "life_stage",
+      label: "Life Stage (Ashrama)",
+      reason: "Tailor spiritual recommendations to your stage of life",
+      route: "/settings/personal-details",
+      priority: 11,
+      context: "personal_details",
+    });
+  }
+  if (!profile?.onboarding_goal) {
+    suggestions.push({
+      key: "onboarding_goal",
+      label: "Practice Goals",
+      reason: "Set spiritual priorities for daily practice",
+      route: "/settings/personalisation",
+      priority: 12,
+      context: "personalisation",
+    });
+  }
+
+  suggestions.sort((a, b) => a.priority - b.priority);
+
+  const completion = {
+    pct: isCoreComplete ? 100 : Math.round(([hasFullName, hasTradition, hasLanguage].filter(Boolean).length / 3) * 100),
+    missing: suggestions.map((s) => s.label),
+    coreComplete: isCoreComplete,
+    suggestions,
+  };
 
   const practices = [
     Boolean(todaySadhana?.japa_done) || malaRows.length > 0,
@@ -248,26 +357,30 @@ export async function GET(request: NextRequest) {
   const response = {
     profile: {
       id: profile?.id,
-      fullName: profile?.full_name ?? '',
-      username: profile?.username ?? '',
+      fullName: profile?.full_name ?? "",
+      username: profile?.username ?? "",
       avatarUrl: profile?.avatar_url ?? null,
-      tradition: profile?.tradition ?? 'hindu',
-      sampradaya: profile?.sampradaya ?? '',
-      ishtaDevata: profile?.ishta_devata ?? '',
-      city: profile?.city ?? '',
-      country: profile?.country ?? '',
-      lifeStage: profile?.life_stage ?? '',
-      appLanguage: profile?.app_language ?? 'en',
+      tradition: profile?.tradition ?? "hindu",
+      sampradaya: profile?.sampradaya ?? "",
+      ishtaDevata: profile?.ishta_devata ?? "",
+      city: profile?.city ?? "",
+      country: profile?.country ?? "",
+      lifeStage: profile?.life_stage ?? "",
+      appLanguage: profile?.app_language ?? "en",
       activeSymbolId: profile?.active_symbol_id,
       sevaScore: profile?.seva_score ?? 0,
       isPro: profile?.is_pro ?? false,
-      subscriptionStatus: profile?.subscription_status ?? 'free',
+      subscriptionStatus: profile?.subscription_status ?? "free",
       activeRelic: profile?.active_symbol_id ? SACRED_RELICS.find(r => r.id === profile.active_symbol_id) ?? null : null,
+      rashi: profile?.rashi ?? null,
+      nakshatra: profile?.nakshatra ?? null,
+      gotra: profile?.gotra ?? null,
+      calendarProfile: profile?.calendar_profile ?? null,
+      calendarScope: profile?.calendar_scope ?? null,
+      onboardingGoal: profile?.onboarding_goal ?? null,
     },
-    completion: {
-      pct,
-      missing,
-    },
+    coreProfile,
+    completion,
     progress: {
       practices: {
         completed: practicesCompleted,
@@ -307,6 +420,6 @@ export async function GET(request: NextRequest) {
   };
 
   return NextResponse.json(response, {
-    headers: { 'Cache-Control': 'private, no-store' },
+    headers: { "Cache-Control": "private, no-store" },
   });
 }
