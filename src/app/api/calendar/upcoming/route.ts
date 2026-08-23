@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resolveRequestProfile, PROFILE_RESOLUTION_PAD_DAYS, shiftDate } from '@/lib/calendar/request-profile';
+import {
+  resolveRequestProfile,
+  resolveSpiritualDateTimezone,
+  PROFILE_RESOLUTION_PAD_DAYS,
+  shiftDate,
+} from '@/lib/calendar/request-profile';
 import { localSpiritualDate } from '@/lib/sacred-time';
 import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/calendar/observance-formatter';
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
+import { buildObservanceSeries } from '@/lib/calendar/observance-series';
+import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
 
 export const runtime = 'nodejs';
 
@@ -10,6 +17,7 @@ export interface UpcomingResponse {
   from: string;
   to: string;
   observances: ClientObservanceResult[];
+  series: ObservanceSeries[];
 }
 
 export async function GET(request: NextRequest) {
@@ -24,12 +32,7 @@ export async function GET(request: NextRequest) {
     let calendarProfile = searchParams.get('calendar_profile') || '';
     let sampradaya: string | null = null;
     const reviewedOnly = searchParams.get('reviewed') === '1' || searchParams.get('reviewed') === 'true';
-    const tz = searchParams.get('tz') || 'Asia/Kolkata';
-
-    const fromStr = localSpiritualDate(tz, 4);
-    const [fy, fm, fd] = fromStr.split('-').map(Number);
-    const endDate = new Date(Date.UTC(fy, fm - 1, fd + days));
-    const toStr = endDate.toISOString().split('T')[0];
+    const requestedTimezone = searchParams.get('tz') || 'Asia/Kolkata';
 
     // Cookie OR Bearer: the native app sends a Bearer token, so the previous
     // cookie-only lookup silently gave every native user the default calendar.
@@ -51,6 +54,15 @@ export async function GET(request: NextRequest) {
     tradition = resolved.tradition;
     sampradaya = resolved.sampradaya;
     const calendarScope = resolved.calendarScope;
+    const tz = resolveSpiritualDateTimezone(resolved, requestedTimezone);
+    if (!tz) {
+      return NextResponse.json({ error: 'Calendar timezone unavailable' }, { status: 500 });
+    }
+
+    const fromStr = localSpiritualDate(tz, 4);
+    const [fy, fm, fd] = fromStr.split('-').map(Number);
+    const endDate = new Date(Date.UTC(fy, fm - 1, fd + days));
+    const toStr = endDate.toISOString().split('T')[0];
 
     let occurrencesQuery = supabase
       .from('observance_occurrences')
@@ -167,10 +179,21 @@ export async function GET(request: NextRequest) {
       return aDate.localeCompare(bDate);
     });
 
+    const primaryContext = formattedResults.find(result => result.isPrimary) ?? formattedResults[0] ?? null;
+    const series = primaryContext
+      ? buildObservanceSeries(formattedResults, {
+          spiritualDate: fromStr,
+          profile: primaryContext.profile,
+          location: primaryContext.location,
+          tradition,
+        })
+      : [];
+
     const response: UpcomingResponse = {
       from: fromStr,
       to: toStr,
       observances: formattedResults,
+      series,
     };
 
     return NextResponse.json(response, {

@@ -1,0 +1,39 @@
+[
+  {
+    "definitionKey": "sharad-navratri",
+    "version": "1.0.0",
+    "mode": "daily_journey",
+    "name": "Sharad Navratri",
+    "tradition": "hindu",
+    "anchorSlug": "navratri-day-1-shailaputri",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "navratri-day-1-shailaputri", "sequence": 1, "title": "Navratri Day 1 — Shailaputri", "deityOrTheme": "Shailaputri", "rituals": ["Ghatasthapana"] },
+      { "slug": "navratri-day-2-brahmacharini", "sequence": 2, "title": "Navratri Day 2 — Brahmacharini", "deityOrTheme": "Brahmacharini" },
+      { "slug": "navratri-day-3-chandraghanta", "sequence": 3, "title": "Navratri Day 3 — Chandraghanta", "deityOrTheme": "Chandraghanta" },
+      { "slug": "navratri-day-4-kushmanda", "sequence": 4, "title": "Navratri Day 4 — Kushmanda", "deityOrTheme": "Kushmanda" },
+      { "slug": "navratri-day-5-skandamata", "sequence": 5, "title": "Navratri Day 5 — Skandamata", "deityOrTheme": "Skandamata" },
+      { "slug": "navratri-day-6-katyayani", "sequence": 6, "title": "Navratri Day 6 — Katyayani", "deityOrTheme": "Katyayani", "rituals": ["Bilva Nimantran", "Sasthi Bodhon"] },
+      { "slug": "navratri-day-7-kalaratri", "sequence": 7, "title": "Navratri Day 7 — Kalaratri", "deityOrTheme": "Kalaratri", "rituals": ["Maha Saptami Puja", "Kola Bou / Nabapatrika"] },
+      { "slug": "durga-ashtami", "sequence": 8, "title": "Durga Ashtami", "deityOrTheme": "Mahagauri", "rituals": ["Maha Ashtami Puja", "Sandhi Puja", "Kanya Pujan"] },
+      { "slug": "maha-navami", "sequence": 9, "title": "Maha Navami", "deityOrTheme": "Siddhidatri", "rituals": ["Maha Navami Puja", "Ayudha Puja", "Chandi Havan"] },
+      { "slug": "dussehra", "sequence": 10, "title": "Vijayadashami / Dussehra", "rituals": ["Dussehra", "Durga Visarjan", "Sindoor Khela", "Vidyarambham"] }
+    ]
+  },
+  {
+    "definitionKey": "diwali-five-days",
+    "version": "1.0.0",
+    "mode": "festival_cluster",
+    "name": "Diwali",
+    "tradition": "hindu",
+    "anchorSlug": "diwali",
+    "allowCrossYear": false,
+    "children": [
+      { "slug": "dhanteras", "sequence": 1, "title": "Dhanteras" },
+      { "slug": "naraka-chaturdashi", "sequence": 2, "title": "Naraka Chaturdashi" },
+      { "slug": "diwali", "sequence": 3, "title": "Diwali" },
+      { "slug": "govardhan-puja", "sequence": 4, "title": "Govardhan Puja" },
+      { "slug": "bhai-dooj", "sequence": 5, "title": "Bhai Dooj" }
+    ]
+  }
+]
