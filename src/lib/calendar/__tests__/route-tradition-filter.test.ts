@@ -59,6 +59,7 @@ vi.mock('@/lib/calendar/request-profile', async (importOriginal) => {
       calendarProfile: requested.calendarProfile || 'legacy-ujjain',
       tradition: requested.tradition,
       sampradaya: null,
+      timezone: 'Asia/Kolkata',
       isAuthenticated: true,
       invalidCredentials: false,
       profileError: null,

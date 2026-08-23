@@ -213,6 +213,8 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
           vratName: "Nirjala Ekadashi",
           calendarProfile: "legacy-ujjain",
           tradition: "hindu",
+          sampradayaIdentity: "hindu",
+          variantKey: null,
         },
       });
 
@@ -240,6 +242,11 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
       expect(mockAdminRpc).toHaveBeenCalledWith("record_vrat_observation", {
         p_user_id: "u-1",
         p_occurrence_id: VALID_OCCURRENCE_ID,
+        p_calendar_profile: "legacy-ujjain",
+        p_tradition: "hindu",
+        p_sampradaya: null,
+        p_spiritual_tradition: "hindu",
+        p_variant_key: null,
       });
     });
 
@@ -266,6 +273,8 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
           vratName: "Nirjala Ekadashi",
           calendarProfile: "legacy-ujjain",
           tradition: "hindu",
+          sampradayaIdentity: "hindu",
+          variantKey: null,
         },
       });
 
@@ -332,6 +341,54 @@ describe("Vrat Observation API Route (/api/vrat/observe)", () => {
       // 2026-08-22T18:00:00Z (04:00 AEST, exact 4 AM boundary) -> 2026-08-23
       const at4am = new Date("2026-08-22T18:00:00Z");
       expect(localSpiritualDate("Australia/Sydney", 4, at4am)).toBe("2026-08-23");
+    });
+
+    it("handles device timezone differing from stored profile timezone with stored profile governing", async () => {
+      // Stored profile timezone: Asia/Kolkata (where 2026-08-23T02:00:00Z is 07:30 IST -> spiritual date 2026-08-23)
+      // Device timezone: America/Los_Angeles (where 2026-08-23T02:00:00Z is 19:00 PDT on 2026-08-22 -> spiritual date 2026-08-22)
+      const frozenTime = new Date("2026-08-23T02:00:00Z");
+
+      const profileSpiritualDate = localSpiritualDate("Asia/Kolkata", 4, frozenTime);
+      const deviceSpiritualDate = localSpiritualDate("America/Los_Angeles", 4, frozenTime);
+
+      expect(profileSpiritualDate).toBe("2026-08-23");
+      expect(deviceSpiritualDate).toBe("2026-08-22");
+
+      // Verify resolver / route reads stored profile timezone
+      const mockSupabase = {
+        from: vi.fn((table: string) => {
+          if (table === "profiles") {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockReturnThis(),
+              maybeSingle: vi.fn().mockResolvedValue({ data: { timezone: "Asia/Kolkata" }, error: null }),
+            };
+          }
+          if (table === "vrat_observations") {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockReturnThis(),
+              maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+            };
+          }
+          return {};
+        }),
+      };
+
+      mockGetApiUser.mockResolvedValue({
+        user: { id: "u-1" },
+        error: null,
+        supabase: mockSupabase,
+      });
+
+      // Pass device timezone in query param, but profile timezone is stored as Asia/Kolkata
+      const req = new NextRequest(`https://shoonaya.com/api/vrat/observe?occurrence_id=${VALID_OCCURRENCE_ID}&tz=America/Los_Angeles`);
+      const res = await GET(req);
+      expect(res.status).toBe(200);
+
+      const json = await res.json();
+      // Server derived spiritual date matches profile timezone
+      expect(json.today).toBe(localSpiritualDate("Asia/Kolkata", 4));
     });
   });
 });

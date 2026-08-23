@@ -66,7 +66,12 @@ function makeClient(
   } as any;
 }
 
-const { resolveRequestProfile, DEFAULT_CALENDAR_PROFILE, shiftDate } = await import('../request-profile');
+const {
+  resolveRequestProfile,
+  resolveSpiritualDateTimezone,
+  DEFAULT_CALENDAR_PROFILE,
+  shiftDate,
+} = await import('../request-profile');
 
 /** Fake request: no credentials unless given. */
 const req = (opts: { bearer?: boolean; cookie?: boolean } = {}) => ({
@@ -143,6 +148,29 @@ describe('shiftDate', () => {
     expect(shiftDate('2026-09-01', -1)).toBe('2026-08-31');
     expect(shiftDate('2026-12-28', 31)).toBe('2027-01-28');
     expect(shiftDate('2028-02-28', 1)).toBe('2028-02-29'); // leap year
+  });
+});
+
+describe('spiritual-date timezone authority', () => {
+  it('uses the stored profile timezone for authenticated requests', () => {
+    expect(resolveSpiritualDateTimezone(
+      { isAuthenticated: true, timezone: 'Asia/Kolkata' },
+      'America/Los_Angeles',
+    )).toBe('Asia/Kolkata');
+  });
+
+  it('uses the requested device timezone only for guests', () => {
+    expect(resolveSpiritualDateTimezone(
+      { isAuthenticated: false, timezone: null },
+      'Europe/London',
+    )).toBe('Europe/London');
+  });
+
+  it('fails closed when an authenticated profile has no timezone', () => {
+    expect(resolveSpiritualDateTimezone(
+      { isAuthenticated: true, timezone: null },
+      'Asia/Kolkata',
+    )).toBeNull();
   });
 });
 

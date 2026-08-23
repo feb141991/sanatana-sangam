@@ -829,11 +829,14 @@ export interface Database {
           created_at: string;
           user_id: string;
           occurrence_id: string;
+          definition_id: string;
           vrat_id: string;
           vrat_name: string | null;
           occurrence_date: string;
           calendar_profile: string | null;
           tradition: string | null;
+          sampradaya: string | null;
+          variant_key: string | null;
           timezone: string;
           karma_awarded: number;
           observed_at: string;

@@ -45,9 +45,16 @@ export const DEFAULT_CALENDAR_PROFILE = 'legacy-ujjain';
 export interface RequestProfile {
   /** The client that authenticated, or an anonymous one. Reuse for reads. */
   supabase: SupabaseClient;
+  userId: string | null;
   calendarProfile: string;
   tradition: string;
   sampradaya: string | null;
+  /**
+   * Stored profile timezone used for user-facing spiritual-day ownership.
+   * This is intentionally separate from the atomic calculation location:
+   * a profile may have a valid timezone before latitude/longitude are saved.
+   */
+  timezone: string | null;
   /**
    * 'major_only' | 'all_observances' | null. Read straight off the profile
    * row, no defaulting here -- null means "no filter", same as today's
@@ -112,6 +119,7 @@ export async function resolveRequestProfile(
   let calendarProfile = requested.calendarProfile;
   let tradition = requested.tradition;
   let sampradaya: string | null = null;
+  let timezone: string | null = null;
   let calendarScope: string | null = null;
   let profileError: Error | null = null;
   let userLocation: any = null;
@@ -133,6 +141,9 @@ export async function resolveRequestProfile(
       if (!calendarProfile) calendarProfile = profile.calendar_profile || '';
       if (tradition === 'all') tradition = profile.tradition || 'all';
       sampradaya = profile.sampradaya || null;
+      timezone = typeof profile.timezone === 'string' && profile.timezone.trim().length > 0
+        ? profile.timezone.trim()
+        : null;
       calendarScope = profile.calendar_scope || null;
       userLocation = (
         profile.latitude != null &&
@@ -212,9 +223,11 @@ export async function resolveRequestProfile(
 
   return {
     supabase,
+    userId: auth.user?.id ?? null,
     calendarProfile,
     tradition,
     sampradaya,
+    timezone,
     calendarScope,
     ekadashiMethod: context.ekadashiMethod,
     context,
@@ -225,6 +238,13 @@ export async function resolveRequestProfile(
 }
 
 export const PROFILE_RESOLUTION_PAD_DAYS = 31;
+
+export function resolveSpiritualDateTimezone(
+  profile: Pick<RequestProfile, 'isAuthenticated' | 'timezone'>,
+  requestedTimezone: string,
+): string | null {
+  return profile.isAuthenticated ? profile.timezone : requestedTimezone;
+}
 
 export function shiftDate(dateStr: string, days: number): string {
   const [y, m, d] = dateStr.split('-').map(Number);

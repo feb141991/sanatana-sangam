@@ -1,15 +1,17 @@
 import { NextRequest } from "next/server";
-import { getApiUser } from "@/lib/api-auth";
 import { resolveRequestProfile, shiftDate, PROFILE_RESOLUTION_PAD_DAYS } from "@/lib/calendar/request-profile";
 import { localSpiritualDate } from "@/lib/sacred-time";
-import { formatOccurrencesToResults } from "@/lib/calendar/observance-formatter";
+import {
+  formatOccurrencesToResults,
+  type ClientObservanceResult,
+} from "@/lib/calendar/observance-formatter";
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from "@/lib/calendar/occurrence-reader";
 import { UUID_REGEX } from "@/lib/vrat-observation";
 
 export interface ObservableVratResultSuccess {
   success: true;
   user: {
-    id: string;
+    id: string | null;
     timezone: string;
     calendarProfile: string;
     tradition: string;
@@ -22,7 +24,10 @@ export interface ObservableVratResultSuccess {
     vratName: string;
     calendarProfile: string;
     tradition: string;
+    sampradayaIdentity: string | null;
+    variantKey: string | null;
   };
+  result: ClientObservanceResult;
 }
 
 export interface ObservableVratResultFailure {
@@ -41,6 +46,7 @@ export type ObservableVratResult = ObservableVratResultSuccess | ObservableVratR
 export async function resolveObservableVratOccurrence(
   request: NextRequest,
   occurrenceId: string,
+  options: { requireToday?: boolean; requestedTimezone?: string } = {},
 ): Promise<ObservableVratResult> {
   if (!occurrenceId || !UUID_REGEX.test(occurrenceId)) {
     return {
@@ -48,16 +54,6 @@ export async function resolveObservableVratOccurrence(
       statusCode: 400,
       errorCode: "INVALID_OCCURRENCE_ID",
       userMessage: "Invalid occurrence ID format",
-    };
-  }
-
-  const { user, error: authError } = await getApiUser(request);
-  if (!user) {
-    return {
-      success: false,
-      statusCode: 401,
-      errorCode: "UNAUTHENTICATED",
-      userMessage: "Authentication required",
     };
   }
 
@@ -80,7 +76,19 @@ export async function resolveObservableVratOccurrence(
     };
   }
 
-  if (!resolved.context.timezone) {
+  if (options.requireToday !== false && !resolved.isAuthenticated) {
+    return {
+      success: false,
+      statusCode: 401,
+      errorCode: "UNAUTHENTICATED",
+      userMessage: "Authentication required",
+    };
+  }
+
+  const tz = resolved.isAuthenticated
+    ? resolved.timezone
+    : options.requestedTimezone ?? "Asia/Kolkata";
+  if (!tz) {
     return {
       success: false,
       statusCode: 500,
@@ -89,19 +97,46 @@ export async function resolveObservableVratOccurrence(
     };
   }
 
-  const tz = resolved.context.timezone;
   const todayStr = localSpiritualDate(tz, 4);
   const calendarProfile = resolved.calendarProfile;
   const tradition = resolved.tradition;
   const sampradaya = resolved.sampradaya;
   const supabase = resolved.supabase;
 
-  // Query occurrences around todayStr using canonical selection and filtering
+  let anchorDate = todayStr;
+  if (options.requireToday === false) {
+    const { data: target, error: targetError } = await supabase
+      .from("observance_occurrences")
+      .select("date")
+      .eq("id", occurrenceId)
+      .maybeSingle();
+
+    if (targetError) {
+      return {
+        success: false,
+        statusCode: 500,
+        errorCode: "DATABASE_ERROR",
+        userMessage: "Failed to query observance occurrence",
+      };
+    }
+    if (!target?.date) {
+      return {
+        success: false,
+        statusCode: 404,
+        errorCode: "OCCURRENCE_NOT_FOUND",
+        userMessage: "This observance occurrence is unavailable",
+      };
+    }
+    anchorDate = target.date;
+  }
+
+  // Query the target's canonical family so read-time profile and variant
+  // selection can establish whether this exact UUID is the user's primary row.
   const { data: occurrencesData, error: occError } = await supabase
     .from("observance_occurrences")
     .select(CALENDAR_OCCURRENCE_SELECT)
-    .gte("date", shiftDate(todayStr, -PROFILE_RESOLUTION_PAD_DAYS))
-    .lte("date", shiftDate(todayStr, PROFILE_RESOLUTION_PAD_DAYS))
+    .gte("date", shiftDate(anchorDate, -PROFILE_RESOLUTION_PAD_DAYS))
+    .lte("date", shiftDate(anchorDate, PROFILE_RESOLUTION_PAD_DAYS))
     .in("calendar_profile", [calendarProfile, "legacy-ujjain"])
     .eq("observance_definitions.active", true)
     .eq("observance_definitions.kind", "vrat")
@@ -134,8 +169,8 @@ export async function resolveObservableVratOccurrence(
     tradition,
     calendarProfile,
     sampradaya,
-    todayStr,
-    todayStr,
+    shiftDate(anchorDate, -PROFILE_RESOLUTION_PAD_DAYS),
+    shiftDate(anchorDate, PROFILE_RESOLUTION_PAD_DAYS),
     resolved.context,
   );
 
@@ -145,22 +180,26 @@ export async function resolveObservableVratOccurrence(
       r.isPrimary === true &&
       r.status === "resolved" &&
       r.kind === "vrat" &&
-      (r.civilDate === todayStr || r.date === todayStr)
+      (options.requireToday === false || r.civilDate === todayStr || r.date === todayStr)
   );
 
   if (!matched) {
     return {
       success: false,
-      statusCode: 400,
+      statusCode: options.requireToday === false ? 404 : 400,
       errorCode: "OCCURRENCE_NOT_OBSERVABLE",
       userMessage: "This observance is not active or eligible to observe today",
     };
   }
 
+  const matchedRaw = occurrencesWithBatches.find(
+    (row: { id?: string | null }) => row.id === occurrenceId,
+  );
+
   return {
     success: true,
     user: {
-      id: user.id,
+      id: resolved.userId,
       timezone: tz,
       calendarProfile,
       tradition,
@@ -173,6 +212,9 @@ export async function resolveObservableVratOccurrence(
       vratName: matched.display_name,
       calendarProfile: matched.profile.calendar,
       tradition: matched.profile.tradition,
+      sampradayaIdentity: matchedRaw?.spiritual_tradition ?? null,
+      variantKey: matched.variantKey ?? null,
     },
+    result: matched,
   };
 }

@@ -162,6 +162,11 @@ export async function POST(req: NextRequest) {
   const { data: rpcResult, error: rpcErr } = await adminClient.rpc("record_vrat_observation", {
     p_user_id: user.id,
     p_occurrence_id: occurrence_id,
+    p_calendar_profile: resolution.user.calendarProfile,
+    p_tradition: resolution.user.tradition,
+    p_sampradaya: resolution.user.sampradaya,
+    p_spiritual_tradition: resolution.occurrence.sampradayaIdentity,
+    p_variant_key: resolution.occurrence.variantKey,
   });
 
   if (rpcErr) {
