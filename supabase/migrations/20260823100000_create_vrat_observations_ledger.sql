@@ -1,4 +1,4 @@
--- Migration: Canonical Vrat Observation Ledger and Atomic Karma Award
+-- Migration: Canonical Vrat Observation Ledger & Service-Role Atomic Karma RPC
 -- Fully occurrence-qualified, non-forgeable, idempotent database ledger.
 
 CREATE TABLE IF NOT EXISTS public.vrat_observations (
@@ -32,10 +32,11 @@ CREATE POLICY "users_read_own_vrat_observations"
   USING (auth.uid() = user_id);
 
 -- Explicitly NO INSERT/UPDATE/DELETE policies for authenticated or anon.
--- Direct table mutation is forbidden; mutations occur ONLY through record_vrat_observation.
+-- Direct client mutation is completely forbidden.
 
--- Atomic occurrence-qualified observation function
+-- Service-role internal transaction function for atomic ledger insertion and karma award
 CREATE OR REPLACE FUNCTION public.record_vrat_observation(
+  p_user_id UUID,
   p_occurrence_id UUID
 )
 RETURNS JSON
@@ -44,17 +45,27 @@ SECURITY DEFINER
 SET search_path TO 'public'
 AS $$
 DECLARE
-  v_user_id UUID := auth.uid();
   v_inserted_id UUID;
   v_occurrence RECORD;
   v_profile RECORD;
   v_user_spiritual_date DATE;
   v_karma INTEGER := 25;
 BEGIN
-  -- 1. Authorization check
-  IF v_user_id IS NULL THEN
-    RAISE EXCEPTION 'Not authenticated';
+  IF p_user_id IS NULL OR p_occurrence_id IS NULL THEN
+    RAISE EXCEPTION 'p_user_id and p_occurrence_id are required';
   END IF;
+
+  -- 1. Fetch user profile and compute current local spiritual date (4 AM boundary)
+  SELECT timezone, calendar_profile, tradition
+  INTO v_profile
+  FROM public.profiles
+  WHERE id = p_user_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'User profile not found for id: %', p_user_id;
+  END IF;
+
+  v_user_spiritual_date := (now() AT TIME ZONE COALESCE(v_profile.timezone, 'Asia/Kolkata') - interval '4 hours')::date;
 
   -- 2. Fetch and strictly validate the canonical occurrence
   SELECT
@@ -66,6 +77,7 @@ BEGIN
     oo.review_status,
     oo.verification_status,
     oo.final_date_source,
+    oo.locked_for_regeneration,
     od.slug AS definition_slug,
     od.display_name AS definition_name,
     od.kind AS definition_kind,
@@ -79,36 +91,28 @@ BEGIN
     RAISE EXCEPTION 'Canonical occurrence not found: %', p_occurrence_id;
   END IF;
 
-  -- Verify it is an active vrat
+  -- Positive verification: must be active vrat
   IF v_occurrence.definition_kind IS DISTINCT FROM 'vrat' OR v_occurrence.definition_active IS NOT TRUE THEN
     RAISE EXCEPTION 'Occurrence is not an active vrat';
   END IF;
 
-  -- Reject unverified, unaudited, or fallback occurrences
+  -- Positive verification: exact published / reviewed / verified / audited states
   IF v_occurrence.final_date_source = 'fallback'
      OR COALESCE(v_occurrence.audit_status, 'not_run') != 'completed'
-     OR COALESCE(v_occurrence.review_status, 'reviewed') = 'needs_review'
-     OR COALESCE(v_occurrence.verification_status, 'verified') = 'mismatch' THEN
-    RAISE EXCEPTION 'Occurrence is unverified or under review';
+     OR COALESCE(v_occurrence.review_status, 'needs_review') != 'reviewed'
+     OR COALESCE(v_occurrence.verification_status, 'not_checked') != 'verified' THEN
+    RAISE EXCEPTION 'Occurrence is unverified, unreviewed, unaudited, or fallback';
   END IF;
 
-  -- 3. Fetch user profile and compute current local spiritual date (4 AM boundary)
-  SELECT timezone, calendar_profile, tradition
-  INTO v_profile
-  FROM public.profiles
-  WHERE id = v_user_id;
-
-  v_user_spiritual_date := (now() AT TIME ZONE COALESCE(v_profile.timezone, 'Asia/Kolkata') - interval '4 hours')::date;
-
-  -- 4. Date validation: Occurrence date MUST match the user spiritual date today
+  -- Date check: occurrence date must match spiritual date
   IF v_occurrence.date != v_user_spiritual_date THEN
     RAISE EXCEPTION 'Occurrence date (%) does not match current spiritual date (%)', v_occurrence.date, v_user_spiritual_date;
   END IF;
 
-  -- 5. Deduplication check (idempotent)
+  -- 3. Idempotent check: return success if already observed
   IF EXISTS (
     SELECT 1 FROM public.vrat_observations
-    WHERE user_id = v_user_id AND occurrence_id = p_occurrence_id
+    WHERE user_id = p_user_id AND occurrence_id = p_occurrence_id
   ) THEN
     RETURN json_build_object(
       'success', true,
@@ -118,7 +122,7 @@ BEGIN
     );
   END IF;
 
-  -- 6. Atomic insert with conflict protection
+  -- 4. Atomic insert with conflict protection
   INSERT INTO public.vrat_observations (
     user_id,
     occurrence_id,
@@ -131,7 +135,7 @@ BEGIN
     karma_awarded
   )
   VALUES (
-    v_user_id,
+    p_user_id,
     p_occurrence_id,
     v_occurrence.definition_slug,
     v_occurrence.definition_name,
@@ -144,7 +148,6 @@ BEGIN
   ON CONFLICT (user_id, occurrence_id) DO NOTHING
   RETURNING id INTO v_inserted_id;
 
-  -- 7. If another concurrent request won the race
   IF v_inserted_id IS NULL THEN
     RETURN json_build_object(
       'success', true,
@@ -154,14 +157,13 @@ BEGIN
     );
   END IF;
 
-  -- 8. Award karma in the same atomic transaction
+  -- 5. Atomic karma award in same transaction
   UPDATE public.profiles
   SET seva_score = COALESCE(seva_score, 0) + v_karma
-  WHERE id = v_user_id;
+  WHERE id = p_user_id;
 
-  -- Audit ledger
   INSERT INTO public.karma_ledger (user_id, amount, reason, source_route)
-  VALUES (v_user_id, v_karma, 'vrat_observed:' || v_occurrence.definition_slug, '/api/vrat/observe');
+  VALUES (p_user_id, v_karma, 'vrat_observed:' || v_occurrence.definition_slug, '/api/vrat/observe');
 
   RETURN json_build_object(
     'success', true,
@@ -172,5 +174,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.record_vrat_observation(UUID) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.record_vrat_observation(UUID) TO authenticated, service_role;
+-- Revoke all execution from public, anon, and authenticated
+REVOKE ALL ON FUNCTION public.record_vrat_observation(UUID, UUID) FROM PUBLIC, anon, authenticated;
+-- Grant execute strictly to service_role
+GRANT EXECUTE ON FUNCTION public.record_vrat_observation(UUID, UUID) TO service_role;

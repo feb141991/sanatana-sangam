@@ -20,6 +20,7 @@ import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
 import type { ClientObservanceResult } from '@/lib/calendar/observance-formatter';
+import { isEligibleToObserveToday, buildVratObservationPayload } from '@/lib/vrat-observation';
 
 import { ObservanceStatusNotice } from '@/components/ui/ObservanceStatusNotice';
 
@@ -210,8 +211,17 @@ export default function VratClient({
   const [observeLoading,   setObserveLoading]   = useState(false);
   const [observeStatusLoaded, setObserveStatusLoaded] = useState(false);
   const [calendarObservance, setCalendarObservance] = useState<ClientObservanceResult | null>(null);
+  const [canonicalToday,   setCanonicalToday]   = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset observation and calendar states synchronously on Vrat switch
+    setCalendarObservance(null);
+    setObservedToday(false);
+    setObserveCount(0);
+    setObserveStatusLoaded(false);
+    setObserveLoading(false);
+    setCanonicalToday(null);
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
     fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`)
       .then((response) => response.ok ? response.json() : null)
@@ -238,8 +248,9 @@ export default function VratClient({
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
-          setObservedToday(data.observed_today);
-          setObserveCount(data.total_count);
+          setObservedToday(Boolean(data.observed_today));
+          setObserveCount(data.total_count ?? 0);
+          if (data.today) setCanonicalToday(data.today);
         }
       })
       .catch(() => { /* silently ignore — tracker is non-critical */ })
@@ -248,16 +259,17 @@ export default function VratClient({
 
   async function handleObserve() {
     if (observedToday || observeLoading) return;
+    if (!isEligibleToObserveToday({ occurrence: calendarObservance, canonicalTodayDate: canonicalToday })) {
+      toast.error('Observation is only available on the sacred observance date');
+      return;
+    }
     setObserveLoading(true);
     try {
-      if (!calendarObservance?.id) {
-        toast.error('No active occurrence found for today');
-        return;
-      }
+      const payload = buildVratObservationPayload({ occurrenceId: calendarObservance?.id });
       const res = await fetch('/api/vrat/observe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ occurrence_id: calendarObservance.id }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -724,7 +736,7 @@ export default function VratClient({
               transition={{ delay: 0.15 }}
               className="w-full max-w-sm"
             >
-              {calendarObservance?.id && calendarObservance?.status === 'resolved' ? (
+              {isEligibleToObserveToday({ occurrence: calendarObservance, canonicalTodayDate: canonicalToday }) ? (
                 <>
                   {observedToday ? (
                     <div
