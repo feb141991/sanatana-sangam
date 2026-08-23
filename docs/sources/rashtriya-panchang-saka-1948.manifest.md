@@ -305,3 +305,68 @@ standalone `dussehra` rule was removed as dead code during D41, see
 `CALENDAR_ENGINE_ASSESSMENT.md`). `tsc --noEmit` clean. `golden_fixtures`
 DB write confirmed via `returning`: all 4 case_ids now show
 `expected.civilDate = "2026-10-21"`.
+
+---
+
+## Batch 5 (2026-08-23): Naraka Chaturdashi — identity separation from Diwali, same Index #55
+
+Prompted by `docs/ANTIGRAVITY_MULTIDAY_OBSERVANCE_SERIES_PROMPTS.md` Prompt 1,
+which requires a canonical `naraka-chaturdashi` observance rule to be created
+as a distinct identity — not a duplicate of the `diwali` fixture.
+
+The source for both `diwali` and `naraka-chaturdashi` is the same PDF entry:
+**Index #55, p.7 (English edition)**, batch 3 above already cited for `diwali`.
+This batch extracts the *distinct* named festival from that same entry.
+
+### Source extraction
+
+Index #55 entry, verbatim (as read from `/private/tmp/shoonaya-rp1948/all.txt`,
+checksum-verified against SHA-256 `a8816abe4fae7fc0f0e4349a3d91eef00cfc0044a5f050b1b3bfe826847f9eaa`):
+
+> **Naraka Chaturdasi (Purvarunodaya), Dipavali (S.India), Kali Puja, Dipavali**
+> → 2026-11-08
+
+The parenthetical `(Purvarunodaya)` is the liturgical criterion stated by the
+source itself: Naraka Chaturdasi is associated with the Purvarunodaya (pre-dawn /
+arunodaya window before sunrise).
+
+### Epistemic Classification
+
+- **Sourced Fact:** RP Saka 1948 Index #55 lists "Naraka Chaturdasi (Purvarunodaya)" at 2026-11-08 on its Indian reference basis.
+- **Implemented Convention:** The evaluator defines `arunodaya` as (local sunrise − 96 minutes) through local sunrise.
+- **Proposed Scholarly Decision:** Chaturdashi (tithi 14) is evaluated under the mode `prevails` (holding throughout the full arunodaya window).
+- **Computed Consequence:** Under this proposed rule and Bedford coordinates, the engine returns 2026-11-07.
+- **Unproven Claim / Open Decision:** Bedford 2026-11-07 is a provisional computed consequence under the proposed `prevails` rule, pending council ratification and external local-calendar validation.
+
+| Item | Value |
+|---|---|
+| Rule slug | `naraka-chaturdashi` |
+| Source entry | Index #55, p.7, RP Saka 1948 |
+| Verbatim source name | `"Naraka Chaturdasi (Purvarunodaya)"` |
+| Source-stated civil date | 2026-11-08 |
+| Distinct from `diwali` | Yes — two distinct identities, must not deduplicate |
+| Liturgical criterion (source) | `Purvarunodaya` qualifier |
+| Condition modelled | `tithi_presence { tithi: 14, period: 'arunodaya', mode: 'prevails' }` (provisional) |
+| Month system | Kartika purnimanta (rule) / Ashwin amanta (evaluator) via documented conversion law |
+| Engine date (Ujjain) | 2026-11-08 (matches RP source) |
+| Engine date (Bedford, UK) | 2026-11-07 (provisional computed result under proposed full-window prevails rule) |
+| `launch_status` | `deferred` — not published to production calendar |
+
+### Open Council Decisions (Unresolved)
+
+For `Purvarunodaya`, should Krishna Chaturdashi:
+1. prevail throughout the entire 96-minute arunodaya window;
+2. touch any part of the window;
+3. prevail at a defined arunodaya instant or boundary; or
+4. follow another sourced day-assignment rule?
+
+### What this does NOT establish
+
+1. **Bedford 2026-11-07 is NOT proven as the ritually authoritative local date.** It is a provisional computed result under the proposed full-window `prevails` interpretation.
+2. **Not council-approved.** The rule remains deferred pending council review.
+3. **Not proven for adhika or kshaya years.** 2026 has no adhika Kartika; kshaya and adhika cases are not proven generally by the 2026 single-year fixture.
+4. **Regional aliases (e.g. Kali Chaudas, Choti Diwali) are not attested in this source citation** and are excluded from the rule definition until typed sources are provided.
+
+## Guards run after batch 5
+
+`validate:rules` 97/97. `tsc --noEmit` clean. Shadow harness `src/conditions/__tests__/naraka-chaturdashi.test.ts` passing. Production DB untouched.

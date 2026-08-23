@@ -660,6 +660,24 @@
     "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit."
   },
   {
+    "slug": "naraka-chaturdashi",
+    "display_name": "Naraka Chaturdashi",
+    "emoji": "🪔",
+    "description": "A Krishna Chaturdashi observance identified by Rashtriya Panchang with the Purvarunodaya qualifier.",
+    "kind": "major",
+    "tradition": "hindu",
+    "rule_family": "lunar_tithi",
+    "verification_type": "lunar_tithi",
+    "corrected_lunar_masa_name": "Kartika",
+    "corrected_month_system": "purnimanta",
+    "adhika_policy": "nija",
+    "corrected_lunar_tithi_index": 29,
+    "corrected_prefer_last_match": false,
+    "launch_status": "deferred",
+    "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
+    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION. Sourced fact: Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08. Implemented convention: arunodaya is evaluated as sunrise minus 96 minutes through sunrise. Open Council Decision: For Purvarunodaya, should Krishna Chaturdashi (1) prevail throughout the entire 96-minute arunodaya window, (2) touch any part of the window, (3) prevail at a defined arunodaya instant or boundary, or (4) follow another sourced day-assignment rule? Month system: stored as Kartika/purnimanta corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. Launch status is deferred until council ratification."
+  },
+  {
     "slug": "govardhan-puja",
     "display_name": "Govardhan Puja",
     "emoji": "⛰️",

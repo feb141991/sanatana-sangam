@@ -352,6 +352,57 @@ export const EVALUATOR_RULES: EvaluatorRuleDefinition[] = [
       },
     ],
   },
+  {
+    // Naraka Chaturdashi (Purvarunodaya) — PENDING COUNCIL RATIFICATION
+    // Production materialisation blocked by launch_status: 'deferred' in rules.json.
+    //
+    // Sourced Fact:
+    //   Rashtriya Panchang Saka 1948, Index #55 (p.7, English edition):
+    //   "Naraka Chaturdasi (Purvarunodaya), Dipavali (S.India), Kali Puja, Dipavali" → 2026-11-08.
+    //   Distinct canonical identity from diwali; not a deduplication target.
+    //
+    // Implemented Convention & Evaluator Representation:
+    //   - Arunodaya window: defined as (local sunrise − 96 minutes) through local sunrise.
+    //   - Month System Conversion Law: The rule record specifies Kartika purnimanta.
+    //     Under the standard astronomical conversion law, Kartika Krishna paksha (purnimanta)
+    //     corresponds to Ashwin Krishna paksha (amanta). The evaluator condition below
+    //     uses Ashwin amanta to target this exact astronomical fortnight.
+    //
+    // Open Council Decision (Unresolved):
+    //   For Purvarunodaya, should Krishna Chaturdashi:
+    //   1. prevail throughout the entire 96-minute arunodaya window;
+    //   2. touch any part of the window;
+    //   3. prevail at a defined arunodaya instant or boundary; or
+    //   4. follow another sourced day-assignment rule?
+    //   The mode 'prevails' below is a proposed interpretation subject to council ruling.
+    //
+    // Retirement gate: once the generic condition-evaluator path reads conditions
+    //   directly from versioned rule data (D6 resolution), this hardcoded entry
+    //   can be removed and replaced by the rule data record alone.
+    slug: 'naraka-chaturdashi',
+    windowDays: 35,
+    variants: [
+      {
+        variantId: 'standard',
+        spiritualTradition: null,
+        isPrimary: true,
+        sourceRefs: [
+          {
+            sourceName: 'Rashtriya Panchang Saka 1948',
+            tier: 1 as const,
+            copyrightStatus: 'government_publication' as const,
+            usagePermitted: 'academic_citation' as const,
+            pageOrSection: 'Index #55 (p.7, English edition) — "Naraka Chaturdasi (Purvarunodaya)" at 2026-11-08',
+          },
+        ],
+        conditions: [
+          { type: 'lunar_month', value: 'Ashwin', monthSystem: 'amanta' },
+          { type: 'paksha', value: 'krishna' },
+          { type: 'tithi_presence', tithi: 14, period: 'arunodaya', mode: 'prevails' },
+        ],
+      },
+    ],
+  },
 ];
 
 function offsetDateStr(dateStr: string, offsetDays: number): string {
