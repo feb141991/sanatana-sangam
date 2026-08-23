@@ -98,6 +98,11 @@ describe('canonical observance-series read contract', () => {
     const sameDate = series.children.filter(child => child.civilDate === '2026-11-08');
     expect(sameDate.map(child => child.slug)).toEqual(['naraka-chaturdashi', 'diwali']);
     expect(new Set(sameDate.map(child => child.occurrenceId)).size).toBe(2);
+    expect(series.currentCivilDate).toBe('2026-11-08');
+    expect(series.activeChildOccurrenceIds).toEqual([
+      'occ-naraka-chaturdashi-2026-11-08',
+      'occ-diwali-2026-11-08',
+    ]);
     expect(series.currentDay).toBe(2);
     expect(series.status).toBe('active');
   });

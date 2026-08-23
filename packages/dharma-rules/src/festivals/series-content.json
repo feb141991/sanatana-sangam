@@ -1,0 +1,880 @@
+{
+  "version": "1.1.0",
+  "series": [
+    {
+      "definitionKey": "sharad-navratri",
+      "name": {
+        "value": {
+          "en": "Sharad Navratri",
+          "hi": "शारदीय नवरात्रि",
+          "pa": "ਸ਼ਾਰਦੀਯ ਨਰਾਤੇ"
+        },
+        "status": "pending_source",
+        "sourceRefs": [
+          {
+            "sourceName": "Rashtriya Panchang Saka 1948",
+            "pageOrSection": "Ashwin Shukla Paksha",
+            "tier": 1,
+            "usagePermitted": "academic_citation"
+          }
+        ],
+        "applicability": {
+          "universal": true
+        },
+        "translationStatus": {
+          "en": "source",
+          "hi": "reviewed_translation",
+          "pa": "reviewed_translation"
+        }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "navratri-day-1-shailaputri",
+          "sequence": 1,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 1 — Shailaputri",
+              "hi": "नवरात्रि दिन १ — शैलपुत्री",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੧ — ਸ਼ੈਲਪੁਤਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Pratipada (Ghatasthapana)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Shailaputri",
+              "hi": "माँ शैलपुत्री",
+              "pa": "ਮਾਂ ਸ਼ੈਲਪੁਤਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Ghatasthapana", "Shailaputri Puja"],
+              "hi": ["घटस्थापना", "शैलपुत्री पूजा"],
+              "pa": ["ਘਟਸਥਾਪਨਾ", "ਸ਼ੈਲਪੁਤਰੀ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Pratipada mentions Kalashasthapana",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "First form of Navadurga, daughter of the Himalayas, symbol of steadfast devotion.",
+              "hi": "नवदुर्गा का प्रथम स्वरूप, हिमालय की पुत्री, दृढ़ भक्ति और स्थिरता की प्रतीक।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਪਹਿਲਾ ਸਰੂਪ, ਹਿਮਾਲਿਆ ਦੀ ਪੁੱਤਰੀ, ਦ੍ਰਿੜ੍ਹ ਭਗਤੀ ਦਾ ਪ੍ਰਤੀਕ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-2-brahmacharini",
+          "sequence": 2,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 2 — Brahmacharini",
+              "hi": "नवरात्रि दिन २ — ब्रह्मचारिणी",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੨ — ਬ੍ਰਹਮਚਾਰਿਣੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Dwitiya",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Brahmacharini",
+              "hi": "माँ ब्रह्मचारिणी",
+              "pa": "ਮਾਂ ਬ੍ਰਹਮਚਾਰਿਣੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Brahmacharini Puja"],
+              "hi": ["ब्रह्मचारिणी पूजा"],
+              "pa": ["ਬ੍ਰਹਮਚਾਰਿਣੀ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Second form of Navadurga, embodiment of penance, austerity, and sacred wisdom.",
+              "hi": "नवदुर्गा का दूसरा स्वरूप, तपस्या, संयम और पवित्र ज्ञान की साक्षात मूर्ति।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਦੂਜਾ ਸਰੂਪ, ਤਪੱਸਿਆ ਅਤੇ ਪਵਿੱਤਰ ਗਿਆਨ ਦੀ ਮੂਰਤ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-3-chandraghanta",
+          "sequence": 3,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 3 — Chandraghanta",
+              "hi": "नवरात्रि दिन ३ — चंद्रघंटा",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੩ — ਚੰਦਰਘੰਟਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Tritiya",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Chandraghanta",
+              "hi": "माँ चंद्रघंटा",
+              "pa": "ਮਾਂ ਚੰਦਰਘੰਟਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Chandraghanta Puja"],
+              "hi": ["चंद्रघंटा पूजा"],
+              "pa": ["ਚੰਦਰਘੰਟਾ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Third form of Navadurga, bearer of the crescent bell, symbol of courage and grace.",
+              "hi": "नवदुर्गा का तीसरा स्वरूप, चंद्रघंट धारिणी, साहस और सौम्यता की अधिष्ठात्री।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਤੀਜਾ ਸਰੂਪ, ਸਾਹਸ ਅਤੇ ਸ਼ਾਂਤੀ ਦੀ ਪ੍ਰਤੀਕ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-4-kushmanda",
+          "sequence": 4,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 4 — Kushmanda",
+              "hi": "नवरात्रि दिन ४ — कूष्माण्डा",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੪ — ਕੂਸ਼ਮਾਂਡਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Chaturthi",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Kushmanda",
+              "hi": "माँ कूष्माण्डा",
+              "pa": "ਮਾਂ ਕੂਸ਼ਮਾਂਡਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Kushmanda Puja"],
+              "hi": ["कूष्माण्डा पूजा"],
+              "pa": ["ਕੂਸ਼ਮਾਂਡਾ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Fourth form of Navadurga, creator of the cosmic egg with her divine smile.",
+              "hi": "नवदुर्गा का चौथा स्वरूप, अपनी मन्द मुस्कान से ब्रह्मांड की रचना करने वाली शक्ति।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਚੌਥਾ ਸਰੂਪ, ਬ੍ਰਹਿਮੰਡ ਦੀ ਸਿਰਜਣਹਾਰ ਸ਼ਕਤੀ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-5-skandamata",
+          "sequence": 5,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 5 — Skandamata",
+              "hi": "नवरात्रि दिन ५ — स्कन्दमाता",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੫ — ਸਕੰਦਮਾਤਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Panchami",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Skandamata",
+              "hi": "माँ स्कन्दमाता",
+              "pa": "ਮਾਂ ਸਕੰਦਮਾਤਾ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Skandamata Puja"],
+              "hi": ["स्कन्दमाता पूजा"],
+              "pa": ["ਸਕੰਦਮਾਤਾ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Fifth form of Navadurga, mother of Lord Skanda (Kartikeya), bestower of maternal grace and salvation.",
+              "hi": "नवदुर्गा का पाँचवाँ स्वरूप, भगवान स्कन्द (कार्तिकेय) की माता, वात्सल्य और मोक्ष प्रदायिनी।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਪੰਜਵਾਂ ਸਰੂਪ, ਭਗਵਾਨ ਸਕੰਦ ਦੀ ਮਾਤਾ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-6-katyayani",
+          "sequence": 6,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 6 — Katyayani",
+              "hi": "नवरात्रि दिन ६ — कात्यायनी",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੬ — ਕਾਤਿਆਇਨੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Shashthi (Durga Sasthi)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Katyayani",
+              "hi": "माँ कात्यायनी",
+              "pa": "ਮਾਂ ਕਾਤਿਆਇਨੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Bilva Nimantran", "Sasthi Bodhon", "Katyayani Puja"],
+              "hi": ["बिल्व निमंत्रण", "षष्ठी बोधन", "कात्यायनी पूजा"],
+              "pa": ["ਬਿਲਵ ਨਿਮੰਤਰਣ", "ਸ਼ਸ਼ਠੀ ਬੋਧਨ", "ਕਾਤਿਆਇਨੀ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "regions": ["Bengal", "East India", "Odisha", "Assam"],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Sixth form of Navadurga, fierce warrior manifestation who vanquished Mahishasura.",
+              "hi": "नवदुर्गा का छठा स्वरूप, महर्षि कात्यायन की तपस्या से प्रकट वीर शक्ति।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਛੇਵਾਂ ਸਰੂਪ, ਮਹਿਸ਼ਾਸੁਰ ਦਾ ਸੰਘਾਰ ਕਰਨ ਵਾਲੀ ਵੀਰ ਸ਼ਕਤੀ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "navratri-day-7-kalaratri",
+          "sequence": 7,
+          "canonicalTitle": {
+            "value": {
+              "en": "Navratri Day 7 — Kalaratri",
+              "hi": "नवरात्रि दिन ७ — कालरात्रि",
+              "pa": "ਨਰਾਤੇ ਦਿਨ ੭ — ਕਾਲਰਾਤਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Saptami (Maha Saptami)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Kalaratri",
+              "hi": "माँ कालरात्रि",
+              "pa": "ਮਾਂ ਕਾਲਰਾਤਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Maha Saptami Puja", "Kola Bou / Nabapatrika"],
+              "hi": ["महासप्तमी पूजा", "नवपत्रिका प्रवेश"],
+              "pa": ["ਮਹਾਸਪਤਮੀ ਪੂਜਾ", "ਨਵਪੱਤ੍ਰਿਕਾ ਪ੍ਰਵੇਸ਼"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "regions": ["Bengal", "East India", "Odisha", "Assam"],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Seventh form of Navadurga, destroyer of darkness and fear, also revered as Shubhankari.",
+              "hi": "नवदुर्गा का सातवाँ स्वरूप, अंधकार और भय की नाशिनी, शुभ फल देने वाली शुभंकरी।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਸੱਤਵਾਂ ਸਰੂਪ, ਅੰਧਕਾਰ ਤੇ ਡਰ ਦਾ ਨਾਸ਼ ਕਰਨ ਵਾਲੀ ਸ਼ੁਭੰਕਰੀ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "durga-ashtami",
+          "sequence": 8,
+          "canonicalTitle": {
+            "value": {
+              "en": "Durga Ashtami (Maha Ashtami)",
+              "hi": "दुर्गा अष्टमी (महाअष्टमी)",
+              "pa": "ਦੁਰਗਾ ਅਸ਼ਟਮੀ (ਮਹਾਅਸ਼ਟਮੀ)"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #49 (p.7, English edition) — 'Durgastami (Maha Astami)' at 2026-10-19",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Mahagauri",
+              "hi": "माँ महागौरी",
+              "pa": "ਮਾਂ ਮਹਾਗੌਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Maha Ashtami Puja", "Sandhi Puja", "Kanya Pujan"],
+              "hi": ["महाअष्टमी पूजा", "संधि पूजा", "कन्या पूजन"],
+              "pa": ["ਮਹਾਅਸ਼ਟਮੀ ਪੂਜਾ", "ਸੰਧੀ ਪੂਜਾ", "ਕੰਨਿਆ ਪੂਜਨ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "regions": ["Pan-India", "Bengal", "North India"],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Eighth form of Navadurga, embodiment of purity and luminous grace, Sandhi Puja worship.",
+              "hi": "नवदुर्गा का आठवाँ स्वरूप, परम पवित्र और दिव्य कांति स्वरूपा, संधि पूजा का महापर्व।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਅੱਠਵਾਂ ਸਰੂਪ, ਸ਼ੁੱਧਤਾ ਅਤੇ ਪਰਮ ਕ੍ਰਿਪਾ ਦੀ ਪ੍ਰਤੀਕ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "maha-navami",
+          "sequence": 9,
+          "canonicalTitle": {
+            "value": {
+              "en": "Maha Navami",
+              "hi": "महानवमी",
+              "pa": "ਮਹਾਨਵਮੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #50 (p.7, English edition) — 'Mahanavami' at 2026-10-20",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Siddhidatri",
+              "hi": "माँ सिद्धिदात्री",
+              "pa": "ਮਾਂ ਸਿੱਧੀਦਾਤਰੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Maha Navami Puja", "Ayudha Puja", "Chandi Havan"],
+              "hi": ["महानवमी पूजा", "आयुध पूजा", "चंडी हवन"],
+              "pa": ["ਮਹਾਨਵਮੀ ਪੂਜਾ", "ਆਯੁਧ ਪੂਜਾ", "ਚੰਡੀ ਹਵਨ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #50 (p.7, English edition) mentions Ayudha Puja",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Ninth form of Navadurga, bestower of all mystical accomplishments (siddhis) and cosmic blessings.",
+              "hi": "नवदुर्गा का नौवाँ स्वरूप, समस्त सिद्धियों और आनंद को प्रदान करने वाली पूर्ण शक्ति।",
+              "pa": "ਨਵਦੁਰਗਾ ਦਾ ਨੌਵਾਂ ਸਰੂਪ, ਸਾਰੀਆਂ ਸਿੱਧੀਆਂ ਪ੍ਰਦਾਨ ਕਰਨ ਵਾਲੀ ਸ਼ਕਤੀ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "dussehra",
+          "sequence": 10,
+          "canonicalTitle": {
+            "value": {
+              "en": "Vijayadashami / Dussehra",
+              "hi": "विजयादशमी / दशहरा",
+              "pa": "ਵਿਜਯਾਦਸ਼ਮੀ / ਦੁਸਹਿਰਾ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #51 (p.7, English edition) — 'Vijaya Dasami (Bengal & Kerala)' at 2026-10-21",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Victory of Dharma",
+              "hi": "धर्म की विजय",
+              "pa": "ਧਰਮ ਦੀ ਜਿੱਤ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Dussehra", "Durga Visarjan", "Sindoor Khela", "Vidyarambham"],
+              "hi": ["दशहरा", "दुर्गा विसर्जन", "सिंदूर खेला", "विद्यारम्भ"],
+              "pa": ["ਦੁਸਹਿਰਾ", "ਦੁਰਗਾ ਵਿਸਰਜਨ", "ਸਿੰਦੂਰ ਖੇਲਾ", "ਵਿਦਿਆਰੰਭ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": {
+              "regions": ["Pan-India", "Bengal", "Kerala"],
+              "universal": false
+            }
+          },
+          "significance": {
+            "value": {
+              "en": "Culmination of Navratri, celebrating the victory of righteousness over unrighteousness.",
+              "hi": "नवरात्रि का पावन समापन, अधर्म पर धर्म और असत्य पर सत्य की शाश्वत विजय का उत्सव।",
+              "pa": "ਨਰਾਤਿਆਂ ਦੀ ਸਮਾਪਤੀ, ਬੁਰਾਈ ਉੱਤੇ ਨੇਕੀ ਦੀ ਜਿੱਤ ਦਾ ਦਿਹਾੜਾ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        }
+      ]
+    },
+    {
+      "definitionKey": "diwali-five-days",
+      "name": {
+        "value": {
+          "en": "Diwali",
+          "hi": "दीपावली",
+          "pa": "ਦੀਵਾਲੀ"
+        },
+        "status": "source_backed",
+        "sourceRefs": [
+          {
+            "sourceName": "Rashtriya Panchang Saka 1948",
+            "pageOrSection": "Index #55 (p.7, English edition) — Dipavali",
+            "tier": 1,
+            "usagePermitted": "academic_citation"
+          }
+        ],
+        "applicability": { "universal": true },
+        "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "dhanteras",
+          "sequence": 1,
+          "canonicalTitle": {
+            "value": {
+              "en": "Dhanteras",
+              "hi": "धनतेरस (धनत्रयोदशी)",
+              "pa": "ਧਨਤੇਰਸ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Kartika Krishna Trayodashi (Dhanatrayodasi)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Lord Dhanvantari & Devi Lakshmi",
+              "hi": "भगवान धन्वन्तरि एवं माँ लक्ष्मी",
+              "pa": "ਭਗਵਾਨ ਧਨਵੰਤਰੀ ਅਤੇ ਮਾਂ ਲਕਸ਼ਮੀ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Dhanvantari Puja", "Yamadeepdaan", "Kuber Puja"],
+              "hi": ["धन्वन्तरि पूजा", "यमदीपदान", "कुबेर पूजा"],
+              "pa": ["ਧਨਵੰਤਰੀ ਪੂਜਾ", "ਯਮਦੀਪਦਾਨ", "ਕੁਬੇਰ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Inception of Diwali festival; marks the appearance of Lord Dhanvantari with the pot of Amrita.",
+              "hi": "दीपावली महापर्व का शुभारंभ; समुद्र मंथन से अमृत कलश लेकर प्रकट हुए आयुर्वेद के प्रणेता भगवान धन्वन्तरि की आराधना।",
+              "pa": "ਦੀਵਾਲੀ ਤਿਉਹਾਰ ਦਾ ਆਰੰਭ; ਭਗਵਾਨ ਧਨਵੰਤਰੀ ਅਤੇ ਮਾਂ ਲਕਸ਼ਮੀ ਦੀ ਅਰਾਧਨਾ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "naraka-chaturdashi",
+          "sequence": 2,
+          "canonicalTitle": {
+            "value": {
+              "en": "Naraka Chaturdashi",
+              "hi": "नरक चतुर्दशी",
+              "pa": "ਨਰਕ ਚਤੁਰਦਸ਼ੀ"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #55 (p.7, English edition) — 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Purvarunodaya Snana & Deep Daan",
+              "hi": "पूर्व-अरुणोदय स्नान एवं दीपदान",
+              "pa": "ਪੂਰਵ-ਅਰੁਣੋਦਯ ਇਸ਼ਨਾਨ ਅਤੇ ਦੀਪਦਾਨ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Abhyanga Snana", "Yama Tarpana", "Deep Daan"],
+              "hi": ["अभ्यंग स्नान", "यम तर्पण", "दीपदान"],
+              "pa": ["ਅਭਿਅੰਗ ਇਸ਼ਨਾਨ", "ਯਮ ਤਰਪਣ", "ਦੀਪਦਾਨ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Pre-dawn Chaturdashi observance celebrated with sacred bath and lighting lamps.",
+              "hi": "अरुणोदय काल में पवित्र स्नान एवं दीपदान द्वारा नकारात्मकता का शमन और आत्म-शुद्धि का पर्व।",
+              "pa": "ਸੂਰਜ ਚੜ੍ਹਨ ਤੋਂ ਪਹਿਲਾਂ ਇਸ਼ਨਾਨ ਅਤੇ ਦੀਵੇ ਜਗਾਉਣ ਦਾ ਪਵਿੱਤਰ ਦਿਹਾੜਾ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "diwali",
+          "sequence": 3,
+          "canonicalTitle": {
+            "value": {
+              "en": "Diwali (Lakshmi Puja)",
+              "hi": "दीपावली (लक्ष्मी पूजन)",
+              "pa": "ਦੀਵਾਲੀ (ਲਕਸ਼ਮੀ ਪੂਜਨ)"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #55 (p.7, English edition) — 'Dipavali' at 2026-11-08",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Maa Lakshmi & Lord Ganesha",
+              "hi": "माँ लक्ष्मी एवं भगवान गणेश",
+              "pa": "ਮਾਂ ਲਕਸ਼ਮੀ ਅਤੇ ਭਗਵਾਨ ਗਣੇਸ਼"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Lakshmi Puja", "Ganesh Puja", "Deepotsava", "Chopda Pujan"],
+              "hi": ["लक्ष्मी पूजा", "गणेश पूजा", "दीपोत्सव", "चोपड़ा पूजन"],
+              "pa": ["ਲਕਸ਼ਮੀ ਪੂਜਾ", "ਗਣੇਸ਼ ਪੂਜਾ", "ਦੀਪਮਾਲਾ", "ਚੋਪੜਾ ਪੂਜਨ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "The great festival of lights on Amavasya pradosha, welcoming auspiciousness, prosperity, and light.",
+              "hi": "अमावस्या के प्रदोष काल में दीपों का महापर्व; अंधकार पर प्रकाश, अज्ञान पर ज्ञान और माँ महालक्ष्मी का स्वागत।",
+              "pa": "ਦੀਵਿਆਂ ਦਾ ਮਹਾਂਪਰਵ; ਖੁਸ਼ਹਾਲੀ ਅਤੇ ਚਾਨਣ ਦਾ ਉਤਸਵ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "govardhan-puja",
+          "sequence": 4,
+          "canonicalTitle": {
+            "value": {
+              "en": "Govardhan Puja",
+              "hi": "गोवर्धन पूजा (अन्नकूट)",
+              "pa": "ਗੋਵਰਧਨ ਪੂਜਾ (ਅੰਨਕੂਟ)"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #56 (p.7, English edition) — 'Govardhana Puja / Annakuta' at 2026-11-09",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Govardhan Hill & Lord Krishna",
+              "hi": "गोवर्धन पर्वत एवं भगवान श्रीकृष्ण",
+              "pa": "ਗੋਵਰਧਨ ਪਰਬਤ ਅਤੇ ਭਗਵਾਨ ਸ਼੍ਰੀ ਕ੍ਰਿਸ਼ਨ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Govardhan Puja", "Annakut", "Gau Puja"],
+              "hi": ["गोवर्धन पूजा", "अन्नकूट महाप्रसाद", "गोपूजा"],
+              "pa": ["ਗੋਵਰਧਨ ਪੂਜਾ", "ਅੰਨਕੂਟ", "ਗਊ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Commemorates Lord Krishna lifting Govardhan Hill to protect the inhabitants of Braj; celebrated with Annakut feasts.",
+              "hi": "भगवान श्रीकृष्ण द्वारा गोवर्धन पर्वत उठाकर ब्रजवासियों की रक्षा करने की पावन स्मृति; अन्नकूट महाभोग और गो-संवर्धन का उत्सव।",
+              "pa": "ਭਗਵਾਨ ਕ੍ਰਿਸ਼ਨ ਦੁਆਰਾ ਗੋਵਰਧਨ ਪਰਬਤ ਚੁੱਕਣ ਦੀ ਯਾਦ ਵਿੱਚ ਮਨਾਇਆ ਜਾਂਦਾ ਤਿਉਹਾਰ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        },
+        {
+          "slug": "bhai-dooj",
+          "sequence": 5,
+          "canonicalTitle": {
+            "value": {
+              "en": "Bhai Dooj (Yama Dwitiya)",
+              "hi": "भाई दूज (यम द्वितीया)",
+              "pa": "ਭਾਈ ਦੂਜ (ਯਮ ਦਵਿਤੀਆ)"
+            },
+            "status": "source_backed",
+            "sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #57 (p.7, English edition) — 'Bhratridvitiya (Bhai Duj)' at 2026-11-10",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          },
+          "deityOrTheme": {
+            "value": {
+              "en": "Yama & Yamuna / Sibling Bond",
+              "hi": "यमराज एवं यमुना / भ्रातृ-भगिनी प्रेम",
+              "pa": "ਯਮਰਾਜ ਅਤੇ ਯਮੁਨਾ / ਭੈਣ-ਭਰਾ ਦਾ ਪਿਆਰ"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "rituals": {
+            "value": {
+              "en": ["Bhai Tika", "Yama Dwitiya Puja"],
+              "hi": ["भाई टीका", "यम द्वितीया पूजा"],
+              "pa": ["ਭਾਈ ਟੀਕਾ", "ਯਮ ਦਵਿਤੀਆ ਪੂਜਾ"]
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true }
+          },
+          "significance": {
+            "value": {
+              "en": "Celebrates the sacred bond of brothers and sisters, blessed by Yamuna welcoming her brother Yamaraj.",
+              "hi": "भाई-बहन के अगाध स्नेह और दीर्घायु की कामना का पर्व; यमुना जी द्वारा अपने भ्राता यमराज का सत्कार।",
+              "pa": "ਭੈਣ-ਭਰਾ ਦੇ ਪਵਿੱਤਰ ਰਿਸ਼ਤੇ ਅਤੇ ਲੰਮੀ ਉਮਰ ਦੀ ਕਾਮਨਾ ਦਾ ਤਿਉਹਾਰ।"
+            },
+            "status": "pending_source",
+            "sourceRefs": [],
+            "applicability": { "universal": true },
+            "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 import { createHash } from 'node:crypto';
 import type { SourceReference } from '@sangam/dharma-rules';
 import seriesDefinitionsJson from '@sangam/dharma-rules/src/festivals/series.json';
+import seriesContentJson from '@sangam/dharma-rules/src/festivals/series-content.json';
 import {
   OBSERVANCE_SERIES_CONTRACT_VERSION,
+  type LocalizedEditorialField,
   type ObservanceSeries,
   type ObservanceSeriesChild,
   type ObservanceSeriesMode,
@@ -56,6 +58,31 @@ export function assertSeriesDefinitions(definitions: SeriesDefinition[]): void {
 }
 
 assertSeriesDefinitions(SERIES_DEFINITIONS);
+
+export interface SourcedSeriesChildContent {
+  slug: string;
+  sequence: number;
+  canonicalTitle: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+  deityOrTheme?: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+  rituals?: LocalizedEditorialField<{ en: string[]; hi?: string[]; pa?: string[] }>;
+  significance?: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+}
+
+export interface SourcedSeriesGroupContent {
+  definitionKey: string;
+  name: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+  tradition: string;
+  children: SourcedSeriesChildContent[];
+}
+
+const SERIES_CONTENT_DATA = seriesContentJson as { version: string; series: SourcedSeriesGroupContent[] };
+const SERIES_CONTENT_BY_SLUG = new Map<string, SourcedSeriesChildContent>();
+for (const s of SERIES_CONTENT_DATA.series) {
+  for (const child of s.children) {
+    SERIES_CONTENT_BY_SLUG.set(child.slug, child);
+  }
+}
+
 
 function sameLocation(result: ClientObservanceResult, location: BuildObservanceSeriesOptions['location']): boolean {
   return result.location.tz === location.tz
@@ -164,9 +191,15 @@ function buildOneSeries(
         status: 'missing',
         diagnostics: ['required_series_child_missing'],
         sourceRefs: [],
-        editorial: childDefinition.deityOrTheme || childDefinition.rituals
-          ? { deityOrTheme: childDefinition.deityOrTheme ?? null, rituals: childDefinition.rituals ?? [] }
-          : undefined,
+        editorial: (() => {
+          const c = SERIES_CONTENT_BY_SLUG.get(childDefinition.slug);
+          return c ? {
+            canonicalTitle: c.canonicalTitle,
+            deityOrTheme: c.deityOrTheme ?? null,
+            rituals: c.rituals,
+            significance: c.significance ?? null,
+          } : undefined;
+        })(),
       });
       continue;
     }
@@ -187,9 +220,15 @@ function buildOneSeries(
       status: selected.status,
       diagnostics: [...new Set(childDiagnostics)],
       sourceRefs: selected.sourceRefs,
-      editorial: childDefinition.deityOrTheme || childDefinition.rituals
-        ? { deityOrTheme: childDefinition.deityOrTheme ?? null, rituals: childDefinition.rituals ?? [] }
-        : undefined,
+      editorial: (() => {
+        const c = SERIES_CONTENT_BY_SLUG.get(childDefinition.slug);
+        return c ? {
+          canonicalTitle: c.canonicalTitle,
+          deityOrTheme: c.deityOrTheme ?? null,
+          rituals: c.rituals,
+          significance: c.significance ?? null,
+        } : undefined;
+      })(),
     });
   }
 
@@ -200,6 +239,8 @@ function buildOneSeries(
 
   const todayChildren = children.filter(child => child.civilDate === options.spiritualDate);
   if (todayChildren.length > 1) diagnostics.push('multiple_series_children_today');
+  const activeChildOccurrenceIds = todayChildren.flatMap(child => child.occurrenceId ? [child.occurrenceId] : []);
+  const currentCivilDate = todayChildren.length > 0 ? options.spiritualDate : null;
   const currentDay = todayChildren.length > 0
     ? Math.min(...todayChildren.map(child => child.sequence))
     : null;
@@ -237,6 +278,8 @@ function buildOneSeries(
     status,
     startDate,
     endDate,
+    currentCivilDate,
+    activeChildOccurrenceIds,
     currentDay,
     totalDays: children.length,
     children,

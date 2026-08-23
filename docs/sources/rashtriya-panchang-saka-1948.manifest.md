@@ -368,3 +368,76 @@ silently.
 ## Guards run after batch 5
 
 `validate:rules` 97/97. `tsc --noEmit` clean. Shadow harness `src/conditions/__tests__/naraka-chaturdashi.test.ts` passing. Production DB untouched.
+
+---
+
+## Batch 6 — 2026-08-19: `golden_fixtures` coverage gap-fill
+
+Same checksummed PDF (SHA-256 confirmed matching the edition above before
+extraction). Scope: the 7 festivals with `golden_fixtures` rows but zero
+`approved: true` citation, identified by querying the live `golden_fixtures`
+table directly (`festival_id NOT IN (SELECT DISTINCT festival_id WHERE
+approved = true)`). Extraction re-verified clean before trusting any match:
+`node scripts/sources/extract-panchang-dates.mjs rp1948.txt` — 395 day
+headers, 2026-03-22 .. 2027-04-20, **0 gaps**.
+
+Method, same as batch 2: compute the rule's actual output via
+`calculateObservancesForYear` (the real production entry point, not a
+re-derivation) and require an **exact match** against the source's printed
+Gregorian date before writing anything as a citation. A rule that doesn't
+compute an occurrence at all (deferred rules aren't in the default output)
+is reported as such, not silently skipped.
+
+| Festival | Source label found | Printed date | PDF location | Engine (real entry point) | Result |
+|---|---|---|---|---|---|
+| `guru-purnima` | "Guru Purnima, Vyasa Puja, Asadhi Purnima" (Ashadha Sukla Purnima) | 2026-07-29 | pdftotext p.54, daily entry | `calculateObservancesForYear(2026)` → `guru-purnima::legacy-default` = 2026-07-29 | **MATCH** |
+| `lohri` | Index #66, "Lohri (Jammu & kashmir)" | 2027-01-13 | pdftotext p.7 (printed "ii"), festival index | `calculateObservancesForYear(2027)` → `lohri::legacy-default` = 2027-01-13 | **MATCH** |
+| `makar-sankranti` | Index #67, "Bhogi (S.India), Makara Samkranti (Bengal)" | 2027-01-14 | pdftotext p.7 (printed "ii"), festival index | `calculateObservancesForYear(2027)` → `makar-sankranti::legacy-default` = 2027-01-14 | **MATCH** |
+| `hartalika-teej` | "Haritalika Gauri Tritiya, Haritalika Chaturthi..." (Bhadra Sukla Tritiya) | 2026-09-15 | pdftotext p.66 (printed "46"), daily entry | Rule has `launch_status: "deferred"` — **not in the production entry point's output at all**, nothing to diff against | **Sourced, engine-unverified** |
+| `hanuman-jayanti` | See "Regional variant found" below | — | — | Rule has `launch_status: "deferred"` | **Not written — see below** |
+| `holla-mohalla` | Not found in this source (Sikh festival; RP is a mainstream Hindu almanac) | — | — | — | **Wrong source — needs SGPC per D35's precedent, not this PDF** |
+| `sahibzade-shaheedi-diwas` | Not found in this source | — | — | — | **Wrong source — same as above** |
+
+### Regional variant found — `hanuman-jayanti` — flagged, not resolved
+
+The source prints **two different dates** for Hanuman Jayanti under two
+different names, and they are not close — 219 days apart, not a boundary
+dispute:
+
+| Label in source | Date | Context |
+|---|---|---|
+| "Hanumat Jayanti (S. India)" | 2026-04-03 (Friday) | Chaitra Purnima — grouped with "Chaitri Purnima, ... Oli Ends(Jain)" |
+| "Hanumajjanma (N.India)" | 2026-11-09 (Monday) | Kartika Krishna Chaturdashi — grouped with "Naraka Chaturdasi(Purvarunodaya), Lakshmi Puja, ... Dipavali" |
+
+This is the source's own explicit regional labelling, not an artefact of
+extraction. The existing `hanuman-jayanti` rule (`corrected_lunar_masa_name:
+"Chaitra"`, `lunar_tithi_index: 15`) already targets the **South Indian**
+Chaitra-Purnima convention specifically — the source confirms that specific
+choice is a real, attested date, **not** that it's the only one. No North
+Indian variant rule exists in `rules.json` today. Per this codebase's own
+precedent (Vat Savitri, Krishna Janmashtami), a second regional variant is a
+new rule-authoring decision, not a citation-writing one — **not attempted
+here**. Writing only the S.India citation risks it later being read as "the"
+citation for Hanuman Jayanti rather than one of two attested regional dates;
+flagging this explicitly so it isn't lost.
+
+### What was NOT written to `golden_fixtures`
+
+Per this manifest's own governing rule (§ intro) and `4.2`'s human/council
+gate: `expected`/`source` were populated **only** for the three MATCH rows
+above, **only** for their Ujjain-location case_ids (the source is India-
+computed; Bedford rows need their own location-qualified verification this
+PDF cannot provide), and `approved` was left `false` in every case — the
+same discipline as every prior batch. `hartalika-teej` and `hanuman-jayanti`
+were left entirely untouched in the DB: a citation with nothing to diff
+against isn't a verified fact yet, and `hanuman-jayanti` additionally has
+the unresolved variant question above. `holla-mohalla`/`sahibzade-shaheedi-
+diwas` need the Sikh SGPC source track (see D35), not this document.
+
+## Guards run after batch 6
+
+`validate:rules` 97/97 (unchanged — no `rules.json` edits this batch).
+`tsc --noEmit` clean. `golden_fixtures` UPDATE confirmed via `returning`:
+exactly 3 rows changed (`guru-purnima`/`lohri`/`makar-sankranti`, Ujjain
+case_ids only), all still `approved: false`. Zero rows touched for
+`hartalika-teej`/`hanuman-jayanti`/`holla-mohalla`/`sahibzade-shaheedi-diwas`.

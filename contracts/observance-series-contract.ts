@@ -4,7 +4,7 @@
  * Backend owns this file. Native receives a byte-identical generated snapshot;
  * clients render these dates and identities but never calculate them.
  */
-export const OBSERVANCE_SERIES_CONTRACT_VERSION = '1.0.0';
+export const OBSERVANCE_SERIES_CONTRACT_VERSION = '1.1.0';
 
 export type ObservanceSeriesMode =
   | 'daily_journey'
@@ -18,6 +18,20 @@ export type ObservanceSeriesStatus =
   | 'concluding'
   | 'complete'
   | 'under_review';
+
+export type EditorialStatus =
+  | 'source_backed'
+  | 'council_reviewed_editorial'
+  | 'pending_source'
+  | 'withheld';
+
+export interface Applicability {
+  regions?: string[];
+  calendarProfiles?: string[];
+  traditions?: string[];
+  sampradayas?: string[];
+  universal: boolean;
+}
 
 export interface ObservanceSeriesSourceReference {
   id?: string;
@@ -35,6 +49,20 @@ export interface ObservanceSeriesSourceReference {
   url?: string | null;
 }
 
+export interface LocalizedEditorialField<T> {
+  value: T;
+  status: EditorialStatus;
+  sourceRefs: ObservanceSeriesSourceReference[];
+  applicability: Applicability;
+  /** Required when status is council_reviewed_editorial. */
+  reviewRef?: string;
+  translationStatus?: {
+    en: 'source' | 'reviewed_translation' | 'pending';
+    hi?: 'source' | 'reviewed_translation' | 'pending';
+    pa?: 'source' | 'reviewed_translation' | 'pending';
+  };
+}
+
 export interface ObservanceSeriesChild {
   /** Null only for an explicitly missing required child; never fabricate an occurrence UUID. */
   occurrenceId: string | null;
@@ -48,8 +76,10 @@ export interface ObservanceSeriesChild {
   diagnostics: string[];
   sourceRefs: ObservanceSeriesSourceReference[];
   editorial?: {
-    deityOrTheme?: string | null;
-    rituals?: string[];
+    canonicalTitle?: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+    deityOrTheme?: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }> | null;
+    rituals?: LocalizedEditorialField<{ en: string[]; hi?: string[]; pa?: string[] }>;
+    significance?: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }> | null;
     colour?: string | null;
     mantraId?: string | null;
   };
@@ -66,6 +96,10 @@ export interface ObservanceSeries {
   status: ObservanceSeriesStatus;
   startDate: string | null;
   endDate: string | null;
+  /** Present only when one or more children occur on the user's spiritual date. */
+  currentCivilDate: string | null;
+  /** Lossless identity list; multiple children may share one civil date. */
+  activeChildOccurrenceIds: string[];
   currentDay: number | null;
   totalDays: number | null;
   children: ObservanceSeriesChild[];
