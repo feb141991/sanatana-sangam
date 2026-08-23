@@ -1,0 +1,178 @@
+import { NextRequest } from "next/server";
+import { getApiUser } from "@/lib/api-auth";
+import { resolveRequestProfile, shiftDate, PROFILE_RESOLUTION_PAD_DAYS } from "@/lib/calendar/request-profile";
+import { localSpiritualDate } from "@/lib/sacred-time";
+import { formatOccurrencesToResults } from "@/lib/calendar/observance-formatter";
+import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from "@/lib/calendar/occurrence-reader";
+import { UUID_REGEX } from "@/lib/vrat-observation";
+
+export interface ObservableVratResultSuccess {
+  success: true;
+  user: {
+    id: string;
+    timezone: string;
+    calendarProfile: string;
+    tradition: string;
+    sampradaya: string | null;
+  };
+  occurrence: {
+    id: string;
+    date: string;
+    vratId: string;
+    vratName: string;
+    calendarProfile: string;
+    tradition: string;
+  };
+}
+
+export interface ObservableVratResultFailure {
+  success: false;
+  statusCode: number;
+  errorCode: string;
+  userMessage: string;
+}
+
+export type ObservableVratResult = ObservableVratResultSuccess | ObservableVratResultFailure;
+
+/**
+ * Resolves whether an occurrence is currently observable by the authenticated user today.
+ * Reuses the canonical calendar pipeline (request profile, withholding, batches, tradition/variant resolution).
+ */
+export async function resolveObservableVratOccurrence(
+  request: NextRequest,
+  occurrenceId: string,
+): Promise<ObservableVratResult> {
+  if (!occurrenceId || !UUID_REGEX.test(occurrenceId)) {
+    return {
+      success: false,
+      statusCode: 400,
+      errorCode: "INVALID_OCCURRENCE_ID",
+      userMessage: "Invalid occurrence ID format",
+    };
+  }
+
+  const { user, error: authError } = await getApiUser(request);
+  if (!user) {
+    return {
+      success: false,
+      statusCode: 401,
+      errorCode: "UNAUTHENTICATED",
+      userMessage: "Authentication required",
+    };
+  }
+
+  const resolved = await resolveRequestProfile(request, { tradition: "all", calendarProfile: "" });
+  if (resolved.invalidCredentials) {
+    return {
+      success: false,
+      statusCode: 401,
+      errorCode: "UNAUTHORIZED",
+      userMessage: "Authentication required",
+    };
+  }
+
+  if (resolved.profileError) {
+    return {
+      success: false,
+      statusCode: 500,
+      errorCode: "PROFILE_READ_FAILURE",
+      userMessage: "Failed to read profile context",
+    };
+  }
+
+  if (!resolved.context.timezone) {
+    return {
+      success: false,
+      statusCode: 500,
+      errorCode: "TIMEZONE_REQUIRED",
+      userMessage: "User profile timezone not set",
+    };
+  }
+
+  const tz = resolved.context.timezone;
+  const todayStr = localSpiritualDate(tz, 4);
+  const calendarProfile = resolved.calendarProfile;
+  const tradition = resolved.tradition;
+  const sampradaya = resolved.sampradaya;
+  const supabase = resolved.supabase;
+
+  // Query occurrences around todayStr using canonical selection and filtering
+  const { data: occurrencesData, error: occError } = await supabase
+    .from("observance_occurrences")
+    .select(CALENDAR_OCCURRENCE_SELECT)
+    .gte("date", shiftDate(todayStr, -PROFILE_RESOLUTION_PAD_DAYS))
+    .lte("date", shiftDate(todayStr, PROFILE_RESOLUTION_PAD_DAYS))
+    .in("calendar_profile", [calendarProfile, "legacy-ujjain"])
+    .eq("observance_definitions.active", true)
+    .eq("observance_definitions.kind", "vrat")
+    .eq("publication_status", "published")
+    .eq("review_status", "reviewed")
+    .eq("verification_status", "verified")
+    .eq("audit_status", "completed")
+    .neq("final_date_source", "fallback")
+    .order("date", { ascending: true });
+
+  if (occError) {
+    return {
+      success: false,
+      statusCode: 500,
+      errorCode: "DATABASE_ERROR",
+      userMessage: "Failed to query observance occurrences",
+    };
+  }
+
+  const occurrencesWithBatches = await attachMaterialisationBatches(
+    occurrencesData || [],
+    undefined,
+    calendarProfile,
+    resolved.context.effectiveCalculationLocation,
+  );
+
+  const formattedResults = formatOccurrencesToResults(
+    occurrencesWithBatches,
+    [],
+    tradition,
+    calendarProfile,
+    sampradaya,
+    todayStr,
+    todayStr,
+    resolved.context,
+  );
+
+  const matched = formattedResults.find(
+    (r) =>
+      r.id === occurrenceId &&
+      r.isPrimary === true &&
+      r.status === "resolved" &&
+      r.kind === "vrat" &&
+      (r.civilDate === todayStr || r.date === todayStr)
+  );
+
+  if (!matched) {
+    return {
+      success: false,
+      statusCode: 400,
+      errorCode: "OCCURRENCE_NOT_OBSERVABLE",
+      userMessage: "This observance is not active or eligible to observe today",
+    };
+  }
+
+  return {
+    success: true,
+    user: {
+      id: user.id,
+      timezone: tz,
+      calendarProfile,
+      tradition,
+      sampradaya,
+    },
+    occurrence: {
+      id: matched.id!,
+      date: matched.civilDate ?? matched.date,
+      vratId: matched.festivalId,
+      vratName: matched.display_name,
+      calendarProfile: matched.profile.calendar,
+      tradition: matched.profile.tradition,
+    },
+  };
+}

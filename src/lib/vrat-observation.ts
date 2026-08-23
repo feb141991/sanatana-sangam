@@ -29,11 +29,19 @@ export function isEligibleToObserveToday(params: {
   if (!params.occurrence?.id || !params.canonicalTodayDate) {
     return false;
   }
-  const occurrenceDate = params.occurrence.civilDate ?? params.occurrence.date;
-  if (!occurrenceDate || occurrenceDate !== params.canonicalTodayDate) {
+  if (!UUID_REGEX.test(params.occurrence.id)) {
     return false;
   }
-  if (params.occurrence.status === "unresolved" || params.occurrence.status === "under_review") {
+  // Exactly positive resolved status required
+  if (params.occurrence.status !== "resolved") {
+    return false;
+  }
+  // Exactly primary variant required
+  if (params.occurrence.isPrimary !== true) {
+    return false;
+  }
+  const occurrenceDate = params.occurrence.civilDate ?? params.occurrence.date;
+  if (!occurrenceDate || occurrenceDate !== params.canonicalTodayDate) {
     return false;
   }
   return true;

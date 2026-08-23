@@ -4,6 +4,7 @@ import { assertNotBanned } from "@/lib/api-guards";
 import { localSpiritualDate } from "@/lib/sacred-time";
 import { createServiceRoleSupabaseClient } from "@/lib/admin";
 import { UUID_REGEX } from "@/lib/vrat-observation";
+import { resolveObservableVratOccurrence } from "@/lib/calendar/vrat-observable-resolver";
 
 // ── GET /api/vrat/observe?occurrence_id=X or ?vrat_id=X ──────────────────────
 // Returns observation state strictly for the authenticated user.
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
 
   // Reject unknown or hostile fields
   const allowedKeys = new Set(["occurrence_id"]);
-  const extraKeys = Object.keys(body).filter(k => !allowedKeys.has(k));
+  const extraKeys = Object.keys(body).filter((k) => !allowedKeys.has(k));
   if (extraKeys.length > 0) {
     return NextResponse.json({
       error: `Unknown request fields: ${extraKeys.join(", ")}`,
@@ -147,89 +148,16 @@ export async function POST(req: NextRequest) {
     }, { status: 400 });
   }
 
-  // Fetch user profile - fail closed on failure
-  const { data: profile, error: profErr } = await supabase
-    .from("profiles")
-    .select("id, timezone, calendar_profile, tradition, sampradaya")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profErr || !profile || !profile.timezone) {
-    return NextResponse.json({ error: "Failed to read user profile context" }, { status: 500 });
-  }
-
-  // Compute canonical local spiritual date (4 AM boundary)
-  const canonicalToday = localSpiritualDate(profile.timezone, 4);
-
-  // Validate occurrence strictly before calling transactional RPC
-  const { data: occurrence, error: occErr } = await supabase
-    .from("observance_occurrences")
-    .select(`
-      id,
-      date,
-      calendar_profile,
-      spiritual_tradition,
-      audit_status,
-      review_status,
-      verification_status,
-      final_date_source,
-      locked_for_regeneration,
-      batch_id,
-      observance_definitions!inner (
-        id,
-        slug,
-        display_name,
-        kind,
-        active
-      )
-    `)
-    .eq("id", occurrence_id)
-    .maybeSingle();
-
-  if (occErr) {
-    return NextResponse.json({ error: "Database error verifying occurrence" }, { status: 500 });
-  }
-
-  if (!occurrence) {
-    return NextResponse.json({ error: "Canonical occurrence not found" }, { status: 400 });
-  }
-
-  const def = occurrence.observance_definitions as any;
-  if (!def || def.kind !== "vrat" || def.active !== true) {
-    return NextResponse.json({ error: "Occurrence is not an active vrat" }, { status: 400 });
-  }
-
-  // Positive state verification
-  if (
-    occurrence.final_date_source === "fallback" ||
-    occurrence.audit_status !== "completed" ||
-    occurrence.review_status !== "reviewed" ||
-    occurrence.verification_status !== "verified"
-  ) {
-    return NextResponse.json({ error: "Occurrence is unverified, unreviewed, or fallback" }, { status: 400 });
-  }
-
-  // Date match validation
-  if (occurrence.date !== canonicalToday) {
+  // Resolve occurrence using canonical pipeline
+  const resolution = await resolveObservableVratOccurrence(req, occurrence_id);
+  if (!resolution.success) {
     return NextResponse.json({
-      error: `Occurrence date (${occurrence.date}) does not match current spiritual date (${canonicalToday})`,
-    }, { status: 400 });
+      error: resolution.userMessage,
+      code: resolution.errorCode,
+    }, { status: resolution.statusCode });
   }
 
-  // Batch completeness verification if batch_id exists
-  if (occurrence.batch_id) {
-    const { data: batch, error: batchErr } = await supabase
-      .from("observance_materialisation_batches")
-      .select("status, expected_row_count, produced_row_count")
-      .eq("id", occurrence.batch_id)
-      .maybeSingle();
-
-    if (batchErr || !batch || batch.status !== "complete") {
-      return NextResponse.json({ error: "Occurrence materialisation batch is incomplete" }, { status: 400 });
-    }
-  }
-
-  // Execute internal service-role RPC
+  // Execute internal service-role transaction RPC
   const adminClient = createServiceRoleSupabaseClient();
   const { data: rpcResult, error: rpcErr } = await adminClient.rpc("record_vrat_observation", {
     p_user_id: user.id,
@@ -238,13 +166,16 @@ export async function POST(req: NextRequest) {
 
   if (rpcErr) {
     console.error("[vrat/observe] Internal RPC failure:", rpcErr.message);
-    return NextResponse.json({ error: rpcErr.message || "Failed to record observation" }, { status: 500 });
+    return NextResponse.json({
+      error: "Failed to record observation",
+      code: "LEDGER_WRITE_ERROR",
+    }, { status: 500 });
   }
 
   return NextResponse.json({
     success: true,
     already_observed: Boolean(rpcResult?.already_observed),
     karma_earned: rpcResult?.karma_earned ?? 0,
-    occurrence_date: rpcResult?.occurrence_date ?? occurrence.date,
+    occurrence_date: rpcResult?.occurrence_date ?? resolution.occurrence.date,
   });
 }

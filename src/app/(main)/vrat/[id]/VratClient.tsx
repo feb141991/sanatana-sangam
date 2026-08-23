@@ -222,39 +222,70 @@ export default function VratClient({
     setObserveLoading(false);
     setCanonicalToday(null);
 
+    const controller = new AbortController();
+    const currentVratId = vrat.id;
+    const currentSlug = originalSlug;
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
-    fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`)
-      .then((response) => response.ok ? response.json() : null)
+
+    fetch(`/api/calendar/upcoming?days=60&tz=${encodeURIComponent(timezone)}`, {
+      signal: controller.signal,
+    })
+      .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
+        if (controller.signal.aborted) return;
         const observances = Array.isArray(data?.observances)
-          ? data.observances as ClientObservanceResult[]
+          ? (data.observances as ClientObservanceResult[])
           : [];
-        const matching = observances.filter((observance) =>
-          observance.festivalId === vrat.id ||
-          observance.route_slug === originalSlug ||
-          observance.slug === originalSlug,
+        const matching = observances.filter(
+          (observance) =>
+            observance.festivalId === currentVratId ||
+            observance.route_slug === currentSlug ||
+            observance.slug === currentSlug,
         );
         setCalendarObservance(
           matching.find((observance) => observance.isPrimary) ?? matching[0] ?? null,
         );
       })
-      .catch(() => setCalendarObservance(null));
+      .catch((err) => {
+        if (err?.name !== 'AbortError' && !controller.signal.aborted) {
+          setCalendarObservance(null);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
   }, [originalSlug, vrat.id]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const url = calendarObservance?.id ? `/api/vrat/observe?occurrence_id=${encodeURIComponent(calendarObservance.id)}` : `/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`;
-    fetch(url)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) {
-          setObservedToday(Boolean(data.observed_today));
-          setObserveCount(data.total_count ?? 0);
-          if (data.today) setCanonicalToday(data.today);
+    const controller = new AbortController();
+    const url = calendarObservance?.id
+      ? `/api/vrat/observe?occurrence_id=${encodeURIComponent(calendarObservance.id)}`
+      : `/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`;
+
+    fetch(url, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (controller.signal.aborted || !data) return;
+        setObservedToday(Boolean(data.observed_today));
+        setObserveCount(data.total_count ?? 0);
+        if (data.today) setCanonicalToday(data.today);
+      })
+      .catch((err) => {
+        if (err?.name !== 'AbortError' && !controller.signal.aborted) {
+          /* non-critical */
         }
       })
-      .catch(() => { /* silently ignore — tracker is non-critical */ })
-      .finally(() => setObserveStatusLoaded(true));
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setObserveStatusLoaded(true);
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
   }, [isAuthenticated, vrat.id, calendarObservance?.id]);
 
   async function handleObserve() {

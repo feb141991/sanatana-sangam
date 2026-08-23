@@ -57,7 +57,8 @@
     "calendar:approved-fixtures:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/materialize-approved-calendar-fixtures.mts --commit",
     "calendar:approved-fixtures:rollback:dry-run": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/rollback-approved-calendar-fixtures.mts",
     "calendar:approved-fixtures:rollback:commit": "DOTENV_CONFIG_PATH=.env.local npx tsx scripts/rollback-approved-calendar-fixtures.mts --commit",
-    "generate:library-summaries": "npx tsx scripts/generate-library-summaries.ts"
+    "generate:library-summaries": "npx tsx scripts/generate-library-summaries.ts",
+    "verify:vrat-observation-shadow": "bash scripts/shadow/verify-vrat-observation-shadow.sh"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",
