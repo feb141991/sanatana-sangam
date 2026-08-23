@@ -823,6 +823,28 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['dharm_veers']['Row']>;
       };
+      vrat_observations: {
+        Row: {
+          id: string;
+          created_at: string;
+          user_id: string;
+          occurrence_id: string;
+          vrat_id: string;
+          vrat_name: string | null;
+          occurrence_date: string;
+          calendar_profile: string | null;
+          tradition: string | null;
+          timezone: string;
+          karma_awarded: number;
+          observed_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['vrat_observations']['Row'], 'id' | 'created_at' | 'observed_at'> & {
+          id?: string;
+          created_at?: string;
+          observed_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['vrat_observations']['Insert']>;
+      };
       dharm_veer_generation_log: {
         Row: {
           slug: string;
@@ -872,3 +894,4 @@ export type CalendarProfile = Database['public']['Tables']['calendar_profiles'][
 export type TraditionProfile = Database['public']['Tables']['tradition_profiles']['Row'];
 export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
 export type ObservanceMaterialisationBatch = Database['public']['Tables']['observance_materialisation_batches']['Row'];
+export type VratObservation = Database['public']['Tables']['vrat_observations']['Row'];

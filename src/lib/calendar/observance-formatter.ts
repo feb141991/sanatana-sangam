@@ -66,6 +66,7 @@ export interface ClientObservanceResult {
   description: string;
 
   // ObservanceResult contract
+  id?: string | null;
   festivalId: string;
   variantKey?: string | null;
   status: 'resolved' | 'ambiguous' | 'unresolved' | 'under_review';
@@ -311,6 +312,7 @@ export function formatOccurrencesToResults(
       description: def.description ?? '',
 
       // ObservanceResult contract
+      id: row.id ?? null,
       festivalId: def.slug,
       variantKey: row.variant_key ?? null,
       status: row.review_status === 'needs_review' ? 'ambiguous' : 'resolved',
@@ -416,6 +418,7 @@ export function formatOccurrencesToResults(
           description: def.description ?? '',
 
           // ObservanceResult contract
+          id: null,
           festivalId: def.slug,
           variantKey: row.variant_key ?? null,
           status: 'unresolved',

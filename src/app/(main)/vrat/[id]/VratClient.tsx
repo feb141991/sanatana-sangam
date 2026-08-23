@@ -233,7 +233,8 @@ export default function VratClient({
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetch(`/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`)
+    const url = calendarObservance?.id ? `/api/vrat/observe?occurrence_id=${encodeURIComponent(calendarObservance.id)}` : `/api/vrat/observe?vrat_id=${encodeURIComponent(vrat.id)}`;
+    fetch(url)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data) {
@@ -243,16 +244,20 @@ export default function VratClient({
       })
       .catch(() => { /* silently ignore — tracker is non-critical */ })
       .finally(() => setObserveStatusLoaded(true));
-  }, [isAuthenticated, vrat.id]);
+  }, [isAuthenticated, vrat.id, calendarObservance?.id]);
 
   async function handleObserve() {
     if (observedToday || observeLoading) return;
     setObserveLoading(true);
     try {
+      if (!calendarObservance?.id) {
+        toast.error('No active occurrence found for today');
+        return;
+      }
       const res = await fetch('/api/vrat/observe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vrat_id: vrat.id, vrat_name: vrat.name }),
+        body: JSON.stringify({ occurrence_id: calendarObservance.id }),
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -719,39 +724,55 @@ export default function VratClient({
               transition={{ delay: 0.15 }}
               className="w-full max-w-sm"
             >
-              {observedToday ? (
-                <div
-                  className="flex items-center justify-center gap-2.5 w-full rounded-full py-4 font-bold text-sm"
-                  style={{ background: 'rgba(134,187,110,0.15)', border: '1.5px solid rgba(134,187,110,0.45)', color: '#5aaa38' }}
-                >
-                  <CheckCircle2 size={18} />
-                  Observed today ✓
-                  {observeCount > 1 && (
-                    <span className="ml-1 text-xs font-normal opacity-70">({observeCount}× total)</span>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={handleObserve}
-                  disabled={observeLoading || !observeStatusLoaded}
-                  className="w-full flex items-center justify-center gap-2.5 rounded-full py-4 font-bold text-sm transition active:scale-95 disabled:opacity-60"
-                  style={{ background: 'rgba(197,160,89,0.92)', color: '#1c1208', boxShadow: '0 4px 20px rgba(197,160,89,0.25)' }}
-                >
-                  {observeLoading ? (
-                    <Loader2 size={16} className="animate-spin" />
-                  ) : (
-                    <>
-                      🙏 Mark as Observed
-                      {observeCount > 0 && (
-                        <span className="ml-1 text-xs font-semibold opacity-70">({observeCount}× before)</span>
+              {calendarObservance?.id && calendarObservance?.status === 'resolved' ? (
+                <>
+                  {observedToday ? (
+                    <div
+                      className="flex items-center justify-center gap-2.5 w-full rounded-full py-4 font-bold text-sm"
+                      style={{ background: 'rgba(134,187,110,0.15)', border: '1.5px solid rgba(134,187,110,0.45)', color: '#5aaa38' }}
+                    >
+                      <CheckCircle2 size={18} />
+                      Observed today ✓
+                      {observeCount > 1 && (
+                        <span className="ml-1 text-xs font-normal opacity-70">({observeCount}× total)</span>
                       )}
-                    </>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleObserve}
+                      disabled={observeLoading || !observeStatusLoaded}
+                      className="w-full flex items-center justify-center gap-2.5 rounded-full py-4 font-bold text-sm transition active:scale-95 disabled:opacity-60"
+                      style={{ background: 'rgba(197,160,89,0.92)', color: '#1c1208', boxShadow: '0 4px 20px rgba(197,160,89,0.25)' }}
+                    >
+                      {observeLoading ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <>
+                          🙏 Mark as Observed
+                          {observeCount > 0 && (
+                            <span className="ml-1 text-xs font-semibold opacity-70">({observeCount}× before)</span>
+                          )}
+                        </>
+                      )}
+                    </button>
                   )}
-                </button>
+                  <p className="text-center text-[11px] mt-2 opacity-40">
+                    {observedToday ? 'Your practice is recorded' : `Earn ${25} karma for completing this vrat`}
+                  </p>
+                </>
+              ) : (
+                <div
+                  className="rounded-2xl p-4 text-center border space-y-1"
+                  style={{ borderColor: activeTheme.border, background: activeTheme.card }}
+                >
+                  <p className="text-xs font-semibold" style={{ color: activeTheme.text }}>
+                    📖 Educational Reference
+                  </p>
+                  <p className="text-[11px] opacity-60">
+                    Karma tracking is enabled on the sacred observance date.
+                  </p>
+                </div>
               )}
-              <p className="text-center text-[11px] mt-2 opacity-40">
-                {observedToday ? 'Your practice is recorded' : `Earn ${25} karma for completing this vrat`}
-              </p>
             </motion.div>
           )}
 
