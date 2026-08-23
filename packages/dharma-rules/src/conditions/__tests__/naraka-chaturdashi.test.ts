@@ -5,10 +5,10 @@
  *
  * Remediated per docs/ANTIGRAVITY_NARAKA_PROMPT_1_REMEDIATION.md:
  * - Distinguishes sourced fact vs implemented convention vs proposed decision vs computed consequence.
- * - Records open council decision regarding Purvarunodaya semantics.
+ * - Records the ratified full-window Purvarunodaya semantics.
  * - Tests month-system conversion law (Kartika purnimanta == Ashwin amanta for Krishna paksha).
  * - Tests actual runtime timezone behavior without hardcoded assumptions.
- * - Proves production isolation: launch_status: 'deferred' keeps Naraka out of consumer feeds.
+ * - Proves production inclusion without collapsing the existing Diwali identities.
  * - Verifies Diwali-family output stability (dhanteras, diwali, govardhan-puja, bhai-dooj, bandhi-chhor-divas).
  */
 
@@ -83,15 +83,13 @@ describe('Naraka Chaturdashi — Prompt 1 Remediation Suite', () => {
   /**
    * Test 2: Computed Consequence — Bedford UK Provisional Output
    */
-  it('T2: evaluates Bedford to 2026-11-07 as a provisional computed consequence under proposed prevails rule', () => {
+  it('T2: evaluates Bedford to 2026-11-07 under the ratified local prevails rule', () => {
     const candidate = findCandidate(NARAKA_VARIANT, SWEEP_DATES_2026, BEDFORD);
-    // Provisional computed result under the proposed full-window prevails interpretation;
-    // pending council ratification and external local-calendar validation.
     expect(candidate).toBe('2026-11-07');
   });
 
   /**
-   * Test 3: Evaluator Interpretations Comparison (Open Council Decision)
+   * Test 3: Evaluator Interpretations Comparison (Regression Evidence)
    */
   it('T3: computes every supported presence mode for council comparison', () => {
     const modes = [
@@ -138,16 +136,17 @@ describe('Naraka Chaturdashi — Prompt 1 Remediation Suite', () => {
   });
 
   /**
-   * Test 5: Production Isolation — Deferred Launch Status
+   * Test 5: Production Inclusion — Ratified Launch Status
    */
-  it('T5: confirms launch_status: deferred excludes Naraka from active production launch list', () => {
+  it('T5: confirms launch_status: included adds Naraka to the active production launch list', () => {
     const narakaRule = (rules as any[]).find(r => r.slug === 'naraka-chaturdashi');
     expect(narakaRule).toBeDefined();
-    expect(narakaRule.launch_status).toBe('deferred');
+    expect(narakaRule.launch_status).toBe('included');
 
     // Production calculation filters launch_status === 'included'
     const includedRules = (rules as any[]).filter(r => r.launch_status === 'included');
-    expect(includedRules.some(r => r.slug === 'naraka-chaturdashi')).toBe(false);
+    expect(includedRules.filter(r => r.slug === 'naraka-chaturdashi')).toHaveLength(1);
+    expect((rules as any[]).find(r => r.slug === 'vasant-panchami')?.launch_status).toBe('deferred');
   });
 
   /**

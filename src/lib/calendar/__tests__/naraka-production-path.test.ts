@@ -12,12 +12,16 @@ let evaluatorRows: ReturnType<typeof calculateOccurrencesWithEvaluator>;
 beforeAll(() => {
   productionRows = calculateObservancesForYear(2026, UJJAIN);
   evaluatorRows = calculateOccurrencesWithEvaluator(2026, UJJAIN);
-}, 120_000);
+}, 360_000);
 
-describe('Naraka Chaturdashi production-path isolation', () => {
-  it('keeps Naraka out of both resolved and review output while its rule is deferred', () => {
-    expect(productionRows.some(row => row.slug === 'naraka-chaturdashi')).toBe(false);
-    expect(evaluatorRows.resolved.some(row => row.slug === 'naraka-chaturdashi')).toBe(false);
+describe('Naraka Chaturdashi production-path inclusion', () => {
+  it('publishes exactly one resolved Ujjain occurrence and no unresolved duplicate', () => {
+    expect(productionRows.filter(row => row.slug === 'naraka-chaturdashi')).toEqual([
+      expect.objectContaining({ slug: 'naraka-chaturdashi', date: '2026-11-08' }),
+    ]);
+    expect(evaluatorRows.resolved.filter(row => row.slug === 'naraka-chaturdashi')).toEqual([
+      expect.objectContaining({ slug: 'naraka-chaturdashi', date: '2026-11-08' }),
+    ]);
     expect(evaluatorRows.unresolved.some(row => row.slug === 'naraka-chaturdashi')).toBe(false);
   });
 

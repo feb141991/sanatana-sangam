@@ -60,6 +60,7 @@
     "generate:library-summaries": "npx tsx scripts/generate-library-summaries.ts",
     "verify:vrat-observation-shadow": "bash scripts/shadow/verify-vrat-observation-shadow.sh",
     "audit:naraka": "npx tsx scripts/naraka-baseline-audit.mts",
+    "verify:naraka-shadow": "bash scripts/shadow/verify-naraka-approval-shadow.sh",
     "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs"
   },
   "dependencies": {

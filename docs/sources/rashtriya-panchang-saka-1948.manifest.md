@@ -334,9 +334,8 @@ arunodaya window before sunrise).
 
 - **Sourced Fact:** RP Saka 1948 Index #55 lists "Naraka Chaturdasi (Purvarunodaya)" at 2026-11-08 on its Indian reference basis.
 - **Implemented Convention:** The evaluator defines `arunodaya` as (local sunrise − 96 minutes) through local sunrise.
-- **Proposed Scholarly Decision:** Chaturdashi (tithi 14) is evaluated under the mode `prevails` (holding throughout the full arunodaya window).
-- **Computed Consequence:** Under this proposed rule and Bedford coordinates, the engine returns 2026-11-07.
-- **Unproven Claim / Open Decision:** Bedford 2026-11-07 is a provisional computed consequence under the proposed `prevails` rule, pending council ratification and external local-calendar validation.
+- **Council Decision (2026-08-23):** Chaturdashi (tithi 14) is evaluated under the mode `prevails` (holding throughout the full arunodaya window).
+- **Computed Consequence:** Under the ratified rule and Bedford coordinates, the engine returns 2026-11-07.
 
 | Item | Value |
 |---|---|
@@ -346,26 +345,25 @@ arunodaya window before sunrise).
 | Source-stated civil date | 2026-11-08 |
 | Distinct from `diwali` | Yes — two distinct identities, must not deduplicate |
 | Liturgical criterion (source) | `Purvarunodaya` qualifier |
-| Condition modelled | `tithi_presence { tithi: 14, period: 'arunodaya', mode: 'prevails' }` (provisional) |
+| Condition modelled | `tithi_presence { tithi: 14, period: 'arunodaya', mode: 'prevails' }` (council-ratified 2026-08-23) |
 | Month system | Kartika purnimanta (rule) / Ashwin amanta (evaluator) via documented conversion law |
 | Engine date (Ujjain) | 2026-11-08 (matches RP source) |
-| Engine date (Bedford, UK) | 2026-11-07 (provisional computed result under proposed full-window prevails rule) |
-| `launch_status` | `deferred` — not published to production calendar |
+| Engine date (Bedford, UK) | 2026-11-07 (location-qualified result under the ratified rule) |
+| `launch_status` | `included` |
 
-### Open Council Decisions (Unresolved)
+### Council Decision — 2026-08-23
 
-For `Purvarunodaya`, should Krishna Chaturdashi:
-1. prevail throughout the entire 96-minute arunodaya window;
-2. touch any part of the window;
-3. prevail at a defined arunodaya instant or boundary; or
-4. follow another sourced day-assignment rule?
+Prince Sharma, acting as founder/product owner, approved the conservative
+full-window interpretation: Krishna Chaturdashi must prevail throughout the
+entire 96-minute Arunodaya window. The calculation uses the user's location
+and timezone; Ujjain is reference-only and must never replace local coordinates
+silently.
 
 ### What this does NOT establish
 
-1. **Bedford 2026-11-07 is NOT proven as the ritually authoritative local date.** It is a provisional computed result under the proposed full-window `prevails` interpretation.
-2. **Not council-approved.** The rule remains deferred pending council review.
-3. **Not proven for adhika or kshaya years.** 2026 has no adhika Kartika; kshaya and adhika cases are not proven generally by the 2026 single-year fixture.
-4. **Regional aliases (e.g. Kali Chaudas, Choti Diwali) are not attested in this source citation** and are excluded from the rule definition until typed sources are provided.
+1. **The source independently verifies Ujjain 2026, not Bedford.** Bedford 2026-11-07 is the location-qualified engine consequence of the ratified rule.
+2. **Not proven for adhika or kshaya years.** 2026 has no adhika Kartika; kshaya and adhika cases are not proven generally by the 2026 single-year fixture.
+3. **Regional aliases (e.g. Kali Chaudas, Choti Diwali) are not attested in this source citation** and are excluded from the rule definition until typed sources are provided.
 
 ## Guards run after batch 5
 

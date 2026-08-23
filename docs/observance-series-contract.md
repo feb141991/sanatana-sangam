@@ -45,8 +45,10 @@ two separate concepts and make recurring occurrence grouping ambiguous.
 
 - Sharad Navratri is a `daily_journey` over its ten canonical tithi children.
 - Diwali is a five-child `festival_cluster`.
-- Naraka Chaturdashi remains deferred and absent from production occurrence
-  rows. Therefore a live Diwali series is intentionally `under_review` until
-  that required child is council-approved and canonically materialised.
+- Naraka Chaturdashi was council-ratified on 2026-08-23. A Diwali series is
+  `complete` only when its canonical Naraka occurrence and the other four
+  required child occurrences are all present and final for the same profile
+  and calculation location. Missing pre-materialisation data still fails
+  closed as `under_review`.
 - `season` and `recurring_series` are reserved contract modes. No Jain or
   Buddhist series is activated in this phase.

@@ -117,14 +117,16 @@ const productionNaraka = {
 const checks = {
   sourceChecksumMatches: pdfSha256 === EXPECTED_SOURCE_SHA256,
   sourceDateReproducedAtUjjain: directCandidates.ujjain === SOURCE_DATE,
-  canonicalRuleIsDeferred: canonicalRule?.launch_status === 'deferred',
+  canonicalRuleIsIncluded: canonicalRule?.launch_status === 'included',
   aliasesAreNotRuleRows: !rules.some(rule => ALIASES.includes(rule.slug)),
   existingFamilyComplete: familyOutput.length === EXISTING_FAMILY.length,
-  productionPathsWithholdNaraka:
-    productionNaraka.calculated.length === 0
-    && productionNaraka.resolved.length === 0
+  productionPathsPublishOneNaraka:
+    productionNaraka.calculated.length === 1
+    && productionNaraka.calculated[0]?.date === SOURCE_DATE
+    && productionNaraka.resolved.length === 1
+    && productionNaraka.resolved[0]?.date === SOURCE_DATE
     && productionNaraka.unresolved.length === 0,
-  productionDatabaseUntouched: db.definitionCount === 0 && db.occurrenceCount === 0,
+  productionDatabaseHasNoOrphanOccurrence: db.definitionCount > 0 || db.occurrenceCount === 0,
 };
 
 const report = {
@@ -139,6 +141,11 @@ const report = {
   source: { path: SOURCE_PDF, expectedSha256: EXPECTED_SOURCE_SHA256, actualSha256: pdfSha256, sourcedCivilDate: SOURCE_DATE },
   computed: { directCandidates, familyOutput, productionNaraka },
   checks,
+  deploymentState: db.definitionCount === 0
+    ? 'migration_unapplied'
+    : db.occurrenceCount === 0
+      ? 'definition_registered_awaiting_materialisation'
+      : 'materialised',
   passed: Object.values(checks).every(Boolean),
 };
 

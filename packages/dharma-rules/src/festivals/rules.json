@@ -673,9 +673,9 @@
     "adhika_policy": "nija",
     "corrected_lunar_tithi_index": 29,
     "corrected_prefer_last_match": false,
-    "launch_status": "deferred",
+    "launch_status": "included",
     "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
-    "ratification_note": "Official-source-backed, PENDING COUNCIL RATIFICATION. Sourced fact: Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08. Implemented convention: arunodaya is evaluated as sunrise minus 96 minutes through sunrise. Open Council Decision: For Purvarunodaya, should Krishna Chaturdashi (1) prevail throughout the entire 96-minute arunodaya window, (2) touch any part of the window, (3) prevail at a defined arunodaya instant or boundary, or (4) follow another sourced day-assignment rule? Month system: stored as Kartika/purnimanta corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. Launch status is deferred until council ratification."
+    "ratification_note": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users."
   },
   {
     "slug": "govardhan-puja",
