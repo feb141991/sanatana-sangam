@@ -338,7 +338,7 @@ export default function VratCarousel({
   for (const s of series) {
     if (s.status === 'under_review') {
       if (isSeriesStartWithinWindow(s, spiritualDate, HOME_OBSERVANCE_WINDOW_DAYS)) {
-        const days = daysFromReference(s.startDate, spiritualDate);
+        const days = s.startDate ? daysFromReference(s.startDate, spiritualDate) : 0;
         seriesItems.push({
           type: 'under_review_series',
           series: s,

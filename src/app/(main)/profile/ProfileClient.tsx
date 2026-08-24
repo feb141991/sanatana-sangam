@@ -2013,7 +2013,7 @@ export default function ProfileClient({
               <div className="space-y-2 col-span-1 sm:col-span-2">
                 <div className="h-px bg-[var(--card-border)] my-2" />
                 <p className="text-xs font-semibold text-[var(--brand-primary)]">Calendar Preferences</p>
-                <p className="text-[10px] text-[var(--brand-muted)] mb-2">Regional systems, rules and month naming languages are under review (⚖️ [S] ratification pending).</p>
+                <p className="text-[10px] text-[var(--brand-muted)] mb-2">Choose the regional calendar and month naming convention your family follows.</p>
               </div>
 
               <div className="space-y-2">

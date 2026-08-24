@@ -21,6 +21,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Sunrise, Bell, X, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import {
+  buildBrahmaDismissKey,
+  getBrowserNotificationApi,
+} from '@/components/home/home-runtime-guards';
 
 interface BrahmaMuhurtaCardProps {
   /** String like "4:45 AM – 5:30 AM" from panchang.brahmaMuhurta */
@@ -29,6 +33,7 @@ interface BrahmaMuhurtaCardProps {
   sunrise: string;
   japaAlreadyDoneToday: boolean;
   tradition?: string | null;
+  timezone: string;
 }
 
 /** Parse "4:45 AM" → today's Date object */
@@ -54,16 +59,10 @@ function fmtCountdown(ms: number): string {
   return m > 0 ? `${h} hr ${m} min` : `${h} hr`;
 }
 
-const DISMISS_KEY_PREFIX = 'shoonaya-brahma-dismissed-';
-
-function todayKey(): string {
-  return DISMISS_KEY_PREFIX + new Date().toISOString().slice(0, 10);
-}
-
 type Phase = 'upcoming' | 'active' | null;
 
 export default function BrahmaMuhurtaCard({
-  brahmaMuhurta, sunrise, japaAlreadyDoneToday, tradition,
+  brahmaMuhurta, sunrise, japaAlreadyDoneToday, tradition, timezone,
 }: BrahmaMuhurtaCardProps) {
   const [phase, setPhase]       = useState<Phase>(null);
   const [countdown, setCountdown] = useState('');
@@ -75,10 +74,10 @@ export default function BrahmaMuhurtaCard({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (localStorage.getItem(todayKey())) { setDismissed(true); return; }
+    if (localStorage.getItem(buildBrahmaDismissKey(timezone))) { setDismissed(true); return; }
     if (japaAlreadyDoneToday) { setDismissed(true); return; }
-    setNotifGranted(Notification?.permission === 'granted');
-  }, [japaAlreadyDoneToday]);
+    setNotifGranted(getBrowserNotificationApi()?.permission === 'granted');
+  }, [japaAlreadyDoneToday, timezone]);
 
   useEffect(() => {
     if (dismissed) return;
@@ -116,14 +115,15 @@ export default function BrahmaMuhurtaCard({
   }, [dismissed, brahmaMuhurta, sunrise]);
 
   const dismiss = useCallback(() => {
-    localStorage.setItem(todayKey(), '1');
+    localStorage.setItem(buildBrahmaDismissKey(timezone), '1');
     setDismissed(true);
-  }, []);
+  }, [timezone]);
 
   const requestReminder = useCallback(async () => {
-    if (!('Notification' in window)) return;
-    if (Notification.permission === 'default') {
-      const perm = await Notification.requestPermission();
+    const notificationApi = getBrowserNotificationApi();
+    if (!notificationApi) return;
+    if (notificationApi.permission === 'default') {
+      const perm = await notificationApi.requestPermission();
       if (perm !== 'granted') return;
       setNotifGranted(true);
     }
@@ -134,7 +134,7 @@ export default function BrahmaMuhurtaCard({
     const delay = start.getTime() - Date.now();
     if (delay > 0 && delay < 3_600_000) {
       setTimeout(() => {
-        new Notification('Brahma Muhurta — time for japa', {
+        new notificationApi('Brahma Muhurta — time for japa', {
           body: `Sacred window open until ${brahmaMuhurta.split('–')[1]?.trim()}. Begin your mala. 📿`,
           icon: '/icons/icon-192x192.png',
           badge: '/icons/icon-192x192.png',

@@ -21,6 +21,7 @@ import { Share2, X, Flame, Copy, Check } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
 import { shareShoonayaShareCard } from '@/lib/share/shoonaya-card-data';
 import SacredGlowIcon from '@/components/ui/SacredGlowIcon';
+import { isMilestoneAlreadyDismissed } from '@/components/home/home-runtime-guards';
 
 const MILESTONES = [7, 21, 40, 108] as const;
 type Milestone = (typeof MILESTONES)[number];
@@ -48,11 +49,6 @@ function dismissedKey(milestone: Milestone): string {
   return `shoonaya-milestone-shared-${milestone}`;
 }
 
-function isAlreadyDismissed(milestone: Milestone): boolean {
-  if (typeof window === 'undefined') return false;
-  return Boolean(localStorage.getItem(dismissedKey(milestone)));
-}
-
 interface MilestoneShareCardProps {
   japaStreak: number;
   userId: string;
@@ -67,8 +63,10 @@ export default function MilestoneShareCard({
   tradition,
 }: MilestoneShareCardProps) {
   const milestone = getActiveMilestone(japaStreak);
+  // This component is loaded with `ssr: false`, so reading persisted state in
+  // the initializer is hydration-safe and avoids a one-frame card pop-in.
   const [dismissed, setDismissed] = useState(() =>
-    milestone ? isAlreadyDismissed(milestone) : true
+    milestone ? isMilestoneAlreadyDismissed(milestone) : true
   );
   const [copied, setCopied] = useState(false);
 

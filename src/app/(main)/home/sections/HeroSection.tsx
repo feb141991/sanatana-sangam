@@ -1047,6 +1047,7 @@ export function HeroSection({
           sunrise={panchang.sunrise}
           japaAlreadyDoneToday={japaAlreadyDoneToday}
           tradition={tradition}
+          timezone={timezone}
         />
       )}
 

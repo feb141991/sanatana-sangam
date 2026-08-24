@@ -1333,9 +1333,6 @@ export default function OnboardingClient({
                         <div>
                           <div className="font-semibold text-[var(--brand-primary-strong)] text-sm">{p.label}</div>
                           <div className="text-[10px] text-[var(--brand-muted)] mt-0.5">{p.system} · Era: {p.era}</div>
-                          <div className="text-[9px] uppercase tracking-wider text-[var(--premium-gold)] font-semibold mt-1">
-                            ⚖️ [S] ratification pending
-                          </div>
                         </div>
                         {selected && (
                           <div className="w-5 h-5 rounded-full bg-[var(--premium-gold)] flex items-center justify-center text-white text-[10px] font-bold shrink-0">✓</div>
