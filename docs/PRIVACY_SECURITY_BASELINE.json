@@ -1,0 +1,616 @@
+{
+  "generatedAt": "2026-08-24T15:04:55.792Z",
+  "environment": {
+    "supabaseUrl": "https://mnbwodcswxoojndytngu.supabase.co",
+    "hasServiceRole": true,
+    "hasAnonKey": true
+  },
+  "summary": {
+    "totalItems": 23,
+    "byStatus": {
+      "VERIFIED": 21,
+      "NOT FOUND": 0,
+      "DRIFT": 0,
+      "NEEDS POLICY DECISION": 2
+    },
+    "byCategory": {
+      "1. Sensitive Profile Fields & Paths": 3,
+      "2. Database Grants & RLS Policies": 2,
+      "3. Third-Party SDKs & Trackers": 6,
+      "4. Storage & Identity Cache Keys": 3,
+      "5. DOB, Birth & Location Entry Points": 2,
+      "6. Terms & Privacy Acceptance": 2,
+      "7. Mandali UGC & Safety": 2,
+      "8. Data Lifecycle, Deletion & Export": 3
+    },
+    "byOwnership": {
+      "backend": 16,
+      "native": 5,
+      "generated_snapshot": 0,
+      "shared_contract": 2
+    }
+  },
+  "liveDatabaseMetadata": {
+    "anonProfilesSelectExposed": true,
+    "anonProfilesPolicy": "Public profiles are viewable by everyone (SELECT USING (true))",
+    "tableCounts": {
+      "profiles": 15,
+      "birth_profiles": 15,
+      "posts": 4,
+      "post_comments": 3,
+      "content_reports": 0,
+      "user_blocked_profiles": 0,
+      "user_muted_profiles": 0,
+      "user_hidden_content": 1,
+      "deleted_accounts": null,
+      "golden_fixtures": 298,
+      "calendar_governance_diagnostics_cache": 7,
+      "user_settings": null,
+      "consent_records": null,
+      "terms_acceptances": null
+    },
+    "profileColumns": [
+      {
+        "name": "id",
+        "type": "uuid",
+        "isSensitive": true,
+        "classification": "Identifier (Auth UID)"
+      },
+      {
+        "name": "full_name",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "PII (Direct)"
+      },
+      {
+        "name": "username",
+        "type": "text",
+        "isSensitive": false,
+        "classification": "Public Handle"
+      },
+      {
+        "name": "avatar_url",
+        "type": "text",
+        "isSensitive": false,
+        "classification": "Public Media"
+      },
+      {
+        "name": "bio",
+        "type": "text",
+        "isSensitive": false,
+        "classification": "Public Bio"
+      },
+      {
+        "name": "date_of_birth",
+        "type": "date",
+        "isSensitive": true,
+        "classification": "PII / Special Category (Age/DOB)"
+      },
+      {
+        "name": "gender_context",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Demographic / Sensitive"
+      },
+      {
+        "name": "life_stage",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Spiritual / Personal Stage"
+      },
+      {
+        "name": "tradition",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Special Category (Religious belief - GDPR Art 9)"
+      },
+      {
+        "name": "sampradaya",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Special Category (Religious sect - GDPR Art 9)"
+      },
+      {
+        "name": "ishta_devata",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Special Category (Religious deity - GDPR Art 9)"
+      },
+      {
+        "name": "gotra",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Special Category (Lineage / Castemark)"
+      },
+      {
+        "name": "kul_devata",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Special Category (Religious deity - GDPR Art 9)"
+      },
+      {
+        "name": "rashi",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Astrological / Religious Data"
+      },
+      {
+        "name": "nakshatra",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Astrological / Religious Data"
+      },
+      {
+        "name": "latitude",
+        "type": "double precision",
+        "isSensitive": true,
+        "classification": "Precise Geolocation (Device/Home)"
+      },
+      {
+        "name": "longitude",
+        "type": "double precision",
+        "isSensitive": true,
+        "classification": "Precise Geolocation (Device/Home)"
+      },
+      {
+        "name": "city",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Location / Coarse"
+      },
+      {
+        "name": "country",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Location / Coarse"
+      },
+      {
+        "name": "home_town",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Location / Birthplace"
+      },
+      {
+        "name": "neighbourhood",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Location / Neighborhood"
+      },
+      {
+        "name": "onesignal_player_id",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Push Identifier / Device Token"
+      },
+      {
+        "name": "is_banned",
+        "type": "boolean",
+        "isSensitive": true,
+        "classification": "Moderation / Internal Status"
+      },
+      {
+        "name": "ban_reason",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Moderation / Internal Notes"
+      },
+      {
+        "name": "karma_points",
+        "type": "integer",
+        "isSensitive": false,
+        "classification": "Gamification Karma Score"
+      },
+      {
+        "name": "consent_religious_data",
+        "type": "boolean",
+        "isSensitive": true,
+        "classification": "Consent Flag (Special Category)"
+      },
+      {
+        "name": "consent_updated_at",
+        "type": "timestamptz",
+        "isSensitive": true,
+        "classification": "Consent Audit Timestamp"
+      },
+      {
+        "name": "unsubscribe_token",
+        "type": "text",
+        "isSensitive": true,
+        "classification": "Direct Marketing Auth Token"
+      },
+      {
+        "name": "is_deleting",
+        "type": "boolean",
+        "isSensitive": true,
+        "classification": "Lifecycle Deletion Flag"
+      },
+      {
+        "name": "deletion_requested_at",
+        "type": "timestamptz",
+        "isSensitive": true,
+        "classification": "Lifecycle Deletion Timestamp"
+      }
+    ]
+  },
+  "inventory": [
+    {
+      "id": "INV-PROF-01",
+      "category": "1. Sensitive Profile Fields & Paths",
+      "name": "Profiles Table Anonymous SELECT Grant",
+      "description": "Direct SELECT on public.profiles is granted to role anon with USING(true), exposing all 80+ columns including DOB, religion, and coordinates.",
+      "location": "supabase/public_schema.sql (L11495) / Live DB Policy: \"Public profiles are viewable by everyone\"",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "table": "public.profiles",
+        "policy": "Public profiles are viewable by everyone",
+        "command": "SELECT",
+        "roles": [
+          "PUBLIC",
+          "anon",
+          "authenticated"
+        ],
+        "using": "true",
+        "exposedColumnCount": 30,
+        "sensitiveColumnCount": 26
+      },
+      "notes": "P0 Critical Vulnerability. Unauthenticated callers can harvest all profile records."
+    },
+    {
+      "id": "INV-PROF-02",
+      "category": "1. Sensitive Profile Fields & Paths",
+      "name": "PWA Profile Read/Write API Routes",
+      "description": "PWA routes /api/profile and /api/onboarding read and update profile fields with Supabase auth.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/api/profile/route.ts, src/app/api/onboarding/route.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "readEndpoints": [
+          "GET /api/profile",
+          "GET /api/user/export"
+        ],
+        "writeEndpoints": [
+          "PATCH /api/profile",
+          "POST /api/onboarding"
+        ]
+      }
+    },
+    {
+      "id": "INV-PROF-03",
+      "category": "1. Sensitive Profile Fields & Paths",
+      "name": "Native Onboarding Contract Profile Payload",
+      "description": "Native buildOnboardingProfilePayload packages tradition, DOB, gotra, rashi, nakshatra, calendarProfile without explicit consent capture.",
+      "location": "shoonaya-mobile: lib/onboarding-contract.ts (L107-154)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "shared_contract",
+      "details": {
+        "function": "buildOnboardingProfilePayload",
+        "fieldsCaptured": [
+          "tradition",
+          "date_of_birth",
+          "gender_context",
+          "life_stage",
+          "rashi",
+          "nakshatra",
+          "gotra",
+          "calendar_profile",
+          "calendar_scope"
+        ],
+        "consentIncluded": false
+      }
+    },
+    {
+      "id": "INV-RLS-01",
+      "category": "2. Database Grants & RLS Policies",
+      "name": "Public Table RLS State",
+      "description": "Audit of Row Level Security across public schema tables.",
+      "location": "supabase/step2_constraints_policies.sql",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "profilesRlsEnabled": true,
+        "profilesSelectPolicy": "USING (true) [PERMISSIVE]",
+        "profilesUpdatePolicy": "TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id)",
+        "profilesInsertPolicy": "WITH CHECK (auth.uid() = id)"
+      }
+    },
+    {
+      "id": "INV-RLS-02",
+      "category": "2. Database Grants & RLS Policies",
+      "name": "Birth Profiles RLS Policies",
+      "description": "birth_profiles stores chart DOB, time, birth lat/lng with owner_id or session_token.",
+      "location": "supabase/migrations/016_birth_profiles.sql",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "table": "public.birth_profiles",
+        "ownerPolicy": "owner_id = auth.uid()",
+        "guestPolicy": "session_token IS NOT NULL (unowned charts)"
+      }
+    },
+    {
+      "id": "INV-SDK-01",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "Web Google Analytics 4 Unconditional Loading",
+      "description": "GA4 is loaded unconditionally in RootLayout head with hardcoded fallback measurement ID 'G-548KZ0TBHD'.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L139, L210-220)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "provider": "Google Analytics 4",
+        "fallbackId": "G-548KZ0TBHD",
+        "gate": "None (runs before consent)",
+        "sendPageView": true
+      },
+      "notes": "PECR/ePrivacy violation in UK/EU: tracker script executed before consent choice."
+    },
+    {
+      "id": "INV-SDK-02",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "Web Google AdSense Script Tag",
+      "description": "Google AdSense script is injected unconditionally in RootLayout.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L222-227)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "provider": "Google AdSense",
+        "client": "ca-pub-6518026066446033",
+        "gate": "None (runs before consent)"
+      }
+    },
+    {
+      "id": "INV-SDK-03",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "Web OneSignal Web Push SDK",
+      "description": "OneSignal SDK v16 is initialized unconditionally in RootLayout when NEXT_PUBLIC_ONESIGNAL_APP_ID is present.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L197-208)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "provider": "OneSignal",
+        "sdk": "v16/OneSignalSDK.page.js",
+        "gate": "None (injected on load)"
+      }
+    },
+    {
+      "id": "INV-SDK-04",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "Native Firebase Analytics (Android-Only Guard)",
+      "description": "Native Firebase Analytics is active strictly on Android, guarded by Platform.OS !== 'android'.",
+      "location": "shoonaya-mobile: lib/analytics.ts (L24-35)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "native",
+      "details": {
+        "platformScope": "Android only",
+        "iosExcluded": true,
+        "preConsentGate": "Missing pre-event opt-in gate"
+      }
+    },
+    {
+      "id": "INV-SDK-05",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "AI Provider (Sarvam AI)",
+      "description": "Sarvam AI is used for speech-to-text / translation API routes.",
+      "location": "Sanatan Sangam/Shoonaya: src/lib/sarvam.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "provider": "Sarvam AI",
+        "useCase": "Audio TTS / Indic translation",
+        "dataShared": "Scripture / prompt text only (no user PII)"
+      }
+    },
+    {
+      "id": "INV-SDK-06",
+      "category": "3. Third-Party SDKs & Trackers",
+      "name": "Payment Gateway (Razorpay)",
+      "description": "Razorpay integration for Kul Pro / donations.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/api/payment/route.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "provider": "Razorpay",
+        "jurisdiction": "India (14-day cooling-off clause present)"
+      }
+    },
+    {
+      "id": "INV-CACHE-01",
+      "category": "4. Storage & Identity Cache Keys",
+      "name": "Web Browser Cookies",
+      "description": "Authentication and session cookies managed by PWA and middleware.",
+      "location": "Sanatan Sangam/Shoonaya: src/middleware.ts, src/lib/admin-auth.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "authCookies": [
+          "sb-*-auth-token",
+          "auth-token"
+        ],
+        "adminCookie": "sangam_admin_session (HMAC-SHA256)",
+        "previewCookie": "shoonaya_preview"
+      }
+    },
+    {
+      "id": "INV-CACHE-02",
+      "category": "4. Storage & Identity Cache Keys",
+      "name": "Web localStorage Identity Keys",
+      "description": "PWA localStorage keys used for instant hydration and user settings.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/layout.tsx, src/hooks/useProfile.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "keys": [
+          "sh_tradition",
+          "sh_theme",
+          "shoonaya_user",
+          "shoonaya_profile",
+          "shoonaya_guest_session"
+        ]
+      }
+    },
+    {
+      "id": "INV-CACHE-03",
+      "category": "4. Storage & Identity Cache Keys",
+      "name": "Native AsyncStorage Keys",
+      "description": "Native storage keys containing profile, preferences, and home cache.",
+      "location": "shoonaya-mobile: lib/homeCache.ts, app/settings.tsx",
+      "status": "VERIFIED",
+      "canonicalOwnership": "native",
+      "details": {
+        "keys": [
+          "shoonaya_mobile_settings",
+          "sangam_theme_preference",
+          "shoonaya_home_cache",
+          "shoonaya_onboarding_draft"
+        ]
+      }
+    },
+    {
+      "id": "INV-ENTRY-01",
+      "category": "5. DOB, Birth & Location Entry Points",
+      "name": "Guest Jyotish Chart Endpoint (Age Verification Gap)",
+      "description": "POST /api/jyotish/chart accepts date_of_birth, birth_lat, birth_lng, and session_token with zero age gating or parental consent.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/api/jyotish/chart/route.ts (L67-72)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "endpoint": "POST /api/jyotish/chart",
+        "acceptsGuestSession": true,
+        "acceptsDob": true,
+        "acceptsBirthCoordinates": true,
+        "ageEnforcement": "None",
+        "serviceRoleClientUsed": true
+      },
+      "notes": "Children's privacy exposure under DPDP (India) and COPPA/GDPR."
+    },
+    {
+      "id": "INV-ENTRY-02",
+      "category": "5. DOB, Birth & Location Entry Points",
+      "name": "Native Device Location Service",
+      "description": "Native locationService requests device GPS for panchang sunrise/sunset calculation.",
+      "location": "shoonaya-mobile: lib/locationService.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "native",
+      "details": {
+        "service": "expo-location",
+        "permissionType": "Foreground",
+        "fallback": "Ujjain / London / Delhi preset coordinates"
+      }
+    },
+    {
+      "id": "INV-TERMS-01",
+      "category": "6. Terms & Privacy Acceptance",
+      "name": "Native Login/Signup Passive Terms Link",
+      "description": "Mobile login displays passive 'Terms of Service' text without explicit affirmative checkbox and without recording accepted version or timestamp.",
+      "location": "shoonaya-mobile: app/(auth)/login.tsx (L998-1020)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "native",
+      "details": {
+        "hasCheckbox": false,
+        "persistsAcceptedAt": false,
+        "persistsTermsVersion": false
+      },
+      "notes": "L-05: Deficient contract formation and lack of auditable acceptance receipts."
+    },
+    {
+      "id": "INV-TERMS-02",
+      "category": "6. Terms & Privacy Acceptance",
+      "name": "Settings Religious Data Consent Toggle Disconnect",
+      "description": "Settings screen defaults consent_religious_data to true and toggling off does not clear data or prevent collection.",
+      "location": "shoonaya-mobile: app/settings.tsx (L67)",
+      "status": "VERIFIED",
+      "canonicalOwnership": "shared_contract",
+      "details": {
+        "defaultState": true,
+        "onboardingGate": false,
+        "withdrawalHandling": "Incomplete (writes boolean to profiles, does not delete religious fields)"
+      },
+      "notes": "L-03: Default-on special-category consent violates GDPR Art 9 & DPDP."
+    },
+    {
+      "id": "INV-UGC-01",
+      "category": "7. Mandali UGC & Safety",
+      "name": "User Safety State & Content Moderation",
+      "description": "Mandali feed supports block, mute, hide, and content report via content_reports, user_blocked_profiles, user_muted_profiles.",
+      "location": "Sanatan Sangam/Shoonaya: src/lib/user-safety.ts, src/app/api/user/report/route.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "tables": [
+          "content_reports",
+          "user_blocked_profiles",
+          "user_muted_profiles",
+          "user_hidden_content"
+        ],
+        "reportReasons": [
+          "abusive",
+          "intolerant",
+          "misleading",
+          "spam",
+          "privacy"
+        ],
+        "serverSideFiltering": true
+      }
+    },
+    {
+      "id": "INV-UGC-02",
+      "category": "7. Mandali UGC & Safety",
+      "name": "Apple Guideline 1.2 UGC Compliance Gate",
+      "description": "App Store requires published contact info, report mechanism, block user, and timely moderation response for UGC apps.",
+      "location": "shoonaya-mobile: docs/LEGAL_RISK_ASSESSMENT.md (L-08)",
+      "status": "NEEDS POLICY DECISION",
+      "canonicalOwnership": "native",
+      "details": {
+        "filterMechanism": "Present in user-safety.ts",
+        "reportingMechanism": "Present in api/user/report",
+        "blockMechanism": "Present in user_blocked_profiles",
+        "supportContactUrl": "Needs verified published link in mobile UI"
+      }
+    },
+    {
+      "id": "INV-DEL-01",
+      "category": "8. Data Lifecycle, Deletion & Export",
+      "name": "Account Deletion 30-Day Cool-Off Workflow",
+      "description": "POST /api/user/delete/request initiates 30-day grace period; purgeDueDeletedAccounts cron executes hard delete.",
+      "location": "Sanatan Sangam/Shoonaya: src/lib/account-deletion.ts, src/app/api/cron/purge-deleted-accounts/route.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "cooldownDays": 30,
+        "requestRoute": "POST /api/user/delete/request",
+        "cancelRoute": "POST /api/user/delete/cancel",
+        "cronRoute": "GET /api/cron/purge-deleted-accounts",
+        "hardDeleteAction": "auth.admin.deleteUser() + profiles delete"
+      }
+    },
+    {
+      "id": "INV-DEL-02",
+      "category": "8. Data Lifecycle, Deletion & Export",
+      "name": "User Data Export Route",
+      "description": "GET /api/user/export generates JSON archive of user profile, sadhana, mood checkins, recommendations, mala sessions, and karma ledger.",
+      "location": "Sanatan Sangam/Shoonaya: src/app/api/user/export/route.ts",
+      "status": "VERIFIED",
+      "canonicalOwnership": "backend",
+      "details": {
+        "endpoint": "GET /api/user/export",
+        "auth": "Bearer token + session cookie supported via getApiUser",
+        "format": "JSON file download",
+        "retentionWindowDays": 90
+      }
+    },
+    {
+      "id": "INV-DEL-03",
+      "category": "8. Data Lifecycle, Deletion & Export",
+      "name": "Guest Session Data Lifecycle & Retention Policy",
+      "description": "Retention schedule and automatic cleanup job for unattached guest birth profiles.",
+      "location": "supabase/migrations/016_birth_profiles.sql",
+      "status": "NEEDS POLICY DECISION",
+      "canonicalOwnership": "backend",
+      "details": {
+        "table": "birth_profiles",
+        "guestClaimMechanism": "session_token lookup on signup",
+        "expirationJob": "Not implemented — guest records persist indefinitely until claimed"
+      }
+    }
+  ]
+}

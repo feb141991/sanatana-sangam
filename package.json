@@ -61,7 +61,8 @@
     "verify:vrat-observation-shadow": "bash scripts/shadow/verify-vrat-observation-shadow.sh",
     "audit:naraka": "npx tsx scripts/naraka-baseline-audit.mts",
     "verify:naraka-shadow": "bash scripts/shadow/verify-naraka-approval-shadow.sh",
-    "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs"
+    "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs",
+    "baseline:privacy": "npx tsx scripts/generate-privacy-security-baseline.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",
