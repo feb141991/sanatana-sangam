@@ -15,6 +15,10 @@ import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { resolveMonthLabelForSlug } from '@/lib/calendar/month-label-resolver';
 import { getOrMaterializeOccurrences } from '@/lib/calendar/resolve-occurrences';
 import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
+import { buildObservanceSeries } from '@/lib/calendar/observance-series';
+import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
+import { formatOccurrencesToResults } from '@/lib/calendar/observance-formatter';
+import { attachMaterialisationBatches } from '@/lib/calendar/occurrence-reader';
 
 export const runtime = 'nodejs';
 
@@ -117,6 +121,7 @@ type HomeSummaryResponse = {
     name: string;
     firstName: string;
     tradition: string;
+    appLanguage: 'en' | 'hi' | 'pa';
     city: string;
     country: string;
     karmaPoints: number;
@@ -161,6 +166,7 @@ type HomeSummaryResponse = {
       label: string;
     } | null;
     upcomingObservances: ObservanceEntry[];
+    series?: ObservanceSeries[];
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -700,6 +706,16 @@ export async function GET(request: NextRequest) {
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
   const observanceRows = filterWithheldJoinedRows(observanceResult.data ?? []);
+  const occurrencesWithBatches = await attachMaterialisationBatches(
+    observanceRows,
+    undefined,
+    observanceCalendarProfile,
+    {
+      latitude: observanceLocation.lat,
+      longitude: observanceLocation.lon,
+      timezone: observanceLocation.tz,
+    },
+  );
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
   const activePathshala = guidedPathProgress.find(
@@ -804,6 +820,25 @@ export async function GET(request: NextRequest) {
     dbThemes: dbHeroThemes,
   });
 
+  const seriesResults = formatOccurrencesToResults(
+    occurrencesWithBatches,
+    [],
+    tradition,
+    observanceCalendarProfile,
+    profile?.sampradaya ?? null,
+    today,
+    calendarTo,
+  );
+  const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;
+  const series = primarySeriesContext
+    ? buildObservanceSeries(seriesResults, {
+        spiritualDate: today,
+        profile: primarySeriesContext.profile,
+        location: primarySeriesContext.location,
+        tradition,
+      })
+    : [];
+
   const targetDays = sankalpaRow?.target_days ?? 30;
   const sankalpaDay = sankalpaRow ? buildDayNumber(sankalpaRow.start_date, today) : 1;
   const name = getDisplayName({
@@ -819,6 +854,7 @@ export async function GET(request: NextRequest) {
       name,
       firstName: getFirstName(name),
       tradition,
+      appLanguage: profile?.app_language === 'hi' || profile?.app_language === 'pa' ? profile.app_language : 'en',
       city: profile?.city ?? '',
       country: profile?.country ?? '',
       karmaPoints: profile?.karma_points ?? 0,
@@ -846,6 +882,7 @@ export async function GET(request: NextRequest) {
       viewedToday: Boolean(todaySadhana?.panchang_viewed),
       observance,
       upcomingObservances,
+      series,
     },
     nextPractice: buildNextPractice(practices),
     practices,

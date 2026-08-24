@@ -787,7 +787,13 @@ export default function HomeDashboard({
   const meta = getTraditionMeta(tradition);
   const effectiveAppLanguage = appLanguage === 'hi' || appLanguage === 'pa' ? appLanguage : 'en';
 
-  const { observances, loading: calendarLoading, error: calendarError } = useUpcomingObservances(
+  const {
+    observances,
+    series: activeObservanceSeries,
+    spiritualDate: observanceSpiritualDate,
+    loading: calendarLoading,
+    error: calendarError,
+  } = useUpcomingObservances(
     tradition || 'all',
     HOME_OBSERVANCE_WINDOW_DAYS,
     { reviewedOnly: true },
@@ -1121,8 +1127,9 @@ export default function HomeDashboard({
 
         <VratCarousel
           festivals={activeVratFestivals}
-          isDark={isDark}
+          series={activeObservanceSeries}
           effectiveAppLanguage={effectiveAppLanguage}
+          spiritualDate={observanceSpiritualDate ?? todayStr}
         />
 
         {/* ── Section 2: Calendar Section ── */}

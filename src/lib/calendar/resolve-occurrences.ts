@@ -19,6 +19,7 @@
  * writer scoped to exactly the rows a live request needs.
  */
 import { calculateObservancesForYear } from './engine';
+import { CALENDAR_OCCURRENCE_SELECT } from './occurrence-reader';
 import type { LocationInput } from '@sangam/panchang-engine';
 
 export interface OccurrenceDefinitionJoin {
@@ -33,13 +34,10 @@ export interface OccurrenceDefinitionJoin {
   active: boolean;
 }
 
-export interface ResolvedOccurrenceRow {
+export interface ResolvedOccurrenceRow extends Record<string, unknown> {
   date: string;
   observance_definitions: OccurrenceDefinitionJoin;
 }
-
-const DEFINITION_JOIN_SELECT =
-  'slug, display_name, emoji, description, kind, tradition, route_kind, route_slug, active';
 
 /**
  * Ensures a year has been materialized for a specific (calendar_profile,
@@ -180,7 +178,7 @@ export async function getOrMaterializeOccurrences({
 
   let query = supabase
     .from('observance_occurrences')
-    .select(`date, observance_definitions!inner(${DEFINITION_JOIN_SELECT})`)
+    .select(CALENDAR_OCCURRENCE_SELECT)
     .gte('date', fromDate)
     .lte('date', toDate)
     .eq('observance_definitions.active', true)

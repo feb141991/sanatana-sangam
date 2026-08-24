@@ -76,6 +76,9 @@ export interface SourcedSeriesGroupContent {
 }
 
 const SERIES_CONTENT_DATA = seriesContentJson as { version: string; series: SourcedSeriesGroupContent[] };
+const SERIES_CONTENT_BY_DEFINITION = new Map(
+  SERIES_CONTENT_DATA.series.map(series => [series.definitionKey, series]),
+);
 const SERIES_CONTENT_BY_SLUG = new Map<string, SourcedSeriesChildContent>();
 for (const s of SERIES_CONTENT_DATA.series) {
   for (const child of s.children) {
@@ -272,6 +275,9 @@ function buildOneSeries(
     definitionKey: definition.definitionKey,
     mode: definition.mode,
     name: definition.name,
+    editorial: SERIES_CONTENT_BY_DEFINITION.has(definition.definitionKey)
+      ? { name: SERIES_CONTENT_BY_DEFINITION.get(definition.definitionKey)!.name }
+      : undefined,
     tradition: definition.tradition,
     profile: options.profile,
     location: options.location,

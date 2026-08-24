@@ -90,6 +90,9 @@ export interface ObservanceSeries {
   definitionKey: string;
   mode: ObservanceSeriesMode;
   name: string;
+  editorial?: {
+    name: LocalizedEditorialField<{ en: string; hi?: string; pa?: string }>;
+  };
   tradition: string;
   profile: { calendar: string; tradition: string };
   location: { label: string; lat: number; lon: number; tz: string };
