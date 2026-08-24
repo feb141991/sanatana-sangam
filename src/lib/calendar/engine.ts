@@ -648,11 +648,7 @@ export const NanakshahiHandler = {
     const start = NANAKSHAHI_GREGORIAN_START[rule.nanakshahi_month];
     if (!start) return [];
 
-    // Magh and Phagan fall in the next Gregorian year
-    const gregYear = (rule.nanakshahi_month === 'Magh' || rule.nanakshahi_month === 'Phagan')
-      ? year + 1 : year;
-
-    const startDate = new Date(Date.UTC(gregYear, start.month - 1, start.day));
+    const startDate = new Date(Date.UTC(year, start.month - 1, start.day));
     const observanceDate = new Date(startDate.getTime() + (rule.nanakshahi_day - 1) * 86400000);
 
     // Only include if the resulting date falls in the target year
@@ -1131,11 +1127,36 @@ export function calculateObservanceCandidateDiagnosticsForYear(
   let _correctedMap: Record<string, string[]> | null = null;
   const getCorrectedMap = () => (_correctedMap ??= buildOccurrencesMapCorrected(year, { applyPublicationGate: false, location }));
 
-  return CANONICAL_RULES.map((rule) => {
+  const mainDiagnostics: ObservanceCandidateDiagnostic[] = [];
+  const subDiagnostics: ObservanceCandidateDiagnostic[] = [];
+
+  // If USE_CONDITION_EVALUATOR is true and we want corrected engine, check evaluator resolved dates
+  let evaluatorResolved: Map<string, string[]> | null = null;
+  if (USE_CONDITION_EVALUATOR && enginePreference === 'corrected') {
+    const { resolved } = calculateOccurrencesWithEvaluator(year, location);
+    evaluatorResolved = new Map();
+    for (const r of resolved) {
+      const canonicalQualifier = r.variant_key && r.variant_key !== 'standard' && r.variant_key !== 'default'
+        ? evaluatorVariantToRuleQualifier(r.slug, r.variant_key)
+        : null;
+      const key = canonicalQualifier ? `${r.slug}::${canonicalQualifier}` : r.slug;
+      const existing = evaluatorResolved.get(key) ?? [];
+      existing.push(r.date);
+      evaluatorResolved.set(key, existing);
+    }
+  }
+
+  for (const rule of CANONICAL_RULES) {
     const rk = ruleIdentityKey(rule);
-    const rawDates = enginePreference === 'corrected'
-      ? (() => { const c = getCorrectedMap()[rk]; return (c && c.length > 0) ? c : (getLegacyMap()[rk] || []); })()
-      : (() => { const l = getLegacyMap()[rk]; return (l && l.length > 0) ? l : (getCorrectedMap()[rk] || []); })();
+    let rawDates: string[];
+    if (evaluatorResolved && evaluatorResolved.has(rk)) {
+      rawDates = evaluatorResolved.get(rk)!;
+    } else {
+      rawDates = enginePreference === 'corrected'
+        ? (() => { const c = getCorrectedMap()[rk]; return (c && c.length > 0) ? c : (getLegacyMap()[rk] || []); })()
+        : (() => { const l = getLegacyMap()[rk]; return (l && l.length > 0) ? l : (getCorrectedMap()[rk] || []); })();
+    }
+
     const candidateDates = rawDates.filter(
       d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
     );
@@ -1160,7 +1181,7 @@ export function calculateObservanceCandidateDiagnosticsForYear(
       : rule.disputed_years?.includes(year) ? 'disputed_year'
       : null;
 
-    return {
+    mainDiagnostics.push({
       slug: rule.slug,
       ruleKey: rk,
       year,
@@ -1172,8 +1193,33 @@ export function calculateObservanceCandidateDiagnosticsForYear(
       selectedDate,
       selectionPolicy,
       recurring,
-    };
-  });
+    });
+
+    if (rule.rule_family === 'lunar_tithi_span' && rule.sub_observances) {
+      const occurrencesMap = enginePreference === 'corrected' ? getCorrectedMap() : getLegacyMap();
+      for (const sub of rule.sub_observances) {
+        const subRaw = occurrencesMap[sub.slug] || [];
+        const subCandidateDates = subRaw.filter(
+          d => new Date(d + 'T00:00:00Z').getUTCFullYear() === year
+        );
+        subDiagnostics.push({
+          slug: sub.slug,
+          ruleKey: sub.slug,
+          year,
+          ruleFamily: 'lunar_tithi',
+          publicationWithheld: sub.launch_status === 'deferred',
+          withheldReason: sub.launch_status === 'deferred' ? 'deferred' : null,
+          candidateDates: subCandidateDates,
+          candidateCount: subCandidateDates.length,
+          selectedDate: subCandidateDates[0] ?? null,
+          selectionPolicy: 'first_match',
+          recurring: false,
+        });
+      }
+    }
+  }
+
+  return [...mainDiagnostics, ...subDiagnostics];
 }
 
 // ---------------------------------------------------------------------------
@@ -1232,6 +1278,14 @@ export function calculateObservanceSelectedDateForMonthSystem(
   monthSystem: 'amanta' | 'purnimanta',
   location: LocationInput = DEFAULT_LOCATION,
 ): string | null {
+  if (USE_CONDITION_EVALUATOR) {
+    const { resolved } = calculateOccurrencesWithEvaluator(year, location);
+    const match = resolved.find(o => o.slug === rule.slug);
+    if (match) {
+      return match.date;
+    }
+  }
+
   if (rule.rule_family !== 'lunar_tithi' && rule.rule_family !== 'lunar_tithi_recurring') {
     return null;
   }

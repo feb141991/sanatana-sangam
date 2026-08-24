@@ -474,7 +474,18 @@
     "corrected_lunar_masa_name": "Ashwin",
     "corrected_month_system": "amanta",
     "adhika_policy": "nija",
-    "span_tithis": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "span_tithis": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
     "cluster_slug": "sharad-navratri",
     "sub_observances": [
       {
@@ -482,7 +493,9 @@
         "slug": "navratri-day-1-shailaputri",
         "display_name": "Navratri Day 1 — Shailaputri",
         "devi_form": "Shailaputri",
-        "rituals": ["Ghatasthapana"],
+        "rituals": [
+          "Ghatasthapana"
+        ],
         "kind": "major",
         "launch_status": "included",
         "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Pratipada"
@@ -524,7 +537,10 @@
         "slug": "navratri-day-6-katyayani",
         "display_name": "Navratri Day 6 — Katyayani (Durga Sasthi)",
         "devi_form": "Katyayani",
-        "rituals": ["Bilva Nimantran", "Sasthi Bodhon"],
+        "rituals": [
+          "Bilva Nimantran",
+          "Sasthi Bodhon"
+        ],
         "kind": "major",
         "launch_status": "included"
       },
@@ -533,7 +549,10 @@
         "slug": "navratri-day-7-kalaratri",
         "display_name": "Navratri Day 7 — Kalaratri (Maha Saptami)",
         "devi_form": "Kalaratri",
-        "rituals": ["Maha Saptami Puja", "Kola Bou / Nabapatrika"],
+        "rituals": [
+          "Maha Saptami Puja",
+          "Kola Bou / Nabapatrika"
+        ],
         "kind": "major",
         "launch_status": "included"
       },
@@ -542,7 +561,11 @@
         "slug": "durga-ashtami",
         "display_name": "Durga Ashtami (Maha Ashtami)",
         "devi_form": "Mahagauri",
-        "rituals": ["Maha Ashtami Puja", "Sandhi Puja", "Kanya Pujan"],
+        "rituals": [
+          "Maha Ashtami Puja",
+          "Sandhi Puja",
+          "Kanya Pujan"
+        ],
         "kind": "major",
         "launch_status": "included",
         "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Ashtami"
@@ -552,7 +575,11 @@
         "slug": "maha-navami",
         "display_name": "Maha Navami",
         "devi_form": "Siddhidatri",
-        "rituals": ["Maha Navami Puja", "Ayudha Puja", "Chandi Havan"],
+        "rituals": [
+          "Maha Navami Puja",
+          "Ayudha Puja",
+          "Chandi Havan"
+        ],
         "kind": "major",
         "launch_status": "included",
         "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Navami"
@@ -561,7 +588,12 @@
         "tithi": 10,
         "slug": "dussehra",
         "display_name": "Vijayadashami / Dussehra",
-        "rituals": ["Dussehra", "Durga Visarjan", "Sindoor Khela", "Vidyarambham"],
+        "rituals": [
+          "Dussehra",
+          "Durga Visarjan",
+          "Sindoor Khela",
+          "Vidyarambham"
+        ],
         "kind": "major",
         "launch_status": "included",
         "citation": "Rashtriya Panchang Saka 1948, Ashwin Shukla Dashami (Index #51, Vijaya Dasami, Bengal & Kerala, 2026-10-21) -- DISPUTED against Index #50's mainstream reading, see ratification_note"
@@ -1100,11 +1132,12 @@
     "description": "Celebration of the birth of Guru Gobind Singh Ji — 10th Sikh Guru and founder of the Khalsa",
     "kind": "major",
     "tradition": "sikh",
-    "rule_family": "solar_fixed",
+    "rule_family": "regional_calendar",
     "verification_type": "historical_commemoration",
-    "solar_month": 1,
-    "solar_day": 5,
-    "launch_status": "included"
+    "launch_status": "included",
+    "nanakshahi_month": "Magh",
+    "nanakshahi_day": 2,
+    "ratification_note": "D35 fix: nanakshahi_month Magh, nanakshahi_day 2 per SGPC Nanakshahi-558 sidebar Gurpurab entry (02 mwG). See docs/sources/sgpc-nanakshahi-558.manifest.md."
   },
   {
     "slug": "lohri",

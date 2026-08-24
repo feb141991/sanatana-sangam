@@ -67,7 +67,7 @@ const DISPUTED: Array<{ slug: string; ruleKey: string; year: number }> = [
  * exactly the inference that wastes an afternoon. Caching makes each year cost
  * once for the whole file.
  */
-const cache = new Map<string, Array<{ slug: string; date: string }>>();
+const cache = new Map<string, Array<{ slug: string; ruleKey?: string; date: string }>>();
 const occurrences = (path: 'legacy' | 'corrected', year: number) => {
   const key = `${path}|${year}`;
   if (!cache.has(key)) {

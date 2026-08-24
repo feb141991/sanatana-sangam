@@ -69,6 +69,25 @@ function fixtureRule(input: ApprovedFixtureEvaluationInput): ObservanceRule {
     return rawMatches[0];
   }
 
+  // Check sub-observances of spans (e.g. dussehra in sharad-navratri)
+  for (const parent of CANONICAL_RULES) {
+    if (parent.rule_family === "lunar_tithi_span" && parent.sub_observances) {
+      const sub = parent.sub_observances.find(s => s.slug === input.festivalId);
+      if (sub) {
+        return {
+          ...parent,
+          slug: sub.slug,
+          display_name: sub.display_name,
+          emoji: sub.emoji ?? parent.emoji,
+          description: sub.description ?? parent.description,
+          kind: sub.kind ?? parent.kind,
+          lunar_tithi_index: sub.tithi,
+          corrected_lunar_tithi_index: sub.tithi,
+        };
+      }
+    }
+  }
+
   // Crosswalk fallback for known divergent naming conventions (e.g. krishna-janmashtami's
   // EVALUATOR_RULES/profile 'smarta'/'vaishnava' vs rules.json 'smarta_nishita'/'gaudiya_iskcon'):
   if (rawVariantKey) {
