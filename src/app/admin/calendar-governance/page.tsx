@@ -223,9 +223,20 @@ function CoverageSection({
 
   useEffect(() => {
     fetch('/api/admin/calendar-governance/coverage')
-      .then(r => r.json())
-      .then(json => { if (json.error) setError(json.error); else setData(json); })
-      .catch(e => setError(String(e)));
+      .then(async r => {
+        let json: any = null;
+        try { json = await r.json(); } catch { json = null; }
+        if (r.status === 401) {
+          setError("Admin session expired or unauthorized. Please log in at /admin/login");
+          return;
+        }
+        if (!r.ok) {
+          setError(json?.error || `Failed to fetch coverage (status ${r.status})`);
+          return;
+        }
+        setData(json);
+      })
+      .catch(e => setError(e instanceof Error ? e.message : String(e)));
   }, []);
 
   const filteredSlugs = useMemo(() => {
@@ -601,8 +612,15 @@ function FixturesSection({
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/calendar-governance/fixtures');
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || 'Failed to fetch fixtures');
+      let json: any = null;
+      try { json = await res.json(); } catch { json = null; }
+      if (res.status === 401) {
+        setError("Admin session expired or unauthorized. Please log in at /admin/login");
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(json?.error || `Failed to fetch fixtures (status ${res.status})`);
+      }
       setRows(Array.isArray(json) ? json : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch fixtures');
@@ -1452,8 +1470,15 @@ function ReviewQueueSection({ onToast }: { onToast?: (t: ToastFeedback) => void 
   const fetchData = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/calendar-governance/review-queue');
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || 'Failed to fetch review queue');
+      let json: any = null;
+      try { json = await res.json(); } catch { json = null; }
+      if (res.status === 401) {
+        setError("Admin session expired or unauthorized. Please log in at /admin/login");
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(json?.error || `Failed to fetch review queue (status ${res.status})`);
+      }
       setRows(Array.isArray(json) ? json : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch review queue');
@@ -1576,8 +1601,15 @@ function ActivitySection() {
     try {
       setLoading(true);
       const res = await fetch('/api/admin/calendar-governance/activity');
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || 'Failed to fetch activity log');
+      let json: any = null;
+      try { json = await res.json(); } catch { json = null; }
+      if (res.status === 401) {
+        setError("Admin session expired or unauthorized. Please log in at /admin/login");
+        return;
+      }
+      if (!res.ok) {
+        throw new Error(json?.error || `Failed to fetch activity log (status ${res.status})`);
+      }
       setLogs(Array.isArray(json) ? json : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch activity log');

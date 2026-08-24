@@ -154,7 +154,10 @@ export async function warmDiagnosticsForYear(year: number): Promise<void> {
   await occurrencesForYear(year);
 }
 
-const knownSlugs = new Set(CANONICAL_RULES.map((rule) => rule.slug));
+const knownSlugs = new Set([
+  ...CANONICAL_RULES.map((rule) => rule.slug),
+  ...CANONICAL_RULES.flatMap((rule) => rule.sub_observances?.map((sub) => sub.slug) ?? []),
+]);
 
 // Picks the item matching `qualifier` out of a same-slug list. Evaluator-
 // assigned variant_key values (e.g. 'standard' for a single-variant rule)
