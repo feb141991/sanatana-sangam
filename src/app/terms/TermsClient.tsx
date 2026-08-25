@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TERMS_DATA, TermsRegion } from '@/lib/terms-content';
+import { TERMS_DATA, TERMS_VERSION, TermsRegion } from '@/lib/terms-content';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TermsClient() {
@@ -100,7 +100,10 @@ export default function TermsClient() {
         </AnimatePresence>
       </div>
 
-      <div className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">
+      <div
+        data-terms-version={TERMS_VERSION}
+        className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
+      >
         Last Updated: July 20, 2026 • Shoonaya Global Governance
       </div>
     </div>

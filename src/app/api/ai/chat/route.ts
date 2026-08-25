@@ -324,9 +324,15 @@ export async function POST(req: NextRequest) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_pro, is_banned, tradition, sampradaya, city, country, seeking, app_language, meaning_language, transliteration_language, spiritual_level, timezone, seva_score')
+    .select('is_pro, is_banned, tradition, sampradaya, city, country, seeking, app_language, meaning_language, transliteration_language, spiritual_level, timezone, seva_score, consent_religious_data')
     .eq('id', user.id)
     .single();
+
+  // Religious-data consent: suppress the stored tradition/sampradaya/
+  // spiritual_level from personalization (not deletion) when withdrawn.
+  // Does not affect a value the user explicitly supplies in this request --
+  // that's a live instruction for this chat, not passive profile use.
+  const religiousDataConsented = profile?.consent_religious_data !== false;
 
   const isPro = profile?.is_pro ?? false;
   if (profile?.is_banned) {
@@ -372,8 +378,8 @@ export async function POST(req: NextRequest) {
   }
   const history = sanitiseHistory(body.history);
 
-  const tradition             = body.tradition ?? profile?.tradition ?? null;
-  const sampradaya            = body.sampradaya ?? profile?.sampradaya ?? null;
+  const tradition             = body.tradition ?? (religiousDataConsented ? profile?.tradition : null) ?? null;
+  const sampradaya            = body.sampradaya ?? (religiousDataConsented ? profile?.sampradaya : null) ?? null;
   const city                  = body.city ?? profile?.city ?? null;
   const country               = body.country ?? profile?.country ?? null;
   const seeking               = body.seeking ?? profile?.seeking ?? [];
@@ -383,7 +389,7 @@ export async function POST(req: NextRequest) {
   const timeZone              = profile?.timezone ?? 'Asia/Kolkata';
   const spiritualDate         = localSpiritualDate(timeZone, 4);
   const systemPrompt          = buildSystemPrompt({
-    tradition, rank: profile?.spiritual_level ?? null,
+    tradition, rank: religiousDataConsented ? (profile?.spiritual_level ?? null) : null,
     sampradaya, city, country, seeking,
     language: responseLanguage, meaningLanguage, transliterationLanguage,
     spiritualDate,

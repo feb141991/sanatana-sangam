@@ -260,6 +260,25 @@ export interface Database {
         Insert: Database['public']['Tables']['public_profiles']['Row'];
         Update: Partial<Database['public']['Tables']['public_profiles']['Insert']>;
       };
+      legal_acceptances: {
+        Row: {
+          id: string;
+          user_id: string;
+          document: 'terms' | 'privacy';
+          version: string;
+          accepted_at: string;
+          surface: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          document: 'terms' | 'privacy';
+          version: string;
+          accepted_at?: string;
+          surface: string;
+        };
+        Update: Partial<Database['public']['Tables']['legal_acceptances']['Insert']>;
+      };
       mandalis: {
         Row: {
           id: string;

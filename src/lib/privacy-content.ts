@@ -1,5 +1,13 @@
 import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
 
+/**
+ * Single source of truth for the Privacy Policy version, in sync with the
+ * displayed "Last Updated" date. Bump this (and the date text in
+ * PrivacyClient.tsx) whenever the policy content materially changes -- this
+ * is what gets recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
+ */
+export const PRIVACY_VERSION = '2026-08-11';
+
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
 export interface PrivacySection {

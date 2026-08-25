@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PRIVACY_DATA, PrivacyRegion } from '@/lib/privacy-content';
+import { PRIVACY_DATA, PRIVACY_VERSION, PrivacyRegion } from '@/lib/privacy-content';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function PrivacyClient() {
@@ -100,7 +100,10 @@ export default function PrivacyClient() {
         </AnimatePresence>
       </div>
 
-      <div className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold">
+      <div
+        data-privacy-version={PRIVACY_VERSION}
+        className="pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.3em] font-bold"
+      >
         Last Updated: August 11, 2026 • Shoonaya Privacy Trust
       </div>
     </div>

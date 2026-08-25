@@ -1,5 +1,13 @@
 import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
 
+/**
+ * Single source of truth for the Terms version, in sync with the displayed
+ * "Last Updated" date. Bump this (and the date text in TermsClient.tsx)
+ * whenever the Terms content materially changes -- this is what gets
+ * recorded on every acceptance receipt (src/lib/legal-acceptance.ts).
+ */
+export const TERMS_VERSION = '2026-07-20';
+
 export type TermsRegion = 'global' | 'india' | 'uk' | 'usa';
 
 export interface TermsSection {

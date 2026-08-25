@@ -66,12 +66,17 @@ export async function GET() {
     // ── 2. Fetch user profile ────────────────────────────────────────────────────
     const { data: profile } = await supabase
       .from('profiles')
-      .select('tradition, sampradaya, spiritual_level, seeking, full_name, username')
+      .select('tradition, sampradaya, spiritual_level, seeking, full_name, username, consent_religious_data')
       .eq('id', user.id)
       .maybeSingle();
 
+    // Religious-data consent: suppress tradition/spiritual_level from
+    // personalization (not deletion) when withdrawn -- fall back to the same
+    // neutral defaults already used when no tradition is set at all.
+    const religiousDataConsented = profile?.consent_religious_data !== false;
+
     // ── 3. Generate via active provider ──────────────────────────────────────────
-    const rawTradition = profile?.tradition ?? 'general';
+    const rawTradition = religiousDataConsented ? (profile?.tradition ?? 'general') : 'general';
     const tagValidation = validatePipelineTags(
       {
         tradition: rawTradition === 'general' ? 'generic' : rawTradition,
@@ -90,7 +95,7 @@ export async function GET() {
       : (effectiveTags.tradition ?? 'general');
     const pipelinePromptHint = buildPipelinePromptHint(effectiveTags);
 
-    const level     = profile?.spiritual_level ?? 'beginner';
+    const level     = religiousDataConsented ? (profile?.spiritual_level ?? 'beginner') : 'beginner';
     const seeking   = (profile?.seeking as string[])?.join(', ') ?? '';
     const name      = profile?.full_name ?? profile?.username ?? 'Seeker';
 

@@ -11,6 +11,7 @@ import BrandMark from '@/components/BrandMark';
 import { createClient } from '@/lib/supabase';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
 import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
+import { markPendingLegalAcceptance, recordLegalAcceptance } from '@/lib/legal-acceptance';
 
 function usernameFromEmail(email: string) {
   const base = email
@@ -98,6 +99,7 @@ export default function SignupPage() {
     }
 
     setGoogleLoading(true);
+    markPendingLegalAcceptance('web_signup_google');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -123,6 +125,7 @@ export default function SignupPage() {
     }
 
     setAppleLoading(true);
+    markPendingLegalAcceptance('web_signup_apple');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
@@ -188,6 +191,11 @@ export default function SignupPage() {
       if (error) throw error;
 
       if (data.session) {
+        void Promise.all([
+          recordLegalAcceptance('terms', 'web_signup_email'),
+          recordLegalAcceptance('privacy', 'web_signup_email'),
+        ]);
+
         if (claimToken) {
           await fetch('/api/jyotish/birth-profiles', {
             method: 'POST',
@@ -201,6 +209,10 @@ export default function SignupPage() {
         router.push(destination);
         router.refresh();
       } else {
+        // No session until email confirmation. Best-effort: consumed by
+        // AuthSessionGuard if confirmation happens in this same tab; a
+        // cross-tab confirmation link won't see this sessionStorage flag.
+        markPendingLegalAcceptance('web_signup_email_unconfirmed');
         toast.success('Please check your inbox to confirm your email.');
         router.push(`/login?message=check_email&email=${encodeURIComponent(normalizedEmail)}`);
       }

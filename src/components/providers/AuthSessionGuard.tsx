@@ -13,6 +13,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import { consumePendingLegalAcceptance } from '@/lib/legal-acceptance';
 
 function hasErrorCode(error: unknown, code: string): boolean {
   return typeof error === 'object' &&
@@ -74,6 +75,14 @@ export default function AuthSessionGuard() {
     });
 
     return () => subscription.unsubscribe();
+  }, [pathname]);
+
+  // Records a Terms/Privacy acceptance stashed by the signup page before an
+  // OAuth redirect (or an unconfirmed-email redirect), once a real session
+  // exists to attach it to. No-ops if nothing is pending. See
+  // src/lib/legal-acceptance.ts.
+  useEffect(() => {
+    void consumePendingLegalAcceptance();
   }, [pathname]);
 
   return null;
