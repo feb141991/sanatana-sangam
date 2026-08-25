@@ -9,6 +9,7 @@ import {
   fetchReviewedObservancesForNotifications,
   type ObservanceNotificationPreview,
 } from '@/lib/observance-notification-source';
+import { fetchIncompleteSeriesOccurrenceIds } from '@/lib/calendar/observance-series-eligibility';
 
 function isMissingObservanceModel(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error ?? '');
@@ -71,7 +72,7 @@ export async function GET(request: Request) {
     const targetLocalHour = 9;
 
     const {
-      observances: festivals,
+      observances: reviewedFestivals,
       error: observanceError,
     } = await fetchReviewedObservancesForNotifications(supabase, ['major', 'regional']);
 
@@ -90,6 +91,19 @@ export async function GET(request: Request) {
         sent: 0,
       });
     }
+
+    // Reject occurrences whose parent multi-day series (e.g. Navratri,
+    // Diwali-five-days) is currently incomplete/under_review, so a
+    // reviewed-and-published single occurrence never gets notified while a
+    // sibling in the same series is missing, disputed, or unreviewed.
+    const incompleteSeriesIds = await fetchIncompleteSeriesOccurrenceIds(
+      supabase,
+      reviewedFestivals.map((f) => f.slug),
+      reviewedFestivals.map((f) => f.date),
+    );
+    const festivals = incompleteSeriesIds.size === 0
+      ? reviewedFestivals
+      : reviewedFestivals.filter((f) => !f.id || !incompleteSeriesIds.has(f.id));
 
     if (festivals.length === 0) {
       return NextResponse.json({ message: 'No reviewed festivals eligible for reminder', sent: 0 });

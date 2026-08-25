@@ -108,9 +108,31 @@ export async function searchArchiveOrgForHero(heroName: string): Promise<Archive
  * all of those are legitimate "not a usable candidate" outcomes given this
  * session's repeated experience with archive.org djvu.txt fetches being
  * truncated, dominated by site-chrome, or landing on unrelated volumes.
+ *
+ * Two real bugs found and fixed here (2026-08-23): (1) `/stream/<id>/<id>_djvu.txt`
+ * 301-redirects to the HTML book-reader viewer (`/details/...?view=theater`),
+ * not the raw text -- `fetch()` follows the redirect and returns a full HTML
+ * page, which is exactly the "excerpt" that was showing up as raw
+ * `<!DOCTYPE html>`/banner markup in the review UI. `/download/<id>/<file>`
+ * serves the actual file. (2) The real djvu.txt filename is frequently NOT
+ * `<identifier>_djvu.txt` -- older/`in.ernet.dli.*`-style uploads name it
+ * after the title instead (verified directly: `in.ernet.dli.2015.98064`'s
+ * real file is `2015.98064.Select-Essays-Of-Sister-Nivedita_djvu.txt`).
+ * Fixed by reading the item's real file list from the metadata API first.
  */
 async function fetchExcerptIfRelevant(identifier: string, heroName: string): Promise<string | null> {
-  const url = `https://archive.org/stream/${identifier}/${identifier}_djvu.txt`;
+  let djvuFilename: string | null = null;
+  try {
+    const metadata = await fetchJson(`https://archive.org/metadata/${identifier}`);
+    const files: Array<{ name?: string; format?: string }> = metadata?.files ?? [];
+    const djvuFile = files.find((f) => f.format === 'DjVuTXT' || /_djvu\.txt$/i.test(f.name ?? ''));
+    djvuFilename = djvuFile?.name ?? null;
+  } catch {
+    return null;
+  }
+  if (!djvuFilename) return null;
+
+  const url = `https://archive.org/download/${identifier}/${encodeURIComponent(djvuFilename)}`;
   let text: string;
   try {
     text = await fetchText(url);

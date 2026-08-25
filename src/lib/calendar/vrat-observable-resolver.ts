@@ -7,6 +7,7 @@ import {
 } from "@/lib/calendar/observance-formatter";
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from "@/lib/calendar/occurrence-reader";
 import { UUID_REGEX } from "@/lib/vrat-observation";
+import { isOccurrenceObservableInItsSeries } from "@/lib/calendar/observance-series-eligibility";
 
 export interface ObservableVratResultSuccess {
   success: true;
@@ -189,6 +190,32 @@ export async function resolveObservableVratOccurrence(
       statusCode: options.requireToday === false ? 404 : 400,
       errorCode: "OCCURRENCE_NOT_OBSERVABLE",
       userMessage: "This observance is not active or eligible to observe today",
+    };
+  }
+
+  // Reject observation writes for a multi-day series (e.g. Navratri,
+  // Diwali-five-days) child when the parent series is incomplete/under_review
+  // -- even though this single occurrence individually passed the eligibility
+  // filter above. Reuses the exact per-user profile/location/tradition
+  // already resolved for this request, so this check is fully precise (no
+  // canonical-profile proxying, unlike the batch notification-cron gate).
+  const seriesObservable = isOccurrenceObservableInItsSeries(
+    formattedResults,
+    {
+      spiritualDate: todayStr,
+      profile: { calendar: calendarProfile, tradition: matched.profile.tradition },
+      location: matched.location,
+      tradition,
+    },
+    occurrenceId,
+    matched.slug,
+  );
+  if (!seriesObservable) {
+    return {
+      success: false,
+      statusCode: 409,
+      errorCode: "SERIES_INCOMPLETE",
+      userMessage: "This observance is part of a multi-day sequence that is not yet fully confirmed or is not currently active",
     };
   }
 

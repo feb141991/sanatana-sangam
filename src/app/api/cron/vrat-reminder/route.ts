@@ -14,6 +14,7 @@ import {
   type ObservanceNotificationPreview,
   type ReviewedObservance,
 } from '@/lib/observance-notification-source';
+import { fetchIncompleteSeriesOccurrenceIds } from '@/lib/calendar/observance-series-eligibility';
 
 // ─── Vrat Reminder Cron ──────────────────────────────────────────────────────
 // Sends occurrence-backed reminders for reviewed recurring vrats. General
@@ -83,8 +84,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: `Reviewed vrat source unavailable: ${observanceError.message}` }, { status: 500 });
     }
 
-    const generalVrats = filterGeneralOccurrenceBackedVrats(observances);
-    const femaleVrats = filterWomenFocusedVrats(observances);
+    // Reject occurrences whose parent multi-day series (e.g. Navratri,
+    // Diwali-five-days) is currently incomplete/under_review, so a
+    // reviewed-and-published single occurrence never gets notified while a
+    // sibling in the same series is missing, disputed, or unreviewed.
+    const incompleteSeriesIds = await fetchIncompleteSeriesOccurrenceIds(
+      supabase,
+      observances.map((o) => o.slug),
+      observances.map((o) => o.date),
+    );
+    const seriesEligibleObservances = incompleteSeriesIds.size === 0
+      ? observances
+      : observances.filter((o) => !o.id || !incompleteSeriesIds.has(o.id));
+
+    const generalVrats = filterGeneralOccurrenceBackedVrats(seriesEligibleObservances);
+    const femaleVrats = filterWomenFocusedVrats(seriesEligibleObservances);
     if (generalVrats.length === 0 && femaleVrats.length === 0) {
       return NextResponse.json({ message: 'No reviewed vrat source rows eligible for reminder', sent: 0 });
     }
