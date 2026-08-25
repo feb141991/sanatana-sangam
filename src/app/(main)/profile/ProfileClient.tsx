@@ -39,6 +39,7 @@ import { SACRED_RELICS, getUnlockedRelics } from '@/lib/relics';
 import { getRelicFrame } from '@/lib/relic-frames';
 import SadhanaHighlightsCard from '@/components/profile/SadhanaHighlightsCard';
 import { InviteModal } from '@/app/(main)/home/sections/InviteModal';
+import { AgeGuidanceNotice } from '@/components/privacy/AgeGuidanceNotice';
 
 import SocialShareDrawer from '@/components/profile/SocialShareDrawer';
 import InviteCard from '@/components/home/InviteCard';
@@ -2160,6 +2161,7 @@ export default function ProfileClient({
                     </div>
                   );
                 })()}
+                <AgeGuidanceNotice dateOfBirth={form.date_of_birth} />
               </div>
 
               <div className="space-y-3">

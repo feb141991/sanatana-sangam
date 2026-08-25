@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, Users, MapPin, Calendar, Info, Baby } from 'lucide-react';
 import { FamilyMember } from '../types';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
+import { AgeGuidanceNotice } from '@/components/privacy/AgeGuidanceNotice';
 
 const EXTENDED_ROLES = [
   { group: 'Direct', roles: ['Self', 'Spouse', 'Son', 'Daughter', 'Brother', 'Sister'] },
@@ -146,6 +147,8 @@ export function KulVanshForm({ onClose, onSave, members, editMember }: { onClose
                 />
               </div>
             </div>
+
+            <AgeGuidanceNotice dateOfBirth={form.birth_date ?? ''} subject="family-member" />
 
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-bold text-[#F2EAD6]/40 ml-1">{t('kulBirthPlace')}</label>

@@ -10,7 +10,7 @@ import { format as fmtDate } from 'date-fns';
 import type { Shloka } from '@/lib/shlokas';
 import type { Festival, FestivalCalendarMeta } from '@/lib/festivals';
 import type { DailySacredText } from '@/lib/sacred-texts';
-import { calculatePanchang, REFERENCE_LOCATION_UJJAIN, resolveObservanceLocation } from '@/lib/panchang';
+import { resolveObservanceLocation } from '@/lib/panchang';
 import { getFestivalStory } from '@/lib/festival-stories';
 import { selectDharmVeer, type DharmVeer } from '@/lib/dharm-veer';
 import { getPitruPakshaDay, getPitruPakshaBannerCopy } from '@/lib/pitru-paksha';
@@ -735,16 +735,21 @@ export default function HomeDashboard({
   }, [coords?.lat, coords?.lon, liveCity, savedLat, savedLon, savedCity]);
 
   useEffect(() => {
-    const p = calculatePanchang(selectedDate, resolvedLoc.lat, resolvedLoc.lon, resolvedLoc.tz);
-    setPanchang({
-      tithi:      p.tithi,
-      nakshatra:  p.nakshatra,
-      yoga:       p.yoga,
-      sunrise:    p.sunrise,
-      sunset:     p.sunset,
-      rahuKaal:   p.rahuKaal,
-      tithiIndex: p.tithiIndex,
+    let isMounted = true;
+    import('@/lib/panchang').then(({ calculatePanchang }) => {
+      if (!isMounted) return;
+      const p = calculatePanchang(selectedDate, resolvedLoc.lat, resolvedLoc.lon, resolvedLoc.tz);
+      setPanchang({
+        tithi:      p.tithi,
+        nakshatra:  p.nakshatra,
+        yoga:       p.yoga,
+        sunrise:    p.sunrise,
+        sunset:     p.sunset,
+        rahuKaal:   p.rahuKaal,
+        tithiIndex: p.tithiIndex,
+      });
     });
+    return () => { isMounted = false; };
   }, [selectedDate, resolvedLoc]);
 
   useEffect(() => {

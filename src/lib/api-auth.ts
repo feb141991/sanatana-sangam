@@ -1,7 +1,7 @@
-import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
-import type { NextRequest } from 'next/server';
+import { createClient, type SupabaseClient, type User } from "@supabase/supabase-js";
+import type { NextRequest } from "next/server";
 
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 // Deliberately untyped (no `<Database>` generic) — matching every other
 // working Supabase client factory in this repo (`createClient()` in
@@ -18,66 +18,77 @@ type ApiUserResult =
   | { user: null; error: Error; supabase: null };
 
 function getBearerToken(req: NextRequest) {
-  const header = req.headers.get('authorization');
+  const header = req.headers.get("authorization");
   const match = header?.match(/^Bearer\s+(.+)$/i);
   return match?.[1] ?? null;
 }
 
 /**
- * Resolves the authenticated user for an API route, trying a cookie-based
- * session first (web callers) and falling back to a Bearer token (native
- * callers via `apiFetch`).
+ * Resolves the authenticated user for an API route.
+ *
+ * Fast path: checks for a Bearer token FIRST (native callers via `apiFetch`),
+ * avoiding an expensive cookie-session network lookup that is guaranteed to fail
+ * for native clients.
+ *
+ * Fallback path: falls through to cookie-based session verification for web callers.
  *
  * Also returns the `supabase` client instance that successfully authenticated
  * — callers should reuse this client for any subsequent table reads/writes
  * instead of standing up a separate service-role admin client. This keeps
- * RLS enforced (least privilege) and avoids a `never`-typed admin client
- * (see Slice 4D report: `createAdminClient()` intersecting certain tables
- * produced `never` row types under this repo's current supabase-js/Database
- * type generation — reusing the already-working cookie/bearer client sidesteps
- * that entirely).
+ * RLS enforced (least privilege).
  */
 export async function getApiUser(req: NextRequest): Promise<ApiUserResult> {
-  const cookieClient = await createServerSupabaseClient();
-  const cookieResult = await cookieClient.auth.getUser();
-
-  if (cookieResult.data.user) {
-    return { user: cookieResult.data.user, error: null, supabase: cookieClient };
-  }
-
   const token = getBearerToken(req);
-  if (!token) {
-    return {
-      user: null,
-      error: cookieResult.error ?? new Error('Unauthorized'),
-      supabase: null,
-    };
-  }
 
-  const bearerClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  // 1. Fast path: Native callers with Bearer token
+  if (token) {
+    const bearerClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
         },
-      },
-    }
-  );
+        global: {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        },
+      }
+    );
 
-  const bearerResult = await bearerClient.auth.getUser();
-  if (!bearerResult.data.user) {
+    const bearerResult = await bearerClient.auth.getUser(token);
+    if (bearerResult.data?.user) {
+      return { user: bearerResult.data.user, error: null, supabase: bearerClient };
+    }
+
     return {
       user: null,
-      error: bearerResult.error ?? new Error('Unauthorized'),
+      error: bearerResult.error ?? new Error("Unauthorized"),
       supabase: null,
     };
   }
 
-  return { user: bearerResult.data.user, error: null, supabase: bearerClient };
+  // 2. Fallback path: Web callers with cookie session
+  try {
+    const cookieClient = await createServerSupabaseClient();
+    const cookieResult = await cookieClient.auth.getUser();
+
+    if (cookieResult.data?.user) {
+      return { user: cookieResult.data.user, error: null, supabase: cookieClient };
+    }
+
+    return {
+      user: null,
+      error: cookieResult.error ?? new Error("Unauthorized"),
+      supabase: null,
+    };
+  } catch (err: any) {
+    return {
+      user: null,
+      error: err instanceof Error ? err : new Error("Unauthorized"),
+      supabase: null,
+    };
+  }
 }

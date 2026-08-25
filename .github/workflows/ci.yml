@@ -26,6 +26,14 @@ jobs:
       - name: Build calendar workspace package
         run: npm run build --workspace=@sangam/panchang-engine
 
+      - name: Verify privacy and compliance engineering contracts
+        run: |
+          npm run test:baseline:privacy
+          npm run test:web-consent
+          npm run test:public-sources
+          npm run test:mandali-write-contract
+          npm run verify:compliance-engineering
+
       - name: Run lint
         run: npm run lint
 

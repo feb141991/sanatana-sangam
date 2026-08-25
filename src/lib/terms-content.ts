@@ -1,3 +1,5 @@
+import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
+
 export type TermsRegion = 'global' | 'india' | 'uk' | 'usa';
 
 export interface TermsSection {
@@ -14,6 +16,11 @@ export interface RegionalAppendix {
 
 export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[] } = {
   global: [
+    {
+      title: 'Age and Parental Guidance',
+      summary: 'Younger seekers should explore with a parent or guardian involved.',
+      content: [...AGE_GUIDANCE_POLICY.terms],
+    },
     {
       title: 'Community & Respect',
       summary: 'Shoonaya is a sacred space. Treat it as such.',
@@ -138,10 +145,10 @@ export const TERMS_DATA: { global: TermsSection[]; appendices: RegionalAppendix[
           ]
         },
         {
-          title: 'COPPA Compliance',
-          summary: 'Children under 13.',
+          title: "Children's Privacy",
+          summary: 'Shoonaya is not directed to children under 13.',
           content: [
-            'Shoonaya is not directed at children under the age of 13. We do not knowingly collect information from children in the USA without parental consent.',
+            'Shoonaya is not directed at children under the age of 13. If we learn that a child under 13 has provided personal data, we will review and remove it as appropriate.',
           ]
         }
       ]

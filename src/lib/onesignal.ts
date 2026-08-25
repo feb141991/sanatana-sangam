@@ -4,6 +4,7 @@
 // SDK URL and App ID are configured in @/lib/config.ts → API.ONESIGNAL
 
 import { API } from '@/lib/config';
+import { hasWebConsent } from '@/lib/web-consent';
 
 export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
 
@@ -15,7 +16,7 @@ export const ONESIGNAL_APP_ID = API.ONESIGNAL.APP_ID;
 const ONESIGNAL_TIMEOUT_MS = 8000; // 8s — generous for slow mobile connections
 
 export function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): Promise<T | null> {
-  if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return Promise.resolve(null);
+  if (typeof window === 'undefined' || !ONESIGNAL_APP_ID || !hasWebConsent('push')) return Promise.resolve(null);
 
   return new Promise((resolve) => {
     const timeout = window.setTimeout(() => {
@@ -40,11 +41,11 @@ export function withOneSignal<T>(callback: (OneSignal: any) => Promise<T> | T): 
 }
 
 export function isOneSignalConfigured() {
-  return Boolean(ONESIGNAL_APP_ID);
+  return Boolean(ONESIGNAL_APP_ID) && hasWebConsent('push');
 }
 
 export function initOneSignal() {
-  if (typeof window === 'undefined' || !ONESIGNAL_APP_ID) return;
+  if (typeof window === 'undefined' || !ONESIGNAL_APP_ID || !hasWebConsent('push')) return;
 
   // Load OneSignal SDK
   const script    = document.createElement('script');

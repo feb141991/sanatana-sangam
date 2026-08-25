@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import BrandMark from '@/components/BrandMark';
+import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
 
 type PublicPageShellProps = {
   eyebrow: string;
@@ -16,6 +17,7 @@ const footerLinks = [
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms' },
   { href: '/guidelines', label: 'Guidelines' },
+  { href: '/sources', label: 'Sources' },
   { href: '/contact', label: 'Contact' },
 ];
 
@@ -43,6 +45,7 @@ export default function PublicPageShell({
                 {link.label}
               </Link>
             ))}
+            <PrivacyChoicesButton className="hover:text-[color:var(--text-cream)] transition-colors" />
             <Link href="/signup" className="glass-button-primary px-4 py-2 rounded-full text-white font-semibold">
               Join Free
             </Link>

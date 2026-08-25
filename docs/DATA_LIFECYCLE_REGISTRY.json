@@ -1,0 +1,17 @@
+{
+  "version": "2026-08-24.v1",
+  "destructiveJobsEnabled": false,
+  "categories": [
+    {"id":"account_profile","stores":["auth.users","profiles","public_profiles"],"trigger":"account deletion completion","retentionDays":null,"action":"delete or approved anonymization","owner":"account-deletion workflow","status":"pending_approval"},
+    {"id":"religious_profile","stores":["profiles","birth_profiles","personalisation caches"],"trigger":"consent withdrawal or account deletion","retentionDays":null,"action":"pending field-specific rule","owner":"privacy lifecycle","status":"pending_approval"},
+    {"id":"guest_birth_chart","stores":["birth_profiles","guest chart/session storage"],"trigger":"guest expiry or deletion request","retentionDays":null,"action":"delete","owner":"jyotish lifecycle","status":"pending_approval"},
+    {"id":"push_tokens","stores":["push_tokens","Expo push service"],"trigger":"DeviceNotRegistered, sign-out, account deletion or inactivity","retentionDays":null,"action":"delete token","owner":"notification delivery","status":"pending_approval"},
+    {"id":"notification_delivery","stores":["notifications","notification_deliveries","push_receipts_pending"],"trigger":"delivery finalization","retentionDays":null,"action":"delete or aggregate","owner":"notification delivery","status":"pending_approval"},
+    {"id":"legal_receipts","stores":["future append-only consent/Terms receipt tables"],"trigger":"legal retention expiry","retentionDays":null,"action":"retain/anonymize per approved exception","owner":"legal evidence","status":"pending_approval"},
+    {"id":"community_content","stores":["posts","post_comments","content_reports","moderation audit"],"trigger":"content/account deletion","retentionDays":null,"action":"delete content; retain minimum approved abuse evidence","owner":"trust and safety","status":"pending_approval"},
+    {"id":"ai_requests","stores":["AI route logs","provider logs","caches"],"trigger":"request completion","retentionDays":null,"action":"delete or aggregate","owner":"AI platform","status":"pending_approval"},
+    {"id":"uploads","stores":["Supabase Storage avatars and user media"],"trigger":"replacement or account deletion","retentionDays":null,"action":"delete object and references","owner":"storage lifecycle","status":"pending_approval"},
+    {"id":"backups","stores":["Supabase/Vercel/provider backups"],"trigger":"provider backup rotation","retentionDays":null,"action":"expire by provider schedule","owner":"infrastructure","status":"external_disclosure_required"}
+  ]
+}
+

@@ -98,26 +98,14 @@ const baseProfile: MandaliProfile = {
 const baseMembers: MandaliMemberRow[] = [
   {
     id: 'mock-user',
-    full_name: 'Prince Sharma',
     username: 'prince',
     avatar_url: null,
-    sampradaya: 'vaishnava',
-    ishta_devata: 'krishna',
-    spiritual_level: 'sadhaka',
-    city: 'London',
-    country: 'United Kingdom',
     seva_score: 120,
   },
   {
     id: 'mandali-friend',
-    full_name: 'Meera Patel',
     username: 'meera',
     avatar_url: null,
-    sampradaya: 'shaiva',
-    ishta_devata: 'shiva',
-    spiritual_level: 'jigyasu',
-    city: 'London',
-    country: 'United Kingdom',
     seva_score: 86,
   },
 ];
@@ -237,7 +225,7 @@ export async function joinMockMandaliForLocation(userId: string, city: string, c
     state.comments = [];
     state.rsvps = [];
     const self = state.members.find((m) => m.id === userId);
-    state.members = self ? [{ ...self, city: cityName, country: countryName }] : [];
+    state.members = self ? [self] : [];
   }
   return mandaliId;
 }

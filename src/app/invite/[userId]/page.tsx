@@ -85,14 +85,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = createAdminClient();
   const { data: profileRaw } = await supabase
     .from('profiles')
-    .select('full_name, username, tradition')
+    .select('username')
     .eq('id', userId)
     .maybeSingle();
-  const profile = profileRaw as { full_name: string | null; username: string | null; tradition: string | null } | null;
+  const profile = profileRaw as { username: string | null } | null;
 
-  const name = profile?.full_name ?? profile?.username ?? 'A seeker';
-  const tradition = (profile?.tradition as string) ?? 'other';
-  const copy = TRADITION_COPY[tradition] ?? TRADITION_COPY.other;
+  const name = profile?.username ?? 'A seeker';
+  const copy = TRADITION_COPY.other;
 
   const title = `${name} invited you to Shoonaya`;
   const description = copy.subline;
@@ -125,22 +124,19 @@ export default async function InvitePage({ params }: PageProps) {
   const supabase = createAdminClient();
   const { data: profileRaw } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url, tradition')
+    .select('username, avatar_url')
     .eq('id', userId)
     .maybeSingle();
   const profile = profileRaw as {
-    full_name: string | null;
     username: string | null;
     avatar_url: string | null;
-    tradition: string | null;
   } | null;
 
   if (!profile) notFound();
 
-  const name = profile.full_name ?? profile.username ?? 'A seeker';
+  const name = profile.username ?? 'A seeker';
   const firstName = name.split(' ')[0];
-  const tradition = profile.tradition ?? 'other';
-  const copy = TRADITION_COPY[tradition] ?? TRADITION_COPY.other;
+  const copy = TRADITION_COPY.other;
   const inviteCode = generateInviteCode(userId);
   const joinHref = `/join?ref=${encodeURIComponent(inviteCode)}`;
   const accent = copy.accentHex;

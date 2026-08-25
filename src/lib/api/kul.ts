@@ -156,96 +156,10 @@ export type SaveKulEventPayload = {
 };
 
 export async function fetchKulData(userId: string): Promise<KulData> {
-  const supabase = createClient();
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, username, avatar_url, active_symbol_id, kul_id, tradition, sampradaya, shloka_streak, spiritual_level, is_banned, ban_reason, karma_points, weekly_seva')
-    .eq('id', userId)
-    .single();
-
-  let kulId = profile?.kul_id ?? null;
-
-  // AUTO-RECOVER: If profile.kul_id is missing, check if the user is a member of any Kul.
-  // This ensures that even if Step 3 of join_kul/create_kul failed (or was cleared),
-  // the user can still access their Kul dashboard.
-  if (!kulId) {
-    const { data: membership } = await supabase
-      .from('kul_members')
-      .select('kul_id')
-      .eq('user_id', userId)
-      .limit(1)
-      .maybeSingle();
-    
-    if (membership?.kul_id) {
-      kulId = membership.kul_id;
-      // Proactively fix the profile link in the background via RPC (bypasses REVOKE)
-      supabase.rpc('repair_kul_membership').then(() => {});
-    }
-  }
-
-  let kul: KulSummary | null = null;
-  let members: KulMemberRow[] = [];
-  let tasks: KulTaskRow[] = [];
-  let messages: KulMessageRow[] = [];
-  let familyMembers: KulFamilyMember[] = [];
-  let kulEvents: KulEvent[] = [];
-  let myRole: 'guardian' | 'sadhak' = 'sadhak';
-
-  if (kulId) {
-    const [kulRes, membersRes, tasksRes, msgsRes, familyRes, eventsRes] = await Promise.all([
-      supabase.from('kuls').select('id, name, invite_code, avatar_emoji, cover_url, created_by, created_at').eq('id', kulId).single(),
-      supabase.from('kul_members')
-        .select('id, role, joined_at, user_id, profiles!kul_members_user_id_fkey(id, full_name, username, avatar_url, active_symbol_id, tradition, sampradaya, shloka_streak, spiritual_level, bio, city, country, home_town, gotra, kul_devata, is_banned, ban_reason, karma_points, weekly_seva)')
-        .eq('kul_id', kulId),
-      supabase.from('kul_tasks')
-        .select('*, assigned_by_profile:profiles!kul_tasks_assigned_by_fkey(full_name, username), assigned_to_profile:profiles!kul_tasks_assigned_to_fkey(full_name, username, avatar_url)')
-        .eq('kul_id', kulId)
-        .order('created_at', { ascending: false }),
-      supabase.from('kul_messages')
-        .select('*, profiles!kul_messages_sender_id_fkey(full_name, username, avatar_url)')
-        .eq('kul_id', kulId)
-        .order('created_at', { ascending: false })
-        .limit(60),
-      supabase.from('kul_family_members')
-        .select('id, kul_id, name, role, gender, birth_year, birth_date, birth_place, death_year, death_date, marriage_date, parent_id, spouse_id, linked_user_id, notes, photo_url, is_alive, generation, display_order')
-        .eq('kul_id', kulId)
-        .order('generation', { ascending: true })
-        .order('display_order', { ascending: true }),
-      supabase.from('kul_events')
-        .select('*, member:kul_family_members(name, role)')
-        .eq('kul_id', kulId)
-        .order('event_date', { ascending: true }),
-    ]);
-
-    kul = (kulRes.data as KulSummary | null) ?? null;
-    members = ((membersRes.data ?? []) as any[]).map((row) => ({
-      ...row,
-      profiles: Array.isArray(row.profiles) ? (row.profiles[0] ?? null) : (row.profiles ?? null),
-    })) as KulMemberRow[];
-    tasks = (tasksRes.data ?? []) as KulTaskRow[];
-    messages = ((msgsRes.data ?? []) as KulMessageRow[]).reverse();
-    familyMembers = (familyRes.data ?? []) as KulFamilyMember[];
-    kulEvents = (eventsRes.data ?? []) as KulEvent[];
-
-    const myMembership = members.find((member) => member.user_id === userId);
-    if (myMembership?.role === 'guardian') {
-      myRole = 'guardian';
-    }
-  }
-
-  return {
-    userId,
-    userName: profile?.full_name ?? profile?.username ?? 'Sanatani',
-    userProfile: profile ?? null,
-    kul,
-    members,
-    tasks,
-    messages,
-    familyMembers,
-    kulEvents,
-    myRole,
-  };
+  if (!userId) throw new Error('Kul requires an authenticated user.');
+  const response = await fetch('/api/kul/data', { credentials: 'include' });
+  if (!response.ok) throw new Error('Could not load Kul.');
+  return response.json() as Promise<KulData>;
 }
 
 export async function createKul(payload: { name: string; emoji: string }) {

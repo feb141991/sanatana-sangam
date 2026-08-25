@@ -1,3 +1,5 @@
+import { AGE_GUIDANCE_POLICY } from '@/lib/compliance/age-guidance';
+
 export type PrivacyRegion = 'global' | 'india' | 'uk' | 'usa';
 
 export interface PrivacySection {
@@ -77,9 +79,9 @@ export const PRIVACY_DATA: { global: PrivacySection[]; appendices: PrivacyAppend
     },
     {
       title: 'Children and Sensitive Data',
-      summary: 'Shoonaya is intended for mature spiritual use.',
+      summary: 'Younger seekers should use Shoonaya with a parent or guardian involved.',
       content: [
-        'Shoonaya is not directed to children under 13. If you believe a child has provided personal data without appropriate consent, contact us so we can review and remove it.',
+        ...AGE_GUIDANCE_POLICY.privacy,
         'Religious, spiritual, astrological, and mood-related data can be sensitive. You control whether to provide optional profile details such as date of birth, rashi, nakshatra, goals, and reflections. Some core personalization requires tradition and language settings.',
       ]
     }

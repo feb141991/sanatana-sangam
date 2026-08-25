@@ -1,629 +1,500 @@
 /**
- * scripts/generate-privacy-security-baseline.ts
+ * Reproducible privacy/security engineering inventory.
  *
- * Machine-Generated Privacy and Security Baseline for Legal Risk Remediation.
- * Generates:
- *   - docs/PRIVACY_SECURITY_BASELINE.json (machine-readable data)
- *   - docs/PRIVACY_SECURITY_BASELINE.md (concise human-readable report)
- *
- * Evaluates 8 compliance categories across PWA, Native, and Live Database Metadata.
- * NEVER prints, exports or logs production PII, secrets, or row values.
+ * This script discovers evidence from both repositories and runs aggregate-only
+ * Supabase access probes. It intentionally does not make legal conclusions.
  */
 
+import { createHash } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { config } from "dotenv";
+import { createClient, type PostgrestError } from "@supabase/supabase-js";
+
 config({ path: ".env.local" });
 
-import fs from "fs";
-import path from "path";
-import { createClient } from "@supabase/supabase-js";
+export type FindingStatus =
+  | "VERIFIED"
+  | "NOT_FOUND"
+  | "DRIFT"
+  | "NEEDS_POLICY_DECISION"
+  | "UNKNOWN"
+  | "ERROR";
 
-type FindingStatus = "VERIFIED" | "NOT FOUND" | "DRIFT" | "NEEDS POLICY DECISION";
-type ContractOwnership = "backend" | "native" | "generated_snapshot" | "shared_contract";
+export type AccessProbeState = "EXPOSED" | "SECURED" | "UNKNOWN" | "ERROR";
+type RepositoryName = "backend" | "native";
+
+interface SourceFile {
+  repository: RepositoryName;
+  relativePath: string;
+  content: string;
+}
+
+interface Evidence {
+  repository: RepositoryName;
+  file: string;
+  line: number;
+  marker: string;
+}
 
 interface InventoryItem {
   id: string;
   category: string;
   name: string;
-  description: string;
-  location: string;
   status: FindingStatus;
-  canonicalOwnership: ContractOwnership;
-  details: Record<string, unknown>;
-  notes?: string;
+  canonicalOwnership: "backend" | "native" | "shared_contract";
+  description: string;
+  evidence: Evidence[];
+  decisionGate?: string;
+}
+
+interface TableProbe {
+  state: "OK" | "NOT_FOUND" | "PERMISSION_DENIED" | "UNKNOWN" | "ERROR";
+  count: number | null;
+  code: string | null;
+}
+
+interface ProfileColumn {
+  name: string;
+  type: string;
+  classification: "public_candidate" | "sensitive_candidate" | "internal_candidate" | "unclassified";
+}
+
+interface ProviderDiscovery {
+  provider: string;
+  evidence: Evidence[];
 }
 
 interface BaselineReport {
-  generatedAt: string;
+  schemaVersion: 2;
+  sourceFingerprint: string;
   environment: {
-    supabaseUrl: string;
-    hasServiceRole: boolean;
-    hasAnonKey: boolean;
+    supabaseHost: string | null;
+    anonProbeAvailable: boolean;
+    aggregateAdminProbeAvailable: boolean;
   };
   summary: {
     totalItems: number;
     byStatus: Record<FindingStatus, number>;
-    byCategory: Record<string, number>;
-    byOwnership: Record<ContractOwnership, number>;
+    scannedFiles: Record<RepositoryName, number>;
+    discoveredStorageKeys: Record<RepositoryName, number>;
+    discoveredProviders: number;
   };
-  liveDatabaseMetadata: {
-    anonProfilesSelectExposed: boolean;
-    anonProfilesPolicy: string;
-    tableCounts: Record<string, number | null>;
-    profileColumns: { name: string; type: string; isSensitive: boolean; classification: string }[];
+  databaseAccessProbe: {
+    profiles: {
+      state: AccessProbeState;
+      anonymousCount: number | null;
+      administrativeCount: number | null;
+      errorCode: string | null;
+      explanation: string;
+    };
+    tableCounts: Record<string, TableProbe>;
+    limitation: string;
+  };
+  discoveries: {
+    profileColumns: ProfileColumn[];
+    profilePaths: Evidence[];
+    storageKeys: Record<RepositoryName, Array<{ key: string; evidence: Evidence[] }>>;
+    providers: ProviderDiscovery[];
+    dobAndLocationPaths: Evidence[];
+    termsAndConsentPaths: Evidence[];
+    ugcSafetyPaths: Evidence[];
+    deletionAndExportPaths: Evidence[];
   };
   inventory: InventoryItem[];
 }
 
-async function run() {
-  console.log("[baseline] Starting machine-generated privacy & security audit...");
+const TEXT_EXTENSIONS = new Set([
+  ".cjs", ".gradle", ".js", ".json", ".jsx", ".md", ".mjs", ".plist",
+  ".properties", ".sql", ".toml", ".ts", ".tsx", ".xcprivacy", ".yaml", ".yml",
+]);
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://mnbwodcswxoojndytngu.supabase.co";
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const IGNORED_DIRECTORIES = new Set([
+  ".git", ".next", ".expo", ".turbo", "Pods", "build", "coverage", "dist",
+  "graphify-out", "node_modules",
+]);
 
-  // ── 1. Live Database Metadata & Exposure Check ──────────────────────────────
-  let anonExposed = false;
-  let anonPolicy = "Unknown";
-  if (supabaseUrl && anonKey) {
-    try {
-      const anonSupabase = createClient(supabaseUrl, anonKey);
-      const { count, error } = await anonSupabase.from("profiles").select("*", { count: "exact", head: true });
-      if (!error && count !== null) {
-        anonExposed = true;
-        anonPolicy = "Public profiles are viewable by everyone (SELECT USING (true))";
-      }
-    } catch {
-      anonExposed = false;
+const GENERATED_OUTPUTS = new Set([
+  "docs/PRIVACY_SECURITY_BASELINE.json",
+  "docs/PRIVACY_SECURITY_BASELINE.md",
+]);
+
+const SENSITIVE_PROFILE_FIELD = /(?:date_of_birth|birth|latitude|longitude|tradition|sampradaya|gotra|devata|gender|ban_reason|onesignal|unsubscribe|deletion|consent|timezone|home_|neighbourhood)/i;
+const INTERNAL_PROFILE_FIELD = /(?:is_admin|is_banned|subscription|entitlement|karma|seva|streak|reminder|notification|is_deleting)/i;
+const PUBLIC_PROFILE_FIELD = /^(?:username|avatar_url|bio)$/;
+
+const PROVIDERS: Array<{ provider: string; patterns: RegExp[] }> = [
+  { provider: "Supabase", patterns: [/@supabase\//, /createClient\(/] },
+  { provider: "Google Analytics 4", patterns: [/googletagmanager\.com\/gtag/, /G-[A-Z0-9]{6,}/] },
+  { provider: "Google AdSense", patterns: [/pagead2\.googlesyndication\.com/, /ca-pub-/] },
+  { provider: "OneSignal", patterns: [/OneSignalSDK/, /onesignal/i] },
+  { provider: "Firebase Analytics", patterns: [/@react-native-firebase\/analytics/, /setAnalyticsCollectionEnabled/] },
+  { provider: "Expo Notifications", patterns: [/expo-notifications/, /getExpoPushTokenAsync/] },
+  { provider: "Razorpay", patterns: [/razorpay/i] },
+  { provider: "Twilio", patterns: [/twilio/i] },
+  { provider: "Sarvam AI", patterns: [/sarvam/i] },
+  { provider: "Vercel Analytics", patterns: [/@vercel\/analytics/] },
+  { provider: "Vercel Speed Insights", patterns: [/@vercel\/speed-insights/] },
+];
+
+function walk(root: string, repository: RepositoryName, current = root): SourceFile[] {
+  if (!fs.existsSync(current)) return [];
+  const entries = fs.readdirSync(current, { withFileTypes: true })
+    .sort((left, right) => left.name.localeCompare(right.name));
+  const files: SourceFile[] = [];
+  for (const entry of entries) {
+    if (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name)) continue;
+    const absolute = path.join(current, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...walk(root, repository, absolute));
+      continue;
+    }
+    if (!entry.isFile() || !TEXT_EXTENSIONS.has(path.extname(entry.name))) continue;
+    const relativePath = path.relative(root, absolute).split(path.sep).join("/");
+    if (GENERATED_OUTPUTS.has(relativePath)) continue;
+    if (fs.statSync(absolute).size > 2_000_000) continue;
+    files.push({
+      repository,
+      relativePath,
+      content: fs.readFileSync(absolute, "utf8"),
+    });
+  }
+  return files;
+}
+
+function evidenceFor(files: SourceFile[], patterns: RegExp[], limit = 200): Evidence[] {
+  const evidence: Evidence[] = [];
+  for (const file of files) {
+    const lines = file.content.split(/\r?\n/);
+    for (let index = 0; index < lines.length && evidence.length < limit; index += 1) {
+      const pattern = patterns.find((candidate) => {
+        candidate.lastIndex = 0;
+        return candidate.test(lines[index]);
+      });
+      if (!pattern) continue;
+      evidence.push({ repository: file.repository, file: file.relativePath, line: index + 1, marker: pattern.source });
     }
   }
+  return evidence;
+}
 
-  const tableCounts: Record<string, number | null> = {};
-  if (supabaseUrl && serviceKey) {
-    const adminSupabase = createClient(supabaseUrl, serviceKey);
-    const keyTables = [
-      "profiles",
-      "birth_profiles",
-      "posts",
-      "post_comments",
-      "content_reports",
-      "user_blocked_profiles",
-      "user_muted_profiles",
-      "user_hidden_content",
-      "deleted_accounts",
-      "golden_fixtures",
-      "calendar_governance_diagnostics_cache",
-      "user_settings",
-      "consent_records",
-      "terms_acceptances"
-    ];
+function uniqueEvidence(evidence: Evidence[]): Evidence[] {
+  const seen = new Set<string>();
+  return evidence.filter((item) => {
+    const key = `${item.repository}:${item.file}:${item.line}:${item.marker}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
-    for (const tbl of keyTables) {
-      try {
-        const { count, error } = await adminSupabase.from(tbl).select("*", { count: "exact", head: true });
-        tableCounts[tbl] = error ? null : count;
-      } catch {
-        tableCounts[tbl] = null;
-      }
-    }
-  }
-
-  // ── 2. Sensitive Profile Fields Classification ─────────────────────────────
-  const profileColumns = [
-    { name: "id", type: "uuid", isSensitive: true, classification: "Identifier (Auth UID)" },
-    { name: "full_name", type: "text", isSensitive: true, classification: "PII (Direct)" },
-    { name: "username", type: "text", isSensitive: false, classification: "Public Handle" },
-    { name: "avatar_url", type: "text", isSensitive: false, classification: "Public Media" },
-    { name: "bio", type: "text", isSensitive: false, classification: "Public Bio" },
-    { name: "date_of_birth", type: "date", isSensitive: true, classification: "PII / Special Category (Age/DOB)" },
-    { name: "gender_context", type: "text", isSensitive: true, classification: "Demographic / Sensitive" },
-    { name: "life_stage", type: "text", isSensitive: true, classification: "Spiritual / Personal Stage" },
-    { name: "tradition", type: "text", isSensitive: true, classification: "Special Category (Religious belief - GDPR Art 9)" },
-    { name: "sampradaya", type: "text", isSensitive: true, classification: "Special Category (Religious sect - GDPR Art 9)" },
-    { name: "ishta_devata", type: "text", isSensitive: true, classification: "Special Category (Religious deity - GDPR Art 9)" },
-    { name: "gotra", type: "text", isSensitive: true, classification: "Special Category (Lineage / Castemark)" },
-    { name: "kul_devata", type: "text", isSensitive: true, classification: "Special Category (Religious deity - GDPR Art 9)" },
-    { name: "rashi", type: "text", isSensitive: true, classification: "Astrological / Religious Data" },
-    { name: "nakshatra", type: "text", isSensitive: true, classification: "Astrological / Religious Data" },
-    { name: "latitude", type: "double precision", isSensitive: true, classification: "Precise Geolocation (Device/Home)" },
-    { name: "longitude", type: "double precision", isSensitive: true, classification: "Precise Geolocation (Device/Home)" },
-    { name: "city", type: "text", isSensitive: true, classification: "Location / Coarse" },
-    { name: "country", type: "text", isSensitive: true, classification: "Location / Coarse" },
-    { name: "home_town", type: "text", isSensitive: true, classification: "Location / Birthplace" },
-    { name: "neighbourhood", type: "text", isSensitive: true, classification: "Location / Neighborhood" },
-    { name: "onesignal_player_id", type: "text", isSensitive: true, classification: "Push Identifier / Device Token" },
-    { name: "is_banned", type: "boolean", isSensitive: true, classification: "Moderation / Internal Status" },
-    { name: "ban_reason", type: "text", isSensitive: true, classification: "Moderation / Internal Notes" },
-    { name: "karma_points", type: "integer", isSensitive: false, classification: "Gamification Karma Score" },
-    { name: "consent_religious_data", type: "boolean", isSensitive: true, classification: "Consent Flag (Special Category)" },
-    { name: "consent_updated_at", type: "timestamptz", isSensitive: true, classification: "Consent Audit Timestamp" },
-    { name: "unsubscribe_token", type: "text", isSensitive: true, classification: "Direct Marketing Auth Token" },
-    { name: "is_deleting", type: "boolean", isSensitive: true, classification: "Lifecycle Deletion Flag" },
-    { name: "deletion_requested_at", type: "timestamptz", isSensitive: true, classification: "Lifecycle Deletion Timestamp" }
+function discoverStorageKeys(files: SourceFile[]): Record<RepositoryName, Array<{ key: string; evidence: Evidence[] }>> {
+  const byRepository: Record<RepositoryName, Map<string, Evidence[]>> = { backend: new Map(), native: new Map() };
+  const patterns = [
+    /(?:localStorage|sessionStorage|AsyncStorage)\.(?:getItem|setItem|removeItem|mergeItem)\(\s*(["'`])([^"'`]+)\1/g,
+    /(?:const|let)\s+[A-Z][A-Z0-9_]*(?:KEY|CACHE)[A-Z0-9_]*\s*=\s*(["'`])([^"'`]+)\1/g,
   ];
-
-  // ── 3. Build Full Baseline Inventory ─────────────────────────────────────────
-  const items: InventoryItem[] = [
-    // Category 1: Sensitive Profile Fields & Read/Write Paths
-    {
-      id: "INV-PROF-01",
-      category: "1. Sensitive Profile Fields & Paths",
-      name: "Profiles Table Anonymous SELECT Grant",
-      description: "Direct SELECT on public.profiles is granted to role anon with USING(true), exposing all 80+ columns including DOB, religion, and coordinates.",
-      location: "supabase/public_schema.sql (L11495) / Live DB Policy: \"Public profiles are viewable by everyone\"",
-      status: anonExposed ? "VERIFIED" : "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        table: "public.profiles",
-        policy: "Public profiles are viewable by everyone",
-        command: "SELECT",
-        roles: ["PUBLIC", "anon", "authenticated"],
-        using: "true",
-        exposedColumnCount: profileColumns.length,
-        sensitiveColumnCount: profileColumns.filter(c => c.isSensitive).length
-      },
-      notes: "P0 Critical Vulnerability. Unauthenticated callers can harvest all profile records."
-    },
-    {
-      id: "INV-PROF-02",
-      category: "1. Sensitive Profile Fields & Paths",
-      name: "PWA Profile Read/Write API Routes",
-      description: "PWA routes /api/profile and /api/onboarding read and update profile fields with Supabase auth.",
-      location: "Sanatan Sangam/Shoonaya: src/app/api/profile/route.ts, src/app/api/onboarding/route.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        readEndpoints: ["GET /api/profile", "GET /api/user/export"],
-        writeEndpoints: ["PATCH /api/profile", "POST /api/onboarding"]
+  for (const file of files) {
+    const lines = file.content.split(/\r?\n/);
+    lines.forEach((line, index) => {
+      for (const pattern of patterns) {
+        pattern.lastIndex = 0;
+        for (const match of line.matchAll(pattern)) {
+          const key = match[2];
+          if (!key || key.includes("${")) continue;
+          const existing = byRepository[file.repository].get(key) ?? [];
+          existing.push({ repository: file.repository, file: file.relativePath, line: index + 1, marker: "storage_key" });
+          byRepository[file.repository].set(key, existing);
+        }
       }
-    },
-    {
-      id: "INV-PROF-03",
-      category: "1. Sensitive Profile Fields & Paths",
-      name: "Native Onboarding Contract Profile Payload",
-      description: "Native buildOnboardingProfilePayload packages tradition, DOB, gotra, rashi, nakshatra, calendarProfile without explicit consent capture.",
-      location: "shoonaya-mobile: lib/onboarding-contract.ts (L107-154)",
-      status: "VERIFIED",
-      canonicalOwnership: "shared_contract",
-      details: {
-        function: "buildOnboardingProfilePayload",
-        fieldsCaptured: ["tradition", "date_of_birth", "gender_context", "life_stage", "rashi", "nakshatra", "gotra", "calendar_profile", "calendar_scope"],
-        consentIncluded: false
-      }
-    },
-
-    // Category 2: Public Schemas, Table/View Grants, RLS Policies, RPCs
-    {
-      id: "INV-RLS-01",
-      category: "2. Database Grants & RLS Policies",
-      name: "Public Table RLS State",
-      description: "Audit of Row Level Security across public schema tables.",
-      location: "supabase/step2_constraints_policies.sql",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        profilesRlsEnabled: true,
-        profilesSelectPolicy: "USING (true) [PERMISSIVE]",
-        profilesUpdatePolicy: "TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id)",
-        profilesInsertPolicy: "WITH CHECK (auth.uid() = id)"
-      }
-    },
-    {
-      id: "INV-RLS-02",
-      category: "2. Database Grants & RLS Policies",
-      name: "Birth Profiles RLS Policies",
-      description: "birth_profiles stores chart DOB, time, birth lat/lng with owner_id or session_token.",
-      location: "supabase/migrations/016_birth_profiles.sql",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        table: "public.birth_profiles",
-        ownerPolicy: "owner_id = auth.uid()",
-        guestPolicy: "session_token IS NOT NULL (unowned charts)"
-      }
-    },
-
-    // Category 3: Analytics, Advertising, Push, Auth, Payments, AI SDKs
-    {
-      id: "INV-SDK-01",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "Web Google Analytics 4 Unconditional Loading",
-      description: "GA4 is loaded unconditionally in RootLayout head with hardcoded fallback measurement ID 'G-548KZ0TBHD'.",
-      location: "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L139, L210-220)",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        provider: "Google Analytics 4",
-        fallbackId: "G-548KZ0TBHD",
-        gate: "None (runs before consent)",
-        sendPageView: true
-      },
-      notes: "PECR/ePrivacy violation in UK/EU: tracker script executed before consent choice."
-    },
-    {
-      id: "INV-SDK-02",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "Web Google AdSense Script Tag",
-      description: "Google AdSense script is injected unconditionally in RootLayout.",
-      location: "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L222-227)",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        provider: "Google AdSense",
-        client: "ca-pub-6518026066446033",
-        gate: "None (runs before consent)"
-      }
-    },
-    {
-      id: "INV-SDK-03",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "Web OneSignal Web Push SDK",
-      description: "OneSignal SDK v16 is initialized unconditionally in RootLayout when NEXT_PUBLIC_ONESIGNAL_APP_ID is present.",
-      location: "Sanatan Sangam/Shoonaya: src/app/layout.tsx (L197-208)",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        provider: "OneSignal",
-        sdk: "v16/OneSignalSDK.page.js",
-        gate: "None (injected on load)"
-      }
-    },
-    {
-      id: "INV-SDK-04",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "Native Firebase Analytics (Android-Only Guard)",
-      description: "Native Firebase Analytics is active strictly on Android, guarded by Platform.OS !== 'android'.",
-      location: "shoonaya-mobile: lib/analytics.ts (L24-35)",
-      status: "VERIFIED",
-      canonicalOwnership: "native",
-      details: {
-        platformScope: "Android only",
-        iosExcluded: true,
-        preConsentGate: "Missing pre-event opt-in gate"
-      }
-    },
-    {
-      id: "INV-SDK-05",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "AI Provider (Sarvam AI)",
-      description: "Sarvam AI is used for speech-to-text / translation API routes.",
-      location: "Sanatan Sangam/Shoonaya: src/lib/sarvam.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        provider: "Sarvam AI",
-        useCase: "Audio TTS / Indic translation",
-        dataShared: "Scripture / prompt text only (no user PII)"
-      }
-    },
-    {
-      id: "INV-SDK-06",
-      category: "3. Third-Party SDKs & Trackers",
-      name: "Payment Gateway (Razorpay)",
-      description: "Razorpay integration for Kul Pro / donations.",
-      location: "Sanatan Sangam/Shoonaya: src/app/api/payment/route.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        provider: "Razorpay",
-        jurisdiction: "India (14-day cooling-off clause present)"
-      }
-    },
-
-    // Category 4: Cookies, localStorage, AsyncStorage, Cache Keys
-    {
-      id: "INV-CACHE-01",
-      category: "4. Storage & Identity Cache Keys",
-      name: "Web Browser Cookies",
-      description: "Authentication and session cookies managed by PWA and middleware.",
-      location: "Sanatan Sangam/Shoonaya: src/middleware.ts, src/lib/admin-auth.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        authCookies: ["sb-*-auth-token", "auth-token"],
-        adminCookie: "sangam_admin_session (HMAC-SHA256)",
-        previewCookie: "shoonaya_preview"
-      }
-    },
-    {
-      id: "INV-CACHE-02",
-      category: "4. Storage & Identity Cache Keys",
-      name: "Web localStorage Identity Keys",
-      description: "PWA localStorage keys used for instant hydration and user settings.",
-      location: "Sanatan Sangam/Shoonaya: src/app/layout.tsx, src/hooks/useProfile.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        keys: ["sh_tradition", "sh_theme", "shoonaya_user", "shoonaya_profile", "shoonaya_guest_session"]
-      }
-    },
-    {
-      id: "INV-CACHE-03",
-      category: "4. Storage & Identity Cache Keys",
-      name: "Native AsyncStorage Keys",
-      description: "Native storage keys containing profile, preferences, and home cache.",
-      location: "shoonaya-mobile: lib/homeCache.ts, app/settings.tsx",
-      status: "VERIFIED",
-      canonicalOwnership: "native",
-      details: {
-        keys: ["shoonaya_mobile_settings", "sangam_theme_preference", "shoonaya_home_cache", "shoonaya_onboarding_draft"]
-      }
-    },
-
-    // Category 5: DOB, Birthplace, Location & Guest Entry Points
-    {
-      id: "INV-ENTRY-01",
-      category: "5. DOB, Birth & Location Entry Points",
-      name: "Guest Jyotish Chart Endpoint (Age Verification Gap)",
-      description: "POST /api/jyotish/chart accepts date_of_birth, birth_lat, birth_lng, and session_token with zero age gating or parental consent.",
-      location: "Sanatan Sangam/Shoonaya: src/app/api/jyotish/chart/route.ts (L67-72)",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        endpoint: "POST /api/jyotish/chart",
-        acceptsGuestSession: true,
-        acceptsDob: true,
-        acceptsBirthCoordinates: true,
-        ageEnforcement: "None",
-        serviceRoleClientUsed: true
-      },
-      notes: "Children's privacy exposure under DPDP (India) and COPPA/GDPR."
-    },
-    {
-      id: "INV-ENTRY-02",
-      category: "5. DOB, Birth & Location Entry Points",
-      name: "Native Device Location Service",
-      description: "Native locationService requests device GPS for panchang sunrise/sunset calculation.",
-      location: "shoonaya-mobile: lib/locationService.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "native",
-      details: {
-        service: "expo-location",
-        permissionType: "Foreground",
-        fallback: "Ujjain / London / Delhi preset coordinates"
-      }
-    },
-
-    // Category 6: Terms / Privacy Acceptance Surfaces & Receipts
-    {
-      id: "INV-TERMS-01",
-      category: "6. Terms & Privacy Acceptance",
-      name: "Native Login/Signup Passive Terms Link",
-      description: "Mobile login displays passive 'Terms of Service' text without explicit affirmative checkbox and without recording accepted version or timestamp.",
-      location: "shoonaya-mobile: app/(auth)/login.tsx (L998-1020)",
-      status: "VERIFIED",
-      canonicalOwnership: "native",
-      details: {
-        hasCheckbox: false,
-        persistsAcceptedAt: false,
-        persistsTermsVersion: false
-      },
-      notes: "L-05: Deficient contract formation and lack of auditable acceptance receipts."
-    },
-    {
-      id: "INV-TERMS-02",
-      category: "6. Terms & Privacy Acceptance",
-      name: "Settings Religious Data Consent Toggle Disconnect",
-      description: "Settings screen defaults consent_religious_data to true and toggling off does not clear data or prevent collection.",
-      location: "shoonaya-mobile: app/settings.tsx (L67)",
-      status: "VERIFIED",
-      canonicalOwnership: "shared_contract",
-      details: {
-        defaultState: true,
-        onboardingGate: false,
-        withdrawalHandling: "Incomplete (writes boolean to profiles, does not delete religious fields)"
-      },
-      notes: "L-03: Default-on special-category consent violates GDPR Art 9 & DPDP."
-    },
-
-    // Category 7: Mandali UGC Safety, Report, Block, Moderation
-    {
-      id: "INV-UGC-01",
-      category: "7. Mandali UGC & Safety",
-      name: "User Safety State & Content Moderation",
-      description: "Mandali feed supports block, mute, hide, and content report via content_reports, user_blocked_profiles, user_muted_profiles.",
-      location: "Sanatan Sangam/Shoonaya: src/lib/user-safety.ts, src/app/api/user/report/route.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        tables: ["content_reports", "user_blocked_profiles", "user_muted_profiles", "user_hidden_content"],
-        reportReasons: ["abusive", "intolerant", "misleading", "spam", "privacy"],
-        serverSideFiltering: true
-      }
-    },
-    {
-      id: "INV-UGC-02",
-      category: "7. Mandali UGC & Safety",
-      name: "Apple Guideline 1.2 UGC Compliance Gate",
-      description: "App Store requires published contact info, report mechanism, block user, and timely moderation response for UGC apps.",
-      location: "shoonaya-mobile: docs/LEGAL_RISK_ASSESSMENT.md (L-08)",
-      status: "NEEDS POLICY DECISION",
-      canonicalOwnership: "native",
-      details: {
-        filterMechanism: "Present in user-safety.ts",
-        reportingMechanism: "Present in api/user/report",
-        blockMechanism: "Present in user_blocked_profiles",
-        supportContactUrl: "Needs verified published link in mobile UI"
-      }
-    },
-
-    // Category 8: Account Deletion, Export, Retention Jobs
-    {
-      id: "INV-DEL-01",
-      category: "8. Data Lifecycle, Deletion & Export",
-      name: "Account Deletion 30-Day Cool-Off Workflow",
-      description: "POST /api/user/delete/request initiates 30-day grace period; purgeDueDeletedAccounts cron executes hard delete.",
-      location: "Sanatan Sangam/Shoonaya: src/lib/account-deletion.ts, src/app/api/cron/purge-deleted-accounts/route.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        cooldownDays: 30,
-        requestRoute: "POST /api/user/delete/request",
-        cancelRoute: "POST /api/user/delete/cancel",
-        cronRoute: "GET /api/cron/purge-deleted-accounts",
-        hardDeleteAction: "auth.admin.deleteUser() + profiles delete"
-      }
-    },
-    {
-      id: "INV-DEL-02",
-      category: "8. Data Lifecycle, Deletion & Export",
-      name: "User Data Export Route",
-      description: "GET /api/user/export generates JSON archive of user profile, sadhana, mood checkins, recommendations, mala sessions, and karma ledger.",
-      location: "Sanatan Sangam/Shoonaya: src/app/api/user/export/route.ts",
-      status: "VERIFIED",
-      canonicalOwnership: "backend",
-      details: {
-        endpoint: "GET /api/user/export",
-        auth: "Bearer token + session cookie supported via getApiUser",
-        format: "JSON file download",
-        retentionWindowDays: 90
-      }
-    },
-    {
-      id: "INV-DEL-03",
-      category: "8. Data Lifecycle, Deletion & Export",
-      name: "Guest Session Data Lifecycle & Retention Policy",
-      description: "Retention schedule and automatic cleanup job for unattached guest birth profiles.",
-      location: "supabase/migrations/016_birth_profiles.sql",
-      status: "NEEDS POLICY DECISION",
-      canonicalOwnership: "backend",
-      details: {
-        table: "birth_profiles",
-        guestClaimMechanism: "session_token lookup on signup",
-        expirationJob: "Not implemented — guest records persist indefinitely until claimed"
-      }
-    }
-  ];
-
-  // ── 4. Calculate Summaries Deterministically ──────────────────────────────
-  const byStatus: Record<FindingStatus, number> = {
-    VERIFIED: items.filter(i => i.status === "VERIFIED").length,
-    "NOT FOUND": items.filter(i => i.status === "NOT FOUND").length,
-    DRIFT: items.filter(i => i.status === "DRIFT").length,
-    "NEEDS POLICY DECISION": items.filter(i => i.status === "NEEDS POLICY DECISION").length
-  };
-
-  const byCategory: Record<string, number> = {};
-  for (const it of items) {
-    byCategory[it.category] = (byCategory[it.category] || 0) + 1;
+    });
   }
-
-  const byOwnership: Record<ContractOwnership, number> = {
-    backend: items.filter(i => i.canonicalOwnership === "backend").length,
-    native: items.filter(i => i.canonicalOwnership === "native").length,
-    generated_snapshot: items.filter(i => i.canonicalOwnership === "generated_snapshot").length,
-    shared_contract: items.filter(i => i.canonicalOwnership === "shared_contract").length
+  return {
+    backend: [...byRepository.backend.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, evidence]) => ({ key, evidence })),
+    native: [...byRepository.native.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, evidence]) => ({ key, evidence })),
   };
+}
 
-  const baselineData: BaselineReport = {
-    generatedAt: new Date().toISOString(),
+export function classifyAccessProbe(input: {
+  adminCount: number | null;
+  anonCount: number | null;
+  anonError: Pick<PostgrestError, "code" | "message"> | null;
+  anonCredentialsAvailable: boolean;
+}): { state: AccessProbeState; errorCode: string | null; explanation: string } {
+  if (!input.anonCredentialsAvailable) {
+    return { state: "UNKNOWN", errorCode: null, explanation: "Anonymous credentials were unavailable; no security conclusion was made." };
+  }
+  if (input.anonError) {
+    if (input.anonError.code === "42501" || /permission denied/i.test(input.anonError.message)) {
+      return { state: "SECURED", errorCode: input.anonError.code, explanation: "The anonymous role was explicitly denied access." };
+    }
+    return { state: "ERROR", errorCode: input.anonError.code || null, explanation: "The anonymous probe failed for a reason other than an explicit permission denial." };
+  }
+  if ((input.anonCount ?? 0) > 0) {
+    return { state: "EXPOSED", errorCode: null, explanation: "An unauthenticated query could count rows while selecting sensitive columns." };
+  }
+  if ((input.adminCount ?? 0) > 0 && input.anonCount === 0) {
+    return { state: "SECURED", errorCode: null, explanation: "Rows exist, but the anonymous role could not observe any of them." };
+  }
+  return { state: "UNKNOWN", errorCode: null, explanation: "An empty or unavailable table cannot prove whether anonymous access is securely denied." };
+}
+
+export function classifyTableProbe(count: number | null, error: Pick<PostgrestError, "code" | "message"> | null, available: boolean): TableProbe {
+  if (!available) return { state: "UNKNOWN", count: null, code: null };
+  if (!error) return { state: "OK", count, code: null };
+  if (error.code === "42P01" || /does not exist|schema cache/i.test(error.message)) return { state: "NOT_FOUND", count: null, code: error.code || null };
+  if (error.code === "42501" || /permission denied/i.test(error.message)) return { state: "PERMISSION_DENIED", count: null, code: error.code || null };
+  return { state: "ERROR", count: null, code: error.code || null };
+}
+
+export function extractProfileColumns(databaseTypes: string): ProfileColumn[] {
+  const tableStart = databaseTypes.indexOf("      profiles: {");
+  if (tableStart < 0) return [];
+  const rowStart = databaseTypes.indexOf("        Row: {", tableStart);
+  const insertStart = databaseTypes.indexOf("        Insert:", rowStart);
+  if (rowStart < 0 || insertStart < 0) return [];
+  const columns: ProfileColumn[] = [];
+  for (const line of databaseTypes.slice(rowStart, insertStart).split(/\r?\n/)) {
+    const match = line.match(/^\s{10}([a-zA-Z0-9_]+)(?:\?)?:\s*(.+);$/);
+    if (!match) continue;
+    const name = match[1];
+    const classification: ProfileColumn["classification"] = PUBLIC_PROFILE_FIELD.test(name)
+      ? "public_candidate"
+      : SENSITIVE_PROFILE_FIELD.test(name)
+        ? "sensitive_candidate"
+        : INTERNAL_PROFILE_FIELD.test(name)
+          ? "internal_candidate"
+          : "unclassified";
+    columns.push({ name, type: match[2], classification });
+  }
+  return columns.sort((left, right) => left.name.localeCompare(right.name));
+}
+
+async function probeDatabase(supabaseUrl: string, anonKey: string, serviceKey: string) {
+  const anonAvailable = Boolean(supabaseUrl && anonKey);
+  const adminAvailable = Boolean(supabaseUrl && serviceKey);
+  const adminClient = adminAvailable ? createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } }) : null;
+  const anonClient = anonAvailable ? createClient(supabaseUrl, anonKey, { auth: { persistSession: false } }) : null;
+  let adminProfilesCount: number | null = null;
+  if (adminClient) {
+    const result = await adminClient.from("profiles").select("id", { count: "exact", head: true });
+    if (!result.error) adminProfilesCount = result.count;
+  }
+  let anonCount: number | null = null;
+  let anonError: PostgrestError | null = null;
+  if (anonClient) {
+    const result = await anonClient.from("profiles").select("id,date_of_birth,tradition,sampradaya,gotra,home_latitude,home_longitude", { count: "exact", head: true });
+    anonCount = result.count;
+    anonError = result.error;
+  }
+  const access = classifyAccessProbe({ adminCount: adminProfilesCount, anonCount, anonError, anonCredentialsAvailable: anonAvailable });
+  const tables = [
+    "profiles", "birth_profiles", "posts", "post_comments", "content_reports",
+    "user_blocked_profiles", "user_muted_profiles", "user_hidden_content",
+    "deleted_accounts", "golden_fixtures", "calendar_governance_diagnostics_cache",
+    "user_settings", "consent_records", "terms_acceptances",
+  ];
+  const tableCounts: Record<string, TableProbe> = {};
+  for (const table of tables) {
+    if (!adminClient) {
+      tableCounts[table] = classifyTableProbe(null, null, false);
+      continue;
+    }
+    const result = await adminClient.from(table).select("*", { count: "exact", head: true });
+    tableCounts[table] = classifyTableProbe(result.count, result.error, true);
+  }
+  return {
+    profiles: {
+      state: access.state,
+      anonymousCount: anonCount,
+      administrativeCount: adminProfilesCount,
+      errorCode: access.errorCode,
+      explanation: access.explanation,
+    },
+    tableCounts,
+  };
+}
+
+function statusFromEvidence(evidence: Evidence[]): FindingStatus {
+  return evidence.length > 0 ? "VERIFIED" : "NOT_FOUND";
+}
+
+function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbeState; discoveries: BaselineReport["discoveries"] }): InventoryItem[] {
+  const webTrackerEvidence = evidenceFor(input.files, [/googletagmanager\.com\/gtag/, /pagead2\.googlesyndication\.com/, /OneSignalSDK/]);
+  const analyticsConsentEvidence = evidenceFor(input.files, [/setAnalyticsCollectionEnabled/, /analytics.*consent|consent.*analytics/i]);
+  const ageGateEvidence = evidenceFor(input.files, [/minimumAge|ageGate|parentalConsent|parental_consent/i]);
+  const termsReceiptEvidence = evidenceFor(input.files, [/terms_version|termsVersion|terms_acceptances|accepted_at/i]);
+  const religiousConsentEvidence = evidenceFor(input.files, [/consent_religious_data/]);
+  const supportEvidence = evidenceFor(input.files, [/support@shoonaya|\/support|contact.*support/i]);
+  const guestRetentionEvidence = evidenceFor(input.files, [/birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest/i]);
+  return [
+    {
+      id: "INV-PROF-01", category: "Sensitive profile access", name: "Anonymous profiles access probe",
+      status: input.profilesState === "EXPOSED" ? "DRIFT" : input.profilesState === "SECURED" ? "VERIFIED" : input.profilesState,
+      canonicalOwnership: "backend", description: `Aggregate anonymous access probe result: ${input.profilesState}.`,
+      evidence: input.discoveries.profilePaths.slice(0, 20),
+    },
+    {
+      id: "INV-PROF-02", category: "Sensitive profile access", name: "Profile read and write paths",
+      status: statusFromEvidence(input.discoveries.profilePaths), canonicalOwnership: "shared_contract",
+      description: `${input.discoveries.profilePaths.length} source locations reference profile data paths.`, evidence: input.discoveries.profilePaths.slice(0, 30),
+    },
+    {
+      id: "INV-SDK-01", category: "Third-party SDKs and trackers", name: "Web tracker initialization",
+      status: webTrackerEvidence.length > 0 ? "DRIFT" : "VERIFIED", canonicalOwnership: "backend",
+      description: `${webTrackerEvidence.length} source locations initialize or configure GA4, AdSense or OneSignal. Consent enforcement requires separate verification.`, evidence: webTrackerEvidence.slice(0, 30),
+    },
+    {
+      id: "INV-SDK-02", category: "Third-party SDKs and trackers", name: "Native analytics consent control",
+      status: analyticsConsentEvidence.length > 0 ? "VERIFIED" : "DRIFT", canonicalOwnership: "native",
+      description: "Checks whether analytics collection and an analytics consent path both exist; event ordering still requires focused tests.", evidence: analyticsConsentEvidence.slice(0, 30),
+    },
+    {
+      id: "INV-CACHE-01", category: "Client storage and identity", name: "Discovered browser and native storage keys",
+      status: (input.discoveries.storageKeys.backend.length + input.discoveries.storageKeys.native.length) > 0 ? "VERIFIED" : "NOT_FOUND", canonicalOwnership: "shared_contract",
+      description: `${input.discoveries.storageKeys.backend.length} backend/PWA and ${input.discoveries.storageKeys.native.length} Native literal storage keys were discovered. Dynamic keys require manual review.`,
+      evidence: [...input.discoveries.storageKeys.backend, ...input.discoveries.storageKeys.native].flatMap((entry) => entry.evidence).slice(0, 30),
+    },
+    {
+      id: "INV-AGE-01", category: "DOB, birth and location", name: "Centralized age-policy enforcement",
+      status: ageGateEvidence.length > 0 ? "VERIFIED" : "NEEDS_POLICY_DECISION", canonicalOwnership: "backend",
+      description: `${input.discoveries.dobAndLocationPaths.length} DOB/location source locations were discovered. Threshold and parental-consent semantics require approved policy.`,
+      evidence: [...ageGateEvidence, ...input.discoveries.dobAndLocationPaths].slice(0, 30),
+      decisionGate: ageGateEvidence.length > 0 ? undefined : "Approve markets, age thresholds and parental-consent behavior before enforcement.",
+    },
+    {
+      id: "INV-TERMS-01", category: "Terms and consent", name: "Versioned Terms acceptance receipts",
+      status: termsReceiptEvidence.length > 0 ? "VERIFIED" : "DRIFT", canonicalOwnership: "backend",
+      description: "Checks for a durable Terms version and acceptance timestamp contract.", evidence: termsReceiptEvidence.slice(0, 30),
+    },
+    {
+      id: "INV-CONSENT-01", category: "Terms and consent", name: "Religious-profile consent",
+      status: religiousConsentEvidence.length > 0 ? "NEEDS_POLICY_DECISION" : "NOT_FOUND", canonicalOwnership: "shared_contract",
+      description: "A consent field exists, but enforcement, historical state and withdrawal semantics require contract review.", evidence: religiousConsentEvidence.slice(0, 30),
+      decisionGate: "Approve covered fields, decline behavior, withdrawal behavior and consent version before implementation.",
+    },
+    {
+      id: "INV-UGC-01", category: "UGC safety", name: "Mandali safety paths", status: statusFromEvidence(input.discoveries.ugcSafetyPaths),
+      canonicalOwnership: "backend", description: `${input.discoveries.ugcSafetyPaths.length} report/block/mute/hide/moderation source locations were discovered.`, evidence: input.discoveries.ugcSafetyPaths.slice(0, 30),
+    },
+    {
+      id: "INV-UGC-02", category: "UGC safety", name: "Published support path", status: supportEvidence.length > 0 ? "VERIFIED" : "NEEDS_POLICY_DECISION",
+      canonicalOwnership: "shared_contract", description: "Checks for a user-visible support/contact path; operational response ownership still requires confirmation.", evidence: supportEvidence.slice(0, 30),
+      decisionGate: supportEvidence.length > 0 ? undefined : "Approve the published support contact and response owner.",
+    },
+    {
+      id: "INV-LIFE-01", category: "Data lifecycle", name: "Account deletion and export paths", status: statusFromEvidence(input.discoveries.deletionAndExportPaths),
+      canonicalOwnership: "backend", description: `${input.discoveries.deletionAndExportPaths.length} deletion/export source locations were discovered. Completeness requires cascade tests.`, evidence: input.discoveries.deletionAndExportPaths.slice(0, 30),
+    },
+    {
+      id: "INV-LIFE-02", category: "Data lifecycle", name: "Guest birth-profile retention", status: guestRetentionEvidence.length > 0 ? "VERIFIED" : "NEEDS_POLICY_DECISION",
+      canonicalOwnership: "backend", description: "Checks for an implemented guest birth-profile retention path.", evidence: guestRetentionEvidence.slice(0, 30),
+      decisionGate: guestRetentionEvidence.length > 0 ? undefined : "Approve retention period and deletion exceptions before implementing cleanup.",
+    },
+  ];
+}
+
+function buildFingerprint(files: SourceFile[], profileColumns: ProfileColumn[]): string {
+  const hash = createHash("sha256");
+  for (const file of files) hash.update(`${file.repository}\0${file.relativePath}\0${file.content}\0`);
+  hash.update(JSON.stringify(profileColumns));
+  return hash.digest("hex");
+}
+
+function renderMarkdown(report: BaselineReport): string {
+  return [
+    "# Machine-Generated Privacy and Security Engineering Baseline", "",
+    `**Schema version:** ${report.schemaVersion}`,
+    `**Source fingerprint:** \`${report.sourceFingerprint}\``, "",
+    "> This is an engineering evidence inventory, not legal advice. UNKNOWN and",
+    "> ERROR states are never equivalent to a secure or compliant result.", "",
+    "## Summary", "",
+    `- Inventory checks: ${report.summary.totalItems}`,
+    `- Scanned files: backend ${report.summary.scannedFiles.backend}, Native ${report.summary.scannedFiles.native}`,
+    `- Literal storage keys: backend ${report.summary.discoveredStorageKeys.backend}, Native ${report.summary.discoveredStorageKeys.native}`,
+    `- Providers/SDKs discovered: ${report.summary.discoveredProviders}`,
+    ...Object.entries(report.summary.byStatus).map(([status, count]) => `- ${status}: ${count}`), "",
+    "## Database Access Probe", "",
+    `- Profiles state: **${report.databaseAccessProbe.profiles.state}**`,
+    `- Anonymous row count: ${report.databaseAccessProbe.profiles.anonymousCount ?? "unavailable"}`,
+    `- Administrative row count: ${report.databaseAccessProbe.profiles.administrativeCount ?? "unavailable"}`,
+    `- Explanation: ${report.databaseAccessProbe.profiles.explanation}`,
+    `- Limitation: ${report.databaseAccessProbe.limitation}`, "",
+    "## Inventory Checks", "",
+    "| ID | Status | Category | Check | Evidence |", "|---|---|---|---|---:|",
+    ...report.inventory.map((item) => `| ${item.id} | ${item.status} | ${item.category} | ${item.name} | ${item.evidence.length} |`), "",
+    "## Profile Contract", "", `Generated types expose ${report.discoveries.profileColumns.length} profile columns:`, "",
+    "| Column | Type | Engineering classification |", "|---|---|---|",
+    ...report.discoveries.profileColumns.map((column) => `| \`${column.name}\` | \`${column.type.replace(/\|/g, "\\|")}\` | ${column.classification} |`), "",
+    "## Providers And SDKs", "",
+    ...report.discoveries.providers.map((provider) => `- ${provider.provider}: ${provider.evidence.length} evidence locations`), "",
+    "## Decision Gates", "",
+    ...report.inventory.filter((item) => item.decisionGate).map((item) => `- ${item.id}: ${item.decisionGate}`), "",
+    "## Reproduction", "", "```bash", "npm run baseline:privacy", "npm run test:baseline:privacy", "```", "",
+  ].join("\n");
+}
+
+export async function generateBaseline(options?: { webRoot?: string; nativeRoot?: string; write?: boolean }): Promise<BaselineReport> {
+  const webRoot = options?.webRoot ?? process.cwd();
+  const nativeRoot = options?.nativeRoot ?? process.env.SHOONAYA_NATIVE_ROOT ?? path.resolve(webRoot, "..", "..", "shoonaya-mobile");
+  const backendFiles = walk(webRoot, "backend");
+  const nativeFiles = walk(nativeRoot, "native");
+  const files = [...backendFiles, ...nativeFiles];
+  const databaseTypesPath = path.join(webRoot, "src/types/database.ts");
+  const profileColumns = fs.existsSync(databaseTypesPath) ? extractProfileColumns(fs.readFileSync(databaseTypesPath, "utf8")) : [];
+  const storageKeys = discoverStorageKeys(files);
+  const providers = PROVIDERS.map(({ provider, patterns }) => ({ provider, evidence: evidenceFor(files, patterns, 100) })).filter((entry) => entry.evidence.length > 0);
+  const discoveries: BaselineReport["discoveries"] = {
+    profileColumns,
+    profilePaths: uniqueEvidence(evidenceFor(files, [/\.from\(["']profiles["']\)/, /\/api\/(?:profile|onboarding)/, /buildOnboardingProfilePayload/])),
+    storageKeys,
+    providers,
+    dobAndLocationPaths: uniqueEvidence(evidenceFor(files, [/date_of_birth/, /birth_(?:lat|lng|time|place)/, /home_(?:latitude|longitude)/, /requestForegroundPermissionsAsync/])),
+    termsAndConsentPaths: uniqueEvidence(evidenceFor(files, [/terms/i, /privacy/i, /consent_religious_data/])),
+    ugcSafetyPaths: uniqueEvidence(evidenceFor(files, [/content_reports/, /user_blocked_profiles/, /user_muted_profiles/, /user_hidden_content/, /moderation/i])),
+    deletionAndExportPaths: uniqueEvidence(evidenceFor(files, [/deletion_requested_at/, /purgeDueDeletedAccounts/, /\/api\/user\/export/, /deleteUser\(/])),
+  };
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+  const databaseProbe = await probeDatabase(supabaseUrl, anonKey, serviceKey);
+  const inventory = buildInventory({ files, profilesState: databaseProbe.profiles.state, discoveries });
+  const statuses: FindingStatus[] = ["VERIFIED", "NOT_FOUND", "DRIFT", "NEEDS_POLICY_DECISION", "UNKNOWN", "ERROR"];
+  const byStatus = Object.fromEntries(statuses.map((status) => [status, inventory.filter((item) => item.status === status).length])) as Record<FindingStatus, number>;
+  const report: BaselineReport = {
+    schemaVersion: 2,
+    sourceFingerprint: buildFingerprint(files, profileColumns),
     environment: {
-      supabaseUrl,
-      hasServiceRole: !!serviceKey,
-      hasAnonKey: !!anonKey
+      supabaseHost: supabaseUrl ? new URL(supabaseUrl).host : null,
+      anonProbeAvailable: Boolean(supabaseUrl && anonKey),
+      aggregateAdminProbeAvailable: Boolean(supabaseUrl && serviceKey),
     },
     summary: {
-      totalItems: items.length,
-      byStatus,
-      byCategory,
-      byOwnership
+      totalItems: inventory.length, byStatus,
+      scannedFiles: { backend: backendFiles.length, native: nativeFiles.length },
+      discoveredStorageKeys: { backend: storageKeys.backend.length, native: storageKeys.native.length },
+      discoveredProviders: providers.length,
     },
-    liveDatabaseMetadata: {
-      anonProfilesSelectExposed: anonExposed,
-      anonProfilesPolicy: anonPolicy,
-      tableCounts,
-      profileColumns
+    databaseAccessProbe: {
+      ...databaseProbe,
+      limitation: "The Data API probes verify effective anonymous access and aggregate counts. Exact live PostgreSQL grants, policy expressions, view security and RPC privileges require a separate metadata query through an approved database connection or Supabase MCP.",
     },
-    inventory: items
+    discoveries, inventory,
   };
-
-  // ── 5. Write docs/PRIVACY_SECURITY_BASELINE.json ─────────────────────────
-  const jsonPath = path.resolve("docs/PRIVACY_SECURITY_BASELINE.json");
-  fs.writeFileSync(jsonPath, JSON.stringify(baselineData, null, 2), "utf8");
-  console.log(`[baseline] Wrote JSON baseline to ${jsonPath}`);
-
-  // ── 6. Generate docs/PRIVACY_SECURITY_BASELINE.md ────────────────────────
-  const mdContent = generateMarkdownReport(baselineData);
-  const mdPath = path.resolve("docs/PRIVACY_SECURITY_BASELINE.md");
-  fs.writeFileSync(mdPath, mdContent, "utf8");
-  console.log(`[baseline] Wrote Markdown report to ${mdPath}`);
-
-  console.log(`[baseline] Completed successfully! Total items: ${items.length} (VERIFIED: ${byStatus.VERIFIED}, NEEDS POLICY DECISION: ${byStatus["NEEDS POLICY DECISION"]})`);
+  if (options?.write !== false) {
+    fs.writeFileSync(path.join(webRoot, "docs/PRIVACY_SECURITY_BASELINE.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+    fs.writeFileSync(path.join(webRoot, "docs/PRIVACY_SECURITY_BASELINE.md"), renderMarkdown(report), "utf8");
+  }
+  return report;
 }
 
-function generateMarkdownReport(data: BaselineReport): string {
-  const { summary, liveDatabaseMetadata, inventory, generatedAt } = data;
-
-  return `# Machine-Generated Privacy and Security Baseline
-
-**Generated**: ${generatedAt}  
-**Authoritative Generator**: \`scripts/generate-privacy-security-baseline.ts\`  
-**Target Repositories**: \`Sanatan Sangam/Shoonaya\` (PWA/Backend) & \`shoonaya-mobile\` (Native)  
-**Live Project**: \`mnbwodcswxoojndytngu.supabase.co\`
-
----
-
-## 1. Executive Summary & Verification Counts
-
-All counts below are derived directly from the automated inventory generator.
-
-| Metric | Count |
-|---|---|
-| **Total Inventory Items** | **${summary.totalItems}** |
-| **VERIFIED (Confirmed in Code / Live DB)** | **${summary.byStatus.VERIFIED}** |
-| **NEEDS POLICY DECISION** | **${summary.byStatus["NEEDS POLICY DECISION"]}** |
-| **DRIFT** | **${summary.byStatus.DRIFT}** |
-| **NOT FOUND** | **${summary.byStatus["NOT FOUND"]}** |
-
-### Contract Ownership
-- **Backend (Canonical)**: ${summary.byOwnership.backend}
-- **Native**: ${summary.byOwnership.native}
-- **Shared Contract**: ${summary.byOwnership.shared_contract}
-
----
-
-## 2. Live Database & Schema Exposure Audit
-
-| Security Boundary | Live Status | Impact |
-|---|---|---|
-| **Profiles \`anon\` SELECT Exposure** | \`${liveDatabaseMetadata.anonProfilesSelectExposed ? "CRITICAL EXPOSURE (TRUE)" : "SECURED (FALSE)"}\` | ${liveDatabaseMetadata.anonProfilesPolicy} |
-| **Total Profile Columns** | **${liveDatabaseMetadata.profileColumns.length} columns** | ${liveDatabaseMetadata.profileColumns.filter(c => c.isSensitive).length} sensitive / special-category columns |
-
-### Live Table Record Counts (Aggregate Schema Only — No PII)
-${Object.entries(liveDatabaseMetadata.tableCounts)
-  .map(([tbl, count]) => `- \`${tbl}\`: \`${count === null ? "NOT FOUND / UNMIGRATED" : `${count} rows`}\``)
-  .join("\n")}
-
----
-
-## 3. Sensitive Profile Columns Classification
-
-| Column Name | Data Type | Sensitivity Classification |
-|---|---|---|
-${liveDatabaseMetadata.profileColumns.map(c => `| \`${c.name}\` | \`${c.type}\` | ${c.classification} |`).join("\n")}
-
----
-
-## 4. Comprehensive Inventory by Category
-
-${inventory.map(item => `### [${item.id}] ${item.name}
-- **Category**: ${item.category}
-- **Status**: **${item.status}**
-- **Canonical Ownership**: \`${item.canonicalOwnership}\`
-- **Location**: \`${item.location}\`
-- **Description**: ${item.description}
-${item.notes ? `- **Notes**: *${item.notes}*\n` : ""}`).join("\n")}
-
----
-
-## 5. Independent Review Gate for Prompt 1
-
-> [!IMPORTANT]
-> **Prompt 0 is complete.** This machine-generated baseline must be independently reviewed before initiating **Prompt 1 (P0 Profiles Exposure Containment)**.
-> No production data, secrets, or application behaviors were altered during this step.
-`;
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+if (invokedPath === fileURLToPath(import.meta.url)) {
+  generateBaseline().then((report) => {
+    console.log(JSON.stringify({ sourceFingerprint: report.sourceFingerprint, summary: report.summary, profilesAccess: report.databaseAccessProbe.profiles }, null, 2));
+  }).catch((error: unknown) => {
+    console.error(`[baseline] ${error instanceof Error ? error.message : "Unknown baseline failure"}`);
+    process.exitCode = 1;
+  });
 }
-
-run().catch((err) => {
-  console.error("[baseline] Fatal error:", err);
-  process.exit(1);
-});

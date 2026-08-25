@@ -1,4 +1,6 @@
-'use client';
+"use client";
+
+import { localSpiritualDate, buildSpiritualDateRange } from "@/lib/sacred-time";
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
@@ -20,19 +22,13 @@ interface Props {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+function todayStr(timezone?: string) {
+  return localSpiritualDate(timezone);
 }
 
 /** Returns sorted array of the last 28 YYYY-MM-DD strings (oldest → newest). */
-function last28Days(): string[] {
-  const out: string[] = [];
-  for (let i = 27; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    out.push(d.toISOString().slice(0, 10));
-  }
-  return out;
+function last28Days(timezone?: string): string[] {
+  return buildSpiritualDateRange(timezone, 28);
 }
 
 // ── HeatDot ───────────────────────────────────────────────────────────────────

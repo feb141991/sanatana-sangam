@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
-import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import AppProviders from '@/components/providers/AppProviders';
 import AuthSessionGuard from '@/components/providers/AuthSessionGuard';
+import WebConsentManager from '@/components/privacy/WebConsentManager';
 import {
   Inter,
   Cormorant_Garamond,
@@ -118,7 +116,6 @@ export const metadata: Metadata = {
   },
   other: {
     'mobile-web-app-capable': 'yes',
-    'google-adsense-account': 'ca-pub-6518026066446033',
   },
 };
 
@@ -136,7 +133,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
-  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? 'G-548KZ0TBHD';
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
   return (
     <html lang="en" className={fontVars}>
@@ -154,12 +152,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
          * preference. Dark default (#0C0A07) matches --surface-base dark.
          * Light users get #FAF6EF. No flicker on either theme.
          */}
-        {/* Preconnect hints — DNS + TLS handshake before first paint */}
-        <link rel="preconnect" href="https://cdn.onesignal.com" />
-        <link rel="dns-prefetch" href="https://cdn.onesignal.com" />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <style dangerouslySetInnerHTML={{ __html: `body{background:#0C0A07}` }} />
 
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
@@ -193,40 +185,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         </AppProviders>
 
-        {/* ── OneSignal Push Notifications (SDK URL managed in src/lib/config.ts) ── */}
-        {oneSignalAppId && (
-          <>
-            <Script
-              src={`https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js`}
-              strategy="afterInteractive"
-              defer
-            />
-            <Script id="onesignal-init" strategy="afterInteractive">
-              {`window.OneSignalDeferred=window.OneSignalDeferred||[];OneSignalDeferred.push(async function(OneSignal){await OneSignal.init({appId:"${oneSignalAppId}",notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true,serviceWorkerPath:"/OneSignalSDKWorker.js",serviceWorkerUpdaterPath:"/OneSignalSDKUpdaterWorker.js",serviceWorkerParam:{scope:"/"}});});`}
-            </Script>
-          </>
-        )}
-        {/* ── Google Analytics 4 — aggregate web analytics only ─────────────── */}
-        {gaMeasurementId && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga4-init" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaMeasurementId}',{send_page_view:true,allow_google_signals:false,allow_ad_personalization_signals:false});`}
-            </Script>
-          </>
-        )}
-        {/* ── Google AdSense ── */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6518026066446033"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-        <Analytics />
-        <SpeedInsights />
+        <WebConsentManager gaMeasurementId={gaMeasurementId} oneSignalAppId={oneSignalAppId} adsenseClient={adsenseClient} />
       </body>
     </html>
   );

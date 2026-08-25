@@ -62,7 +62,13 @@
     "audit:naraka": "npx tsx scripts/naraka-baseline-audit.mts",
     "verify:naraka-shadow": "bash scripts/shadow/verify-naraka-approval-shadow.sh",
     "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs",
-    "baseline:privacy": "npx tsx scripts/generate-privacy-security-baseline.ts"
+    "baseline:privacy": "npx tsx scripts/generate-privacy-security-baseline.ts",
+    "test:baseline:privacy": "npx tsx --test scripts/generate-privacy-security-baseline.test.ts",
+    "test:web-consent": "npx tsx --test src/lib/web-consent.test.ts",
+    "test:public-sources": "npx tsx --test src/lib/public-source-disclosures.test.ts",
+    "test:mandali-write-contract": "npx vitest run src/lib/mandali-write-contract.test.ts",
+    "verify:profiles-containment-shadow": "bash scripts/shadow/verify-profiles-containment-shadow.sh",
+    "verify:compliance-engineering": "node scripts/verify-compliance-engineering.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",

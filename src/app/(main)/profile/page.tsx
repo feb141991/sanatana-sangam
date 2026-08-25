@@ -4,12 +4,14 @@ import { getUserSafetyDashboardData, getUserSafetyState } from '@/lib/user-safet
 import { redirect } from 'next/navigation';
 import ProfileClient from './ProfileClient';
 import type { Profile } from '@/types/database';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export default async function ProfilePage() {
   const user = await getAuthUser();
   if (!user) redirect('/login');
 
   const supabase = await createServerSupabaseClient();
+  const admin = createAdminClient();
 
   let profile: (Profile & { show_sadhana_highlights?: boolean | null }) | null = null;
 
@@ -53,7 +55,7 @@ export default async function ProfilePage() {
       .eq('author_id', user.id),
     (async () => {
       const state = await getUserSafetyState(supabase, user.id);
-      return getUserSafetyDashboardData(supabase, user.id, state);
+      return getUserSafetyDashboardData(admin, user.id, state);
     })(),
     // Only select the 4 columns needed — avoids fetching unused session data
     supabase

@@ -130,20 +130,28 @@ export default function ContentSafetyMenu({
 
   async function reportContent(reason: ReportReason) {
     setPendingAction(`report:${reason}`);
-    const { error } = await supabase
-      .from('content_reports')
-      .insert({
-        reported_by: userId,
-        content_author_id: authorId,
-        content_type: contentType,
-        content_id: contentId,
-        reason,
-      });
+    const reasonMap: Record<ReportReason, string> = {
+      abusive: 'harassment',
+      intolerant: 'hate',
+      misleading: 'other',
+      spam: 'spam',
+      privacy: 'privacy',
+    };
+    const response = await fetch('/api/mandali/report', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        targetType: contentType === 'mandali_post' ? 'post' : contentType,
+        targetId: contentId,
+        reason: reasonMap[reason],
+      }),
+    });
 
     setPendingAction(null);
 
-    if (error) {
-      toast.error(error.message);
+    if (!response.ok) {
+      toast.error('Could not submit report.');
       return;
     }
 

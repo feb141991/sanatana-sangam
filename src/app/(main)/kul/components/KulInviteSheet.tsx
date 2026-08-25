@@ -4,26 +4,24 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Search } from 'lucide-react';
-import { createClient } from '@/lib/supabase';
 import toast from 'react-hot-toast';
+
+type DirectoryProfile = { id: string; username: string; avatar_url: string | null };
 
 export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<DirectoryProfile[]>([]);
   const [invited, setInvited] = useState<Set<string>>(new Set());
 
   const search = async () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, username, avatar_url, tradition')
-        .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
-        .limit(10);
-      setResults(data || []);
+      const response = await fetch(`/api/mandali/search?q=${encodeURIComponent(query.trim())}`);
+      if (!response.ok) throw new Error('Search failed');
+      const payload = await response.json() as { profiles: DirectoryProfile[] };
+      setResults(payload.profiles.slice(0, 10));
     } catch (e) {
       toast.error('Search failed');
     } finally {
@@ -33,11 +31,12 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
 
   const sendInvite = async (targetId: string, name: string) => {
     try {
-      const supabase = createClient();
-      await supabase.from('kul_invites').insert({
-        target_user_id: targetId,
-        invite_code: inviteCode,
+      const response = await fetch('/api/kul/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId: targetId, inviteCode }),
       });
+      if (!response.ok) throw new Error('Invite failed');
       setInvited(prev => new Set([...Array.from(prev), targetId]));
       toast.success(`Invited ${name}!`);
     } catch (e) {
@@ -91,16 +90,16 @@ export function KulInviteSheet({ inviteCode, onClose }: { inviteCode: string; on
                    <Image width={120} height={120} src={r.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                    <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-400">
-                     {(r.full_name || r.username || '?')[0].toUpperCase()}
+                     {(r.username || '?')[0].toUpperCase()}
                    </div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold theme-ink truncate">{r.full_name || r.username}</p>
+                <p className="text-sm font-bold theme-ink truncate">{r.username}</p>
                 <p className="text-[10px] theme-muted truncate">@{r.username}</p>
               </div>
               <button
-                onClick={() => sendInvite(r.id, r.full_name || r.username || 'them')}
+                onClick={() => sendInvite(r.id, r.username || 'them')}
                 disabled={invited.has(r.id)}
                 className="px-4 py-1.5 rounded-xl text-[10px] font-bold transition disabled:opacity-50"
                 style={{ 

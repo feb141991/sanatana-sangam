@@ -16,6 +16,7 @@ import type { TraditionKey } from '@/lib/traditions';
 import { useUpdateProfileMutation } from '@/hooks/useProfile';
 import type { Database } from '@/types/database';
 import InviteCard from '@/components/home/InviteCard';
+import PrivacyChoicesButton from '@/components/privacy/PrivacyChoicesButton';
 
 type SubscriptionStatus = Database['public']['Tables']['profiles']['Row']['subscription_status'];
 type TransliterationLanguage = Database['public']['Tables']['profiles']['Row']['transliteration_language'];
@@ -760,6 +761,7 @@ export default function SettingsClient({
           description={copy.accountDescription}
         >
           <div className="space-y-3">
+            <PrivacyChoicesButton className="flex min-h-11 w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-medium text-[color:var(--text-cream)]" />
             <Link
               href="/settings/subscription"
               className="flex items-center justify-between rounded-2xl border p-4"

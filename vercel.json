@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm install --legacy-peer-deps --force",
+  "installCommand": "npm ci --legacy-peer-deps",
   "crons": [
     {
       "path": "/api/cron/panchang-revalidate",

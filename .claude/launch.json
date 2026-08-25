@@ -14,6 +14,12 @@
       "port": 5000
     },
     {
+      "name": "qa-preview-3002",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["next", "dev", "-p", "3002"],
+      "port": 3002
+    },
+    {
       "name": "shoonaya-redesign-preview",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "4173", "--directory", "/Users/princesharma/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/97252294-e760-42e4-8cbe-d5c1a5a94df5/bd335ad2-74af-4934-911c-49f7449f51be/skills/web-artifacts-builder/shoonaya-redesign/dist"],

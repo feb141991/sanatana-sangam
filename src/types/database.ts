@@ -245,6 +245,21 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['profiles']['Row'], 'created_at' | 'updated_at' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'streak_freeze_count' | 'last_freeze_used'>;
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
       };
+      public_profiles: {
+        Row: {
+          id: string;
+          username: string;
+          avatar_url: string | null;
+          bio: string | null;
+          seva_score: number;
+          weekly_seva: number;
+          monthly_seva: number;
+          active_symbol_id: string | null;
+          updated_at: string;
+        };
+        Insert: Database['public']['Tables']['public_profiles']['Row'];
+        Update: Partial<Database['public']['Tables']['public_profiles']['Insert']>;
+      };
       mandalis: {
         Row: {
           id: string;

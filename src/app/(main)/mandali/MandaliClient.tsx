@@ -14,15 +14,15 @@ import { queryKeys } from '@/lib/query-keys';
 import ContentSafetyMenu from '@/components/safety/ContentSafetyMenu';
 import { formatRelativeTime, getInitials } from '@/lib/utils';
 import { useLocation } from '@/lib/LocationContext';
-import type { Profile, PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
+import type { PostWithAuthor, PostCommentWithAuthor, EventRsvp } from '@/types/database';
 import { AsyncStateCard, EmptyState } from '@/components/ui';
-import type { MandaliProfile } from '@/lib/api/mandali';
+import type { MandaliProfile, MandaliPublicIdentity } from '@/lib/mandali-contract';
 import { useMandaliMutations, useMandaliQuery } from '@/hooks/useMandali';
 import { usePremium } from '@/hooks/usePremium';
 import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import SeekersNearYou from './SeekersNearYou';
 import { Shimmer } from '@/components/ui/Shimmer';
-type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
+type MemberRow = MandaliPublicIdentity;
 
 type Props = {
   profile:      MandaliProfile;
@@ -87,10 +87,9 @@ const typeIcon: Record<string, React.ReactNode> = {
 };
 
 // ─── Find Sanatani Search Modal ──────────────────────────────────
-type SearchResult = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'tradition' | 'city' | 'country' | 'sampradaya' | 'spiritual_level'>;
+type SearchResult = Pick<MandaliPublicIdentity, 'id' | 'username' | 'avatar_url'>;
 
 function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () => void }) {
-  const supabase = createClient();
   const [query,   setQuery]   = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -100,19 +99,11 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
     if (!query.trim()) return;
     setLoading(true);
     setSearched(true);
-    const { data } = await supabase
-      .from('profiles')
-      .select('id, full_name, username, avatar_url, tradition, city, country, sampradaya, spiritual_level')
-      .or(`full_name.ilike.%${query.trim()}%,username.ilike.%${query.trim()}%`)
-      .neq('id', userId)
-      .limit(20);
-    setResults((data as SearchResult[]) ?? []);
+    const response = await fetch(`/api/mandali/search?q=${encodeURIComponent(query.trim())}`);
+    const payload = response.ok ? await response.json() as { profiles: SearchResult[] } : { profiles: [] };
+    setResults(payload.profiles);
     setLoading(false);
   }
-
-  const TRADITION_EMOJI: Record<string, string> = {
-    hindu: '🕉️', sikh: '☬', buddhist: '☸️', jain: '🤲', other: '✨',
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end" onClick={onClose}>
@@ -174,19 +165,14 @@ function FindSanataniModal({ userId, onClose }: { userId: string; onClose: () =>
                 style={{ background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
                 {user.avatar_url
                   ? <Image src={user.avatar_url} alt="" fill sizes="40px" className="object-cover" />
-                  : getInitials(user.full_name || user.username || '?')}
+                  : getInitials(user.username || '?')}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm theme-ink truncate">
-                  {user.full_name || user.username}
-                  {user.tradition && (
-                    <span className="ml-1.5 text-xs">{TRADITION_EMOJI[user.tradition] ?? '🙏'}</span>
-                  )}
+                  {user.username}
                 </p>
                 <p className="text-xs theme-dim truncate">
-                  {user.username && `@${user.username}`}
-                  {user.city && ` · ${user.city}`}
-                  {user.spiritual_level && ` · ${user.spiritual_level}`}
+                  @{user.username}
                 </p>
               </div>
               <button
@@ -1506,7 +1492,7 @@ export default function MandaliClient({ profile, posts: initialPosts, comments: 
                       style={{ border: '2px solid var(--surface-soft)', background: 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' }}>
                       {m.avatar_url
                         ? <Image src={m.avatar_url} alt="" fill sizes="28px" className="object-cover" />
-                        : getInitials(m.full_name || m.username || '?')}
+                        : getInitials(m.username || '?')}
                     </div>
                   ))}
                 </div>

@@ -4,26 +4,23 @@ import Image from 'next/image';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { EmptyState } from '@/components/ui';
-import { createClient } from '@/lib/supabase';
-import { getInitials, ISHTA_DEVATAS } from '@/lib/utils';
-import type { Profile } from '@/types/database';
+import { getInitials } from '@/lib/utils';
+import type { MandaliPublicIdentity } from '@/lib/mandali-contract';
 
-type MemberRow = Pick<Profile, 'id' | 'full_name' | 'username' | 'avatar_url' | 'sampradaya' | 'ishta_devata' | 'spiritual_level' | 'city' | 'country' | 'seva_score'>;
+type MemberRow = MandaliPublicIdentity;
 
 export default function MandaliMembers({ members, userId }: { members: MemberRow[]; userId: string }) {
-  const supabase = createClient();
   const [reportingId, setReportingId] = useState<string | null>(null);
 
   async function reportMember(memberId: string) {
     setReportingId(memberId);
-    const { error } = await supabase.from('content_reports').insert({
-      reported_by: userId,
-      content_type: 'user_profile',
-      content_id: memberId,
-      reason: 'inappropriate_behaviour',
-    });
+    const response = await fetch('/api/mandali/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetType: 'user_profile', targetId: memberId, reason: 'other' }),
+    }).catch(() => null);
     setReportingId(null);
-    if (error) { toast.error('Could not submit report'); return; }
+    if (!response?.ok) { toast.error('Could not submit report'); return; }
     toast.success('Report submitted for review 🙏');
   }
 
@@ -40,7 +37,6 @@ export default function MandaliMembers({ members, userId }: { members: MemberRow
   return (
     <div className="space-y-2">
       {members.map((m, idx) => {
-        const devata = ISHTA_DEVATAS.find((d) => d.value === m.ishta_devata);
         const isMe = m.id === userId;
         return (
           <div key={m.id}
@@ -53,24 +49,18 @@ export default function MandaliMembers({ members, userId }: { members: MemberRow
               style={{ background: isMe ? 'linear-gradient(135deg, var(--brand-primary-strong), var(--brand-primary))' : 'linear-gradient(135deg, var(--brand-primary), var(--brand-accent))' }}>
               {m.avatar_url
                 ? <Image src={m.avatar_url} alt="" fill sizes="40px" className="object-cover" />
-                : getInitials(m.full_name || m.username || '?')
+                : getInitials(m.username || '?')
               }
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <p className="font-semibold text-[color:var(--brand-ink)] text-sm truncate">
-                  {m.full_name || m.username}
+                  {m.username}
                   {isMe && <span className="ml-1 text-[10px] font-medium" style={{ color: 'var(--brand-primary-strong)' }}>(you)</span>}
                 </p>
-                {m.country && m.country !== 'India' && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-full theme-dim"
-                    style={{ background: 'rgba(128,128,128,0.08)', fontSize: '10px' }}>
-                    🌍 {m.country}
-                  </span>
-                )}
               </div>
               <p className="text-xs text-[color:var(--brand-muted)] truncate">
-                {devata?.emoji} {devata?.label ?? 'Sanatani'} · {m.city ?? m.spiritual_level ?? 'Seeker'}
+                Seeker in your Mandali
               </p>
             </div>
             <div className="text-right mr-1">

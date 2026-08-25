@@ -1,5 +1,6 @@
 import ScoreboardClient from './ScoreboardClient';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 const RANK_META = {
   Seeker:  { emoji: '🌱', text: '#7aab7a', desc: 'Beginning the journey' },
@@ -89,10 +90,22 @@ type QuizLeaderboardRow = {
   profiles: ScoreboardProfile | ScoreboardProfile[] | null;
 };
 
+type PublicLeaderboardRow = Pick<LeaderboardUser, 'id' | 'username' | 'avatar_url' | 'seva_score' | 'weekly_seva' | 'monthly_seva' | 'active_symbol_id'>;
+
+function toLeaderboardUsers(rows: unknown): LeaderboardUser[] {
+  return ((rows ?? []) as PublicLeaderboardRow[]).map((row) => ({
+    ...row,
+    full_name: null,
+    tradition: null,
+    is_pro: false,
+  }));
+}
+
 export default async function ScoreboardPage() {
   const supabase = await createServerSupabaseClient();
+  const admin = createAdminClient();
 
-  const baseSelect = 'id, full_name, username, avatar_url, seva_score, weekly_seva, monthly_seva, tradition, is_pro, active_symbol_id';
+  const baseSelect = 'id, username, avatar_url, seva_score, weekly_seva, monthly_seva, active_symbol_id';
   const [
     { data: users, error },
     { data: weeklyUsers, error: weeklyError },
@@ -100,25 +113,22 @@ export default async function ScoreboardPage() {
     { data: shrutiData, error: shrutiError },
     { data: quizResponsesData, error: quizError },
   ] = await Promise.all([
-    supabase
+    admin
       .from('profiles')
       .select(baseSelect)
-      .not('full_name', 'is', null)
       .order('seva_score', { ascending: false })
       .limit(50),
-    supabase
+    admin
       .from('profiles')
       .select(baseSelect)
-      .not('full_name', 'is', null)
       .order('weekly_seva', { ascending: false })
       .limit(50),
-    supabase
+    admin
       .from('profiles')
       .select(baseSelect)
-      .not('full_name', 'is', null)
       .order('monthly_seva', { ascending: false })
       .limit(50),
-    supabase
+    admin
       .from('pathshala_recitation_stats')
       .select(`
         user_id,
@@ -129,20 +139,16 @@ export default async function ScoreboardPage() {
         certified_count,
         profiles!inner (
           id,
-          full_name,
           username,
           avatar_url,
-          tradition,
-          is_pro,
           active_symbol_id
         )
       `)
       .gte('scored_count', 3)
-      .not('profiles.full_name', 'is', null)
       .order('avg_overall_score', { ascending: false })
       .order('scored_count', { ascending: false })
       .limit(50),
-    supabase
+    admin
       .from('quiz_responses')
       .select(`
         user_id,
@@ -150,15 +156,11 @@ export default async function ScoreboardPage() {
         is_correct,
         profiles!inner (
           id,
-          full_name,
           username,
           avatar_url,
-          tradition,
-          is_pro,
           active_symbol_id
         )
-      `)
-      .not('profiles.full_name', 'is', null),
+      `),
   ]);
 
   if (error || weeklyError || monthlyError || shrutiError || quizError) {
@@ -170,11 +172,11 @@ export default async function ScoreboardPage() {
     if (!profile?.id) return [];
     return [{
       id: profile.id,
-      full_name: profile.full_name ?? null,
+      full_name: null,
       username: profile.username ?? '',
       avatar_url: profile.avatar_url ?? null,
-      tradition: profile.tradition ?? null,
-      is_pro: Boolean(profile.is_pro),
+      tradition: null,
+      is_pro: false,
       active_symbol_id: profile.active_symbol_id ?? null,
       avg_score_100: Math.round((Number(row.avg_overall_score ?? 0) || 0) * 20),
       total_recordings: Number(row.total_recordings ?? 0),
@@ -258,11 +260,11 @@ export default async function ScoreboardPage() {
         const rank = computeRank(entry.total_answered, accuracy);
         return {
           id: entry.profile.id,
-          full_name: entry.profile.full_name ?? null,
+          full_name: null,
           username: entry.profile.username ?? '',
           avatar_url: entry.profile.avatar_url ?? null,
-          tradition: entry.profile.tradition ?? null,
-          is_pro: Boolean(entry.profile.is_pro),
+          tradition: null,
+          is_pro: false,
           active_symbol_id: entry.profile.active_symbol_id ?? null,
           total_karma: entry.total_karma,
           total_correct: entry.total_correct,
@@ -281,9 +283,9 @@ export default async function ScoreboardPage() {
 
   return (
     <ScoreboardClient
-      initialUsers={(users as LeaderboardUser[] | null) || []}
-      weeklyUsers={(weeklyUsers as LeaderboardUser[] | null) || []}
-      monthlyUsers={(monthlyUsers as LeaderboardUser[] | null) || []}
+      initialUsers={toLeaderboardUsers(users)}
+      weeklyUsers={toLeaderboardUsers(weeklyUsers)}
+      monthlyUsers={toLeaderboardUsers(monthlyUsers)}
       shrutiUsers={shrutiUsers}
       quizAllTime={quizAllTime}
       quizWeekly={quizWeekly}

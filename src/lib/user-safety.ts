@@ -155,7 +155,7 @@ export async function getUserSafetyDashboardData(
     profileIds.length
       ? supabase
           .from('profiles')
-          .select('id, full_name, username, avatar_url')
+          .select('id, username, avatar_url')
           .in('id', profileIds)
       : Promise.resolve({ data: [] }),
     hiddenPostIds.length
@@ -166,8 +166,12 @@ export async function getUserSafetyDashboardData(
       : Promise.resolve({ data: [] }),
   ]);
 
+  const safeProfileRows = safeRows(safetyProfiles) as Array<{ id: string; username: string; avatar_url: string | null }>;
   const profileMap = new Map(
-    safeRows(safetyProfiles).map((profile: any) => [profile.id, profile as SafetyProfileSummary])
+    safeProfileRows.map((profile) => [profile.id, {
+      ...profile,
+      full_name: profile.username,
+    } satisfies SafetyProfileSummary])
   );
 
   const hiddenPreviewMap = new Map<string, { title: string; subtitle: string }>();

@@ -1,4 +1,6 @@
-'use client';
+"use client";
+
+import dynamic from 'next/dynamic';
 
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
 
@@ -40,10 +42,10 @@ import { getAshramaDuties, getAshramaMeta, type LifeStage, type GenderContext } 
 import { localSpiritualDate, buildSpiritualDateRange } from '@/lib/sacred-time';
 import { calculatePanchang, getTodaySpiritualPulses, REFERENCE_LOCATION_UJJAIN } from '@/lib/panchang';
 import { usePremium } from '@/hooks/usePremium';
-import PremiumActivateModal from '@/components/premium/PremiumActivateModal';
+const PremiumActivateModal = dynamic(() => import('@/components/premium/PremiumActivateModal'), { ssr: false });
 import NityaHeroBanner from '@/components/nitya/NityaHeroBanner';
 import ConfettiOverlay from '@/components/ui/ConfettiOverlay';
-import MilestoneShareCard from '@/components/home/MilestoneShareCard';
+const MilestoneShareCard = dynamic(() => import('@/components/home/MilestoneShareCard'), { ssr: false });
 import type { NityaSequenceStep, NityaKarmaStreak } from '@sangam/sadhana-engine';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { buildReadableCapabilities, type ReadableContent } from '@/lib/readable-content';

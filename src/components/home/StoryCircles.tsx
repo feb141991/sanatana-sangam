@@ -1,4 +1,6 @@
-'use client';
+"use client";
+
+import { localSpiritualDate } from "@/lib/sacred-time";
 
 /**
  * StoryCircles — Instagram-style horizontal strip of daily spiritual content circles.

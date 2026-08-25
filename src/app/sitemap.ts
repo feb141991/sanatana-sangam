@@ -35,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/privacy`,          changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${BASE_URL}/terms`,            changeFrequency: 'yearly',  priority: 0.3 },
     { url: `${BASE_URL}/contact`,          changeFrequency: 'yearly',  priority: 0.3 },
+    { url: `${BASE_URL}/sources`,          changeFrequency: 'monthly', priority: 0.4 },
   ];
 
   const vratRoutes: MetadataRoute.Sitemap = Object.keys(VRAT_DATABASE).map(slug => ({

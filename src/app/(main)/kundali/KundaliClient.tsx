@@ -10,6 +10,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { createClient } from '@/lib/supabase';
 import type { KundaliInput, KundaliResult } from '@/lib/jyotish/kundali-engine';
 import { AFFECTED_IDENTITY_PROFILE_IDS, AFFECTED_TIMING_PROFILE_IDS } from '@/lib/jyotish/ayanamsha-notices';
+import { AgeGuidanceNotice } from '@/components/privacy/AgeGuidanceNotice';
 
 interface Props {
   lat: number;
@@ -509,6 +510,8 @@ export default function KundaliClient({ lat, lon, city, timezone, isReference }:
                   />
                 </div>
               </div>
+
+              <AgeGuidanceNotice dateOfBirth={kundaliInput.birthDate} />
 
               <div className="space-y-1 relative">
                 <label className="text-[10px] uppercase font-bold tracking-wider" style={{ color: 'var(--brand-muted)' }}>

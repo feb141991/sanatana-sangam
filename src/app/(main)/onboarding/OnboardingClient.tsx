@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { useThemePreference } from '@/components/providers/ThemeProvider';
+import { AgeGuidanceNotice } from '@/components/privacy/AgeGuidanceNotice';
 import {
   defaultNameStoryTranslationLanguage,
   isNameStoryTradition,
@@ -742,6 +743,9 @@ export default function OnboardingClient({
                       )}
                     </div>
                   )}
+                  <div className="mt-3">
+                    <AgeGuidanceNotice dateOfBirth={dob} />
+                  </div>
                 </div>
 
                 <h2 className="text-lg font-semibold text-[var(--brand-primary-strong)] mb-1" style={{ fontFamily: 'var(--font-serif)' }}>

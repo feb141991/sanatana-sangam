@@ -19,7 +19,7 @@ import {
 } from '@/lib/mocks/mandali';
 import { selectRuntimeAdapter } from '@shared-core/runtime/selectRuntimeAdapter';
 
-export type { MandaliData, MandaliMemberRow, MandaliProfile } from '@/lib/api/mandali';
+export type { MandaliData, MandaliProfile, MandaliPublicIdentity as MandaliMemberRow } from '@/lib/mandali-contract';
 
 type RuntimeMandaliApi = {
   fetchMandaliData: (userId: string) => Promise<MandaliData>;
