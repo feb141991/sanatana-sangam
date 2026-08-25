@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 // ─── POST /api/karma/award ───────────────────────────────────────────────────
 // Awards karma atomically via the award_karma RPC, which serialises concurrent
@@ -67,14 +68,18 @@ export async function POST(req: NextRequest) {
     let metadata: any = null;
 
     if (reason === 'new_member_welcome' && target_user_id) {
-      // Fetch both users' tradition from profiles
+      // Fetch both users' tradition from profiles. The target is another
+      // user's row, which RLS restricts to self-only reads on the caller's
+      // own client -- an admin client is required to see it.
+      const admin = createAdminClient();
       const [callerRes, targetRes] = await Promise.all([
         supabase.from('profiles').select('tradition').eq('id', user.id).maybeSingle(),
-        supabase.from('profiles').select('tradition').eq('id', target_user_id).maybeSingle()
+        admin.from('profiles').select('tradition').eq('id', target_user_id).maybeSingle()
       ]);
 
+      const targetProfile = targetRes.data as { tradition: string | null } | null;
       const callerTradition = callerRes.data?.tradition;
-      const targetTradition = targetRes.data?.tradition;
+      const targetTradition = targetProfile?.tradition;
 
       if (callerTradition && targetTradition && callerTradition !== targetTradition) {
         finalAmount = amount + 10;
