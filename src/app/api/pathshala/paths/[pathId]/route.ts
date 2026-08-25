@@ -15,5 +15,8 @@ export async function GET(
 
   const lessons = getPathLessons(pathId);
 
-  return NextResponse.json({ path, lessons });
+  return NextResponse.json(
+    { path, lessons },
+    { headers: { 'Cache-Control': 'public, max-age=3600' } }
+  );
 }

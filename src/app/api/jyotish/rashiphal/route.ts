@@ -22,5 +22,7 @@ export async function GET(request: Request) {
   }
 
   const dailyHoroscope = getDailyHoroscope(rashi, parsedDate, timeZone);
-  return NextResponse.json(dailyHoroscope);
+  return NextResponse.json(dailyHoroscope, {
+    headers: { 'Cache-Control': 'public, max-age=3600' },
+  });
 }

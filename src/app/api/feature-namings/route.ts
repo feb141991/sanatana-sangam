@@ -39,7 +39,10 @@ export async function GET() {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500, headers: CORS });
   }
-  return NextResponse.json({ namings: data ?? [] }, { headers: CORS });
+  return NextResponse.json(
+    { namings: data ?? [] },
+    { headers: { ...CORS, 'Cache-Control': 'public, max-age=3600' } }
+  );
 }
 
 // ── POST — admin: record a naming ─────────────────────────────────────────

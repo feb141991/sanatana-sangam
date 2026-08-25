@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json(
+      { success: true, data },
+      { headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' } }
+    );
   } catch (err: any) {
     console.error('[GET /api/discover] Server error:', err);
     return NextResponse.json({ error: err?.message || 'Server error' }, { status: 500 });
