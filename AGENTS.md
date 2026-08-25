@@ -102,6 +102,23 @@ Before changing files, follow `SHOONAYA_WORKFLOW.md` and `SHOONAYA_RULES.md`.
 - Report test results as passed, failed and skipped; never present only the
   passed count as the full denominator.
 
+### 11. AI Provider Scope — Sarvam Only
+- Sarvam is the sole active AI inference provider (`src/lib/ai/providers/inference.ts`,
+  `packages/pramana-serve/src/provider-selector.ts`). `self-hosted` exists as a
+  configured-but-optional fallback; no other provider is registered.
+- Never add, re-add, or wire in Gemini, OpenAI, Claude-as-a-provider, or any
+  other AI provider without an explicit, current request from the founder in
+  chat. This has been decided and reverted multiple times across this
+  project's history — a Gemini provider class, config fields, and a
+  `google-gemini` fallback slot were silently reintroduced at least twice
+  after removal, most recently 2026-08-24, before being deleted again. Do
+  not treat the mere presence of old provider code, comments, or a stray
+  file as license to restore it.
+- Before touching `inference.ts`, `provider-selector.ts`, or `pramana-serve/src/providers/`,
+  re-check this rule is still true (`grep -ri "gemini\|openai" packages/pramana-serve/src
+  src/lib/ai` should return nothing but incidental comments/docstrings) rather
+  than assuming a partially-present provider is intentional.
+
 ## Required Behavior
 
 - Read the relevant `.claude/agents/*.md` role file before implementing specialized work.
