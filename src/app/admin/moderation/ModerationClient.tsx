@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
 import toast from 'react-hot-toast';
-import { createClient } from '@/lib/supabase';
 
 interface Report {
   id: string;
@@ -40,41 +39,45 @@ export default function ModerationClient({ initialReports }: { initialReports: R
   const [reports, setReports] = useState<Report[]>(initialReports);
   const [filter, setFilter] = useState<'all' | 'pending' | 'resolved'>('all');
   const handleAction = async (report: Report, action: 'resolve' | 'dismiss' | 'delete' | 'ban') => {
-    const supabase = createClient();
     try {
-      if (action === 'delete') {
-        let table = '';
-        switch (report.content_type) {
-          case 'mandali_post': table = 'posts'; break;
-        }
-
-        if (table) {
-          const { error: delError } = await supabase
-            .from(table)
-            .delete()
-            .eq('id', report.content_id);
-          
-          if (delError) throw delError;
-          toast.success('Content permanently removed');
-        }
-      }
-
       if (action === 'ban') {
-        const { error: banError } = await supabase
-          .from('profiles')
-          .update({ is_banned: true })
-          .eq('id', report.content_author_id);
-        
-        if (banError) throw banError;
+        const res = await fetch(`/api/admin/users/${report.content_author_id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            isBanned: true,
+            banReason: `Reported content: ${report.reason}`,
+          }),
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => null);
+          throw new Error(body?.error || 'Failed to ban user');
+        }
         toast.success('User has been banned from Shoonaya');
       }
 
-      const { error } = await supabase
-        .from('content_reports')
-        .update({ status: action === 'dismiss' ? 'dismissed' : 'resolved' })
-        .eq('id', report.id);
+      // Reports don't carry a 'resolved' status -- the schema distinguishes
+      // 'dismissed' (not actionable), 'reviewed' (looked at, no action taken)
+      // and 'actioned' (content removed or user banned).
+      const status = action === 'dismiss' ? 'dismissed' : action === 'resolve' ? 'reviewed' : 'actioned';
 
-      if (error) throw error;
+      const reportRes = await fetch(`/api/admin/reports/${report.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status,
+          removeContent: action === 'delete',
+          contentType: report.content_type,
+          contentId: report.content_id,
+        }),
+      });
+      if (!reportRes.ok) {
+        const body = await reportRes.json().catch(() => null);
+        throw new Error(body?.error || 'Failed to update report');
+      }
+      if (action === 'delete') {
+        toast.success('Content permanently removed');
+      }
 
       setReports(prev => prev.filter(r => r.id !== report.id));
       if (action !== 'delete' && action !== 'ban') {
