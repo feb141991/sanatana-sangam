@@ -141,5 +141,8 @@
       "path": "/api/cron/push-receipt-check",
       "schedule": "20 10 * * *"
     }
+  ],
+  "regions": [
+    "fra1"
   ]
 }

@@ -33,7 +33,9 @@ export async function GET(req: NextRequest) {
     const roster = await getDharmVeerRoster(supabase);
     const todayHero = selectDharmVeerOfTheDayFromRoster(roster, tradition);
 
-    return NextResponse.json({ success: true, roster, todayHero });
+    return NextResponse.json({ success: true, roster, todayHero }, {
+      headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' },
+    });
   } catch (err: unknown) {
     console.error('[GET /api/dharm-veer/roster] Server error:', err);
     const message = err instanceof Error ? err.message : 'Server error';
