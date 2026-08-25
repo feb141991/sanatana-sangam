@@ -5,7 +5,11 @@ import { emitEvent, emitError } from "@/lib/monitoring/events";
 import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
 
 // ─── Notification Dispatcher Cron ───────────────────────────────────────────
-// Schedule: runs every 10 minutes (*/10 * * * *).
+// Schedule: every 10 minutes, triggered by a Supabase pg_cron job (via
+// pg_net -> net.http_post), NOT a Vercel cron -- Vercel's Hobby plan caps
+// cron jobs at once per day, which this dispatcher's timing precision (quiet
+// hours re-checked at delivery time) genuinely needs sub-daily. See
+// supabase/migrations/20260825_schedule_notification_dispatch_pg_cron.sql.
 //
 // Atomically claims due rows across all scheduled notification types from
 // `notification_schedule` with a 15-minute lease and crash recovery:
@@ -25,12 +29,16 @@ const BATCH_LIMIT = 200;
 export async function GET(request: Request) {
   const startTime = Date.now();
   const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret) {
-    return NextResponse.json({ error: "CRON_SECRET is not configured" }, { status: 500 });
+  const dispatchSecret = process.env.INTERNAL_DISPATCH_SECRET;
+  if (!cronSecret && !dispatchSecret) {
+    return NextResponse.json({ error: "No dispatch secret is configured" }, { status: 500 });
   }
 
   const authHeader = request.headers.get("authorization");
-  if (authHeader !== "Bearer " + cronSecret) {
+  const authorized =
+    (!!cronSecret && authHeader === "Bearer " + cronSecret) ||
+    (!!dispatchSecret && authHeader === "Bearer " + dispatchSecret);
+  if (!authorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

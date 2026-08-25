@@ -140,10 +140,6 @@
     {
       "path": "/api/cron/push-receipt-check",
       "schedule": "20 10 * * *"
-    },
-    {
-      "path": "/api/cron/notification-dispatch",
-      "schedule": "*/10 * * * *"
     }
   ]
 }
