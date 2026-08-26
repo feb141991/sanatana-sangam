@@ -28,6 +28,8 @@ jobs:
 
       - name: Verify privacy and compliance engineering contracts
         run: |
+          npm run baseline:privacy
+          npm run generate:compliance-manifest
           npm run test:baseline:privacy
           npm run test:web-consent
           npm run test:public-sources

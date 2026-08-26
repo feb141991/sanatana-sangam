@@ -1,0 +1,314 @@
+{
+  "version": "2026-08-25.v1",
+  "verificationStatus": "ENGINEERING_INVENTORY_PENDING_CONTRACT_REVIEW",
+  "verificationNote": "Vendor URLs and application integrations are evidence of usage only. Roles, regions, transfer mechanisms, deletion capabilities and security attestations remain unverified until the corresponding contract or assessment vault record is completed.",
+  "vendors": [
+    {
+      "id": "VEND-01-SUPABASE",
+      "legalEntity": "Supabase Inc.",
+      "services": [
+        "Managed PostgreSQL Database",
+        "Supabase Auth",
+        "Supabase S3 Storage",
+        "pgvector"
+      ],
+      "dataReceived": [
+        "Account identifiers",
+        "Hashed credentials",
+        "Profile & religious data",
+        "Birth details",
+        "Sadhana & Japa logs",
+        "Mandali UGC",
+        "Media uploads"
+      ],
+      "role": "Processor (Data Processor under UK GDPR)",
+      "serviceRegion": "AWS EU (London / Frankfurt) or US East",
+      "dpaUrl": "https://supabase.com/legal/dpa",
+      "privacyUrl": "https://supabase.com/privacy",
+      "subprocessorsUrl": "https://supabase.com/docs/guides/platform/subprocessors",
+      "contractVaultId": "VAULT-DPA-SUPABASE-001: missing (Action required: execute online DPA)",
+      "transferMechanism": "Standard Contractual Clauses (SCCs) / UK IDTA Addendum",
+      "deletionCapability": "Direct SQL row deletion, automated cascade, bucket object purge API",
+      "securityAttestation": "SOC2 Type II, ISO 27001, HIPAA compliant architecture, AES-256 at rest",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "package.json:@supabase/supabase-js",
+        "src/lib/supabase/*"
+      ]
+    },
+    {
+      "id": "VEND-02-VERCEL",
+      "legalEntity": "Vercel Inc.",
+      "services": [
+        "Web Application Hosting",
+        "Edge Serverless Functions",
+        "Web Analytics",
+        "Speed Insights"
+      ],
+      "dataReceived": [
+        "HTTP Request metadata",
+        "IP address (anonymized for telemetry)",
+        "Diagnostic performance traces",
+        "Edge execution logs"
+      ],
+      "role": "Processor",
+      "serviceRegion": "Global Edge Network / US East primary execution",
+      "dpaUrl": "https://vercel.com/legal/dpa",
+      "privacyUrl": "https://vercel.com/legal/privacy-policy",
+      "subprocessorsUrl": "https://vercel.com/legal/subprocessors",
+      "contractVaultId": "VAULT-DPA-VERCEL-001: missing (Action required: execute online DPA)",
+      "transferMechanism": "Standard Contractual Clauses (SCCs) / US Data Privacy Framework (DPF)",
+      "deletionCapability": "Automatic log rotation (7-30 days retention based on plan tier)",
+      "securityAttestation": "SOC2 Type II, ISO 27001 certified edge infrastructure",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "package.json:@vercel/analytics",
+        "package.json:@vercel/speed-insights",
+        "src/app/layout.tsx"
+      ]
+    },
+    {
+      "id": "VEND-03-EXPO",
+      "legalEntity": "650 Industries Inc. (Expo)",
+      "services": [
+        "EAS Mobile Application Builds",
+        "Expo Push Notification Service",
+        "Runtime Updates"
+      ],
+      "dataReceived": [
+        "Expo Push Token",
+        "Device Model & OS version",
+        "App Build Artifacts"
+      ],
+      "role": "Processor",
+      "serviceRegion": "United States",
+      "dpaUrl": "https://expo.dev/terms",
+      "privacyUrl": "https://expo.dev/privacy",
+      "subprocessorsUrl": "https://expo.dev/privacy",
+      "contractVaultId": "VAULT-DPA-EXPO-001: missing",
+      "transferMechanism": "Standard Contractual Clauses (SCCs)",
+      "deletionCapability": "Automatic invalidation on `DeviceNotRegistered` push receipt; token purge API",
+      "securityAttestation": "Cloud infrastructure hosted on AWS US East",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "shoonaya-mobile/package.json:expo-notifications",
+        "shoonaya-mobile/app.json"
+      ]
+    },
+    {
+      "id": "VEND-04-FIREBASE",
+      "legalEntity": "Google LLC (Firebase)",
+      "services": [
+        "Firebase Cloud Messaging (FCM) for Android Push Delivery",
+        "Firebase Core App Registration"
+      ],
+      "dataReceived": [
+        "FCM Push Device Registration Token",
+        "Android Notification Payloads"
+      ],
+      "role": "Processor",
+      "serviceRegion": "Global / United States",
+      "dpaUrl": "https://firebase.google.com/terms/data-processing-terms",
+      "privacyUrl": "https://policies.google.com/privacy",
+      "subprocessorsUrl": "https://firebase.google.com/terms/subprocessors",
+      "contractVaultId": "VAULT-DPA-FIREBASE-001: missing",
+      "transferMechanism": "EU/UK Standard Contractual Clauses / US Data Privacy Framework",
+      "deletionCapability": "Device unregister event removes FCM token",
+      "securityAttestation": "SOC1, SOC2, SOC3, ISO 27001",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "shoonaya-mobile/package.json:@react-native-firebase/app",
+        "google-services.json"
+      ]
+    },
+    {
+      "id": "VEND-05-GOOGLE",
+      "legalEntity": "Google LLC",
+      "services": [
+        "Google OAuth Authentication",
+        "Google Play Services",
+        "Google Analytics 4 (Web Consented)",
+        "Google AdSense (Web Consented)"
+      ],
+      "dataReceived": [
+        "OAuth Email/Profile Name",
+        "Web Analytics telemetry (consented)",
+        "AdSense cookies (consented)"
+      ],
+      "role": "Independent Controller (OAuth / Ads) & Processor (GA4 under DPA)",
+      "serviceRegion": "Global / United States",
+      "dpaUrl": "https://business.safety.google/adsprocessorterms/",
+      "privacyUrl": "https://policies.google.com/privacy",
+      "subprocessorsUrl": "https://business.safety.google/adssubprocessors/",
+      "contractVaultId": "VAULT-DPA-GOOGLE-001: missing",
+      "transferMechanism": "EU/UK Standard Contractual Clauses / US Data Privacy Framework",
+      "deletionCapability": "GA4 data deletion requests via API; Cookie clearing by user",
+      "securityAttestation": "SOC2, SOC3, ISO 27001",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "src/components/privacy/WebConsentManager.tsx",
+        "package.json:google-auth-library"
+      ]
+    },
+    {
+      "id": "VEND-06-APPLE",
+      "legalEntity": "Apple Inc.",
+      "services": [
+        "Apple Sign-In (OAuth)",
+        "Apple Push Notification service (APNs)",
+        "App Store Distribution"
+      ],
+      "dataReceived": [
+        "Apple User Identifier / Relay Email",
+        "APNs Device Token",
+        "iOS Store Transaction Receipts"
+      ],
+      "role": "Independent Controller / Service Provider",
+      "serviceRegion": "United States / Global",
+      "dpaUrl": "https://www.apple.com/legal/privacy/en-ww/",
+      "privacyUrl": "https://www.apple.com/legal/privacy/",
+      "subprocessorsUrl": "https://www.apple.com/legal/privacy/",
+      "contractVaultId": "VAULT-AGR-APPLE-001: missing (Standard Apple Developer Program License Agreement)",
+      "transferMechanism": "Apple Global Privacy Policy / Standard Contractual Clauses",
+      "deletionCapability": "User revocation via Apple ID settings",
+      "securityAttestation": "ISO 27001, ISO 27018",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "shoonaya-mobile/package.json:expo-apple-authentication",
+        "ios/Shoonaya/PrivacyInfo.xcprivacy"
+      ]
+    },
+    {
+      "id": "VEND-07-RAZORPAY",
+      "legalEntity": "Razorpay Software Pvt. Ltd.",
+      "services": [
+        "Payment Processing Gateway",
+        "Subscription Recurring Billing",
+        "Statutory Invoicing"
+      ],
+      "dataReceived": [
+        "Payment Amount",
+        "Currency",
+        "Customer Name/Email/Phone",
+        "Payment Method Tokens (PCI-DSS)"
+      ],
+      "role": "Independent Controller / Regulated Payment Fiduciary under RBI guidelines",
+      "serviceRegion": "India",
+      "dpaUrl": "https://razorpay.com/terms/",
+      "privacyUrl": "https://razorpay.com/privacy/",
+      "subprocessorsUrl": "https://razorpay.com/privacy/",
+      "contractVaultId": "VAULT-AGR-RAZORPAY-001: missing (Merchant Service Agreement)",
+      "transferMechanism": "Cross-Border Commercial Transfer Agreement (India)",
+      "deletionCapability": "Statutory 7-year retention exception for financial transaction ledgers",
+      "securityAttestation": "PCI-DSS Level 1 Certified, ISO 27001",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "package.json:razorpay",
+        "src/lib/razorpay.ts",
+        "src/app/api/payment/*"
+      ]
+    },
+    {
+      "id": "VEND-08-TWILIO",
+      "legalEntity": "Twilio Inc.",
+      "services": [
+        "WhatsApp Business API for One-Time Password (OTP) Authentication"
+      ],
+      "dataReceived": [
+        "Phone Number",
+        "Transactional OTP Code"
+      ],
+      "role": "Processor",
+      "serviceRegion": "United States / Ireland",
+      "dpaUrl": "https://www.twilio.com/en-us/legal/data-protection-addendum",
+      "privacyUrl": "https://www.twilio.com/en-us/legal/privacy",
+      "subprocessorsUrl": "https://www.twilio.com/en-us/legal/sub-processors",
+      "contractVaultId": "VAULT-DPA-TWILIO-001: missing",
+      "transferMechanism": "Twilio Binding Corporate Rules (BCRs) / Standard Contractual Clauses",
+      "deletionCapability": "Transactional OTP logs deleted / anonymized within 30 days",
+      "securityAttestation": "SOC2 Type II, ISO 27001, BCR-approved",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "package.json:twilio",
+        "src/app/api/auth/phone/send-otp/route.ts"
+      ]
+    },
+    {
+      "id": "VEND-09-SARVAM",
+      "legalEntity": "Sarvam AI",
+      "services": [
+        "Indic Speech Synthesis (TTS)",
+        "Indic Language Translation & Chat Completions"
+      ],
+      "dataReceived": [
+        "Scripture snippet / text prompt for voice synthesis",
+        "Language parameters"
+      ],
+      "role": "Processor",
+      "serviceRegion": "India",
+      "dpaUrl": "https://www.sarvam.ai/terms",
+      "privacyUrl": "https://www.sarvam.ai/privacy",
+      "subprocessorsUrl": "https://www.sarvam.ai/privacy",
+      "contractVaultId": "VAULT-DPA-SARVAM-001: missing (Action required: confirm commercial enterprise terms)",
+      "transferMechanism": "Standard Data Transfer Agreement (India-UK/EU)",
+      "deletionCapability": "Ephemeral processing; zero retention of audio synthesis stream",
+      "securityAttestation": "Cloud infrastructure with encryption in transit (HTTPS/TLS 1.3)",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "src/app/api/pramana/tts/route.ts",
+        "docs/pramana_sarvam_live_proof.md"
+      ]
+    },
+    {
+      "id": "VEND-10-ONESIGNAL",
+      "legalEntity": "OneSignal Inc.",
+      "services": [
+        "Legacy Web Push Notification Delivery"
+      ],
+      "dataReceived": [
+        "OneSignal Player ID",
+        "Web Push Subscription Endpoint",
+        "Notification Title/Body"
+      ],
+      "role": "Processor",
+      "serviceRegion": "United States",
+      "dpaUrl": "https://onesignal.com/dpa",
+      "privacyUrl": "https://onesignal.com/privacy_policy",
+      "subprocessorsUrl": "https://onesignal.com/subprocessors",
+      "contractVaultId": "VAULT-DPA-ONESIGNAL-001: missing",
+      "transferMechanism": "Standard Contractual Clauses / US Data Privacy Framework",
+      "deletionCapability": "Player ID deletion via REST API",
+      "securityAttestation": "SOC2 Type II certified",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "src/components/privacy/WebConsentManager.tsx",
+        "docs/PRIVACY_SECURITY_BASELINE.json:OneSignalSDK"
+      ]
+    },
+    {
+      "id": "VEND-11-OSM",
+      "legalEntity": "OpenStreetMap Foundation (Nominatim API)",
+      "services": [
+        "Forward & Reverse Geocoding for City/Country search"
+      ],
+      "dataReceived": [
+        "Search query text (City name or coarse Coordinates)",
+        "HTTP User-Agent"
+      ],
+      "role": "Independent Service / Public Utility",
+      "serviceRegion": "United Kingdom / Global",
+      "dpaUrl": "https://wiki.osmfoundation.org/wiki/Privacy_Policy",
+      "privacyUrl": "https://wiki.osmfoundation.org/wiki/Privacy_Policy",
+      "subprocessorsUrl": "N/A",
+      "contractVaultId": "N/A (Public API fair-use policy)",
+      "transferMechanism": "UK Adequacy",
+      "deletionCapability": "Ephemeral query (no user account associated)",
+      "securityAttestation": "HTTPS / Open Source community infrastructure",
+      "reviewCadence": "Annual",
+      "evidence": [
+        "src/app/api/geocode/route.ts",
+        "src/lib/geo.ts"
+      ]
+    }
+  ]
+}

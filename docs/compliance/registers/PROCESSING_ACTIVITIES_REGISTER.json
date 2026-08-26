@@ -1,0 +1,662 @@
+{
+  "version": "2026-08-25.v1",
+  "fiduciary": {
+    "organization": "Shoonaya (Sanatan Sangam)",
+    "contact": "privacy@shoonaya.com",
+    "dpoStatus": "Not formally appointed under UK GDPR Art. 37 (under review pending scale); compliance led by Privacy Officer"
+  },
+  "activities": [
+    {
+      "id": "ROPA-01-AUTH",
+      "name": "Account Registration, Authentication & Identity Management",
+      "category": "Account & Authentication",
+      "dataSubjects": [
+        "Registered Users",
+        "Subscribers"
+      ],
+      "dataCategories": [
+        "User ID",
+        "Email",
+        "Hashed Password / OAuth Token",
+        "Phone Number (OTP)",
+        "Username",
+        "Profile Name",
+        "Avatar URL"
+      ],
+      "specialCategory": false,
+      "purpose": "Creating and authenticating user accounts, maintaining secure login sessions, and managing access rights across Web and Native platforms.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance (delivering authentication service requested by user)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user input via Signup / Login forms, Google OAuth, Apple Sign-In, Twilio WhatsApp OTP",
+      "mandatory": true,
+      "internalAccessRoles": [
+        "System Auth Worker",
+        "Support Administrator (restricted access)"
+      ],
+      "processors": [
+        "Supabase Inc. (Auth & DB)",
+        "Google LLC (OAuth)",
+        "Apple Inc. (Apple Sign-in)",
+        "Twilio Inc. (WhatsApp OTP)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`auth.users`, `public.profiles`)",
+      "retentionReference": "RET-01-AUTH",
+      "deletionPath": "Initiated via `DELETE /api/user/delete` -> 30-day cancellation window in `deleted_accounts` -> Automated hard delete via `purgeDueDeletedAccounts()`",
+      "securityControls": "Bcrypt/Argon2 password hashing, JWT Bearer tokens, HTTPS/TLS 1.3, Supabase RLS, Row-Level isolation",
+      "dpiaRiskId": "RISK-01-PROF",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/auth/*",
+        "src/types/database.ts:profiles",
+        "app/(auth)/*"
+      ]
+    },
+    {
+      "id": "ROPA-02-RELIGIOUS",
+      "name": "Spiritual Personalization & Religious Practice Profiling",
+      "category": "Religious & Spiritual Data",
+      "dataSubjects": [
+        "Registered Users"
+      ],
+      "dataCategories": [
+        "Tradition (Sampradaya)",
+        "Gotra",
+        "Ishta Devata",
+        "Rashi",
+        "Nakshatra",
+        "Deity Preferences",
+        "Spiritual Goals",
+        "Karma/Seva Points"
+      ],
+      "specialCategory": true,
+      "purpose": "Personalizing the Panchang calendar, custom ritual reminders, sadhana suggestions, and tradition-specific observances (e.g. Vaishnava vs Smartha tithis).",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance / Art. 6(1)(a) Consent",
+      "proposedArticle9Condition": "Art. 9(2)(a) Explicit Consent (special category religious data under UK/EU GDPR)",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user input during Onboarding questionnaire or Settings / Personal Details screens",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Panchang Engine Worker",
+        "Personalization Query Service"
+      ],
+      "processors": [
+        "Supabase Inc. (PostgreSQL Storage)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.profiles`, `public.user_settings`)",
+      "retentionReference": "RET-02-REL",
+      "deletionPath": "Directly editable/clearable in UI by user (setting fields to null) or cascading purge on Account Deletion",
+      "securityControls": "Supabase RLS locking base table from anonymous access; authenticated self-access only; column-level isolation",
+      "dpiaRiskId": "RISK-02-REL",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/lib/onboarding-contract.ts",
+        "app/settings.tsx",
+        "src/app/api/profile/route.ts"
+      ]
+    },
+    {
+      "id": "ROPA-03-BIRTH-JYOTISH",
+      "name": "Astrological Birth Chart (Kundali) & Kul Family Lineage Processing",
+      "category": "DOB, Birth & Family Data",
+      "dataSubjects": [
+        "Registered Users",
+        "Guests",
+        "Family Members (entered by user)"
+      ],
+      "dataCategories": [
+        "Date of Birth",
+        "Time of Birth",
+        "Place of Birth (City/Country)",
+        "Birthplace Latitude & Longitude",
+        "Family Lineage (Kul Vansh)"
+      ],
+      "specialCategory": false,
+      "purpose": "Calculating astrological chart positions (Kundali, Dasha, Bhavas), identifying Vedic day boundaries, and tracking ancestral lineage.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance (user-requested chart calculation)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user entry via Kundali generator, Kul Vansh form, or Guest Chart calculator",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Jyotish Engine Serverless Worker"
+      ],
+      "processors": [
+        "Supabase Inc. (Storage)",
+        "In-process Astronomy Engine (Astronomia / Astronomy-Engine)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.birth_profiles`, `public.profiles`), Client LocalStorage for ephemeral guest sessions",
+      "retentionReference": "RET-03-BIRTH",
+      "deletionPath": "User deletion of saved birth profile row, profile field reset, or full account deletion cascade",
+      "securityControls": "Server-side coordinate truncation, Age Guidance Notice display, RLS isolation",
+      "dpiaRiskId": "RISK-03-AGE",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/jyotish/chart/route.ts",
+        "src/lib/compliance/age-guidance.ts",
+        "src/app/(main)/kul/*"
+      ]
+    },
+    {
+      "id": "ROPA-04-LOCATION",
+      "name": "Location-Aware Astronomical & Civil Time Calculations",
+      "category": "Location Data",
+      "dataSubjects": [
+        "Registered Users",
+        "Guests"
+      ],
+      "dataCategories": [
+        "Foreground Device Coordinates (Latitude, Longitude)",
+        "Saved Home Coordinates",
+        "Timezone Identifier",
+        "City / State / Country"
+      ],
+      "specialCategory": false,
+      "purpose": "Computing local solar sunrise, sunset, moonrise, and local civil tithi transitions necessary for ritual timing.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance / Art. 6(1)(a) Consent (OS Permission)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Browser Geolocation API / Native Expo Location (`requestForegroundPermissionsAsync`), or manual city search",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Panchang Engine",
+        "Geocoding Service"
+      ],
+      "processors": [
+        "Supabase Inc. (Home Coords)",
+        "OpenStreetMap / Nominatim (Geocoding lookup)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Transient device memory, client storage (`AsyncStorage`/`localStorage`), `public.profiles` (`home_latitude`, `home_longitude`)",
+      "retentionReference": "RET-04-LOC",
+      "deletionPath": "Revoke location permission in device settings, clear home location in profile, or account deletion",
+      "securityControls": "Foreground-only permission prompt (zero background location tracking), TLS 1.3 in transit",
+      "dpiaRiskId": "RISK-05-LOC",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/lib/geo.ts",
+        "src/app/api/geocode/route.ts",
+        "shoonaya-mobile/lib/location.ts"
+      ]
+    },
+    {
+      "id": "ROPA-05-MOOD-SANKALPA",
+      "name": "Spiritual Growth, Mood Journaling & Intention (Sankalpa) Tracking",
+      "category": "Journal & Mood Data",
+      "dataSubjects": [
+        "Registered Users"
+      ],
+      "dataCategories": [
+        "Mood Ratings",
+        "Energy Levels",
+        "Sankalpa Intention Text",
+        "Target Fulfillment Date",
+        "Daily Spiritual Reflection Notes"
+      ],
+      "specialCategory": false,
+      "purpose": "Enabling users to record personal reflections, commit to spiritual intentions (sankalpas), and monitor emotional/spiritual wellbeing over time.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user input in Mood, Sankalpa, and Reflection screens",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "User-Scoped Query Handler"
+      ],
+      "processors": [
+        "Supabase Inc."
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.mood_logs`, `public.sankalpas`, `public.daily_reflections`)",
+      "retentionReference": "RET-05-MOOD",
+      "deletionPath": "Direct item deletion via UI, or cascading account deletion purge",
+      "securityControls": "Strict RLS self-access policies (`auth.uid() = user_id`)",
+      "dpiaRiskId": "RISK-06-MOOD",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/(main)/mood/*",
+        "src/app/(main)/sankalpa/*",
+        "components/home/SankalpaCard.tsx"
+      ]
+    },
+    {
+      "id": "ROPA-06-PRACTICE-PROGRESS",
+      "name": "Sadhana, Japa Counter, Pathshala Learning & Quiz History",
+      "category": "Practice & Learning Progress",
+      "dataSubjects": [
+        "Registered Users"
+      ],
+      "dataCategories": [
+        "Japa Beads Chanted",
+        "Mantra Identifiers",
+        "Chanting Duration",
+        "Pathshala Lesson Completion",
+        "Quiz Scores",
+        "Vrat Observances",
+        "Streaks"
+      ],
+      "specialCategory": false,
+      "purpose": "Maintaining digital japa bead counting records, tracking curriculum progress in Pathshala, recording completed vrats, and maintaining spiritual practice streaks.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user interaction with Japa bead counter, Pathshala modules, and Vrat observation buttons",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Sadhana Engine",
+        "Pathshala Engine"
+      ],
+      "processors": [
+        "Supabase Inc."
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.japa_sessions`, `public.pathshala_progress`, `public.quiz_attempts`, `public.vrat_observations`, `public.user_streaks`)",
+      "retentionReference": "RET-06-PRAC",
+      "deletionPath": "Account deletion cascade",
+      "securityControls": "Authenticated route verification, RLS user-scoping",
+      "dpiaRiskId": "RISK-09-CACHE",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/(main)/japa/*",
+        "src/app/(main)/pathshala/*",
+        "app/vrat.tsx"
+      ]
+    },
+    {
+      "id": "ROPA-07-COMMUNITY-MANDALI",
+      "name": "Mandali Community Feed, Interaction & Trust & Safety Moderation",
+      "category": "UGC & Community Safety",
+      "dataSubjects": [
+        "Community Participants",
+        "Reported Users"
+      ],
+      "dataCategories": [
+        "Post Text",
+        "Comment Text",
+        "Attached Image URLs",
+        "Content Reports",
+        "Block List Records",
+        "Mute List Records",
+        "Moderator Action Logs"
+      ],
+      "specialCategory": false,
+      "purpose": "Providing a moderated spiritual community forum for discussions, satsang, questions, and safety enforcement (blocking, reporting, filtering toxic content).",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance & Art. 6(1)(f) Legitimate Interests (protecting platform safety and preventing abuse)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "User submitted posts, comments, reactions, and report/block actions",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Community Moderator",
+        "Trust & Safety Lead",
+        "Automated Content Filter"
+      ],
+      "processors": [
+        "Supabase Inc."
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.posts`, `public.post_comments`, `public.content_reports`, `public.user_blocked_profiles`, `public.user_muted_profiles`, `public.moderation_logs`)",
+      "retentionReference": "RET-07-UGC",
+      "deletionPath": "Author delete of post/comment; safety reports and moderation audit records preserved per safety retention policy",
+      "securityControls": "Server-side rate limiting by IP/auth, input length constraints, symmetric blocking filter, privileged moderation RPCs",
+      "dpiaRiskId": "RISK-08-UGC",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/mandali/*",
+        "src/lib/user-safety.ts",
+        "components/safety/ContentSafetyMenu.tsx"
+      ]
+    },
+    {
+      "id": "ROPA-08-AI-PRAMANA",
+      "name": "Pramana AI Dharma Guidance, Scripture QA & Speech Synthesis (TTS)",
+      "category": "AI Prompts & Generated Content",
+      "dataSubjects": [
+        "Users querying Pramana AI"
+      ],
+      "dataCategories": [
+        "User Query Text",
+        "Scriptural Context Snippets",
+        "Generated Text Answers",
+        "Synthesized Audio Buffer",
+        "Model Parameters"
+      ],
+      "specialCategory": false,
+      "purpose": "Answering theological and ritual questions using verified canonical scripture retrieval (RAG) and generating authentic Indic language audio recitation.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct user input in Ask Pramana search bar / Audio player",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "AI Gateway Service"
+      ],
+      "processors": [
+        "Sarvam AI (Inference & TTS)",
+        "Supabase Inc. (Vector Embeddings)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Ephemeral serverless memory, streaming response; vector embeddings in PostgreSQL pgvector. Zero persistent user prompt logging in DB.",
+      "retentionReference": "RET-08-AI",
+      "deletionPath": "Transient stream discarded after delivery; cache TTL rotation",
+      "securityControls": "Prompt sanitization, strict RAG grounding in verified scripture, rate limiting, no training on user prompts under API agreement",
+      "dpiaRiskId": "RISK-07-AI",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/pramana/*",
+        "packages/pramana-serve/*",
+        "python/ai_pipeline/*"
+      ]
+    },
+    {
+      "id": "ROPA-09-NOTIFICATIONS",
+      "name": "Ritual Reminders, Daily Panchang Push & Quiet Hours Delivery",
+      "category": "Notifications & Device Tokens",
+      "dataSubjects": [
+        "Registered & Guest App Users"
+      ],
+      "dataCategories": [
+        "Expo Push Token",
+        "FCM Device Token",
+        "APNs Token",
+        "OneSignal Player ID",
+        "Per-Category Notification Preferences",
+        "Quiet Hours Times"
+      ],
+      "specialCategory": false,
+      "purpose": "Dispatching timely reminder notifications for upcoming vrats, daily sunrise tithis, and auspicious muhurtas while respecting user quiet hours.",
+      "proposedArticle6Basis": "Art. 6(1)(a) Consent (OS Notification Permission) & Art. 6(1)(b) Contract",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "OS Push Permission dialog, Notification Preferences screen",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Notification Dispatcher Cron"
+      ],
+      "processors": [
+        "Expo Push Service (650 Industries)",
+        "Google LLC (Firebase Cloud Messaging)",
+        "Apple Inc. (APNs)",
+        "OneSignal Inc."
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.push_tokens`, `public.notification_preferences`, `public.notification_deliveries`)",
+      "retentionReference": "RET-09-NOTIF",
+      "deletionPath": "Invalid token deletion on `DeviceNotRegistered` error, sign-out token wipe, or user preference toggle off",
+      "securityControls": "Token isolation per user ID, quiet-hours suppression engine, no sensitive spiritual text in lock-screen payload summaries",
+      "dpiaRiskId": "RISK-12-PUSH",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/notifications/*",
+        "shoonaya-mobile/app/settings.tsx",
+        "package.json:expo-notifications"
+      ]
+    },
+    {
+      "id": "ROPA-10-ANALYTICS-ADS",
+      "name": "Product Diagnostics, Performance Telemetry & Consented Web Advertising",
+      "category": "Analytics, Diagnostics & Ads",
+      "dataSubjects": [
+        "Website Visitors",
+        "App Users"
+      ],
+      "dataCategories": [
+        "Consent Preferences Cookie",
+        "Page Views",
+        "App Load Errors",
+        "Client Platform / OS",
+        "AdSense Impression Identifiers (Web Consented Only)"
+      ],
+      "specialCategory": false,
+      "purpose": "Monitoring platform performance, identifying rendering crashes, and serving non-personalized / personalized web advertisements only upon explicit consent.",
+      "proposedArticle6Basis": "Art. 6(1)(a) Consent (PECR / ePrivacy for Web Analytics & Ads) & Art. 6(1)(f) Legitimate Interests (essential crash diagnostics)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Web Consent Manager banner, browser navigation events, Vercel edge telemetry",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Web Frontend Service",
+        "Analytics Platform"
+      ],
+      "processors": [
+        "Google LLC (GA4, AdSense)",
+        "Vercel Inc. (Speed Insights, Analytics)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Client cookie (`shoonaya_consent_v1`), Google Cloud / Vercel cloud analytics dashboards. Native Firebase Analytics is removed.",
+      "retentionReference": "RET-10-ANALYTICS",
+      "deletionPath": "Cookie preference reset in footer; provider-configured data retention periods (e.g. 14 months in GA4)",
+      "securityControls": "Prior-consent gating via `WebConsentManager.tsx`, zero ad SDKs in Native mobile build, IP anonymization enabled",
+      "dpiaRiskId": "RISK-11-VENDOR",
+      "platforms": [
+        "Web PWA"
+      ],
+      "evidence": [
+        "src/components/privacy/WebConsentManager.tsx",
+        "src/lib/web-consent.ts",
+        "app.json:ios.privacyManifests"
+      ]
+    },
+    {
+      "id": "ROPA-11-MEDIA-UPLOADS",
+      "name": "User Media Uploads, Profile Avatars & Shareable Festival Cards",
+      "category": "User Uploads & Media",
+      "dataSubjects": [
+        "Registered Users"
+      ],
+      "dataCategories": [
+        "Avatar Images",
+        "Mandali Post Attachments",
+        "Generated Festival Share Graphics"
+      ],
+      "specialCategory": false,
+      "purpose": "Allowing users to customize their profile picture, share photographic community posts, and generate personalized spiritual greeting cards.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Direct file selection via device image picker",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Storage Service API"
+      ],
+      "processors": [
+        "Supabase Inc. (Storage Buckets)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase Storage S3 buckets (`avatars`, `mandali-uploads`, `share-cards`)",
+      "retentionReference": "RET-11-MEDIA",
+      "deletionPath": "Replaced avatars immediately deleted from bucket; account deletion purges all owned storage assets",
+      "securityControls": "MIME-type validation, file size limits (5MB), randomized file naming to prevent enumeration",
+      "dpiaRiskId": "RISK-08-UGC",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/profile/upload/route.ts",
+        "package.json:sharp",
+        "shoonaya-mobile/package.json:expo-image-picker"
+      ]
+    },
+    {
+      "id": "ROPA-12-PAYMENTS",
+      "name": "Premium Subscriptions, Temple Seva Donations & Financial Invoicing",
+      "category": "Payments & Subscriptions",
+      "dataSubjects": [
+        "Paying Customers",
+        "Donors"
+      ],
+      "dataCategories": [
+        "Payment Order ID",
+        "Transaction ID",
+        "Amount",
+        "Currency",
+        "Subscription Tier",
+        "Payment Signature",
+        "Billing Name/Email"
+      ],
+      "specialCategory": false,
+      "purpose": "Processing premium membership subscriptions, facilitating voluntary temple seva donations, and generating statutory tax receipts.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract Performance & Art. 6(1)(c) Legal Obligation (statutory tax and accounting laws)",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Razorpay checkout modal / Store In-App Purchases",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Billing Gateway Webhook Handler",
+        "Financial Audit Role"
+      ],
+      "processors": [
+        "Razorpay Software Pvt. Ltd.",
+        "Apple Inc. (IAP if enabled)",
+        "Google LLC (Play Billing if enabled)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Supabase PostgreSQL (`public.subscriptions`, `public.payment_orders`, `public.transactions`). Card numbers handled solely by Razorpay (PCI-DSS compliant).",
+      "retentionReference": "RET-12-PAY",
+      "deletionPath": "Statutory legal retention hold (exempt from immediate user erasure under UK/India financial record laws; retained 7 years)",
+      "securityControls": "HMAC signature verification on webhooks, PCI-DSS tokenization, TLS 1.3",
+      "dpiaRiskId": "RISK-10-RET",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/payment/*",
+        "src/lib/razorpay.ts",
+        "package.json:razorpay"
+      ]
+    },
+    {
+      "id": "ROPA-13-GUEST-DATA",
+      "name": "Guest Panchang Exploration & Ephemeral Chart Calculation",
+      "category": "Guest Mode Records",
+      "dataSubjects": [
+        "Unauthenticated Visitors"
+      ],
+      "dataCategories": [
+        "Session Token",
+        "Guest Birth Coordinates",
+        "Guest Date/Time of Birth",
+        "Ephemeral Preferences"
+      ],
+      "specialCategory": false,
+      "purpose": "Permitting first-time users to view current panchang and calculate sample astrological charts without requiring prior account creation.",
+      "proposedArticle6Basis": "Art. 6(1)(b) Contract / Art. 6(1)(f) Legitimate Interests",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Guest calculation form inputs",
+      "mandatory": false,
+      "internalAccessRoles": [
+        "Panchang / Jyotish Engine"
+      ],
+      "processors": [
+        "Supabase Inc. (Ephemeral DB rows if saved)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Client `localStorage` / `AsyncStorage`, temporary rows in `public.birth_profiles` with `session_token`",
+      "retentionReference": "RET-13-GUEST",
+      "deletionPath": "Cleared on browser storage clear; server-side guest records subject to TTL cleanup job",
+      "securityControls": "No linkage to identity, token expiration",
+      "dpiaRiskId": "RISK-03-AGE",
+      "platforms": [
+        "Web PWA",
+        "iOS Native",
+        "Android Native"
+      ],
+      "evidence": [
+        "src/app/api/jyotish/chart/route.ts",
+        "src/lib/session.ts"
+      ]
+    },
+    {
+      "id": "ROPA-14-LOGS-ADMIN",
+      "name": "System Audit Logs, Infrastructure Backups & Administrative Access",
+      "category": "Logs & Infrastructure",
+      "dataSubjects": [
+        "All Users",
+        "System Administrators"
+      ],
+      "dataCategories": [
+        "Admin User ID",
+        "Action Timestamp",
+        "API Endpoint",
+        "HTTP Status Code",
+        "Hashed IP Address",
+        "Cron Job Execution Status"
+      ],
+      "specialCategory": false,
+      "purpose": "Ensuring server resilience, automated calendar precomputation, disaster recovery, unauthorized intrusion detection, and system maintenance.",
+      "proposedArticle6Basis": "Art. 6(1)(f) Legitimate Interests (securing IT infrastructure) & Art. 6(1)(c) Legal Obligation",
+      "proposedArticle9Condition": "N/A",
+      "decisionStatus": "PROPOSED_COUNSEL_REVIEW",
+      "collectionSource": "Serverless execution logs, PostgreSQL WAL logs, Cron job runners",
+      "mandatory": true,
+      "internalAccessRoles": [
+        "System DevOps Lead",
+        "Security Auditor"
+      ],
+      "processors": [
+        "Vercel Inc. (Hosting & Edge Logs)",
+        "Supabase Inc. (Database Logs & Backups)",
+        "GitHub Inc. (CI/CD)"
+      ],
+      "internationalTransfers": true,
+      "storageLocation": "Vercel Log Streams, Supabase automated backup snapshots, GitHub repository",
+      "retentionReference": "RET-14-LOGS",
+      "deletionPath": "Automatic rolling expiration (7-30 days by provider plan)",
+      "securityControls": "CRON_SECRET bearer authorization, MFA for administrative dashboards, immutable write-once audit logs",
+      "dpiaRiskId": "RISK-11-VENDOR",
+      "platforms": [
+        "Web PWA",
+        "Backend Infrastructure"
+      ],
+      "evidence": [
+        "src/app/api/admin/*",
+        "src/lib/admin.ts",
+        "scripts/shadow/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "version": "2026-08-25.v1",
+  "destructiveJobsEnabled": false,
+  "status": "DECISION_REQUIRED",
+  "governanceNote": "All specific retention periods remain PENDING_DECISION by Founder and Counsel. Destructive automated deletion jobs are disabled in production until approval.",
+  "schedules": [
+    {
+      "id": "RET-01-AUTH",
+      "category": "Account and Authentication Records",
+      "stores": [
+        "auth.users",
+        "public.profiles",
+        "public.deleted_accounts"
+      ],
+      "activeRetention": "Duration of active account membership",
+      "deletionTrigger": "User-initiated account deletion (`DELETE /api/user/delete`)",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Automated purge via `purgeDueDeletedAccounts()` removing auth.users and cascading tables",
+      "proposedPeriod": "Active + 30-day grace period",
+      "statutoryException": "None",
+      "owner": "Account Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-02-REL",
+      "category": "Religious and Spiritual Profile Personalization",
+      "stores": [
+        "public.profiles (tradition, gotra, devata)",
+        "public.user_settings"
+      ],
+      "activeRetention": "Duration of active consent / account",
+      "deletionTrigger": "User profile edit (clearing fields), consent toggle off, or account deletion",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Set columns to NULL or cascading row purge",
+      "proposedPeriod": "Immediate on field clearing; 30-day grace on account delete",
+      "statutoryException": "None",
+      "owner": "Privacy Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-03-BIRTH",
+      "category": "Astrological Birth Profiles & Kundali Data",
+      "stores": [
+        "public.birth_profiles",
+        "client localStorage"
+      ],
+      "activeRetention": "Duration of active account or manual user deletion",
+      "deletionTrigger": "User deletion of birth profile row, or account deletion purge",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Hard delete of `birth_profiles` row",
+      "proposedPeriod": "User-directed; 30-day grace on account delete",
+      "statutoryException": "None",
+      "owner": "Jyotish Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-04-LOC",
+      "category": "Location Data and Timezone Coordinates",
+      "stores": [
+        "Transient device memory",
+        "public.profiles (home_latitude, home_longitude)"
+      ],
+      "activeRetention": "Coarse home coordinates retained while account active; device GPS in memory only",
+      "deletionTrigger": "Permission revocation, home location reset, or account deletion",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Set coordinates to NULL or account deletion cascade",
+      "proposedPeriod": "Transient / User-managed",
+      "statutoryException": "None",
+      "owner": "Location Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-05-MOOD",
+      "category": "Mood Logs, Reflections & Sankalpas",
+      "stores": [
+        "public.mood_logs",
+        "public.sankalpas",
+        "public.daily_reflections"
+      ],
+      "activeRetention": "Duration of active account or individual item deletion",
+      "deletionTrigger": "User deletion of entry or account deletion purge",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Hard delete of table rows",
+      "proposedPeriod": "User-directed; 30-day grace on account delete",
+      "statutoryException": "None",
+      "owner": "Journal Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-06-PRAC",
+      "category": "Japa, Pathshala & Quiz Progress History",
+      "stores": [
+        "public.japa_sessions",
+        "public.pathshala_progress",
+        "public.quiz_attempts",
+        "public.vrat_observations"
+      ],
+      "activeRetention": "Duration of active account",
+      "deletionTrigger": "Account deletion purge",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Cascading row deletion",
+      "proposedPeriod": "Active account lifecycle",
+      "statutoryException": "None",
+      "owner": "Sadhana Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-07-UGC",
+      "category": "Community Posts, Comments & Safety Reports",
+      "stores": [
+        "public.posts",
+        "public.post_comments",
+        "public.content_reports",
+        "public.moderation_logs"
+      ],
+      "activeRetention": "Duration of active post or account; safety reports retained for abuse prevention",
+      "deletionTrigger": "Author delete of post/comment; account deletion",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "Content deleted/anonymized; content reports preserved with pseudonymized IDs",
+      "proposedPeriod": "Content: User-directed; Safety Reports: 2 years for trust & safety audit",
+      "statutoryException": "Abuse prevention and legal claims defense exception",
+      "owner": "Trust & Safety",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-08-AI",
+      "category": "Ask Pramana Queries & TTS Synthesis",
+      "stores": [
+        "Serverless execution memory",
+        "Transient edge response"
+      ],
+      "activeRetention": "In-flight request duration (0 days persistent storage)",
+      "deletionTrigger": "Stream completion",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Memory garbage collection",
+      "proposedPeriod": "Zero persistent storage",
+      "statutoryException": "None",
+      "owner": "AI Platform",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-09-NOTIF",
+      "category": "Device Push Tokens & Notification History",
+      "stores": [
+        "public.push_tokens",
+        "public.notifications",
+        "public.notification_deliveries"
+      ],
+      "activeRetention": "Active device registration; delivery logs retained for delivery debugging",
+      "deletionTrigger": "Token invalidation (`DeviceNotRegistered`), sign-out, or account delete",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Immediate deletion of stale token; delivery receipts rotated",
+      "proposedPeriod": "Tokens: Active; Delivery Logs: 30 days",
+      "statutoryException": "None",
+      "owner": "Notification Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-10-ANALYTICS",
+      "category": "Web Analytics & Consent Cookies",
+      "stores": [
+        "Client cookies (`shoonaya_consent_v1`)",
+        "Google Analytics 4"
+      ],
+      "activeRetention": "12 months for consent cookie; 14 months for GA4 telemetry",
+      "deletionTrigger": "Cookie reset by user or automated GA4 expiration",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Cookie overwrite / Google Cloud automated retention expiration",
+      "proposedPeriod": "Consent Cookie: 12 months; Analytics: 14 months",
+      "statutoryException": "None",
+      "owner": "Web Platform",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-11-MEDIA",
+      "category": "User Uploaded Media & Avatars",
+      "stores": [
+        "Supabase Storage S3 buckets (`avatars`, `mandali-uploads`, `share-cards`)"
+      ],
+      "activeRetention": "Active account duration or until replaced",
+      "deletionTrigger": "Avatar replacement or account deletion purge",
+      "cancellationCoolOffDays": 30,
+      "hardDeleteAction": "S3 object delete API call via `supabase.storage.from(...).remove(...)`",
+      "proposedPeriod": "Active + 30-day grace period",
+      "statutoryException": "None",
+      "owner": "Storage Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-12-PAY",
+      "category": "Payment Invoices, Orders & Seva Records",
+      "stores": [
+        "public.subscriptions",
+        "public.payment_orders",
+        "public.transactions"
+      ],
+      "activeRetention": "7 years from transaction date",
+      "deletionTrigger": "Statutory financial audit period expiration",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Financial ledger archive / anonymization",
+      "proposedPeriod": "7 years (Statutory financial hold under UK HMRC and India Income Tax Act)",
+      "statutoryException": "UK Companies Act & HMRC tax compliance legal obligation (Art. 6(1)(c))",
+      "owner": "Finance & Legal",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-13-GUEST",
+      "category": "Guest Mode Session Records",
+      "stores": [
+        "Client LocalStorage",
+        "public.birth_profiles (guest session rows)"
+      ],
+      "activeRetention": "30 days from creation",
+      "deletionTrigger": "Session expiration or automated cleanup job",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Automated purge of guest birth_profiles older than 30 days",
+      "proposedPeriod": "30 days TTL",
+      "statutoryException": "None",
+      "owner": "Guest Lifecycle",
+      "status": "pending_approval"
+    },
+    {
+      "id": "RET-14-LOGS",
+      "category": "System Logs, Cloud Backups & Administrative Audits",
+      "stores": [
+        "Vercel Log Streams",
+        "Supabase automated daily backups"
+      ],
+      "activeRetention": "Logs: 7-30 days; Backups: 30 days rolling backup snapshots",
+      "deletionTrigger": "Cloud provider automated rotation schedule",
+      "cancellationCoolOffDays": 0,
+      "hardDeleteAction": "Automated backup overwrite by cloud provider infrastructure",
+      "proposedPeriod": "Logs: 30 days; Backups: 30 days rolling rotation",
+      "statutoryException": "Security logging & disaster recovery",
+      "owner": "Infrastructure",
+      "status": "pending_approval"
+    }
+  ]
+}

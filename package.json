@@ -63,6 +63,7 @@
     "verify:naraka-shadow": "bash scripts/shadow/verify-naraka-approval-shadow.sh",
     "verify:native-observance-series-contract": "node scripts/verify-native-observance-series-contract.mjs",
     "baseline:privacy": "npx tsx scripts/generate-privacy-security-baseline.ts",
+    "generate:compliance-manifest": "node scripts/generate-compliance-evidence-manifest.mjs",
     "test:baseline:privacy": "npx tsx --test scripts/generate-privacy-security-baseline.test.ts",
     "test:web-consent": "npx tsx --test src/lib/web-consent.test.ts",
     "test:public-sources": "npx tsx --test src/lib/public-source-disclosures.test.ts",

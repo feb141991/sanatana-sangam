@@ -1,0 +1,157 @@
+{
+  "version": "2026-08-25.v1",
+  "generatedAt": "2026-08-25T00:00:00Z",
+  "totalArtifacts": 30,
+  "artifacts": [
+    {
+      "path": "docs/compliance/assessments/AI_AND_AUTOMATED_GUIDANCE_ASSESSMENT.md",
+      "sha256": "76c4ada238957394ccad137c2b46050a2f383f92a72076c0c5314c8f774a0cba",
+      "bytes": 1264
+    },
+    {
+      "path": "docs/compliance/assessments/CHILDREN_AND_AGE_DESIGN_ASSESSMENT.md",
+      "sha256": "567c972e9b82e1bc3707b61904398e372ba9fa07483fdf13b29f6b287c558d39",
+      "bytes": 3034
+    },
+    {
+      "path": "docs/compliance/assessments/DATA_PROTECTION_IMPACT_ASSESSMENT.md",
+      "sha256": "08057c8d5389cc5e3d43eb4da3bdf8188dda9edd9ffaefb4c2aef89d36f8f96d",
+      "bytes": 6596
+    },
+    {
+      "path": "docs/compliance/assessments/RELIGIOUS_DATA_ASSESSMENT.md",
+      "sha256": "c83af01fb704a594e4ceb949a5af026c8951920660e3d0e0ee460c5de5ad2120",
+      "bytes": 1590
+    },
+    {
+      "path": "docs/compliance/assessments/UGC_AND_COMMUNITY_SAFETY_ASSESSMENT.md",
+      "sha256": "c9cb38664fd9c1e3e9637e60042192f55d57f5c7df4e77d6c969a16ef8851c9a",
+      "bytes": 1674
+    },
+    {
+      "path": "docs/compliance/COMPLIANCE_RECORDS_INDEX.md",
+      "sha256": "69833f9d8d44be81c22a7c53c8f62ea609fa1b04b21421e418cc85a6e32fe993",
+      "bytes": 8149
+    },
+    {
+      "path": "docs/compliance/evidence/ENGINEERING_CONTROL_MATRIX.md",
+      "sha256": "0e3b531b107481ae8b775ba01dba94571bb06249b8a410144cb5432ff827b5f8",
+      "bytes": 2976
+    },
+    {
+      "path": "docs/compliance/procedures/APPROVAL_RECORD_20260825_FOUNDER_SOPS.md",
+      "sha256": "1c3eddc6f6239165c4355e6a95c12d6edc100547af8154965089458e125bf208",
+      "bytes": 2440
+    },
+    {
+      "path": "docs/compliance/procedures/APPROVAL_RECORD_20260825_STORE_DECLARATIONS.md",
+      "sha256": "ae4460d98a78c6059d1a1b5fbeb1eb7090caa750890807e255cbda97ed2030f3",
+      "bytes": 1308
+    },
+    {
+      "path": "docs/compliance/procedures/APPROVAL_RECORD_20260825_VENDOR_DPAS.md",
+      "sha256": "0e88870e7d12f3e698f5593ad45d98cb3b64393861d35109dee40c1ffc479b21",
+      "bytes": 1938
+    },
+    {
+      "path": "docs/compliance/procedures/DATA_INCIDENT_RESPONSE_PLAN.md",
+      "sha256": "db3b0c95ea961b1c786f44f48702813591101ed8ea78a3979dcb64d85e89e1e8",
+      "bytes": 2791
+    },
+    {
+      "path": "docs/compliance/procedures/DATA_SUBJECT_REQUEST_PROCEDURE.md",
+      "sha256": "54cb18bc6e5c9ae79b8d99154ed1369eb5538142c9dc3ac4e805630bc877891e",
+      "bytes": 1914
+    },
+    {
+      "path": "docs/compliance/procedures/LEGAL_DOCUMENT_CHANGE_PROCEDURE.md",
+      "sha256": "c5799c9c1e5fc45718e814e15b32210b79778f9ba4247e55874b13342e62d837",
+      "bytes": 1391
+    },
+    {
+      "path": "docs/compliance/procedures/RETENTION_AND_DELETION_PROCEDURE.md",
+      "sha256": "1b150b6aa2921504cb3b8fce1b721a42a8092edea0b87ab08125334c7d2c5279",
+      "bytes": 3779
+    },
+    {
+      "path": "docs/compliance/procedures/UGC_MODERATION_AND_APPEALS_PROCEDURE.md",
+      "sha256": "c92acfb1da79bab6fbe59b63ee44c6bcf79b164b97c2ba1466f1602cd8b20b27",
+      "bytes": 1702
+    },
+    {
+      "path": "docs/compliance/procedures/VENDOR_ONBOARDING_AND_REVIEW_PROCEDURE.md",
+      "sha256": "efc5a7fd71ca33d027c399784e21bf117df43f4bcbe3b796647d5f91b5e5dab3",
+      "bytes": 1273
+    },
+    {
+      "path": "docs/compliance/README.md",
+      "sha256": "b03943f730783d633cd04941e4ccb29ab992d2c19ea5c8465a703c45abdc34eb",
+      "bytes": 3247
+    },
+    {
+      "path": "docs/compliance/registers/CONSENT_AND_LEGAL_VERSION_REGISTER.md",
+      "sha256": "d20fca22f48d46ec799eca6bc6165ee90d5e4ce3d0b6a8724119f143dca614a3",
+      "bytes": 1896
+    },
+    {
+      "path": "docs/compliance/registers/INTERNATIONAL_TRANSFERS_REGISTER.md",
+      "sha256": "4da523887514740edf8674102aea850fe301e6477fe4ddeb8b6d681a8388558d",
+      "bytes": 3598
+    },
+    {
+      "path": "docs/compliance/registers/PROCESSING_ACTIVITIES_REGISTER.json",
+      "sha256": "dca5d82d6f33d87d61a9748f760b75270420402d38489a20e1037d1fbe797d28",
+      "bytes": 26928
+    },
+    {
+      "path": "docs/compliance/registers/PROCESSING_ACTIVITIES_REGISTER.md",
+      "sha256": "eb665ef457ed14c594e80a33284d10546ad4545eaeb82b90e4e57e321f91c42c",
+      "bytes": 23879
+    },
+    {
+      "path": "docs/compliance/registers/RETENTION_SCHEDULE.json",
+      "sha256": "ea7ab4295d361a887a69205ee6093de23e0494fbd5dc74a0e4f8cbf9ce806b83",
+      "bytes": 9766
+    },
+    {
+      "path": "docs/compliance/registers/RETENTION_SCHEDULE.md",
+      "sha256": "fc818a29a467e12f5134efd55425b922fc46e1b7d5c4d1aab216411ce0b9627e",
+      "bytes": 3627
+    },
+    {
+      "path": "docs/compliance/registers/STORE_DECLARATION_MATRIX.md",
+      "sha256": "bcbdd18dec57f88926785673109adea94be3462b4a646f408ca9e59a2e978d9a",
+      "bytes": 4410
+    },
+    {
+      "path": "docs/compliance/registers/VENDOR_PROCESSOR_REGISTER.json",
+      "sha256": "1d1c4e417653d667fe2f18b0e1bd7fe43551c647dce0695de63718b57fe8757f",
+      "bytes": 12665
+    },
+    {
+      "path": "docs/compliance/registers/VENDOR_PROCESSOR_REGISTER.md",
+      "sha256": "37c7962cc9203106e9a71fe7dabbc525d566d4d7e3d64dba58ec6692240e9c55",
+      "bytes": 15277
+    },
+    {
+      "path": "docs/compliance/templates/DATA_SUBJECT_REQUEST_TEMPLATE.md",
+      "sha256": "eb90d9a6a70f0ac897bb22ed8e79fcee852b6f8733566b114a73386700ee73b3",
+      "bytes": 1002
+    },
+    {
+      "path": "docs/compliance/templates/INCIDENT_RECORD_TEMPLATE.md",
+      "sha256": "6e19410df232aec0535595256f9cd1ccef8dfb0d1a1f506d44a6b22c9e818b1e",
+      "bytes": 1236
+    },
+    {
+      "path": "docs/compliance/templates/LEGAL_APPROVAL_RECORD_TEMPLATE.md",
+      "sha256": "f04146538d23e60985de7178dc2ce5534e8137ef9ad0c3f7a01698de7b1c5908",
+      "bytes": 815
+    },
+    {
+      "path": "docs/compliance/templates/VENDOR_REVIEW_TEMPLATE.md",
+      "sha256": "b26f4ae95658babcc8cd5acf86cbbcbc1b419270e9a7005a7c73e203923ce2f7",
+      "bytes": 1107
+    }
+  ]
+}

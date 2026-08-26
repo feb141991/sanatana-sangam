@@ -164,6 +164,7 @@ check('compliance records index and structured registers exist and match schema'
   const vendors = JSON.parse(read('docs/compliance/registers/VENDOR_PROCESSOR_REGISTER.json'));
   assert.equal(vendors.vendors.length, 11);
   assert.ok(vendors.vendors.every((v) => v.id && v.legalEntity && v.role));
+  assert.equal(vendors.verificationStatus, 'ENGINEERING_INVENTORY_PENDING_CONTRACT_REVIEW');
 
   const retention = JSON.parse(read('docs/compliance/registers/RETENTION_SCHEDULE.json'));
   assert.equal(retention.destructiveJobsEnabled, false);
@@ -177,6 +178,45 @@ check('compliance records index and structured registers exist and match schema'
     const content = readFileSync(filePath);
     const hash = createHash('sha256').update(content).digest('hex');
     assert.equal(hash, item.sha256, `Checksum mismatch for ${item.path}`);
+  }
+});
+
+check('generated baseline cannot pass with drift or errors', () => {
+  const baseline = JSON.parse(read('docs/PRIVACY_SECURITY_BASELINE.json'));
+  assert.equal(baseline.summary.byStatus.ERROR, 0);
+  assert.equal(baseline.summary.byStatus.DRIFT, 0);
+  assert.notEqual(baseline.databaseAccessProbe.profiles.state, 'ERROR');
+  assert.notEqual(baseline.databaseAccessProbe.profiles.state, 'EXPOSED');
+});
+
+check('operational procedures do not claim unsupported approval or deletion controls', () => {
+  const proceduresDir = resolve(root, 'docs/compliance/procedures');
+  for (const name of readdirSync(proceduresDir)) {
+    if (!name.endsWith('.md')) continue;
+    const procedure = read(join('docs/compliance/procedures', name));
+    assert.doesNotMatch(procedure, /\*\*Status:\*\*\s*`APPROVED`/);
+  }
+
+  const deletion = read('docs/compliance/procedures/RETENTION_AND_DELETION_PROCEDURE.md');
+  assert.match(deletion, /profiles\.is_deleting/);
+  // Founder approved this procedure 2026-08-25 (APPR-20260825-01) with its
+  // §3 gaps explicitly accepted as open, not closed -- assert that
+  // disclosure survives rather than requiring the stale ENGINEERING_DRAFT
+  // status literal.
+  assert.match(deletion, /FOUNDER_APPROVED/);
+  assert.match(deletion, /gaps remain open and unimplemented/);
+  assert.doesNotMatch(deletion, /Insert record into public\.deleted_accounts/);
+  assert.doesNotMatch(deletion, /GA4 User Deletion API invoked/);
+  assert.doesNotMatch(deletion, /S3 storage objects purged/);
+
+  const index = read('docs/compliance/COMPLIANCE_RECORDS_INDEX.md');
+  assert.doesNotMatch(index, /\| `REC-PROC-[^`]+`[^\n]+\| `APPROVED` \|/);
+});
+
+check('missing transfer evidence is labelled unverified', () => {
+  const transfers = read('docs/compliance/registers/INTERNATIONAL_TRANSFERS_REGISTER.md');
+  for (const line of transfers.split('\n').filter((candidate) => candidate.startsWith('| `XFER-'))) {
+    if (line.includes(': missing`')) assert.match(line, /UNVERIFIED/);
   }
 });
 
