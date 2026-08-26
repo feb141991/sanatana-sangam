@@ -5,6 +5,7 @@ import type { MonitoringEvent } from '@/lib/monitoring/events';
 import { createAdminClient } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import { resolveContentReport } from './actions';
+import PushMonitoringSection from './PushMonitoringSection';
 
 interface Props {
   searchParams?: Promise<{ aiReportStatus?: string }>;
@@ -67,6 +68,9 @@ export default async function MonitoringPage({ searchParams }: Props) {
         <h1 className="text-3xl font-bold mb-2">Operational Monitoring Window</h1>
         <p className="text-sm text-gray-500">Last updated: {new Date(report.lastUpdated).toLocaleString()}</p>
       </header>
+
+      {/* Push Notification Live Gateway & Delivery Health */}
+      <PushMonitoringSection />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         {/* Provider Health */}

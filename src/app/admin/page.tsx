@@ -1,7 +1,7 @@
 'use client';
 
 import { 
-  Users, ShieldAlert, Globe, Activity, 
+  Users, ShieldAlert, Bell, Globe, Activity, 
   Settings, ChevronRight, Search, 
   ArrowUpRight, BarChart3, AlertTriangle, 
   UserCheck, ShieldCheck, LogOut, ArrowLeft,
@@ -24,6 +24,7 @@ export default function AdminDashboard() {
   });
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFlushing, setIsFlushing] = useState(false);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -53,6 +54,23 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+    const handleFlushCache = async () => {
+    setIsFlushing(true);
+    try {
+      const res = await fetch("/api/admin/flush-cache", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Success: " + (data.message || "Global edge and page cache flushed successfully!"));
+      } else {
+        alert("Failed to flush cache: " + (data.error || "Unknown error"));
+      }
+    } catch (e) {
+      alert("Error flushing cache: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setIsFlushing(false);
+    }
+  };
 
   const handleLogout = async () => {
     document.cookie = "admin_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
@@ -171,6 +189,12 @@ export default function AdminDashboard() {
                   desc="Approve or reject auto-sourced biographies before they go live."
                   count={stats.pendingDharmVeerReview}
                 />
+                <CommandLink 
+                  href="/admin/monitoring"
+                  icon={Bell} 
+                  title="Push Gateway & Health" 
+                  desc="Live FCM/APNs delivery success rate, active device tokens, and failure stream." 
+                />
                 <CommandLink
                   href="/admin/calendar-governance"
                   icon={BarChart3}
@@ -210,7 +234,7 @@ export default function AdminDashboard() {
                 <div className="space-y-3">
                   <QuickTool icon={Megaphone} label="Global Broadcast" href="/admin/broadcast" />
                   <QuickTool icon={FileText} label="Export User Data" href="/admin/reports?tab=export" />
-                  <QuickTool icon={RefreshCw} label="Flush Cache" onClick={() => alert('Cache flushed successfully')} />
+                  <QuickTool icon={RefreshCw} label={isFlushing ? "Flushing..." : "Flush Cache"} onClick={handleFlushCache} />
                   <QuickTool icon={ShieldCheck} label="Audit Logs" href="/admin/monitoring?tab=logs" />
                 </div>
               </div>

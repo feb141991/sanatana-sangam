@@ -332,6 +332,8 @@
     "description": "Festival celebrating the bond between brothers and sisters",
     "kind": "major",
     "tradition": "hindu",
+    "route_kind": "festival",
+    "route_slug": "raksha-bandhan",
     "rule_family": "lunar_tithi",
     "verification_type": "lunar_tithi",
     "lunar_masa_name": "Jyeshtha",
