@@ -190,14 +190,13 @@
       "id": "RET-12-PAY",
       "category": "Payment Invoices, Orders & Seva Records",
       "stores": [
-        "public.subscriptions",
-        "public.payment_orders",
-        "public.transactions"
+        "public.profiles (subscription_status, subscription_id, subscription_plan_id, subscription_expires_at, entitlement_source, entitlement_updated_at)"
       ],
+      "storesNote": "Corrected 2026-08-26: the previously-listed public.subscriptions/payment_orders/transactions tables do not exist in the live schema (confirmed via information_schema.tables). Subscription/entitlement data lives as columns on profiles instead, which is hard-deleted immediately on account purge -- the opposite of the 7-year hold below. See docs/compliance/procedures/RETENTION_AND_DELETION_PROCEDURE.md section 3 for the open finding and the two candidate resolutions (snapshot-before-delete vs. rely on the payment processor's own records).",
       "activeRetention": "7 years from transaction date",
       "deletionTrigger": "Statutory financial audit period expiration",
       "cancellationCoolOffDays": 0,
-      "hardDeleteAction": "Financial ledger archive / anonymization",
+      "hardDeleteAction": "Financial ledger archive / anonymization -- NOT YET IMPLEMENTED for the actual profiles columns; account deletion currently erases them immediately",
       "proposedPeriod": "7 years (Statutory financial hold under UK HMRC and India Income Tax Act)",
       "statutoryException": "UK Companies Act & HMRC tax compliance legal obligation (Art. 6(1)(c))",
       "owner": "Finance & Legal",

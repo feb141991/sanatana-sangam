@@ -21,8 +21,13 @@ not approve retention periods (`RETENTION_SCHEDULE.json`, separately
 4. `POST /api/user/delete/cancel` clears both profile fields during the
    30-day cool-off period.
 5. Once the cool-off expires, `purgeDeletedAccountById()` or
-   `purgeDueDeletedAccounts()` calls `auth.admin.deleteUser(userId)` and then
-   explicitly deletes the matching `profiles` row.
+   `purgeDueDeletedAccounts()` first deletes the user's own files from the
+   `avatars` Storage bucket (both the `{userId}/` and `profiles/{userId}/`
+   prefixes -- the only two path conventions confirmed live for user-owned
+   content; `kuls/{kulId}/...` is shared family content and is deliberately
+   left untouched), then calls `auth.admin.deleteUser(userId)` and explicitly
+   deletes the matching `profiles` row. Storage cleanup is best-effort: a
+   failure there is logged but never blocks the account deletion itself.
 6. Related database rows are deleted only where the live foreign-key contract
    supplies the applicable cascade. This procedure does not assume universal
    cascade coverage without a separate schema verification.
@@ -45,19 +50,43 @@ test-account cleanup. It is not the canonical user-facing deletion flow.
 
 ## 3. Gaps That Must Not Be Represented As Implemented
 
-The current account-deletion helper does **not** itself prove or perform:
+**Closed 2026-08-26:** deletion of user-owned Supabase Storage objects.
+`deleteUserStorageObjects()` in `src/lib/account-deletion.ts` now removes the
+`avatars` bucket's `{userId}/` and `profiles/{userId}/` paths on account
+purge. Verified live: uploaded test files to both prefixes against
+production Storage, ran the same list-then-remove sequence the function
+uses, confirmed zero files remained after. `kuls/{kulId}/...` (shared family
+content) is explicitly out of scope -- one member's deletion must not touch
+Kul-owned assets.
 
-- deletion of user-owned Supabase Storage objects;
+**New finding, not yet closed:** `RETENTION_SCHEDULE.json`'s `RET-12-PAY`
+entry names `public.subscriptions`, `public.payment_orders`, and
+`public.transactions` as the stores holding payment data under a 7-year
+statutory hold. None of these tables exist in the live schema (confirmed via
+`information_schema.tables`). The actual subscription/entitlement data lives
+as columns directly on `profiles`
+(`subscription_status`, `subscription_id`, `entitlement_source`, etc.), which
+means **today, account deletion erases this data immediately** -- the
+opposite of the stated 7-year hold. Resolving this needs a decision, not
+just code: either snapshot subscription/entitlement fields to a retained
+record before the profile row is purged, or confirm the payment processor's
+own records satisfy the statutory hold and Shoonaya never needed a local
+copy. Do not represent RET-12-PAY as enforced until one of those is chosen
+and implemented.
+
+The current account-deletion helper still does **not** itself prove or
+perform:
+
 - GA4 User Deletion API calls;
-- CDN or S3 cache invalidation;
-- anonymisation or statutory retention of payment records;
+- CDN cache invalidation;
+- anonymisation or statutory retention of payment records (see finding above);
 - processor-specific deletion notices;
 - a durable completion receipt independent of platform logs; or
 - complete cascade coverage for every user-owned table.
 
 These items remain implementation and policy work. Before this SOP can be
-approved, engineering must produce a machine-generated ownership/cascade
-inventory, verify storage ownership conventions, and reconcile financial and
+fully closed, engineering must produce a machine-generated ownership/cascade
+inventory, resolve the payment-retention finding above, and reconcile
 provider deletion obligations with the approved retention schedule.
 
 ## 4. Approval Gate

@@ -77,8 +77,45 @@ export async function purgeDueDeletedAccounts({ dryRun = false } = {}) {
   };
 }
 
+// Deletes the user's own files from the `avatars` bucket -- the only bucket
+// that currently holds user-owned content addressed by userId (confirmed
+// live: `{userId}/avatar.*` from profile photo uploads and
+// `profiles/{userId}/home_cover_*` from home-cover uploads). Does NOT touch
+// `kuls/{kulId}/...` -- that's shared family content owned by the Kul, not
+// any single member, and must survive one member's account deletion.
+// Best-effort: a Storage failure is logged but never blocks the account
+// deletion itself, so a transient Storage outage can't leave a user stuck
+// mid-deletion.
+async function deleteUserStorageObjects(admin: ReturnType<typeof createServiceRoleSupabaseClient>, userId: string) {
+  const prefixes = [userId, `profiles/${userId}`];
+
+  for (const prefix of prefixes) {
+    try {
+      const { data: files, error: listError } = await admin.storage.from('avatars').list(prefix);
+      if (listError) {
+        console.warn(`account-deletion: storage list failed for ${prefix}:`, listError.message);
+        continue;
+      }
+      if (!files || files.length === 0) continue;
+
+      const paths = files.map((file) => `${prefix}/${file.name}`);
+      const { error: removeError } = await admin.storage.from('avatars').remove(paths);
+      if (removeError) {
+        console.warn(`account-deletion: storage remove failed for ${prefix}:`, removeError.message);
+      }
+    } catch (err) {
+      console.warn(
+        `account-deletion: storage cleanup exception for ${prefix}:`,
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  }
+}
+
 async function hardDeleteAccount(userId: string): Promise<{ id: string; success: boolean; error?: string }> {
   const admin = createServiceRoleSupabaseClient();
+
+  await deleteUserStorageObjects(admin, userId);
 
   const { error: authDeleteError } = await admin.auth.admin.deleteUser(userId);
   if (authDeleteError) {

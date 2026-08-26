@@ -70,8 +70,8 @@
     },
     {
       "path": "docs/compliance/procedures/RETENTION_AND_DELETION_PROCEDURE.md",
-      "sha256": "1b150b6aa2921504cb3b8fce1b721a42a8092edea0b87ab08125334c7d2c5279",
-      "bytes": 3779
+      "sha256": "dfa27991af0e7042e3e145c9d20f82a7f5ac4c34be0908dce689b11b1ad89cb1",
+      "bytes": 5611
     },
     {
       "path": "docs/compliance/procedures/UGC_MODERATION_AND_APPEALS_PROCEDURE.md",
@@ -110,8 +110,8 @@
     },
     {
       "path": "docs/compliance/registers/RETENTION_SCHEDULE.json",
-      "sha256": "ea7ab4295d361a887a69205ee6093de23e0494fbd5dc74a0e4f8cbf9ce806b83",
-      "bytes": 9766
+      "sha256": "fd378750c5db64503bffeb8bd1000d4229bc3336386f6afa499fdfcbb6352bac",
+      "bytes": 10499
     },
     {
       "path": "docs/compliance/registers/RETENTION_SCHEDULE.md",
