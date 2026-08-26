@@ -13,7 +13,16 @@ export const runtime = 'nodejs';
  * Returns: { orderId, amount, currency, key }
  * Client opens Razorpay checkout, on success calls /api/payment/lifetime/activate.
  */
+// Disabled 2026-08-26: Shoonaya is launching free, with no active premium
+// gate. See src/app/api/payment/checkout/route.ts for the matching guard
+// and rationale -- kept as a one-line revert rather than removed code.
+const LIFETIME_CHECKOUT_DISABLED = true;
+
 export async function POST() {
+  if (LIFETIME_CHECKOUT_DISABLED) {
+    return NextResponse.json({ error: 'The Lifetime Pass is not currently available.' }, { status: 503 });
+  }
+
   const supabase = await createServerSupabaseClient();
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {

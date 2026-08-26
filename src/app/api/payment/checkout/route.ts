@@ -10,7 +10,19 @@ export const runtime = 'nodejs';
  * GET /api/payment/checkout?plan=zenith|kul&billing=monthly|annual
  * Auth: session cookie via createServerSupabaseClient (service role cannot read sessions).
  */
+// Disabled 2026-08-26: Shoonaya is launching free, with no active premium
+// gate. Checkout intentionally returns 503 rather than being removed, so
+// re-enabling later is a one-line revert, not a rebuild. Does not affect
+// existing "pro" users (all 14 current ones are entitlement_source
+// 'early_access' grants, not purchases) -- /api/payment/subscription/cancel
+// and /history stay live so they can still manage what they already have.
+const CHECKOUT_DISABLED = true;
+
 export async function GET(request: Request) {
+  if (CHECKOUT_DISABLED) {
+    return NextResponse.json({ error: 'Checkout is not currently available.' }, { status: 503 });
+  }
+
   const url = new URL(request.url);
   const plan = url.searchParams.get('plan');
   const billing = url.searchParams.get('billing');
