@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0",
+  "festivals": [
+    {
+      "definitionKey": "raksha-bandhan",
+      "emoji": "🧵",
+      "tradition": "hindu",
+      "name": {
+        "value": { "en": "Raksha Bandhan" },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": { "universal": true }
+      },
+      "tagline": {
+        "value": { "en": "A sacred thread of protection between siblings" },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": { "universal": true }
+      },
+      "significance": {
+        "value": {
+          "en": "Raksha Bandhan celebrates the bond between brothers and sisters. A sister ties a protective thread (rakhi) on her brother's wrist as a symbol of her love and prayers for his wellbeing, and he in turn pledges to protect and support her. The festival is observed on the full moon (Purnima) of the lunar month of Shravana."
+        },
+        "status": "pending_source",
+        "sourceRefs": [
+          {
+            "sourceName": "Widely cited traditional festival account — needs primary-source verification before publication",
+            "tier": 3,
+            "usagePermitted": "internal_review_only"
+          }
+        ],
+        "applicability": { "universal": true }
+      },
+      "rituals": {
+        "value": {
+          "en": [
+            "Sister performs a short aarti and applies tilak on her brother's forehead",
+            "Sister ties the rakhi thread on her brother's right wrist",
+            "Brother offers a gift and pledges to protect and support his sister",
+            "Sweets are exchanged between siblings"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [
+          {
+            "sourceName": "Widely cited traditional practice — needs primary-source verification before publication",
+            "tier": 3,
+            "usagePermitted": "internal_review_only"
+          }
+        ],
+        "applicability": { "universal": true }
+      },
+      "dos": {
+        "value": {
+          "en": [
+            "Tie the rakhi during an auspicious muhurat when possible",
+            "Sit facing east or north during the ritual"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [
+          {
+            "sourceName": "Widely cited traditional practice — needs primary-source verification before publication",
+            "tier": 3,
+            "usagePermitted": "internal_review_only"
+          }
+        ],
+        "applicability": { "universal": true }
+      },
+      "donts": {
+        "value": {
+          "en": [
+            "Avoid tying the rakhi during Bhadra kaal, considered inauspicious"
+          ]
+        },
+        "status": "pending_source",
+        "sourceRefs": [
+          {
+            "sourceName": "Widely cited traditional practice — needs primary-source verification before publication",
+            "tier": 3,
+            "usagePermitted": "internal_review_only"
+          }
+        ],
+        "applicability": { "universal": true }
+      },
+      "pujaItems": {
+        "value": {
+          "en": ["Rakhi thread", "Roli/kumkum", "Rice grains", "Diya", "Sweets"]
+        },
+        "status": "pending_source",
+        "sourceRefs": [],
+        "applicability": { "universal": true }
+      },
+      "mantra": {
+        "sanskrit": "येन बद्धो बली राजा दानवेन्द्रो महाबलः। तेन त्वामनुबध्नामि रक्षे मा चल मा चल॥",
+        "transliteration": "yena baddho balī rājā dānavendro mahābalaḥ, tena tvām anubadhnāmi rakṣe mā cala mā cala",
+        "translation": {
+          "value": {
+            "en": "With the same thread that bound the mighty king of demons [Bali], I bind you, O protective thread — may you not falter, may you not falter."
+          },
+          "status": "pending_source",
+          "sourceRefs": [
+            {
+              "sourceName": "Commonly attributed to the Bhavishya Purana in popular tradition — attribution and exact verse location unverified, needs primary-text citation before publication",
+              "tier": 3,
+              "usagePermitted": "internal_review_only"
+            }
+          ],
+          "applicability": { "universal": true }
+        }
+      }
+    }
+  ]
+}

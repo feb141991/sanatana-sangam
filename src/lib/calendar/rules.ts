@@ -70,7 +70,7 @@ export interface ObservanceRule {
   skipped_tithi_policy?: SkippedTithiPolicy;
   recurring_tithi_indices?: number[];
   recurring_weekday?: number;
-  route_kind?: 'vrat' | null;
+  route_kind?: 'vrat' | 'festival' | null;
   route_slug?: string | null;
   region?: string | null;
 

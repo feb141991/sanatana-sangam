@@ -266,7 +266,11 @@ function buildObservanceEntry(
   const name = definition.display_name;
   const routeKind = definition.route_kind || 'festival';
   const routeSlug = definition.route_slug || definition.slug;
-  const href = routeKind === 'vrat' ? '/vrat' : '/panchang';
+  const href = routeKind === 'vrat'
+    ? '/vrat'
+    : definition.route_kind === 'festival' && definition.route_slug
+      ? `/festival/${definition.route_slug}`
+      : '/panchang';
   const label = daysLeft === 0
     ? `Today is ${name}`
     : daysLeft === 1
@@ -567,7 +571,7 @@ export async function GET(request: NextRequest) {
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
-  const calendarTo = shiftIsoDate(today, 14);
+  const calendarTo = shiftIsoDate(today, 5);
   const tradition = profile?.tradition ?? 'hindu';
   const latitude = profile?.latitude ?? 23.1765;
   const longitude = profile?.longitude ?? 75.7885;
