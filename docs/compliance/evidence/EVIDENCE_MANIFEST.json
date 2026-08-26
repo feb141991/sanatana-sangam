@@ -1,7 +1,7 @@
 {
   "version": "2026-08-25.v1",
   "generatedAt": "2026-08-25T00:00:00Z",
-  "totalArtifacts": 30,
+  "totalArtifacts": 31,
   "artifacts": [
     {
       "path": "docs/compliance/assessments/AI_AND_AUTOMATED_GUIDANCE_ASSESSMENT.md",
@@ -30,8 +30,8 @@
     },
     {
       "path": "docs/compliance/COMPLIANCE_RECORDS_INDEX.md",
-      "sha256": "69833f9d8d44be81c22a7c53c8f62ea609fa1b04b21421e418cc85a6e32fe993",
-      "bytes": 8149
+      "sha256": "e324deb118403eef7afc11a4706d9c1341af6b4aeccece7c4163d190ddf43c90",
+      "bytes": 8577
     },
     {
       "path": "docs/compliance/evidence/ENGINEERING_CONTROL_MATRIX.md",
@@ -52,6 +52,11 @@
       "path": "docs/compliance/procedures/APPROVAL_RECORD_20260825_VENDOR_DPAS.md",
       "sha256": "0e88870e7d12f3e698f5593ad45d98cb3b64393861d35109dee40c1ffc479b21",
       "bytes": 1938
+    },
+    {
+      "path": "docs/compliance/procedures/APPROVAL_RECORD_20260826_RETENTION_PERIODS.md",
+      "sha256": "44bcb0bd5e30299f1f2696323334ebd5da0f86a3515231d32047478c68743549",
+      "bytes": 1592
     },
     {
       "path": "docs/compliance/procedures/DATA_INCIDENT_RESPONSE_PLAN.md",
@@ -110,13 +115,13 @@
     },
     {
       "path": "docs/compliance/registers/RETENTION_SCHEDULE.json",
-      "sha256": "fd378750c5db64503bffeb8bd1000d4229bc3336386f6afa499fdfcbb6352bac",
-      "bytes": 10499
+      "sha256": "3b596cac25b19daa8da188a7d19e6d84b754cea88c141ee1115d5a3a203791ee",
+      "bytes": 12347
     },
     {
       "path": "docs/compliance/registers/RETENTION_SCHEDULE.md",
-      "sha256": "fc818a29a467e12f5134efd55425b922fc46e1b7d5c4d1aab216411ce0b9627e",
-      "bytes": 3627
+      "sha256": "f147df3484aa801a8ce70f47abd813547b45a26cf29f11a216c6bb734c32390a",
+      "bytes": 3999
     },
     {
       "path": "docs/compliance/registers/STORE_DECLARATION_MATRIX.md",

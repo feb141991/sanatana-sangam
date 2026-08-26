@@ -1,8 +1,8 @@
 {
-  "version": "2026-08-25.v1",
+  "version": "2026-08-26.v2",
   "destructiveJobsEnabled": false,
-  "status": "DECISION_REQUIRED",
-  "governanceNote": "All specific retention periods remain PENDING_DECISION by Founder and Counsel. Destructive automated deletion jobs are disabled in production until approval.",
+  "status": "PERIODS_APPROVED_AUTOMATION_PENDING",
+  "governanceNote": "Founder approved retention periods for 13 of 14 categories on 2026-08-26 (see APPR-20260826-01). RET-12-PAY is deliberately excluded -- no premium/payment gate is active yet, so the decision is deferred rather than needed now. destructiveJobsEnabled remains false: approving a period is a policy decision, not the same as building and enabling the automated job that enforces it -- no category-aware destructive cron exists yet beyond the already-live 30-day account-deletion cool-off purge (src/lib/account-deletion.ts), which is unaffected by this flag.",
   "schedules": [
     {
       "id": "RET-01-AUTH",
@@ -19,7 +19,9 @@
       "proposedPeriod": "Active + 30-day grace period",
       "statutoryException": "None",
       "owner": "Account Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-02-REL",
@@ -35,7 +37,9 @@
       "proposedPeriod": "Immediate on field clearing; 30-day grace on account delete",
       "statutoryException": "None",
       "owner": "Privacy Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-03-BIRTH",
@@ -51,7 +55,9 @@
       "proposedPeriod": "User-directed; 30-day grace on account delete",
       "statutoryException": "None",
       "owner": "Jyotish Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-04-LOC",
@@ -67,7 +73,9 @@
       "proposedPeriod": "Transient / User-managed",
       "statutoryException": "None",
       "owner": "Location Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-05-MOOD",
@@ -84,7 +92,9 @@
       "proposedPeriod": "User-directed; 30-day grace on account delete",
       "statutoryException": "None",
       "owner": "Journal Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-06-PRAC",
@@ -102,7 +112,9 @@
       "proposedPeriod": "Active account lifecycle",
       "statutoryException": "None",
       "owner": "Sadhana Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-07-UGC",
@@ -120,7 +132,9 @@
       "proposedPeriod": "Content: User-directed; Safety Reports: 2 years for trust & safety audit",
       "statutoryException": "Abuse prevention and legal claims defense exception",
       "owner": "Trust & Safety",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-08-AI",
@@ -136,7 +150,9 @@
       "proposedPeriod": "Zero persistent storage",
       "statutoryException": "None",
       "owner": "AI Platform",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-09-NOTIF",
@@ -153,7 +169,9 @@
       "proposedPeriod": "Tokens: Active; Delivery Logs: 30 days",
       "statutoryException": "None",
       "owner": "Notification Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-10-ANALYTICS",
@@ -169,7 +187,9 @@
       "proposedPeriod": "Consent Cookie: 12 months; Analytics: 14 months",
       "statutoryException": "None",
       "owner": "Web Platform",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-11-MEDIA",
@@ -177,6 +197,7 @@
       "stores": [
         "Supabase Storage S3 buckets (`avatars`, `mandali-uploads`, `share-cards`)"
       ],
+      "storesNote": "Corrected 2026-08-26: the real bucket is just `avatars` (confirmed via storage.buckets) -- `mandali-uploads` and `share-cards` do not exist. Deletion is implemented for `avatars` (src/lib/account-deletion.ts, deleteUserStorageObjects()).",
       "activeRetention": "Active account duration or until replaced",
       "deletionTrigger": "Avatar replacement or account deletion purge",
       "cancellationCoolOffDays": 30,
@@ -184,7 +205,9 @@
       "proposedPeriod": "Active + 30-day grace period",
       "statutoryException": "None",
       "owner": "Storage Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-12-PAY",
@@ -200,7 +223,8 @@
       "proposedPeriod": "7 years (Statutory financial hold under UK HMRC and India Income Tax Act)",
       "statutoryException": "UK Companies Act & HMRC tax compliance legal obligation (Art. 6(1)(c))",
       "owner": "Finance & Legal",
-      "status": "pending_approval"
+      "status": "pending_approval",
+      "deferralNote": "Deliberately deferred 2026-08-26, not approved and not rejected: no premium/payment gate is live yet, so there is no real payment data this decision currently governs. Revisit before any payment feature ships."
     },
     {
       "id": "RET-13-GUEST",
@@ -216,7 +240,9 @@
       "proposedPeriod": "30 days TTL",
       "statutoryException": "None",
       "owner": "Guest Lifecycle",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     },
     {
       "id": "RET-14-LOGS",
@@ -232,7 +258,9 @@
       "proposedPeriod": "Logs: 30 days; Backups: 30 days rolling rotation",
       "statutoryException": "Security logging & disaster recovery",
       "owner": "Infrastructure",
-      "status": "pending_approval"
+      "status": "approved",
+      "approvedDate": "2026-08-26",
+      "approvalRecord": "APPR-20260826-01"
     }
   ]
 }
