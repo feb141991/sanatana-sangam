@@ -32,7 +32,8 @@ export default async function SettingsPage() {
       madhyahn_reminder_time,
       wants_evening_reminder,
       evening_reminder_time,
-      subscription_status
+      subscription_status,
+      consent_religious_data
     `)
     .eq('id', user.id)
     .single();
@@ -54,6 +55,7 @@ export default async function SettingsPage() {
       initialEveningReminderTime={profile?.evening_reminder_time ?? '18:30'}
       initialNityaRhythmMode={profile?.nitya_rhythm_mode ?? 'morning'}
       subscriptionStatus={(profile?.subscription_status ?? 'free') as SubscriptionStatus}
+      initialConsentReligiousData={profile?.consent_religious_data ?? false}
     />
   );
 }

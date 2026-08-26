@@ -71,6 +71,8 @@ type SectionCopy = {
   saved: string;
   saveFailed: string;
   traditionWarning: string;
+  consentToggleLabel: string;
+  consentToggleHint: string;
 };
 
 const COPY: Record<AppLang, SectionCopy> = {
@@ -111,6 +113,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     saved: 'Saved ✓',
     saveFailed: 'Could not save',
     traditionWarning: 'Changing tradition will update your daily quiz and recommendations.',
+    consentToggleLabel: 'Tradition-aware personalization',
+    consentToggleHint: 'Uses your spiritual preference data to tailor recommendations.',
   },
   hi: {
     pageTitle: 'सेटिंग्स',
@@ -149,6 +153,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     saved: 'सहेजा गया ✓',
     saveFailed: 'सहेजा नहीं जा सका',
     traditionWarning: 'परंपरा बदलने पर आपका दैनिक क्विज़ और सुझाव अपडेट होंगे।',
+    consentToggleLabel: 'परंपरा-अनुरूप निजीकरण',
+    consentToggleHint: 'आपके सुझाव तैयार करने के लिए आपकी आध्यात्मिक पसंद के डेटा का उपयोग करता है।',
   },
   pa: {
     pageTitle: 'ਸੈਟਿੰਗਜ਼',
@@ -187,6 +193,8 @@ const COPY: Record<AppLang, SectionCopy> = {
     saved: 'ਸੰਭਾਲਿਆ ਗਿਆ ✓',
     saveFailed: 'ਸੰਭਾਲਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ',
     traditionWarning: 'ਪਰੰਪਰਾ ਬਦਲਣ ਨਾਲ ਤੁਹਾਡਾ ਰੋਜ਼ਾਨਾ ਕੁਇਜ਼ ਅਤੇ ਸਿਫ਼ਾਰਸ਼ਾਂ ਅੱਪਡੇਟ ਹੋਣਗੀਆਂ।',
+    consentToggleLabel: 'ਪਰੰਪਰਾ-ਅਨੁਸਾਰ ਨਿੱਜੀਕਰਨ',
+    consentToggleHint: 'ਤੁਹਾਡੀਆਂ ਸਿਫ਼ਾਰਸ਼ਾਂ ਤਿਆਰ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਅਧਿਆਤਮਿਕ ਪਸੰਦ ਦੇ ਡੇਟਾ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ।',
   },
 };
 
@@ -402,6 +410,7 @@ export default function SettingsClient({
   initialEveningReminderTime,
   initialNityaRhythmMode,
   subscriptionStatus,
+  initialConsentReligiousData,
 }: {
   userId: string;
   initialTradition: string | null;
@@ -415,6 +424,7 @@ export default function SettingsClient({
   initialWantsMadhyahnReminder: boolean;
   initialMadhyahnReminderTime: string;
   initialWantsEveningReminder: boolean;
+  initialConsentReligiousData: boolean;
   initialEveningReminderTime: string;
   initialNityaRhythmMode: string;
   subscriptionStatus: SubscriptionStatus;
@@ -465,6 +475,8 @@ export default function SettingsClient({
   });
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [savingTradition, setSavingTradition] = useState(false);
+  const [consentReligiousData, setConsentReligiousData] = useState(initialConsentReligiousData);
+  const [savingConsent, setSavingConsent] = useState(false);
   const savedNotificationRef = useRef(savedNotificationState);
   const hasMountedNotificationRef = useRef(false);
 
@@ -553,6 +565,25 @@ export default function SettingsClient({
       showErrorToast(copy.saveFailed);
     } finally {
       setSavingTradition(false);
+    }
+  }
+
+  async function handleToggleConsentReligiousData() {
+    if (savingConsent) return;
+
+    const previous = consentReligiousData;
+    const next = !previous;
+
+    setSavingConsent(true);
+    setConsentReligiousData(next);
+    try {
+      await profileMutation.mutateAsync({ consent_religious_data: next });
+      showSavedToast(copy.saved);
+    } catch {
+      setConsentReligiousData(previous);
+      showErrorToast(copy.saveFailed);
+    } finally {
+      setSavingConsent(false);
     }
   }
 
@@ -762,6 +793,36 @@ export default function SettingsClient({
         >
           <div className="space-y-3">
             <PrivacyChoicesButton className="flex min-h-11 w-full items-center justify-between rounded-2xl border p-4 text-left text-sm font-medium text-[color:var(--text-cream)]" />
+            <div
+              className="rounded-2xl border p-4"
+              style={{ borderColor: 'var(--card-border)', background: 'var(--surface-soft)' }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[color:var(--text-cream)]">{copy.consentToggleLabel}</p>
+                  <p className="mt-1 text-xs text-[color:var(--text-dim)]">{copy.consentToggleHint}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleConsentReligiousData}
+                  disabled={savingConsent}
+                  aria-pressed={consentReligiousData}
+                  className="relative h-7 w-12 shrink-0 rounded-full transition"
+                  style={{
+                    background: consentReligiousData ? 'var(--brand-primary)' : 'var(--card-border)',
+                    opacity: savingConsent ? 0.6 : 1,
+                  }}
+                >
+                  <span
+                    className="absolute top-1 h-5 w-5 rounded-full transition"
+                    style={{
+                      left: consentReligiousData ? 'calc(100% - 1.5rem)' : '0.25rem',
+                      background: 'var(--card-bg)',
+                    }}
+                  />
+                </button>
+              </div>
+            </div>
             <Link
               href="/settings/subscription"
               className="flex items-center justify-between rounded-2xl border p-4"
