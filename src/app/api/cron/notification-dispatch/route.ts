@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendPushNotification } from "@/lib/push-server";
+import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
 import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
 
@@ -133,11 +134,21 @@ export async function GET(request: Request) {
 
     const eligibleRows: any[] = [];
     const skippedRows: Array<{ id: string; reason: string }> = [];
+    const dispatchAuditEvents: NotificationDispatchEventPayload[] = [];
 
     for (const row of claimedRows) {
       const profile = profileMap.get(row.user_id);
       if (!profile || profile.is_deleting) {
-        skippedRows.push({ id: row.id, reason: profile?.is_deleting ? "account_deletion_pending" : "user_missing" });
+        const reason = profile?.is_deleting ? "account_deletion_pending" : "user_missing";
+        skippedRows.push({ id: row.id, reason });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "skipped",
+          reason,
+          provider: "expo",
+        });
         continue;
       }
 
@@ -148,6 +159,14 @@ export async function GET(request: Request) {
 
       if (isHourInQuietWindow(currentLocalHour, quietStart, quietEnd)) {
         skippedRows.push({ id: row.id, reason: "quiet_hours_active" });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "skipped",
+          reason: "quiet_hours_active",
+          provider: "expo",
+        });
         continue;
       }
 
@@ -224,12 +243,29 @@ export async function GET(request: Request) {
         });
 
         succeededIds.push(row.id);
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "sent",
+          reason: null,
+          provider: "expo",
+        });
       } catch (err: any) {
         const nextRetry = (row.retry_count ?? 0) + 1;
+        const errorMsg = err?.message || "Push dispatch failed";
         failedRows.push({
           id:          row.id,
           retry_count: nextRetry,
-          error:       err?.message || "Push dispatch failed",
+          error:       errorMsg,
+        });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "failed",
+          reason: errorMsg,
+          provider: "expo",
         });
       }
     }
@@ -283,6 +319,11 @@ export async function GET(request: Request) {
             .in("id", group.ids.slice(i, i + 100));
         }
       }
+    }
+
+    // ── 9. Record append-only dispatch audit events (survives 90-day retention cleanup) ──
+    if (dispatchAuditEvents.length > 0) {
+      await recordNotificationDispatchBatch(dispatchAuditEvents, supabase);
     }
 
     emitEvent({

@@ -1,4 +1,5 @@
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { recordPushTokenEventBatch } from '@/lib/push-token-audit';
 
 const EXPO_RECEIPTS_API_URL = 'https://exp.host/--/api/v2/push/getReceipts';
 const MIN_AGE_MS = 15 * 60 * 1000;
@@ -9,6 +10,12 @@ type ExpoReceipt = {
   status: 'ok' | 'error';
   message?: string;
   details?: { error?: string };
+};
+
+type PendingReceiptRow = {
+  ticket_id: string;
+  token: string;
+  user_id?: string | null;
 };
 
 function chunk<T>(items: T[], size: number) {
@@ -31,7 +38,7 @@ export async function checkPendingExpoPushReceipts() {
 
   const { data: pending, error: pendingError } = await supabase
     .from('push_receipts_pending')
-    .select('ticket_id, token')
+    .select('ticket_id, token, user_id')
     .lt('created_at', readyBefore)
     .limit(1500);
 
@@ -53,9 +60,10 @@ export async function checkPendingExpoPushReceipts() {
   let checked = 0;
   let pruned = 0;
   const staleTokens: string[] = [];
+  const staleTokenEvents: Array<{ token: string; userId?: string | null }> = [];
   const processedTicketIds: string[] = [];
 
-  for (const batch of chunk(pending as { ticket_id: string; token: string }[], RECEIPT_BATCH_SIZE)) {
+  for (const batch of chunk(pending as PendingReceiptRow[], RECEIPT_BATCH_SIZE)) {
     const ticketIds = batch.map((row) => row.ticket_id);
     const response = await fetch(EXPO_RECEIPTS_API_URL, {
       method: 'POST',
@@ -78,17 +86,29 @@ export async function checkPendingExpoPushReceipts() {
       processedTicketIds.push(row.ticket_id);
       if (receipt.status === 'error' && receipt.details?.error === 'DeviceNotRegistered') {
         staleTokens.push(row.token);
+        staleTokenEvents.push({ token: row.token, userId: row.user_id });
       }
     }
   }
 
   if (staleTokens.length > 0) {
+    const uniqueStale = Array.from(new Set(staleTokens));
     const { error: pruneError, count } = await supabase
       .from('push_tokens')
       .delete({ count: 'exact' })
-      .in('token', Array.from(new Set(staleTokens)));
+      .in('token', uniqueStale);
     if (pruneError) console.warn('stale push_tokens prune failed:', pruneError.message);
     pruned = count ?? 0;
+
+    await recordPushTokenEventBatch(
+      staleTokenEvents.map((e) => ({
+        userId: e.userId,
+        token: e.token,
+        eventType: 'pruned_device_not_registered',
+        reason: 'DeviceNotRegistered receipt from Expo',
+        source: 'push-receipts',
+      }))
+    );
   }
 
   if (processedTicketIds.length > 0) {

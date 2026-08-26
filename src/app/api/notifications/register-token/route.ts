@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { getApiUser } from '@/lib/api-auth';
+import { recordPushTokenEvent } from '@/lib/push-token-audit';
 
 // --- Push token registration -------------------------------------------------
 // Replaces what OneSignal did invisibly on its own servers: associating a
@@ -53,6 +54,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Could not register token: ${rpcError.message}` }, { status: 500 });
     }
 
+    await recordPushTokenEvent({
+      userId: user.id,
+      token,
+      eventType: 'registered',
+      reason: `platform:${platform}`,
+      source: '/api/notifications/register-token',
+    });
+
     return NextResponse.json({ registered: true });
   } catch (err) {
     console.error('register-token route crashed:', err);
@@ -92,6 +101,14 @@ export async function DELETE(request: NextRequest) {
       console.error('register-token delete failed:', rpcError);
       return NextResponse.json({ error: `Could not remove token: ${rpcError.message}` }, { status: 500 });
     }
+
+    await recordPushTokenEvent({
+      userId: user.id,
+      token,
+      eventType: 'pruned_other',
+      reason: 'user_sign_out',
+      source: '/api/notifications/register-token',
+    });
 
     return NextResponse.json({ removed: true });
   } catch (err) {

@@ -882,6 +882,50 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['vrat_observations']['Insert']>;
       };
+      push_token_events: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          token: string;
+          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other';
+          reason: string | null;
+          source: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          token: string;
+          event_type: 'registered' | 'pruned_device_not_registered' | 'pruned_other';
+          reason?: string | null;
+          source: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['push_token_events']['Insert']>;
+      };
+      notification_dispatch_events: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          notification_key: string | null;
+          notification_type: string | null;
+          decision: 'sent' | 'skipped' | 'failed';
+          reason: string | null;
+          provider: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          notification_key?: string | null;
+          notification_type?: string | null;
+          decision: 'sent' | 'skipped' | 'failed';
+          reason?: string | null;
+          provider?: string;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['notification_dispatch_events']['Insert']>;
+      };
       dharm_veer_generation_log: {
         Row: {
           slug: string;
@@ -932,3 +976,6 @@ export type TraditionProfile = Database['public']['Tables']['tradition_profiles'
 export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
 export type ObservanceMaterialisationBatch = Database['public']['Tables']['observance_materialisation_batches']['Row'];
 export type VratObservation = Database['public']['Tables']['vrat_observations']['Row'];
+
+export type PushTokenEvent = Database['public']['Tables']['push_token_events']['Row'];
+export type NotificationDispatchEvent = Database['public']['Tables']['notification_dispatch_events']['Row'];

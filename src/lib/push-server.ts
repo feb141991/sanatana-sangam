@@ -1,6 +1,7 @@
 import { getNotificationSafetyState } from '@/lib/notification-safety';
 import { recordNotificationDeliveryBatch, type AuditRecordPayload } from '@/lib/notification-delivery-audit';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { recordPushTokenEventBatch } from '@/lib/push-token-audit';
 
 // --- Push send path -----------------------------------------------------------
 // Two independent channels, both keyed off Supabase user ids:
@@ -229,6 +230,7 @@ async function sendViaExpo(
   const userOutcome = new Map<string, { sent: boolean; errorCode?: string; errorMessage?: string }>();
   const receiptRows: { ticket_id: string; token: string; user_id: string }[] = [];
   const staleTokens: string[] = [];
+  const staleTokenEvents: Array<{ token: string; userId?: string | null }> = [];
 
   for (const batch of chunk(outbox, EXPO_MESSAGE_BATCH_SIZE)) {
     try {
@@ -260,7 +262,10 @@ async function sendViaExpo(
           if (!existing || !existing.sent) userOutcome.set(item.userId, { sent: true });
         } else {
           const errorCode = ticket.details?.error ?? 'unknown';
-          if (errorCode === 'DeviceNotRegistered') staleTokens.push(item.token);
+          if (errorCode === 'DeviceNotRegistered') {
+            staleTokens.push(item.token);
+            staleTokenEvents.push({ token: item.token, userId: item.userId });
+          }
           const existing = userOutcome.get(item.userId);
           if (!existing || !existing.sent) {
             userOutcome.set(item.userId, { sent: false, errorCode, errorMessage: ticket.message?.slice(0, 500) });
@@ -290,6 +295,15 @@ async function sendViaExpo(
   if (staleTokens.length > 0) {
     const { error: pruneError } = await supabase.from('push_tokens').delete().in('token', staleTokens);
     if (pruneError) console.warn('stale push_tokens prune failed:', pruneError.message);
+    await recordPushTokenEventBatch(
+      staleTokenEvents.map((e) => ({
+        userId: e.userId,
+        token: e.token,
+        eventType: 'pruned_device_not_registered',
+        reason: 'DeviceNotRegistered ticket from Expo push send',
+        source: 'push-server',
+      }))
+    );
   }
 
   const sentUserIdsList: string[] = [];
