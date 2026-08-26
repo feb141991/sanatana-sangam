@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
+import { GoogleIcon, AppleIcon } from '@/components/ui';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
 import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
 
@@ -142,24 +143,26 @@ function LoginForm() {
     <button
       type="button"
       onClick={() => handleOAuth('google')}
-      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-300 bg-white py-3 text-sm font-medium text-gray-800 hover:bg-gray-50"
+      className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-semibold text-[var(--text-cream)] shadow-sm transition hover:border-[var(--brand-primary)] hover:bg-[color-mix(in_srgb,var(--card-bg)_80%,var(--brand-primary)_20%)] active:scale-[0.99]"
     >
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#EA4335] text-[11px] font-bold text-white">G</span>
-      Continue with Google
+      <GoogleIcon size={18} />
+      <span>Continue with Google</span>
     </button>
     <button
       type="button"
       onClick={() => handleOAuth('apple')}
-      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-gray-800 bg-black py-3 text-sm font-medium text-white hover:bg-gray-900"
+      className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-black bg-black px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-900 active:scale-[0.99]"
     >
-      🍎 Continue with Apple
+      <AppleIcon size={18} className="text-white" />
+      <span>Continue with Apple</span>
     </button>
-    <button
-      type="button"
-      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-[#25D366] bg-[#25D366] py-3 text-sm font-medium text-white hover:bg-[#128C7E] transition-colors"
+    <Link
+      href="/whatsapp-login"
+      className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-[#25D366]/30 bg-[#25D366]/10 px-5 text-sm font-semibold text-[#25D366] transition hover:bg-[#25D366]/20 active:scale-[0.99]"
     >
-      <span className="text-lg">💬</span> Continue with WhatsApp
-    </button>
+      <span className="text-base">💬</span>
+      <span>Continue with WhatsApp</span>
+    </Link>
   </div>
   <form onSubmit={handleLogin} className="glass-panel-strong rounded-[2rem] shadow-card p-6 space-y-4">
           <div>

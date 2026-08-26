@@ -9,3 +9,5 @@ export * from './SectionHeading';
 export * from './Skeleton';
 export * from './Spinner';
 export * from './SurfaceSection';
+export * from './GoogleIcon';
+export * from './AppleIcon';

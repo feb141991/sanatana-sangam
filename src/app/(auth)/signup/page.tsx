@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Loader2, Lock, Mail, Sparkles } from 'lucide-react';
 import BrandMark from '@/components/BrandMark';
+import { GoogleIcon, AppleIcon } from '@/components/ui';
 import { createClient } from '@/lib/supabase';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
 import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
@@ -279,14 +280,12 @@ export default function SignupPage() {
               type="button"
               onClick={handleGoogleSignup}
               disabled={googleLoading || appleLoading}
-              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-bold text-[var(--text-cream)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--text-cream)_14%,transparent)] transition hover:border-[var(--brand-primary)] disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[var(--premium-border)] bg-[var(--card-bg)] px-5 text-sm font-semibold text-[var(--text-cream)] shadow-sm transition hover:border-[var(--brand-primary)] hover:bg-[color-mix(in_srgb,var(--card-bg)_80%,var(--brand-primary)_20%)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {googleLoading ? (
                 <Loader2 className="animate-spin" size={18} aria-hidden="true" />
               ) : (
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--text-cream)] text-sm font-black text-[var(--divine-bg)]">
-                  G
-                </span>
+                <GoogleIcon size={18} />
               )}
               {signupContext.googleLabel}
             </button>
@@ -295,12 +294,12 @@ export default function SignupPage() {
               type="button"
               onClick={handleAppleSignup}
               disabled={googleLoading || appleLoading}
-              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-[color-mix(in_srgb,var(--text-cream)_24%,transparent)] bg-[var(--text-cream)] px-5 text-sm font-bold text-[var(--divine-bg)] shadow-[0_14px_32px_color-mix(in_srgb,var(--text-cream)_10%,transparent),inset_0_1px_0_color-mix(in_srgb,white_36%,transparent)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex min-h-14 w-full items-center justify-center gap-3 rounded-full border border-black bg-black px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-900 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {appleLoading ? (
                 <Loader2 className="animate-spin" size={18} aria-hidden="true" />
               ) : (
-                <span className="text-base" aria-hidden="true"></span>
+                <AppleIcon size={18} className="text-white" />
               )}
               {signupContext.appleLabel}
             </button>
