@@ -12,6 +12,14 @@
 -- the username default, then to 'Seeker' if even that is empty (e.g. an
 -- email of "@example.com" with nothing before the @, which split_part
 -- would otherwise turn into an empty string).
+--
+-- Also fixes avatar_url for Google sign-ins: Google's OAuth metadata puts
+-- the photo URL under 'picture', not 'avatar_url', so this previously
+-- inserted NULL for every Google-originated profile. Coalesces both keys,
+-- matching the same fallback now applied client-side in
+-- src/lib/auth-profile.ts and src/app/(main)/layout.tsx, and backfills
+-- existing profiles below -- guarded to only touch rows where avatar_url
+-- is currently NULL, so no user-set avatar is ever overwritten.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -55,9 +63,17 @@ BEGIN
     NEW.id,
     _username,
     _full_name,
-    NEW.raw_user_meta_data->>'avatar_url'
+    coalesce(NEW.raw_user_meta_data->>'avatar_url', NEW.raw_user_meta_data->>'picture')
   );
 
   RETURN NEW;
 END;
 $function$;
+
+-- Backfill existing profiles missing avatar_url where auth metadata contains one
+UPDATE public.profiles p
+SET avatar_url = coalesce(u.raw_user_meta_data->>'avatar_url', u.raw_user_meta_data->>'picture')
+FROM auth.users u
+WHERE p.id = u.id
+  AND p.avatar_url IS NULL
+  AND coalesce(u.raw_user_meta_data->>'avatar_url', u.raw_user_meta_data->>'picture') IS NOT NULL;

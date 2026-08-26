@@ -14,6 +14,17 @@ function profileName(user: User) {
   return name?.trim() || 'Shoonaya Seeker';
 }
 
+export function profileAvatarUrl(user: User): string | null {
+  const meta = user.user_metadata ?? {};
+  if (typeof meta.avatar_url === "string" && meta.avatar_url.trim()) {
+    return meta.avatar_url.trim();
+  }
+  if (typeof meta.picture === "string" && meta.picture.trim()) {
+    return meta.picture.trim();
+  }
+  return null;
+}
+
 function profileUsername(user: User) {
   const meta = user.user_metadata ?? {};
   const raw = typeof meta.username === 'string' ? meta.username
@@ -35,9 +46,7 @@ export async function ensureAuthProfile(
     id: user.id,
     full_name: profileName(user),
     username: profileUsername(user),
-    avatar_url: typeof user.user_metadata?.avatar_url === 'string'
-      ? user.user_metadata.avatar_url
-      : null,
+    avatar_url: profileAvatarUrl(user),
     app_language: 'en',
     onboarding_completed: false,
   };
@@ -47,11 +56,15 @@ export async function ensureAuthProfile(
 
   const { data: existing, error: readError } = await supabase
     .from('profiles')
-    .select('id, onboarding_completed')
+    .select('id, onboarding_completed, avatar_url')
     .eq('id', user.id)
     .maybeSingle();
 
   if (existing) {
+    const avatarUrl = profileAvatarUrl(user);
+    if (!existing.avatar_url && avatarUrl) {
+      await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", user.id);
+    }
     return { onboarding_completed: existing.onboarding_completed };
   }
 

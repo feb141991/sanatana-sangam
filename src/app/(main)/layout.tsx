@@ -10,6 +10,7 @@ import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 import type { User } from '@supabase/supabase-js';
 import { OneSignalIdentityProvider } from '@/components/providers/OneSignalIdentityProvider';
+import { profileAvatarUrl } from '@/lib/auth-profile';
 
 function profileName(user: User) {
   const meta = user.user_metadata ?? {};
@@ -42,9 +43,7 @@ async function repairMissingProfile(user: User) {
     id: user.id,
     full_name: profileName(user),
     username: profileUsername(user),
-    avatar_url: typeof user.user_metadata?.avatar_url === 'string'
-      ? user.user_metadata.avatar_url
-      : null,
+    avatar_url: profileAvatarUrl(user),
     app_language: 'en',
     tradition: null,
     onboarding_completed: false,
