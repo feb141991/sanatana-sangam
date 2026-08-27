@@ -1,6 +1,7 @@
 'use client';
 
 import { 
+  Clock,
   Users, ShieldAlert, Bell, Globe, Activity, 
   Settings, ChevronRight, Search, 
   ArrowUpRight, BarChart3, AlertTriangle, 
@@ -201,6 +202,12 @@ export default function AdminDashboard() {
                   title="Calendar Governance"
                   desc="Golden-fixture sourcing, disputed variant review, and coverage by tradition."
                 />
+                <CommandLink
+                  href="/admin/crons"
+                  icon={Clock}
+                  title="Cron & Automation Health"
+                  desc="Monitor ~35 scheduled background jobs, view failure reasons & run tests."
+                />
               </div>
             </section>
 
@@ -232,6 +239,7 @@ export default function AdminDashboard() {
               <div className="relative z-10 space-y-6">
                 <h3 className="text-sm font-bold uppercase tracking-widest theme-ink">Quick Tools</h3>
                 <div className="space-y-3">
+                  <QuickTool icon={Clock} label="Cron Health & Runner" href="/admin/crons" />
                   <QuickTool icon={Megaphone} label="Global Broadcast" href="/admin/broadcast" />
                   <QuickTool icon={FileText} label="Export User Data" href="/admin/reports?tab=export" />
                   <QuickTool icon={RefreshCw} label={isFlushing ? "Flushing..." : "Flush Cache"} onClick={handleFlushCache} />

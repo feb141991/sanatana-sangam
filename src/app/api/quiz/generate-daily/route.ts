@@ -3,6 +3,7 @@ import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { getLanguageInstruction } from '@/lib/language-runtime';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
+import { recordCronTelemetry } from '@/lib/monitoring/cron-telemetry';
 
 const TRADITION_CONTEXT: Record<string, string> = {
   hindu:    'Hindu scriptures, deities, festivals, temples, philosophy (Vedanta, Yoga, Bhakti), rivers, sacred geography, Sanskrit terms, and Puranic stories',
@@ -59,20 +60,31 @@ function extractJsonBlock(raw: string): string {
 const TRADITIONS = ['hindu', 'sikh', 'buddhist', 'jain'];
 const LANGUAGES = ['en', 'hi', 'pa'];
 
-export async function POST(req: NextRequest) {
+async function handleGenerateDaily(req: NextRequest) {
+  const startTime = Date.now();
+  const route = '/api/quiz/generate-daily';
+  
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    await recordCronTelemetry({
+      route,
+      statusCode: 401,
+      durationMs: Date.now() - startTime,
+      error: 'Unauthorized — missing or invalid CRON_SECRET',
+    });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   let body: { tradition?: string; language?: string; date?: string } = {};
-  try {
-    const rawBody = await req.text();
-    if (rawBody) {
-      body = JSON.parse(rawBody);
+  if (req.method === 'POST') {
+    try {
+      const rawBody = await req.text();
+      if (rawBody) {
+        body = JSON.parse(rawBody);
+      }
+    } catch {
+      // Ignore invalid JSON, default to empty
     }
-  } catch (err) {
-    // Ignore invalid JSON, default to empty
   }
 
   const dateStr = body.date || new Date().toISOString().split('T')[0];
@@ -102,37 +114,39 @@ export async function POST(req: NextRequest) {
           continue;
         }
 
-        // Fetch last 90 days to avoid repetition
         const ninetyDaysAgo = new Date(dateStr);
         ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
+
         const { data: recentRows } = await supabase
           .from('daily_quiz' as unknown as 'quiz_responses')
           .select('question')
           .eq('tradition', tradition)
           .eq('language', language)
-          .gte('date', ninetyDaysAgo.toISOString().split('T')[0])
+          .gte('date', ninetyDaysAgoStr)
           .lt('date', dateStr)
           .order('date', { ascending: false })
           .limit(90);
+
         const recentQuestions = (recentRows as unknown as { question: string }[] | null)
-          ?.map((r) => r.question).filter(Boolean) ?? [];
+          ?.map(r => r.question)
+          .filter(Boolean) ?? [];
 
         const prompt = buildPrompt(tradition, dateStr, language, recentQuestions);
-        
         const result = await generateWithProvider(
           {
             system: 'You generate precise, valid JSON for structured spiritual quiz content.',
             user: prompt,
             temperature: 0.35,
             reasoningEffort: 'none',
-            maxOutputTokens: 2048,
+            maxOutputTokens: 1024,
           },
           { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
         );
 
         const cleaned = extractJsonBlock(result.text);
         let quiz: { question: string; options: string[]; answerIndex: number; explanation: string; fact: string; source: string };
-        
+
         try {
           quiz = JSON.parse(cleaned);
         } catch {
@@ -150,7 +164,7 @@ export async function POST(req: NextRequest) {
           throw new Error('Validation failed');
         }
 
-        const { error: insertError } = await supabase
+        await supabase
           .from('daily_quiz' as unknown as 'quiz_responses')
           .insert({
             tradition,
@@ -164,33 +178,53 @@ export async function POST(req: NextRequest) {
             source: quiz.source,
           } as unknown as never);
 
-        if (insertError) throw insertError;
-
         generated++;
         results.push({ tradition, language, date: dateStr, status: 'generated' });
+
         emitEvent({
           severity: 'P3',
           domain: 'ai',
           route: '/api/quiz/generate-daily',
-          context: { feature: 'daily_quiz_cron', tradition, language, date: dateStr, status: 'generated' },
+          latency_ms: Date.now() - startTime,
+          provider: result.provider,
+          model: result.modelUsed,
+          context: { feature: 'daily_quiz_cron', tradition, language, date: dateStr },
         });
-
       } catch (err: unknown) {
         failed++;
-        const errMsg = err instanceof Error ? err.message : String(err);
-        results.push({ tradition, language, date: dateStr, status: 'failed', error: errMsg });
-        emitError('ai', err instanceof Error ? err : new Error(errMsg), 'P2', {
-          route: '/api/quiz/generate-daily',
-          context: { tradition, language, date: dateStr },
-        });
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        results.push({ tradition, language, date: dateStr, status: 'failed', error: errorMessage });
+        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: dateStr } });
       }
     }
   }
 
-  return NextResponse.json({ generated, skipped, failed, results });
+  const responsePayload = {
+    message: 'Daily quiz generation run completed',
+    date: dateStr,
+    generated,
+    skipped,
+    failed,
+    results,
+  };
+
+  const statusCode = (failed > 0 && generated === 0) ? 500 : 200;
+
+  await recordCronTelemetry({
+    route,
+    statusCode,
+    durationMs: Date.now() - startTime,
+    responseData: responsePayload,
+    error: failed > 0 ? `${failed} quiz variations failed` : undefined,
+  });
+
+  return NextResponse.json(responsePayload, { status: statusCode });
 }
 
-// Vercel cron calls GET
 export async function GET(req: NextRequest) {
-  return POST(req);
+  return handleGenerateDaily(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleGenerateDaily(req);
 }
