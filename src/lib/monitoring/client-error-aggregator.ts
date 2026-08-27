@@ -1,4 +1,7 @@
 import { createAdminClient } from '@/lib/supabase-admin';
+import type { Database } from '@/types/database';
+
+type ClientErrorEventRow = Database['public']['Tables']['client_error_events']['Row'];
 
 export interface ClientErrorFingerprintGroup {
   fingerprint: string;
@@ -46,7 +49,7 @@ export async function fetchClientErrorMonitoringMetrics(): Promise<ClientErrorMo
     .select('*')
     .gte('created_at', twentyFourHoursAgo)
     .order('created_at', { ascending: false })
-    .limit(1500);
+    .limit(1500) as { data: ClientErrorEventRow[] | null; error: { message: string } | null };
 
   if (error) {
     console.error('[client-error-aggregator] Error fetching client_error_events:', error);
