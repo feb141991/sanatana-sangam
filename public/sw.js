@@ -15,45 +15,19 @@
 //   3. Set `serviceWorkerPath: '/OneSignalSDKWorker.js'` in OneSignal.init().
 // Docs: https://documentation.onesignal.com/docs/web-push-service-worker-faq
 //
-// Until that merge is done, this file is intentionally left unregistered.
-// Next.js static asset caching and browser defaults provide basic offline resilience.
-
-const CACHE_NAME = 'sangam-v2';
-const OFFLINE_URL = '/offline';
-
-const PRECACHE_ASSETS = [
-  '/',
-  '/home',
-  '/manifest.json',
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
-  );
-  self.skipWaiting();
-});
-
+// This retired worker intentionally has no fetch handler. If an older landing
+// page registered it, activation clears its caches and releases all requests
+// back to the browser/network until OneSignal installs its canonical worker.
+self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+      Promise.all(
+        keys
+          .filter((key) => key.startsWith('shoonaya-') || key.startsWith('sangam-'))
+          .map((key) => caches.delete(key)),
+      ),
+    ),
   );
   self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-
-  // Network first, fall back to cache
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
 });

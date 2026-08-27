@@ -8806,10 +8806,6 @@
             localStorage.setItem("pwa-nudge-dismissed", Date.now().toString()));
         }
         (sessionStorage.getItem("pwa-dismissed"),
-          "serviceWorker" in navigator &&
-            window.addEventListener("load", function () {
-              navigator.serviceWorker.register("/sw.js").catch(function () {});
-            }),
           /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) &&
             !t &&
             setTimeout(i, 3e3),
