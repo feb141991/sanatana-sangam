@@ -40,6 +40,7 @@ import { useZenithSensory } from '@/contexts/ZenithSensoryContext';
 import { MOODS_CONFIG } from '@/lib/mood/registry';
 import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 import { useUpcomingObservances } from '@/hooks/useUpcomingObservances';
+import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
 import dynamic from 'next/dynamic';
 
 // ── Refactored Section Components ──
@@ -479,7 +480,7 @@ export default function HomeDashboard({
   useEffect(() => {
     if (coverUrl) setCustomCover(coverUrl);
     else {
-      const saved = localStorage.getItem('user_cover_photo');
+      const saved = readLocalStorageItem('user_cover_photo');
       if (saved) setCustomCover(saved);
     }
   }, [coverUrl]);
@@ -611,7 +612,7 @@ export default function HomeDashboard({
         const quizData = { ...data, type: 'quiz' as const };
         setQuiz(quizData);
         setQuizDailyId(data.daily_quiz_id ?? null);
-        localStorage.setItem(QUIZ_CACHE_KEY,      JSON.stringify(quizData));
+        writeLocalStorageItem(QUIZ_CACHE_KEY, JSON.stringify(quizData));
 
         fetch('/api/quiz/stats')
           .then(r => r.ok ? r.json() : null)
@@ -627,7 +628,7 @@ export default function HomeDashboard({
     if (!quiz || typeof quiz === 'string' || quizAnswered !== null) return;
 
     setQuizAnswered(idx);
-    localStorage.setItem(QUIZ_ANSWERED_KEY, String(idx));
+    writeLocalStorageItem(QUIZ_ANSWERED_KEY, String(idx));
 
     if (idx === quiz.answerIndex) {
       setShowConfetti(true);

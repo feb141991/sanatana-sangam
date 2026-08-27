@@ -25,6 +25,7 @@ import {
   buildBrahmaDismissKey,
   getBrowserNotificationApi,
 } from '@/components/home/home-runtime-guards';
+import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
 
 interface BrahmaMuhurtaCardProps {
   /** String like "4:45 AM – 5:30 AM" from panchang.brahmaMuhurta */
@@ -74,7 +75,7 @@ export default function BrahmaMuhurtaCard({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    if (localStorage.getItem(buildBrahmaDismissKey(timezone))) { setDismissed(true); return; }
+    if (readLocalStorageItem(buildBrahmaDismissKey(timezone))) { setDismissed(true); return; }
     if (japaAlreadyDoneToday) { setDismissed(true); return; }
     setNotifGranted(getBrowserNotificationApi()?.permission === 'granted');
   }, [japaAlreadyDoneToday, timezone]);
@@ -115,7 +116,7 @@ export default function BrahmaMuhurtaCard({
   }, [dismissed, brahmaMuhurta, sunrise]);
 
   const dismiss = useCallback(() => {
-    localStorage.setItem(buildBrahmaDismissKey(timezone), '1');
+    writeLocalStorageItem(buildBrahmaDismissKey(timezone), '1');
     setDismissed(true);
   }, [timezone]);
 

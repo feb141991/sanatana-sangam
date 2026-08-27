@@ -17,6 +17,7 @@ import type { DharmVeer } from '@/lib/dharm-veer';
 import { format as fmtDate } from 'date-fns';
 import { getTransliteration } from '@/lib/transliteration';
 import { resolveEffectiveMeaningLanguage } from '@/lib/language-runtime';
+import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
 import { useLocalizedMeaning } from '@/hooks/useLocalizedMeaning';
 import { getUnlockedRelics } from '@/lib/relics';
 import { getRelicAccent } from '@/lib/relic-accents';
@@ -381,17 +382,18 @@ export function HeroSection({
   const [correctionModalOpen, setCorrectionModalOpen] = useState(false);
   const [heroImageFailed, setHeroImageFailed] = useState(false);
   const [heroPicker, setHeroPicker] = useState(false);
-  const [selectedHeroId, setSelectedHeroId] = useState<string | null>(() => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('shoonaya_hero_pick');
-  });
+  const [selectedHeroId, setSelectedHeroId] = useState<string | null>(null);
 
   const [customCover, setCustomCover] = useState<string | null>(coverUrl || null);
 
   useEffect(() => {
+    setSelectedHeroId(readLocalStorageItem('shoonaya_hero_pick'));
+  }, []);
+
+  useEffect(() => {
     if (coverUrl) setCustomCover(coverUrl);
     else {
-      const saved = localStorage.getItem('user_cover_photo');
+      const saved = readLocalStorageItem('user_cover_photo');
       if (saved) setCustomCover(saved);
     }
   }, [coverUrl]);
@@ -431,7 +433,7 @@ export function HeroSection({
       if (updateError) throw updateError;
 
       setCustomCover(publicUrl);
-      localStorage.setItem('user_cover_photo', publicUrl);
+      writeLocalStorageItem('user_cover_photo', publicUrl);
       toast.success('Home sanctuary updated! 🙏');
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Upload failed');
@@ -505,8 +507,10 @@ export function HeroSection({
 
   const handleHeroSelect = (id: string | null) => {
     setSelectedHeroId(id);
-    if (id) localStorage.setItem('shoonaya_hero_pick', id);
-    else     localStorage.removeItem('shoonaya_hero_pick');
+    if (id) writeLocalStorageItem('shoonaya_hero_pick', id);
+    else {
+      try { window.localStorage.removeItem('shoonaya_hero_pick'); } catch {}
+    }
     setHeroPicker(false);
     setHeroImageFailed(false);
   };
@@ -645,7 +649,7 @@ export function HeroSection({
                 onClick={async (e) => {
                   e.stopPropagation();
                   setCustomCover(null);
-                  localStorage.removeItem('user_cover_photo');
+                  try { window.localStorage.removeItem('user_cover_photo'); } catch {}
                   await supabase.from('profiles').update({ cover_url: null }).eq('id', userId);
                   toast.success('Restored default cover 🙏');
                 }}

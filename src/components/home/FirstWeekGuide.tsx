@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Circle, ChevronRight } from 'lucide-react';
 import { getTraditionMeta } from '@/lib/tradition-config';
+import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
 
 interface FirstWeekGuideProps {
   tradition?: string | null;
@@ -143,7 +144,7 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
     setMounted(true);
     setCompleted(getCompletedActs());
     if (typeof window !== 'undefined') {
-      setDismissed(localStorage.getItem(DISMISS_KEY) === 'true');
+      setDismissed(readLocalStorageItem(DISMISS_KEY) === 'true');
     }
   }, []);
 
@@ -158,7 +159,7 @@ export default function FirstWeekGuide({ tradition, userName, onDismiss }: First
 
   function dismiss() {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(DISMISS_KEY, 'true');
+      writeLocalStorageItem(DISMISS_KEY, 'true');
     }
     setDismissed(true);
     onDismiss?.();
