@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { getLanguageInstruction } from '@/lib/language-runtime';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { recordCronTelemetry } from '@/lib/monitoring/cron-telemetry';
+import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
 
 const TRADITION_CONTEXT: Record<string, string> = {
   hindu:    'Hindu scriptures, deities, festivals, temples, philosophy (Vedanta, Yoga, Bhakti), rivers, sacred geography, Sanskrit terms, and Puranic stories',
@@ -57,6 +58,21 @@ function extractJsonBlock(raw: string): string {
   return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
 }
 
+function getFallbackQuizFor(tradition: string, language: string, dateStr: string) {
+  const langPool = DAILY_FALLBACK_QUIZ[language] || DAILY_FALLBACK_QUIZ['en'] || {};
+  const traditionPool = langPool[tradition] || langPool['hindu'] || [];
+  if (traditionPool.length === 0) return null;
+
+  // Pick deterministic index from date
+  let hash = 0;
+  for (let i = 0; i < dateStr.length; i++) {
+    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % traditionPool.length;
+  return traditionPool[index];
+}
+
 const TRADITIONS = ['hindu', 'sikh', 'buddhist', 'jain'];
 const LANGUAGES = ['en', 'hi', 'pa'];
 
@@ -94,8 +110,9 @@ async function handleGenerateDaily(req: NextRequest) {
   const supabase = createAdminClient();
   let generated = 0;
   let skipped = 0;
+  let seededFallback = 0;
   let failed = 0;
-  const results: Array<{ tradition: string; language: string; date: string; status: 'generated'|'skipped'|'failed'; error?: string }> = [];
+  const results: Array<{ tradition: string; language: string; date: string; status: 'generated'|'skipped'|'seeded_from_fallback'|'failed'; error?: string }> = [];
 
   for (const tradition of traditions) {
     for (const language of languages) {
@@ -139,7 +156,7 @@ async function handleGenerateDaily(req: NextRequest) {
             user: prompt,
             temperature: 0.35,
             reasoningEffort: 'none',
-            maxOutputTokens: 1024,
+            maxOutputTokens: 2048,
           },
           { responseFormat: 'json', providerOverride: 'sarvam-hosted' }
         );
@@ -191,10 +208,38 @@ async function handleGenerateDaily(req: NextRequest) {
           context: { feature: 'daily_quiz_cron', tradition, language, date: dateStr },
         });
       } catch (err: unknown) {
-        failed++;
         const errorMessage = err instanceof Error ? err.message : String(err);
-        results.push({ tradition, language, date: dateStr, status: 'failed', error: errorMessage });
-        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: dateStr } });
+        
+        // Fallback data seeding so the user never sees empty state
+        const fallbackQuiz = getFallbackQuizFor(tradition, language, dateStr);
+        if (fallbackQuiz) {
+          try {
+            await supabase
+              .from('daily_quiz' as unknown as 'quiz_responses')
+              .insert({
+                tradition,
+                language,
+                date: dateStr,
+                question: fallbackQuiz.question,
+                options: fallbackQuiz.options,
+                answer_index: fallbackQuiz.answerIndex,
+                explanation: fallbackQuiz.explanation,
+                fact: fallbackQuiz.fact,
+                source: fallbackQuiz.source,
+              } as unknown as never);
+
+            seededFallback++;
+            results.push({ tradition, language, date: dateStr, status: 'seeded_from_fallback', error: errorMessage });
+          } catch (seedErr) {
+            failed++;
+            results.push({ tradition, language, date: dateStr, status: 'failed', error: `${errorMessage} (fallback insert failed: ${seedErr})` });
+          }
+        } else {
+          failed++;
+          results.push({ tradition, language, date: dateStr, status: 'failed', error: errorMessage });
+        }
+
+        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: dateStr, seededFallback: !!fallbackQuiz } });
       }
     }
   }
@@ -203,19 +248,20 @@ async function handleGenerateDaily(req: NextRequest) {
     message: 'Daily quiz generation run completed',
     date: dateStr,
     generated,
+    seeded_fallback: seededFallback,
     skipped,
     failed,
     results,
   };
 
-  const statusCode = (failed > 0 && generated === 0) ? 500 : 200;
+  const statusCode = (failed > 0 && generated === 0 && seededFallback === 0) ? 500 : 200;
 
   await recordCronTelemetry({
     route,
     statusCode,
     durationMs: Date.now() - startTime,
     responseData: responsePayload,
-    error: failed > 0 ? `${failed} quiz variations failed` : undefined,
+    error: failed > 0 ? `${failed} quiz variations failed completely` : undefined,
   });
 
   return NextResponse.json(responsePayload, { status: statusCode });
