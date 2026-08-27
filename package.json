@@ -125,5 +125,8 @@
   "optionalDependencies": {
     "@rollup/rollup-linux-arm64-gnu": "4.60.1",
     "@rollup/rollup-linux-x64-gnu": "4.60.1"
+  },
+  "overrides": {
+    "scheduler": "^0.23.2"
   }
 }
