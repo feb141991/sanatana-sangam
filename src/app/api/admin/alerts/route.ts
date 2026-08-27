@@ -1,12 +1,13 @@
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { fetchClientErrorMonitoringMetrics } from "@/lib/monitoring/client-error-aggregator";
 
 export interface UrgentAlertItem {
   id: string;
   title: string;
   desc: string;
-  type: "integrity" | "report" | "dharm_veer" | "system";
+  type: "integrity" | "report" | "dharm_veer" | "system" | "client_error";
   severity: "high" | "medium" | "low";
   href: string;
   timestamp: string;
@@ -21,7 +22,54 @@ export async function GET(request: NextRequest) {
   try {
     const alerts: UrgentAlertItem[] = [];
 
-    // 1. Calendar integrity findings -- Only trigger for genuine critical mismatches or active current year issues
+    // 1. Client Error Spikes & New Fingerprints
+    try {
+      const clientMetrics = await fetchClientErrorMonitoringMetrics();
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+
+      for (const fp of clientMetrics.fingerprints) {
+        const isBrandNew = fp.first_seen >= oneHourAgo;
+        const isSpike = fp.count_1h >= 10;
+        const isHomeSpike = fp.route === '/home' && fp.count_1h >= 3;
+        const isStaleSpike = fp.stale_client_count >= 5;
+
+        if (isBrandNew) {
+          alerts.push({
+            id: `client-err-new-${fp.fingerprint.slice(0, 10)}`,
+            title: `New Client Crash: ${fp.error_name} on ${fp.route}`,
+            desc: `Brand new fingerprint first seen at ${new Date(fp.first_seen).toLocaleTimeString()}. Message: ${fp.error_message.slice(0, 80)}`,
+            type: "client_error",
+            severity: fp.route === '/home' ? "high" : "medium",
+            href: "/admin/monitoring",
+            timestamp: fp.last_seen,
+          });
+        } else if (isHomeSpike || isSpike) {
+          alerts.push({
+            id: `client-err-spike-${fp.fingerprint.slice(0, 10)}`,
+            title: `Crash Spike (${fp.count_1h}/hr): ${fp.error_name} on ${fp.route}`,
+            desc: `Error frequency crossed threshold. ${fp.distinct_sessions_count} unique sessions affected in the last hour.`,
+            type: "client_error",
+            severity: "high",
+            href: "/admin/monitoring",
+            timestamp: fp.last_seen,
+          });
+        } else if (isStaleSpike) {
+          alerts.push({
+            id: `client-err-stale-${fp.fingerprint.slice(0, 10)}`,
+            title: `Stale Client Deployment Spike on ${fp.route}`,
+            desc: `${fp.stale_client_count} requests with stale bundle SHA detected (client !== server).`,
+            type: "client_error",
+            severity: "medium",
+            href: "/admin/monitoring",
+            timestamp: fp.last_seen,
+          });
+        }
+      }
+    } catch (clientErr) {
+      console.error('[admin/alerts] Failed to evaluate client error alerts:', clientErr);
+    }
+
+    // 2. Calendar integrity findings
     const { data: findings } = await (supabase
       .from("calendar_integrity_findings") as any)
       .select("*")
@@ -44,7 +92,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 2. Pending Content Reports
+    // 3. Pending Content Reports
     const { data: reports } = await (supabase
       .from("content_reports") as any)
       .select("id, reason, created_at, reporter_id")
@@ -66,7 +114,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 3. Pending Dharm Veer Reviews
+    // 4. Pending Dharm Veer Reviews
     const { data: dharmVeers } = await (supabase
       .from("dharm_veers") as any)
       .select("slug, name, updated_at")
@@ -92,10 +140,10 @@ export async function GET(request: NextRequest) {
       alerts.push({
         id: "system-ok",
         title: "All Systems Operational",
-        desc: "No open calendar integrity issues, pending reports, or unreviewed biographies.",
+        desc: "No open calendar integrity issues, client crash spikes, pending reports, or unreviewed biographies.",
         type: "system",
         severity: "low",
-        href: "/admin/calendar-governance",
+        href: "/admin/monitoring",
         timestamp: new Date().toISOString(),
       });
     }

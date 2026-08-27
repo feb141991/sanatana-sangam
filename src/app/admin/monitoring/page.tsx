@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import { resolveContentReport } from './actions';
 import PushMonitoringSection from './PushMonitoringSection';
+import ClientErrorMonitoringSection from './ClientErrorMonitoringSection';
 
 interface Props {
   searchParams?: Promise<{ aiReportStatus?: string }>;
@@ -68,6 +69,9 @@ export default async function MonitoringPage({ searchParams }: Props) {
         <h1 className="text-3xl font-bold mb-2">Operational Monitoring Window</h1>
         <p className="text-sm text-gray-500">Last updated: {new Date(report.lastUpdated).toLocaleString()}</p>
       </header>
+
+      {/* Client Error Stream & Crash Fingerprints */}
+      <ClientErrorMonitoringSection />
 
       {/* Push Notification Live Gateway & Delivery Health */}
       <PushMonitoringSection />
