@@ -16,6 +16,7 @@ import { verifyAdminToken, ADMIN_COOKIE } from '@/lib/admin-auth';
 
 const PREVIEW_COOKIE = 'shoonaya_preview';
 const AUTH_COOKIE_PATTERNS = ['auth-token', 'sb-'] as const;
+const AUTH_LOOKUP_TIMEOUT_MS = 2_500;
 
 const PUBLIC_ADMIN_PATHS = [
   '/admin/login',
@@ -125,6 +126,39 @@ async function getMiddlewareUser(req: NextRequest, res: NextResponse) {
   return supabase.auth.getUser();
 }
 
+export function shouldVerifyUserInMiddleware({
+  pathname,
+  appOpen,
+  isPublicPath,
+}: {
+  pathname: string;
+  appOpen: boolean;
+  isPublicPath: boolean;
+}): boolean {
+  // Authentication for application pages belongs to their server/client auth
+  // guards. Middleware only needs a verified user for these routing decisions.
+  return pathname === '/' || (!appOpen && !isPublicPath);
+}
+
+async function getMiddlewareUserWithTimeout(req: NextRequest, res: NextResponse) {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<{
+    data: { user: null };
+    error: null;
+  }>((resolve) => {
+    timeoutId = setTimeout(() => {
+      console.warn('[middleware] Supabase user lookup timed out; using anonymous routing fallback');
+      resolve({ data: { user: null }, error: null });
+    }, AUTH_LOOKUP_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([getMiddlewareUser(req, res), timeout]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 function redirectHome(req: NextRequest, res: NextResponse): NextResponse {
   const homeUrl = req.nextUrl.clone();
   homeUrl.pathname = '/home';
@@ -153,21 +187,6 @@ async function middlewareHandler(req: NextRequest) {
     return res;
   }
 
-  const hasAuthCookie = req.cookies.getAll().some((cookie) => isAuthCookieName(cookie.name));
-  const {
-    data: { user },
-    error: authError,
-  } = hasAuthCookie
-    ? await getMiddlewareUser(req, res)
-    : { data: { user: null }, error: null };
-
-  if (isInvalidAuthSessionError(authError)) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/login';
-    loginUrl.search = '?reason=session_expired';
-    return clearAuthCookies(req, NextResponse.redirect(loginUrl));
-  }
-
   // ── Step 1: ?preview=KEY → set cookie + redirect to clean URL ─────────────
   const previewParam = req.nextUrl.searchParams.get('preview');
   if (previewParam && envPreviewKey && previewParam === envPreviewKey) {
@@ -186,13 +205,31 @@ async function middlewareHandler(req: NextRequest) {
 
   // ── Step 2: Coming-soon gate ───────────────────────────────────────────────
   const appOpen = process.env.APP_OPEN !== 'false';
+  const isPublicPath =
+    ALWAYS_PUBLIC_EXACT.has(pathname) ||
+    ALWAYS_PUBLIC_PREFIX.some((prefix) => pathname.startsWith(prefix));
+  const hasAuthCookie = req.cookies.getAll().some((cookie) => isAuthCookieName(cookie.name));
+  const shouldVerifyUser = hasAuthCookie && shouldVerifyUserInMiddleware({
+    pathname,
+    appOpen,
+    isPublicPath,
+  });
+  const {
+    data: { user },
+    error: authError,
+  } = shouldVerifyUser
+    ? await getMiddlewareUserWithTimeout(req, res)
+    : { data: { user: null }, error: null };
+
+  if (isInvalidAuthSessionError(authError)) {
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.search = '?reason=session_expired';
+    return clearAuthCookies(req, NextResponse.redirect(loginUrl));
+  }
 
   if (!appOpen) {
-    const isPublic =
-      ALWAYS_PUBLIC_EXACT.has(pathname) ||
-      ALWAYS_PUBLIC_PREFIX.some(p => pathname.startsWith(p));
-
-    if (!isPublic) {
+    if (!isPublicPath) {
       // Logged-in users always get through. The gate is for anonymous visitors
       // only, but auth must be confirmed by Supabase instead of cookie presence.
       if (!user) {
