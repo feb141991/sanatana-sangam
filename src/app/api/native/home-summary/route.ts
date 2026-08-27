@@ -18,6 +18,7 @@ import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
 import { formatOccurrencesToResults } from '@/lib/calendar/observance-formatter';
+import { buildObservanceHref, getPulseRouteSlug } from '@/lib/observance-route';
 import { attachMaterialisationBatches } from '@/lib/calendar/occurrence-reader';
 
 export const runtime = 'nodejs';
@@ -266,11 +267,7 @@ function buildObservanceEntry(
   const name = definition.display_name;
   const routeKind = definition.route_kind || 'festival';
   const routeSlug = definition.route_slug || definition.slug;
-  const href = routeKind === 'vrat'
-    ? `/vrat/${routeSlug}`
-    : definition.route_kind === 'festival' && definition.route_slug
-      ? `/festival/${definition.route_slug}`
-      : '/panchang';
+  const href = buildObservanceHref(routeKind, routeSlug);
   const label = daysLeft === 0
     ? `Today is ${name}`
     : daysLeft === 1
@@ -458,19 +455,6 @@ function buildNextPractice(practices: PracticeRow[]) {
     progress: next.done ? 1 : next.progress,
   };
 }
-
-function getPulseRouteSlug(label: string) {
-  const normalized = label.toLowerCase();
-  if (normalized.includes('shivaratri')) return 'shivaratri';
-  if (normalized.includes('ekadashi')) return 'ekadashi';
-  if (normalized.includes('pradosh')) return 'pradosh';
-  if (normalized.includes('chaturthi')) return 'chaturthi';
-  if (normalized.includes('purnima')) return 'purnima';
-  if (normalized.includes('amavasya')) return 'amavasya';
-  return 'vrat';
-}
-
-
 
 type CachedGlobal<T> = {
   data: T;
@@ -782,8 +766,8 @@ export async function GET(request: NextRequest) {
       emoji: fallbackPulse.emoji,
       daysLeft: 0,
       routeKind: 'vrat',
-      routeSlug,
-      href: `/vrat/${routeSlug}`,
+      routeSlug: routeSlug ?? 'vrat',
+      href: buildObservanceHref('vrat', routeSlug),
       label: `${fallbackPulse.label} Today`,
       monthLabel: null,
       description: null,
