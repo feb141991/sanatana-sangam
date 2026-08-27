@@ -267,7 +267,7 @@ function buildObservanceEntry(
   const routeKind = definition.route_kind || 'festival';
   const routeSlug = definition.route_slug || definition.slug;
   const href = routeKind === 'vrat'
-    ? '/vrat'
+    ? `/vrat/${routeSlug}`
     : definition.route_kind === 'festival' && definition.route_slug
       ? `/festival/${definition.route_slug}`
       : '/panchang';
@@ -783,7 +783,7 @@ export async function GET(request: NextRequest) {
       daysLeft: 0,
       routeKind: 'vrat',
       routeSlug,
-      href: '/vrat',
+      href: `/vrat/${routeSlug}`,
       label: `${fallbackPulse.label} Today`,
       monthLabel: null,
       description: null,
