@@ -48,8 +48,16 @@ export async function consumePendingLegalAcceptance(): Promise<void> {
   // (or before email confirmation) would discard the pending acceptance
   // without ever recording it.
   const supabase = createClient();
-  const { data } = await supabase.auth.getSession();
-  if (!data.session) return;
+  let sessionData;
+  try {
+    const { data } = await supabase.auth.getSession();
+    sessionData = data;
+  } catch {
+    // Browser storage/lock failures must not become unhandled root-layout
+    // rejections. Keep the pending marker so a later navigation can retry.
+    return;
+  }
+  if (!sessionData.session) return;
 
   try {
     window.sessionStorage.removeItem(PENDING_KEY);

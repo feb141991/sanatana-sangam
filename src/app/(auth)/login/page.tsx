@@ -4,17 +4,24 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import BrandMark from '@/components/BrandMark';
 import { GoogleIcon, AppleIcon } from '@/components/ui';
 import { getAuthCallbackUrl } from '@/lib/auth-redirect';
-import { getClientPostAuthDestination } from '@/lib/auth-client-destination';
+import {
+  getClientPostAuthDestination,
+  navigateAfterAuthentication,
+} from '@/lib/auth-client-destination';
+
+function authFailureMessage(error: unknown): string {
+  if (error instanceof Error && error.message.trim()) return error.message;
+  return 'Sign in could not be completed. Please check your connection and try again.';
+}
 
 function LoginForm() {
-  const router       = useRouter();
   const searchParams = useSearchParams();
   const supabase     = useMemo(() => {
     if (typeof window === 'undefined') return null;
@@ -23,10 +30,15 @@ function LoginForm() {
 
   const handleOAuth = async (provider: 'google' | 'apple') => {
     if (!supabase) return;
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: getAuthCallbackUrl('/home') },
-    });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: getAuthCallbackUrl('/home') },
+      });
+      if (error) toast.error(error.message);
+    } catch (error) {
+      toast.error(authFailureMessage(error));
+    }
   };
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -86,17 +98,22 @@ function LoginForm() {
     }
 
     setLoading(true);
-    const normalizedEmail = email.trim().toLowerCase();
-    const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
-    if (error) {
-      toast.error(error.message);
-    } else {
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const { error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
       toast.success('Welcome back, Seeker 🙏');
       const destination = await getClientPostAuthDestination('/home');
-      router.push(destination);
-      router.refresh();
+      navigateAfterAuthentication(destination);
+    } catch (error) {
+      toast.error(authFailureMessage(error));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

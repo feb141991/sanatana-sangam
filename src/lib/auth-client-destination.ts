@@ -4,8 +4,28 @@ type AuthDestinationResponse = {
   destination?: unknown;
 };
 
-function isSafeInternalPath(value: unknown): value is string {
+export function isSafeInternalPath(value: unknown): value is string {
   return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//');
+}
+
+type AuthLocation = Pick<Location, 'assign'>;
+
+/**
+ * Start the authenticated tree with a fresh document request. A soft App
+ * Router transition can reuse the anonymous RSC tree that rendered the login
+ * page before Supabase finished persisting its cookies, which is especially
+ * fragile in installed PWAs and WebKit.
+ */
+export function navigateAfterAuthentication(
+  destination: unknown,
+  fallback = '/home',
+  locationTarget?: AuthLocation,
+): string {
+  const safeFallback = isSafeInternalPath(fallback) ? fallback : '/home';
+  const target = isSafeInternalPath(destination) ? destination : safeFallback;
+  const browserLocation = locationTarget ?? (typeof window !== 'undefined' ? window.location : null);
+  browserLocation?.assign(target);
+  return target;
 }
 
 export async function getClientPostAuthDestination(next = '/home') {
