@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { OptionalSectionBoundary } from '@/components/monitoring/OptionalSectionBoundary';
 
 const DivineDiyaCanvas = dynamic(() => import('@/components/canvas/DivineDiyaCanvas'), {
   ssr: false,
@@ -14,7 +15,14 @@ const DivineDiyaCanvas = dynamic(() => import('@/components/canvas/DivineDiyaCan
 export default function Divine3DDiyaSection() {
   return (
     <section className="my-6">
-      <DivineDiyaCanvas />
+      {/* Purely decorative -- Home is fully usable without it. A defect
+          here (see the react-reconciler/scheduler chunk-duplication
+          incidents ce_ce629613 and siblings) must never take the whole
+          page down, so it gets its own boundary rather than relying only
+          on the underlying bundling fix. */}
+      <OptionalSectionBoundary name="divine-diya-canvas">
+        <DivineDiyaCanvas />
+      </OptionalSectionBoundary>
     </section>
   );
 }

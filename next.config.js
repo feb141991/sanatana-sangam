@@ -118,6 +118,26 @@ const nextConfig = {
       ...config.resolve.alias,
       '@sangam/sadhana-engine': path.resolve(__dirname, 'packages/sadhana-engine/src/index.ts'),
       '@sangam/pathshala-engine': path.resolve(__dirname, 'packages/pathshala-engine/src/index.ts'),
+      // Force every import of these to the exact same file, regardless of
+      // which chunk (main bundle vs the lazily-loaded @react-three/fiber
+      // chunk) requests it. A single `npm overrides` dedupe on disk was not
+      // enough -- Next's own chunk-splitting still bundled a second, private
+      // copy of `scheduler` (and therefore a disconnected React internals
+      // object) into the async DivineDiyaCanvas chunk, which is what threw
+      // "Cannot read properties of undefined (reading 'ReactCurrentBatchConfig')"
+      // on Home 100% of the time that component mounted (incidents
+      // ce_ce629613, ce_fca6e023, ce_f254a5ad, ce_0d941ade, ce_a678bf20,
+      // ce_9499b8ef). Aliasing to an absolute resolved path makes webpack
+      // treat it as one module identity across every chunk, which npm
+      // overrides alone cannot guarantee once code-splitting is involved.
+      // The '$' suffix anchors this to an EXACT-match specifier only --
+      // without it, webpack treats the alias as a prefix match and it also
+      // hijacks subpaths like 'react/jsx-runtime' and 'react-dom/client',
+      // which breaks the build entirely (every file using JSX fails to
+      // resolve react/jsx-runtime).
+      react$: require.resolve('react'),
+      'react-dom$': require.resolve('react-dom'),
+      scheduler$: require.resolve('scheduler'),
     };
     config.resolve.extensionAlias = {
       ...config.resolve.extensionAlias,
