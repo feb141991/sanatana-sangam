@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { readLocalStorageItem, writeLocalStorageItem } from '@/lib/safe-browser-storage';
 
 type SensoryTheme = 'home' | 'bhakti' | 'pathshala' | 'panchang' | 'none';
 
@@ -27,18 +28,22 @@ const AMBIANCE_MAP: Record<SensoryTheme, string | null> = {
 export function ZenithSensoryProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [theme, setTheme] = useState<SensoryTheme>('none');
-  const [isMuted, setIsMuted] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('shoonaya-sensory-muted') === 'true';
-    }
-    return false;
-  });
+  const [isMuted, setIsMuted] = useState(false);
+  const [storageReady, setStorageReady] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Hydrate after mount so server and first-client render remain identical.
+  useEffect(() => {
+    const storedValue = readLocalStorageItem('shoonaya-sensory-muted');
+    if (storedValue !== null) setIsMuted(storedValue === 'true');
+    setStorageReady(true);
+  }, []);
 
   // Persist mute state
   useEffect(() => {
-    localStorage.setItem('shoonaya-sensory-muted', String(isMuted));
-  }, [isMuted]);
+    if (!storageReady) return;
+    writeLocalStorageItem('shoonaya-sensory-muted', String(isMuted));
+  }, [isMuted, storageReady]);
 
   // Automatically switch theme based on route
   useEffect(() => {
@@ -74,25 +79,32 @@ export function ZenithSensoryProvider({ children }: { children: React.ReactNode 
     // New Audio
     if (audioRef.current) audioRef.current.pause();
     
-    const newAudio = new Audio(url);
-    newAudio.loop = true;
-    newAudio.volume = 0;
-    audioRef.current = newAudio;
-    
-    const playPromise = newAudio.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        // Fade in
-        let vol = 0;
-        const fade = setInterval(() => {
-          if (vol < 0.15) { // Keep ambiance subtle
-            vol += 0.02;
-            newAudio.volume = vol;
-          } else {
-            clearInterval(fade);
-          }
-        }, 100);
-      }).catch(e => console.warn('[ZenithSensory] Audio blocked by browser policy:', e));
+    let newAudio: HTMLAudioElement;
+    try {
+      if (typeof window.Audio !== 'function') return;
+      newAudio = new window.Audio(url);
+      newAudio.loop = true;
+      newAudio.volume = 0;
+      audioRef.current = newAudio;
+
+      const playPromise = newAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          // Fade in
+          let vol = 0;
+          const fade = setInterval(() => {
+            if (vol < 0.15) { // Keep ambiance subtle
+              vol += 0.02;
+              newAudio.volume = vol;
+            } else {
+              clearInterval(fade);
+            }
+          }, 100);
+        }).catch(e => console.warn('[ZenithSensory] Audio blocked by browser policy:', e));
+      }
+    } catch (error) {
+      console.warn('[ZenithSensory] Audio is unavailable:', error);
+      return;
     }
 
     return () => {

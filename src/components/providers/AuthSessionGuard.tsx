@@ -60,19 +60,28 @@ export default function AuthSessionGuard() {
 
     // Proactively check for bad refresh tokens on mount.
     // Only fires once; ref guard prevents racing with the SIGNED_OUT event above.
-    supabase.auth.getSession().then(({ error }) => {
-      if (isPublicAuthPath) return;
-      if (!error) return;
-      const msg = error.message ?? '';
-      const isTokenError =
-        msg.includes('Refresh Token') ||
-        msg.includes('refresh_token') ||
-        hasErrorCode(error, 'refresh_token_not_found');
-      if (!isTokenError) return;
-      if (redirecting.current) return;
-      redirecting.current = true;
-      supabase.auth.signOut({ scope: 'local' }).finally(() => redirectToLogin('session_expired'));
-    });
+    void supabase.auth.getSession()
+      .then(({ error }) => {
+        if (isPublicAuthPath) return;
+        if (!error) return;
+        const msg = error.message ?? '';
+        const isTokenError =
+          msg.includes('Refresh Token') ||
+          msg.includes('refresh_token') ||
+          hasErrorCode(error, 'refresh_token_not_found');
+        if (!isTokenError) return;
+        if (redirecting.current) return;
+        redirecting.current = true;
+        void supabase.auth.signOut({ scope: 'local' })
+          .finally(() => redirectToLogin('session_expired'));
+      })
+      .catch((error: unknown) => {
+        // A transient browser storage/lock failure must not crash the app.
+        // Authenticated server layouts remain the source of truth for access.
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[AuthSessionGuard] Session check unavailable:', error);
+        }
+      });
 
     return () => subscription.unsubscribe();
   }, [pathname]);
