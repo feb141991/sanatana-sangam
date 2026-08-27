@@ -69,7 +69,9 @@
     "test:public-sources": "npx tsx --test src/lib/public-source-disclosures.test.ts",
     "test:mandali-write-contract": "npx vitest run src/lib/mandali-write-contract.test.ts",
     "verify:profiles-containment-shadow": "bash scripts/shadow/verify-profiles-containment-shadow.sh",
-    "verify:compliance-engineering": "node scripts/verify-compliance-engineering.mjs"
+    "verify:compliance-engineering": "node scripts/verify-compliance-engineering.mjs",
+    "verify:production-release": "node scripts/verify-production-release.mjs",
+    "test:client-errors": "npx tsx --test src/lib/client-error-contract.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.121.5",

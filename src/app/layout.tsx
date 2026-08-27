@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import AppProviders from '@/components/providers/AppProviders';
 import AuthSessionGuard from '@/components/providers/AuthSessionGuard';
 import WebConsentManager from '@/components/privacy/WebConsentManager';
+import ClientErrorReporter from '@/components/monitoring/ClientErrorReporter';
 import {
   Inter,
   Cormorant_Garamond,
@@ -169,6 +170,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="zenith-120fps">
         <AppProviders>
+          <ClientErrorReporter />
           <AuthSessionGuard />
           {children}
 

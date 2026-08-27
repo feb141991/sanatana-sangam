@@ -3,6 +3,51 @@ export type Json = string | number | boolean | null | { [key: string]: Json } | 
 export interface Database {
   public: {
     Tables: {
+      client_error_events: {
+        Row: {
+          id: string;
+          incident_id: string;
+          fingerprint: string;
+          source: 'react_root' | 'react_home' | 'window_error' | 'unhandled_rejection' | 'qa_probe';
+          error_name: string;
+          error_message: string;
+          stack: string | null;
+          component_stack: string | null;
+          route: string;
+          browser_family: string;
+          os_family: string;
+          client_release_sha: string;
+          client_deployment_url: string | null;
+          server_release_sha: string;
+          server_deployment_url: string | null;
+          service_worker_controller: string | null;
+          online: boolean | null;
+          anonymous_session_hash: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          incident_id: string;
+          fingerprint: string;
+          source: 'react_root' | 'react_home' | 'window_error' | 'unhandled_rejection' | 'qa_probe';
+          error_name: string;
+          error_message: string;
+          stack?: string | null;
+          component_stack?: string | null;
+          route: string;
+          browser_family: string;
+          os_family: string;
+          client_release_sha: string;
+          client_deployment_url?: string | null;
+          server_release_sha: string;
+          server_deployment_url?: string | null;
+          service_worker_controller?: string | null;
+          online?: boolean | null;
+          anonymous_session_hash?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database['public']['Tables']['client_error_events']['Insert']>;
+      };
       calendar_integrity_findings: {
         Row: {
           id: string;

@@ -1,9 +1,20 @@
 /** @type {import('next').NextConfig} */
 const path = require('path');
 const kathaAliases = require('./src/lib/katha-aliases.json');
+const packageJson = require('./package.json');
+
+const releaseIdentity = {
+  NEXT_PUBLIC_RELEASE_SHA:
+    process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA || 'local',
+  NEXT_PUBLIC_DEPLOYMENT_URL:
+    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL || 'local',
+  NEXT_PUBLIC_APP_VERSION: packageJson.version,
+  NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
+};
 
 const nextConfig = {
   output: 'standalone',
+  env: releaseIdentity,
   async redirects() {
     return [
       {
