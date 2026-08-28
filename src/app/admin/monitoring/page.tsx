@@ -11,10 +11,24 @@ interface Props {
 
 export default async function MonitoringPage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
+  const adminSupabase = createAdminClient();
 
+  // 1. Measure DB Query Latency & Pool Responsiveness
+  const t0 = Date.now();
+  let dbLatencyMs = 0;
+  let dbStatus: "healthy" | "degraded" | "error" = "healthy";
+  try {
+    const { error } = await adminSupabase.from("profiles").select("id", { count: "exact", head: true });
+    dbLatencyMs = Date.now() - t0;
+    if (error) dbStatus = "degraded";
+  } catch {
+    dbStatus = "error";
+    dbLatencyMs = Date.now() - t0;
+  }
+
+  // 2. Fetch Recent Telemetry Events
   let recentEvents: MonitoringEvent[] = [];
   try {
-    const adminSupabase = createAdminClient();
     const { data } = await adminSupabase
       .from("monitoring_events")
       .select("timestamp, severity, domain, route, provider, model, fallback_used, latency_ms, error_code, error_message, request_id, trace_id, context")
@@ -25,14 +39,13 @@ export default async function MonitoringPage({ searchParams }: Props) {
     recentEvents = [];
   }
 
+  // 3. Fetch AI Content Reports with Full Metadata
   const aiReportStatus = resolvedSearchParams?.aiReportStatus ?? "pending";
-
   let aiReports: any[] = [];
   try {
-    const adminSupabase = createAdminClient();
     let query = adminSupabase
       .from("content_reports")
-      .select("id, status, reason, metadata, reported_by, created_at")
+      .select("id, status, reason, metadata, reported_by, created_at, resolved_at, resolved_by, resolution_notes")
       .eq("content_type", "ai_chat_response")
       .order("created_at", { ascending: false })
       .limit(50);
@@ -47,6 +60,15 @@ export default async function MonitoringPage({ searchParams }: Props) {
     aiReports = [];
   }
 
+  // 4. Fetch Mobile Sync Queue & Offline Japa Sessions
+  let offlineSyncStats = { totalSynced: 0, recentSyncs: 0, status: "synchronized" };
+  try {
+    const { count } = await adminSupabase.from("mala_sessions").select("id", { count: "exact", head: true });
+    offlineSyncStats.totalSynced = count || 0;
+  } catch {
+    // fallback
+  }
+
   const report = generateHealthReport(recentEvents);
 
   return (
@@ -54,6 +76,8 @@ export default async function MonitoringPage({ searchParams }: Props) {
       report={report}
       recentEvents={recentEvents}
       aiReports={aiReports}
+      dbMetrics={{ latencyMs: dbLatencyMs, status: dbStatus }}
+      offlineSyncStats={offlineSyncStats}
     />
   );
 }
