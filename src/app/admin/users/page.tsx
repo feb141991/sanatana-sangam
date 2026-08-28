@@ -11,7 +11,7 @@ import {
   Search, UserMinus, UserCheck, Shield, ArrowLeft, Trash2, ShieldOff,
   MapPin, Flame, Mail, Calendar,
   ChevronRight, Filter, MoreVertical,
-  AlertCircle, Users, History, UserPlus, Heart,
+  AlertCircle, Users, History, UserPlus, Heart, Sparkles,
   Lightbulb, HandMetal, Flag, Ban
 } from 'lucide-react';
 import { getInitials } from '@/lib/utils';
@@ -374,10 +374,18 @@ export default function UserManagement() {
                     )}
                   </div>
 
-                  <div className="pt-6 border-t border-black/5 space-y-4">
+                  <div className="pt-6 border-t border-black/5 space-y-3">
+                    <Link
+                      href={`/admin/users/${selectedUser.id}`}
+                      className="w-full py-3.5 rounded-2xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-amber-900/20 transition-all"
+                    >
+                      <Sparkles size={16} />
+                      <span>Open Full Seeker Dossier & Timeline &rarr;</span>
+                    </Link>
+
                     <button
                       onClick={() => toggleBan(selectedUser)}
-                      className={`w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${
+                      className={`w-full py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all ${
                         selectedUser.is_banned 
                           ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' 
                           : 'bg-red-500 text-white shadow-lg shadow-red-500/20'
