@@ -483,14 +483,14 @@ export interface Database {
         Update: Partial<Database['public']['Tables']['forum_replies']['Insert']>;
       };
       post_upvotes: {
-        Row: { post_id: string; user_id: string; created_at: string };
-        Insert: Omit<Database['public']['Tables']['post_upvotes']['Row'], 'created_at'>;
-        Update: never;
+        Row: { post_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful'; created_at: string };
+        Insert: { post_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful'; created_at?: string };
+        Update: Partial<Database['public']['Tables']['post_upvotes']['Insert']>;
       };
       comment_upvotes: {
-        Row: { comment_id: string; user_id: string; created_at: string };
-        Insert: Omit<Database['public']['Tables']['comment_upvotes']['Row'], 'created_at'>;
-        Update: never;
+        Row: { comment_id: string; user_id: string; reaction_type: 'pranam' | 'love' | 'insightful'; created_at: string };
+        Insert: { comment_id: string; user_id: string; reaction_type?: 'pranam' | 'love' | 'insightful'; created_at?: string };
+        Update: Partial<Database['public']['Tables']['comment_upvotes']['Insert']>;
       };
       thread_upvotes: {
         Row: { thread_id: string; user_id: string; created_at: string };
