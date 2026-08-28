@@ -622,7 +622,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
                           <span>👤 Seeker Prompt</span>
                         </span>
                         <p className="text-xs text-gray-900 font-medium italic">
-                          "{report.metadata?.user_prompt || "No prompt text recorded"}"
+                          &ldquo;{report.metadata?.user_prompt || "No prompt text recorded"}&rdquo;
                         </p>
                       </div>
 
