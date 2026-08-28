@@ -84,6 +84,36 @@ const SECTION_INFO: Record<string, InfoModalData> = {
   },
 };
 
+
+function resolveServiceName(route?: string, domain?: string, context?: Record<string, unknown>): { name: string; tag: string; icon: string } {
+  if (context?.service && typeof context.service === "string") {
+    return { name: context.service, tag: route || "service", icon: "⚡" };
+  }
+  if (!route) {
+    if (domain === "ai") return { name: "AI Inference & Fallback Engine", tag: "ai-gateway", icon: "🧠" };
+    if (domain === "tts") return { name: "Sanskrit Recitation TTS", tag: "/api/tts", icon: "🔊" };
+    if (domain === "notifications") return { name: "Push Notification Gateway", tag: "notifications", icon: "🔔" };
+    if (domain === "cron") return { name: "Background Cron Job", tag: "cron", icon: "⏱️" };
+    return { name: "Core Platform Service", tag: domain || "system", icon: "⚙️" };
+  }
+
+  const r = route.toLowerCase();
+  if (r.includes("verify-festival-dates") || r.includes("festival")) return { name: "Festival Date Verification", tag: route, icon: "🎯" };
+  if (r.includes("ai/chat") || r.includes("chat")) return { name: "AI Guru Dharma Chat", tag: route, icon: "💬" };
+  if (r.includes("quiz")) return { name: "Daily Sadhana Quiz", tag: route, icon: "🌅" };
+  if (r.includes("tts")) return { name: "Sanskrit Shloka TTS Audio", tag: route, icon: "🔊" };
+  if (r.includes("i18n") || r.includes("meaning")) return { name: "Indic Shloka Translation", tag: route, icon: "📖" };
+  if (r.includes("notification-dispatch") || r.includes("dispatch")) return { name: "Push Notification Dispatcher", tag: route, icon: "🔔" };
+  if (r.includes("japa")) return { name: "Japa Sadhana Insights", tag: route, icon: "📿" };
+  if (r.includes("mood")) return { name: "Devotional Mood Reflection", tag: route, icon: "🌿" };
+  if (r.includes("sankalpa")) return { name: "Sankalpa Suggestion Engine", tag: route, icon: "🎯" };
+  if (r.includes("panchang")) return { name: "Panchang Astronomical Engine", tag: route, icon: "🕉️" };
+  if (r.includes("darshan")) return { name: "Live Darshan Crawler", tag: route, icon: "🏛️" };
+  if (r.includes("mandali")) return { name: "Mandali Community Engine", tag: route, icon: "👥" };
+
+  return { name: route.replace(/^\/api\//, "").replace(/-/g, " "), tag: route, icon: "⚡" };
+}
+
 export default function MonitoringClient({ report, recentEvents, aiReports }: Props) {
   const [activeTab, setActiveTab] = useState<"telemetry" | "push" | "errors" | "ai_reports">("telemetry");
   const [infoModal, setInfoModal] = useState<InfoModalData | null>(null);
@@ -425,8 +455,8 @@ export default function MonitoringClient({ report, recentEvents, aiReports }: Pr
                 <span>Severity / Time</span>
                 <button onClick={() => setInfoModal(SECTION_INFO.telemetry)} className="text-gray-400 hover:text-amber-700"><Info size={11} /></button>
               </span>
-              <span className="col-span-3">Domain / Route</span>
-              <span className="col-span-5">Message / Context</span>
+              <span className="col-span-4">Origin Service & Feature</span>
+              <span className="col-span-4">Message & Provider</span>
               <span className="col-span-2 text-right">Duration / Action</span>
             </div>
 
@@ -446,14 +476,33 @@ export default function MonitoringClient({ report, recentEvents, aiReports }: Pr
                       <p className="text-[10px] font-mono text-gray-400">{new Date(ev.timestamp).toLocaleTimeString()}</p>
                     </div>
 
-                    <div className="col-span-3 space-y-0.5">
-                      <b className="text-gray-900 truncate block">{ev.domain || "system"}</b>
-                      <code className="text-[10px] text-amber-800 truncate block font-mono">{ev.route || "internal"}</code>
+                    <div className="col-span-4 space-y-0.5">
+                      {(() => {
+                        const svc = resolveServiceName(ev.route, ev.domain, ev.context as any);
+                        return (
+                          <>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs">{svc.icon}</span>
+                              <b className="text-gray-900 text-xs truncate capitalize">{svc.name}</b>
+                            </div>
+                            <code className="text-[10px] text-purple-900 bg-purple-50 px-1.5 py-0.5 rounded font-mono truncate inline-block">
+                              {svc.tag}
+                            </code>
+                          </>
+                        );
+                      })()}
                     </div>
 
-                    <div className="col-span-5 space-y-0.5">
-                      <p className="text-gray-700 truncate">{ev.error_message || "Execution successful"}</p>
-                      {ev.provider && <p className="text-[10px] text-gray-400">Provider: {ev.provider} ({ev.model || "default"})</p>}
+                    <div className="col-span-4 space-y-0.5">
+                      <p className="text-gray-700 truncate text-xs">{ev.error_message || "Execution successful"}</p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                        {ev.provider && (
+                          <span className="px-1.5 py-0.2 rounded bg-gray-100 font-bold text-gray-700">
+                            [{ev.provider}]
+                          </span>
+                        )}
+                        {ev.model && <span>Model: {ev.model}</span>}
+                      </div>
                     </div>
 
                     <div className="col-span-2 text-right space-y-0.5">
