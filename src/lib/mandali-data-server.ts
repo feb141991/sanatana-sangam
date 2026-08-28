@@ -46,7 +46,15 @@ async function hydratePosts(rows: Post[]) {
 
 async function hydrateComments(rows: PostComment[]) {
   const authorMap = await loadSafeAuthors(rows.map((row) => row.author_id));
-  return rows.map((row) => ({ ...row, profiles: commentAuthorRelation(authorMap.get(row.author_id)) }));
+  return rows.map((row) => ({
+    ...row,
+    // deleted_at is set but the original body is kept in the DB for
+    // moderation/audit history -- it must never reach another user's
+    // client, so it's blanked here rather than relying on every consumer
+    // to remember to check deleted_at before rendering row.body.
+    body: row.deleted_at ? '' : row.body,
+    profiles: commentAuthorRelation(authorMap.get(row.author_id)),
+  }));
 }
 
 export async function loadMandaliDataForUser(userId: string): Promise<MandaliData> {

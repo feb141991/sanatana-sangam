@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
-import { parseMandaliCommentInput } from '@/lib/mandali-write-contract';
+import { parseMandaliCommentInput, parseMandaliCommentEditInput, parseMandaliCommentDeleteInput } from '@/lib/mandali-write-contract';
 import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function POST(request: NextRequest) {
@@ -44,4 +44,59 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: 'Could not create comment.' }, { status: 500 });
   const created = data as unknown as { id: string };
   return NextResponse.json({ id: created.id }, { status: 201 });
+}
+
+export async function PATCH(request: NextRequest) {
+  const rejected = rejectLargeRequest(request, 4_096)
+    ?? rateLimitByIp(request, { keyPrefix: 'mandali-comment-edit', limit: 20, windowMs: 60 * 60 * 1000 });
+  if (rejected) return rejected;
+  const { user } = await getApiUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const admin = createAdminClient();
+  const banned = await assertNotBanned(admin, user.id);
+  if (banned) return banned;
+  const input = parseMandaliCommentEditInput(await request.json().catch(() => null));
+  if (!input) return NextResponse.json({ error: 'Invalid comment.' }, { status: 400 });
+
+  const { data: existing } = await admin.from('post_comments').select('author_id, deleted_at').eq('id', input.commentId).maybeSingle();
+  const target = existing as unknown as { author_id: string; deleted_at: string | null } | null;
+  if (!target) return NextResponse.json({ error: 'Comment not found.' }, { status: 404 });
+  if (target.author_id !== user.id) return NextResponse.json({ error: 'Not your comment.' }, { status: 403 });
+  if (target.deleted_at) return NextResponse.json({ error: 'Comment is deleted.' }, { status: 400 });
+
+  const { error } = await admin.from('post_comments')
+    .update({ body: input.body, updated_at: new Date().toISOString() } as never)
+    .eq('id', input.commentId);
+  if (error) return NextResponse.json({ error: 'Could not update comment.' }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(request: NextRequest) {
+  const rejected = rateLimitByIp(request, { keyPrefix: 'mandali-comment-delete', limit: 20, windowMs: 60 * 60 * 1000 });
+  if (rejected) return rejected;
+  const { user } = await getApiUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const admin = createAdminClient();
+  const banned = await assertNotBanned(admin, user.id);
+  if (banned) return banned;
+  const input = parseMandaliCommentDeleteInput(await request.json().catch(() => null));
+  if (!input) return NextResponse.json({ error: 'Invalid request.' }, { status: 400 });
+
+  const { data: existing } = await admin.from('post_comments').select('author_id, deleted_at').eq('id', input.commentId).maybeSingle();
+  const target = existing as unknown as { author_id: string; deleted_at: string | null } | null;
+  if (!target) return NextResponse.json({ error: 'Comment not found.' }, { status: 404 });
+  if (target.author_id !== user.id) return NextResponse.json({ error: 'Not your comment.' }, { status: 403 });
+  if (target.deleted_at) return NextResponse.json({ ok: true });
+
+  // Soft delete: keeps the row (and any replies attached to it via
+  // parent_id, plus any content_reports referencing it) intact, so a
+  // deleted comment renders as a tombstone rather than orphaning its
+  // thread. The body itself is left in place for moderation/audit history
+  // -- clients render the "[deleted]" placeholder off deleted_at, never off
+  // an actually-blanked body.
+  const { error } = await admin.from('post_comments')
+    .update({ deleted_at: new Date().toISOString() } as never)
+    .eq('id', input.commentId);
+  if (error) return NextResponse.json({ error: 'Could not delete comment.' }, { status: 500 });
+  return NextResponse.json({ ok: true });
 }

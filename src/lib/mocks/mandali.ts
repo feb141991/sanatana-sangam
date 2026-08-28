@@ -55,7 +55,7 @@ const baseProfile: MandaliProfile = {
   onboarding_completed: true,
   onboarding_goal: 'daily_practice',
   mandali_id: 'mock-mandali-1',
-  onesignal_player_id: null,
+  onesignal_player_id: null, // column still exists in prod pending a drop migration (blocked by permission classifier, needs to be applied manually) -- see 20260828140000_drop_onesignal_player_id.sql
   country_code: 'GB',
   timezone: 'Europe/London',
   tradition: 'hindu',
@@ -142,6 +142,7 @@ const baseComments: PostCommentWithAuthor[] = [
     body: 'I can bring two mats.',
     parent_id: null,
     created_at: new Date('2026-04-11T10:00:00.000Z').toISOString(),
+    upvotes: 0,
     profiles: { full_name: 'Prince Sharma', username: 'prince', avatar_url: null },
   },
 ];
@@ -291,6 +292,7 @@ export async function createMockMandaliComment(userId: string, payload: {
     body: payload.body.trim(),
     parent_id: payload.parentId ?? null,
     created_at: new Date().toISOString(),
+    upvotes: 0,
     profiles: { full_name: 'You', username: 'you', avatar_url: null },
   });
 }

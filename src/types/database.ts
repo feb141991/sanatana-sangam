@@ -368,8 +368,9 @@ export interface Database {
           created_at: string;
           updated_at?: string | null;
           deleted_at?: string | null;
+          upvotes: number;
         };
-        Insert: Omit<Database['public']['Tables']['post_comments']['Row'], 'id' | 'created_at'>;
+        Insert: Omit<Database['public']['Tables']['post_comments']['Row'], 'id' | 'created_at' | 'upvotes'>;
         Update: Partial<Database['public']['Tables']['post_comments']['Insert']>;
       };
       event_rsvps: {
@@ -484,6 +485,11 @@ export interface Database {
       post_upvotes: {
         Row: { post_id: string; user_id: string; created_at: string };
         Insert: Omit<Database['public']['Tables']['post_upvotes']['Row'], 'created_at'>;
+        Update: never;
+      };
+      comment_upvotes: {
+        Row: { comment_id: string; user_id: string; created_at: string };
+        Insert: Omit<Database['public']['Tables']['comment_upvotes']['Row'], 'created_at'>;
         Update: never;
       };
       thread_upvotes: {

@@ -40,3 +40,20 @@ export function parseMandaliCommentInput(value: unknown): { postId: string; body
   if (!postId || !body || body.length > 1_000 || parentId === undefined) return null;
   return { postId, body, parentId };
 }
+
+export function parseMandaliCommentEditInput(value: unknown): { commentId: string; body: string } | null {
+  if (!value || typeof value !== 'object') return null;
+  const input = value as Record<string, unknown>;
+  const commentId = typeof input.commentId === 'string' ? input.commentId.trim() : '';
+  const body = typeof input.body === 'string' ? input.body.trim() : '';
+  if (!commentId || !body || body.length > 1_000) return null;
+  return { commentId, body };
+}
+
+export function parseMandaliCommentDeleteInput(value: unknown): { commentId: string } | null {
+  if (!value || typeof value !== 'object') return null;
+  const input = value as Record<string, unknown>;
+  const commentId = typeof input.commentId === 'string' ? input.commentId.trim() : '';
+  if (!commentId) return null;
+  return { commentId };
+}
