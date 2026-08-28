@@ -413,13 +413,13 @@ export async function recordCronTelemetry(params: {
   durationMs: number;
   error?: unknown;
   responseData?: unknown;
-  triggeredBy?: 'vercel_cron' | 'admin_manual';
+  triggeredBy?: "vercel_cron" | "admin_manual";
 }): Promise<void> {
-  const { route, statusCode, durationMs, error, responseData, triggeredBy = 'vercel_cron' } = params;
+  const { route, statusCode, durationMs, error, responseData, triggeredBy = "vercel_cron" } = params;
 
   const isOk = statusCode >= 200 && statusCode < 300;
-  const severity = isOk ? 'P3' : statusCode >= 500 ? 'P1' : 'P2';
-  const errorMessage = error instanceof Error ? error.message : typeof error === 'string' ? error : (statusCode >= 400 ? `HTTP ${statusCode}` : undefined);
+  const severity: "P0" | "P1" | "P2" | "P3" = isOk ? "P3" : statusCode >= 500 ? "P1" : "P2";
+  const errorMessage = error instanceof Error ? error.message : typeof error === "string" ? error : (statusCode >= 400 ? `HTTP ${statusCode}` : undefined);
 
   let safeContext: Record<string, string | number | boolean | null> = {
     status_code: statusCode,
@@ -427,28 +427,40 @@ export async function recordCronTelemetry(params: {
     triggered_by: triggeredBy,
   };
 
-  if (responseData && typeof responseData === 'object') {
+  if (responseData && typeof responseData === "object") {
     try {
       const respObj = responseData as Record<string, unknown>;
-      if ('sent' in respObj && typeof respObj.sent === 'number') safeContext.sent_count = respObj.sent;
-      if ('inserted' in respObj && typeof respObj.inserted === 'number') safeContext.inserted_count = respObj.inserted;
-      if ('push_targets' in respObj && typeof respObj.push_targets === 'number') safeContext.push_targets = respObj.push_targets;
-      if ('message' in respObj && typeof respObj.message === 'string') safeContext.response_message = respObj.message.slice(0, 200);
-      if ('error' in respObj && typeof respObj.error === 'string') safeContext.response_error = respObj.error.slice(0, 200);
+      if ("sent" in respObj && typeof respObj.sent === "number") safeContext.sent_count = respObj.sent;
+      if ("inserted" in respObj && typeof respObj.inserted === "number") safeContext.inserted_count = respObj.inserted;
+      if ("push_targets" in respObj && typeof respObj.push_targets === "number") safeContext.push_targets = respObj.push_targets;
+      if ("message" in respObj && typeof respObj.message === "string") safeContext.response_message = respObj.message.slice(0, 200);
+      if ("error" in respObj && typeof respObj.error === "string") safeContext.response_error = respObj.error.slice(0, 200);
     } catch {
       // ignore
     }
   }
 
-  emitEvent({
-    domain: 'cron',
+  const now = new Date().toISOString();
+  const eventPayload = {
+    timestamp: now,
+    domain: "cron" as const,
     severity,
     route,
     latency_ms: durationMs,
     error_code: isOk ? undefined : String(statusCode),
     error_message: errorMessage,
     context: safeContext,
-  });
+  };
+
+  // Immediate durable insert to Supabase so that status matrix reflects changes instantly
+  try {
+    const supabase = createAdminClient() as any;
+    await supabase.from("monitoring_events").insert([eventPayload]);
+  } catch (err) {
+    console.warn("[Cron Telemetry] Immediate insert warning:", err);
+  }
+
+  emitEvent(eventPayload);
 }
 
 export async function fetchCronStatusMatrix(): Promise<CronStatusSummary[]> {
