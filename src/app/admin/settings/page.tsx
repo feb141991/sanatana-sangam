@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Settings, Save, Shield, Bell, 
-  Globe, Database, ArrowLeft, Lock,
+  Settings, Save, Shield, Bell,
+  Globe, Database, ArrowLeft,
   RefreshCw, Cloud
 } from 'lucide-react';
 import Link from 'next/link';
@@ -81,13 +81,6 @@ export default function GlobalSettings() {
             <Cloud size={16} className="text-purple-500" /> Third-Party Hooks
           </h2>
           <div className="glass-panel rounded-3xl border border-black/5 p-6 space-y-6 bg-white/40">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-[var(--brand-muted)] uppercase tracking-widest">OneSignal App ID</label>
-              <div className="relative">
-                <input type="password" value="********-****-****-****-************" readOnly className="w-full bg-black/5 border border-black/5 rounded-2xl px-5 py-3 text-xs outline-none" />
-                <Lock size={14} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--brand-muted)]" />
-              </div>
-            </div>
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-[var(--brand-muted)] uppercase tracking-widest">WhatsApp API Endpoint</label>
               <input type="text" placeholder="https://api.whatsapp.com/..." className="w-full bg-white border border-black/5 rounded-2xl px-5 py-3 text-xs outline-none" />

@@ -8,11 +8,14 @@
 //   2. For each kul, count who practiced today (via kul_practice_today view)
 //   3. If ≥1 member practiced and user hasn't → generate community nudge
 //   4. Write to notifications table (in-app bell)
-//   5. Optionally push via OneSignal
+//
+// OneSignal push delivery (send_push param, sendOneSignalPush) was removed
+// 2026-08-28 -- the team is focusing on native and retiring the PWA, and
+// native push goes through Expo (see src/lib/push-server.ts in the main
+// repo), not this function.
 //
 // POST body:
 //   user_id     string   — user to nudge
-//   send_push?  boolean  — send OneSignal push (default false)
 //
 // Deploy:
 //   supabase functions deploy ai-kul-nudge
@@ -23,7 +26,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-const ONESIGNAL_API = 'https://onesignal.com/api/v1/notifications';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -34,7 +36,7 @@ serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS_HEADERS });
 
   try {
-    const { user_id, send_push = false } = await req.json();
+    const { user_id } = await req.json();
     if (!user_id) return errorResponse('user_id is required', 400);
 
     const supabase = createClient(
@@ -152,16 +154,6 @@ serve(async (req: Request) => {
       sent_timezone:    'UTC',
     }, { onConflict: 'notification_key' });
 
-    // ── 7. Optionally push via OneSignal ──
-    let push_sent = false;
-    let push_error: string | null = null;
-
-    if (send_push) {
-      const result = await sendOneSignalPush(supabase, user_id, message);
-      push_sent = result.success;
-      push_error = result.error;
-    }
-
     return new Response(
       JSON.stringify({
         nudged:     true,
@@ -171,8 +163,6 @@ serve(async (req: Request) => {
         total_japa: stats.totalJapa,
         message:    message.message,
         call_to_action: message.call_to_action,
-        push_sent,
-        push_error,
         generated_at: new Date().toISOString(),
       }),
       { headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
@@ -247,42 +237,6 @@ Return JSON only:
       call_to_action: 'Begin my practice',
     };
   }
-}
-
-// ── OneSignal push ──
-
-async function sendOneSignalPush(
-  supabase: ReturnType<typeof createClient>,
-  userId: string,
-  message: { message: string; call_to_action: string }
-): Promise<{ success: boolean; error: string | null }> {
-  const appId      = Deno.env.get('ONESIGNAL_APP_ID');
-  const restApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
-  if (!appId || !restApiKey) return { success: false, error: 'OneSignal secrets not configured' };
-
-  const { data: tokens } = await supabase
-    .from('device_tokens')
-    .select('player_id')
-    .eq('user_id', userId)
-    .eq('is_active', true);
-
-  if (!tokens?.length) return { success: false, error: 'No active device tokens' };
-
-  const resp = await fetch(ONESIGNAL_API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Basic ${restApiKey}` },
-    body: JSON.stringify({
-      app_id:             appId,
-      include_player_ids: tokens.map((t: { player_id: string }) => t.player_id),
-      contents:           { en: message.message },
-      buttons:            [{ id: 'open_app', text: message.call_to_action }],
-      data:               { nudge_type: 'kul_nudge', source: 'sadhana-engine' },
-      collapse_id:        `kul-nudge-${userId.slice(0, 8)}`,
-    }),
-  });
-
-  if (!resp.ok) return { success: false, error: `OneSignal ${resp.status}` };
-  return { success: true, error: null };
 }
 
 function errorResponse(message: string, status: number) {

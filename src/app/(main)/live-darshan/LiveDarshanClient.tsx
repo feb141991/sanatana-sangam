@@ -10,7 +10,6 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { LiveStream, LiveStreamCategory } from '@/lib/live-streams';
 import SacredIcon, { SacredIconName } from '@/components/ui/SacredIcon';
-import { withOneSignal, getPermissionState } from '@/lib/onesignal';
 import InteractiveAarti from '@/components/darshan/InteractiveAarti';
 import toast from 'react-hot-toast';
 
@@ -725,16 +724,6 @@ export default function LiveDarshanClient({
     update: { notify_morning: boolean; notify_evening: boolean }
   ) => {
     const wantsNotif = update.notify_morning || update.notify_evening;
-    if (wantsNotif) {
-      const permState = await getPermissionState();
-      if (permState !== 'granted') {
-        await withOneSignal(async (OS) => {
-          if (typeof OS.Notifications?.requestPermission === 'function') {
-            await OS.Notifications.requestPermission();
-          }
-        });
-      }
-    }
     await savePref(streamId, update);
     setNotifTarget(null);
     toast.success(wantsNotif ? '🔔 Aarti call saved' : 'Notifications turned off');

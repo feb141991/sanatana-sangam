@@ -133,7 +133,6 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const oneSignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID;
   const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
   const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
@@ -187,7 +186,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           />
         </AppProviders>
 
-        <WebConsentManager gaMeasurementId={gaMeasurementId} oneSignalAppId={oneSignalAppId} adsenseClient={adsenseClient} />
+        <WebConsentManager gaMeasurementId={gaMeasurementId} adsenseClient={adsenseClient} />
       </body>
     </html>
   );

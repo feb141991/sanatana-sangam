@@ -53,7 +53,6 @@ import { resolveReadablePreferences } from '@/lib/readable-preferences';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { getVratData, resolveVratSlug } from '@/lib/vrat-data';
 import PageIntro from '@/components/ui/PageIntro';
-import { withOneSignal } from '@/lib/onesignal';
 import {
   buildNityaMonthlyCardData,
   resolveNityaMilestoneLabel,
@@ -507,14 +506,6 @@ function saveCustom(userId: string, custom: NityaCustom) {
 }
 
 async function scheduleMorningAlert(time: string) {
-  try {
-    await withOneSignal(async (OS) => {
-      await OS.User.addTag('nitya_alert_time', time);
-    });
-  } catch (err) {
-    console.warn('[Nitya OneSignal Alert] Non-fatal OneSignal tag error:', err);
-  }
-
   try {
     if (typeof window !== 'undefined' && 'Notification' in window) {
       const permission = await Notification.requestPermission();

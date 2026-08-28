@@ -52,7 +52,7 @@ function ensureMockProfile(userId: string): Profile {
       onboarding_completed: true,
       onboarding_goal: 'daily_practice',
       mandali_id: 'mock-mandali-1',
-      onesignal_player_id: null,
+      onesignal_player_id: null, // column still exists in prod pending a drop migration (blocked by permission classifier, needs to be applied manually) -- see 20260828140000_drop_onesignal_player_id.sql
       country_code: 'GB',
       timezone: 'Europe/London',
       tradition: 'hindu',

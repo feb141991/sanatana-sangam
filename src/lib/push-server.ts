@@ -4,27 +4,24 @@ import { createServiceRoleSupabaseClient } from '@/lib/admin';
 import { recordPushTokenEventBatch } from '@/lib/push-token-audit';
 
 // --- Push send path -----------------------------------------------------------
-// Two independent channels, both keyed off Supabase user ids:
+// Expo push -- reaches the native mobile app, keyed off Supabase user ids.
+// Expo push has no device registry of its own, so we look up each target
+// user's tokens from our own `push_tokens` table (migration
+// 20260716124259_push_tokens.sql, populated via POST
+// /api/notifications/register-token from the native app).
 //
-// 1. Expo push -- reaches the native mobile app. Replaces what used to be
-//    OneSignal's native SDK integration (react-native-onesignal). Expo push
-//    has no device registry of its own, so we look up each target user's
-//    tokens from our own `push_tokens` table (migration
-//    20260716124259_push_tokens.sql, populated via POST
-//    /api/notifications/register-token from the native app).
-//
-// 2. OneSignal -- reaches PWA browser push subscribers. This is a *separate*
-//    integration from the native app's old OneSignal usage -- see
-//    src/components/providers/OneSignalIdentityProvider.tsx and
-//    src/lib/onesignal.ts, which bind a browser subscription to
-//    `external_id = user.id` client-side. That integration was never part
-//    of the native-app migration and stays exactly as it was.
+// OneSignal (the former PWA-browser-push channel) was removed: the team is
+// focusing on native and retiring the PWA, and OneSignal had no other live
+// purpose here. PWA browser users no longer receive push notifications --
+// a deliberate tradeoff, not an oversight (see git history around
+// 2026-08-28 for the removal). notification_delivery_audit rows tagged
+// provider='onesignal' are historical data from before this removal and are
+// left as-is.
 //
 // The public contract (sendPushNotification's args/return shape, plus the
-// dry-run/safety-state gating and per-user audit logging) is kept identical
-// to the old sendOneSignalPush on purpose -- every cron and route that calls
-// this only ever reads `.sent` off the result, so none of those ~29 call
-// sites needed to change beyond the import name.
+// dry-run/safety-state gating and per-user audit logging) predates this
+// removal -- every cron and route that calls this only ever reads `.sent`
+// off the result, so no call site needed to change.
 
 type PushMessage = {
   userIds: string[];
@@ -48,18 +45,8 @@ const EXPO_PUSH_API_URL = 'https://exp.host/--/api/v2/push/send';
 // request -- not 100 users, since a user can have multiple devices/tokens.
 const EXPO_MESSAGE_BATCH_SIZE = 100;
 
-const ONESIGNAL_API_URL = 'https://api.onesignal.com/notifications';
-const ONESIGNAL_BATCH_SIZE = 1000;
-
 function getExpoAccessToken(): string | null {
   return process.env.EXPO_ACCESS_TOKEN?.trim() || null;
-}
-
-function getOneSignalServerConfig() {
-  const appId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID?.trim();
-  const apiKey = process.env.ONESIGNAL_REST_API_KEY?.trim();
-  if (!appId || !apiKey) return null;
-  return { appId, apiKey };
 }
 
 // Expo push has no app-level API key the way OneSignal did -- any valid
@@ -67,13 +54,6 @@ function getOneSignalServerConfig() {
 // that matters for a boolean status flag.
 export function canSendPush() {
   return true;
-}
-
-// Whether the OneSignal (PWA browser push) channel is configured -- kept
-// separate from canSendPush() since the two channels are genuinely
-// independent and callers/diagnostics may care about either one.
-export function canSendOneSignalPush() {
-  return Boolean(getOneSignalServerConfig());
 }
 
 function chunk<T>(items: T[], size: number) {
@@ -102,7 +82,7 @@ function buildAuditRows({
   userIds: string[];
   type: string;
   status: 'sent' | 'failed' | 'dry_run' | 'disabled' | 'unconfigured' | 'skipped';
-  provider: 'expo' | 'onesignal';
+  provider: 'expo';
   dryRun?: boolean;
   disabled?: boolean;
   providerMessageId?: string | null;
@@ -131,12 +111,6 @@ function buildAuditRows({
     errorMessage: errorMessage ?? undefined,
     metadata: metadata as Record<string, unknown>,
   }));
-}
-
-function asProviderMessageId(payload: unknown): string | null {
-  if (!payload || typeof payload !== 'object' || !('id' in payload)) return null;
-  const id = (payload as { id: unknown }).id;
-  return typeof id === 'string' ? id : null;
 }
 
 type ExpoTicket =
@@ -352,108 +326,6 @@ async function sendViaExpo(
   return sentUserIds;
 }
 
-// --- Channel 2: OneSignal (PWA browser push) ---------------------------------
-
-async function sendViaOneSignal(
-  targetUserIds: string[],
-  message: PushMessage,
-  messageType: string,
-  options: SendPushOptions | undefined
-): Promise<Set<string>> {
-  const sentUserIds = new Set<string>();
-  const config = getOneSignalServerConfig();
-
-  if (!config) {
-    await recordNotificationDeliveryBatch(buildAuditRows({
-      userIds: targetUserIds,
-      type: messageType,
-      status: 'unconfigured',
-      provider: 'onesignal',
-      notificationKey: options?.notificationKey ?? null,
-      notificationKeysByUserId: options?.notificationKeysByUserId,
-      notificationIdsByUserId: options?.notificationIdsByUserId,
-      metadata: {
-        reason: 'onesignal_unconfigured',
-        url: message.url ?? null,
-        target_count: targetUserIds.length,
-        ...options?.metadata,
-      },
-    }));
-    return sentUserIds;
-  }
-
-  for (const batch of chunk(targetUserIds, ONESIGNAL_BATCH_SIZE)) {
-    try {
-      const response = await fetch(ONESIGNAL_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Key ${config.apiKey}`,
-        },
-        body: JSON.stringify({
-          app_id: config.appId,
-          include_aliases: { external_id: batch },
-          target_channel: 'push',
-          headings: { en: message.title },
-          contents: { en: message.body },
-          url: message.url ?? undefined,
-          data: message.data ?? undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('OneSignal push failed:', response.status, errorText);
-        await recordNotificationDeliveryBatch(buildAuditRows({
-          userIds: batch,
-          type: messageType,
-          status: 'failed',
-          provider: 'onesignal',
-          errorCode: String(response.status),
-          errorMessage: errorText.slice(0, 500),
-          notificationKey: options?.notificationKey ?? null,
-          notificationKeysByUserId: options?.notificationKeysByUserId,
-          notificationIdsByUserId: options?.notificationIdsByUserId,
-          metadata: { url: message.url ?? null, batch_size: batch.length, ...options?.metadata },
-        }));
-        continue;
-      }
-
-      const responsePayload: unknown = await response.json().catch(() => null);
-      const providerMessageId = asProviderMessageId(responsePayload);
-
-      await recordNotificationDeliveryBatch(buildAuditRows({
-        userIds: batch,
-        type: messageType,
-        status: 'sent',
-        provider: 'onesignal',
-        providerMessageId,
-        notificationKey: options?.notificationKey ?? null,
-        notificationKeysByUserId: options?.notificationKeysByUserId,
-        notificationIdsByUserId: options?.notificationIdsByUserId,
-        metadata: { url: message.url ?? null, batch_size: batch.length, ...options?.metadata },
-      }));
-      for (const userId of batch) sentUserIds.add(userId);
-    } catch (error) {
-      console.error('OneSignal push request crashed:', error);
-      await recordNotificationDeliveryBatch(buildAuditRows({
-        userIds: batch,
-        type: messageType,
-        status: 'failed',
-        provider: 'onesignal',
-        errorCode: 'request_crashed',
-        errorMessage: error instanceof Error ? error.message : String(error),
-        notificationKey: options?.notificationKey ?? null,
-        notificationKeysByUserId: options?.notificationKeysByUserId,
-        notificationIdsByUserId: options?.notificationIdsByUserId,
-        metadata: { url: message.url ?? null, batch_size: batch.length, ...options?.metadata },
-      }));
-    }
-  }
-
-  return sentUserIds;
-}
-
 // --- Public entry point --------------------------------------------------------
 
 export async function sendPushNotification(message: PushMessage, options?: SendPushOptions) {
@@ -496,19 +368,12 @@ export async function sendPushNotification(message: PushMessage, options?: SendP
     };
   }
 
-  // Fan out to both channels independently -- a user reachable on either
-  // (or both) counts as reached. Neither channel blocks the other.
-  const [expoSent, oneSignalSent] = await Promise.all([
-    sendViaExpo(targetUserIds, message, messageType, options),
-    sendViaOneSignal(targetUserIds, message, messageType, options),
-  ]);
-
-  const sentUnion = new Set<string>([...expoSent, ...oneSignalSent]);
+  const expoSent = await sendViaExpo(targetUserIds, message, messageType, options);
 
   return {
     attempted: targetUserIds.length,
-    sent: sentUnion.size,
-    skipped: targetUserIds.length - sentUnion.size,
+    sent: expoSent.size,
+    skipped: targetUserIds.length - expoSent.size,
     dryRun: false,
     disabled: false,
     configured: true,

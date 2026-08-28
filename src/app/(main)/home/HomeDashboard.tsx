@@ -1017,13 +1017,6 @@ export default function HomeDashboard({
         onDismissRashiphalNudge={() => {
           try { localStorage.setItem('shoonaya-rashiphal-nudge-v1', 'yes'); } catch {}
           setShowRashiphalNudge(false);
-          import('@/lib/onesignal')
-            .then(({ withOneSignal }) => withOneSignal(async (OS) => {
-              if (typeof OS.User?.addTag === 'function') {
-                await OS.User.addTag('wants_rashiphal', '1');
-              }
-            }))
-            .catch(() => {});
         }}
         showDharmaMitraNudge={showDharmaMitraNudge}
         onDismissDharmaMitraNudge={() => {

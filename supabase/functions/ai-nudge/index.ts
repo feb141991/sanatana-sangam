@@ -1,36 +1,32 @@
 // ============================================================
 // Edge Function: ai-nudge
 // Generates adaptive streak recovery and reminder messages via Gemini.
-// Optionally delivers them as OneSignal push notifications.
+// Writes each nudge to the in-app 'notifications' table. OneSignal push
+// delivery (send_push param, sendOneSignalPush) was removed 2026-08-28 --
+// the team is focusing on native and retiring the PWA, and native push
+// goes through Expo (see src/lib/push-server.ts in the main repo), not
+// this function.
 //
 // POST body (streak recovery):
 //   user_id     string  — the user
 //   days_missed number  — days since last practice
 //   type?       string  — 'streak_recovery' (default) | 'vrata_reminder' | 'morning_reminder'
-//   send_push?  boolean — if true, send push via OneSignal (default false)
 //
 // POST body (vrata reminder):
 //   user_id     string
 //   type        'vrata_reminder'
 //   vrata_name? string  — optional override; if omitted, tomorrow's festival is fetched
 //   tithi?      string  — optional override
-//   send_push?  boolean
 //
 // POST body (morning reminder):
 //   user_id     string
 //   type        'morning_reminder'
 //   panchang?   { tithi, vrata?, festival? } — optional override; today's festival is fetched
-//   send_push?  boolean
-//
-// All nudge types automatically write to the 'notifications' table
-// so the in-app notification bell stays in sync with push delivery.
 //
 // Deploy:
 //   supabase functions deploy ai-nudge
 // Secrets needed:
 //   supabase secrets set GEMINI_API_KEY=AIza...
-//   supabase secrets set ONESIGNAL_APP_ID=your-app-id
-//   supabase secrets set ONESIGNAL_REST_API_KEY=your-rest-api-key
 // ============================================================
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -38,8 +34,6 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const GEMINI_URL =
   'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
-const ONESIGNAL_API = 'https://onesignal.com/api/v1/notifications';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -53,7 +47,7 @@ serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const { user_id, type = 'streak_recovery', send_push = false } = body;
+    const { user_id, type = 'streak_recovery' } = body;
 
     if (!user_id) return errorResponse('user_id is required', 400);
 
@@ -179,22 +173,11 @@ serve(async (req: Request) => {
         : (tomorrowFestival?.emoji ?? '🙏'),
     });
 
-    // ── Optionally send as OneSignal push notification ──
-    let push_sent = false;
-    let push_error: string | null = null;
-
-    if (send_push) {
-      const pushResult = await sendOneSignalPush(supabase, user_id, message, type);
-      push_sent = pushResult.success;
-      push_error = pushResult.error;
-    }
-
     return new Response(
       JSON.stringify({
         ...message,
         style: nudgeStyle,
         generated_at: new Date().toISOString(),
-        ...(send_push ? { push_sent, push_error } : {}),
       }),
       { headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
     );
@@ -245,86 +228,6 @@ async function writeInAppNotification(
   } catch (err) {
     // Non-fatal — push still sends even if in-app write fails
     console.warn('writeInAppNotification failed:', err);
-  }
-}
-
-// ── OneSignal push delivery ──
-
-async function sendOneSignalPush(
-  supabase: ReturnType<typeof createClient>,
-  userId: string,
-  message: { message: string; call_to_action: string },
-  nudgeType: string
-): Promise<{ success: boolean; error: string | null }> {
-  const appId = Deno.env.get('ONESIGNAL_APP_ID');
-  const restApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
-
-  if (!appId || !restApiKey) {
-    return { success: false, error: 'OneSignal secrets not configured' };
-  }
-
-  // Look up the user's active player IDs from device_tokens table
-  const { data: tokens, error: tokenError } = await supabase
-    .from('device_tokens')
-    .select('player_id')
-    .eq('user_id', userId)
-    .eq('is_active', true);
-
-  if (tokenError || !tokens?.length) {
-    return { success: false, error: 'No active device tokens for user' };
-  }
-
-  const playerIds = tokens.map((t: { player_id: string }) => t.player_id);
-
-  // Build OneSignal payload
-  // https://documentation.onesignal.com/reference/create-notification
-  const payload = {
-    app_id: appId,
-    include_player_ids: playerIds,
-    contents: { en: message.message },
-    buttons: [
-      { id: 'open_app', text: message.call_to_action },
-    ],
-    // Custom data — lets the app deep-link to the right screen
-    data: {
-      nudge_type: nudgeType,
-      source: 'sadhana-engine',
-    },
-    // Collapse duplicate notifications of the same type
-    collapse_id: `sangam-${nudgeType}-${userId.slice(0, 8)}`,
-    // Respect quiet hours — only deliver between 6 AM and 10 PM device time
-    delayed_option: 'timezone',
-    delivery_time_of_day: nudgeType === 'morning_reminder' ? '4:30AM' : undefined,
-    // iOS specific
-    ios_sound: 'default',
-    ios_badge_type: 'Increase',
-    ios_badge_count: 1,
-    // Android specific
-    android_channel_id: 'sadhana-reminders',
-    priority: nudgeType === 'morning_reminder' ? 10 : 5,
-  };
-
-  try {
-    const resp = await fetch(ONESIGNAL_API, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${restApiKey}`,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.error('OneSignal error:', errText);
-      return { success: false, error: `OneSignal ${resp.status}: ${errText}` };
-    }
-
-    const result = await resp.json();
-    console.log('OneSignal sent:', result.id, `→ ${playerIds.length} device(s)`);
-    return { success: true, error: null };
-  } catch (err) {
-    return { success: false, error: String(err) };
   }
 }
 

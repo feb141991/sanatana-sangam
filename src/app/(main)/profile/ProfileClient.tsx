@@ -19,7 +19,6 @@ import { APP_LANGUAGES, MEANING_LANGUAGE_OPTIONS, SCRIPTURE_SCRIPT_OPTIONS, TRAN
 import type { TraditionKey } from '@/lib/traditions';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
-import { getPlayerId, getPermissionState, logoutFromOneSignal, requestNotificationPermission } from '@/lib/onesignal';
 import type { Profile } from '@/types/database';
 import { ageToAshrama, ageFromDob, getAshramaMeta, type LifeStage, type GenderContext } from '@/lib/ashrama';
 import TierBadge from '@/components/ui/TierBadge';
@@ -325,17 +324,6 @@ export default function ProfileClient({
   async function handleToggleReminder() {
     if (!reminderEnabled) {
       try {
-        const granted = await requestNotificationPermission();
-        if (!granted) {
-          toast.error('Enable notifications in browser settings');
-          return;
-        }
-
-        const playerId = await getPlayerId();
-        if (playerId) {
-          await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
-        }
-
         const prefRes = await fetch('/api/push/preferences', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -467,7 +455,6 @@ export default function ProfileClient({
 
   const initials  = getInitials(liveProfile?.full_name ?? 'S');
   const profileTimezone = (liveProfile as any)?.timezone ?? null;
-  const onesignalPlayerId = (liveProfile as any)?.onesignal_player_id ?? null;
   const [notificationPrefs, setNotificationPrefs] = useState({
     wants_festival_reminders: (liveProfile as any)?.wants_festival_reminders ?? true,
     wants_shloka_reminders: (liveProfile as any)?.wants_shloka_reminders ?? true,
@@ -508,16 +495,6 @@ export default function ProfileClient({
     
     syncMembership().then(() => setRepairing(false));
   }, [userId, supabase]);
-
-  // Save OneSignal player ID when permission is granted
-  useEffect(() => {
-    if (!userId) return;
-    if (getPermissionState() !== 'granted') return;
-    if (onesignalPlayerId) return; // already saved
-    getPlayerId().then((id) => {
-      if (id) supabase.from('profiles').update({ onesignal_player_id: id }).eq('id', userId);
-    });
-  }, [onesignalPlayerId, supabase, userId]);
 
   // ── Detect-and-Ask Timezone Update (Rule 2) ───────────────────────────────
   const [showTzPrompt, setShowTzPrompt] = useState(false);
@@ -791,12 +768,6 @@ export default function ProfileClient({
   }
 
   async function signOut() {
-    try {
-      await logoutFromOneSignal();
-    } catch {
-      // Never let push cleanup block the actual auth sign-out.
-    }
-
     const { error } = await supabase.auth.signOut();
     if (error) {
       toast.error(error.message);
@@ -2377,17 +2348,6 @@ export default function ProfileClient({
                       key={item.key}
                       onClick={async () => {
                         const next = !checked;
-                        if (next && getPermissionState() !== 'granted') {
-                          const granted = await requestNotificationPermission();
-                          if (!granted) {
-                            toast.error('Enable notifications in browser settings');
-                            return;
-                          }
-                          const playerId = await getPlayerId();
-                          if (playerId) {
-                            await supabase.from('profiles').update({ onesignal_player_id: playerId }).eq('id', userId);
-                          }
-                        }
                         setNotificationPrefs(prev => ({ ...prev, [item.key]: next }));
                         patchProfile({ [item.key]: next }, `${item.label} ${next ? 'enabled' : 'disabled'}`);
                       }}

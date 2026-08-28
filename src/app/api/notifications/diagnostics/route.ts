@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
-import { canSendPush, canSendOneSignalPush } from '@/lib/push-server';
+import { canSendPush } from '@/lib/push-server';
 import { getDisabledNotificationTypes, getNotificationSafetyState } from '@/lib/notification-safety';
 
 // --- Notification Diagnostics Endpoint ---------------------------------------
@@ -9,12 +9,9 @@ import { getDisabledNotificationTypes, getNotificationSafetyState } from '@/lib/
 // Returns a checklist of every layer in the notification pipeline so we can
 // pinpoint exactly which step is broken without digging through Vercel logs.
 //
-// Two independent push channels as of the native app's OneSignal -> Expo
-// migration (see src/lib/push-server.ts): Expo push reaches the native
-// mobile app (checks 1/2/7 below), OneSignal still reaches PWA browser
-// push subscribers exactly as before (checks 1b/7b) -- that integration
-// (OneSignalIdentityProvider.tsx, lib/onesignal.ts) was untouched by the
-// migration and is unrelated to the native app.
+// Expo push reaches the native mobile app (checks 1/2/7 below). OneSignal
+// (the former PWA browser push channel) was removed 2026-08-28 -- see
+// src/lib/push-server.ts.
 
 export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
@@ -37,23 +34,6 @@ export async function GET(request: Request) {
     detail: expoAccessToken
       ? `Set (${expoAccessToken.slice(0, 6)}...)`
       : 'Not set -- fine unless "Enhanced Security for Push Notifications" is enabled in the Expo dashboard for this project, in which case sends will fail without it.',
-  };
-
-  // -- 1b. Env var: OneSignal App ID / REST key (PWA browser push) ----------
-  const onesignalAppId = process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID?.trim();
-  checks.onesignal_app_id = {
-    ok: Boolean(onesignalAppId),
-    detail: onesignalAppId
-      ? `Set (${onesignalAppId.slice(0, 8)}...)`
-      : 'Missing -- NEXT_PUBLIC_ONESIGNAL_APP_ID not set; PWA browser push subscription will not initialize',
-  };
-
-  const onesignalApiKey = process.env.ONESIGNAL_REST_API_KEY?.trim();
-  checks.onesignal_rest_key = {
-    ok: Boolean(onesignalApiKey),
-    detail: onesignalApiKey
-      ? `Set (${onesignalApiKey.slice(0, 6)}...)`
-      : 'Missing -- ONESIGNAL_REST_API_KEY not set; server cannot push to PWA browser subscribers',
   };
 
   // -- 2. This user's registered Expo push tokens (native app) --------------
@@ -97,8 +77,6 @@ export async function GET(request: Request) {
       `notificationsDryRun=${safetyState.isDryRun ? 'true' : 'false'}`,
       `disabledTypes=${getDisabledNotificationTypes().join(',') || 'none'}`,
       `expoPushConfigured=${canSendPush() ? 'true' : 'false'}`,
-      `oneSignalConfigured=${canSendOneSignalPush() ? 'true' : 'false'}`,
-      `legacyWebPushRuntimeActive=false`,
       `reason=${safetyState.disabledReason || 'N/A'}`,
     ].join('; '),
   };
@@ -215,15 +193,6 @@ export async function GET(request: Request) {
     detail: tokenCount > 0
       ? 'This account has at least one registered native device token — server push should reach the app'
       : 'No native device token registered for this account yet — push cannot reach the app until it registers one',
-  };
-
-  // -- 7b. OneSignal push reachability summary (PWA browser) -------------------
-  const oneSignalReady = canSendOneSignalPush();
-  checks.onesignal_push_configured = {
-    ok: oneSignalReady,
-    detail: oneSignalReady
-      ? 'Both App ID and REST key are set — server can push to PWA browser subscribers'
-      : 'Server-side PWA push disabled — add NEXT_PUBLIC_ONESIGNAL_APP_ID and ONESIGNAL_REST_API_KEY to environment variables',
   };
 
   // -- 8. User profile: timezone set? -----------------------------------------

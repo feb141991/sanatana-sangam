@@ -67,7 +67,7 @@ export async function DELETE(
       "full_name", "username", "avatar_url", "bio", "city", "country",
       "gotra", "kul_devata", "date_of_birth", "legacy_family_name",
       "home_town", "home_city", "home_country", "custom_greeting",
-      "onesignal_player_id", "latitude", "longitude", "home_latitude", "home_longitude"
+      "latitude", "longitude", "home_latitude", "home_longitude"
     ];
 
     const { error: profileUpdateError } = await admin.supabase
@@ -87,7 +87,6 @@ export async function DELETE(
         home_city: null,
         home_country: null,
         custom_greeting: null,
-        onesignal_player_id: null,
         latitude: null,
         longitude: null,
         home_latitude: null,

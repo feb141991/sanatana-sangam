@@ -54,13 +54,6 @@ export const API = {
     USER_AGENT: 'SanatanaSangam/1.0',
   },
 
-  /** OneSignal — web push notifications (App ID comes from env) */
-  ONESIGNAL: {
-    SDK_URL:  'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js',
-    /** App ID is read from NEXT_PUBLIC_ONESIGNAL_APP_ID env var */
-    APP_ID:   process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID ?? '',
-  },
-
 } as const;
 
 

@@ -9,7 +9,6 @@ import { EngineProvider } from '@/contexts/EngineContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import type { AppLang } from '@/lib/i18n/translations';
 import type { User } from '@supabase/supabase-js';
-import { OneSignalIdentityProvider } from '@/components/providers/OneSignalIdentityProvider';
 import { profileAvatarUrl } from '@/lib/auth-profile';
 
 function profileName(user: User) {
@@ -73,11 +72,6 @@ async function repairMissingProfile(user: User) {
     username: insertProfile.username,
     app_language: insertProfile.app_language,
     is_banned: false,
-    wants_festival_reminders: true,
-    wants_shloka_reminders: true,
-    wants_nitya_reminders: true,
-    wants_community_notifications: true,
-    wants_family_notifications: true,
   };
 }
 
@@ -100,17 +94,10 @@ export default async function MainLayout({
   let tradition:        string        = 'hindu';
   let appLanguage: AppLang            = 'en';
 
-  // Notification preferences
-  let wantsFestivalReminders = true;
-  let wantsShlokaReminders = true;
-  let wantsNityaReminders = true;
-  let wantsCommunityNotifications = true;
-  let wantsFamilyNotifications = true;
-
   if (user) {
     let { data: profile } = await supabase
       .from('profiles')
-      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, app_language, is_banned, wants_festival_reminders, wants_shloka_reminders, wants_nitya_reminders, wants_community_notifications, wants_family_notifications')
+      .select('latitude, longitude, city, country, country_code, tradition, full_name, username, app_language, is_banned')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -139,13 +126,6 @@ export default async function MainLayout({
     userName         = profile.full_name ?? profile.username ?? 'Sadhak';
     tradition        = profile.tradition ?? 'hindu';
 
-    // Notifications mapping
-    wantsFestivalReminders = profile.wants_festival_reminders ?? true;
-    wantsShlokaReminders = profile.wants_shloka_reminders ?? true;
-    wantsNityaReminders = profile.wants_nitya_reminders ?? true;
-    wantsCommunityNotifications = profile.wants_community_notifications ?? true;
-    wantsFamilyNotifications = profile.wants_family_notifications ?? true;
-
     const rawLang = profile.app_language ?? 'en';
     appLanguage = (['en', 'hi', 'pa'] as AppLang[]).includes(rawLang as AppLang)
       ? (rawLang as AppLang)
@@ -154,17 +134,6 @@ export default async function MainLayout({
 
   return (
     <LanguageProvider lang={appLanguage}>
-      <OneSignalIdentityProvider
-        userId={userId || null}
-        tradition={tradition}
-        city={savedCity}
-        countryCode={savedCountryCode}
-        wantsFestivalReminders={wantsFestivalReminders}
-        wantsShlokaReminders={wantsShlokaReminders}
-        wantsNityaReminders={wantsNityaReminders}
-        wantsCommunityNotifications={wantsCommunityNotifications}
-        wantsFamilyNotifications={wantsFamilyNotifications}
-      />
       <div className="min-h-screen flex min-w-0 flex-col overflow-x-hidden">
         <main className="flex-1 min-w-0 max-w-2xl mx-auto w-full overflow-x-hidden px-3 pt-safe-top pb-28 sm:px-4">
           <EngineProvider userId={userId || null} tradition={tradition}>

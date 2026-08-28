@@ -10,7 +10,6 @@
 // Output per member:
 //   - In-app notification (notifications table)
 //   - A bot message posted to kul_messages
-//   - Optional OneSignal push
 //
 // Deploy:
 //   supabase functions deploy ai-kul-summary

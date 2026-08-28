@@ -14,9 +14,9 @@ import {
   type WebConsentPreferences,
 } from '@/lib/web-consent';
 
-type Props = { gaMeasurementId?: string; oneSignalAppId?: string; adsenseClient?: string };
+type Props = { gaMeasurementId?: string; adsenseClient?: string };
 
-export default function WebConsentManager({ gaMeasurementId, oneSignalAppId, adsenseClient }: Props) {
+export default function WebConsentManager({ gaMeasurementId, adsenseClient }: Props) {
   const [preferences, setPreferences] = useState<WebConsentPreferences>(defaultWebConsent);
   const [open, setOpen] = useState(false);
   const [customizing, setCustomizing] = useState(false);
@@ -31,7 +31,7 @@ export default function WebConsentManager({ gaMeasurementId, oneSignalAppId, ads
     return () => window.removeEventListener(OPEN_PRIVACY_CHOICES_EVENT, reopen);
   }, []);
 
-  function save(nextValues: Pick<WebConsentPreferences, 'analytics' | 'advertising' | 'push'>) {
+  function save(nextValues: Pick<WebConsentPreferences, 'analytics' | 'advertising'>) {
     const next: WebConsentPreferences = { version: WEB_CONSENT_VERSION, ...nextValues, decidedAt: new Date().toISOString() };
     clearVendorState(preferences, next);
     try { window.localStorage.setItem(WEB_CONSENT_STORAGE_KEY, JSON.stringify(next)); } catch { /* fail closed in memory */ }
@@ -55,23 +55,15 @@ export default function WebConsentManager({ gaMeasurementId, oneSignalAppId, ads
       {preferences.advertising && adsenseClient ? (
         <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`} crossOrigin="anonymous" strategy="afterInteractive" />
       ) : null}
-      {preferences.push && oneSignalAppId ? (
-        <>
-          <Script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" strategy="afterInteractive" />
-          <Script id="onesignal-consented-init" strategy="afterInteractive">
-            {`window.OneSignalDeferred=window.OneSignalDeferred||[];OneSignalDeferred.push(async function(OneSignal){await OneSignal.init({appId:"${oneSignalAppId}",notifyButton:{enable:false},allowLocalhostAsSecureOrigin:true,serviceWorkerPath:"/OneSignalSDKWorker.js",serviceWorkerUpdaterPath:"/OneSignalSDKUpdaterWorker.js",serviceWorkerParam:{scope:"/"}});});`}
-          </Script>
-        </>
-      ) : null}
       {open ? (
         <div role="dialog" aria-modal="true" aria-label="Privacy choices" className="fixed inset-x-3 bottom-3 z-[200] mx-auto max-w-xl rounded-2xl border border-black/10 bg-[#fffaf2] p-5 text-[#3f2a20] shadow-2xl dark:border-white/10 dark:bg-[#17120d] dark:text-[#f7ead8]">
           <h2 className="font-display text-xl font-bold">Your privacy choices</h2>
-          <p className="mt-2 text-sm leading-6 opacity-80">Shoonaya uses necessary storage for sign-in and preferences. Analytics, advertising and web push stay off unless you choose them.</p>
+          <p className="mt-2 text-sm leading-6 opacity-80">Shoonaya uses necessary storage for sign-in and preferences. Analytics and advertising stay off unless you choose them.</p>
           {customizing ? (
             <div className="mt-4 space-y-3">
-              {(['analytics', 'advertising', 'push'] as const).map((key) => (
+              {(['analytics', 'advertising'] as const).map((key) => (
                 <label key={key} className="flex min-h-11 items-center justify-between gap-4 rounded-xl border border-current/10 px-3 py-2 capitalize">
-                  {key === 'push' ? 'Web push engagement' : key}
+                  {key}
                   <input type="checkbox" checked={preferences[key]} onChange={(event) => setPreferences((current) => ({ ...current, [key]: event.target.checked }))} />
                 </label>
               ))}
@@ -79,9 +71,9 @@ export default function WebConsentManager({ gaMeasurementId, oneSignalAppId, ads
             </div>
           ) : (
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
-              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => save({ analytics: false, advertising: false, push: false })}>Reject optional</button>
+              <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => save({ analytics: false, advertising: false })}>Reject optional</button>
               <button className="min-h-11 rounded-xl border border-current/20 px-3 font-semibold" onClick={() => setCustomizing(true)}>Customize</button>
-              <button className="min-h-11 rounded-xl bg-[#9a641e] px-3 font-semibold text-white" onClick={() => save({ analytics: true, advertising: true, push: true })}>Accept optional</button>
+              <button className="min-h-11 rounded-xl bg-[#9a641e] px-3 font-semibold text-white" onClick={() => save({ analytics: true, advertising: true })}>Accept optional</button>
             </div>
           )}
         </div>
