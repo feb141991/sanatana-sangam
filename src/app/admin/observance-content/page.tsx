@@ -398,43 +398,63 @@ export default function ObservanceContentStudioPage() {
       {/* ─── TAB 1: COVERAGE MATRIX ────────────────────────────────────────── */}
       {activeTab === "coverage" && (
         <div className="space-y-6">
-          {/* Summary Metric Cards */}
+          {/* Summary Metric Cards (Interactive Filter Tiles) */}
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="rounded-2xl border bg-white p-5 shadow-2xs">
+            <button
+              onClick={() => setStatusFilter(statusFilter === "published" ? "all" : "published")}
+              className={"text-left rounded-2xl border p-5 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer " + (
+                statusFilter === "published" ? "bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/20" : "bg-white border-black/10 hover:border-emerald-500/40"
+              )}
+            >
               <div className="flex items-center justify-between text-emerald-600">
                 <b className="text-3xl font-serif">{counts.published}</b>
                 <CheckCircle size={20} />
               </div>
-              <p className="text-xs font-bold opacity-65 mt-1">Live & Published</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">PWA & Native offline snapshots</p>
-            </div>
+              <p className="text-xs font-bold opacity-75 mt-1">Live & Published</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter published stories</p>
+            </button>
 
-            <div className="rounded-2xl border bg-white p-5 shadow-2xs">
+            <button
+              onClick={() => setStatusFilter(statusFilter === "approved" ? "all" : "approved")}
+              className={"text-left rounded-2xl border p-5 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer " + (
+                statusFilter === "approved" ? "bg-blue-50 border-blue-500 ring-2 ring-blue-500/20" : "bg-white border-black/10 hover:border-blue-500/40"
+              )}
+            >
               <div className="flex items-center justify-between text-blue-600">
                 <b className="text-3xl font-serif">{counts.approved}</b>
                 <ShieldCheck size={20} />
               </div>
-              <p className="text-xs font-bold opacity-65 mt-1">Approved & Ready</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Gated, ready for 1-click publish</p>
-            </div>
+              <p className="text-xs font-bold opacity-75 mt-1">Approved & Ready</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter approved stories</p>
+            </button>
 
-            <div className="rounded-2xl border bg-white p-5 shadow-2xs">
+            <button
+              onClick={() => setStatusFilter(statusFilter === "review" ? "all" : "review")}
+              className={"text-left rounded-2xl border p-5 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer " + (
+                statusFilter === "review" ? "bg-amber-50 border-amber-500 ring-2 ring-amber-500/20" : "bg-white border-black/10 hover:border-amber-500/40"
+              )}
+            >
               <div className="flex items-center justify-between text-amber-600">
                 <b className="text-3xl font-serif">{counts.review}</b>
                 <Sparkles size={20} />
               </div>
-              <p className="text-xs font-bold opacity-65 mt-1">Draft / In Review</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Awaiting human review check</p>
-            </div>
+              <p className="text-xs font-bold opacity-75 mt-1">Draft / In Review</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter drafts in review</p>
+            </button>
 
-            <div className="rounded-2xl border bg-white p-5 shadow-2xs">
-              <div className="flex items-center justify-between text-gray-400">
+            <button
+              onClick={() => setStatusFilter(statusFilter === "missing" ? "all" : "missing")}
+              className={"text-left rounded-2xl border p-5 transition-all shadow-2xs hover:scale-[1.02] cursor-pointer " + (
+                statusFilter === "missing" ? "bg-gray-100 border-gray-400 ring-2 ring-gray-400/20" : "bg-white border-black/10 hover:border-gray-400"
+              )}
+            >
+              <div className="flex items-center justify-between text-gray-500">
                 <b className="text-3xl font-serif">{counts.missing}</b>
                 <XCircle size={20} />
               </div>
-              <p className="text-xs font-bold opacity-65 mt-1">Missing Story</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Requires source reference first</p>
-            </div>
+              <p className="text-xs font-bold opacity-75 mt-1">Missing Story</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">Click to filter missing items</p>
+            </button>
           </section>
 
           {/* Filters Area */}
