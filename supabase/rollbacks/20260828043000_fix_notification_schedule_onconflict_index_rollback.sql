@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS public.idx_notification_schedule_user_notification_key;

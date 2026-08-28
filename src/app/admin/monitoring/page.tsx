@@ -4,6 +4,7 @@ import { generateHealthReport } from '@/lib/monitoring/aggregation';
 import type { MonitoringEvent } from '@/lib/monitoring/events';
 import { createAdminClient } from '@/lib/supabase-admin';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { resolveContentReport } from './actions';
 import PushMonitoringSection from './PushMonitoringSection';
 import ClientErrorMonitoringSection from './ClientErrorMonitoringSection';
@@ -66,6 +67,13 @@ export default async function MonitoringPage({ searchParams }: Props) {
   return (
     <div className="p-8 max-w-7xl mx-auto font-sans">
       <header className="mb-8">
+        <Link
+          href="/admin"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/5 hover:bg-black/10 text-xs font-bold text-gray-700 hover:text-gray-900 transition-all mb-4"
+        >
+          <ArrowLeft size={16} />
+          <span>Back to Command Center</span>
+        </Link>
         <h1 className="text-3xl font-bold mb-2">Operational Monitoring Window</h1>
         <p className="text-sm text-gray-500">Last updated: {new Date(report.lastUpdated).toLocaleString()}</p>
       </header>

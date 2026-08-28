@@ -27,11 +27,24 @@ export interface CronExecutionTelemetry {
   triggeredBy: 'vercel_cron' | 'admin_manual';
 }
 
+export interface HourlyBucket24h {
+  hourLabel: string;
+  hourUtc: number;
+  startIso: string;
+  count: number;
+  errorCount: number;
+  status: "healthy" | "error" | "none";
+  avgDurationMs: number;
+}
+
 export interface CronStatusSummary extends CronDefinition {
   lastExecution: CronExecutionTelemetry | null;
   recentExecutions: CronExecutionTelemetry[];
   successRate24h: number;
   totalRuns24h: number;
+  successfulRuns24h: number;
+  failedRuns24h: number;
+  hourlyBreakdown24h: HourlyBucket24h[];
 }
 
 export const CRON_CATALOGUE: CronDefinition[] = [
@@ -492,8 +505,46 @@ export async function fetchCronStatusMatrix(): Promise<CronStatusSummary[]> {
       const code = Number(e.context?.status_code ?? (e.severity === 'P3' ? 200 : 500));
       return code >= 200 && code < 300;
     }).length;
+    const failedRuns24h = totalRuns24h - successfulRuns24h;
 
     const successRate24h = totalRuns24h > 0 ? Math.round((successfulRuns24h / totalRuns24h) * 100) : 100;
+
+    // Generate 24 hourly buckets (from 23 hours ago to current hour)
+    const nowMs = Date.now();
+    const hourlyBreakdown24h: HourlyBucket24h[] = [];
+    for (let i = 23; i >= 0; i--) {
+      const startMs = nowMs - (i + 1) * 3600 * 1000;
+      const endMs = nowMs - i * 3600 * 1000;
+      const startIso = new Date(startMs).toISOString();
+      const endIso = new Date(endMs).toISOString();
+      const hourDate = new Date(endMs);
+      const hourUtc = hourDate.getUTCHours();
+      const hourLabel = `${String(hourUtc).padStart(2, '0')}:00`;
+
+      const bucketEvents = cronEvents.filter((e) => e.timestamp >= startIso && e.timestamp < endIso);
+      const count = bucketEvents.length;
+      let errorCount = 0;
+      let totalDuration = 0;
+
+      for (const e of bucketEvents) {
+        const code = Number(e.context?.status_code ?? (e.severity === 'P3' ? 200 : 500));
+        if (code < 200 || code >= 300) errorCount++;
+        totalDuration += (e.latency_ms ?? Number(e.context?.duration_ms ?? 0));
+      }
+
+      const status: 'healthy' | 'error' | 'none' = count === 0 ? 'none' : errorCount > 0 ? 'error' : 'healthy';
+      const avgDurationMs = count > 0 ? Math.round(totalDuration / count) : 0;
+
+      hourlyBreakdown24h.push({
+        hourLabel,
+        hourUtc,
+        startIso,
+        count,
+        errorCount,
+        status,
+        avgDurationMs,
+      });
+    }
 
     return {
       ...cron,
@@ -501,6 +552,9 @@ export async function fetchCronStatusMatrix(): Promise<CronStatusSummary[]> {
       recentExecutions,
       successRate24h,
       totalRuns24h,
+      successfulRuns24h,
+      failedRuns24h,
+      hourlyBreakdown24h,
     };
   });
 }

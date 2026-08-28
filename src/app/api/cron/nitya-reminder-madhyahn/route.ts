@@ -126,7 +126,7 @@ export async function GET(request: Request) {
       const batch = scheduledRows.slice(i, i + 100);
       const { data: upserted, error: upsertError } = await supabase
         .from("notification_schedule")
-        .upsert(batch, { onConflict: "notification_key", ignoreDuplicates: true })
+        .upsert(batch, { onConflict: "user_id,notification_key", ignoreDuplicates: true })
         .select("id");
 
       if (upsertError) {
