@@ -7,7 +7,7 @@ import {
   Search, ShieldCheck, ArrowLeft, ChevronDown, ChevronUp,
   Activity, Zap, Info, Server, Sparkles, Calendar, Bell, Wrench,
   ArrowUpDown, ArrowUp, ArrowDown, Check, XCircle, Send, Inbox,
-  Layers, Filter
+  Layers, Filter, Copy, Code, HelpCircle, ExternalLink
 } from "lucide-react";
 import { CronStatusSummary, CronCategory } from "@/lib/monitoring/cron-telemetry";
 
@@ -63,8 +63,56 @@ const CATEGORY_META: Record<string, { label: string; icon: typeof Clock; color: 
   maintenance: { label: "System Maintenance", icon: Wrench, color: "text-blue-600" },
 };
 
-type SortField = "name" | "category" | "totalRuns24h" | "successRate24h" | "lastRun" | "duration";
+type SortField = "name" | "category" | "totalRuns24h" | "successRate24h" | "lastRun" | "nextRun" | "duration";
 type SortOrder = "asc" | "desc";
+
+// Layman Next Run Calculator
+function getNextCronRun(cronExpr: string) {
+  if (!cronExpr) return { iso: "", human: "Scheduled", relative: "", timestamp: 0 };
+  const parts = cronExpr.trim().split(/\s+/);
+  if (parts.length < 5) return { iso: "", human: "Custom Schedule", relative: "", timestamp: 0 };
+
+  const [minStr, hourStr, domStr, monthStr, dowStr] = parts;
+  const now = new Date();
+
+  for (let m = 1; m <= 35 * 24 * 60; m++) {
+    const candidate = new Date(now.getTime() + m * 60 * 1000);
+    candidate.setSeconds(0, 0);
+
+    const minMatch = minStr === "*" || minStr.split(",").includes(String(candidate.getUTCMinutes()));
+    const hourMatch = hourStr === "*" || hourStr.split(",").includes(String(candidate.getUTCHours()));
+    const domMatch = domStr === "*" || domStr.split(",").includes(String(candidate.getUTCDate()));
+    const monthMatch = monthStr === "*" || monthStr.split(",").includes(String(candidate.getUTCMonth() + 1));
+    const dowMatch = dowStr === "*" || dowStr.split(",").includes(String(candidate.getUTCDay()));
+
+    if (minMatch && hourMatch && domMatch && monthMatch && dowMatch) {
+      const diffMs = candidate.getTime() - now.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      let relative = "";
+      if (diffMins < 60) relative = `in ${diffMins}m`;
+      else if (diffHours < 24) relative = `in ${diffHours}h ${diffMins % 60}m`;
+      else relative = `in ${diffDays}d ${diffHours % 24}h`;
+
+      const istTime = candidate.toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", hour12: true });
+      const isToday = candidate.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" }) === now.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+      const isTomorrow = new Date(now.getTime() + 86400000).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" }) === candidate.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+      const dayName = candidate.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", weekday: "short" });
+
+      const dayPrefix = isToday ? "Today" : isTomorrow ? "Tomorrow" : `${dayName}, ${candidate.getDate()} ${candidate.toLocaleString("en-IN", { month: "short" })}`;
+      return {
+        iso: candidate.toISOString(),
+        human: `${dayPrefix} at ${istTime} IST`,
+        relative,
+        timestamp: candidate.getTime(),
+      };
+    }
+  }
+
+  return { iso: "", human: "Scheduled", relative: "", timestamp: 0 };
+}
 
 export default function CronDashboardClient() {
   const [crons, setCrons] = useState<CronStatusSummary[]>([]);
@@ -82,8 +130,16 @@ export default function CronDashboardClient() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortField, setSortField] = useState<SortField>("lastRun");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [sortField, setSortField] = useState<SortField>("nextRun");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
+  // Detailed Modal Inspector
+  const [inspectExecution, setInspectExecution] = useState<{
+    cronName: string;
+    route: string;
+    log: ExecutionLog;
+  } | null>(null);
+  const [copiedPayload, setCopiedPayload] = useState(false);
 
   // Interaction State
   const [runningRoute, setRunningRoute] = useState<string | null>(null);
@@ -207,7 +263,7 @@ export default function CronDashboardClient() {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortOrder(field === "name" ? "asc" : "desc");
+      setSortOrder(field === "nextRun" ? "asc" : "desc");
     }
   };
 
@@ -322,6 +378,10 @@ export default function CronDashboardClient() {
         const timeA = a.lastExecution ? new Date(a.lastExecution.timestamp).getTime() : 0;
         const timeB = b.lastExecution ? new Date(b.lastExecution.timestamp).getTime() : 0;
         cmp = timeA - timeB;
+      } else if (sortField === "nextRun") {
+        const nextA = getNextCronRun(a.schedule).timestamp;
+        const nextB = getNextCronRun(b.schedule).timestamp;
+        cmp = nextA - nextB;
       }
       return sortOrder === "asc" ? cmp : -cmp;
     });
@@ -349,7 +409,7 @@ export default function CronDashboardClient() {
                   24h Telemetry Matrix
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--brand-muted)]">Real-time status, 24-hour run timeline, failure diagnostics & notification schedule ledger</p>
+              <p className="text-[11px] text-[var(--brand-muted)]">Real-time status, layman next-run predictor, 24-hour timeline & clickable execution inspector</p>
             </div>
           </div>
 
@@ -670,7 +730,7 @@ export default function CronDashboardClient() {
           <div className="px-6 py-3 bg-black/[0.02] border-b border-black/5 text-[11px] font-bold text-gray-500 uppercase tracking-wider grid grid-cols-12 gap-4 items-center">
             <button
               onClick={() => toggleSort("name")}
-              className="col-span-12 sm:col-span-4 flex items-center gap-1.5 hover:theme-ink text-left"
+              className="col-span-12 sm:col-span-3 flex items-center gap-1.5 hover:theme-ink text-left"
             >
               <span>Cron Routine & Path</span>
               {sortField === "name" ? (
@@ -679,11 +739,11 @@ export default function CronDashboardClient() {
             </button>
 
             <button
-              onClick={() => toggleSort("category")}
+              onClick={() => toggleSort("nextRun")}
               className="hidden sm:block sm:col-span-2 flex items-center gap-1.5 hover:theme-ink text-left"
             >
-              <span>Category</span>
-              {sortField === "category" ? (
+              <span>Next Scheduled Run</span>
+              {sortField === "nextRun" ? (
                 sortOrder === "asc" ? <ArrowUp size={12} className="text-amber-600" /> : <ArrowDown size={12} className="text-amber-600" />
               ) : <ArrowUpDown size={12} className="opacity-40" />}
             </button>
@@ -694,16 +754,16 @@ export default function CronDashboardClient() {
 
             <button
               onClick={() => toggleSort("lastRun")}
-              className="hidden sm:block sm:col-span-2 flex items-center gap-1.5 hover:theme-ink text-left"
+              className="hidden sm:block sm:col-span-3 flex items-center gap-1.5 hover:theme-ink text-left"
             >
-              <span>Last Execution</span>
+              <span>Last Execution & Status</span>
               {sortField === "lastRun" ? (
                 sortOrder === "asc" ? <ArrowUp size={12} className="text-amber-600" /> : <ArrowDown size={12} className="text-amber-600" />
               ) : <ArrowUpDown size={12} className="opacity-40" />}
             </button>
 
             <div className="col-span-12 sm:col-span-1 text-right">
-              <span>Actions</span>
+              <span>Action</span>
             </div>
           </div>
 
@@ -718,12 +778,13 @@ export default function CronDashboardClient() {
                 const isRunning = runningRoute === cron.route;
                 const isExpanded = expandedCron === cron.id;
                 const last = cron.lastExecution;
+                const nextRunInfo = getNextCronRun(cron.schedule);
 
                 return (
                   <div key={cron.id} className="transition-colors hover:bg-black/[0.01]">
                     <div className="px-6 py-4 grid grid-cols-12 gap-4 items-center">
                       {/* Name & Route */}
-                      <div className="col-span-12 sm:col-span-4 space-y-1">
+                      <div className="col-span-12 sm:col-span-3 space-y-1">
                         <div className="flex items-center gap-2">
                           <b className="text-sm theme-ink">{cron.name}</b>
                           {last?.status === "healthy" ? (
@@ -736,18 +797,19 @@ export default function CronDashboardClient() {
                         </div>
                         <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--brand-muted)]">
                           <code className="bg-black/5 px-1.5 py-0.5 rounded text-amber-800">{cron.route}</code>
-                          <span>•</span>
-                          <span>{cron.schedule}</span>
                         </div>
-                        <p className="text-xs text-gray-500 line-clamp-1">{cron.description}</p>
-                      </div>
-
-                      {/* Category */}
-                      <div className="hidden sm:block sm:col-span-2 text-xs">
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-black/5 text-gray-700">
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/5 text-gray-700">
                           {cron.category}
                         </span>
-                        <p className="text-[10px] text-gray-400 mt-1">{cron.scheduleHuman}</p>
+                      </div>
+
+                      {/* Next Scheduled Run (Layman Language) */}
+                      <div className="hidden sm:block sm:col-span-2 text-xs space-y-0.5">
+                        <b className="text-gray-900 leading-snug block">{nextRunInfo.human}</b>
+                        <span className="inline-block px-2 py-0.5 rounded bg-amber-50 text-amber-900 font-bold font-mono text-[10px] border border-amber-200/60">
+                          {nextRunInfo.relative}
+                        </span>
+                        <p className="text-[10px] text-gray-400 font-mono">{cron.schedule}</p>
                       </div>
 
                       {/* 24h Timeline Sparkline */}
@@ -776,36 +838,48 @@ export default function CronDashboardClient() {
                         </div>
                       </div>
 
-                      {/* Last Execution Info */}
-                      <div className="hidden sm:block sm:col-span-2 text-xs space-y-0.5">
+                      {/* Last Execution Info (Clickable for Detailed Diagnostic Inspector) */}
+                      <div className="hidden sm:block sm:col-span-3 text-xs space-y-1">
                         {last ? (
-                          <>
-                            <div className="flex items-center gap-1.5 font-bold">
-                              <span className={last.status === "healthy" ? "text-emerald-700" : "text-rose-700"}>
-                                {last.statusCode} {last.status === "healthy" ? "OK" : "ERR"}
+                          <button
+                            onClick={() => setInspectExecution({ cronName: cron.name, route: cron.route, log: last })}
+                            className={"text-left w-full p-2 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer " + (
+                              last.status === "healthy"
+                                ? "bg-emerald-50/70 border-emerald-300 hover:border-emerald-500 text-emerald-900"
+                                : "bg-rose-50/70 border-rose-300 hover:border-rose-500 text-rose-900"
+                            )}
+                            title="Click to view detailed execution diagnostics & payload"
+                          >
+                            <div className="flex items-center justify-between font-bold">
+                              <span className="flex items-center gap-1">
+                                {last.status === "healthy" ? <Check size={13} className="text-emerald-600" /> : <AlertTriangle size={13} className="text-rose-600" />}
+                                <span>HTTP {last.statusCode} ({last.durationMs}ms)</span>
                               </span>
-                              <span className="text-gray-400 font-normal">({last.durationMs}ms)</span>
+                              <span className="text-[10px] underline font-sans opacity-70">Inspect →</span>
                             </div>
-                            <p className="text-[11px] text-gray-500 font-mono">
-                              {new Date(last.timestamp).toLocaleTimeString()}
-                            </p>
+                            <div className="flex items-center justify-between text-[10px] font-mono text-gray-500 mt-0.5">
+                              <span>{new Date(last.timestamp).toLocaleTimeString()}</span>
+                              <span className="uppercase text-[9px] px-1 py-0.2 rounded bg-white font-sans">{last.triggeredBy}</span>
+                            </div>
                             {last.errorMessage && (
-                              <p className="text-[10px] text-rose-600 truncate font-semibold">
+                              <p className="text-[10px] text-rose-700 truncate font-semibold mt-0.5">
                                 {last.errorMessage}
                               </p>
                             )}
-                          </>
+                          </button>
                         ) : (
-                          <span className="text-gray-400 italic text-[11px]">No runs recorded</span>
+                          <span className="text-gray-400 italic text-[11px] block p-2 border border-dashed rounded-xl bg-gray-50/50">
+                            No runs recorded in 24h
+                          </span>
                         )}
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-12 sm:col-span-1 flex items-center justify-end gap-2">
+                      <div className="col-span-12 sm:col-span-1 flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setExpandedCron(isExpanded ? null : cron.id)}
-                          className="p-1.5 rounded-lg border border-black/5 hover:bg-black/5 text-gray-500"
-                          title="View invocation history"
+                          className="p-2 rounded-xl border border-black/5 hover:bg-black/5 text-gray-500"
+                          title="View 10 recent logs"
                         >
                           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
@@ -813,7 +887,7 @@ export default function CronDashboardClient() {
                         <button
                           onClick={() => void triggerCron(cron.route)}
                           disabled={isRunning}
-                          className="px-3 py-1.5 rounded-lg bg-gray-900 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm disabled:opacity-50 transition-all"
+                          className="px-3 py-2 rounded-xl bg-gray-900 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm disabled:opacity-50 transition-all"
                           title="Trigger manual run"
                         >
                           <Play size={11} className={isRunning ? "animate-spin" : ""} />
@@ -826,7 +900,7 @@ export default function CronDashboardClient() {
                     {isExpanded && (
                       <div className="px-6 py-4 bg-black/[0.02] border-t border-black/5 text-xs space-y-3">
                         <div className="flex items-center justify-between">
-                          <b className="text-gray-700 uppercase tracking-wider text-[11px]">Last 10 Invocation Telemetry Logs:</b>
+                          <b className="text-gray-700 uppercase tracking-wider text-[11px]">Last 10 Invocation Telemetry Logs (Click any log to inspect):</b>
                           <span className="font-mono text-gray-400 text-[11px]">Route: {cron.route}</span>
                         </div>
 
@@ -835,7 +909,11 @@ export default function CronDashboardClient() {
                         ) : (
                           <div className="divide-y border rounded-xl overflow-hidden bg-white">
                             {cron.recentExecutions.map((log, idx) => (
-                              <div key={idx} className="p-3 flex items-start justify-between gap-4 font-mono text-[11px]">
+                              <div
+                                key={idx}
+                                onClick={() => setInspectExecution({ cronName: cron.name, route: cron.route, log })}
+                                className="p-3 flex items-start justify-between gap-4 font-mono text-[11px] cursor-pointer hover:bg-amber-50/50 transition-colors"
+                              >
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
                                     <span className={"px-2 py-0.5 rounded font-bold " + (
@@ -854,11 +932,9 @@ export default function CronDashboardClient() {
                                   )}
                                 </div>
 
-                                {log.payloadSummary && Object.keys(log.payloadSummary).length > 0 && (
-                                  <pre className="text-[10px] text-gray-600 max-w-xs overflow-x-auto bg-gray-50 p-2 rounded border">
-                                    {JSON.stringify(log.payloadSummary, null, 2)}
-                                  </pre>
-                                )}
+                                <div className="flex items-center gap-2 text-right">
+                                  <span className="text-amber-800 underline text-[11px] font-sans">Inspect Payload →</span>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -872,6 +948,108 @@ export default function CronDashboardClient() {
           </div>
         </div>
       </div>
+
+      {/* ─── DETAILED EXECUTION DIAGNOSTIC INSPECTOR MODAL ──────────────────── */}
+      {inspectExecution && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 max-h-[90vh] overflow-y-auto space-y-5 font-sans">
+            <div className="flex items-center justify-between border-b pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className={"p-2 rounded-xl " + (inspectExecution.log.status === "healthy" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800")}>
+                  {inspectExecution.log.status === "healthy" ? <CheckCircle size={22} /> : <AlertTriangle size={22} />}
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold font-serif text-gray-900">{inspectExecution.cronName}</h3>
+                  <p className="text-xs font-mono text-gray-500">{inspectExecution.route}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setInspectExecution(null)}
+                className="rounded-lg border px-3 py-1.5 text-xs font-bold text-gray-600 hover:bg-gray-100"
+              >
+                Close
+              </button>
+            </div>
+
+            {/* Diagnostic Vitals Summary */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-gray-50 border">
+                <span className="text-gray-400 font-bold uppercase text-[10px] block">Status Code</span>
+                <b className={"text-base " + (inspectExecution.log.status === "healthy" ? "text-emerald-700" : "text-rose-700")}>
+                  HTTP {inspectExecution.log.statusCode}
+                </b>
+              </div>
+
+              <div className="p-3 rounded-xl bg-gray-50 border">
+                <span className="text-gray-400 font-bold uppercase text-[10px] block">Duration</span>
+                <b className="text-base text-gray-900">{inspectExecution.log.durationMs} ms</b>
+              </div>
+
+              <div className="p-3 rounded-xl bg-gray-50 border">
+                <span className="text-gray-400 font-bold uppercase text-[10px] block">Trigger Source</span>
+                <b className="text-base text-gray-900 capitalize">{inspectExecution.log.triggeredBy.replace("_", " ")}</b>
+              </div>
+
+              <div className="p-3 rounded-xl bg-gray-50 border">
+                <span className="text-gray-400 font-bold uppercase text-[10px] block">Timestamp</span>
+                <b className="text-xs text-gray-900 font-mono block mt-1">{new Date(inspectExecution.log.timestamp).toLocaleTimeString()}</b>
+              </div>
+            </div>
+
+            {/* Error Stack Display (if error present) */}
+            {inspectExecution.log.errorMessage && (
+              <div className="p-4 rounded-xl border border-rose-300 bg-rose-50 text-xs space-y-2">
+                <div className="flex items-center gap-1.5 text-rose-900 font-bold text-sm">
+                  <AlertTriangle size={16} />
+                  <span>Error Diagnostics & Root Cause</span>
+                </div>
+                <p className="font-mono text-rose-800 bg-white p-3 rounded-lg border border-rose-200 text-xs leading-relaxed">
+                  {inspectExecution.log.errorMessage}
+                </p>
+              </div>
+            )}
+
+            {/* JSON Payload Inspection & Copy */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold uppercase tracking-wider text-gray-500">Execution Response & Payload Summary:</span>
+                <button
+                  onClick={() => {
+                    void navigator.clipboard.writeText(JSON.stringify(inspectExecution.log.payloadSummary || {}, null, 2));
+                    setCopiedPayload(true);
+                    setTimeout(() => setCopiedPayload(false), 2000);
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-bold text-gray-600 hover:bg-gray-50"
+                >
+                  <Copy size={12} />
+                  <span>{copiedPayload ? "Copied!" : "Copy Payload JSON"}</span>
+                </button>
+              </div>
+
+              <pre className="p-4 rounded-xl bg-black/90 text-emerald-400 font-mono text-[11px] overflow-x-auto max-h-64 border">
+                {JSON.stringify(inspectExecution.log.payloadSummary || { message: "No extra payload metadata recorded." }, null, 2)}
+              </pre>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between pt-2 border-t text-xs">
+              <span className="text-gray-400">Durable log stored in monitoring_events</span>
+              <button
+                onClick={() => {
+                  const r = inspectExecution.route;
+                  setInspectExecution(null);
+                  void triggerCron(r);
+                }}
+                className="px-4 py-2 rounded-xl bg-gray-900 hover:bg-amber-600 text-white font-bold flex items-center gap-1.5 transition-all shadow-sm"
+              >
+                <Play size={12} />
+                <span>Re-run This Cron Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
