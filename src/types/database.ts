@@ -366,6 +366,8 @@ export interface Database {
           body: string;
           parent_id: string | null;
           created_at: string;
+          updated_at?: string | null;
+          deleted_at?: string | null;
         };
         Insert: Omit<Database['public']['Tables']['post_comments']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['post_comments']['Insert']>;
