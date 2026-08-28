@@ -10,6 +10,9 @@ import { formatOccurrencesToResults, type ClientObservanceResult } from '@/lib/c
 import { attachMaterialisationBatches, CALENDAR_OCCURRENCE_SELECT } from '@/lib/calendar/occurrence-reader';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
+import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
+import { selectDisplayObservances } from '@/lib/calendar/display-observances';
+import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
 
 export const runtime = 'nodejs';
 
@@ -17,7 +20,9 @@ export interface UpcomingResponse {
   from: string;
   to: string;
   observances: ClientObservanceResult[];
+  displayObservances: ClientObservanceResult[];
   series: ObservanceSeries[];
+  storyCards: HomeObservanceStoryCard[];
 }
 
 export async function GET(request: NextRequest) {
@@ -179,6 +184,8 @@ export async function GET(request: NextRequest) {
       return aDate.localeCompare(bDate);
     });
 
+    const displayObservances = selectDisplayObservances(formattedResults);
+
     const primaryContext = formattedResults.find(result => result.isPrimary) ?? formattedResults[0] ?? null;
     const series = primaryContext
       ? buildObservanceSeries(formattedResults, {
@@ -189,11 +196,17 @@ export async function GET(request: NextRequest) {
         })
       : [];
 
+    const requestedLanguage = searchParams.get('lang');
+    const language = requestedLanguage === 'hi' || requestedLanguage === 'pa' ? requestedLanguage : 'en';
+    const storyCards = await getPublishedObservanceStoryCards(displayObservances, language, fromStr);
+
     const response: UpcomingResponse = {
       from: fromStr,
       to: toStr,
       observances: formattedResults,
+      displayObservances,
       series,
+      storyCards,
     };
 
     return NextResponse.json(response, {

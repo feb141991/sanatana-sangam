@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ObservanceSeries } from "../../contracts/observance-series-contract";
+import type { HomeObservanceStoryCard } from "../../contracts/observance-story-contract";
 
 export interface UpcomingObservance {
   date: string;
@@ -16,10 +17,11 @@ export interface UpcomingObservance {
 export function useUpcomingObservances(
   tradition: string,
   days = 30,
-  options: { reviewedOnly?: boolean } = {},
+  options: { reviewedOnly?: boolean; language?: 'en' | 'hi' | 'pa' } = {},
 ) {
   const [observances, setObservances] = useState<UpcomingObservance[]>([]);
   const [series, setSeries] = useState<ObservanceSeries[]>([]);
+  const [storyCards, setStoryCards] = useState<HomeObservanceStoryCard[]>([]);
   const [spiritualDate, setSpiritualDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,7 @@ export function useUpcomingObservances(
     setLoading(true);
     setObservances([]);
     setSeries([]);
+    setStoryCards([]);
     setSpiritualDate(null);
 
     const trad = tradition === "all" ? "" : `&tradition=${tradition}`;
@@ -36,12 +39,14 @@ export function useUpcomingObservances(
       ? `&tz=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`
       : "";
     const reviewed = options.reviewedOnly ? "&reviewed=1" : "";
-    fetch(`/api/calendar/upcoming?days=${days}${trad}${tz}${reviewed}`)
+    const language = `&lang=${options.language ?? 'en'}`;
+    fetch(`/api/calendar/upcoming?days=${days}${trad}${tz}${reviewed}${language}`)
       .then(r => r.ok ? r.json() : Promise.reject(r.status))
       .then(data => {
         if (active) {
-          setObservances(data.observances ?? []);
+          setObservances(data.displayObservances ?? data.observances ?? []);
           setSeries(data.series ?? []);
+          setStoryCards(data.storyCards ?? []);
           setSpiritualDate(typeof data.from === 'string' ? data.from : null);
           setLoading(false);
           setError(null);
@@ -57,7 +62,7 @@ export function useUpcomingObservances(
     return () => {
       active = false;
     };
-  }, [tradition, days, options.reviewedOnly]);
+  }, [tradition, days, options.reviewedOnly, options.language]);
 
-  return { observances, series, spiritualDate, loading, error };
+  return { observances, series, storyCards, spiritualDate, loading, error };
 }

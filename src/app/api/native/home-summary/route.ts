@@ -20,6 +20,9 @@ import type { ObservanceSeries } from '../../../../../contracts/observance-serie
 import { formatOccurrencesToResults } from '@/lib/calendar/observance-formatter';
 import { buildObservanceHref, getPulseRouteSlug } from '@/lib/observance-route';
 import { attachMaterialisationBatches } from '@/lib/calendar/occurrence-reader';
+import { selectDisplayObservances } from '@/lib/calendar/display-observances';
+import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
+import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 
 export const runtime = 'nodejs';
 
@@ -168,6 +171,7 @@ type HomeSummaryResponse = {
     } | null;
     upcomingObservances: ObservanceEntry[];
     series?: ObservanceSeries[];
+    storyCards?: HomeObservanceStoryCard[];
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -817,6 +821,7 @@ export async function GET(request: NextRequest) {
     today,
     calendarTo,
   );
+  const displaySeriesResults = selectDisplayObservances(seriesResults);
   const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;
   const series = primarySeriesContext
     ? buildObservanceSeries(seriesResults, {
@@ -825,7 +830,9 @@ export async function GET(request: NextRequest) {
         location: primarySeriesContext.location,
         tradition,
       })
-    : [];
+      : [];
+  const storyLanguage = profile?.app_language === 'hi' || profile?.app_language === 'pa' ? profile.app_language : 'en';
+  const storyCards = await getPublishedObservanceStoryCards(displaySeriesResults, storyLanguage, today);
 
   const targetDays = sankalpaRow?.target_days ?? 30;
   const sankalpaDay = sankalpaRow ? buildDayNumber(sankalpaRow.start_date, today) : 1;
@@ -871,6 +878,7 @@ export async function GET(request: NextRequest) {
       observance,
       upcomingObservances,
       series,
+      storyCards,
     },
     nextPractice: buildNextPractice(practices),
     practices,

@@ -796,13 +796,14 @@ export default function HomeDashboard({
   const {
     observances,
     series: activeObservanceSeries,
+    storyCards: canonicalStoryCards,
     spiritualDate: observanceSpiritualDate,
     loading: calendarLoading,
     error: calendarError,
   } = useUpcomingObservances(
     tradition || 'all',
     HOME_OBSERVANCE_WINDOW_DAYS,
-    { reviewedOnly: true },
+    { reviewedOnly: true, language: effectiveAppLanguage },
   );
 
   const apiFestivals: (import('@/lib/festivals').Festival & { route_kind?: string, route_slug?: string | null })[] = calendarError
@@ -1143,6 +1144,7 @@ export default function HomeDashboard({
           pitruPakshaDay={pitruPakshaDay}
           pitruPakshaCopy={pitruPakshaCopy}
           activeFestivalStories={activeFestivalStories}
+          canonicalStoryCards={canonicalStoryCards}
           calendarLoading={calendarLoading}
           transliterationLanguage={transliterationLanguage ?? 'en'}
           isDark={isDark}

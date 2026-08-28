@@ -177,6 +177,12 @@ export default function AdminDashboard() {
                   title="Festival Management" 
                   desc="Update the global spiritual calendar and holy days." 
                 />
+                <CommandLink
+                  href="/admin/observance-content"
+                  icon={BookOpen}
+                  title="Observance Content Studio"
+                  desc="Track sourced festival stories, review drafts, artwork, share copy, and publication coverage."
+                />
                 <CommandLink 
                   href="/admin/tirtha"
                   icon={MapPin} 

@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight, Share2, X } from 'lucide-react';
 import SacredIcon from '@/components/ui/SacredIcon';
 import type { Festival } from '@/lib/festivals';
 import { getFestivalStory } from '@/lib/festival-stories';
 import { getTransliteration } from '@/lib/transliteration';
+import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 
 interface CalendarSectionProps {
   pitruPakshaDay: { day: number; totalDays: number; isMahalaya: boolean } | null;
@@ -16,6 +17,7 @@ interface CalendarSectionProps {
     story: any;
     daysLeft: number;
   }>;
+  canonicalStoryCards: HomeObservanceStoryCard[];
   calendarLoading: boolean;
   transliterationLanguage: string;
   isDark: boolean;
@@ -25,11 +27,22 @@ export function CalendarSection({
   pitruPakshaDay,
   pitruPakshaCopy,
   activeFestivalStories,
+  canonicalStoryCards,
   calendarLoading,
   transliterationLanguage,
   isDark,
 }: CalendarSectionProps) {
   const [activeStoryFestival, setActiveStoryFestival] = useState<Festival | null>(null);
+  const [activeCanonicalStory, setActiveCanonicalStory] = useState<HomeObservanceStoryCard | null>(null);
+
+  async function shareCanonicalStory(card: HomeObservanceStoryCard) {
+    const payload = card.story.shareTemplate;
+    if (navigator.share) {
+      await navigator.share({ title: payload.title, text: payload.message, url: `/vrat/${card.story.observanceSlug}` });
+      return;
+    }
+    await navigator.clipboard.writeText(`${payload.message}\n${location.origin}/vrat/${card.story.observanceSlug}`);
+  }
 
   function formatFestDate(dateStr: string) {
     const d = new Date(dateStr + 'T00:00:00');
@@ -79,7 +92,28 @@ export function CalendarSection({
         <AnimatePresence>
           {calendarLoading ? (
             <div className="w-full h-[72px] rounded-[1rem] bg-black/[0.04] dark:bg-white/[0.04] opacity-40 mb-3 animate-none" />
-          ) : activeFestivalStories.map(({ festival: f, story, daysLeft }) => (
+          ) : canonicalStoryCards.length > 0 ? canonicalStoryCards.map((card) => (
+            <motion.button
+              key={card.identityKey}
+              type="button"
+              onClick={() => setActiveCanonicalStory(card)}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              className="festival-story-card motion-press mb-3 w-full text-left"
+              aria-label={`Read the story of ${card.story.displayName}`}
+            >
+              <span className="festival-story-emoji" aria-hidden="true"><SacredIcon name="scroll" size={18} /></span>
+              <div className="festival-story-body">
+                <span className="festival-story-kicker">
+                  {card.daysLeft === 0 ? 'Today' : card.daysLeft === 1 ? 'Tomorrow' : `In ${card.daysLeft} days`} · Festival Story
+                </span>
+                <span className="festival-story-title">{card.story.displayName}</span>
+                <span className="festival-story-teaser line-clamp-2">{card.story.translation.teaser}</span>
+              </div>
+              <ChevronRight size={16} className="festival-story-chevron" aria-hidden="true" />
+            </motion.button>
+          )) : activeFestivalStories.map(({ festival: f, story, daysLeft }) => (
             <motion.button
               key={`story-${f.name}`}
               type="button"
@@ -107,6 +141,43 @@ export function CalendarSection({
           ))}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {activeCanonicalStory && (
+          <motion.div
+            className="fixed inset-0 z-50 flex flex-col justify-end"
+            onClick={() => setActiveCanonicalStory(null)}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            style={{ background: 'rgba(0,0,0,0.62)', backdropFilter: 'blur(4px)' }}
+          >
+            <motion.article
+              className="relative w-full overflow-y-auto rounded-t-[2rem] px-6 pb-10"
+              style={{ maxHeight: '88dvh', background: 'var(--surface-raised)', borderTop: '1px solid rgba(197,160,89,.22)' }}
+              onClick={(event) => event.stopPropagation()}
+              initial={{ y: 56 }} animate={{ y: 0 }} exit={{ y: 32 }}
+            >
+              <div className="sticky top-0 flex justify-center py-3" style={{ background: 'var(--surface-raised)' }}>
+                <div className="h-1 w-10 rounded-full" style={{ background: 'rgba(197,160,89,.30)' }} />
+              </div>
+              <div className="flex items-start justify-between gap-3 pb-5">
+                <div>
+                  <p className="festival-story-kicker">Festival story · source reviewed</p>
+                  <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.55rem', fontWeight: 700 }}>{activeCanonicalStory.story.displayName}</h2>
+                </div>
+                <button className="h-11 w-11 rounded-full" onClick={() => setActiveCanonicalStory(null)} aria-label="Close"><X size={18} /></button>
+              </div>
+              <div className="space-y-6">
+                <section><h3 className="festival-story-section-label">Origin</h3><p className="festival-story-prose">{activeCanonicalStory.story.translation.origin}</p></section>
+                <section><h3 className="festival-story-section-label">Spiritual significance</h3><p className="festival-story-prose">{activeCanonicalStory.story.translation.significance}</p></section>
+                {activeCanonicalStory.story.translation.rituals.length > 0 && <section><h3 className="festival-story-section-label">How to observe</h3><ul className="space-y-2">{activeCanonicalStory.story.translation.rituals.map((ritual) => <li key={ritual} className="festival-story-prose">• {ritual}</li>)}</ul></section>}
+                <section><h3 className="festival-story-section-label">A practice for today</h3><p className="festival-story-prose">{activeCanonicalStory.story.translation.personalPractice}</p></section>
+                <details className="rounded-xl border p-4" style={{ borderColor: 'rgba(197,160,89,.22)' }}><summary className="cursor-pointer font-semibold">Sources</summary>{activeCanonicalStory.story.sources.map((source) => <p key={source.id} className="festival-story-prose mt-3"><a href={source.url} target="_blank" rel="noreferrer">{source.title}</a> · Tier {source.tier}</p>)}</details>
+                <button className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-5 font-semibold" style={{ background: 'var(--brand-primary)', color: '#fff' }} onClick={() => void shareCanonicalStory(activeCanonicalStory)}><Share2 size={18} />{activeCanonicalStory.story.shareTemplate.cta}</button>
+              </div>
+            </motion.article>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Festival Story Sheet ───────────────────────────────────────────── */}
       <AnimatePresence>
