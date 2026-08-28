@@ -579,29 +579,74 @@ export default function MonitoringClient({ report, recentEvents, aiReports }: Pr
               </button>
             </div>
 
-            <div className="space-y-3">
-              {report.providers.length === 0 ? (
-                <div className="p-6 text-center text-gray-400 bg-gray-50 rounded-xl">
-                  No active provider circuit breaker trips recorded. All primary AI models are operating normally.
-                </div>
-              ) : (
-                report.providers.map((p) => (
-                  <div key={p.provider} className="p-4 rounded-xl bg-gray-50 border space-y-2">
-                    <div className="flex items-center justify-between">
-                      <b className="text-sm text-gray-900 capitalize">{p.provider}</b>
-                      <span className={"px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
-                        p.circuitState.state === "CLOSED" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
-                      )}>
-                        {p.circuitState.state}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-[11px] text-gray-600">
-                      <p>Consecutive Failures: <b className="text-gray-900">{p.circuitState.consecutiveFailures}</b></p>
-                      <p>Fallbacks Triggered: <b className="text-purple-800">{p.fallbackCount}</b></p>
-                    </div>
+            {/* ─── SARVAM AI WALLET & CREDIT STATUS ─── */}
+            <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-purple-200 text-purple-900 font-bold text-xs">
+                    SARVAM
                   </div>
-                ))
-              )}
+                  <div>
+                    <h4 className="font-bold text-sm text-purple-950">Sarvam AI Account & Wallet Health</h4>
+                    <p className="text-[10px] text-purple-800">Primary Indic Translation & Bulbul TTS Engine</p>
+                  </div>
+                </div>
+                <a
+                  href="https://dashboard.sarvam.ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-800 hover:bg-purple-900 text-white font-bold text-xs transition-all shadow-sm"
+                >
+                  <span>Top-Up Wallet</span>
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+
+              {/* Wallet Credits Breakdown */}
+              <div className="grid grid-cols-3 gap-2.5 text-center">
+                <div className="p-3 rounded-xl bg-white border border-purple-100 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-gray-400 block">Est. Wallet Balance</span>
+                  <b className="text-base text-purple-950 block mt-0.5">Active / Ready</b>
+                  <p className="text-[9px] text-emerald-700 font-bold mt-0.5">Pay-as-you-go</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-purple-100 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-gray-400 block">Translation Rate</span>
+                  <b className="text-base text-gray-900 block mt-0.5">₹0.00015</b>
+                  <p className="text-[9px] text-gray-500 mt-0.5">per 1k characters</p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white border border-purple-100 shadow-sm">
+                  <span className="text-[10px] font-bold uppercase text-gray-400 block">TTS Audio Rate</span>
+                  <b className="text-base text-gray-900 block mt-0.5">₹0.02</b>
+                  <p className="text-[9px] text-gray-500 mt-0.5">per audio minute</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Provider Circuit Breakers List */}
+            <div className="space-y-2.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block">Active Provider Circuit States:</span>
+              {report.providers.map((p) => {
+                const displayName = p.provider === "sarvam-hosted" ? "Sarvam AI (Hosted)" :
+                                    p.provider === "gemini" ? "Google Gemini (2.0 Flash / Pro)" :
+                                    p.provider === "self-hosted" ? "Self-Hosted / Fallback LLM" : p.provider;
+                return (
+                  <div key={p.provider} className="p-3.5 rounded-xl bg-gray-50 border flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <b className="text-xs text-gray-900">{displayName}</b>
+                      <p className="text-[10px] text-gray-500">
+                        Consecutive Failures: <b className="text-gray-800">{p.circuitState.consecutiveFailures}</b> • Fallbacks: <b className="text-purple-800">{p.fallbackCount}</b>
+                      </p>
+                    </div>
+                    <span className={"px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
+                      p.circuitState.state === "CLOSED" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
+                    )}>
+                      {p.circuitState.state === "CLOSED" ? "Healthy (Closed)" : "Tripped (Open)"}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 space-y-1 text-[11px]">

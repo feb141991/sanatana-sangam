@@ -108,11 +108,36 @@ export function generateHealthReport(events: MonitoringEvent[] = _eventSink): Ag
   }));
 
   const circuitStates = getAllCircuitStates();
-  const providers: ProviderHealth[] = Object.entries(circuitStates).map(([provider, state]) => ({
-    provider,
-    circuitState: state,
-    fallbackCount: providerFallbacks.get(provider) || 0,
-  }));
+  const canonicalProviders = ["sarvam-hosted", "gemini", "self-hosted"];
+  const providerMap = new Map<string, ProviderHealth>();
+
+  // Initialize canonical configured providers
+  for (const name of canonicalProviders) {
+    const isConfigured = name === "sarvam-hosted" ? !!process.env.SARVAM_API_KEY :
+                         name === "gemini" ? !!process.env.GEMINI_API_KEY : true;
+    providerMap.set(name, {
+      provider: name,
+      circuitState: circuitStates[name] || {
+        state: isConfigured ? "CLOSED" : "HALF_OPEN",
+        consecutiveFailures: 0,
+        lastFailureTime: null,
+      },
+      fallbackCount: providerFallbacks.get(name) || 0,
+    });
+  }
+
+  // Include any extra dynamically discovered providers
+  for (const [provider, state] of Object.entries(circuitStates)) {
+    if (!providerMap.has(provider)) {
+      providerMap.set(provider, {
+        provider,
+        circuitState: state,
+        fallbackCount: providerFallbacks.get(provider) || 0,
+      });
+    }
+  }
+
+  const providers: ProviderHealth[] = Array.from(providerMap.values());
 
   return {
     activeIncidents,
