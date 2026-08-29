@@ -5,7 +5,63 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as Astronomy from 'astronomy-engine';
-import { lahiriAyanamsha } from '@sangam/panchang-engine';
+import {
+  computeAstronomy,
+  solveNextBoundary,
+  getTithiName,
+  getKaranaName,
+  YOGAS,
+  normalizeAngle,
+  lahiriAyanamsha,
+  PANCHANG_ENGINE_VERSION,
+} from '@sangam/panchang-engine';
+
+export const ASTRO_CHART_SCHEMA_VERSION = 2;
+
+export interface BirthPanchangSnapshot {
+  instantUtc: string;
+  localDate: string;
+  localTime: string;
+  timezone: string;
+
+  vara: {
+    index: number;
+    name: string;
+  };
+
+  tithi: {
+    index: number;
+    name: string;
+    paksha: 'Shukla' | 'Krishna';
+    endsAtUtc: string | null;
+  };
+
+  nakshatra: {
+    index: number;
+    name: string;
+    pada: number | null;
+    endsAtUtc: string | null;
+  };
+
+  yoga: {
+    index: number;
+    name: string;
+    endsAtUtc: string | null;
+  };
+
+  karana: {
+    index: number;
+    name: string;
+    endsAtUtc: string | null;
+  };
+
+  calculation: {
+    engineVersion: string;
+    ayanamsa: 'lahiri';
+    precision: 'high' | 'partial';
+    diagnostics: string[];
+  };
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -94,6 +150,8 @@ export interface SadeSatiStatus {
 }
 
 export interface AstroChart {
+  schemaVersion: number;          // 2 for ASTRO_CHART_SCHEMA_VERSION = 2
+  birthPanchang: BirthPanchangSnapshot | null; // Versioned birth instant Panchang snapshot (null when timeUnknown)
   utcBirthTime:  string;          // UTC ISO string for verification
   julianDay:     number;
   ayanamsa:      number;          // Lahiri ayanamsa in degrees
@@ -704,7 +762,126 @@ export function generateAstroChart(input: BirthInput): AstroChart {
   const navamsha = buildNavamsha(planets, lagna);
   const quality = buildChartQuality(input);
 
+  // ── Birth Panchang Snapshot (Schema Version 2) ──────────────────────────────
+  let birthPanchang: BirthPanchangSnapshot | null = null;
+
+  if (!input.timeUnknown) {
+    // Astronomical snapshot at exact birth instant
+    const astro = computeAstronomy(utcDate);
+
+    // 1. Tithi & Paksha
+    const tithiIndex = Math.floor(astro.elongation / 12) + 1; // 1 to 30
+    const paksha: 'Shukla' | 'Krishna' = tithiIndex <= 15 ? 'Shukla' : 'Krishna';
+    const tithiName = getTithiName(tithiIndex, paksha);
+    const nextTithiDate = solveNextBoundary(
+      utcDate,
+      astro.elongation,
+      12,
+      (d) => computeAstronomy(d).elongation
+    );
+
+    // 2. Vara (Derived strictly in local civil timezone to prevent UTC boundary wrap)
+    let localWeekday = 'Sunday';
+    try {
+      localWeekday = new Intl.DateTimeFormat('en-US', {
+        timeZone: input.timezone,
+        weekday: 'long',
+      }).format(utcDate);
+    } catch {
+      localWeekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][utcDate.getDay()];
+    }
+    const VARA_BY_WEEKDAY: Record<string, { index: number; name: string }> = {
+      Sunday: { index: 0, name: 'Ravivara' },
+      Monday: { index: 1, name: 'Somavara' },
+      Tuesday: { index: 2, name: 'Mangalavara' },
+      Wednesday: { index: 3, name: 'Budhavara' },
+      Thursday: { index: 4, name: 'Guruvara' },
+      Friday: { index: 5, name: 'Shukravara' },
+      Saturday: { index: 6, name: 'Shanivara' },
+    };
+    const varaInfo = VARA_BY_WEEKDAY[localWeekday] ?? { index: 0, name: 'Ravivara' };
+
+    // 3. Nakshatra & Pada
+    const nakshatraIdx = Math.floor(astro.moonSidereal / (360 / 27)) % 27; // 0 to 26
+    const nakshatraName = NAKSHATRAS[nakshatraIdx].name;
+    const nakshatraPada = Math.floor((astro.moonSidereal % (360 / 27)) / ((360 / 27) / 4)) + 1;
+    const nextNakshatraDate = solveNextBoundary(
+      utcDate,
+      astro.moonSidereal,
+      360 / 27,
+      (d) => computeAstronomy(d).moonSidereal
+    );
+
+    // 4. Yoga (Derived mathematically from sum of sidereal longitudes)
+    const yogaIdx = Math.floor(normalizeAngle(astro.sunSidereal + astro.moonSidereal) / (360 / 27)) % 27; // 0 to 26
+    const yogaName = YOGAS[yogaIdx];
+    const nextYogaDate = solveNextBoundary(
+      utcDate,
+      normalizeAngle(astro.sunSidereal + astro.moonSidereal),
+      360 / 27,
+      (d) => {
+        const a = computeAstronomy(d);
+        return normalizeAngle(a.sunSidereal + a.moonSidereal);
+      }
+    );
+
+    // 5. Karana (Derived mathematically: half-tithi 1 to 60)
+    const karanaHalfTithi = Math.floor(astro.elongation / 6) + 1; // 1 to 60
+    const karanaName = getKaranaName(karanaHalfTithi);
+    const nextKaranaDate = solveNextBoundary(
+      utcDate,
+      astro.elongation,
+      6,
+      (d) => computeAstronomy(d).elongation
+    );
+
+    birthPanchang = {
+      instantUtc: utcDate.toISOString(),
+      localDate: input.date,
+      localTime: input.time,
+      timezone: input.timezone,
+      vara: {
+        index: varaInfo.index,
+        name: varaInfo.name,
+      },
+      tithi: {
+        index: tithiIndex,
+        name: tithiName,
+        paksha,
+        endsAtUtc: nextTithiDate ? nextTithiDate.toISOString() : null,
+      },
+      nakshatra: {
+        index: nakshatraIdx,
+        name: nakshatraName,
+        pada: nakshatraPada,
+        endsAtUtc: nextNakshatraDate ? nextNakshatraDate.toISOString() : null,
+      },
+      yoga: {
+        index: yogaIdx,
+        name: yogaName,
+        endsAtUtc: nextYogaDate ? nextYogaDate.toISOString() : null,
+      },
+      karana: {
+        index: karanaHalfTithi,
+        name: karanaName,
+        endsAtUtc: nextKaranaDate ? nextKaranaDate.toISOString() : null,
+      },
+      calculation: {
+        engineVersion: PANCHANG_ENGINE_VERSION,
+        ayanamsa: 'lahiri',
+        precision: 'high',
+        diagnostics: [
+          `Calculated at exact birth instant ${utcDate.toISOString()}`,
+          `Location: ${input.lat.toFixed(4)}°, ${input.lng.toFixed(4)}° (${input.timezone})`,
+          'High astronomical precision birth moment with solved limb transition boundaries',
+        ],
+      },
+    };
+  }
+
   return {
+    schemaVersion: ASTRO_CHART_SCHEMA_VERSION,
+    birthPanchang,
     utcBirthTime: utcDate.toISOString(),
     julianDay:    parseFloat(jd.toFixed(6)),
     ayanamsa:     parseFloat(ayanamsa.toFixed(4)),

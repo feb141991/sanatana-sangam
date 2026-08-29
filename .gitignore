@@ -45,3 +45,4 @@ venv/
 .idea/
 .env.production
 .env.production
+.env*

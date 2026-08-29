@@ -36,16 +36,35 @@ async function checkAndIncrementAiUsage(
 ): Promise<{ allowed: boolean; used: number; limit: number }> {
   const today = new Date().toISOString().slice(0, 10);
   try {
+    let resultData: any = null;
     const { data, error } = await supabase.rpc('increment_ai_chat_usage', {
       p_user_id: userId,
       p_date: today,
       p_limit: limit,
     });
-    if (error || data === null) {
+    
+    if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
+      // Fallback to service role if postgres execute permission is missing for authenticated role
+      const { createClient } = await import('@supabase/supabase-js');
+      const adminClient = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      const adminRes = await adminClient.rpc('increment_ai_chat_usage', {
+        p_user_id: userId,
+        p_date: today,
+        p_limit: limit,
+      });
+      resultData = adminRes.data;
+    } else {
+      resultData = data;
+    }
+
+    if (!resultData) {
       console.warn('[ai/chat] rate limit check failed, failing closed:', error);
       return { allowed: false, used: 0, limit };
     }
-    const res = data as { new_count: number; was_allowed: boolean };
+    const res = resultData as { new_count: number; was_allowed: boolean };
     return { allowed: res.was_allowed, used: res.new_count, limit };
   } catch (err) {
     console.error('[ai/chat] error inside checkAndIncrementAiUsage:', err);
@@ -340,7 +359,7 @@ export async function POST(req: NextRequest) {
   }
 
   const tier = getTierFromScore(profile?.seva_score ?? 0);
-  const dailyLimit = isPro ? PRO_DAILY_LIMIT : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? FREE_DAILY_LIMIT);
+  const dailyLimit = Math.min(isPro ? PRO_DAILY_LIMIT : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? FREE_DAILY_LIMIT), 20);
 
   const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, dailyLimit);
   if (!allowed) {

@@ -76,6 +76,8 @@ export {
 export {
   lahiriAyanamsha,
   normalizeAngle,
+  computeAstronomy,
+  type AstroSnapshot as PanchangAstronomy,
 } from './core/astronomy.js';
 
 export {
@@ -86,7 +88,7 @@ export {
   getSunriseSunsetTimes,
 } from './core/astronomy-adapter.js';
 
-
+export const PANCHANG_ENGINE_VERSION = '0.2.4';
 
 export interface PanchangData {
   tithi: string;
@@ -123,13 +125,13 @@ export const PANCHANG_TRUST_META: PanchangTrustMeta = {
   guidanceNote: 'This Panchang now uses astronomy-backed solar and lunar positions plus solved transition windows. It is materially stronger than the older in-app estimate, but temple- or guru-specific observances should still win when exact vrata timing matters.',
 };
 
-const TITHIS = [
+export const TITHIS = [
   'Pratipada', 'Dwitiya', 'Tritiya', 'Chaturthi', 'Panchami',
   'Shashthi', 'Saptami', 'Ashtami', 'Navami', 'Dashami',
   'Ekadashi', 'Dwadashi', 'Trayodashi', 'Chaturdashi',
 ];
 
-const NAKSHATRAS = [
+export const NAKSHATRAS = [
   'Ashwini', 'Bharani', 'Krittika', 'Rohini', 'Mrigashira', 'Ardra',
   'Punarvasu', 'Pushya', 'Ashlesha', 'Magha', 'Purva Phalguni', 'Uttara Phalguni',
   'Hasta', 'Chitra', 'Swati', 'Vishakha', 'Anuradha', 'Jyeshtha',
@@ -137,14 +139,14 @@ const NAKSHATRAS = [
   'Shatabhisha', 'Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati',
 ];
 
-const YOGAS = [
+export const YOGAS = [
   'Vishkamba', 'Priti', 'Ayushman', 'Saubhagya', 'Shobhana', 'Atiganda',
   'Sukarman', 'Dhriti', 'Shula', 'Ganda', 'Vriddhi', 'Dhruva', 'Vyaghata',
   'Harshana', 'Vajra', 'Siddhi', 'Vyatipata', 'Variyana', 'Parigha', 'Shiva',
   'Siddha', 'Sadhya', 'Shubha', 'Shukla', 'Brahma', 'Indra', 'Vaidhriti',
 ];
 
-const VARAS = ['Ravivara', 'Somavara', 'Mangalavara', 'Budhavara', 'Guruvara', 'Shukravara', 'Shanivara'];
+export const VARAS = ['Ravivara', 'Somavara', 'Mangalavara', 'Budhavara', 'Guruvara', 'Shukravara', 'Shanivara'];
 
 const MASA_NAMES = [
   'Chaitra', 'Vaishakha', 'Jyeshtha', 'Ashadha', 'Shravana', 'Bhadrapada',
@@ -318,7 +320,7 @@ function getSunriseSunset(
   return { ...fallback, noon };
 }
 
-function getTithiName(tithiIndex: number, paksha: 'Shukla' | 'Krishna'): string {
+export function getTithiName(tithiIndex: number, paksha: 'Shukla' | 'Krishna'): string {
   const tithiInPaksha = ((tithiIndex - 1) % 15) + 1;
   if (tithiInPaksha === 15) {
     return paksha === 'Shukla' ? 'Purnima' : 'Amavasya';
@@ -326,7 +328,7 @@ function getTithiName(tithiIndex: number, paksha: 'Shukla' | 'Krishna'): string 
   return TITHIS[tithiInPaksha - 1];
 }
 
-function getKaranaName(karanaIndex: number): string {
+export function getKaranaName(karanaIndex: number): string {
   if (karanaIndex === 1) return 'Kimstughna';
   if (karanaIndex >= 58) {
     return ['Shakuni', 'Chatushpada', 'Nagava'][karanaIndex - 58] ?? 'Nagava';
@@ -334,7 +336,7 @@ function getKaranaName(karanaIndex: number): string {
   return MOVABLE_KARANAS[(karanaIndex - 2) % MOVABLE_KARANAS.length];
 }
 
-function solveNextBoundary(
+export function solveNextBoundary(
   startDate: Date,
   startValue: number,
   stepDegrees: number,
@@ -629,7 +631,18 @@ export function calculatePanchang(
 
   const dayLengthMs = Math.max(0, sunset.getTime() - sunrise.getTime());
   const partLengthMs = dayLengthMs / 8;
-  const dow = date.getDay();
+  let dow = date.getDay();
+  if (timezone) {
+    try {
+      const weekdayStr = new Intl.DateTimeFormat('en-US', { timeZone: timezone, weekday: 'long' }).format(date);
+      const weekdayMap: Record<string, number> = {
+        Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6
+      };
+      if (weekdayStr in weekdayMap) {
+        dow = weekdayMap[weekdayStr];
+      }
+    } catch {}
+  }
   const rahuPartIndex = RAHU_KAAL_ORDER[dow] - 1;
   const rahuStart = new Date(sunrise.getTime() + rahuPartIndex * partLengthMs);
   const rahuEnd = new Date(rahuStart.getTime() + partLengthMs);
