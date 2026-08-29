@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "audit:notifications": "npx tsx scripts/audit-notification-topology.ts",
     "dev": "next dev -p 3001",
     "build": "next build",
     "validate:rules": "npx tsx scripts/validate-rules.ts",
