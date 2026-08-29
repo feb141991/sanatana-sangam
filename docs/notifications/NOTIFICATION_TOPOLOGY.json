@@ -1,22 +1,22 @@
 {
-  "sourceFingerprint": "3da04c9d1467a3e734e03bc2984c314bdf9f820928334af83479fedecca31bd3",
+  "sourceFingerprint": "a882d6e20a855eb44e9954b08dd211ea057c18db003213e8693bd98a63d95166",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
     "nativeRepositoryAudited": true
   },
   "summary": {
-    "totalRoutes": 28,
-    "directPushCallers": 23,
+    "totalRoutes": 27,
+    "directPushCallers": 22,
     "queueWriters": 5,
     "byClassification": {
       "admin_or_test": 2,
       "direct_send_legacy": 16,
       "scheduled_queue_producer": 4,
-      "delivery_worker": 2,
+      "delivery_worker": 1,
       "transactional_event": 4
     },
-    "preferenceReferences": 7
+    "preferenceReferences": 8
   },
   "producers": [
     {
@@ -257,7 +257,9 @@
       "readsSchedule": true,
       "writesSchedule": false,
       "writesBell": true,
-      "preferenceColumns": [],
+      "preferenceColumns": [
+        "wants_family_notifications"
+      ],
       "notificationKeyLiterals": [
         "[notification-dispatch] Cron crashed:",
         "[notification-dispatch] Profile lookup error:"
@@ -292,26 +294,6 @@
       "notificationKeyLiterals": [
         ", sankalpa_id: sankalpa.id }\n          });\n          sent++;\n        }\n      } catch (err) {\n        console.error(",
         "sankalpa-checkin cron crashed:"
-      ]
-    },
-    {
-      "route": "/api/cron/sanskar-milestone",
-      "sourceFile": "src/app/api/cron/sanskar-milestone/route.ts",
-      "classification": "delivery_worker",
-      "schedule": "0 6 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": true,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ",\n          action_url: actionPath,\n          notification_key: ",
-        ",\n          sanskara_id:   String(meta.sanskara_id  ?? ",
-        "[sanskar-milestone] Bulk failed schedule update error:",
-        "[sanskar-milestone] Bulk notification_schedule update error:",
-        "[sanskar-milestone] Bulk notifications insert error:",
-        "[sanskar-milestone] Fetch error:",
-        "[sanskar-milestone] Row error:"
       ]
     },
     {
@@ -522,7 +504,7 @@
         "/api/cron/sanskar-milestone"
       ],
       "rationale": "Two push-sending workers read the shared notification_schedule queue; the Sanskar worker query is not restricted to Sanskar rows.",
-      "allRoutesDiscovered": true,
+      "allRoutesDiscovered": false,
       "status": "requires_runtime_candidate_probe"
     },
     {
@@ -575,6 +557,12 @@
     {
       "column": "wants_evening_reminder",
       "nativeReferenced": false,
+      "webReferenced": true,
+      "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
+    },
+    {
+      "column": "wants_family_notifications",
+      "nativeReferenced": true,
       "webReferenced": true,
       "note": "Reference detection is not proof that a user-facing toggle exists; Prompt 4 must trace each settings control."
     },
@@ -692,12 +680,12 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 48,
+        "count": 65,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 489,
+        "count": 511,
         "error": null
       },
       "push_tokens": {
@@ -707,12 +695,12 @@
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 31,
+        "count": 51,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 34,
+        "count": 36,
         "error": null
       }
     }

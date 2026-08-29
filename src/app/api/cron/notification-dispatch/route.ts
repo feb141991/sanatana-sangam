@@ -4,6 +4,11 @@ import { sendPushNotification } from "@/lib/push-server";
 import { recordNotificationDispatchBatch, type NotificationDispatchEventPayload } from "@/lib/notification-dispatch-audit";
 import { emitEvent, emitError } from "@/lib/monitoring/events";
 import { getLocalHour, isHourInQuietWindow, resolveTimeZone } from "@/lib/sacred-time";
+import {
+  getNotificationPreferenceSkipReason,
+  getScheduledNotificationActionPath,
+  getScheduledNotificationPushData,
+} from "@/lib/notification-delivery-policy";
 
 // ─── Notification Dispatcher Cron ───────────────────────────────────────────
 // Schedule: every 10 minutes, triggered by a Supabase pg_cron job (via
@@ -123,7 +128,7 @@ export async function GET(request: Request) {
     const userIds = Array.from(new Set(claimedRows.map((r) => r.user_id)));
     const { data: profiles, error: profileErr } = await supabase
       .from("profiles")
-      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting")
+      .select("id, timezone, notification_quiet_hours_start, notification_quiet_hours_end, is_deleting, wants_family_notifications")
       .in("id", userIds);
 
     if (profileErr) {
@@ -147,6 +152,20 @@ export async function GET(request: Request) {
           notificationType: row.notification_type,
           decision: "skipped",
           reason,
+          provider: "expo",
+        });
+        continue;
+      }
+
+      const preferenceSkipReason = getNotificationPreferenceSkipReason(row, profile);
+      if (preferenceSkipReason) {
+        skippedRows.push({ id: row.id, reason: preferenceSkipReason });
+        dispatchAuditEvents.push({
+          userId: row.user_id,
+          notificationKey: row.notification_key,
+          notificationType: row.notification_type,
+          decision: "skipped",
+          reason: preferenceSkipReason,
           provider: "expo",
         });
         continue;
@@ -178,12 +197,7 @@ export async function GET(request: Request) {
       const bellNotifications = eligibleRows.map((row) => {
         const meta = (row.metadata ?? {}) as Record<string, any>;
         const notifType = row.notification_type ?? "generic";
-        const defaultActionPath = notifType === "sattvic_reminder"
-          ? "/bhakti/zen"
-          : notifType.startsWith("nitya")
-          ? "/nitya-karma"
-          : "/discover/mood";
-        const actionPath = meta.action_url ?? defaultActionPath;
+        const actionPath = getScheduledNotificationActionPath(row);
         const emoji = meta.emoji ?? (
           notifType === "mood_checkin" ? "🌿" :
           notifType === "nitya_madhyahn" ? "🌞" :
@@ -223,12 +237,7 @@ export async function GET(request: Request) {
       try {
         const meta = (row.metadata ?? {}) as Record<string, any>;
         const notifType = row.notification_type ?? "generic";
-        const defaultActionPath = notifType === "sattvic_reminder"
-          ? "/bhakti/zen"
-          : notifType.startsWith("nitya")
-          ? "/nitya-karma"
-          : "/discover/mood";
-        const actionPath = meta.action_url ?? defaultActionPath;
+        const actionPath = getScheduledNotificationActionPath(row);
         const actionUrl = new URL(actionPath, new URL(request.url).origin).toString();
 
         await sendPushNotification({
@@ -236,10 +245,7 @@ export async function GET(request: Request) {
           title:   row.title,
           body:    row.body,
           url:     actionUrl,
-          data: {
-            type: notifType,
-            notification_key: row.notification_key ?? "",
-          },
+          data: getScheduledNotificationPushData(row),
         });
 
         succeededIds.push(row.id);

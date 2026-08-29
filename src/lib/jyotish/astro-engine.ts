@@ -262,25 +262,49 @@ const COMBUST_ORB: Record<string, number> = {
 // Uses Node.js built-in Intl API (V8 IANA tz database, handles historical DST)
 export function birthLocalToUTC(dateStr: string, timeStr: string, ianaTimezone: string): Date {
   const [y, mo, d] = dateStr.split('-').map(Number);
-  const [h, mi]    = timeStr.split(':').map(Number);
-
-  // Step 1: treat the birth time as if it were UTC (approximate)
-  const approxUtc = new Date(Date.UTC(y, mo - 1, d, h, mi, 0));
-
-  // Step 2: ask Intl what the local clock shows at approxUtc in the birth timezone
+  const [h, mi, s = 0] = timeStr.split(':').map(Number);
+  const requestedWallClock = Date.UTC(y, mo - 1, d, h, mi, s);
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: ianaTimezone,
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
   });
-  const parts = fmt.formatToParts(approxUtc);
-  const get   = (t: string) => parseInt(parts.find(p => p.type === t)!.value);
-  const localH = get('hour') % 24; // handle '24' returned by some implementations
-  const localShown = Date.UTC(get('year'), get('month') - 1, get('day'), localH, get('minute'), get('second'));
+  const wallClockAt = (instantMs: number): number => {
+    const parts = fmt.formatToParts(new Date(instantMs));
+    const get = (type: string) => Number(parts.find((part) => part.type === type)?.value);
+    return Date.UTC(
+      get('year'),
+      get('month') - 1,
+      get('day'),
+      get('hour') % 24,
+      get('minute'),
+      get('second'),
+    );
+  };
 
-  // Step 3: offset = localShown - approxUtc → actual UTC = approxUtc - offset
-  const offsetMs = localShown - approxUtc.getTime();
-  return new Date(approxUtc.getTime() - offsetMs);
+  // Collect every offset observed around the requested civil date. A DST fold
+  // produces two matching instants; a DST gap produces none. Both require user
+  // clarification because silently selecting either changes the birth chart.
+  const offsets = new Set<number>();
+  for (const deltaHours of [-36, -24, -12, 0, 12, 24, 36]) {
+    const sample = requestedWallClock + deltaHours * 60 * 60 * 1000;
+    offsets.add(wallClockAt(sample) - sample);
+  }
+
+  const candidates = [...offsets]
+    .map((offset) => requestedWallClock - offset)
+    .filter((instant, index, all) => all.indexOf(instant) === index)
+    .filter((instant) => wallClockAt(instant) === requestedWallClock)
+    .sort((a, b) => a - b);
+
+  if (candidates.length === 0) {
+    throw new RangeError('birth time does not exist in the selected timezone because of a daylight-saving transition');
+  }
+  if (candidates.length > 1) {
+    throw new RangeError('birth time is ambiguous in the selected timezone because of a daylight-saving transition');
+  }
+
+  return new Date(candidates[0]);
 }
 
 // ── Julian Day from Date ──────────────────────────────────────────────────────

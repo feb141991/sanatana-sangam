@@ -210,16 +210,6 @@ export const CRON_CATALOGUE: CronDefinition[] = [
     method: 'GET',
   },
   {
-    id: 'sanskar-milestone',
-    name: 'Sanskar Milestone Reminder',
-    route: '/api/cron/sanskar-milestone',
-    schedule: '0 6 * * *',
-    scheduleHuman: 'Daily at 06:00 UTC',
-    category: 'reminders',
-    description: 'Milestone achievements and seva progression nudges.',
-    method: 'GET',
-  },
-  {
     id: 'mood-reminder-morning',
     name: 'Morning Mood Reminder',
     route: '/api/cron/mood-reminder',

@@ -46,10 +46,6 @@
       "schedule": "0 3 * * *"
     },
     {
-      "path": "/api/cron/sanskar-milestone",
-      "schedule": "0 6 * * *"
-    },
-    {
       "path": "/api/cron/sattvic-reminder",
       "schedule": "0 11 * * *"
     },

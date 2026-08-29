@@ -4,8 +4,8 @@
 
 ## Summary
 
-- Route-level producers/workers discovered: **28**
-- Direct push callers: **23**
+- Route-level producers/workers discovered: **27**
+- Direct push callers: **22**
 - Queue writers: **5**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
@@ -15,7 +15,7 @@
 | `admin_or_test` | 2 |
 | `direct_send_legacy` | 16 |
 | `scheduled_queue_producer` | 4 |
-| `delivery_worker` | 2 |
+| `delivery_worker` | 1 |
 | `transactional_event` | 4 |
 
 ## Route inventory
@@ -35,10 +35,9 @@
 | `/api/cron/nitya-reminder` | `direct_send_legacy` | `0 4 * * *` | yes | no | `wants_nitya_reminders` |
 | `/api/cron/nitya-reminder-madhyahn` | `scheduled_queue_producer` | `30 6 * * *` | no | yes | `wants_madhyahn_reminder` |
 | `/api/cron/nitya-reminder-sandhya` | `scheduled_queue_producer` | `0 13 * * *` | no | yes | `wants_evening_reminder` |
-| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | none detected |
+| `/api/cron/notification-dispatch` | `delivery_worker` | not in vercel.json | yes | no | `wants_family_notifications` |
 | `/api/cron/pitru-paksha-reminder` | `direct_send_legacy` | `0 3 * * *` | yes | no | none detected |
 | `/api/cron/sankalpa-checkin` | `direct_send_legacy` | `30 1 * * *` | yes | no | none detected |
-| `/api/cron/sanskar-milestone` | `delivery_worker` | `0 6 * * *` | yes | no | none detected |
 | `/api/cron/sattvic-reminder` | `scheduled_queue_producer` | `0 11 * * *` | no | yes | `wants_nitya_reminders` |
 | `/api/cron/shloka-reminder` | `direct_send_legacy` | `0 6 * * *` | yes | no | `wants_shloka_reminders` |
 | `/api/cron/tithi-reminder` | `direct_send_legacy` | `0 5 * * *` | yes | no | `wants_festival_reminders` |
@@ -57,7 +56,7 @@ These are review targets, not machine-proven duplicate deliveries. Prompt 2 must
 
 | Hypothesis | Static route evidence | Status | Rationale |
 | --- | --- | --- | --- |
-| `competing_schedule_delivery_workers` | routes present | `requires_runtime_candidate_probe` | Two push-sending workers read the shared notification_schedule queue; the Sanskar worker query is not restricted to Sanskar rows. |
+| `competing_schedule_delivery_workers` | route missing | `requires_runtime_candidate_probe` | Two push-sending workers read the shared notification_schedule queue; the Sanskar worker query is not restricted to Sanskar rows. |
 | `occurrence_vrat_vs_tithi` | routes present | `requires_runtime_candidate_probe` | Occurrence-backed Ekadashi/Purnima/Amavasya vrats and generic tithi alerts use independent key namespaces. |
 | `morning_routine_budget` | routes present | `requires_runtime_candidate_probe` | Independent early-day routines have no shared per-user cadence arbitration. |
 | `evening_routine_budget` | routes present | `requires_runtime_candidate_probe` | Independent evening routines have no shared per-user cadence arbitration. |
@@ -69,6 +68,7 @@ Reference detection is intentionally weaker than UI exposure. Prompt 4 must trac
 - `japa_reminder_enabled`: Native reference not found; Web reference found.
 - `wants_community_notifications`: Native reference found; Web reference found.
 - `wants_evening_reminder`: Native reference not found; Web reference found.
+- `wants_family_notifications`: Native reference found; Web reference found.
 - `wants_festival_reminders`: Native reference found; Web reference found.
 - `wants_madhyahn_reminder`: Native reference not found; Web reference found.
 - `wants_nitya_reminders`: Native reference found; Web reference found.
@@ -105,12 +105,12 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 48,
+      "count": 65,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 489,
+      "count": 511,
       "error": null
     },
     "push_tokens": {
@@ -120,12 +120,12 @@ Migration files are repository evidence only. They are not labelled applied to p
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 31,
+      "count": 51,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 34,
+      "count": 36,
       "error": null
     }
   }

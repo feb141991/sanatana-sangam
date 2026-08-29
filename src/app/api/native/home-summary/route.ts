@@ -23,6 +23,7 @@ import { attachMaterialisationBatches } from '@/lib/calendar/occurrence-reader';
 import { selectDisplayObservances } from '@/lib/calendar/display-observances';
 import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
 import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
+import { getHomeObservanceWindowEnd } from '@/lib/home-observance-window';
 
 export const runtime = 'nodejs';
 
@@ -559,7 +560,7 @@ export async function GET(request: NextRequest) {
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
-  const calendarTo = shiftIsoDate(today, 5);
+  const calendarTo = getHomeObservanceWindowEnd(today);
   const tradition = profile?.tradition ?? 'hindu';
   const latitude = profile?.latitude ?? 23.1765;
   const longitude = profile?.longitude ?? 75.7885;

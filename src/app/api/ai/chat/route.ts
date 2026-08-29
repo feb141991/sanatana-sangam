@@ -573,7 +573,15 @@ User Question: ${message}
       // Backstop against the model ignoring the "keep it short" system
       // instruction — 500 tokens (~350-400 words) still leaves real room
       // for an explicitly-requested deep answer, but stops runaway replies.
-      { system: systemPrompt, user: userMessage, maxOutputTokens: 500 },
+      {
+        system: systemPrompt,
+        user: userMessage,
+        maxOutputTokens: 500,
+        // Ordinary chat needs a direct answer, not hidden reasoning. Sarvam's
+        // default reasoning repeatedly exhausted this budget before emitting
+        // a final response, which tripped the shared circuit breaker.
+        reasoningEffort: 'none',
+      },
       { providerOverride: 'sarvam-hosted' }
     );
 
