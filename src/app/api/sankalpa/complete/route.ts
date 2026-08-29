@@ -37,21 +37,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Sankalpa is not active' }, { status: 400 });
     }
 
-    // Update sankalpa status and completed_at timestamp
-    const { error: updateError } = await supabase
+    // Generate the completion instant once so persistence and the response
+    // receipt cannot disagree.
+    const completedAt = new Date().toISOString();
+    const { data: completedRow, error: updateError } = await supabase
       .from('sankalpas')
       .update({
         status: 'completed',
-        completed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        completed_at: completedAt,
+        updated_at: completedAt
       })
       .eq('id', sankalpa_id)
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .select('id')
+      .maybeSingle();
 
     if (updateError) throw updateError;
+    if (!completedRow) {
+      return NextResponse.json({ error: 'Sankalpa is no longer active' }, { status: 409 });
+    }
 
     // Award +50 displayed karma. The existing seva RPCs update seva_score /
     // weekly_seva / monthly_seva, while Home reads profiles.karma_points.
+    let karmaAwarded: number | null = null;
     try {
       const { data: profileRow, error: profileError } = await supabase
         .from('profiles')
@@ -69,12 +78,14 @@ export async function POST(req: NextRequest) {
 
       if (karmaError) {
         console.error('[sankalpa/complete] karma_points update failed:', karmaError.message);
+      } else {
+        karmaAwarded = 50;
       }
     } catch (karmaErr) {
       console.error('[sankalpa/complete] karma_points award failed:', karmaErr);
     }
 
-    return NextResponse.json({ success: true, karmaAwarded: 50 });
+    return NextResponse.json({ success: true, karmaAwarded, completedAt });
   } catch (err) {
     console.error('[sankalpa/complete/POST] Failed:', err);
     return NextResponse.json({ error: 'Failed to complete sankalpa' }, { status: 500 });

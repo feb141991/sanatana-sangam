@@ -25,6 +25,7 @@ type SankalpaHistoryRow = {
   status: 'completed' | 'abandoned';
   created_at: string;
   updated_at: string;
+  completed_at: string | null;
 };
 
 export async function GET(req: NextRequest) {
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
   try {
     const { data, error } = await supabase
       .from('sankalpas')
-      .select('id, text, related_practice, target_days, start_date, end_date, status, created_at, updated_at')
+      .select('id, text, related_practice, target_days, start_date, end_date, status, created_at, updated_at, completed_at')
       .eq('user_id', user.id)
       .in('status', ['completed', 'abandoned'])
       .order('updated_at', { ascending: false })

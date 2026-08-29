@@ -2,18 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 
-async function verifyActiveSankalpa(
+async function verifyOwnedSankalpa(
   supabase: NonNullable<Awaited<ReturnType<typeof getApiUser>>['supabase']>,
   userId: string,
   sankalpaId: string,
+  activeOnly: boolean,
 ) {
-  const { data, error } = await supabase
+  let query = supabase
     .from('sankalpas')
     .select('id')
     .eq('id', sankalpaId)
-    .eq('user_id', userId)
-    .eq('status', 'active')
-    .maybeSingle();
+    .eq('user_id', userId);
+  if (activeOnly) query = query.eq('status', 'active');
+  const { data, error } = await query.maybeSingle();
 
   if (error) throw error;
   return Boolean(data);
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    const sankalpaExists = await verifyActiveSankalpa(supabase, user.id, sankalpa_id);
+    const sankalpaExists = await verifyOwnedSankalpa(supabase, user.id, sankalpa_id, true);
     if (!sankalpaExists) {
       return NextResponse.json({ error: 'Active sankalpa not found' }, { status: 404 });
     }
@@ -80,9 +81,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'sankalpa_id is required' }, { status: 400 });
     }
 
-    const sankalpaExists = await verifyActiveSankalpa(supabase, user.id, sankalpa_id);
+    // Historical journeys are read-only but remain owned by the same user;
+    // unlike POST, GET must therefore allow completed/abandoned vows.
+    const sankalpaExists = await verifyOwnedSankalpa(supabase, user.id, sankalpa_id, false);
     if (!sankalpaExists) {
-      return NextResponse.json({ error: 'Active sankalpa not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Sankalpa not found' }, { status: 404 });
     }
 
     const { data: rows, error } = await supabase
