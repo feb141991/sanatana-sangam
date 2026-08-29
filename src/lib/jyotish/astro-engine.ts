@@ -893,7 +893,61 @@ export function generateAstroChart(input: BirthInput): AstroChart {
     yogas,
     navamsha,
     quality,
-    timeUnknown: input.timeUnknown ?? false,
+    timeUnknown: Boolean(input.timeUnknown),
+  };
+}
+
+export interface DenormalizedBirthProfileSummary {
+  rashi: string | null;
+  sun_rashi: string | null;
+  nakshatra: string | null;
+  nakshatra_pada: number | null;
+  nakshatra_lord: string | null;
+  lagna: string | null;
+  lagna_deg: number | null;
+  ayanamsa: number | null;
+  current_dasha_planet: string | null;
+  current_dasha_end_date: string | null;
+  next_dasha_planet: string | null;
+}
+
+/**
+ * Pure mapper deriving all denormalized birth profile summary columns
+ * exclusively and deterministically from a validated AstroChart.
+ */
+export function deriveDenormalizedBirthProfileFields(chart: AstroChart): DenormalizedBirthProfileSummary {
+  const currentDasha = chart.dasha?.current ?? null;
+  let nextDashaPlanet: string | null = null;
+
+  if (chart.dasha?.timeline && Array.isArray(chart.dasha.timeline)) {
+    const currentIndex = currentDasha
+      ? chart.dasha.timeline.findIndex(
+          (d) => d.planet === currentDasha.planet && d.startDate === currentDasha.startDate
+        )
+      : -1;
+
+    if (currentIndex >= 0 && currentIndex + 1 < chart.dasha.timeline.length) {
+      nextDashaPlanet = chart.dasha.timeline[currentIndex + 1].planet;
+    } else if (currentDasha?.endDate) {
+      const found = chart.dasha.timeline.find(
+        (d) => d.startDate >= currentDasha.endDate && d.planet !== currentDasha.planet
+      );
+      nextDashaPlanet = found?.planet ?? null;
+    }
+  }
+
+  return {
+    rashi: chart.planets?.['Chandra']?.rashiName ?? null,
+    sun_rashi: chart.planets?.['Surya']?.rashiName ?? null,
+    nakshatra: chart.nakshatra?.name ?? null,
+    nakshatra_pada: chart.nakshatra?.pada ?? null,
+    nakshatra_lord: chart.nakshatra?.lord ?? null,
+    lagna: chart.timeUnknown ? null : (chart.lagna?.rashiName ?? null),
+    lagna_deg: chart.timeUnknown ? null : (chart.lagna?.degreeInRashi != null ? Number(chart.lagna.degreeInRashi.toFixed(2)) : null),
+    ayanamsa: chart.ayanamsa != null ? Number(chart.ayanamsa.toFixed(2)) : null,
+    current_dasha_planet: currentDasha?.planet ?? null,
+    current_dasha_end_date: currentDasha?.endDate ?? null,
+    next_dasha_planet: nextDashaPlanet,
   };
 }
 

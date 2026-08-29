@@ -28,7 +28,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { generateAstroChart, BirthInput } from '@/lib/jyotish/astro-engine';
+import { generateAstroChart, deriveDenormalizedBirthProfileFields, BirthInput } from '@/lib/jyotish/astro-engine';
 import { getApiUser } from '@/lib/api-auth';
 
 export const runtime = 'nodejs';
@@ -116,13 +116,8 @@ export async function POST(req: NextRequest) {
       .eq('is_primary', true);
   }
 
-  // ── Current dasha quick-access ────────────────────────────────────────────────
-  const currentDasha     = chart.dasha.current;
-  const currentAntarDasha = chart.dasha.currentAntardasha;
-  const nowStr = new Date().toISOString().split('T')[0];
-  const nextDasha = chart.dasha.timeline.find(
-    (d) => d.startDate > (currentDasha?.endDate ?? nowStr)
-  );
+  // ── Derive canonical denormalized summary fields ───────────────────────────
+  const summary = deriveDenormalizedBirthProfileFields(chart);
 
   // ── Save to birth_profiles ────────────────────────────────────────────────────
   const row: Record<string, unknown> = {
@@ -138,20 +133,19 @@ export async function POST(req: NextRequest) {
     birth_lat:      Number(birth_lat),
     birth_lng:      Number(birth_lng),
     birth_timezone,
-    // Computed columns
-    rashi:          chart.planets['Chandra']?.rashiName ?? null,
-    sun_rashi:      chart.planets['Surya']?.rashiName ?? null,
-    nakshatra:      chart.nakshatra?.name ?? null,
-    nakshatra_pada: chart.nakshatra?.pada ?? null,
-    nakshatra_lord: chart.nakshatra?.lord ?? null,
-    lagna:          chart.lagna?.rashiName ?? null,
-    lagna_deg:      chart.lagna?.degreeInRashi ?? null,
-    ayanamsa:       chart.ayanamsa ?? null,
-    chart_data:     chart,
-    // Dasha quick-access
-    current_dasha_planet:   currentDasha?.planet ?? null,
-    current_dasha_end_date: currentDasha?.endDate ?? null,
-    next_dasha_planet:      nextDasha?.planet ?? null,
+    // Pure derived summary columns
+    rashi:                  summary.rashi,
+    sun_rashi:              summary.sun_rashi,
+    nakshatra:              summary.nakshatra,
+    nakshatra_pada:         summary.nakshatra_pada,
+    nakshatra_lord:         summary.nakshatra_lord,
+    lagna:                  summary.lagna,
+    lagna_deg:              summary.lagna_deg,
+    ayanamsa:               summary.ayanamsa,
+    chart_data:             chart,
+    current_dasha_planet:   summary.current_dasha_planet,
+    current_dasha_end_date: summary.current_dasha_end_date,
+    next_dasha_planet:      summary.next_dasha_planet,
     is_primary:             Boolean(is_primary),
     is_public:              false,
   };
