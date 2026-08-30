@@ -19,8 +19,23 @@
  *                          `ALTER DATABASE postgres SET app.apple_token_key = '...'`)
  */
 
-import { createSign } from 'node:crypto';
+import { createSign, scryptSync } from 'node:crypto';
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
+
+// Derives a proper 32-byte AES-256 key from APPLE_TOKEN_ENC_KEY via scrypt,
+// instead of naively zero-padding the raw string to 32 bytes. Zero-padding
+// meant a short passphrase (the common case for an operator-set env var)
+// left most of the "256-bit" key as literal 0x00 bytes -- a drastically
+// weakened key, not real 256 bits of entropy. scrypt is deterministic given
+// the same input, so encryption/decryption still round-trip correctly; the
+// salt is fixed (not per-record) because this derives one system-wide key
+// from one system-wide secret, not a per-user password hash -- record-level
+// uniqueness already comes from the random IV generated per encryption.
+const APPLE_TOKEN_KEY_SALT = 'shoonaya.apple-auth-tokens.v1';
+
+function deriveTokenEncryptionKey(encKey: string): Buffer {
+  return scryptSync(encKey, APPLE_TOKEN_KEY_SALT, 32);
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -197,7 +212,7 @@ async function encryptAndStoreRefreshToken(
     // Production operators should prefer the pgcrypto Postgres approach.
     const { createCipheriv, randomBytes } = await import('node:crypto');
     const iv = randomBytes(16);
-    const keyBuf = Buffer.from(encKey.padEnd(32, '0').slice(0, 32), 'utf8');
+    const keyBuf = deriveTokenEncryptionKey(encKey);
     const cipher = createCipheriv('aes-256-cbc', keyBuf, iv);
     const encrypted = Buffer.concat([cipher.update(refreshToken, 'utf8'), cipher.final()]);
     encryptedValue = `aes256:${iv.toString('hex')}:${encrypted.toString('hex')}`;
@@ -304,7 +319,7 @@ export async function revokeAppleAuthorizationForUser(
         const { createDecipheriv } = await import('node:crypto');
         const [, ivHex, encHex] = encryptedValue.split(':');
         const iv = Buffer.from(ivHex, 'hex');
-        const keyBuf = Buffer.from(encKey.padEnd(32, '0').slice(0, 32), 'utf8');
+        const keyBuf = deriveTokenEncryptionKey(encKey);
         const decipher = createDecipheriv('aes-256-cbc', keyBuf, iv);
         refreshToken = Buffer.concat([
           decipher.update(Buffer.from(encHex, 'hex')),
