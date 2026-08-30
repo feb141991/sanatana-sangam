@@ -7,6 +7,8 @@ export const metadata: Metadata = {
 };
 
 export default function DataDeletionPage() {
+  const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() || 'support@sanatansangam.com';
+
   return (
     <main className="min-h-screen bg-[#FDF6E3] text-[#1A0F00] flex flex-col justify-between py-12 px-6 md:px-12 font-sans">
       <div className="max-w-2xl mx-auto w-full my-auto space-y-8">
@@ -70,7 +72,14 @@ export default function DataDeletionPage() {
           </h2>
           <div className="bg-[#7B1A1A]/5 rounded-xl p-5 border border-[#7B1A1A]/10 space-y-3">
             <p className="text-sm leading-relaxed text-[#1A0F00]/85">
-              Email <span className="font-bold underline text-[#7B1A1A]">support@sanatansangam.com</span> with subject line:
+              Email{' '}
+              <a
+                className="font-bold underline text-[#7B1A1A]"
+                href={`mailto:${supportEmail}`}
+              >
+                {supportEmail}
+              </a>{' '}
+              with subject line:
             </p>
             <div className="bg-white/80 rounded-lg p-4 font-mono text-xs md:text-sm border border-[#1A0F00]/10 text-center select-all">
               DATA DELETION REQUEST — [your registered email]
