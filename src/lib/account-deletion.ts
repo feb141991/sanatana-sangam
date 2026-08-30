@@ -1,4 +1,5 @@
 import { createServiceRoleSupabaseClient } from '@/lib/admin';
+import { revokeAppleAuthorizationForUser } from '@/lib/apple-auth-service';
 
 // Single source of truth for the account-deletion cool-off window, shared by
 // the request/cancel/status API routes (src/app/api/user/delete/*), the
@@ -114,6 +115,16 @@ async function deleteUserStorageObjects(admin: ReturnType<typeof createServiceRo
 
 async function hardDeleteAccount(userId: string): Promise<{ id: string; success: boolean; error?: string }> {
   const admin = createServiceRoleSupabaseClient();
+
+  // ── Apple TN3194 revocation (best-effort, never blocks deletion) ─────────
+  // Must be called BEFORE auth.admin.deleteUser so the auth.identities record
+  // is still present for identity-binding validation. Any non-'revoked' outcome
+  // is logged but does not abort deletion. Apple requires deletion succeeds even
+  // when Apple credentials are unavailable. ON DELETE CASCADE is the final net.
+  const revokeResult = await revokeAppleAuthorizationForUser(userId);
+  if (revokeResult !== 'revoked' && revokeResult !== 'not_found') {
+    console.warn(`account-deletion: Apple revocation outcome for ${userId}: ${revokeResult}`);
+  }
 
   await deleteUserStorageObjects(admin, userId);
 
