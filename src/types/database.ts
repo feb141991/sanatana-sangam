@@ -993,7 +993,20 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_post_comment_previews: {
+        Args: { p_post_ids: string[]; p_preview_count?: number };
+        Returns: {
+          post_id: string;
+          id: string;
+          author_id: string;
+          body: string;
+          created_at: string;
+          deleted_at: string | null;
+          total_count: number;
+        }[];
+      };
+    };
     Enums: Record<string, never>;
   };
 }

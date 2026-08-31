@@ -3,7 +3,26 @@ import { getApiUser } from '@/lib/api-auth';
 import { assertNotBanned } from '@/lib/api-guards';
 import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
 import { parseMandaliCommentInput, parseMandaliCommentEditInput, parseMandaliCommentDeleteInput } from '@/lib/mandali-write-contract';
+import { loadPostComments } from '@/lib/mandali-data-server';
 import { createAdminClient } from '@/lib/supabase-admin';
+
+// Full comment thread for one post -- the "expand" path in the paginated
+// Mandali feed DTO, which ships only a 2-comment preview per post upfront.
+export async function GET(request: NextRequest) {
+  const { user } = await getApiUser(request);
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const postId = new URL(request.url).searchParams.get('postId');
+  if (!postId) return NextResponse.json({ error: 'postId is required.' }, { status: 400 });
+
+  try {
+    const comments = await loadPostComments(user.id, postId);
+    return NextResponse.json({ comments });
+  } catch (error) {
+    console.error('[mandali/comments GET] failed', error instanceof Error ? error.message : 'unknown error');
+    return NextResponse.json({ error: 'Could not load comments.' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   const rejected = rejectLargeRequest(request, 4_096)
