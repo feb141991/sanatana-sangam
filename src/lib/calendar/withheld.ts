@@ -126,6 +126,7 @@ export function filterWithheldOccurrences<T>(
  * Convenience for the common `{ date, observance_definitions: { slug } }` shape.
  */
 export function filterWithheldJoinedRows<T>(rows: T[]): T[] {
+  if (!Array.isArray(rows)) return [];
   return rows.filter(row => {
     const r = row as {
       date?: string | null;

@@ -210,11 +210,18 @@ type HomeSummaryResponse = {
   firstWeek: boolean;
 };
 
-function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
-  return Promise.race([
-    Promise.resolve(promise),
-    new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), timeoutMs)),
-  ]);
+async function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: number): Promise<{ data: T | null }> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      Promise.resolve(promise),
+      new Promise<{ data: null }>((resolve) => {
+        timeout = setTimeout(() => resolve({ data: null }), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
 }
 
 async function withValueTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, fallback: T): Promise<T> {
@@ -609,12 +616,12 @@ export async function GET(request: NextRequest) {
   })
     .then((data) => {
       timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution');
-      return { data };
+      return { data: Array.isArray(data) ? data : [] };
     })
     .catch((err) => {
       console.error('[home-summary] getOrMaterializeOccurrences failed:', err);
       timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution (Failed)');
-      return { data: null };
+      return { data: [] };
     });
 
   const [
@@ -712,7 +719,12 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  const observanceRows = filterWithheldJoinedRows(observanceResult.data ?? []);
+  const rawObservanceData = Array.isArray(observanceResult?.data)
+    ? observanceResult.data
+    : Array.isArray((observanceResult?.data as any)?.data)
+      ? (observanceResult.data as any).data
+      : [];
+  const observanceRows = filterWithheldJoinedRows(rawObservanceData);
   const occurrencesWithBatches = await withValueTimeout(
     attachMaterialisationBatches(
       observanceRows,
