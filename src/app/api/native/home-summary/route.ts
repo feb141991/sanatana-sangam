@@ -217,6 +217,20 @@ function withTimeout<T>(promise: PromiseLike<{ data: T | null }>, timeoutMs: num
   ]);
 }
 
+async function withValueTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, fallback: T): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      Promise.resolve(promise),
+      new Promise<T>((resolve) => {
+        timeout = setTimeout(() => resolve(fallback), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 function shiftIsoDate(isoDate: string, days: number) {
   const date = new Date(`${isoDate}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
@@ -495,13 +509,13 @@ async function getCachedHeroAssets(supabase: any, timeoutMs: number): Promise<He
   }
 }
 
-async function getCachedDharmVeerRoster(supabase: any): Promise<any[]> {
+async function getCachedDharmVeerRoster(supabase: any, timeoutMs: number): Promise<any[]> {
   const now = Date.now();
   if (dharmVeerRosterCache && now - dharmVeerRosterCache.timestamp < GLOBAL_CACHE_TTL_MS) {
     return dharmVeerRosterCache.data;
   }
   try {
-    const roster = await getDharmVeerRoster(supabase);
+    const roster = await withValueTimeout(getDharmVeerRoster(supabase), timeoutMs, []);
     if (roster && roster.length > 0) {
       dharmVeerRosterCache = { data: roster, timestamp: now };
     }
@@ -669,7 +683,7 @@ export async function GET(request: NextRequest) {
     timings.measure('global_lookup', 'Global Roster & Assets Lookup', async () =>
       Promise.all([
         getCachedHeroAssets(supabase, DB_TIMEOUT),
-        getCachedDharmVeerRoster(supabase),
+        getCachedDharmVeerRoster(supabase, DB_TIMEOUT),
       ])
     ),
   ]);
@@ -699,15 +713,19 @@ export async function GET(request: NextRequest) {
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
   const observanceRows = filterWithheldJoinedRows(observanceResult.data ?? []);
-  const occurrencesWithBatches = await attachMaterialisationBatches(
+  const occurrencesWithBatches = await withValueTimeout(
+    attachMaterialisationBatches(
+      observanceRows,
+      undefined,
+      observanceCalendarProfile,
+      {
+        latitude: observanceLocation.lat,
+        longitude: observanceLocation.lon,
+        timezone: observanceLocation.tz,
+      },
+    ),
+    DB_TIMEOUT,
     observanceRows,
-    undefined,
-    observanceCalendarProfile,
-    {
-      latitude: observanceLocation.lat,
-      longitude: observanceLocation.lon,
-      timezone: observanceLocation.tz,
-    },
   );
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
