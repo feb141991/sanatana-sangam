@@ -1,5 +1,5 @@
 {
-  "sourceFingerprint": "a882d6e20a855eb44e9954b08dd211ea057c18db003213e8693bd98a63d95166",
+  "sourceFingerprint": "e1949ce0b10a8a0b11d5d15875b4309ffa8df1c3a1de18a179d4027c34743e7e",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
@@ -7,12 +7,12 @@
   },
   "summary": {
     "totalRoutes": 27,
-    "directPushCallers": 22,
-    "queueWriters": 5,
+    "directPushCallers": 21,
+    "queueWriters": 6,
     "byClassification": {
       "admin_or_test": 2,
-      "direct_send_legacy": 16,
-      "scheduled_queue_producer": 4,
+      "direct_send_legacy": 15,
+      "scheduled_queue_producer": 5,
       "delivery_worker": 1,
       "transactional_event": 4
     },
@@ -392,18 +392,20 @@
     {
       "route": "/api/digest/generate",
       "sourceFile": "src/app/api/digest/generate/route.ts",
-      "classification": "direct_send_legacy",
+      "classification": "scheduled_queue_producer",
       "schedule": "0 23 * * *",
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
+      "callsPushDirectly": false,
+      "readsSchedule": true,
+      "writesSchedule": true,
       "writesBell": false,
       "preferenceColumns": [],
       "notificationKeyLiterals": [
-        " },\n          }, {\n            notificationKey: ",
+        ")\n        .upsert(notificationRows, { onConflict: ",
+        ",\n          body: digest.body.slice(0, 80),\n          send_at: new Date().toISOString(),\n          notification_type: ",
+        ",\n          notification_key: ",
         ": Name the specific tithi + ONE concrete significance. Max 8 words. Example: ",
         ": Route to a relevant section (/pathshala, /bhakti/mala, /japa, /bhakti/stotram, /panchang, /vrat).\n\nFORBIDDEN phrases: ",
-        "s tithi; one in New York at 23:00\n        // UTC is still on yesterday"
+        "[digest/generate] notification queue insert failed:"
       ]
     },
     {
@@ -680,27 +682,27 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 65,
+        "count": 120,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 511,
+        "count": 586,
         "error": null
       },
       "push_tokens": {
         "reachable": true,
-        "count": 4,
+        "count": 5,
         "error": null
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 51,
+        "count": 100,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 36,
+        "count": 37,
         "error": null
       }
     }

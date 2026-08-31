@@ -4,7 +4,7 @@ import { localSpiritualDate } from '@/lib/sacred-time';
 import { getTodayPanchang } from '@/lib/panchang';
 import { generateWithProvider } from '@/lib/ai/providers/inference';
 import { buildNotificationSafetyResponse, getNotificationSafetyState } from '@/lib/notification-safety';
-import { sendPushNotification } from '@/lib/push-server';
+import { buildDigestPanchangSignature } from '@/lib/digest-variant';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -41,6 +41,11 @@ interface DigestPayload {
     weekday: string;
     weekdayDeity: string;
   };
+}
+
+interface GeneratedDigest {
+  payload: DigestPayload;
+  source: 'ai' | 'fallback';
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -102,7 +107,7 @@ async function generateDigest(
   tradition: string,
   level: string,
   panchang: ReturnType<typeof getTodayPanchang>,
-): Promise<DigestPayload> {
+): Promise<GeneratedDigest> {
   const fallback = buildFallback(panchang);
   let raw = '';
   try {
@@ -122,7 +127,7 @@ async function generateDigest(
     raw = result.text;
   } catch (err) {
     console.warn('[digest/generate] AI generation failed, using fallback:', err);
-    return fallback;
+    return { payload: fallback, source: 'fallback' };
   }
 
   const match =
@@ -130,12 +135,12 @@ async function generateDigest(
   if (match) {
     try {
       const parsed = JSON.parse(match[1]) as DigestPayload;
-      if (parsed?.headline) return parsed;
+      if (parsed?.headline) return { payload: parsed, source: 'ai' };
     } catch {
       // fall through to fallback
     }
   }
-  return fallback;
+  return { payload: fallback, source: 'fallback' };
 }
 
 // ─── Route ────────────────────────────────────────────────────────────────────
@@ -213,121 +218,153 @@ export async function GET(request: Request) {
   }
 
   if (!rows.length) {
-    return NextResponse.json({ generated: 0, notified: 0, message: 'All users already have a digest for today.' });
+    return NextResponse.json({ generated: 0, queued: 0, message: 'All users already have a digest for today.' });
   }
+
+  const contexts = rows.map((user) => {
+    const timezone = user.timezone ?? 'Asia/Kolkata';
+    const spiritualDate = localSpiritualDate(timezone, 4);
+    return {
+      user,
+      tradition: user.tradition ?? 'general',
+      level: user.spiritual_level ?? 'beginner',
+      spiritualDate,
+      panchang: getTodayPanchang(undefined, timezone),
+    };
+  });
+  const userIds = contexts.map(({ user }) => user.id);
+  const spiritualDates = [...new Set(contexts.map(({ spiritualDate }) => spiritualDate))];
+  const { data: existingRows, error: existingError } = await supabase
+    .from('recommendations')
+    .select('user_id,date')
+    .eq('type', 'daily_digest')
+    .in('user_id', userIds)
+    .in('date', spiritualDates);
+  if (existingError) {
+    return NextResponse.json({ error: existingError.message }, { status: 500 });
+  }
+  const existingKeys = new Set(
+    (existingRows ?? []).map((row) => `${row.user_id}|${row.date}`),
+  );
+  const eligibleContexts = contexts.filter(
+    ({ user, spiritualDate }) => !existingKeys.has(`${user.id}|${spiritualDate}`),
+  );
 
   if (isDryRun || skipDelivery) {
     return NextResponse.json(buildNotificationSafetyResponse('digest', { isDryRun, isDisabled: skipDelivery, skipDelivery, disabledReason }, {
-      eligibleCount: rows.length,
-      skippedCount: 0,
-      wouldSendCount: rows.length, // Assumes all eligible users would be targeted
+      eligibleCount: eligibleContexts.length,
+      skippedCount: rows.length - eligibleContexts.length,
+      wouldSendCount: eligibleContexts.length,
     }));
   }
 
   // ── 4. Process in concurrent batches of 10 ────────────────────────────────
   const BATCH_SIZE = 10;
   let generated = 0;
-  let notified  = 0;
+  let queuedCount = 0;
 
   // Memoize LLM generation per run by the exact (tradition, level, userToday) triple.
   // Preserves per-user spiritual timezone date boundaries while eliminating duplicate AI calls.
-  const digestCache = new Map<string, Promise<DigestPayload>>();
+  const digestCache = new Map<string, Promise<GeneratedDigest>>();
+  const persistedVariantKeys = new Set<string>();
 
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const batch = rows.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < eligibleContexts.length; i += BATCH_SIZE) {
+    const batch = eligibleContexts.slice(i, i + BATCH_SIZE);
     
     // We will collect users to push to after generating digests
-    const usersToPush: { id: string, digestBody: string, tithiName: string }[] = [];
+    const notificationRows: Array<{
+      user_id: string;
+      title: string;
+      body: string;
+      send_at: string;
+      notification_type: string;
+      notification_key: string;
+      metadata: Record<string, unknown>;
+    }> = [];
+    const recommendationRows: Array<{
+      user_id: string;
+      date: string;
+      type: string;
+      content: DigestPayload;
+      generated_at: string;
+    }> = [];
 
     const results = await Promise.allSettled(
-      batch.map(async (user) => {
-        const tradition = user.tradition ?? 'general';
-        const level     = user.spiritual_level ?? 'beginner';
-
-        // Compute the user's own local spiritual date — a user in Sydney at
-        // 23:00 UTC is already in tomorrow's tithi; one in New York at 23:00
-        // UTC is still on yesterday's IST date.
-        const userToday = localSpiritualDate(user.timezone ?? 'Asia/Kolkata', 4);
-
-        // Definitive per-user dedupe check must use the user's local spiritual date,
-        // not the batch-wide UTC approximation.
-        const { data: existingForUser, error: existingForUserErr } = await supabase
-          .from('recommendations')
-          .select('user_id')
-          .eq('user_id', user.id)
-          .eq('date', userToday)
-          .eq('type', 'daily_digest')
-          .maybeSingle();
-
-        if (existingForUserErr) {
-          console.warn(`[digest/generate] per-user digest check failed for ${user.id}:`, existingForUserErr.message);
-        }
-
-        if (existingForUser) {
-          return;
-        }
-
-        // Panchang computed for the user's local day, not server UTC
-        const userPanchang = getTodayPanchang(undefined, user.timezone ?? 'Asia/Kolkata');
+      batch.map(async ({ user, tradition, level, spiritualDate: userToday, panchang: userPanchang }) => {
 
         // a. Generate digest with timezone-aware memoization
-        const cacheKey = `${tradition}|${level}|${userToday}`;
+        const panchangSignature = buildDigestPanchangSignature(userPanchang);
+        const cacheKey = `${tradition}|${level}|${userToday}|${panchangSignature}`;
         let digestPromise = digestCache.get(cacheKey);
         if (!digestPromise) {
           digestPromise = generateDigest(tradition, level, userPanchang);
           digestCache.set(cacheKey, digestPromise);
         }
-        const digest = await digestPromise;
+        const generatedDigest = await digestPromise;
+        const digest = generatedDigest.payload;
 
-        // b. Upsert into recommendations (use userToday, not the global UTC today)
-        const { error: upsertErr } = await supabase.from('recommendations').upsert(
-          {
-            user_id:      user.id,
-            date:         userToday,
-            type:         'daily_digest',
-            content:      digest,
-            generated_at: new Date().toISOString(),
-          },
-          { onConflict: 'user_id,date,type' },
-        );
-        
-        if (upsertErr) {
-          console.warn(`[digest/generate] upsert failed for ${user.id}:`, upsertErr.message);
-        } else {
-          generated++;
-          usersToPush.push({
-            id: user.id,
-            digestBody: digest.body,
-            tithiName: userPanchang.tithiName,
-          });
+        if (!persistedVariantKeys.has(cacheKey)) {
+          persistedVariantKeys.add(cacheKey);
+          const { error: variantError } = await supabase
+            .from('daily_digest_variants' as unknown as 'recommendations')
+            .upsert({
+              spiritual_date: userToday,
+              tradition,
+              spiritual_level: level,
+              language: 'en',
+              panchang_signature: panchangSignature,
+              content: digest,
+              status: generatedDigest.source === 'fallback' ? 'fallback' : 'ready',
+              completed_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            } as never, {
+              onConflict: 'spiritual_date,tradition,spiritual_level,language,panchang_signature',
+            });
+          if (variantError) throw variantError;
         }
+
+        recommendationRows.push({
+          user_id: user.id,
+          date: userToday,
+          type: 'daily_digest',
+          content: digest,
+          generated_at: new Date().toISOString(),
+        });
+        notificationRows.push({
+          user_id: user.id,
+          title: `Dharmic Digest · ${userPanchang.tithiName}`,
+          body: digest.body.slice(0, 80),
+          send_at: new Date().toISOString(),
+          notification_type: 'daily_digest',
+          notification_key: `daily-digest:${user.id}:${userToday}`,
+          metadata: { url: '/home', type: 'daily_digest', spiritual_date: userToday, panchang_signature: panchangSignature },
+        });
       }),
     );
 
-    // Send OneSignal Pushes for this batch
-    if (usersToPush.length > 0) {
-      // Group users by same tithi/digest snippet if possible?
-      // For simplicity and since content could differ per tradition/level, send individually
-      // However, sendPushNotification takes an array of userIds and sends same payload.
-      // We will loop to send customized pushes, or abstract it.
-      
-      const pushPromises = usersToPush.map(async (u) => {
-        try {
-          const res = await sendPushNotification({
-            userIds: [u.id],
-            title: `Dharmic Digest · ${u.tithiName}`,
-            body: u.digestBody.slice(0, 80),
-            url: new URL('/home', new URL(request.url).origin).toString(),
-            data: { type: 'daily_digest' },
-          }, {
-            notificationKey: 'daily-digest',
-          });
-          if (res.sent > 0) notified++;
-        } catch (e) {
-          console.warn(`[digest/generate] push failed for ${u.id}:`, e);
-        }
-      });
-      await Promise.allSettled(pushPromises);
+    let recommendationsPersisted = false;
+    if (recommendationRows.length > 0) {
+      const { error: recommendationError } = await supabase
+        .from('recommendations')
+        .upsert(recommendationRows, { onConflict: 'user_id,date,type' });
+      if (recommendationError) {
+        console.warn('[digest/generate] recommendation batch upsert failed:', recommendationError.message);
+      } else {
+        recommendationsPersisted = true;
+        generated += recommendationRows.length;
+      }
+    }
+
+    if (recommendationsPersisted && notificationRows.length > 0) {
+      const { data: queued, error: queueError } = await supabase
+        .from('notification_schedule')
+        .upsert(notificationRows, { onConflict: 'notification_key', ignoreDuplicates: true })
+        .select('id');
+      if (queueError) {
+        console.warn('[digest/generate] notification queue insert failed:', queueError.message);
+      } else {
+        queuedCount += queued?.length ?? 0;
+      }
     }
 
     // Log any unexpected rejections per batch (shouldn't happen — inner errors are caught above)
@@ -338,5 +375,5 @@ export async function GET(request: Request) {
     });
   }
 
-  return NextResponse.json({ generated, notified });
+  return NextResponse.json({ generated, queued: queuedCount });
 }

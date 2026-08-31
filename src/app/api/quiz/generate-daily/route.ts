@@ -5,6 +5,7 @@ import { getLanguageInstruction } from '@/lib/language-runtime';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { recordCronTelemetry } from '@/lib/monitoring/cron-telemetry';
 import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
+import { getQuizJobTerminalState } from '@/lib/content-job-policy';
 
 const TRADITION_CONTEXT: Record<string, string> = {
   hindu:    'Hindu scriptures, deities, festivals, temples, philosophy (Vedanta, Yoga, Bhakti), rivers, sacred geography, Sanskrit terms, and Puranic stories',
@@ -76,6 +77,21 @@ function getFallbackQuizFor(tradition: string, language: string, dateStr: string
 const TRADITIONS = ['hindu', 'sikh', 'buddhist', 'jain'];
 const LANGUAGES = ['en', 'hi', 'pa'];
 
+async function mapWithConcurrency<T>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T) => Promise<void>,
+): Promise<void> {
+  let cursor = 0;
+  const runners = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (cursor < items.length) {
+      const item = items[cursor++];
+      await worker(item);
+    }
+  });
+  await Promise.all(runners);
+}
+
 async function handleGenerateDaily(req: NextRequest) {
   const startTime = Date.now();
   const route = '/api/quiz/generate-daily';
@@ -108,6 +124,29 @@ async function handleGenerateDaily(req: NextRequest) {
   const languages = body.language ? [body.language] : LANGUAGES;
 
   const supabase = createAdminClient();
+  const requestedJobs = traditions.flatMap((tradition) =>
+    languages.map((language) => ({ quiz_date: dateStr, tradition, language })),
+  );
+  const { error: seedError } = await supabase
+    .from('quiz_generation_jobs' as unknown as 'quiz_responses')
+    .upsert(requestedJobs as never, {
+      onConflict: 'quiz_date,tradition,language',
+      ignoreDuplicates: true,
+    });
+  if (seedError) {
+    return NextResponse.json({ error: `Unable to seed quiz jobs: ${seedError.message}` }, { status: 500 });
+  }
+
+  const { data: claimedRows, error: claimError } = await supabase.rpc(
+    'claim_quiz_generation_jobs' as never,
+    { p_batch_limit: requestedJobs.length, p_lease_minutes: 5 } as never,
+  );
+  if (claimError) {
+    return NextResponse.json({ error: `Unable to claim quiz jobs: ${claimError.message}` }, { status: 500 });
+  }
+
+  type QuizJob = { id: string; quiz_date: string; tradition: string; language: string; attempt_count: number; max_attempts: number };
+  const claimed = (claimedRows ?? []) as unknown as QuizJob[];
   let generated = 0;
   let skipped = 0;
   let seededFallback = 0;
@@ -135,28 +174,28 @@ async function handleGenerateDaily(req: NextRequest) {
     if (error) console.warn('[quiz/generate-daily] variant telemetry insert failed:', error.message);
   };
 
-  for (const tradition of traditions) {
-    const resultStart = results.length;
-    // Bound concurrency to one tradition at a time and its three language
-    // variants in parallel. This keeps provider pressure predictable while
-    // avoiding twelve sequential AI calls in one serverless request.
-    await Promise.all(languages.map(async (language) => {
+  await mapWithConcurrency(claimed, 4, async (job) => {
+      const { tradition, language } = job;
+      const jobDate = job.quiz_date;
+      let finalStatus: 'generated' | 'fallback' | 'failed' = 'failed';
+      let finalError: string | null = null;
       try {
         const { data: existing } = await supabase
           .from('daily_quiz' as unknown as 'quiz_responses')
           .select('id')
           .eq('tradition', tradition)
           .eq('language', language)
-          .eq('date', dateStr)
+          .eq('date', jobDate)
           .maybeSingle();
 
         if (existing) {
           skipped++;
-          results.push({ tradition, language, date: dateStr, status: 'skipped' });
+          results.push({ tradition, language, date: jobDate, status: 'skipped' });
+          finalStatus = 'generated';
           return;
         }
 
-        const ninetyDaysAgo = new Date(dateStr);
+        const ninetyDaysAgo = new Date(jobDate);
         ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
         const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
 
@@ -166,7 +205,7 @@ async function handleGenerateDaily(req: NextRequest) {
           .eq('tradition', tradition)
           .eq('language', language)
           .gte('date', ninetyDaysAgoStr)
-          .lt('date', dateStr)
+          .lt('date', jobDate)
           .order('date', { ascending: false })
           .limit(90);
 
@@ -174,7 +213,7 @@ async function handleGenerateDaily(req: NextRequest) {
           ?.map(r => r.question)
           .filter(Boolean) ?? [];
 
-        const prompt = buildPrompt(tradition, dateStr, language, recentQuestions);
+        const prompt = buildPrompt(tradition, jobDate, language, recentQuestions);
         const result = await generateWithProvider(
           {
             system: 'You generate precise, valid JSON for structured spiritual quiz content.',
@@ -206,22 +245,24 @@ async function handleGenerateDaily(req: NextRequest) {
           throw new Error('Validation failed');
         }
 
-        await supabase
+        const { error: quizInsertError } = await supabase
           .from('daily_quiz' as unknown as 'quiz_responses')
-          .insert({
+          .upsert({
             tradition,
             language,
-            date: dateStr,
+            date: jobDate,
             question: quiz.question,
             options: quiz.options,
             answer_index: quiz.answerIndex,
             explanation: quiz.explanation,
             fact: quiz.fact,
             source: quiz.source,
-          } as unknown as never);
+          } as unknown as never, { onConflict: 'tradition,language,date', ignoreDuplicates: true });
+        if (quizInsertError) throw quizInsertError;
 
         generated++;
-        results.push({ tradition, language, date: dateStr, status: 'generated' });
+        finalStatus = 'generated';
+        results.push({ tradition, language, date: jobDate, status: 'generated' });
 
         emitEvent({
           severity: 'P3',
@@ -230,45 +271,62 @@ async function handleGenerateDaily(req: NextRequest) {
           latency_ms: Date.now() - startTime,
           provider: result.provider,
           model: result.modelUsed,
-          context: { feature: 'daily_quiz_cron', tradition, language, date: dateStr },
+          context: { feature: 'daily_quiz_cron', tradition, language, date: jobDate },
         });
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : String(err);
+        finalError = errorMessage;
         
         // Fallback data seeding so the user never sees empty state
-        const fallbackQuiz = getFallbackQuizFor(tradition, language, dateStr);
+        const fallbackQuiz = getFallbackQuizFor(tradition, language, jobDate);
         if (fallbackQuiz) {
           try {
-            await supabase
+            const { error: fallbackInsertError } = await supabase
               .from('daily_quiz' as unknown as 'quiz_responses')
-              .insert({
+              .upsert({
                 tradition,
                 language,
-                date: dateStr,
+                date: jobDate,
                 question: fallbackQuiz.question,
                 options: fallbackQuiz.options,
                 answer_index: fallbackQuiz.answerIndex,
                 explanation: fallbackQuiz.explanation,
                 fact: fallbackQuiz.fact,
                 source: fallbackQuiz.source,
-              } as unknown as never);
+              } as unknown as never, { onConflict: 'tradition,language,date', ignoreDuplicates: true });
+            if (fallbackInsertError) throw fallbackInsertError;
 
             seededFallback++;
-            results.push({ tradition, language, date: dateStr, status: 'seeded_from_fallback', error: errorMessage });
+            finalStatus = 'fallback';
+            results.push({ tradition, language, date: jobDate, status: 'seeded_from_fallback', error: errorMessage });
           } catch (seedErr) {
             failed++;
-            results.push({ tradition, language, date: dateStr, status: 'failed', error: `${errorMessage} (fallback insert failed: ${seedErr})` });
+            finalError = `${errorMessage} (fallback insert failed: ${seedErr})`;
+            results.push({ tradition, language, date: jobDate, status: 'failed', error: finalError });
           }
         } else {
           failed++;
-          results.push({ tradition, language, date: dateStr, status: 'failed', error: errorMessage });
+          results.push({ tradition, language, date: jobDate, status: 'failed', error: errorMessage });
         }
 
-        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: dateStr, seededFallback: !!fallbackQuiz } });
+        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: !!fallbackQuiz } });
+      } finally {
+        const persistedStatus = getQuizJobTerminalState(finalStatus, job.attempt_count, job.max_attempts);
+        const retryable = persistedStatus === 'pending';
+        await supabase
+          .from('quiz_generation_jobs' as unknown as 'quiz_responses')
+          .update({
+            status: persistedStatus,
+            available_at: retryable ? new Date(Date.now() + 5 * 60_000).toISOString() : new Date().toISOString(),
+            lease_until: null,
+            last_error: finalError?.slice(0, 1000) ?? null,
+            completed_at: retryable ? null : new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as never)
+          .eq('id', job.id);
       }
-    }));
-    await recordVariantResults(results.slice(resultStart));
-  }
+  });
+  await recordVariantResults(results);
 
   const responsePayload = {
     message: 'Daily quiz generation run completed',
@@ -277,6 +335,8 @@ async function handleGenerateDaily(req: NextRequest) {
     seeded_fallback: seededFallback,
     skipped,
     failed,
+    claimed: claimed.length,
+    remaining: Math.max(0, requestedJobs.length - claimed.length),
     results,
   };
 

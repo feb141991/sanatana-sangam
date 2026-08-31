@@ -5,16 +5,16 @@
 ## Summary
 
 - Route-level producers/workers discovered: **27**
-- Direct push callers: **22**
-- Queue writers: **5**
+- Direct push callers: **21**
+- Queue writers: **6**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
 | `admin_or_test` | 2 |
-| `direct_send_legacy` | 16 |
-| `scheduled_queue_producer` | 4 |
+| `direct_send_legacy` | 15 |
+| `scheduled_queue_producer` | 5 |
 | `delivery_worker` | 1 |
 | `transactional_event` | 4 |
 
@@ -43,7 +43,7 @@
 | `/api/cron/tithi-reminder` | `direct_send_legacy` | `0 5 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/vrat-reminder` | `direct_send_legacy` | `30 4 * * *` | yes | no | `wants_festival_reminders` |
 | `/api/cron/weekly-summary` | `direct_send_legacy` | `0 1 * * 0` | yes | no | none detected |
-| `/api/digest/generate` | `direct_send_legacy` | `0 23 * * *` | yes | no | none detected |
+| `/api/digest/generate` | `scheduled_queue_producer` | `0 23 * * *` | no | yes | none detected |
 | `/api/native/mandali/notify-push` | `transactional_event` | not in vercel.json | yes | no | `wants_community_notifications` |
 | `/api/notifications/milestone` | `transactional_event` | not in vercel.json | yes | no | none detected |
 | `/api/notifications/test` | `admin_or_test` | not in vercel.json | yes | no | none detected |
@@ -105,27 +105,27 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 65,
+      "count": 120,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 511,
+      "count": 586,
       "error": null
     },
     "push_tokens": {
       "reachable": true,
-      "count": 4,
+      "count": 5,
       "error": null
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 51,
+      "count": 100,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 36,
+      "count": 37,
       "error": null
     }
   }

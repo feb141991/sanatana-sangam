@@ -11,13 +11,10 @@ import {
 import { findSourceCandidates } from '@/lib/dharm-veer-source-finder';
 import { dharamVeerRetriever } from '@/lib/ai/retrieval';
 import { HERO_SEEDS } from '@/lib/dharm-veer-seeds';
+import { DHARM_VEER_RUNWAY, evaluateDharmVeerRunway } from '@/lib/content-job-policy';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-// Bound how many unsourceable heroes we'll burn through fetch calls on in a
-// single cron invocation before giving up for the day.
-const MAX_ATTEMPTS_PER_RUN = 5;
 
 export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
@@ -38,6 +35,26 @@ export async function GET(request: Request) {
   const supabase = createClient(supabaseUrl, serviceRoleKey);
 
   try {
+    const { count: approvedCount, error: countError } = await supabase
+      .from('dharm_veers')
+      .select('slug', { count: 'exact', head: true })
+      .eq('review_status', 'approved');
+    if (countError) {
+      return NextResponse.json({ error: countError.message }, { status: 500 });
+    }
+
+    const approvedRunway = approvedCount ?? 0;
+    const runway = evaluateDharmVeerRunway(approvedRunway);
+    if (!runway.shouldGenerate) {
+      return NextResponse.json({
+        ok: true,
+        status: 'runway_healthy',
+        approved_runway: approvedRunway,
+        target: DHARM_VEER_RUNWAY.target,
+        alert: false,
+      });
+    }
+
     const { data: existingRows, error } = await supabase
       .from('dharm_veers')
       .select('slug');
@@ -60,22 +77,47 @@ export async function GET(request: Request) {
     // and so a hero we already generated (and logged) isn't re-attempted.
     const loggedSlugs = new Set((logRows ?? []).map((row) => row.slug));
 
-    const candidateSeeds = HERO_SEEDS.filter(
+    const unattemptedSeeds = HERO_SEEDS.filter(
       (seed) => !existingSlugs.has(seed.slug) && !loggedSlugs.has(seed.slug),
     );
 
-    if (candidateSeeds.length === 0) {
-      return NextResponse.json({ ok: true, status: 'complete', generated: 0 });
+    if (unattemptedSeeds.length === 0) {
+      return NextResponse.json({
+        ok: true,
+        status: 'runway_depleted',
+        approved_runway: approvedRunway,
+        alert: runway.alert,
+        generated: 0,
+      });
     }
 
-    const skipped: Array<{ slug: string; reason: string }> = [];
+    const { error: seedError } = await supabase
+      .from('dharm_veer_generation_jobs')
+      .upsert(unattemptedSeeds.map((seed) => ({ slug: seed.slug })), {
+        onConflict: 'slug',
+        ignoreDuplicates: true,
+      });
+    if (seedError) {
+      return NextResponse.json({ error: seedError.message }, { status: 500 });
+    }
 
-    for (const seed of candidateSeeds.slice(0, MAX_ATTEMPTS_PER_RUN)) {
+    const { data: claimedJobs, error: claimError } = await supabase.rpc(
+      'claim_dharm_veer_generation_jobs',
+      { p_batch_limit: 1, p_lease_minutes: 10 },
+    );
+    if (claimError) {
+      return NextResponse.json({ error: claimError.message }, { status: 500 });
+    }
+
+    const claimedJob = (claimedJobs?.[0] ?? null) as { id: string; slug: string } | null;
+    const seed = claimedJob ? HERO_SEEDS.find((item) => item.slug === claimedJob.slug) : null;
+    if (!claimedJob || !seed) {
+      return NextResponse.json({ ok: true, status: 'no_job_available', approved_runway: approvedRunway });
+    }
+
       // ── 1. Manifest-first ──────────────────────────────────────────────
-      // If this hero already has a human-verified RAG manifest (the same
-      // corpus that backs the dharam_veer_reflection chat mode), use it
-      // directly and publish immediately -- it's already been through the
-      // manual sourcing/rights review this project has done for 39 heroes.
+      // A verified source manifest permits generation, not publication.
+      // Newly generated prose always enters the editorial review queue.
       const manifestResult = await dharamVeerRetriever.retrieve({
         text: seed.name,
         filters: { title: seed.slug },
@@ -94,18 +136,22 @@ export async function GET(request: Request) {
         const nextDayIndex = await getNextDharmVeerDayIndex(supabase);
         await insertGeneratedDharmVeer(supabase, seed, content, nextDayIndex, 'ai-cron-manifest', {
           sourceBacked: true,
-          reviewStatus: 'approved',
+          reviewStatus: 'pending_review',
           sourceCitations: citationsFromSources(sources),
         });
         await supabase.from('dharm_veer_generation_log').insert({
           slug: seed.slug,
-          status: 'generated_approved',
-          notes: 'Grounded in existing verified RAG manifest corpus; published directly.',
+          status: 'generated_pending_review',
+          notes: 'Grounded in the RAG manifest corpus; generated copy still requires editorial approval.',
         });
+        await supabase.from('dharm_veer_generation_jobs').update({
+          status: 'generated_pending_review', lease_until: null,
+          completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        }).eq('id', claimedJob.id);
 
         return NextResponse.json({
           ok: true,
-          status: 'generated',
+          status: 'generated_pending_review',
           mode: 'manifest',
           slug: seed.slug,
           day_index: nextDayIndex,
@@ -130,10 +176,14 @@ export async function GET(request: Request) {
           status: 'generated_pending_review',
           notes: `${candidates.length} archive.org candidate(s) found and used. Awaiting human review before publish.`,
         });
+        await supabase.from('dharm_veer_generation_jobs').update({
+          status: 'generated_pending_review', lease_until: null,
+          completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        }).eq('id', claimedJob.id);
 
         return NextResponse.json({
           ok: true,
-          status: 'generated',
+          status: 'generated_pending_review',
           mode: 'auto_sourced_pending_review',
           slug: seed.slug,
           day_index: nextDayIndex,
@@ -148,14 +198,18 @@ export async function GET(request: Request) {
         status: 'no_source_found',
         notes: 'No manifest match and no archive.org candidate passed the relevance/rights checks.',
       });
-      skipped.push({ slug: seed.slug, reason: 'no_source_found' });
-    }
+      await supabase.from('dharm_veer_generation_jobs').update({
+        status: 'no_source', lease_until: null, last_error: 'no_source_found',
+        completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      }).eq('id', claimedJob.id);
 
     return NextResponse.json({
       ok: true,
       status: 'no_source_found_this_run',
-      attempted: skipped.length,
-      skipped,
+      attempted: 1,
+      skipped: [{ slug: seed.slug, reason: 'no_source_found' }],
+      approved_runway: approvedRunway,
+      alert: runway.alert,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown';
