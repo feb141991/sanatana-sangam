@@ -11,6 +11,7 @@ import { FREE_DAILY_LIMIT, PRO_DAILY_LIMIT } from '@/lib/ai/chat-limits';
 import { getFallbackFestivalCalendar } from '@/lib/festivals';
 import { dharamVeerRetriever, festivalRulesRetriever } from '@/lib/ai/retrieval';
 import { asBoundedString, rateLimitByIp, rejectLargeRequest } from '@/lib/api-security';
+import { classifyChatIntent, getConversationalResponse } from '@/lib/ai/chat-intent';
 
 // ─── Config ────────────────────────────────────────────────────────────────
 const MAX_CHAT_BODY_BYTES = 32 * 1024;
@@ -358,17 +359,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Your account has been suspended.' }, { status: 403 });
   }
 
-  const tier = getTierFromScore(profile?.seva_score ?? 0);
-  const dailyLimit = Math.min(isPro ? PRO_DAILY_LIMIT : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? FREE_DAILY_LIMIT), 20);
-
-  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, dailyLimit);
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'daily_limit_reached', used, limit, isPro },
-      { status: 429 }
-    );
-  }
-
   let body: {
     message: string;
     history?: ChatHistoryMessage[];
@@ -407,6 +397,18 @@ export async function POST(req: NextRequest) {
   const transliterationLanguage = body.transliterationLanguage ?? profile?.transliteration_language ?? 'en';
   const timeZone              = profile?.timezone ?? 'Asia/Kolkata';
   const spiritualDate         = localSpiritualDate(timeZone, 4);
+  const intent = classifyChatIntent(message);
+  if (intent !== 'question') {
+    return new Response(textAsStream(getConversationalResponse(intent, tradition, responseLanguage)), {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' },
+    });
+  }
+
+  const tier = getTierFromScore(profile?.seva_score ?? 0);
+  const dailyLimit = Math.min(isPro ? PRO_DAILY_LIMIT : (SEVA_TIER_PERKS[tier.key]?.aiChatLimit ?? FREE_DAILY_LIMIT), 20);
+  const { allowed, used, limit } = await checkAndIncrementAiUsage(supabase, user.id, dailyLimit);
+  if (!allowed) return NextResponse.json({ error: 'daily_limit_reached', used, limit, isPro }, { status: 429 });
+
   const systemPrompt          = buildSystemPrompt({
     tradition, rank: religiousDataConsented ? (profile?.spiritual_level ?? null) : null,
     sampradaya, city, country, seeking,
