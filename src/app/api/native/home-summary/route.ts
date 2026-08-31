@@ -577,6 +577,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle()
   );
 
+
   const profile = profileData as ProfileRow | null;
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
@@ -719,12 +720,12 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  const rawObservanceData = Array.isArray(observanceResult?.data)
-    ? observanceResult.data
+  const rawObservanceData: ObservanceRow[] = Array.isArray(observanceResult?.data)
+    ? (observanceResult.data as ObservanceRow[])
     : Array.isArray((observanceResult?.data as any)?.data)
-      ? (observanceResult.data as any).data
+      ? ((observanceResult.data as any).data as ObservanceRow[])
       : [];
-  const observanceRows = filterWithheldJoinedRows(rawObservanceData);
+  const observanceRows: ObservanceRow[] = filterWithheldJoinedRows(rawObservanceData);
   const occurrencesWithBatches = await withValueTimeout(
     attachMaterialisationBatches(
       observanceRows,

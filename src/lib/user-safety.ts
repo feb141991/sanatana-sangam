@@ -79,9 +79,13 @@ export function filterProfileRows<T extends { id: string }>(items: T[], state: U
 
 export async function getUserSafetyState(supabase: any, userId: string): Promise<UserSafetyState> {
   const [{ data: blockRows }, { data: muteRows }, { data: hiddenRows }] = await Promise.all([
+    // Scoped to rows involving this user in either direction -- the
+    // previous unfiltered select() read every block relationship in the
+    // table on every call and filtered in application memory.
     supabase
       .from('user_blocked_profiles')
-      .select('blocker_id, blocked_user_id'),
+      .select('blocker_id, blocked_user_id')
+      .or(`blocker_id.eq.${userId},blocked_user_id.eq.${userId}`),
     supabase
       .from('user_muted_profiles')
       .select('muter_id, muted_user_id')

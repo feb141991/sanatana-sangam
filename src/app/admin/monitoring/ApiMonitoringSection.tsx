@@ -1,4 +1,4 @@
-\"use client\";
+'use client';
 
 import { useState, useMemo, useEffect } from "react";
 import {
@@ -1008,7 +1008,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                             <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 mb-1">
                               <span>Curl Command</span>
                               <button
-                                onClick={() => copyToClipboard(\`curl -i -X \${api.method} "https://www.shoonaya.com\${api.path}\${api.sampleQueryOrBody?.startsWith("?") ? api.sampleQueryOrBody : ""}"\`, api.id)}
+                                onClick={() => copyToClipboard(`curl -i -X ${api.method} "https://www.shoonaya.com${api.path}${api.sampleQueryOrBody?.startsWith("?") ? api.sampleQueryOrBody : ""}"`, api.id)}
                                 className="flex items-center gap-1 text-amber-800 hover:underline cursor-pointer"
                               >
                                 {copiedId === api.id ? <Check size={11} /> : <Copy size={11} />}
@@ -1016,7 +1016,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                               </button>
                             </div>
                             <pre className="p-2.5 rounded-xl bg-gray-900 text-amber-200 text-[11px] font-mono overflow-x-auto whitespace-pre-wrap">
-                              curl -i -X {api.method} "https://www.shoonaya.com{api.path}{api.sampleQueryOrBody?.startsWith("?") ? api.sampleQueryOrBody : ""}"
+                              {`curl -i -X ${api.method} "https://www.shoonaya.com${api.path}${api.sampleQueryOrBody?.startsWith("?") ? api.sampleQueryOrBody : ""}"`}
                             </pre>
                           </div>
                         </div>

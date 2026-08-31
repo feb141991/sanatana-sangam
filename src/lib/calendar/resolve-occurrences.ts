@@ -146,6 +146,23 @@ export async function ensureYearMaterialized({
   if (upsertError) throw upsertError;
 }
 
+/**
+ * Home's read path calls this on every request. It must never block on a
+ * DB write or an annual astronomy calculation (see the Home/Mandali
+ * performance review this function's rewrite came out of) -- so unlike the
+ * old implementation, this no longer awaits `ensureYearMaterialized` before
+ * querying. It reads whatever is already materialized for this exact
+ * (calendarProfile, location) combination and returns immediately.
+ *
+ * The only case this changes user-visible behavior for is the very first
+ * request ever made for a brand-new (profile, location) combination: that
+ * request now gets an empty occurrence set (rather than blocking ~1-2s for a
+ * synchronous compute+upsert) while materialization is kicked off in the
+ * background for the *next* request to pick up. That's consistent with this
+ * file's existing withheld-rather-than-guessed governance rule -- an
+ * unmaterialized combo is treated the same as any other not-yet-resolved
+ * occurrence, not backfilled with a blocking write on a read request.
+ */
 export async function getOrMaterializeOccurrences({
   supabase,
   fromDate,
@@ -167,15 +184,6 @@ export async function getOrMaterializeOccurrences({
   const toYear = Number(toDate.slice(0, 4));
   const years = fromYear === toYear ? [fromYear] : [fromYear, toYear];
 
-  // Best-effort: a materialization failure must not block the read.
-  await Promise.all(
-    years.map((year) =>
-      ensureYearMaterialized({ supabase, year, calendarProfile, location }).catch((err) => {
-        console.error(`[resolve-occurrences] lazy materialize failed for year ${year}, profile ${calendarProfile}:`, err);
-      }),
-    ),
-  );
-
   let query = supabase
     .from('observance_occurrences')
     .select(CALENDAR_OCCURRENCE_SELECT)
@@ -184,11 +192,10 @@ export async function getOrMaterializeOccurrences({
     .eq('observance_definitions.active', true)
     .in('observance_definitions.tradition', [tradition, 'all'])
     .eq('publication_status', 'published')
-    // No 'legacy-ujjain' fallback here: ensureYearMaterialized above already
-    // guarantees rows exist for this exact (calendarProfile, location) pair
-    // (unless the write failed, logged above, in which case there's nothing
-    // to fall back to at this location anyway -- Ujjain's rows are keyed to
-    // Ujjain's coordinates, not this caller's).
+    // No 'legacy-ujjain' fallback: rows are keyed to this caller's exact
+    // (calendarProfile, location), not Ujjain's coordinates. If nothing is
+    // materialized yet for this combination, the background kick-off below
+    // populates it for the next read rather than this one blocking on it.
     .eq('calendar_profile', calendarProfile)
     .eq('computed_latitude', location.lat)
     .eq('computed_longitude', location.lon)
@@ -200,5 +207,19 @@ export async function getOrMaterializeOccurrences({
 
   const { data, error } = await query.order('date', { ascending: true }).limit(8);
   if (error) throw error;
-  return (data ?? []) as ResolvedOccurrenceRow[];
+  const rows = (data ?? []) as ResolvedOccurrenceRow[];
+
+  if (rows.length === 0) {
+    // Nothing materialized yet for this (profile, location) combination.
+    // Fire-and-forget: do not await, do not block this read on an annual
+    // astronomy calculation + upsert. The next request (SWR refresh or the
+    // user's next Home load) will find the rows this populates.
+    for (const year of years) {
+      void ensureYearMaterialized({ supabase, year, calendarProfile, location }).catch((err) => {
+        console.error(`[resolve-occurrences] background materialize failed for year ${year}, profile ${calendarProfile}:`, err);
+      });
+    }
+  }
+
+  return rows;
 }
