@@ -44,7 +44,11 @@ export default function AuthSessionGuard() {
       pathname === '/forgot-password' ||
       pathname === '/reset-password' ||
       pathname === '/confirm-email' ||
-      pathname.startsWith('/auth/');
+      pathname.startsWith('/auth/') ||
+      // Admin uses a separate HMAC-cookie session (no Supabase auth.users row).
+      // Without this guard, SIGNED_OUT events from a previously-expired user
+      // session redirect the admin to '/' as soon as they land on any /admin page.
+      pathname.startsWith('/admin');
     const supabase = createClient();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
