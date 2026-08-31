@@ -389,6 +389,7 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
+          client_completion_id: string | null;
           mantra: string;
           chant_source: string | null;
           count: number;

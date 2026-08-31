@@ -7,6 +7,7 @@
 export interface MalaSessionRow {
   id?: string;
   user_id?: string;
+  client_completion_id?: string | null;
   mantra?: string | null;
   chant_source?: string | null;
   count?: number | null;
@@ -43,6 +44,7 @@ export interface MalaSessionRow {
 
 export interface MalaSessionInsert {
   user_id: string;
+  client_completion_id?: string | null;
   mantra: string;
   chant_source?: string | null;
   count: number;
@@ -123,6 +125,7 @@ export function malaSessionCompletionType(row: MalaSessionRow): string | null {
 
 export function buildMalaSessionInsert(input: {
   userId: string;
+  clientCompletionId?: string | null;
   mantra: string;
   count: number;
   durationSeconds: number;
@@ -157,6 +160,7 @@ export function buildMalaSessionInsert(input: {
 
   return {
     user_id: input.userId,
+    client_completion_id: input.clientCompletionId ?? null,
     mantra: input.mantra,
     chant_source: input.chantSource ?? null,
     count: input.count,
