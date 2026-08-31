@@ -114,8 +114,33 @@ async function handleGenerateDaily(req: NextRequest) {
   let failed = 0;
   const results: Array<{ tradition: string; language: string; date: string; status: 'generated'|'skipped'|'seeded_from_fallback'|'failed'; error?: string }> = [];
 
+  const recordVariantResults = async (variantResults: typeof results) => {
+    if (variantResults.length === 0) return;
+    const rows = variantResults.map((item) => ({
+      timestamp: new Date().toISOString(),
+      domain: 'ai',
+      severity: item.status === 'failed' ? 'P2' : 'P3',
+      route,
+      error_code: item.status === 'failed' ? 'QUIZ_VARIANT_FAILED' : null,
+      error_message: item.error?.slice(0, 500) ?? null,
+      context: {
+        feature: 'daily_quiz_variant',
+        tradition: item.tradition,
+        language: item.language,
+        date: item.date,
+        status: item.status,
+      },
+    }));
+    const { error } = await supabase.from('monitoring_events').insert(rows as never);
+    if (error) console.warn('[quiz/generate-daily] variant telemetry insert failed:', error.message);
+  };
+
   for (const tradition of traditions) {
-    for (const language of languages) {
+    const resultStart = results.length;
+    // Bound concurrency to one tradition at a time and its three language
+    // variants in parallel. This keeps provider pressure predictable while
+    // avoiding twelve sequential AI calls in one serverless request.
+    await Promise.all(languages.map(async (language) => {
       try {
         const { data: existing } = await supabase
           .from('daily_quiz' as unknown as 'quiz_responses')
@@ -128,7 +153,7 @@ async function handleGenerateDaily(req: NextRequest) {
         if (existing) {
           skipped++;
           results.push({ tradition, language, date: dateStr, status: 'skipped' });
-          continue;
+          return;
         }
 
         const ninetyDaysAgo = new Date(dateStr);
@@ -241,7 +266,8 @@ async function handleGenerateDaily(req: NextRequest) {
 
         emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: dateStr, seededFallback: !!fallbackQuiz } });
       }
-    }
+    }));
+    await recordVariantResults(results.slice(resultStart));
   }
 
   const responsePayload = {

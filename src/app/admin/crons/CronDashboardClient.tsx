@@ -152,6 +152,11 @@ export default function CronDashboardClient() {
   } | null>(null);
   const [expandedCron, setExpandedCron] = useState<string | null>(null);
   const [showQueueDetails, setShowQueueDetails] = useState<boolean>(false);
+  const [queueFilter, setQueueFilter] = useState<string>("all");
+  const [queueSearch, setQueueSearch] = useState<string>("");
+  const [inspectQueueItem, setInspectQueueItem] = useState<ScheduledNotificationItem | null>(null);
+  const [dispatchingQueue, setDispatchingQueue] = useState<boolean>(false);
+
 
   const fetchCrons = useCallback(async () => {
     try {
@@ -451,90 +456,272 @@ export default function CronDashboardClient() {
               </div>
             </div>
 
-            <button
-              onClick={() => setShowQueueDetails(!showQueueDetails)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-black/10 text-xs font-bold hover:bg-black/5 transition-all"
-            >
-              <Inbox size={14} />
-              <span>{showQueueDetails ? "Collapse Message Stream" : "Inspect Scheduled Messages"}</span>
-              {showQueueDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  setDispatchingQueue(true);
+                  try {
+                    await fetch("/api/notifications/dispatch", { method: "POST" });
+                    await fetchCrons();
+                  } catch {}
+                  setDispatchingQueue(false);
+                }}
+                disabled={dispatchingQueue}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 transition-all shadow-sm disabled:opacity-50"
+              >
+                <RefreshCw size={13} className={dispatchingQueue ? "animate-spin" : ""} />
+                <span>{dispatchingQueue ? "Dispatching..." : "⚡ Trigger Dispatcher Now"}</span>
+              </button>
+
+              <button
+                onClick={() => setShowQueueDetails(!showQueueDetails)}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-black/10 text-xs font-bold hover:bg-black/5 transition-all"
+              >
+                <Inbox size={14} />
+                <span>{showQueueDetails ? "Collapse Stream" : "Inspect Stream"}</span>
+                {showQueueDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+            </div>
           </div>
 
-          {/* Queue Metric Cards */}
+          {/* Interactive Queue Metric Cards (Clickable Filters) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200/80">
+            <button
+              onClick={() => {
+                setQueueFilter(queueFilter === "pending" ? "all" : "pending");
+                setShowQueueDetails(true);
+              }}
+              className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
+                queueFilter === "pending"
+                  ? "bg-amber-100/80 border-amber-500 ring-2 ring-amber-500/20 shadow-sm scale-[1.02]"
+                  : "bg-amber-50/60 border-amber-200/80 hover:bg-amber-100/60 hover:scale-[1.01]"
+              )}
+            >
               <div className="flex items-center justify-between text-amber-800">
                 <span className="text-[11px] font-bold uppercase tracking-wider">🟡 Pending Queue</span>
                 <Clock size={15} />
               </div>
               <div className="text-2xl font-bold font-serif text-amber-900 mt-1">{queue.pending}</div>
-              <p className="text-[10px] text-amber-700 mt-0.5">Enqueued for upcoming local hours</p>
-            </div>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-[10px] text-amber-700">Enqueued for send</p>
+                <span className="text-[9px] font-bold text-amber-800 bg-amber-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+              </div>
+            </button>
 
-            <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200/80">
+            <button
+              onClick={() => {
+                setQueueFilter(queueFilter === "claimed" ? "all" : "claimed");
+                setShowQueueDetails(true);
+              }}
+              className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
+                queueFilter === "claimed"
+                  ? "bg-blue-100/80 border-blue-500 ring-2 ring-blue-500/20 shadow-sm scale-[1.02]"
+                  : "bg-blue-50/60 border-blue-200/80 hover:bg-blue-100/60 hover:scale-[1.01]"
+              )}
+            >
               <div className="flex items-center justify-between text-blue-800">
                 <span className="text-[11px] font-bold uppercase tracking-wider">🔵 Active Claims</span>
                 <Activity size={15} />
               </div>
               <div className="text-2xl font-bold font-serif text-blue-900 mt-1">{queue.claimed}</div>
-              <p className="text-[10px] text-blue-700 mt-0.5">Claimed by notification-dispatch</p>
-            </div>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-[10px] text-blue-700">Claimed by dispatch</p>
+                <span className="text-[9px] font-bold text-blue-800 bg-blue-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+              </div>
+            </button>
 
-            <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200/80">
+            <button
+              onClick={() => {
+                setQueueFilter(queueFilter === "sent" ? "all" : "sent");
+                setShowQueueDetails(true);
+              }}
+              className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
+                queueFilter === "sent"
+                  ? "bg-emerald-100/80 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm scale-[1.02]"
+                  : "bg-emerald-50/60 border-emerald-200/80 hover:bg-emerald-100/60 hover:scale-[1.01]"
+              )}
+            >
               <div className="flex items-center justify-between text-emerald-800">
                 <span className="text-[11px] font-bold uppercase tracking-wider">🟢 Dispatched (Sent)</span>
                 <CheckCircle size={15} />
               </div>
               <div className="text-2xl font-bold font-serif text-emerald-900 mt-1">{queue.sent}</div>
-              <p className="text-[10px] text-emerald-700 mt-0.5">Delivered to Expo / FCM</p>
-            </div>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-[10px] text-emerald-700">Delivered to APNs/FCM</p>
+                <span className="text-[9px] font-bold text-emerald-800 bg-emerald-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+              </div>
+            </button>
 
-            <div className="p-4 rounded-xl bg-rose-50/60 border border-rose-200/80">
+            <button
+              onClick={() => {
+                setQueueFilter(queueFilter === "failed" ? "all" : "failed");
+                setShowQueueDetails(true);
+              }}
+              className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
+                queueFilter === "failed"
+                  ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-sm scale-[1.02]"
+                  : "bg-rose-50/60 border-rose-200/80 hover:bg-rose-100/60 hover:scale-[1.01]"
+              )}
+            >
               <div className="flex items-center justify-between text-rose-800">
                 <span className="text-[11px] font-bold uppercase tracking-wider">🔴 Dead / Failed</span>
                 <XCircle size={15} />
               </div>
               <div className="text-2xl font-bold font-serif text-rose-900 mt-1">{queue.failed}</div>
-              <p className="text-[10px] text-rose-700 mt-0.5">Failed attempts / pruned tokens</p>
-            </div>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-[10px] text-rose-700">Failed / pruned tokens</p>
+                <span className="text-[9px] font-bold text-rose-800 bg-rose-200/60 px-1.5 py-0.2 rounded">Click to filter</span>
+              </div>
+            </button>
           </div>
 
-          {/* Expandable Scheduled Message Stream */}
+          {/* Expandable Scheduled Message Stream with Search & Inspection */}
           {showQueueDetails && (
-            <div className="pt-3 border-t border-black/5 space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-500">Recent Rows in Notification Schedule:</p>
-              {queue.recent.length === 0 ? (
-                <p className="p-4 text-center text-xs text-gray-400 border border-dashed rounded-xl bg-gray-50/50">
-                  No scheduled rows currently in the queue. Enqueuer crons populate this table throughout the day.
-                </p>
-              ) : (
-                <div className="divide-y border rounded-xl overflow-hidden text-xs bg-gray-50/50 max-h-72 overflow-y-auto">
-                  {queue.recent.map((item) => (
-                    <div key={item.id} className="p-3 flex items-start justify-between gap-3 hover:bg-white transition-colors">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <b className="text-gray-900">{item.title}</b>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-black/5">{item.notification_type}</span>
-                          <span className={"px-2 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
-                            item.status === "sent" ? "bg-emerald-100 text-emerald-800" :
-                            item.status === "claimed" ? "bg-blue-100 text-blue-800" :
-                            item.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
-                          )}>
-                            {item.status}
-                          </span>
-                        </div>
-                        <p className="text-gray-600">{item.body}</p>
-                        <p className="font-mono text-[10px] text-gray-400 truncate">Key: {item.notification_key}</p>
-                      </div>
-                      <div className="text-right text-[11px] font-mono shrink-0 text-gray-500">
-                        <p>Target: {new Date(item.send_at).toLocaleTimeString()}</p>
-                        {item.error && <p className="text-rose-600 font-bold mt-0.5">{item.error}</p>}
-                      </div>
-                    </div>
+            <div className="pt-4 border-t border-black/5 space-y-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Filtered View:</span>
+                  {["all", "pending", "claimed", "sent", "failed"].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setQueueFilter(st)}
+                      className={"px-2.5 py-0.5 rounded-lg text-xs font-bold uppercase transition-all " + (
+                        queueFilter === st ? "bg-amber-800 text-white shadow-xs" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      )}
+                    >
+                      {st}
+                    </button>
                   ))}
                 </div>
-              )}
+
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2 text-gray-400" size={13} />
+                  <input
+                    type="text"
+                    value={queueSearch}
+                    onChange={(e) => setQueueSearch(e.target.value)}
+                    placeholder="Search scheduled title, key, type..."
+                    className="pl-8 pr-3 py-1 rounded-xl border text-xs focus:outline-none focus:border-amber-600 bg-gray-50/50 w-64"
+                  />
+                </div>
+              </div>
+
+              {(() => {
+                const filteredRecent = queue.recent.filter((item) => {
+                  if (queueFilter !== "all" && item.status !== queueFilter) return false;
+                  if (queueSearch.trim()) {
+                    const q = queueSearch.toLowerCase();
+                    const matchTitle = item.title?.toLowerCase().includes(q);
+                    const matchBody = item.body?.toLowerCase().includes(q);
+                    const matchKey = item.notification_key?.toLowerCase().includes(q);
+                    const matchType = item.notification_type?.toLowerCase().includes(q);
+                    if (!matchTitle && !matchBody && !matchKey && !matchType) return false;
+                  }
+                  return true;
+                });
+
+                if (filteredRecent.length === 0) {
+                  return (
+                    <p className="p-6 text-center text-xs text-gray-400 border border-dashed rounded-xl bg-gray-50/50">
+                      No scheduled messages match filter <strong className="uppercase">[{queueFilter}]</strong>.
+                    </p>
+                  );
+                }
+
+                return (
+                  <div className="divide-y border rounded-xl overflow-hidden text-xs bg-gray-50/50 max-h-80 overflow-y-auto">
+                    {filteredRecent.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setInspectQueueItem(item)}
+                        className="p-3 flex items-start justify-between gap-3 hover:bg-amber-50/40 cursor-pointer transition-colors"
+                      >
+                        <div className="space-y-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <b className="text-gray-900 truncate">{item.title}</b>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-black/5 shrink-0">{item.notification_type}</span>
+                            <span className={"px-2 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 " + (
+                              item.status === "sent" ? "bg-emerald-100 text-emerald-800" :
+                              item.status === "claimed" ? "bg-blue-100 text-blue-800" :
+                              item.status === "pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
+                            )}>
+                              {item.status}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 truncate">{item.body}</p>
+                          <p className="font-mono text-[10px] text-gray-400 truncate">Key: {item.notification_key}</p>
+                        </div>
+                        <div className="text-right text-[11px] font-mono shrink-0 text-gray-500">
+                          <p>Target: {new Date(item.send_at).toLocaleTimeString()}</p>
+                          {item.error ? (
+                            <p className="text-rose-600 font-bold mt-0.5 truncate max-w-40">{item.error}</p>
+                          ) : (
+                            <span className="text-[10px] text-amber-800 underline">Inspect &rarr;</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Queue Item Detail Modal */}
+          {inspectQueueItem && (
+            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border space-y-4 max-h-[85vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b pb-3">
+                  <div className="flex items-center gap-2">
+                    <Send size={16} className="text-amber-700" />
+                    <h3 className="font-bold text-sm text-gray-900">Scheduled Message Details</h3>
+                  </div>
+                  <button onClick={() => setInspectQueueItem(null)} className="text-gray-400 hover:text-gray-900 font-bold text-sm">✕</button>
+                </div>
+
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <span className="text-gray-400 font-bold uppercase text-[10px]">Title</span>
+                    <p className="font-bold text-gray-900 text-sm mt-0.5">{inspectQueueItem.title}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 font-bold uppercase text-[10px]">Body Copy</span>
+                    <p className="text-gray-700 mt-0.5 bg-gray-50 p-2.5 rounded-xl border">{inspectQueueItem.body}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                    <div className="bg-gray-50 p-2 rounded-lg border">
+                      <span className="text-gray-400 block text-[9px]">Status</span>
+                      <strong className="uppercase">{inspectQueueItem.status}</strong>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg border">
+                      <span className="text-gray-400 block text-[9px]">Notification Type</span>
+                      <strong>{inspectQueueItem.notification_type}</strong>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg border">
+                      <span className="text-gray-400 block text-[9px]">Scheduled Send Time</span>
+                      <strong>{new Date(inspectQueueItem.send_at).toLocaleString()}</strong>
+                    </div>
+                    <div className="bg-gray-50 p-2 rounded-lg border">
+                      <span className="text-gray-400 block text-[9px]">Deduplication Key</span>
+                      <strong className="truncate block">{inspectQueueItem.notification_key}</strong>
+                    </div>
+                  </div>
+                  {inspectQueueItem.error && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 font-mono text-[11px]">
+                      <strong>Failure Error:</strong> {inspectQueueItem.error}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={() => setInspectQueueItem(null)}
+                    className="px-4 py-1.5 rounded-xl bg-gray-900 text-white font-bold text-xs hover:bg-black"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>

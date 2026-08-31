@@ -107,12 +107,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
     }
 
-    const occurrencesWithBatches = await attachMaterialisationBatches(
-      occurrencesData || [],
-      undefined,
-      calendarProfile,
-      resolved.context.effectiveCalculationLocation,
-    );
+    let occurrencesWithBatches = occurrencesData || [];
+    try {
+      occurrencesWithBatches = await attachMaterialisationBatches(
+        occurrencesWithBatches,
+        undefined,
+        calendarProfile,
+        resolved.context.effectiveCalculationLocation,
+      );
+    } catch (error) {
+      console.warn('[API Calendar Upcoming] Batch enrichment unavailable; serving core occurrences:', error);
+    }
 
     // Query unresolved items from the review queue
     let queueQuery = supabase
@@ -159,11 +164,12 @@ export async function GET(request: NextRequest) {
       queueQuery = queueQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
 
-    const { data: queueData, error: queueError } = await queueQuery;
+    const { data: queueResult, error: queueError } = await queueQuery;
+    let queueData = queueResult || [];
 
     if (queueError) {
-      console.error('[API Calendar Upcoming] Review queue error:', queueError);
-      return NextResponse.json({ error: 'Calendar unavailable' }, { status: 500 });
+      console.warn('[API Calendar Upcoming] Review queue unavailable; omitting pending-review items:', queueError);
+      queueData = [];
     }
 
     const formattedResults = formatOccurrencesToResults(
@@ -187,18 +193,28 @@ export async function GET(request: NextRequest) {
     const displayObservances = selectDisplayObservances(formattedResults);
 
     const primaryContext = formattedResults.find(result => result.isPrimary) ?? formattedResults[0] ?? null;
-    const series = primaryContext
-      ? buildObservanceSeries(formattedResults, {
+    let series: ObservanceSeries[] = [];
+    if (primaryContext) {
+      try {
+        series = buildObservanceSeries(formattedResults, {
           spiritualDate: fromStr,
           profile: primaryContext.profile,
           location: primaryContext.location,
           tradition,
-        })
-      : [];
+        });
+      } catch (error) {
+        console.warn('[API Calendar Upcoming] Series enrichment unavailable:', error);
+      }
+    }
 
     const requestedLanguage = searchParams.get('lang');
     const language = requestedLanguage === 'hi' || requestedLanguage === 'pa' ? requestedLanguage : 'en';
-    const storyCards = await getPublishedObservanceStoryCards(displayObservances, language, fromStr);
+    let storyCards: HomeObservanceStoryCard[] = [];
+    try {
+      storyCards = await getPublishedObservanceStoryCards(displayObservances, language, fromStr);
+    } catch (error) {
+      console.warn('[API Calendar Upcoming] Story-card enrichment unavailable:', error);
+    }
 
     const response: UpcomingResponse = {
       from: fromStr,

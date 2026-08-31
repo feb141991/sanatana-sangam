@@ -5,7 +5,8 @@ import {
   Globe, CheckCircle2, AlertTriangle, XCircle, Clock,
   RefreshCw, Search, Filter, Copy, ExternalLink, Zap,
   ChevronDown, ChevronUp, Terminal, Shield, ArrowUpDown,
-  Sparkles, Moon, Sun, Flame, Database, Compass, Bell, User, Check
+  Sparkles, Moon, Sun, Flame, Database, Compass, Bell, User, Check,
+  Activity, Layers, Hash
 } from "lucide-react";
 import type { MonitoringEvent } from "@/lib/monitoring/events";
 
@@ -282,6 +283,7 @@ interface Props {
 
 export default function ApiMonitoringSection({ recentEvents }: Props) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [httpCodeFilter, setHttpCodeFilter] = useState<string>("all");
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<"status" | "latency" | "events" | "name">("status");
@@ -294,14 +296,17 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
 
   // Aggregate stats per route from recentEvents (monitoring_events table)
   const telemetryByRoute = useMemo(() => {
-    const map: Record<string, { totalEvents: number; errors: number; totalLatency: number; maxLatency: number; lastTimestamp?: string; lastError?: string }> = {};
+    const map: Record<string, { totalEvents: number; errors: number; totalLatency: number; maxLatency: number; lastTimestamp?: string; lastError?: string; statusCodes: Record<string, number> }> = {};
 
     recentEvents.forEach((ev) => {
       const route = ev.route || "unknown";
       if (!map[route]) {
-        map[route] = { totalEvents: 0, errors: 0, totalLatency: 0, maxLatency: 0 };
+        map[route] = { totalEvents: 0, errors: 0, totalLatency: 0, maxLatency: 0, statusCodes: {} };
       }
       map[route].totalEvents += 1;
+      const code = String(ev.error_code || "200");
+      map[route].statusCodes[code] = (map[route].statusCodes[code] || 0) + 1;
+
       if (ev.severity === "P1" || ev.severity === "P2" || (ev.error_code && ev.error_code !== "200")) {
         map[route].errors += 1;
         if (ev.error_message) map[route].lastError = ev.error_message;
@@ -317,6 +322,50 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
 
     return map;
   }, [recentEvents]);
+
+  // Aggregate overall HTTP Status Code counts across live probes + telemetry
+  const httpCodeCounts = useMemo(() => {
+    const counts = {
+      c200: 0,
+      c201: 0,
+      c304: 0,
+      c400: 0,
+      c401: 0,
+      c403: 0,
+      c429: 0,
+      c500: 0,
+      c504: 0,
+      c4xx: 0,
+      c5xx: 0,
+    };
+
+    // 1. From live probe results
+    Object.values(probeResults).forEach((p) => {
+      if (p.status === 200) counts.c200++;
+      else if (p.status === 201) counts.c201++;
+      else if (p.status === 304) counts.c304++;
+      else if (p.status === 400) { counts.c400++; counts.c4xx++; }
+      else if (p.status === 401) { counts.c401++; counts.c4xx++; }
+      else if (p.status === 403) { counts.c403++; counts.c4xx++; }
+      else if (p.status === 429) { counts.c429++; counts.c4xx++; }
+      else if (p.status === 500) { counts.c500++; counts.c5xx++; }
+      else if (p.status === 504) { counts.c504++; counts.c5xx++; }
+      else if (p.status >= 400 && p.status < 500) counts.c4xx++;
+      else if (p.status >= 500) counts.c5xx++;
+    });
+
+    // 2. From telemetry events
+    recentEvents.forEach((ev) => {
+      const code = String(ev.error_code || "200");
+      if (code === "200") counts.c200++;
+      else if (code === "401" || code === "403") { counts.c401++; counts.c4xx++; }
+      else if (code === "429") { counts.c429++; counts.c4xx++; }
+      else if (code === "500" || code === "P1" || code === "P2") { counts.c500++; counts.c5xx++; }
+      else if (code === "504") { counts.c504++; counts.c5xx++; }
+    });
+
+    return counts;
+  }, [probeResults, recentEvents]);
 
   // Run live probe for single endpoint
   const handleProbeEndpoint = async (endpointDef: ApiEndpointDef) => {
@@ -407,12 +456,12 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
       // Domain filter
       if (domainFilter !== "all" && api.domain !== domainFilter) return false;
 
-      // Status filter
       const probe = probeResults[api.id];
       const telem = telemetryByRoute[api.path];
       const hasError = (probe && !probe.ok) || (telem && telem.errors > 0);
       const isSlow = (probe && probe.latencyMs > 200) || (telem && telem.totalLatency / (telem.totalEvents || 1) > 200);
 
+      // Status filter
       if (statusFilter === "healthy") {
         if (!probe || !probe.ok || isSlow) return false;
       } else if (statusFilter === "degraded") {
@@ -421,6 +470,23 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
         if (!hasError) return false;
       } else if (statusFilter === "unprobed") {
         if (probe) return false;
+      }
+
+      // Explicit HTTP Status Code filter
+      if (httpCodeFilter !== "all") {
+        if (httpCodeFilter === "200") {
+          const is200 = probe?.status === 200 || telem?.statusCodes["200"];
+          if (!is200) return false;
+        } else if (httpCodeFilter === "4xx") {
+          const is4xx = (probe && probe.status >= 400 && probe.status < 500) || (telem && (telem.statusCodes["401"] || telem.statusCodes["403"] || telem.statusCodes["400"] || telem.statusCodes["429"]));
+          if (!is4xx) return false;
+        } else if (httpCodeFilter === "5xx") {
+          const is5xx = (probe && probe.status >= 500) || (telem && (telem.statusCodes["500"] || telem.statusCodes["504"] || telem.statusCodes["P1"]));
+          if (!is5xx) return false;
+        } else {
+          const exactMatch = String(probe?.status) === httpCodeFilter || telem?.statusCodes[httpCodeFilter];
+          if (!exactMatch) return false;
+        }
       }
 
       // Search query
@@ -456,7 +522,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
       }
       return a.path.localeCompare(b.path);
     });
-  }, [domainFilter, statusFilter, searchQuery, sortBy, probeResults, telemetryByRoute]);
+  }, [domainFilter, statusFilter, httpCodeFilter, searchQuery, sortBy, probeResults, telemetryByRoute]);
 
   // Overall fleet stats
   const fleetSummary = useMemo(() => {
@@ -495,43 +561,80 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* ─── SUMMARY PULSE KPI CARDS ────────────────────────────────────────── */}
+      {/* ─── SUMMARY PULSE KPI CARDS (INTERACTIVE FILTERS) ─────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="bg-white p-3.5 rounded-2xl border border-black/5 shadow-sm space-y-1">
+        <button
+          onClick={() => { setStatusFilter("all"); setHttpCodeFilter("all"); }}
+          className={"text-left p-3.5 rounded-2xl border shadow-sm space-y-1 transition-all cursor-pointer " + (
+            statusFilter === "all" && httpCodeFilter === "all"
+              ? "bg-white border-amber-600 ring-2 ring-amber-500/20 shadow-md scale-[1.02]"
+              : "bg-white border-black/5 hover:scale-[1.01]"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Total APIs</span>
             <Globe size={15} className="text-gray-400" />
           </div>
           <div className="text-xl font-bold text-gray-900">{fleetSummary.total} Endpoints</div>
           <p className="text-[10px] text-gray-400 font-mono">Multi-region ({fleetSummary.probed} probed)</p>
-        </div>
+        </button>
 
-        <div className="bg-emerald-50/50 p-3.5 rounded-2xl border border-emerald-200/60 shadow-sm space-y-1">
+        <button
+          onClick={() => { setStatusFilter(statusFilter === "healthy" ? "all" : "healthy"); setHttpCodeFilter("all"); }}
+          className={"text-left p-3.5 rounded-2xl border shadow-sm space-y-1 transition-all cursor-pointer " + (
+            statusFilter === "healthy"
+              ? "bg-emerald-100/80 border-emerald-500 ring-2 ring-emerald-500/20 shadow-md scale-[1.02]"
+              : "bg-emerald-50/50 border-emerald-200/60 hover:scale-[1.01]"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">Healthy (200 OK)</span>
             <CheckCircle2 size={15} className="text-emerald-600" />
           </div>
           <div className="text-xl font-bold text-emerald-700">{fleetSummary.healthy}</div>
-          <p className="text-[10px] text-emerald-600 font-medium">Fast (&le; 200ms)</p>
-        </div>
+          <div className="flex items-center justify-between text-[10px] text-emerald-600 font-medium">
+            <span>Fast (&le; 200ms)</span>
+            <span className="text-[9px] font-bold bg-emerald-200/60 px-1 py-0.2 rounded">Filter</span>
+          </div>
+        </button>
 
-        <div className="bg-amber-50/50 p-3.5 rounded-2xl border border-amber-200/60 shadow-sm space-y-1">
+        <button
+          onClick={() => { setStatusFilter(statusFilter === "degraded" ? "all" : "degraded"); setHttpCodeFilter("all"); }}
+          className={"text-left p-3.5 rounded-2xl border shadow-sm space-y-1 transition-all cursor-pointer " + (
+            statusFilter === "degraded"
+              ? "bg-amber-100/80 border-amber-500 ring-2 ring-amber-500/20 shadow-md scale-[1.02]"
+              : "bg-amber-50/50 border-amber-200/60 hover:scale-[1.01]"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Degraded / Slow</span>
             <Clock size={15} className="text-amber-600" />
           </div>
           <div className="text-xl font-bold text-amber-700">{fleetSummary.degraded}</div>
-          <p className="text-[10px] text-amber-600 font-medium">&gt; 200ms latency</p>
-        </div>
+          <div className="flex items-center justify-between text-[10px] text-amber-600 font-medium">
+            <span>&gt; 200ms latency</span>
+            <span className="text-[9px] font-bold bg-amber-200/60 px-1 py-0.2 rounded">Filter</span>
+          </div>
+        </button>
 
-        <div className="bg-rose-50/50 p-3.5 rounded-2xl border border-rose-200/60 shadow-sm space-y-1">
+        <button
+          onClick={() => { setStatusFilter(statusFilter === "error" ? "all" : "error"); setHttpCodeFilter("all"); }}
+          className={"text-left p-3.5 rounded-2xl border shadow-sm space-y-1 transition-all cursor-pointer " + (
+            statusFilter === "error"
+              ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-md scale-[1.02]"
+              : "bg-rose-50/50 border-rose-200/60 hover:scale-[1.01]"
+          )}
+        >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-rose-800 uppercase tracking-wider">Failing (4xx/5xx)</span>
             <XCircle size={15} className="text-rose-600" />
           </div>
           <div className="text-xl font-bold text-rose-700">{fleetSummary.errors}</div>
-          <p className="text-[10px] text-rose-600 font-medium">{fleetSummary.errors === 0 ? "Zero errors" : "Needs triage"}</p>
-        </div>
+          <div className="flex items-center justify-between text-[10px] text-rose-600 font-medium">
+            <span>{fleetSummary.errors === 0 ? "Zero errors" : "Needs triage"}</span>
+            <span className="text-[9px] font-bold bg-rose-200/60 px-1 py-0.2 rounded">Filter</span>
+          </div>
+        </button>
 
         <div className="bg-white p-3.5 rounded-2xl border border-black/5 shadow-sm space-y-1">
           <div className="flex items-center justify-between">
@@ -540,6 +643,107 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
           </div>
           <div className="text-xl font-bold text-gray-900">{fleetSummary.avgLatency} ms</div>
           <p className="text-[10px] text-gray-400 font-mono">BOM1 / FRA1 Fleet</p>
+        </div>
+      </div>
+
+      {/* ─── INTERACTIVE HTTP STATUS CODE COUNTERS BAR ───────────────────────── */}
+      <div className="bg-white p-3.5 rounded-2xl border border-black/5 shadow-sm space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Hash size={14} className="text-amber-700" />
+            <span className="text-xs font-bold text-gray-900">Interactive HTTP Response Code Matrix</span>
+            <span className="text-[10px] text-gray-400 font-mono">(Click any response code to filter)</span>
+          </div>
+          {httpCodeFilter !== "all" && (
+            <button
+              onClick={() => setHttpCodeFilter("all")}
+              className="text-[11px] font-bold text-amber-800 hover:underline"
+            >
+              Reset Status Filter (Showing: {httpCodeFilter})
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "200" ? "all" : "200")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "200"
+                ? "bg-emerald-600 text-white border-emerald-700 shadow-sm scale-105"
+                : "bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100"
+            )}
+          >
+            <CheckCircle2 size={12} />
+            <span>200 OK: <strong>{httpCodeCounts.c200}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "201" ? "all" : "201")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "201"
+                ? "bg-blue-600 text-white border-blue-700 shadow-sm scale-105"
+                : "bg-blue-50 text-blue-800 border-blue-200 hover:bg-blue-100"
+            )}
+          >
+            <span>201 Created: <strong>{httpCodeCounts.c201}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "304" ? "all" : "304")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "304"
+                ? "bg-amber-600 text-white border-amber-700 shadow-sm scale-105"
+                : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
+            )}
+          >
+            <span>304 Not Modified: <strong>{httpCodeCounts.c304}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "401" ? "all" : "401")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "401"
+                ? "bg-orange-600 text-white border-orange-700 shadow-sm scale-105"
+                : "bg-orange-50 text-orange-800 border-orange-200 hover:bg-orange-100"
+            )}
+          >
+            <span>401 Unauthorized: <strong>{httpCodeCounts.c401}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "429" ? "all" : "429")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "429"
+                ? "bg-purple-600 text-white border-purple-700 shadow-sm scale-105"
+                : "bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100"
+            )}
+          >
+            <span>429 Rate Limit: <strong>{httpCodeCounts.c429}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "500" ? "all" : "500")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "500"
+                ? "bg-rose-600 text-white border-rose-700 shadow-sm scale-105"
+                : "bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100"
+            )}
+          >
+            <XCircle size={12} />
+            <span>500 Server Error: <strong>{httpCodeCounts.c500}</strong></span>
+          </button>
+
+          <button
+            onClick={() => setHttpCodeFilter(httpCodeFilter === "504" ? "all" : "504")}
+            className={"flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all cursor-pointer " + (
+              httpCodeFilter === "504"
+                ? "bg-red-700 text-white border-red-800 shadow-sm scale-105"
+                : "bg-red-50 text-red-800 border-red-200 hover:bg-red-100"
+            )}
+          >
+            <Clock size={12} />
+            <span>504 Gateway Timeout: <strong>{httpCodeCounts.c504}</strong></span>
+          </button>
         </div>
       </div>
 
@@ -577,7 +781,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
             <button
               onClick={handleProbeAll}
               disabled={probingAll}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 disabled:opacity-50 transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 disabled:opacity-50 transition-all shadow-sm cursor-pointer"
             >
               <RefreshCw size={13} className={probingAll ? "animate-spin" : ""} />
               <span>{probingAll ? "Probing Fleet..." : "⚡ Probe All APIs"}</span>
@@ -600,7 +804,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id)}
-                className={"px-2.5 py-1 rounded-lg text-xs font-bold transition-all " + (
+                className={"px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer " + (
                   statusFilter === st.id
                     ? "bg-amber-800 text-white shadow-xs"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -627,7 +831,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
               <button
                 key={dom.id}
                 onClick={() => setDomainFilter(dom.id)}
-                className={"px-2.5 py-1 rounded-lg text-xs font-bold transition-all " + (
+                className={"px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer " + (
                   domainFilter === dom.id
                     ? "bg-purple-900 text-white shadow-xs"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -716,10 +920,14 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                     <div className="col-span-2 space-y-0.5">
                       {probe ? (
                         <div className="flex items-center gap-1.5">
-                          <span className={"px-2 py-0.5 rounded-lg border text-[11px] font-mono font-bold inline-flex items-center gap-1 " + statusColor}>
+                          <button
+                            onClick={() => setHttpCodeFilter(String(probe.status))}
+                            title="Filter by this HTTP code"
+                            className={"px-2 py-0.5 rounded-lg border text-[11px] font-mono font-bold inline-flex items-center gap-1 hover:scale-105 transition-all cursor-pointer " + statusColor}
+                          >
                             {probe.ok ? <CheckCircle2 size={11} /> : <XCircle size={11} />}
                             {probe.status} {probe.statusText}
-                          </span>
+                          </button>
                           <span className="font-mono text-[11px] text-gray-500 font-medium">
                             {probe.latencyMs}ms
                           </span>
@@ -759,14 +967,14 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                         onClick={() => handleProbeEndpoint(api)}
                         disabled={isProbing}
                         title="Probe this API"
-                        className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 disabled:opacity-40 transition-all"
+                        className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 disabled:opacity-40 transition-all cursor-pointer"
                       >
                         <RefreshCw size={13} className={probingSingle === api.id ? "animate-spin text-amber-800" : ""} />
                       </button>
 
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : api.id)}
-                        className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-all"
+                        className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-600 transition-all cursor-pointer"
                       >
                         {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                       </button>
@@ -801,7 +1009,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                               <span>Curl Command</span>
                               <button
                                 onClick={() => copyToClipboard(\`curl -i -X \${api.method} "https://www.shoonaya.com\${api.path}\${api.sampleQueryOrBody?.startsWith("?") ? api.sampleQueryOrBody : ""}"\`, api.id)}
-                                className="flex items-center gap-1 text-amber-800 hover:underline"
+                                className="flex items-center gap-1 text-amber-800 hover:underline cursor-pointer"
                               >
                                 {copiedId === api.id ? <Check size={11} /> : <Copy size={11} />}
                                 <span>{copiedId === api.id ? "Copied!" : "Copy Curl"}</span>
@@ -820,7 +1028,7 @@ export default function ApiMonitoringSection({ recentEvents }: Props) {
                             <button
                               onClick={() => handleProbeEndpoint(api)}
                               disabled={isProbing}
-                              className="px-2.5 py-1 rounded-lg bg-amber-800 text-white text-[11px] font-bold hover:bg-amber-900 transition-all flex items-center gap-1"
+                              className="px-2.5 py-1 rounded-lg bg-amber-800 text-white text-[11px] font-bold hover:bg-amber-900 transition-all flex items-center gap-1 cursor-pointer"
                             >
                               <RefreshCw size={11} className={probingSingle === api.id ? "animate-spin" : ""} />
                               <span>Ping Live</span>
