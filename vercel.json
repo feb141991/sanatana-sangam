@@ -139,6 +139,9 @@
     }
   ],
   "regions": [
-    "fra1"
+    "bom1",
+    "fra1",
+    "sin1",
+    "iad1"
   ]
 }

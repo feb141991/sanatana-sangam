@@ -11,7 +11,7 @@ import PanchangHub from './PanchangHub';
 // The /api/cron/panchang-revalidate route calls revalidatePath('/panchang')
 // at midnight IST so the page is always warm for the day.
 export const revalidate = 0;
-export const preferredRegion = 'iad1'; // US East — nearest to Supabase default region
+export const preferredRegion = ['bom1', 'fra1', 'sin1', 'iad1'];
 
 // Memoised per-request so generateMetadata and the page share one calculation.
 const getPanchang = cache(() => {
