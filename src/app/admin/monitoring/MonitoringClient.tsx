@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-  Activity, Bell, Smartphone, AlertTriangle, CheckCircle,
+  Globe, Activity, Bell, Smartphone, AlertTriangle, CheckCircle,
   Info, RefreshCw, Search, Shield, Sparkles, Send,
   ChevronDown, ChevronUp, Copy, ExternalLink, HelpCircle,
   Layers, Filter, ArrowRight, Zap, Check, Cpu, Volume2,
@@ -14,6 +14,7 @@ import type { generateHealthReport } from "@/lib/monitoring/aggregation";
 import type { MonitoringEvent } from "@/lib/monitoring/events";
 import PushMonitoringSection from "./PushMonitoringSection";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
+import ApiMonitoringSection, { API_CATALOG } from "./ApiMonitoringSection";
 
 type HealthReport = ReturnType<typeof generateHealthReport>;
 
@@ -145,7 +146,7 @@ function resolveServiceName(route?: string, domain?: string, context?: Record<st
 }
 
 export default function MonitoringClient({ report, recentEvents, aiReports: initialAiReports, dbMetrics, offlineSyncStats }: Props) {
-  const [activeTab, setActiveTab] = useState<"telemetry" | "push" | "errors" | "ai_reports">("telemetry");
+  const [activeTab, setActiveTab] = useState<"apis" | "telemetry" | "push" | "errors" | "ai_reports">("apis");
   const [infoModal, setInfoModal] = useState<InfoModalData | null>(null);
 
   // Specialized Modals for Pulse Cards
@@ -381,6 +382,18 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── TABBED WORKSTATIONS NAVIGATION ────────────────────────────────── */}
       <div className="flex items-center gap-2 border-b border-black/10 overflow-x-auto pb-px">
+                <button
+          onClick={() => setActiveTab("apis")}
+          className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
+            activeTab === "apis"
+              ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
+              : "border-transparent text-gray-500 hover:text-gray-900"
+          )}
+        >
+          <Globe size={14} />
+          <span>API Endpoints & Health Probe ({API_CATALOG.length})</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("telemetry")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
@@ -429,6 +442,11 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
           <span>AI Chat & Content Reports ({aiReports.length})</span>
         </button>
       </div>
+
+            {/* ─── TAB 0: API HEALTH & LIVE PROBE MATRIX ────────────────────────── */}
+      {activeTab === "apis" && (
+        <ApiMonitoringSection recentEvents={recentEvents} />
+      )}
 
       {/* ─── TAB 1: SERVER TELEMETRY & LOGS ────────────────────────────────── */}
       {activeTab === "telemetry" && (
