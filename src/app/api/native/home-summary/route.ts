@@ -24,6 +24,7 @@ import { selectDisplayObservances } from '@/lib/calendar/display-observances';
 import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
 import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 import { getHomeObservanceWindowEnd } from '@/lib/home-observance-window';
+import { settleOptionalSection } from '@/lib/optional-section';
 
 export const runtime = 'nodejs';
 
@@ -551,15 +552,27 @@ class ServerTimingCollector {
   }
 
   toHeaderValue(): string {
-    const totalDur = Math.round((performance.now() - this.startTime) * 100) / 100;
+    const totalDur = this.totalDurationMs();
     const parts = this.stages.map((s) => `${s.name};dur=${s.dur}${s.desc ? `;desc="${s.desc}"` : ''}`);
     parts.push(`total;dur=${totalDur};desc="Total"`);
     return parts.join(', ');
+  }
+
+  totalDurationMs(): number {
+    return Math.round((performance.now() - this.startTime) * 100) / 100;
+  }
+
+  receipt() {
+    return {
+      totalMs: this.totalDurationMs(),
+      stages: this.stages.map((stage) => ({ ...stage })),
+    };
   }
 }
 
 export async function GET(request: NextRequest) {
   const timings = new ServerTimingCollector();
+  const degradedSections = new Set<string>();
 
   const { user, error, supabase } = await timings.measure('auth', 'Authentication', async () => getApiUser(request));
 
@@ -569,16 +582,43 @@ export async function GET(request: NextRequest) {
 
   const DB_TIMEOUT = 4_000;
 
-  const { data: profileData } = await timings.measure('profile', 'Profile Fetch', async () =>
+  const profileSection = await settleOptionalSection(
     supabase
       .from('profiles')
       .select('full_name, username, avatar_url, cover_url, city, country, latitude, longitude, timezone, tradition, sampradaya, ishta_devata, app_language, active_symbol_id, karma_points, nitya_rhythm_mode, shloka_streak, last_shloka_date, calendar_scope, calendar_profile')
       .eq('id', user.id)
-      .maybeSingle()
+      .maybeSingle() as unknown as PromiseLike<{
+        data: ProfileRow | null;
+        error: { message?: string } | null;
+      }>,
+    DB_TIMEOUT,
+    { data: null, error: null },
   );
+  timings.record('profile', profileSection.durationMs, `Profile Fetch (${profileSection.status})`);
 
+  if (profileSection.status !== 'ready' || profileSection.value.error || !profileSection.value.data) {
+    const receipt = timings.receipt();
+    console.warn('[home-summary][required-profile-unavailable]', JSON.stringify({
+      ...receipt,
+      release: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
+      reason: profileSection.status !== 'ready'
+        ? profileSection.status
+        : profileSection.value.error?.message ?? 'profile_not_found',
+    }));
+    return NextResponse.json(
+      { error: 'Home profile is temporarily unavailable.', retryable: true },
+      {
+        status: 503,
+        headers: {
+          'Cache-Control': 'private, no-store',
+          'Retry-After': '2',
+          'Server-Timing': timings.toHeaderValue(),
+        },
+      },
+    );
+  }
 
-  const profile = profileData as ProfileRow | null;
+  const profile = profileSection.value.data;
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
@@ -588,46 +628,43 @@ export async function GET(request: NextRequest) {
   const longitude = profile?.longitude ?? 75.7885;
   const calendarScope = profile?.calendar_scope ?? null;
 
-  let monthSystem: string | null = null;
-  if (profile?.calendar_profile) {
-    const { data: calendarProfileRow } = await timings.measure('calendar_profile', 'Calendar Profile', async () =>
-      supabase
-        .from('calendar_profiles')
-        .select('month_system')
-        .eq('slug', profile.calendar_profile)
-        .maybeSingle()
-    );
-    monthSystem = calendarProfileRow?.month_system ?? null;
-  }
+  const calendarProfilePromise = profile?.calendar_profile
+    ? timings.measure('calendar_profile', 'Calendar Profile', async () =>
+        withTimeout<{ month_system: string | null }>(
+          supabase
+            .from('calendar_profiles')
+            .select('month_system')
+            .eq('slug', profile.calendar_profile)
+            .maybeSingle(),
+          DB_TIMEOUT,
+        )
+      )
+    : Promise.resolve({ data: null });
 
   const observanceCalendarProfile = profile?.calendar_profile ?? 'legacy-ujjain';
   const observanceLocation = resolveObservanceLocationBucket({
     saved: { lat: profile?.latitude ?? null, lon: profile?.longitude ?? null, tz: profile?.timezone ?? null },
   });
 
-  const occurrenceStart = performance.now();
-  const observancePromise = getOrMaterializeOccurrences({
-    supabase,
-    fromDate: today,
-    toDate: calendarTo,
-    tradition,
-    calendarScope,
-    calendarProfile: observanceCalendarProfile,
-    location: observanceLocation,
-  })
-    .then((data) => {
-      timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution');
-      return { data: Array.isArray(data) ? data : [] };
-    })
-    .catch((err) => {
-      console.error('[home-summary] getOrMaterializeOccurrences failed:', err);
-      timings.record('occurrences', performance.now() - occurrenceStart, 'Occurrence Resolution (Failed)');
-      return { data: [] };
-    });
+  const observancePromise = settleOptionalSection(
+    getOrMaterializeOccurrences({
+      supabase,
+      fromDate: today,
+      toDate: calendarTo,
+      tradition,
+      calendarScope,
+      calendarProfile: observanceCalendarProfile,
+      location: observanceLocation,
+    }),
+    2_500,
+    [] as ObservanceRow[],
+  );
 
   const [
     personalizedBatchResult,
     globalContentResult,
+    calendarProfileResult,
+    observanceSection,
   ] = await Promise.all([
     timings.measure('personalized_batch', 'Personalized Data Batch', async () =>
       Promise.all([
@@ -685,7 +722,6 @@ export async function GET(request: NextRequest) {
             .maybeSingle(),
           DB_TIMEOUT,
         ),
-        withTimeout<ObservanceRow[]>(observancePromise, DB_TIMEOUT),
       ])
     ),
     timings.measure('global_lookup', 'Global Roster & Assets Lookup', async () =>
@@ -694,7 +730,16 @@ export async function GET(request: NextRequest) {
         getCachedDharmVeerRoster(supabase, DB_TIMEOUT),
       ])
     ),
+    calendarProfilePromise,
+    observancePromise,
   ]);
+
+  timings.record(
+    'occurrences',
+    observanceSection.durationMs,
+    `Occurrence Resolution (${observanceSection.status})`,
+  );
+  if (observanceSection.status !== 'ready') degradedSections.add('calendar_occurrences');
 
   const [
     guidedResult,
@@ -703,13 +748,14 @@ export async function GET(request: NextRequest) {
     nityaStreakResult,
     malaResult,
     sankalpaResult,
-    observanceResult,
   ] = personalizedBatchResult;
 
   const [
     heroAssetRows,
     dharmVeerRoster,
   ] = globalContentResult;
+
+  const monthSystem = calendarProfileResult.data?.month_system ?? null;
 
   const composeStart = performance.now();
 
@@ -720,13 +766,11 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  const rawObservanceData: ObservanceRow[] = Array.isArray(observanceResult?.data)
-    ? (observanceResult.data as ObservanceRow[])
-    : Array.isArray((observanceResult?.data as any)?.data)
-      ? ((observanceResult.data as any).data as ObservanceRow[])
-      : [];
+  const rawObservanceData: ObservanceRow[] = Array.isArray(observanceSection.value)
+    ? observanceSection.value
+    : [];
   const observanceRows: ObservanceRow[] = filterWithheldJoinedRows(rawObservanceData);
-  const occurrencesWithBatches = await withValueTimeout(
+  const batchSection = await settleOptionalSection(
     attachMaterialisationBatches(
       observanceRows,
       undefined,
@@ -737,9 +781,16 @@ export async function GET(request: NextRequest) {
         timezone: observanceLocation.tz,
       },
     ),
-    DB_TIMEOUT,
+    750,
     observanceRows,
   );
+  timings.record(
+    'calendar_batches',
+    batchSection.durationMs,
+    `Calendar Batch Metadata (${batchSection.status})`,
+  );
+  if (batchSection.status !== 'ready') degradedSections.add('calendar_batches');
+  const occurrencesWithBatches = batchSection.value;
 
   const todaySadhana = sadhanaRows.find((row) => row.date === today) ?? null;
   const activePathshala = guidedPathProgress.find(
@@ -844,27 +895,46 @@ export async function GET(request: NextRequest) {
     dbThemes: dbHeroThemes,
   });
 
-  const seriesResults = formatOccurrencesToResults(
-    occurrencesWithBatches,
-    [],
-    tradition,
-    observanceCalendarProfile,
-    profile?.sampradaya ?? null,
-    today,
-    calendarTo,
-  );
-  const displaySeriesResults = selectDisplayObservances(seriesResults);
-  const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;
-  const series = primarySeriesContext
-    ? buildObservanceSeries(seriesResults, {
-        spiritualDate: today,
-        profile: primarySeriesContext.profile,
-        location: primarySeriesContext.location,
-        tradition,
-      })
+  let seriesResults: ReturnType<typeof formatOccurrencesToResults> = [];
+  let displaySeriesResults: ReturnType<typeof selectDisplayObservances> = [];
+  let series: ObservanceSeries[] = [];
+  try {
+    seriesResults = formatOccurrencesToResults(
+      occurrencesWithBatches,
+      [],
+      tradition,
+      observanceCalendarProfile,
+      profile?.sampradaya ?? null,
+      today,
+      calendarTo,
+    );
+    displaySeriesResults = selectDisplayObservances(seriesResults);
+    const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;
+    series = primarySeriesContext
+      ? buildObservanceSeries(seriesResults, {
+          spiritualDate: today,
+          profile: primarySeriesContext.profile,
+          location: primarySeriesContext.location,
+          tradition,
+        })
       : [];
+  } catch (error) {
+    degradedSections.add('calendar_series');
+    console.error('[home-summary] calendar series composition failed:', error);
+  }
   const storyLanguage = profile?.app_language === 'hi' || profile?.app_language === 'pa' ? profile.app_language : 'en';
-  const storyCards = await getPublishedObservanceStoryCards(displaySeriesResults, storyLanguage, today);
+  const storySection = await settleOptionalSection(
+    getPublishedObservanceStoryCards(displaySeriesResults, storyLanguage, today),
+    500,
+    [] as HomeObservanceStoryCard[],
+  );
+  timings.record(
+    'calendar_stories',
+    storySection.durationMs,
+    `Festival Stories (${storySection.status})`,
+  );
+  if (storySection.status !== 'ready') degradedSections.add('calendar_stories');
+  const storyCards = storySection.value;
 
   const targetDays = sankalpaRow?.target_days ?? 30;
   const sankalpaDay = sankalpaRow ? buildDayNumber(sankalpaRow.start_date, today) : 1;
@@ -938,10 +1008,22 @@ export async function GET(request: NextRequest) {
 
   timings.record('compose', performance.now() - composeStart, 'Response Composition');
 
+  const performanceReceipt = timings.receipt();
+  if (performanceReceipt.totalMs >= 1_500 || degradedSections.size > 0) {
+    console.warn('[home-summary][performance]', JSON.stringify({
+      ...performanceReceipt,
+      degradedSections: [...degradedSections].sort(),
+      release: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
+    }));
+  }
+
   return NextResponse.json(response, {
     headers: {
       'Cache-Control': 'private, no-store',
       'Server-Timing': timings.toHeaderValue(),
+      ...(degradedSections.size > 0
+        ? { 'X-Shoonaya-Degraded-Sections': [...degradedSections].sort().join(',') }
+        : {}),
     },
   });
 }

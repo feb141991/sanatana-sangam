@@ -304,8 +304,20 @@ export async function loadMandaliFeedPage(
   }
   // Fetch one extra row to know whether a next page exists without a
   // separate count query.
-  const { data: postRows, error: postsError } = await postsQuery.limit(pageSize + 1);
+  const [
+    { data: postRows, error: postsError },
+    { data: memberRows, error: membersError },
+  ] = await Promise.all([
+    postsQuery.limit(pageSize + 1),
+    admin
+      .from('profiles')
+      .select('id, username, avatar_url, seva_score')
+      .eq('mandali_id', mandaliId)
+      .order('seva_score', { ascending: false })
+      .limit(50),
+  ]);
   if (postsError) throw postsError;
+  if (membersError) throw membersError;
 
   const allRows = (postRows ?? []) as Post[];
   const hasMore = allRows.length > pageSize;
@@ -313,11 +325,13 @@ export async function loadMandaliFeedPage(
   const lastRow = pageRows[pageRows.length - 1];
   const nextCursor = hasMore && lastRow ? encodeFeedCursor(lastRow.created_at, lastRow.id) : null;
 
-  const [{ data: memberRows, error: membersError }, posts] = await Promise.all([
-    admin.from('profiles').select('id, username, avatar_url, seva_score').eq('mandali_id', mandaliId).order('seva_score', { ascending: false }).limit(50),
+  const postIdsForRsvp = pageRows.map((row) => row.id);
+  const [posts, rsvpResult] = await Promise.all([
     hydrateFeedPosts(admin, userId, pageRows),
+    postIdsForRsvp.length
+      ? admin.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIdsForRsvp)
+      : Promise.resolve({ data: [] as EventRsvp[], error: null }),
   ]);
-  if (membersError) throw membersError;
   const members = filterProfileRows((memberRows ?? []) as MandaliPublicIdentity[], safetyState);
   const needsBlend = members.length < BLEND_THRESHOLD;
 
@@ -330,11 +344,7 @@ export async function loadMandaliFeedPage(
     blendedPosts = await hydrateFeedPosts(admin, userId, (blendedRows ?? []) as Post[]);
   }
 
-  const postIdsForRsvp = pageRows.map((row) => row.id);
-  const { data: rsvpRows, error: rsvpsError } = postIdsForRsvp.length
-    ? await admin.from('event_rsvps').select('id, post_id, user_id, status, created_at, updated_at').in('post_id', postIdsForRsvp)
-    : { data: [] as EventRsvp[], error: null };
-  if (rsvpsError) throw rsvpsError;
+  if (rsvpResult.error) throw rsvpResult.error;
 
   return {
     schemaVersion: 1,
@@ -342,7 +352,7 @@ export async function loadMandaliFeedPage(
     posts,
     blendedPosts,
     members,
-    rsvps: (rsvpRows ?? []) as EventRsvp[],
+    rsvps: (rsvpResult.data ?? []) as EventRsvp[],
     nextCursor,
   };
 }
