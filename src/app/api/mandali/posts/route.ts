@@ -27,6 +27,20 @@ export async function POST(request: NextRequest) {
   const mandaliId = (profile as unknown as { mandali_id?: string | null } | null)?.mandali_id;
   if (!mandaliId) return NextResponse.json({ error: 'Join a Mandali before posting.' }, { status: 403 });
 
+  // A retry of an already-committed request (dropped connection, or a
+  // native outbox resuming after an app kill mid-flight) must return the
+  // existing post rather than creating a duplicate -- see migration
+  // 20260902170000_add_mandali_post_comment_idempotency_keys.sql.
+  if (input.clientOperationId) {
+    const { data: existing, error: lookupError } = await auth.admin
+      .from('posts').select('id').eq('client_operation_id', input.clientOperationId).maybeSingle();
+    if (lookupError) return NextResponse.json({ error: 'Could not create post.' }, { status: 500 });
+    if (existing) {
+      const existingRow = existing as unknown as { id: string };
+      return NextResponse.json({ id: existingRow.id, idempotentReplay: true }, { status: 201 });
+    }
+  }
+
   const { data, error } = await auth.admin.from('posts').insert({
     author_id: auth.user.id,
     mandali_id: mandaliId,
@@ -35,8 +49,23 @@ export async function POST(request: NextRequest) {
     event_date: input.postType === 'event' ? input.eventDate : null,
     event_location: input.postType === 'event' ? input.eventLocation : null,
     is_pinned: false,
+    client_operation_id: input.clientOperationId,
   } as never).select('id').single();
-  if (error) return NextResponse.json({ error: 'Could not create post.' }, { status: 500 });
+  if (error) {
+    // A concurrent retry (e.g. a bounded inline retry and an outbox resume
+    // racing) can hit the unique constraint between the lookup above and
+    // this insert -- fetch and return the row the other request just
+    // committed instead of surfacing a false failure.
+    if (error.code === '23505' && input.clientOperationId) {
+      const { data: raced } = await auth.admin
+        .from('posts').select('id').eq('client_operation_id', input.clientOperationId).maybeSingle();
+      if (raced) {
+        const racedRow = raced as unknown as { id: string };
+        return NextResponse.json({ id: racedRow.id, idempotentReplay: true }, { status: 201 });
+      }
+    }
+    return NextResponse.json({ error: 'Could not create post.' }, { status: 500 });
+  }
   const created = data as unknown as { id: string };
   return NextResponse.json({ id: created.id }, { status: 201 });
 }

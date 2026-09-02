@@ -7,7 +7,10 @@ export type MandaliPostInput = {
   postType: MandaliPostType;
   eventDate: string | null;
   eventLocation: string | null;
+  clientOperationId: string | null;
 };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function optionalText(value: unknown, maximum: number) {
   if (value == null || value === '') return null;
@@ -15,6 +18,17 @@ function optionalText(value: unknown, maximum: number) {
   const normalized = value.trim();
   if (!normalized || normalized.length > maximum) return undefined;
   return normalized;
+}
+
+// Shared by posts and comments: an omitted key means "no idempotency
+// requested" (null, valid) -- web callers that haven't adopted the outbox
+// keep working unchanged. A present-but-malformed value fails closed
+// (undefined) so a caller can't silently degrade to non-idempotent by
+// sending garbage.
+function optionalClientOperationId(value: unknown): string | null | undefined {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'string' || !UUID_RE.test(value)) return undefined;
+  return value;
 }
 
 export function parseMandaliPostInput(value: unknown): MandaliPostInput | null {
@@ -26,19 +40,21 @@ export function parseMandaliPostInput(value: unknown): MandaliPostInput | null {
     : null;
   const eventDate = optionalText(body.eventDate, 64);
   const eventLocation = optionalText(body.eventLocation, 180);
-  if (!content || content.length > 2_000 || !postType || eventDate === undefined || eventLocation === undefined) return null;
+  const clientOperationId = optionalClientOperationId(body.clientOperationId);
+  if (!content || content.length > 2_000 || !postType || eventDate === undefined || eventLocation === undefined || clientOperationId === undefined) return null;
   if (postType === 'event' && eventDate && Number.isNaN(Date.parse(eventDate))) return null;
-  return { content, postType, eventDate, eventLocation };
+  return { content, postType, eventDate, eventLocation, clientOperationId };
 }
 
-export function parseMandaliCommentInput(value: unknown): { postId: string; body: string; parentId: string | null } | null {
+export function parseMandaliCommentInput(value: unknown): { postId: string; body: string; parentId: string | null; clientOperationId: string | null } | null {
   if (!value || typeof value !== 'object') return null;
   const input = value as Record<string, unknown>;
   const postId = typeof input.postId === 'string' ? input.postId.trim() : '';
   const body = typeof input.body === 'string' ? input.body.trim() : '';
   const parentId = optionalText(input.parentId, 128);
-  if (!postId || !body || body.length > 1_000 || parentId === undefined) return null;
-  return { postId, body, parentId };
+  const clientOperationId = optionalClientOperationId(input.clientOperationId);
+  if (!postId || !body || body.length > 1_000 || parentId === undefined || clientOperationId === undefined) return null;
+  return { postId, body, parentId, clientOperationId };
 }
 
 export function parseMandaliCommentEditInput(value: unknown): { commentId: string; body: string } | null {

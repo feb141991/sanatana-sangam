@@ -54,13 +54,42 @@ export async function POST(request: NextRequest) {
   const { data: block } = await admin.from('user_blocked_profiles').select('blocker_id').or(blockPairs).limit(1).maybeSingle();
   if (block) return NextResponse.json({ error: 'Interaction unavailable.' }, { status: 403 });
 
+  // A retry of an already-committed request (dropped connection, or a
+  // native outbox resuming after an app kill mid-flight) must return the
+  // existing comment rather than creating a duplicate -- see migration
+  // 20260902170000_add_mandali_post_comment_idempotency_keys.sql.
+  if (input.clientOperationId) {
+    const { data: existing, error: lookupError } = await admin
+      .from('post_comments').select('id').eq('client_operation_id', input.clientOperationId).maybeSingle();
+    if (lookupError) return NextResponse.json({ error: 'Could not create comment.' }, { status: 500 });
+    if (existing) {
+      const existingRow = existing as unknown as { id: string };
+      return NextResponse.json({ id: existingRow.id, idempotentReplay: true }, { status: 201 });
+    }
+  }
+
   const { data, error } = await admin.from('post_comments').insert({
     post_id: input.postId,
     author_id: user.id,
     body: input.body,
     parent_id: input.parentId,
+    client_operation_id: input.clientOperationId,
   } as never).select('id').single();
-  if (error) return NextResponse.json({ error: 'Could not create comment.' }, { status: 500 });
+  if (error) {
+    // A concurrent retry (e.g. a bounded inline retry and an outbox resume
+    // racing) can hit the unique constraint between the lookup above and
+    // this insert -- fetch and return the row the other request just
+    // committed instead of surfacing a false failure.
+    if (error.code === '23505' && input.clientOperationId) {
+      const { data: raced } = await admin
+        .from('post_comments').select('id').eq('client_operation_id', input.clientOperationId).maybeSingle();
+      if (raced) {
+        const racedRow = raced as unknown as { id: string };
+        return NextResponse.json({ id: racedRow.id, idempotentReplay: true }, { status: 201 });
+      }
+    }
+    return NextResponse.json({ error: 'Could not create comment.' }, { status: 500 });
+  }
   const created = data as unknown as { id: string };
   return NextResponse.json({ id: created.id }, { status: 201 });
 }
