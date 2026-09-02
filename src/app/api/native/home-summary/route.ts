@@ -596,29 +596,24 @@ export async function GET(request: NextRequest) {
   );
   timings.record('profile', profileSection.durationMs, `Profile Fetch (${profileSection.status})`);
 
+  // A profile read enriches Home, but must not turn a valid authenticated
+  // session into a blank screen. Existing defaults below intentionally cover
+  // this temporary state while the client can complete profile setup later.
   if (profileSection.status !== 'ready' || profileSection.value.error || !profileSection.value.data) {
+    degradedSections.add('profile');
     const receipt = timings.receipt();
-    console.warn('[home-summary][required-profile-unavailable]', JSON.stringify({
+    console.error('[home-summary][profile-unavailable]', JSON.stringify({
       ...receipt,
       release: process.env.VERCEL_GIT_COMMIT_SHA ?? 'local',
       reason: profileSection.status !== 'ready'
         ? profileSection.status
         : profileSection.value.error?.message ?? 'profile_not_found',
     }));
-    return NextResponse.json(
-      { error: 'Home profile is temporarily unavailable.', retryable: true },
-      {
-        status: 503,
-        headers: {
-          'Cache-Control': 'private, no-store',
-          'Retry-After': '2',
-          'Server-Timing': timings.toHeaderValue(),
-        },
-      },
-    );
   }
 
-  const profile = profileSection.value.data;
+  const profile = profileSection.status === 'ready' && !profileSection.value.error
+    ? profileSection.value.data
+    : null;
   const timezone = profile?.timezone ?? 'UTC';
   const today = localSpiritualDate(timezone, 4);
   const historyFrom = shiftIsoDate(today, -27);
