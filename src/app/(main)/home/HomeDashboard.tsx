@@ -1709,16 +1709,6 @@ export default function HomeDashboard({
                           Festival alerts & practice milestones show up here.
                         </p>
                       </div>
-                      <button
-                        className="text-[11px] font-semibold px-3 py-1.5 rounded-xl transition-opacity hover:opacity-75 cursor-pointer"
-                        style={{ background: 'rgba(197,160,89,0.12)', color: '#C5A059', border: '1px solid rgba(197,160,89,0.20)' }}
-                        onClick={async () => {
-                          await fetch('/api/notifications/test', { method: 'POST' });
-                          notifQuery.refetch();
-                        }}
-                      >
-                        Send test notification
-                      </button>
                     </div>
                   ) : (
                     notifs.map((n) => (

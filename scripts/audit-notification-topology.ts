@@ -114,7 +114,7 @@ function writesTable(content: string, table: string): boolean {
 
 function classify(route: string, direct: boolean, readsSchedule: boolean, queued: boolean): Classification {
   if (route === '/api/cron/notification-dispatch' || (direct && readsSchedule && !queued)) return 'delivery_worker';
-  if (route.startsWith('/api/admin/') || route === '/api/notifications/test') return 'admin_or_test';
+  if (route.startsWith('/api/admin/')) return 'admin_or_test';
   if (!route.startsWith('/api/cron/') && !route.startsWith('/api/digest/')) return 'transactional_event';
   if (direct && queued) return 'hybrid_direct_and_queue';
   return queued ? 'scheduled_queue_producer' : 'direct_send_legacy';

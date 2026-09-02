@@ -20,7 +20,7 @@ import { getApiUser } from '@/lib/api-auth';
 // (e.g. two users both reaching a 7-day streak) collide with each other.
 //
 // Auth: cookie session first, Bearer-token fallback second (getApiUser) — same
-// migration /api/sankalpa/* and /api/notifications/test got, so a native caller
+// migration /api/sankalpa/* got, so a native caller
 // can hit this route too if a future native japa-milestone flow calls it.
 // ─────────────────────────────────────────────────────────────────────────────
 

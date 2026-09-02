@@ -65,9 +65,8 @@ Each notification row has:
 3. **Nitya Karma morning nudge** — tradition-personalised Brahma Muhurta / Amrit Vela / Morning Practice copy; skips users who've already started
 4. **In-app bell** — reads from notifications table, live badge count via Supabase Realtime
 5. **Mark read** — individual and bulk, with optimistic UI
-6. **Test notification** — `/api/notifications/test` endpoint wired in ProfileClient
-7. **Quiet hours** — per-user time window blocks all sends
-8. **OneSignal user login** — `loginToOneSignal(userId)` called on auth, syncs `external_id`
+6. **Quiet hours** — per-user time window blocks all sends
+7. **OneSignal user login** — `loginToOneSignal(userId)` called on auth, syncs `external_id`
 
 ---
 

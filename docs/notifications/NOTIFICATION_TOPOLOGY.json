@@ -1,16 +1,16 @@
 {
-  "sourceFingerprint": "e1949ce0b10a8a0b11d5d15875b4309ffa8df1c3a1de18a179d4027c34743e7e",
+  "sourceFingerprint": "8919748f486ab15d46a07efcde4ab15c9de7706884b0b3af5a6810263744dbee",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
     "nativeRepositoryAudited": true
   },
   "summary": {
-    "totalRoutes": 27,
-    "directPushCallers": 21,
+    "totalRoutes": 26,
+    "directPushCallers": 20,
     "queueWriters": 6,
     "byClassification": {
-      "admin_or_test": 2,
+      "admin_or_test": 1,
       "direct_send_legacy": 15,
       "scheduled_queue_producer": 5,
       "delivery_worker": 1,
@@ -445,23 +445,6 @@
       ]
     },
     {
-      "route": "/api/notifications/test",
-      "sourceFile": "src/app/api/notifications/test/route.ts",
-      "classification": "admin_or_test",
-      "schedule": null,
-      "callsPushDirectly": true,
-      "readsSchedule": false,
-      "writesSchedule": false,
-      "writesBell": true,
-      "preferenceColumns": [],
-      "notificationKeyLiterals": [
-        ");\n    const pushResult = await sendPushNotification({\n      userIds: [user.id],\n      title,\n      body,\n      url: actionUrl,\n      data: {\n        type: ",
-        "Could not create test notification: ${insertError.message}",
-        "Notification test insert failed:",
-        "Notification test route crashed:"
-      ]
-    },
-    {
       "route": "/api/sanskar/schedule",
       "sourceFile": "src/app/api/sanskar/schedule/route.ts",
       "classification": "transactional_event",
@@ -682,27 +665,27 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 120,
+        "count": 47,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 586,
+        "count": 67,
         "error": null
       },
       "push_tokens": {
         "reachable": true,
-        "count": 5,
+        "count": 0,
         "error": null
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 100,
+        "count": 52,
         "error": null
       },
       "push_token_events": {
         "reachable": true,
-        "count": 37,
+        "count": 0,
         "error": null
       }
     }

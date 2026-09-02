@@ -49,7 +49,6 @@ Almost all scheduled cron routes and event routes insert directly into the `noti
 - `/api/cron/tithi-reminder`
 - `/api/cron/vrat-reminder`
 - `/api/notifications/milestone`
-- `/api/notifications/test`
 - `/api/notifications/diagnostics`
 - `/api/kul/invite`
 
@@ -74,7 +73,6 @@ Routes utilizing `sendOneSignalPush` from `src/lib/onesignal-server.ts`:
 - `/api/admin/broadcast`
 - `/api/seva-tier/check`
 - `/api/notifications/milestone`
-- `/api/notifications/test`
 
 ### 6. Which routes still use raw Web Push/VAPID?
 **None.** Legacy Web Push has been completely retired. `japa-reminder` and `digest/generate` have been successfully migrated to the unified OneSignal path, and all legacy `web-push` dependencies, files, and DB tables have been removed.

@@ -13,6 +13,6 @@
 - **Implementation tasks:**
   - Configure OneSignal initialization in the native `_layout.tsx` or a custom provider.
   - Map the OneSignal `external_id` securely to the Supabase authenticated `user_id`.
-- **Verification plan:** Trigger a test push from the web admin panel to a registered native device.
+- **Verification plan:** Use a release-candidate account with an opted-in scheduled reminder and verify delivery on a registered native device.
 - **Open questions:**
   - Do we need a custom notification service extension in iOS to handle rich media or badge incrementing via OneSignal? (Already defined in `app.json` EAS config).

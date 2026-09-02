@@ -238,7 +238,7 @@ export async function GET(request: Request) {
     user_id: user.id,
     checks,
     next_steps: allOk
-      ? ['Everything looks configured. Open your notification bell and look for the diagnostic test notification. If you still see nothing on the native app, confirm it has permission to send notifications in system settings; on web, confirm browser push permission was granted.']
+      ? ['Everything looks configured. Scheduled reminders will appear in the bell and as push notifications when their delivery time arrives. Confirm system notification permission is enabled on the device.']
       : Object.entries(checks)
           .filter(([, v]) => !v.ok)
           .map(([k, v]) => `[${k}] ${v.detail}`),

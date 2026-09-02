@@ -43,9 +43,9 @@ export default function DharmVeerClient({
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const { lang: contextLang } = useLanguage();
   const localContentLanguage: AppLang = hero.tradition === 'sikh' ? 'pa' : 'hi';
+  const localLanguageLabel = hero.tradition === 'sikh' ? 'ਪੰਜਾਬੀ' : 'हिंदी';
   const hasCompleteLocalContent =
     !!hero.nameLocal &&
-    !!hero.taglineLocal &&
     !!hero.journeyLocal &&
     !!hero.trialLocal &&
     !!hero.teachingLocal &&
@@ -96,7 +96,7 @@ export default function DharmVeerClient({
   const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
   const era = lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era;
   const region = lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region;
-  const tagline = lang === 'local' && hero.taglineLocal ? hero.taglineLocal : hero.tagline;
+  const tagline = lang === 'local' ? hero.taglineLocal : hero.tagline;
   const journeyText = lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey;
   const trialText = lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial;
   const teachingText = lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching;
@@ -308,7 +308,7 @@ export default function DharmVeerClient({
                     : 'opacity-70 hover:opacity-100'
                 }`}
               >
-                हिं/Local
+                {localLanguageLabel}
               </button>
             </div>
           )}
@@ -340,9 +340,11 @@ export default function DharmVeerClient({
             </p>
           </div>
 
-          <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
-            &ldquo;{tagline}&rdquo;
-          </p>
+          {tagline ? (
+            <p className={`italic font-medium opacity-80 px-4 ${fontStyles[fontSize]}`}>
+              &ldquo;{tagline}&rdquo;
+            </p>
+          ) : null}
         </section>
 
         {/* Narrative Section */}

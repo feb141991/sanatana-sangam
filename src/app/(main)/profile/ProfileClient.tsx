@@ -25,8 +25,6 @@ import TierBadge from '@/components/ui/TierBadge';
 import { MetricTile, SurfaceSection } from '@/components/ui';
 import CircularProgress from '@/components/ui/CircularProgress';
 import { useProfileQuery, useUpdateProfileMutation } from '@/hooks/useProfile';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/query-keys';
 import type { ProfileUpdate } from '@/lib/api/profile';
 import { usePremium } from '@/hooks/usePremium';
 import { THEME_OPTIONS, type ThemePreference } from '@/lib/theme-preferences';
@@ -277,7 +275,6 @@ export default function ProfileClient({
 }) {
   const router      = useRouter();
   const supabase    = useRef(createClient()).current;
-  const queryClient = useQueryClient();
   const { setLang, lang: contextLang } = useLanguage();
   const { preference: themePreference, resolvedTheme, setPreference: setThemePreference } = useThemePreference();
   const isPro       = usePremium();
@@ -293,7 +290,6 @@ export default function ProfileClient({
   const [saving,    setSaving]    = useState(false);
   const [uploading, setUploading] = useState(false);
   const [showPhotoOptions, setShowPhotoOptions] = useState(false);
-  const [sendingTestNotification, setSendingTestNotification] = useState(false);
   const [savingNotificationPrefs, setSavingNotificationPrefs] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
   const [showNotificationAdvanced, setShowNotificationAdvanced] = useState(false);
@@ -776,39 +772,6 @@ export default function ProfileClient({
 
     router.push('/');
     router.refresh();
-  }
-
-  async function sendTestNotification() {
-    if (sendingTestNotification) return;
-
-    setSendingTestNotification(true);
-    try {
-      const response = await fetch('/api/notifications/test', {
-        method: 'POST',
-      });
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        toast.error(data.error ?? 'Could not send a test notification.');
-        return;
-      }
-
-      toast.success(
-        data.push_queued
-          ? 'Test notification created. Push delivery workflow queued.'
-          : data.push_targets > 0
-          ? 'Test notification sent. Check your bell and browser.'
-          : 'Test notification created. Check your bell first.'
-      );
-      // Invalidate the React Query notifications cache so the bell badge and
-      // list update immediately (Realtime may also catch it, but this is the
-      // direct fallback if the Realtime channel hasn't connected yet).
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications(userId) });
-    } catch {
-      toast.error('Could not reach the notification test service.');
-    } finally {
-      setSendingTestNotification(false);
-    }
   }
 
   async function saveNotificationPreferences() {
@@ -2400,13 +2363,6 @@ export default function ProfileClient({
                  )}
              </div>
 
-             <button
-               onClick={sendTestNotification}
-               disabled={sendingTestNotification}
-               className="w-full py-4 rounded-2xl bg-[var(--card-bg-soft)] border border-[var(--card-border)] text-sm font-medium theme-ink transition-all hover:border-[var(--brand-primary)] active:scale-95 disabled:opacity-50"
-             >
-               {sendingTestNotification ? 'Ascending...' : 'Send Test Notification'}
-             </button>
           </div>
 
           {/* Safety Sections if exist */}

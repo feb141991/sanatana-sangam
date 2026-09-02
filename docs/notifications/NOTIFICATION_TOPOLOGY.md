@@ -4,15 +4,15 @@
 
 ## Summary
 
-- Route-level producers/workers discovered: **27**
-- Direct push callers: **21**
+- Route-level producers/workers discovered: **26**
+- Direct push callers: **20**
 - Queue writers: **6**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
-| `admin_or_test` | 2 |
+| `admin_or_test` | 1 |
 | `direct_send_legacy` | 15 |
 | `scheduled_queue_producer` | 5 |
 | `delivery_worker` | 1 |
@@ -46,7 +46,6 @@
 | `/api/digest/generate` | `scheduled_queue_producer` | `0 23 * * *` | no | yes | none detected |
 | `/api/native/mandali/notify-push` | `transactional_event` | not in vercel.json | yes | no | `wants_community_notifications` |
 | `/api/notifications/milestone` | `transactional_event` | not in vercel.json | yes | no | none detected |
-| `/api/notifications/test` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/sanskar/schedule` | `transactional_event` | not in vercel.json | no | yes | none detected |
 | `/api/seva-tier/check` | `transactional_event` | not in vercel.json | yes | no | none detected |
 
@@ -105,27 +104,27 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 120,
+      "count": 47,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 586,
+      "count": 67,
       "error": null
     },
     "push_tokens": {
       "reachable": true,
-      "count": 5,
+      "count": 0,
       "error": null
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 100,
+      "count": 52,
       "error": null
     },
     "push_token_events": {
       "reachable": true,
-      "count": 37,
+      "count": 0,
       "error": null
     }
   }
