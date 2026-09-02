@@ -133,7 +133,10 @@ type MoodCheckinInsert = {
   context_time?: string;
   context_type?: string;
   dismissed?: boolean;
+  client_operation_id?: string;
 };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: NextRequest) {
   try {
@@ -153,10 +156,32 @@ export async function POST(request: NextRequest) {
       context_time,
       context_type,
       dismissed,
+      client_operation_id,
     } = body;
 
     if (!dismissed && !before_mood) {
       return NextResponse.json({ error: 'Missing before_mood' }, { status: 400 });
+    }
+
+    if (client_operation_id !== undefined && (typeof client_operation_id !== 'string' || !UUID_RE.test(client_operation_id))) {
+      return NextResponse.json({ error: 'client_operation_id must be a UUID' }, { status: 400 });
+    }
+
+    // A retry of an already-committed request (the original response was
+    // lost, e.g. a dropped connection, not an actual failure) must return
+    // the existing row as success, not attempt a second insert or run the
+    // close-old-sessions side effect a second time.
+    if (client_operation_id) {
+      const { data: existing, error: lookupError } = await supabase
+        .from('user_mood_checkins')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('client_operation_id', client_operation_id)
+        .maybeSingle();
+      if (lookupError) throw lookupError;
+      if (existing) {
+        return NextResponse.json({ checkin_id: existing.id, idempotentReplay: true });
+      }
     }
 
     // Before creating a new session, close any existing open ones as abandoned
@@ -182,6 +207,7 @@ export async function POST(request: NextRequest) {
     if (context_time) insertPayload.context_time = context_time;
     if (context_type) insertPayload.context_type = context_type;
     if (typeof dismissed === 'boolean') insertPayload.dismissed = dismissed;
+    if (client_operation_id) insertPayload.client_operation_id = client_operation_id;
 
     const { data, error } = await supabase
       .from('user_mood_checkins')
@@ -190,6 +216,21 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
+      // A concurrent retry (e.g. the foreground-resume and a manual Retry
+      // tap racing) can hit the unique constraint between the lookup above
+      // and this insert -- fetch and return the row the other request just
+      // committed instead of surfacing a false failure.
+      if (error.code === '23505' && client_operation_id) {
+        const { data: raced, error: racedError } = await supabase
+          .from('user_mood_checkins')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('client_operation_id', client_operation_id)
+          .maybeSingle();
+        if (!racedError && raced) {
+          return NextResponse.json({ checkin_id: raced.id, idempotentReplay: true });
+        }
+      }
       console.error('Error inserting mood checkin:', error);
       if (error.code === 'PGRST204' || error.code === '42703' || error.message?.includes('does not exist')) {
         return NextResponse.json({ error: 'Database schema is out of date. Please run migration 018.' }, { status: 503 });
