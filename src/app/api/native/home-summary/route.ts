@@ -3,6 +3,7 @@ import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 
 import { mapHeroAssetToTheme, resolveHomeHeroTheme, type HeroAssetRow, type HomeHeroTheme } from '@/config/festivalThemes';
 import { getApiUser } from '@/lib/api-auth';
+import { ensureAuthProfile } from '@/lib/auth-profile';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
 import { getTodayShloka } from '@/lib/shlokas';
@@ -595,6 +596,17 @@ export async function GET(request: NextRequest) {
     { data: null, error: null },
   );
   timings.record('profile', profileSection.durationMs, `Profile Fetch (${profileSection.status})`);
+
+  // Repair only a confirmed missing profile. This keeps already-shipped native
+  // clients recoverable after an old OAuth/auth-trigger failure without
+  // treating a database timeout as permission to create state.
+  if (
+    profileSection.status === 'ready'
+    && !profileSection.value.error
+    && !profileSection.value.data
+  ) {
+    await ensureAuthProfile(user);
+  }
 
   // A profile read enriches Home, but must not turn a valid authenticated
   // session into a blank screen. Existing defaults below intentionally cover

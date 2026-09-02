@@ -40,7 +40,7 @@ function profileUsername(user: User) {
 
 export async function ensureAuthProfile(
   user: User,
-  sessionSupabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  sessionSupabase?: Awaited<ReturnType<typeof createServerSupabaseClient>>,
 ): Promise<AuthProfileState> {
   const profile = {
     id: user.id,
@@ -53,6 +53,11 @@ export async function ensureAuthProfile(
 
   const canUseAdmin = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
   const supabase = canUseAdmin ? createAdminClient() : sessionSupabase;
+
+  if (!supabase) {
+    console.error('[auth-profile] profile repair is unavailable: no database client');
+    return null;
+  }
 
   const { data: existing, error: readError } = await supabase
     .from('profiles')
