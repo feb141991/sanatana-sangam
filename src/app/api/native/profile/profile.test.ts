@@ -24,7 +24,14 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
             return {
               eq: (col: string, val: string) => {
                 if (col === "id") updatedUserFilter = val;
-                return Promise.resolve({ error: null });
+                return {
+                  select: (_cols: string) => ({
+                    single: async () => ({
+                      data: { ...payload, updated_at: "2026-08-31T12:00:00.000Z" },
+                      error: null,
+                    }),
+                  }),
+                };
               },
             };
           },
@@ -69,6 +76,27 @@ describe("PATCH /api/native/profile - Complete Contract & Personalisation Suite"
       expect(updatedUserFilter).toBe("user-gender");
     },
   );
+
+  it("returns the persisted values and updatedAt for write-acknowledgment", async () => {
+    getApiUser.mockResolvedValue({
+      user: { id: "user-ack" },
+      error: null,
+      supabase: mockSupabase,
+    });
+    const res = await PATCH(new NextRequest("http://localhost:3000/api/native/profile", {
+      method: "PATCH",
+      body: JSON.stringify({ wants_shloka_reminders: false }),
+    }));
+
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.success).toBe(true);
+    expect(json.persisted).toEqual({ wants_shloka_reminders: false });
+    expect(json.updatedAt).toBe("2026-08-31T12:00:00.000Z");
+    // updated_at must never leak into `persisted` as if it were an
+    // editable settings field.
+    expect(json.persisted.updated_at).toBeUndefined();
+  });
 
   it.each(["male", "prefer_not", "unknown"])(
     "rejects non-canonical gender_context value %s",

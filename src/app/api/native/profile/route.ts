@@ -271,16 +271,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "No editable profile fields provided" }, { status: 400 });
     }
 
-    const { error } = await supabase
+    // Returns the persisted values plus updated_at (auto-maintained by the
+    // set_profiles_updated_at trigger) so a client-side desired-state cache
+    // can acknowledge exactly this write -- a later, unrelated GET is not
+    // sufficient proof a specific pending write landed unless its
+    // updated_at is at least this recent.
+    const { data, error } = await supabase
       .from("profiles")
       .update(updates)
-      .eq("id", user.id);
+      .eq("id", user.id)
+      .select(`${Object.keys(updates).join(", ")}, updated_at`)
+      .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    const { updated_at, ...persisted } = data as Record<string, unknown> & { updated_at: string };
+    return NextResponse.json({ success: true, persisted, updatedAt: updated_at });
   } catch (err: unknown) {
     console.error("[PATCH /api/native/profile] Server error:", err);
     const message = err instanceof Error ? err.message : "Server error";
