@@ -84,7 +84,7 @@ describe("POST /api/mood/checkin -- idempotency", () => {
     expect(retry.status).toBe(200);
     expect(retryJson.checkin_id).toBe(firstJson.checkin_id);
     expect(retryJson.idempotentReplay).toBe(true);
-    expect(insertCount).toBe(1, "The second POST must not create a second row");
+    expect(insertCount, "The second POST must not create a second row").toBe(1);
   });
 
   it("a concurrent race that hits the unique constraint still returns the existing row, not a 500", async () => {

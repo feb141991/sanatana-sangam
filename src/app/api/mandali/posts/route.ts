@@ -5,7 +5,15 @@ import { rejectLargeRequest, rateLimitByIp } from '@/lib/api-security';
 import { parseMandaliPostInput } from '@/lib/mandali-write-contract';
 import { createAdminClient } from '@/lib/supabase-admin';
 
-async function authenticate(request: NextRequest) {
+// Explicit return type is required here: without it, TS infers a widened
+// shape across these differently-keyed return-object literals where
+// `response` becomes optional on every branch (not a true discriminated
+// union), so `'response' in auth` narrowing downstream still types
+// `auth.response` as `NextResponse | undefined` instead of `NextResponse`.
+async function authenticate(request: NextRequest): Promise<
+  | { response: NextResponse }
+  | { admin: ReturnType<typeof createAdminClient>; user: NonNullable<Awaited<ReturnType<typeof getApiUser>>['user']> }
+> {
   const { user } = await getApiUser(request);
   if (!user) return { response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   const admin = createAdminClient();

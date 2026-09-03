@@ -276,18 +276,23 @@ export async function PATCH(req: NextRequest) {
     // can acknowledge exactly this write -- a later, unrelated GET is not
     // sufficient proof a specific pending write landed unless its
     // updated_at is at least this recent.
+    // Widened to `string` (not a template-literal type) so Supabase's typed
+    // client uses its generic select overload instead of trying to
+    // statically parse this runtime-built column list and failing with a
+    // ParserError.
+    const selectColumns: string = `${Object.keys(updates).join(", ")}, updated_at`;
     const { data, error } = await supabase
       .from("profiles")
       .update(updates)
       .eq("id", user.id)
-      .select(`${Object.keys(updates).join(", ")}, updated_at`)
+      .select(selectColumns)
       .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const { updated_at, ...persisted } = data as Record<string, unknown> & { updated_at: string };
+    const { updated_at, ...persisted } = data as unknown as Record<string, unknown> & { updated_at: string };
     return NextResponse.json({ success: true, persisted, updatedAt: updated_at });
   } catch (err: unknown) {
     console.error("[PATCH /api/native/profile] Server error:", err);
