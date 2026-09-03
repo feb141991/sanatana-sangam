@@ -1,3 +1,4 @@
+import { resolveNotificationCopy } from '@/lib/notification-templates';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';
@@ -92,8 +93,10 @@ export async function GET(request: Request) {
         if (completedUserIds.has(user.id)) continue;
         eligibleCount++;
 
-        const title = '🔔 Time for Japa';
-        const body = "Your daily Japa practice awaits. Keep your streak alive 🙏";
+        const { title, body } = await resolveNotificationCopy('japa', 'all', {
+          title: '🔔 Time for Japa',
+          body: "Your daily Japa practice awaits. Keep your streak alive 🙏",
+        });
 
         notificationsToInsert.push({
           user_id: user.id,

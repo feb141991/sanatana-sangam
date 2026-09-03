@@ -1,3 +1,4 @@
+import { resolveNotificationCopy } from '@/lib/notification-templates';
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { emitEvent } from "@/lib/monitoring/events";
@@ -97,7 +98,8 @@ export async function GET(request: Request) {
       }
 
       const tradition = (u.tradition ?? "hindu") as string;
-      const nudge     = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
+      const defaultNudge = TRADITION_NUDGE[tradition] ?? TRADITION_NUDGE.hindu;
+      const nudge = await resolveNotificationCopy('sandhya', tradition, defaultNudge);
       const dedupeKey = `nitya_sandhya:${u.id}:${localDateIso}`;
 
       scheduledRows.push({

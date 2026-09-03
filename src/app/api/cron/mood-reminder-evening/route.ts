@@ -1,3 +1,4 @@
+import { resolveNotificationCopy } from '@/lib/notification-templates';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendPushNotification } from '@/lib/push-server';

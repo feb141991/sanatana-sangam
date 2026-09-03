@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: "/admin/monitoring", label: "Operational Monitoring", icon: Bell },
   { href: "/admin/calendar-governance", label: "Calendar Governance", icon: Calendar },
   { href: "/admin/moderation", label: "Moderation", icon: Shield },
+  { href: "/admin/notifications", label: "Notification Studio", icon: Bell },
   { href: "/admin/broadcast", label: "Broadcast", icon: Send },
 ];
 
