@@ -1,3 +1,16 @@
+// This file is hand-curated/partial, not generated, and has drifted from
+// the live schema (confirmed 2026-09-03 against project `sanatan`,
+// mnbwodcswxoojndytngu): it's missing tables added by newer migrations,
+// and it references at least 3 tables that no longer exist under these
+// names in the live database — `cron_logs`, `nitya_karma_logs` (the live
+// table is `nitya_karma_log`, singular), and `user_custom_japa_mantras`.
+// Grep for those three names before trusting a query against them.
+//
+// `src/types/database.generated.ts` is the current, verified-against-the-
+// live-database source of truth (134 tables). Reconciling every import
+// site in this file onto the generated one is a separate, larger
+// migration, not done here — this note exists so the drift is visible
+// instead of silently trusted.
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
 export interface Database {

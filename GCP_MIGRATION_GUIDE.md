@@ -1,5 +1,19 @@
 # Google Cloud Platform (GCP Cloud Run) Setup & Migration Guide
 
+**Status as of 2026-09-03: not live, never successfully deployed.** Vercel
+is the sole production deployment (`.vercel/project.json`, the cron
+schedule in `vercel.json`). The `.github/workflows/deploy-gcp.yml`
+workflow described below has run automatically on every push to `main`
+since it was added and has failed at the very first step every single
+time (`gh run list --workflow=deploy-gcp.yml` — 10/10 checked failed in
+~10-13s): `google-github-actions/auth failed with: the GitHub Action
+workflow must specify exactly one of "workload_identity_provider" or
+"credentials_json"` — the `GCP_SA_KEY`/`GCP_PROJECT_ID` repository
+secrets referenced in Section 5 below were never actually added. This is
+a prepared-but-abandoned/never-completed migration attempt, not a second
+active environment. Treat everything below as a setup guide to follow if
+this migration is picked back up, not a description of current infra.
+
 This repository is fully configured for automated deployment to **Google Cloud Run** using Next.js `standalone` mode and multi-stage Docker builds.
 
 ---

@@ -1,3 +1,11 @@
+-- STALE SNAPSHOT — dated 2026-07-24, predates several August/September 2026
+-- migrations (e.g. client_error_events, notification_templates, the mood/
+-- mandali idempotency keys). Do not treat this as the current schema. The
+-- live schema has 134 tables as of 2026-09-03; for a current, generated
+-- reference see src/types/database.generated.ts. Regenerate this dump with
+-- `supabase db dump --schema public` against the live project if a fresh
+-- SQL-form snapshot is needed.
+--
 -- Name: advance_enrollment(uuid, uuid); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
