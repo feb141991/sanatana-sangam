@@ -297,7 +297,7 @@ is committed as data, not asserted as prose:
 [`docs/audits/observance-catalogue/2026.json`](audits/observance-catalogue/2026.json)
 / [`.md`](audits/observance-catalogue/2026.md). Re-run with
 `npx tsx scripts/audit-observance-catalogue.ts 2026`; the script itself
-asserts its four-bucket count sums to the live DB total and throws if not,
+asserts its five-bucket count sums to the live DB total and throws if not,
 so this can't silently drift out of sync the way the hand-transcribed
 version did.
 
@@ -305,8 +305,9 @@ version did.
 |---|---|---|
 | `resolved` | 47 | Engine produces a 2026 date. **This means "engine resolved," not "verified."** No broad accuracy conclusion should be drawn from this bucket until real-world source validation occurs — none of the 47 have been externally checked beyond the original 10 migration-touched slugs. |
 | `deferred` | 48 | `launch_status: 'deferred'`. Correctly show no date, pending real review — governance-correct, not a defect. |
-| `missing_rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no `rules.json` entry, and confirmed absent from `series.json` too (checked directly, not assumed). All 7 were created 2026-06-24 09:56-09:58 UTC — the exact window of the (now-deleted) `corrected_2026_festival_migration` batch. `gudi-padwa-ugadi` is also a clear duplicate of two separately-tracked slugs that already exist (`gudi-padwa`, `ugadi`, both `deferred`). This reads as migration-era catalogue pollution (orphaned/duplicate `observance_definitions` rows), not a separate unlocated Jain/Buddhist ruleset — the earlier version of this section guessed the latter without checking; that guess was wrong. Nothing deleted; flagged for a scoped cleanup task with explicit approval.
-| `engine_anomaly` | 1 | `saphala-ekadashi` — `included`, zero 2026 output. See diagnosis below; the script itself only classifies, it does not conclude defect/non-defect (see the row's own `note` field in the receipt). |
+| `missing_rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no `rules.json` entry, and confirmed absent from `series.json` too. All were created during the bad migration's time window. This is correlation, not proof of pollution: FK/reference analysis is required before any cleanup. `gudi-padwa-ugadi` is a separately-supported duplicate candidate because `gudi-padwa` and `ugadi` already exist as tracked slugs. |
+| `expected_zero` | 1 | `saphala-ekadashi` — no 2026 date is expected for a documented calendar-boundary reason. The generated receipt links to the committed evidence rather than mislabelling this as an engine anomaly. |
+| `engine_anomaly` | 0 | An included, rule-backed definition with no target-year output and no committed explanation. This status remains fail-closed for future discoveries. |
 
 ### `saphala-ekadashi` diagnosis — corrected
 

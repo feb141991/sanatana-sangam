@@ -39,7 +39,20 @@ type DbDefinition = {
   created_at: string;
 };
 
-type PrimaryStatus = 'resolved' | 'deferred' | 'missing_rule' | 'engine_anomaly';
+type PrimaryStatus = 'resolved' | 'deferred' | 'missing_rule' | 'expected_zero' | 'engine_anomaly';
+
+/**
+ * A zero-output year is not inherently an engine anomaly. Entries belong here
+ * only when a committed, reviewed source record explains the absence.
+ */
+const EXPECTED_ZERO_OUTPUT: Record<number, Map<string, string>> = {
+  2026: new Map([
+    [
+      'saphala-ekadashi',
+      'Expected zero for 2026: Pausha Krishna Paksha straddles the Gregorian boundary twice in 2027; the documented canonical 2027 occurrence is 2027-12-23. See docs/CALENDAR_ENGINE_ASSESSMENT.md (2026-08-11) and scripts/sweep-adhika-masa-collisions.ts.',
+    ],
+  ]),
+};
 
 interface CatalogueRow {
   slug: string;
@@ -91,10 +104,9 @@ async function main() {
   // Migration-era catalogue pollution check for the missing_rule bucket:
   // the corrected_2026_festival_migration batch (bad occurrence data,
   // deleted from production 2026-09-04) ran at 2026-06-24 09:58:33 UTC.
-  // A missing_rule definition created within the same window is flagged as
-  // a likely orphan/duplicate from that event rather than a genuinely
-  // separate, not-yet-located ruleset -- confirmed by direct timestamp
-  // comparison, not assumed.
+  // A missing_rule definition created within this window is migration-
+  // correlated evidence only. It is not proof that the row is orphaned or
+  // safe to delete; foreign-key/reference analysis remains required.
   const MIGRATION_WINDOW_START = new Date('2026-06-24T09:00:00Z').getTime();
   const MIGRATION_WINDOW_END = new Date('2026-06-24T10:30:00Z').getTime();
 
@@ -103,6 +115,7 @@ async function main() {
     const dates = resolvedDatesBySlug.get(def.slug) ?? [];
     const hasRule = ruleSlugs.has(def.slug);
     const launchStatuses = launchStatusBySlug.get(def.slug);
+    const expectedZeroNote = EXPECTED_ZERO_OUTPUT[YEAR]?.get(def.slug);
 
     let primary_status: PrimaryStatus;
     let note: string | null = null;
@@ -113,8 +126,11 @@ async function main() {
       primary_status = 'missing_rule';
       const createdAtMs = new Date(def.created_at).getTime();
       if (createdAtMs >= MIGRATION_WINDOW_START && createdAtMs <= MIGRATION_WINDOW_END) {
-        note = 'created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset.';
+        note = 'created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove.';
       }
+    } else if (expectedZeroNote) {
+      primary_status = 'expected_zero';
+      note = expectedZeroNote;
     } else if (launchStatuses?.has('deferred') && launchStatuses.size === 1) {
       primary_status = 'deferred';
     } else {
@@ -135,10 +151,10 @@ async function main() {
     });
   }
 
-  const counts: Record<PrimaryStatus, number> = { resolved: 0, deferred: 0, missing_rule: 0, engine_anomaly: 0 };
+  const counts: Record<PrimaryStatus, number> = { resolved: 0, deferred: 0, missing_rule: 0, expected_zero: 0, engine_anomaly: 0 };
   for (const r of rows) counts[r.primary_status]++;
   const total = rows.length;
-  const sumCheck = counts.resolved + counts.deferred + counts.missing_rule + counts.engine_anomaly;
+  const sumCheck = counts.resolved + counts.deferred + counts.missing_rule + counts.expected_zero + counts.engine_anomaly;
 
   const document = {
     generated_at: new Date().toISOString(),

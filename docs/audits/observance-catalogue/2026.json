@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T13:54:25.676Z",
+  "generated_at": "2026-09-04T15:45:41.171Z",
   "target_year": 2026,
   "generator": "scripts/audit-observance-catalogue.ts",
   "db_active_definition_count": 103,
@@ -18,7 +18,8 @@
     "resolved": 47,
     "deferred": 48,
     "missing_rule": 7,
-    "engine_anomaly": 1
+    "expected_zero": 1,
+    "engine_anomaly": 0
   },
   "sum_check_passes": true,
   "rows": [
@@ -221,7 +222,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "das-lakshana-dharma-begins",
@@ -391,7 +392,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "gupt-navratri-ashadha-begins",
@@ -909,7 +910,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "paryushana-parva-begins",
@@ -933,7 +934,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "pavarana-end-of-vassa",
@@ -1066,7 +1067,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "samvatsari-paryushana-ends",
@@ -1090,7 +1091,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "sangha-day-loy-krathong",
@@ -1120,10 +1121,10 @@
       "kind": "vrat",
       "tradition": "hindu",
       "created_at": "2026-08-12T12:23:07.454273+00:00",
-      "primary_status": "engine_anomaly",
+      "primary_status": "expected_zero",
       "launch_status": "included",
       "resolved_dates": [],
-      "note": "Has a rules.json entry, launch_status is not purely deferred, but produced zero occurrences for the target year. Requires the same bounded multi-year diagnosis saphala-ekadashi got before concluding anything -- do not assume defect or non-defect from this row alone."
+      "note": "Expected zero for 2026: Pausha Krishna Paksha straddles the Gregorian boundary twice in 2027; the documented canonical 2027 occurrence is 2027-12-23. See docs/CALENDAR_ENGINE_ASSESSMENT.md (2026-08-11) and scripts/sweep-adhika-masa-collisions.ts."
     },
     {
       "slug": "shani-jayanti",
@@ -1226,7 +1227,7 @@
       "primary_status": "missing_rule",
       "launch_status": null,
       "resolved_dates": [],
-      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove."
     },
     {
       "slug": "vassa-begins-rains-retreat",
