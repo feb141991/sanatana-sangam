@@ -376,8 +376,30 @@ claim) and added `has_ratification_note_requiring_human_read` so every row
 with a note is flagged for a human to actually read it, rather than the
 script pretending to have understood it.
 
-Summary for 2026 (47 `resolved` slugs): `no_current_year_source` 21,
+**Second external review caught three more contract defects, all fixed
+before proceeding:**
+1. `future_year_disputed` was emitted for both "the target year itself is
+   disputed" and "some other year is disputed" — collapsing the one case
+   that matters most (the report's own target year being structurally
+   disputed) into the same bucket as an unrelated future dispute. Split
+   into a separate `target_year_disputed` flag.
+2. A variant-bearing slug (Krishna Janmashtami's smarta_nishita +
+   gaudiya_iskcon rows) produced duplicate copies of the same flag type —
+   the JSON summary deduplicated by slug, but the per-slug evidence receipt
+   did not. Rewritten so every flag type appears **at most once per slug**,
+   carrying an `evidence` array naming every contributing rule row instead
+   of repeating the flag.
+3. `no_current_year_source` claimed something the data model can't support
+   — it only checked whether `citation` was non-empty, not whether that
+   citation's text actually supports the target year. `citation` is free
+   text and can name a different year entirely (maha-shivaratri's own
+   citation describes a 2027 occurrence, while this report concerns 2026).
+   Renamed to `no_structured_citation` (paired with a new, equally scoped
+   `has_citation`) — neither is a year-specific claim.
+
+Corrected summary for 2026 (47 `resolved` slugs): `target_year_disputed` 0,
 `future_year_disputed` 3, `no_structured_dispute_for_target_year` 11,
+`has_citation` 11, `no_structured_citation` 36,
 `has_ratification_note_requiring_human_read` 26,
 `profile_scope_unverified` 47 (applies to all, by design — this audit run
 only computed against the Ujjain reference point).

@@ -14,21 +14,41 @@
  * `ratification_note` is carried through VERBATIM as an evidence field for
  * human review, never interpreted.
  *
- * Every flag is scoped to an explicit (source, year, profile) triple, not a
- * global verdict. `no_structured_dispute_for_target_year` is deliberately
- * NOT named "confirmed" -- disputed_years being empty only means no
- * specific year is flagged as astronomically disputed; it says nothing
- * about unresolved methodology/profile-convention questions ("PENDING
- * COUNCIL RATIFICATION" can and does appear alongside empty disputed_years
- * -- confirmed on maha-shivaratri, a real false positive an earlier version
- * of this script produced by conflating the two). A row with a
- * ratification_note always ALSO gets
+ * Every flag is scoped to an explicit (year, profile) pair, not a global
+ * verdict, and appears AT MOST ONCE PER SLUG -- a variant-bearing slug
+ * (Krishna Janmashtami: smarta_nishita + gaudiya_iskcon rows) produces one
+ * flag of each applicable type, carrying an `evidence` array naming every
+ * contributing rule row, not one duplicated flag per row (an earlier
+ * version of this script emitted duplicates; fixed on review).
+ *
+ * `target_year_disputed` vs `future_year_disputed` are kept distinct: the
+ * exact year this report concerns being in `disputed_years` is a different,
+ * more load-bearing fact than some OTHER year being disputed (an earlier
+ * version collapsed both into one `future_year_disputed` flag, hiding the
+ * case that matters most).
+ *
+ * `no_structured_dispute_for_target_year` is deliberately NOT named
+ * "confirmed" -- disputed_years being empty only means no specific year is
+ * flagged as astronomically disputed; it says nothing about unresolved
+ * methodology/profile-convention questions ("PENDING COUNCIL RATIFICATION"
+ * can and does appear alongside empty disputed_years -- confirmed on
+ * maha-shivaratri, a real false positive an earlier version of this script
+ * produced by conflating the two).
+ *
+ * `has_citation`/`no_structured_citation` (renamed from the earlier,
+ * overclaiming `no_current_year_source`) say only whether a `citation`
+ * field is present -- `citation` is free text and can name a year other
+ * than the target one (maha-shivaratri's own citation text describes a
+ * 2027 occurrence while this report concerns 2026), so neither flag is a
+ * year-specific claim about what the citation supports.
+ *
+ * A slug with a ratification_note always ALSO gets
  * `has_ratification_note_requiring_human_read`, and that note is carried
- * verbatim -- read it before treating any slug as settled. All flags carry
- * `computed_location_profile` so it's clear this audit run's evidence is
- * scoped to one reference point (Ujjain, the profile
- * calculateOccurrencesWithEvaluator uses by default), not validated across
- * every calendar_profile.
+ * verbatim -- read it before treating any slug as settled. All
+ * dispute/no-dispute flags carry `computed_location_profile` so it's clear
+ * this audit run's evidence is scoped to one reference point (Ujjain, the
+ * profile calculateOccurrencesWithEvaluator uses by default), not
+ * validated across every calendar_profile.
  *
  * Run: npx tsx scripts/classify-ratification-notes.ts [year]
  */
@@ -51,7 +71,35 @@ type RuleRow = {
   launch_status?: string;
 };
 
+interface DisputeEvidence {
+  sampradaya_or_variant: string | null;
+  citation: string | null;
+  disputed_years: number[];
+}
+
+interface NoteEvidence {
+  sampradaya_or_variant: string | null;
+  ratification_note_verbatim: string;
+}
+
+interface SourceEvidence {
+  sampradaya_or_variant: string | null;
+  citation: string;
+}
+
+// One flag PER TYPE per slug (not per rule row) -- a slug with two variant
+// rows (e.g. Krishna Janmashtami's smarta_nishita/gaudiya_iskcon) must not
+// produce two copies of the same flag. Each flag instead carries an
+// `evidence` array naming every contributing variant/row.
 type Flag =
+  // The target year ITSELF is in a rule row's disputed_years -- distinct
+  // from a future year being disputed. Emitting this via the same
+  // `future_year_disputed` type (an earlier version of this script did)
+  // hides the one case that matters most: the year this report is actually
+  // about is structurally disputed, not just some other year.
+  | { type: 'target_year_disputed'; year: number; evidence: DisputeEvidence[] }
+  // Some OTHER year (not the target) is in disputed_years for this slug.
+  | { type: 'future_year_disputed'; evidence: DisputeEvidence[] }
   // NOTE: this is weaker than it sounds. disputed_years is the ONLY
   // machine-readable per-year signal rules.json carries. Its absence means
   // "no specific year is flagged as astronomically disputed" -- it does
@@ -62,13 +110,20 @@ type Flag =
   // disputed_years + a citation, yet its own ratification_note reads
   // "PENDING COUNCIL RATIFICATION -- not fully settled." An earlier version
   // of this flag was named `current_year_confirmed` and over-claimed
-  // exactly this. Renamed, and its own type name is the caveat: read
-  // ratification_note_verbatim before treating any slug as settled.
-  | { type: 'no_structured_dispute_for_target_year'; source: string; year: number; profile: string }
-  | { type: 'future_year_disputed'; source: string | null; disputed_years: number[] }
+  // exactly this. Read ratification_note_verbatim before treating any slug
+  // as settled.
+  | { type: 'no_structured_dispute_for_target_year'; year: number; profile: string; evidence: DisputeEvidence[] }
   | { type: 'profile_scope_unverified'; profile: string }
-  | { type: 'no_current_year_source' }
-  | { type: 'has_ratification_note_requiring_human_read' };
+  // Renamed from `no_current_year_source`. The old name implied a
+  // year-specific claim ("no source FOR this year") the data model cannot
+  // support: `citation` is free text and can name a year other than the
+  // target (e.g. maha-shivaratri's own citation text describes a 2027
+  // occurrence). This flag means only "no rule row for this slug carries a
+  // non-empty citation field" -- nothing about which year any citation, if
+  // present, actually supports.
+  | { type: 'no_structured_citation' }
+  | { type: 'has_citation'; evidence: SourceEvidence[] }
+  | { type: 'has_ratification_note_requiring_human_read'; evidence: NoteEvidence[] };
 
 interface RuleRowEvidence {
   sampradaya_or_variant: string | null;
@@ -121,27 +176,52 @@ async function main() {
 
     const flags: Flag[] = [];
 
+    // Aggregate contributing rows PER FLAG TYPE first, then emit at most one
+    // flag of each type -- a variant-bearing slug (Krishna Janmashtami: two
+    // rows) must produce one flag with two evidence entries, not two flags.
+    const targetYearDisputedEvidence: DisputeEvidence[] = [];
+    const futureYearDisputedEvidence: DisputeEvidence[] = [];
+    const noDisputeEvidence: DisputeEvidence[] = [];
+    const citationEvidence: SourceEvidence[] = [];
+    const noteEvidence: NoteEvidence[] = [];
+
     for (const row of evidence) {
+      const disputeEvidence: DisputeEvidence = {
+        sampradaya_or_variant: row.sampradaya_or_variant,
+        citation: row.citation,
+        disputed_years: row.disputed_years,
+      };
       if (row.target_year_in_disputed_years) {
-        // Target year itself is structurally disputed -- this is the
-        // opposite of "confirmed," surfaced distinctly from the
-        // future-year case.
-        flags.push({ type: 'future_year_disputed', source: row.citation, disputed_years: row.disputed_years });
+        targetYearDisputedEvidence.push(disputeEvidence);
       } else if (row.disputed_years.length > 0) {
-        // Some OTHER year is disputed; target year is not on that list.
-        flags.push({ type: 'future_year_disputed', source: row.citation, disputed_years: row.disputed_years });
+        futureYearDisputedEvidence.push(disputeEvidence);
+      } else if (row.citation) {
+        noDisputeEvidence.push(disputeEvidence);
       }
-      if (row.citation && !row.target_year_in_disputed_years) {
-        flags.push({ type: 'no_structured_dispute_for_target_year', source: row.citation, year: YEAR, profile: COMPUTED_LOCATION_PROFILE });
+      if (row.citation) {
+        citationEvidence.push({ sampradaya_or_variant: row.sampradaya_or_variant, citation: row.citation });
       }
-      if (row.has_ratification_note) {
-        flags.push({ type: 'has_ratification_note_requiring_human_read' });
+      if (row.ratification_note_verbatim) {
+        noteEvidence.push({ sampradaya_or_variant: row.sampradaya_or_variant, ratification_note_verbatim: row.ratification_note_verbatim });
       }
     }
 
-    const anySource = evidence.some(e => e.citation || e.has_ratification_note);
-    if (!anySource) {
-      flags.push({ type: 'no_current_year_source' });
+    if (targetYearDisputedEvidence.length > 0) {
+      flags.push({ type: 'target_year_disputed', year: YEAR, evidence: targetYearDisputedEvidence });
+    }
+    if (futureYearDisputedEvidence.length > 0) {
+      flags.push({ type: 'future_year_disputed', evidence: futureYearDisputedEvidence });
+    }
+    if (noDisputeEvidence.length > 0) {
+      flags.push({ type: 'no_structured_dispute_for_target_year', year: YEAR, profile: COMPUTED_LOCATION_PROFILE, evidence: noDisputeEvidence });
+    }
+    if (citationEvidence.length > 0) {
+      flags.push({ type: 'has_citation', evidence: citationEvidence });
+    } else {
+      flags.push({ type: 'no_structured_citation' });
+    }
+    if (noteEvidence.length > 0) {
+      flags.push({ type: 'has_ratification_note_requiring_human_read', evidence: noteEvidence });
     }
 
     // Scoped caveat applied uniformly: this audit run only computed against
@@ -158,10 +238,8 @@ async function main() {
     });
   }
 
-  const withNoSource = classifications.filter(c => c.flags.some(f => f.type === 'no_current_year_source'));
-  const withFutureDisputed = classifications.filter(c => c.flags.some(f => f.type === 'future_year_disputed'));
-  const withNoStructuredDispute = classifications.filter(c => c.flags.some(f => f.type === 'no_structured_dispute_for_target_year'));
-  const withRatificationNote = classifications.filter(c => c.flags.some(f => f.type === 'has_ratification_note_requiring_human_read'));
+  const countWithFlag = (type: Flag['type']) =>
+    classifications.filter(c => c.flags.some(f => f.type === type)).length;
 
   const document = {
     generated_at: new Date().toISOString(),
@@ -170,10 +248,12 @@ async function main() {
     input_catalogue: `docs/audits/observance-catalogue/${YEAR}.json`,
     resolved_slug_count: resolvedSlugs.size,
     summary: {
-      no_current_year_source: withNoSource.length,
-      future_year_disputed: withFutureDisputed.length,
-      no_structured_dispute_for_target_year: withNoStructuredDispute.length,
-      has_ratification_note_requiring_human_read: withRatificationNote.length,
+      target_year_disputed: countWithFlag('target_year_disputed'),
+      future_year_disputed: countWithFlag('future_year_disputed'),
+      no_structured_dispute_for_target_year: countWithFlag('no_structured_dispute_for_target_year'),
+      has_citation: countWithFlag('has_citation'),
+      no_structured_citation: countWithFlag('no_structured_citation'),
+      has_ratification_note_requiring_human_read: countWithFlag('has_ratification_note_requiring_human_read'),
       profile_scope_unverified: classifications.length, // applies to all, by design
     },
     classifications,
@@ -203,7 +283,7 @@ function markdown(doc: {
   lines.push('');
   lines.push(`Generated: ${doc.generated_at} by \`${doc.generator}\`. Scope: the ${doc.resolved_slug_count} slugs classified \`resolved\` in the ${doc.target_year} catalogue audit.`);
   lines.push('');
-  lines.push('**Every flag below is evidence, not a verdict.** `no_structured_dispute_for_target_year` means a named source exists and `disputed_years` does not list this year -- it does NOT mean confirmed or settled: a rule can be disputed on undeclared-per-year grounds (methodology, profile convention, "PENDING COUNCIL RATIFICATION") that `disputed_years` never captures. Read `ratification_note_verbatim` on any row flagged `has_ratification_note_requiring_human_read` before treating it as anything more than "engine resolved."');
+  lines.push('**Every flag below is evidence, not a verdict, and appears at most once per slug** (with every contributing variant/rule row listed in its `evidence` array, not duplicated as separate flags). `target_year_disputed` means this exact year is in `disputed_years` for at least one rule row. `no_structured_dispute_for_target_year` means `disputed_years` does not list this year -- it does NOT mean confirmed or settled: a rule can be disputed on undeclared-per-year grounds (methodology, profile convention, "PENDING COUNCIL RATIFICATION") that `disputed_years` never captures. `has_citation`/`no_structured_citation` say only whether a `citation` field is present -- `citation` is free text and can name a year other than the target one (confirmed on maha-shivaratri, whose own citation text describes a 2027 occurrence), so neither flag is a year-specific claim. Read `ratification_note_verbatim` on any slug flagged `has_ratification_note_requiring_human_read` before treating it as anything more than "engine resolved."');
   lines.push('');
   lines.push('| Flag | Count |');
   lines.push('|---|---|');

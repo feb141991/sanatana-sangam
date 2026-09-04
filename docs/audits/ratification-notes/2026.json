@@ -1,13 +1,15 @@
 {
-  "generated_at": "2026-09-04T16:10:11.835Z",
+  "generated_at": "2026-09-04T17:38:39.885Z",
   "target_year": 2026,
   "generator": "scripts/classify-ratification-notes.ts",
   "input_catalogue": "docs/audits/observance-catalogue/2026.json",
   "resolved_slug_count": 47,
   "summary": {
-    "no_current_year_source": 21,
+    "target_year_disputed": 0,
     "future_year_disputed": 3,
     "no_structured_dispute_for_target_year": 11,
+    "has_citation": 11,
+    "no_structured_citation": 36,
     "has_ratification_note_requiring_human_read": 26,
     "profile_scope_unverified": 47
   },
@@ -29,12 +31,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.65 -- Aja Ekadasi listed at 2026-09-07"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -58,7 +81,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -82,7 +105,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -107,12 +130,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.34 -- Apara Ekadasi listed at 2026-05-13"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -136,7 +180,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D37 fix, 2026-08-17: was solar_fixed with a hand-maintained Gregorian date (solar_fixed 4/14), a stand-in for a real solar-transit computation that drifts by precession over centuries. Migrated to solar_sankranti (target rashi: Mesha (Aries)), which computes the actual sun-transit instant via findSankrantisBetween and takes its IST civil date. Verified byte-identical to the prior hardcoded date for 2024-2035 except where the prior hardcoded value was itself already known-stale for a shift year (see docs/CALENDAR_ENGINE_ASSESSMENT.md D37)."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -160,7 +213,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -184,7 +237,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -208,7 +261,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -232,7 +285,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -256,7 +309,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -281,12 +334,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55), p.81 (daily) -- Dipavali listed at 2026-11-08"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. D36 follow-up (2026-08-18): corrected_lunar_tithi_index now set explicitly to 30 (Amavasya) instead of relying on the unset-field fallback to the raw lunar_tithi_index (29, Chaturdashi-at-sunrise proxy). This is a clarity fix, not a behavior fix -- diwali is fully covered by materialize.ts's EVALUATOR_RULES (tithi 15 krishna-paksha, pradosha-touches) on the production calculateObservancesForYear path, which re-evaluates the real condition across a +/-35-day window seeded from (not dictated by) the baseline masa-engine date, so the baseline's tithi index was already never the final answer. Verified: diwali 2026 (11-08) and 2027 (10-29) unchanged after this edit."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -301,7 +375,7 @@
       "rule_rows": [],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -325,7 +399,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -349,7 +423,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Chaturthi begins ~07:00-07:30 IST on 2026-09-14, absent at that day's sunrise). Corrected engine independently computes 2026-09-14, matching Rashtriya Panchang 1948 SE entry #41 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -373,7 +456,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -397,7 +480,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Harh 2), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -421,7 +513,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D35 fix: nanakshahi_month Magh, nanakshahi_day 2 per SGPC Nanakshahi-558 sidebar Gurpurab entry (02 mwG). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -445,7 +546,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -469,7 +570,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Council ratified 2026-08-10. Ashadha Purnima. CONFIRMED and reproduced for all three years: 2026-07-29, 2027-07-18, 2028-07-06. The 2028 ruling independently confirms the Ashadha correction -- had the month still been Shravana, 2028 would have fallen in August."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -496,13 +606,27 @@
       "flags": [
         {
           "type": "future_year_disputed",
-          "source": null,
-          "disputed_years": [
-            2027
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": null,
+              "disputed_years": [
+                2027
+              ]
+            }
           ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Magha/Phalguna Purnima begins ~06:00-09:00 IST on 2027-02-20, absent at that day's sunrise). Corrected engine independently computes 2027-02-20, matching the SGPC Nanakshahi Samvat 558 citation (08 Phagun) exactly. See D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -526,7 +650,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D35 fix, 2026-08-17: nanakshahi_month/day was wrong (Maghar 10), not matching any real SGPC Nanakshahi-558 sidebar entry for this event. Re-verified directly against the checksummed source PDF (SHA-256 ad9ff9ad...) -- all 5 regional_calendar Sikh rules were checked, all 5 had wrong values (this repo never sourced them against the actual document; likely placeholder/guessed data). See docs/sources/sgpc-nanakshahi-558.manifest.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -550,7 +683,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. Rule targets tithi 15 (Phalguna Purnima = Holika Dahan night). Corrected engine independently computes 2027-03-22, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #85, 'Holikadahana') exactly -- NOT the separately-listed 'Holi' color-day entry (#86, 2027-03-23, a different tithi). Whether this rule's user-facing date should represent Holika Dahan or the following Rangwali Holi day is an open content question, not settled by this citation. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -574,7 +716,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -598,7 +740,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -623,12 +765,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.57 -- Kamika Ekadasi listed at 2026-08-09"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -653,12 +816,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #54), p.79 (daily) -- Karaka Chaturthi listed at 2026-10-29"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only. 2028 RESOLVED 2026-08-17 (founder ratification, D39-adjacent): the prior council ruling of 6 Oct was reopened after direct tithi-at-moonrise verification. Chaturthi begins ~03:30-04:30 IST on 7 Oct 2028 (elongation-based computation), a full ~9 hours after 6 Oct's moonrise (~19:35 IST, still Tritiya) and well before 7 Oct's own moonrise (~20:19 IST, Chaturthi present) -- no boundary ambiguity either way. Drik Panchang's own published muhurat page independently corroborates almost exactly: Chaturthi begins 03:35 AM 7 Oct, moonrise 08:06 PM (Tier 5 QA signal only per source-governance.md, not a citation, but strong corroboration that three independent computations -- our raw engine, our real moonrise evaluator, and Drik -- all converge on 7 Oct with nothing computing 6 Oct). disputed_years cleared."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -692,29 +876,54 @@
       ],
       "flags": [
         {
-          "type": "no_structured_dispute_for_target_year",
-          "source": "Dharmasindhu / Nirnayasindhu (Smarta Nishita Vyapti)",
-          "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
-        },
-        {
-          "type": "has_ratification_note_requiring_human_read"
-        },
-        {
           "type": "future_year_disputed",
-          "source": "Hari-bhakti-vilasa (Gaudiya / ISKCON Rohini-Udaya Vrata)",
-          "disputed_years": [
-            2027
+          "evidence": [
+            {
+              "sampradaya_or_variant": "gaudiya_iskcon",
+              "citation": "Hari-bhakti-vilasa (Gaudiya / ISKCON Rohini-Udaya Vrata)",
+              "disputed_years": [
+                2027
+              ]
+            }
           ]
         },
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Hari-bhakti-vilasa (Gaudiya / ISKCON Rohini-Udaya Vrata)",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": "smarta_nishita",
+              "citation": "Dharmasindhu / Nirnayasindhu (Smarta Nishita Vyapti)",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": "smarta_nishita",
+              "citation": "Dharmasindhu / Nirnayasindhu (Smarta Nishita Vyapti)"
+            },
+            {
+              "sampradaya_or_variant": "gaudiya_iskcon",
+              "citation": "Hari-bhakti-vilasa (Gaudiya / ISKCON Rohini-Udaya Vrata)"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": "smarta_nishita",
+              "ratification_note_verbatim": "RESOLVED 2026-08-17. Council ruled 2027-08-24 (Smarta); the raw sunrise-sampled engine gave 08-25 and Drik Panchang agreed with the raw engine, not the ruling -- exactly the sunrise-vs-nishitha sampling gap this rule's own EVALUATOR_RULES condition (tithi_presence tithi:8, period:'nishita', mode:'touches') exists to fix. Directly verified with USE_CONDITION_EVALUATOR's real logic (bypassing the disputed-year publish gate to let it run): the nishitha-touches condition qualifies exactly 2027-08-24, matching the council ruling precisely. 2027 removed from disputed_years. 2026 (09-04) remains council-confirmed and reproduces. The Vaishnava variant's own sunrise+rohini condition has NOT been separately re-verified and remains disputed for 2027 -- see that row."
+            },
+            {
+              "sampradaya_or_variant": "gaudiya_iskcon",
+              "ratification_note_verbatim": "DISPUTED, not proven wrong. Council ruled 2027-08-24 (Smarta); engine and Drik Panchang both give 08-25. A tithi beginning on the 24th does not by itself make the 24th the ritual date -- nishitha ownership has to be evaluated, not inferred. 2026 (09-04) is council-confirmed and reproduces. Note the Vaishnava variant remains unresolved even under the evaluator. RE-VERIFIED 2026-08-18: directly ran this variant's own real evaluator condition (tithi 8 krishna-paksha AT sunrise, AND rohini nakshatra TOUCHES sunrise -- materialize.ts EVALUATOR_RULES 'vaishnava' variant) day-by-day across 2027-08-20 through 2027-08-28. Confirmed: Ashtami-at-sunrise occurs only on 08-25; Rohini does not touch sunrise until 08-26. The two conditions never coincide on the same day anywhere in that window -- this is not a sampling artifact like the Smarta row's nishitha gap was, it is the AND-condition as coded genuinely having zero qualifying days for 2027. Unlike Smarta (D39), there is no hidden fix the evaluator was already computing correctly; either the condition needs OR/nearest-day tie-breaking logic (which day 'wins' when tithi and nakshatra don't align, itself a real dharma-sastra question, not an engineering one) or 2027 genuinely has no clean Gaudiya date under this citation. disputed_years correctly left as-is -- confirmed disputed, not stale. CLOSED 2026-08-18 (founder decision): engineering has now directly verified there is nothing further to find here without a real dharma-sastra ruling on the tie-breaking question above. No further engineering action pending; revisit only if a new source or council ruling arrives."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -738,7 +947,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -763,12 +972,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.8 (index #81), p.112-113 (daily) -- Maha Shivaratri (mainstream/S.India reading) listed at 2027-03-06"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but this rule declares amanta, aligning with the 7 of 13 profiles that declare their OWN convention as amanta (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) -- while the 2 purnimanta-declaring profiles (north_indian_purnimanta, nepali_bikram) are in tension with this amanta setting. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -792,7 +1022,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. CONFIRMED for both 2026 and 2027: corrected engine independently computes 2026-03-31 and 2027-04-19, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entries #4 and #96) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -816,7 +1055,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "D37 fix, 2026-08-17: was solar_fixed with a hand-maintained Gregorian date (solar_fixed 1/14), a stand-in for a real solar-transit computation that drifts by precession over centuries. Migrated to solar_sankranti (target rashi: Makara (Capricorn)), which computes the actual sun-transit instant via findSankrantisBetween and takes its IST civil date. Verified byte-identical to the prior hardcoded date for 2024-2035 except where the prior hardcoded value was itself already known-stale for a shift year (see docs/CALENDAR_ENGINE_ASSESSMENT.md D37)."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -841,12 +1089,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.7 (index #55) — 'Naraka Chaturdasi (Purvarunodaya)' listed at 2026-11-08"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Council ratified 2026-08-23 by Prince Sharma (founder/product owner). Naraka Chaturdashi is assigned to the local civil date on which Krishna Chaturdashi prevails throughout the full Purvarunodaya/Arunodaya window, modelled as local sunrise minus 96 minutes through sunrise. Rashtriya Panchang Saka 1948 Index #55 lists 'Naraka Chaturdasi (Purvarunodaya)' at 2026-11-08 on the Ujjain/India reference basis; the evaluator reproduces that date. Location-qualified results may differ: under this ratified rule Bedford resolves to 2026-11-07. Month system is Kartika/purnimanta, corresponding to Ashwin/amanta for Krishna paksha under the documented conversion law. This approval covers the day-assignment rule; it does not make Ujjain a silent fallback for local users."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -870,7 +1139,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "RESOLVED 2026-08-18 by Prince Sharma (founder/Council ratification, in chat: 'I, Prince Sharma, as council approve it, go ahead'). The span's tithi-at-sunrise computation for tithi 10 gives 2026-10-21, independently reproduced by a raw elongation-based sunrise scan bypassing all handler code, and matches RP Saka 1948 Index #51 ('Vijaya Dasami, Bengal & Kerala') exactly. RP's own Index #50 bundles 'Mahanavami' with 'Vijaya Dasami (Dussehara or Dasahara) mainstream' on 2026-10-20 -- the same civil day as Navami, not Dashami's own sunrise day -- implying mainstream Vijayadashami follows a different, unmodeled convention (likely a muhurta/dashami-vyapini-style rule, analogous to Diwali's pradosh condition; not built here). The `golden_fixtures` citation for dussehra 2026 (4 approved rows) was updated 2026-08-18 from Index #50 (2026-10-20) to Index #51 (2026-10-21) to match. This was NOT a computation bug -- both the span and a prior duplicate standalone lunar_tithi rule (removed 2026-08-18, was dead-code redundant, computed the identical 2026-10-21 despite its own stale citation text saying 2026-10-20) independently agreed on 10-21 before this ratification. Still open, not part of this ratification: no mainstream-Vijayadashami evaluator/variant exists in this codebase -- if that reading is ever wanted alongside the Bengal/Kerala one, it needs its own sourced rule."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -894,7 +1172,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -918,7 +1196,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -942,7 +1220,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -970,14 +1248,28 @@
       "flags": [
         {
           "type": "future_year_disputed",
-          "source": null,
-          "disputed_years": [
-            2027,
-            2028
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": null,
+              "disputed_years": [
+                2027,
+                2028
+              ]
+            }
           ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "DISPUTED, not proven wrong. Council ruled 2027-08-28 and 2028-08-16; the engine gives 08-29 and 08-17, and Drik Panchang (Tier 5, commercial -- QA signal only) agrees with the ENGINE for 2028. Our 2026 date (09-08) is council-confirmed and reproduces, so only these two years are withheld. There is no Paryushana evaluator, so this is NOT resolved by USE_CONDITION_EVALUATOR -- an earlier claim of mine that was wrong. May need a Jain-profile or externally-curated treatment. DEEPER DIAGNOSIS 2026-08-18 (still not resolved, but now a precise, falsifiable finding instead of 'no convention found'): sampled the raw tithi (elongation-based, bypassing all handlers) at sunrise/madhyahna/aparahna/sunset for both ruled dates and their neighbours. Target is absolute tithi index 27 (krishna dwadashi). For 2027: tithi 27 does NOT touch 08-28's sunrise (still 26) but DOES touch 08-28's madhyahna/aparahna/sunset (begins between sunrise and madhyahna that day) -- a madhyahna-vyapini-style convention (same family as D34's four fixed rules) would land exactly on the council's 08-28 ruling. For 2028: tithi 27 does NOT touch 08-16 at ANY sampled point of the day -- sunrise, madhyahna, aparahna, and sunset are all still tithi 26 throughout 08-16; tithi 27 only begins close to 08-17's own sunrise. No reference-time convention this engine knows how to express reproduces the 08-16 ruling. Since the same festival cannot correctly follow two different reference-time rules in different years, this rules out a simple fixed-convention fix for BOTH years at once. Two live hypotheses, neither confirmed: (a) 2028's council ruling is itself the outlier and needs an independent re-check against a primary Jain source, structurally the same situation karva-chauth 2028 turned out to be (D40) -- Drik Panchang already agrees with the engine's 08-17 for 2028, which is corroborating, not sourcing, evidence; or (b) Paryushana's real governing rule isn't 'tithi 27 at some fixed time of day' at all -- Jain paksha/tithi reckoning has genuine, documented sect-level calendar disputes (distinct from the Vedic madhyahna/nishitha family), and may need a dedicated Jain-calendar source, not an extension of this engine's existing reference-time mechanism. Needs a human with access to a primary Jain panchang (e.g. a Shvetambara Murtipujak source) to adjudicate -- engineering cannot pick between (a) and (b) from computation alone. PARKED 2026-08-18 (founder decision): no Tier 1-4 Jain calendar authority has ever been identified in this project (see docs/sources/candidate-sources-sikh-buddhist-jain.md) -- both hypotheses above require one before further work is useful. Jain and Buddhist calendar sourcing deprioritized as a body of work, to be picked up together later. 2026 (09-08) stays published; 2027/2028 stay withheld. No further engineering action until a primary Jain source is available."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1001,7 +1293,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -1025,7 +1317,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -1049,7 +1341,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system's amanta setting cross-validated: corrected engine independently computes 2026-08-28, matching Rashtriya Panchang 1948 SE (Principal Festivals table, entry #35) exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2. Validated against the canonical/default reference materialisation only; not proven across every calendar_profile."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1073,7 +1374,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. CONFIRMED for both 2026 and 2027. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Navami begins ~11:30-12:00 IST on 2026-03-26, absent at that day's sunrise). Corrected engine independently computes 2026-03-26 and 2027-04-15, matching Rashtriya Panchang 1948 SE entries #3 and #95 exactly. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34/D33 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1098,12 +1408,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.80 -- Rama Ekadasi listed at 2026-11-05"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1127,7 +1458,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -1151,7 +1482,16 @@
       ],
       "flags": [
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "no_structured_citation"
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. D34 fix (2026-08-17): rule now declares corrected_tithi_reference_time: madhyahna (Panchami begins ~07:30-08:00 IST on 2026-09-15, absent at that day's sunrise). Corrected engine independently computes 2026-09-15, matching Rashtriya Panchang 1948 SE entry #42 exactly -- though that source entry itself lists two paksha variants (Chaturthi-paksha, Panchami-paksha) at the same printed date, an unresolved source-internal ambiguity separate from this engine fix. See docs/sources/rashtriya-panchang-saka-1948.manifest.md batch 2 and D34 in docs/CALENDAR_ENGINE_ASSESSMENT.md."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1175,7 +1515,7 @@
       ],
       "flags": [
         {
-          "type": "no_current_year_source"
+          "type": "no_structured_citation"
         },
         {
           "type": "profile_scope_unverified",
@@ -1200,12 +1540,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, p.88 -- Utpanna Ekadasi listed at 2026-12-04"
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Official-source-backed, PENDING COUNCIL RATIFICATION -- not fully settled. corrected_month_system set from a real Tier 1 citation (Rashtriya Panchang, Positional Astronomy Centre/IMD; see docs/sources/rashtriya-panchang-saka-1948.manifest.md), not from a Tier 2 traditional text or a council decision, so per source-governance.md this is a strong indication rather than a ruling. Also unproven across calendar_profiles: the engine applies corrected_month_system globally, but 7 of 13 profiles (gujarati_amanta, kannada_amanta, kannada_telugu_amanta, marathi_amanta, odia, telugu_amanta, global_sanatan) declare their OWN convention as amanta -- in tension with this purnimanta setting -- while only 2 (north_indian_purnimanta, nepali_bikram) align. Validated against the canonical/default reference materialisation only."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
@@ -1230,12 +1591,33 @@
       "flags": [
         {
           "type": "no_structured_dispute_for_target_year",
-          "source": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
           "year": 2026,
-          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles"
+          "profile": "legacy-ujjain reference point (23.1765, 75.7885, Asia/Kolkata) -- NOT validated across other calendar_profiles",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position.",
+              "disputed_years": []
+            }
+          ]
         },
         {
-          "type": "has_ratification_note_requiring_human_read"
+          "type": "has_citation",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "citation": "Rashtriya Panchang, Saka 1948 (2026-27 A.D.), Positional Astronomy Centre / India Meteorological Department (Govt. of India), English edition, printed p.92 (PDF file page 112) -- Vijaya Ekadasi listed at 2027-03-04, one day after tithi 26 first touches sunrise (source shows 'Ekadasi ahoratra' the prior day) -- a genuine vrddhi tithi. corrected_prefer_last_match selects the later of the two candidate days; verified a no-op in 2026 and 2028, which have no vrddhi tithi at this position."
+            }
+          ]
+        },
+        {
+          "type": "has_ratification_note_requiring_human_read",
+          "evidence": [
+            {
+              "sampradaya_or_variant": null,
+              "ratification_note_verbatim": "Council decision batch 0 approved only the 2027-03-04 Ujjain, north_indian_purnimanta fixture, effective 2026-08-14. Other years, locations, and profiles remain governed by their own evidence and publication gates."
+            }
+          ]
         },
         {
           "type": "profile_scope_unverified",
