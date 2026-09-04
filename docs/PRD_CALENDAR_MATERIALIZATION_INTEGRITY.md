@@ -280,3 +280,50 @@ flagged for awareness only.
   conflict, 5 deferred slugs confirmed absent as intended, confirmed via
   direct query that `krishna-janmashtami` is a single `observance_
   definitions` row (not two) before designing the collision-collapse fix.
+
+## 7. Full definition catalogue — first pass (2026-09-04)
+
+Scope-out for the broader accuracy audit beyond the original 10 migration-
+touched slugs. `observance_definitions` has 103 active rows; `rules.json`
+has 97 rows / 95 distinct slugs. A first pass ran the pure, DB-free engine
+(`calculateOccurrencesWithEvaluator(2026)`) against every active slug and
+classified each into ONE mutually-exclusive primary status (verified by set
+arithmetic summing to exactly 103 — an earlier hand-transcribed version of
+this table double-counted 9 Navratri series-child pseudo-slugs and did not
+sum correctly; this version is script-derived from the real DB slug list
+and does not have that defect):
+
+| Primary status | Count | Meaning |
+|---|---|---|
+| `resolved` | 47 | Engine produces a 2026 date. **Not yet vetted per-note for `pending_ratification`/`profile_scope_unverified` secondary flags** — a substring grep for "PENDING COUNCIL RATIFICATION" hit 20 slugs, but most of those likely follow Krishna Janmashtami's own pattern (a specific *future* year flagged pending while 2026 is separately council-confirmed) rather than being unresolved outright. That distinction requires reading each note individually, not assumed from either direction — not yet done. |
+| `deferred` | 48 | `launch_status: 'deferred'`. Correctly show no date, pending real review — governance-correct, not a defect. Nearly half of all active definitions are in this state today. |
+| `missing-rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no entry in this rules file at all. Likely a separate Jain/Buddhist ruleset not yet located in this investigation; unconfirmed. |
+| `engine-anomaly` → resolved as **not a defect** | 1 | `saphala-ekadashi`, `included` but zero 2026 output. Bounded diagnosis (below) closed this. |
+
+### `saphala-ekadashi` diagnosis (closed, not a defect)
+
+Ran `calculateOccurrencesWithEvaluator` for 2025/2026/2027 at the Ujjain
+reference location: 2025 → `2025-12-15`, 2026 → **none**, 2027 →
+`2027-01-03` (exact match to the rule's own cited Rashtriya Panchang, Saka
+1948 source). The ~384-day gap between the 2025 and 2027 occurrences is one
+full lunar year plus drift from an intervening adhika-masa insertion — a
+normal lunar/solar calendar phenomenon where a fixed lunar-month festival
+can fall zero times within a specific Gregorian calendar year. The engine
+producing nothing for 2026 is correct, not broken. Reclassified out of
+`engine-anomaly`.
+
+This confirms the general caution this section should carry forward: **do
+not treat "zero output for the target year" as proof of a defect** without
+checking adjacent years first — exactly this pattern could recur for any of
+the other 47 "resolved" slugs in a future year, or could explain some of
+the 7 "missing-rule" slugs' apparent absence if their real rule turns out to
+exist but just doesn't land in 2026.
+
+### Not yet done
+- Read each of the 20 "pending ratification"-language notes individually to
+  separate genuinely-unratified rules from Janmashtami-pattern
+  (future-year-disputed, current-year-confirmed) ones.
+- Locate the ruleset (if any) covering the 7 `missing-rule` slugs.
+- Real-world external verification (WebSearch/government source
+  cross-check) of any of the 47 `resolved` slugs beyond the original 10 —
+  none of the 47 have been checked against an outside source in this cycle.
