@@ -97,11 +97,11 @@ function toCalendarEra(value: unknown): CalendarEra {
     : 'unknown';
 }
 
-function toEkadashiMethod(value: unknown): EkadashiMethod {
+export function toEkadashiMethod(value: unknown): EkadashiMethod {
   return value === 'smarta' || value === 'vaishnava_suddha' ? value : 'unknown';
 }
 
-function toJanmashtamiMethod(value: unknown): JanmashtamiMethod {
+export function toJanmashtamiMethod(value: unknown): JanmashtamiMethod {
   return value === 'smarta_nishita' || value === 'vaishnava_rohini' ? value : 'unknown';
 }
 

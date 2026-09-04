@@ -19,6 +19,8 @@ import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
 import { formatOccurrencesToResults } from '@/lib/calendar/observance-formatter';
+import { resolveCalendarContext, type TraditionProfileDefinition } from '@/lib/calendar/calendar-context';
+import { toEkadashiMethod, toJanmashtamiMethod } from '@/lib/calendar/request-profile';
 import { buildObservanceHref, getPulseRouteSlug } from '@/lib/observance-route';
 import { attachMaterialisationBatches } from '@/lib/calendar/occurrence-reader';
 import { selectDisplayObservances } from '@/lib/calendar/display-observances';
@@ -648,6 +650,32 @@ export async function GET(request: NextRequest) {
       )
     : Promise.resolve({ data: null });
 
+  // Same fallback resolveRequestProfile() already uses elsewhere: an
+  // authenticated Hindu-tradition user with no stated sampradaya resolves
+  // to the literal 'unspecified' tradition_profiles row (ekadashi_method:
+  // 'smarta', janmashtami_method: 'smarta_nishita' -- identical to the
+  // 'smarta' row itself, per governance rule 3: "unspecified uses approved
+  // Smarta calculation behavior but remains labelled unspecified"). Without
+  // this, requestedSampradaya is null, resolveCalendarContext() below never
+  // gets a matching TraditionProfileDefinition, normalizeTraditionProfileId
+  // falls back to 'unknown', and selectTraditionVariant() has no branch for
+  // 'unknown' -- every variant of a disputed festival (Janmashtami, named
+  // Ekadashis) is marked under_review with civilDate: null instead of
+  // showing the intended Smarta default.
+  const targetTraditionSlug = profile?.sampradaya || (user && tradition === 'hindu' ? 'unspecified' : null);
+  const traditionProfilePromise = targetTraditionSlug
+    ? timings.measure('tradition_profile', 'Tradition Profile', async () =>
+        withTimeout<{ slug: string; ekadashi_method: string | null; janmashtami_method: string | null }>(
+          supabase
+            .from('tradition_profiles')
+            .select('slug, ekadashi_method, janmashtami_method')
+            .eq('slug', targetTraditionSlug)
+            .maybeSingle(),
+          DB_TIMEOUT,
+        )
+      )
+    : Promise.resolve({ data: null });
+
   const observanceCalendarProfile = profile?.calendar_profile ?? 'legacy-ujjain';
   const observanceLocation = resolveObservanceLocationBucket({
     saved: { lat: profile?.latitude ?? null, lon: profile?.longitude ?? null, tz: profile?.timezone ?? null },
@@ -671,6 +699,7 @@ export async function GET(request: NextRequest) {
     personalizedBatchResult,
     globalContentResult,
     calendarProfileResult,
+    traditionProfileResult,
     observanceSection,
   ] = await Promise.all([
     timings.measure('personalized_batch', 'Personalized Data Batch', async () =>
@@ -738,6 +767,7 @@ export async function GET(request: NextRequest) {
       ])
     ),
     calendarProfilePromise,
+    traditionProfilePromise,
     observancePromise,
   ]);
 
@@ -763,6 +793,24 @@ export async function GET(request: NextRequest) {
   ] = globalContentResult;
 
   const monthSystem = calendarProfileResult.data?.month_system ?? null;
+
+  const traditionProfileRow = traditionProfileResult.data;
+  const traditionProfileDefinition: TraditionProfileDefinition | null = traditionProfileRow?.slug
+    ? {
+        slug: traditionProfileRow.slug,
+        ekadashiMethod: toEkadashiMethod(traditionProfileRow.ekadashi_method),
+        janmashtamiMethod: toJanmashtamiMethod(traditionProfileRow.janmashtami_method),
+      }
+    : null;
+  const calendarContext = resolveCalendarContext({
+    calendarProfile: observanceCalendarProfile,
+    traditionProfile: traditionProfileDefinition?.slug ?? null,
+    traditionProfileDefinition,
+    location: observanceLocation
+      ? { label: null, latitude: observanceLocation.lat, longitude: observanceLocation.lon, timezone: observanceLocation.tz }
+      : null,
+    isAuthenticated: !!user,
+  });
 
   const composeStart = performance.now();
 
@@ -914,6 +962,7 @@ export async function GET(request: NextRequest) {
       profile?.sampradaya ?? null,
       today,
       calendarTo,
+      calendarContext,
     );
     displaySeriesResults = selectDisplayObservances(seriesResults);
     const primarySeriesContext = seriesResults.find(result => result.isPrimary) ?? seriesResults[0] ?? null;

@@ -106,6 +106,30 @@ describe('resolveRequestProfile — authentication', () => {
     expect(r.sampradaya).toBeNull();
     expect(r.isAuthenticated).toBe(false);
   });
+
+  it('an authenticated Hindu user with no stated sampradaya resolves to Smarta, not unknown', async () => {
+    // The regression this pins: a caller that skips the 'unspecified' fallback
+    // (or forgets to fetch+pass the tradition_profiles definition at all, as
+    // src/app/api/native/home-summary/route.ts did before this fix) leaves
+    // ekadashiMethod/janmashtamiMethod at 'unknown'. selectTraditionVariant()
+    // has no branch for 'unknown' (by design -- see ekadashi-selection.ts's
+    // header comment), so every variant of a disputed festival (Janmashtami,
+    // named Ekadashis) is left `under_review` with civilDate: null instead of
+    // showing the Smarta default this governance rule promises.
+    getApiUser.mockResolvedValue({
+      user: { id: 'u1' },
+      error: null,
+      supabase: makeClient({ calendar_profile: 'gujarati_amanta', tradition: 'hindu', sampradaya: null }),
+    });
+
+    const r = await resolveRequestProfile(req(), { tradition: 'all', calendarProfile: '' });
+
+    expect(r.sampradaya).toBeNull();
+    expect(r.context.displayedTraditionProfile).toBe('unspecified');
+    expect(r.ekadashiMethod).toBe('smarta');
+    expect(r.context.janmashtamiMethod).toBe('smarta_nishita');
+    expect(r.ekadashiMethod).not.toBe('unknown');
+  });
 });
 
 describe('resolveRequestProfile — the lookup is unconditional', () => {
