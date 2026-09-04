@@ -37,11 +37,16 @@ were obtained (manual entry vs. automated retrieval) — flagged as an open
 question for whoever owns that history, not resolved here.
 
 Status of every item below: `draft` (nothing yet reviewed). Each now carries
-an **External verification (2026-09-05)** subsection — independent research
-against sources outside this project, done to answer *which date is
-factually correct*, not to make the *which-slug-survives* decision above.
-That decision remains the reviewer's per `source-governance.md` §5; this
-research only narrows what they're deciding between.
+an **External evidence (2026-09-05)** subsection — independent research
+against sources outside this project. Per `source-governance.md` §6's
+binding product wording (never "the correct date is …" or language implying
+a tradition/source is mistaken), this evidence is reported as **candidate
+dates and their sourcing**, not as resolutions. None of it has been
+ratified. A 2026-09-05 correction is recorded inline where an earlier
+version of this section used disqualified language ("confirmed,"
+"answered," "correct," "wrong") — flagged rather than quietly rewritten,
+since the same review that caught it also found a factual gap in the
+Sangha Day item (§5) that changes its substance, not just its wording.
 
 ---
 
@@ -75,16 +80,17 @@ Separately: why are `gudi-padwa`/`ugadi` deferred at all if a published date
 already exists — should they be un-deferred, or should their existing
 published rows be withheld until the deferral is lifted?
 
-**External verification (2026-09-05):** already resolved by a Tier 1 source
-already committed to this repo, not new external research —
-`docs/sources/rashtriya-panchang-saka-1948.manifest.md:190`, Rashtriya
-Panchang (Positional Astronomy Centre / IMD, Govt. of India), entry #90
-"Chaitra Sukladi (Gudi Padava, Ugadi)" → **2027-04-07**, matching this
-project's own independently-computed engine value exactly. **Question (a) is
-answered: 2027-04-07 is correct**, and a real Tier 1-4 citation now exists
-for it (it just needs to actually be attached to whichever row(s) survive).
-Questions (b) and (c) are structural/governance, not accuracy questions —
-still the reviewer's call.
+**External evidence (2026-09-05):** a source record already committed to
+this repo, not new external research — `docs/sources/rashtriya-panchang-saka-1948.manifest.md:190`,
+citing *Rashtriya Panchang, Saka 1948* (Positional Astronomy Centre / IMD,
+Govt. of India) — **Tier 1** per `source-governance.md` §2. Entry #90
+"Chaitra Sukladi (Gudi Padava, Ugadi)" lists **2027-04-07**, matching this
+project's own independently-computed engine value. This is a Tier 1
+candidate for question (a), with all three currently-stored rows already in
+agreement — a stronger evidentiary position than any other item in this
+packet, but still a candidate pending the reviewer's ratification, not a
+resolution. Questions (b) and (c) remain entirely structural/governance
+calls, untouched by this evidence.
 
 ---
 
@@ -101,16 +107,18 @@ manual-seed slug) be retired once `vassa-begins-rains-retreat` is confirmed
 correct, or does the product intentionally want a separate "begins" moment
 distinct from the "rains retreat" framing?
 
-**External verification (2026-09-05):** Asalha Puja 2027 (the full-moon day
-that precedes Vassa) is independently reported at **2027-07-18** (multiple
-Buddhist/travel calendar sources, cross-checked; still Tier 5-equivalent
-sourcing, no government/monastic authority found for the exact Gregorian
-date). Vassa traditionally begins the day after that full moon —
-**2027-07-19**, matching both stored rows exactly. **Question is answered:
-2027-07-19 is correct**, though a stronger (Tier 1-4) citation than what
-this search found still doesn't exist and should be sought (a national
-Theravada Buddhist authority's own published calendar, e.g. Thailand's or
-Sri Lanka's, would qualify) before treating it as `approved`.
+**External evidence (2026-09-05):** one source found —
+[AnydayGuide](https://anydayguide.com/calendar/18-07-2027), a general
+holiday-calendar aggregator, **Tier 5**, no Tier 1-4 source located —
+lists Asalha Puja (the full-moon day traditionally preceding Vassa) at
+**2027-07-18**. Combined with the traditional "Vassa begins the day after"
+convention, this is a Tier 5-sourced candidate of **2027-07-19**, matching
+both currently-stored rows. Per §2's own rule, Tier 5 "may be attached as
+corroboration but never as the sole authority" — this does not establish
+2027-07-19 as correct, only as a candidate consistent with one commercial
+aggregator. A national Theravada Buddhist authority's own published
+calendar (Thailand's or Sri Lanka's) would be needed to reach Tier 1-4 and
+should still be sought.
 
 ---
 
@@ -126,18 +134,21 @@ Sri Lanka's, would qualify) before treating it as `approved`.
 (neither currently cites a Tier 1-4 source), and should these two slugs merge
 into one properly-`rules.json`-backed definition?
 
-**External verification (2026-09-05):** the astronomical full moon of
-October 2027 falls on **2027-10-15** (14:47 UTC) — confirmed via TheSkyLive,
-an independent astronomy reference, not a religious-calendar service.
-Pavarana is defined as the full-moon day marking the end of Vassa, so this
-is a direct, non-panchang-vendor confirmation. **Matches the rules-engine
-sibling (`pavarana-end-of-vassa`, 2027-10-15) exactly; the manual-seed
-slug's 2027-10-17 does not match and appears to be the wrong one of the
-two** — though the reviewer's call on which slug/row structure to keep
-remains open, and a Buddhist-authority (not pure-astronomy) source should
-still be sought to confirm no traditional local-sighting/timezone
-convention shifts the observed date by a day from the raw astronomical
-moment.
+**External evidence (2026-09-05):** [TheSkyLive](https://theskylive.com/full-moon-october-2027)
+reports the raw astronomical full moon of October 2027 at **2027-10-15,
+14:47 UTC**. This is not evaluated on this project's Tier 1-5 rubric — it is
+neither an official calendrical authority nor a panchāṅga/commercial
+service, just a lunar-ephemeris calculation, independently reproducible.
+Per this packet's own earlier caution (§source-tier note above), a raw UTC
+instant does not by itself establish which Gregorian date a Theravada
+tradition observes locally — timezone, local moonrise/moonset convention,
+and monastic-sighting practice can all shift the observed day from the raw
+astronomical moment. **This is evidence worth weighing, matching the
+rules-engine sibling's stored date (`pavarana-end-of-vassa`, 2027-10-15) and
+diverging from the manual-seed slug's 2027-10-17 — it is not a finding that
+either row is correct or incorrect.** A Buddhist-authority source (a
+national Theravada calendar) is still needed to actually resolve which
+Gregorian date the tradition observes.
 
 ---
 
@@ -154,56 +165,81 @@ moment under different regional/sectarian conventions (in which case both may
 be legitimately correct for different audiences and should be labeled as
 such, not merged), or is one of them simply wrong?
 
-**External verification (2026-09-05):** `docs/sources/rashtriya-panchang-saka-1948.manifest.md:230`
-already contains a Tier 1 finding for the 2026 date specifically —
-Rashtriya Panchang entry #42 → **2026-09-15**, matching the rules-engine
-sibling (`samvatsari-paryushana-ends`, 2026-09-15) exactly, **not** the
-manual-seed slug's 2026-09-06 (9 days off). The manifest itself flags an
-open, separate ambiguity in the source's own paksha-variant listing — noted
-there as unresolved, not contradicted by this finding. **For 2026, the
-question is answered: 2026-09-15 is correct, sourced to a real Tier 1-4
-citation already in this repo.** 2027 (1-day gap, 09-04 vs 09-05) was not
-independently re-checked here — the same manifest source should be
-consulted for a 2027 entry before assuming the pattern holds.
+**External evidence (2026-09-05):** `docs/sources/rashtriya-panchang-saka-1948.manifest.md:230`
+already contains a **Tier 1** record for 2026 specifically — Rashtriya
+Panchang entry #42 lists **2026-09-15**, matching the rules-engine sibling
+(`samvatsari-paryushana-ends`, 2026-09-15) and diverging from the
+manual-seed slug's 2026-09-06 (9 days off). The manifest itself flags a
+separate, still-open ambiguity in the source's own paksha-variant listing —
+that caveat is not resolved by this finding and is carried forward, not
+dismissed. This is a Tier 1 candidate for 2026, the strongest evidence tier
+in this packet after item 1 — still pending reviewer ratification, not a
+finding that the manual-seed date is wrong. 2027 (1-day gap, 09-04 vs
+09-05) was not independently checked here; the same manifest source should
+be consulted for a 2027 entry before drawing any inference from the 2026
+result.
 
 ---
 
-## 5. Sangha Day — 2-day discrepancy
+## 5. Sangha Day — naming/content question, not primarily a date discrepancy
 
 | | |
 |---|---|
 | Manual-seed slug | `sangha-day` — 2027-11-11 (published, `legacy_sync`, cites timeanddate.com) |
 | Rules-engine sibling | `sangha-day-loy-krathong` — 2027-11-13 (published, `calculated_by: cron_job`) |
-| Discrepancy | **2 days.** |
+| Existing, separate definition | `magha-puja` (`rules.json`) — `launch_status: deferred`, no stored occurrence row |
+| Discrepancy | 2 days between the two November rows, but see below — the more load-bearing question is whether "Sangha Day" belongs in November at all. |
 
-**Question for reviewer:** Which date is correct, and is "Sangha Day" the
-same observance as "Sangha Day / Loy Krathong," or two distinct Buddhist/Thai
-observances that happen to share a name fragment?
+**Question for reviewer:** Should `sangha-day`/`sangha-day-loy-krathong` be
+reconciled against the existing `magha-puja` definition, and separately,
+should the Loy Krathong content be repaired (correct name, correct date) or
+retired? See the correction and evidence below for why this replaces the
+original "which of the two November dates is correct" framing.
 
-**External verification (2026-09-05) — this changes the question, not just
-the answer.** "Sangha Day" is independently, consistently documented
-(multiple sources: religionfacts.com, learnreligions.com, Tricycle, RE:ONLINE,
-buddhism.net) as an **alternate name for Māgha Pūjā / Fourfold Assembly Day**
-— observed on the full moon of the **third** lunar month, which falls in
-**February or March**, not November. It commemorates an unrelated event (the
-spontaneous gathering of 1,250 arhats at Veḷuvana) with no connection to Loy
-Krathong at all. Loy Krathong itself is independently confirmed at
-**2027-11-14** (multiple Thai-tourism/calendar sources, cross-checked) — the
-Thai lunar new-year lantern festival, observed on the full moon of the
-*twelfth* lunar month.
+**Correction to an earlier version of this section (2026-09-05):** it stated
+"does this project have a real Magha Puja/Sangha Day definition at all (it
+does not appear to, under any slug checked here)." **That is factually
+wrong and is retracted.** `rules.json:1347` already contains a `magha-puja`
+entry — `display_name: "Magha Puja"`, description *"Full moon day
+commemorating the spontaneous gathering of 1,250 enlightened disciples
+before the Buddha — Fourfold Assembly Day,"* `tradition: buddhist`,
+`launch_status: deferred`. This is the exact event the sources below
+describe, already correctly modeled, already in this project's own rule
+set — it was simply never checked against `sangha-day`/
+`sangha-day-loy-krathong` before the earlier version of this section was
+written. The real reconciliation question is against this existing
+definition, not "does one exist."
 
-Both stored rows (`sangha-day` 2027-11-11, `sangha-day-loy-krathong`
-2027-11-13) sit in November, near but not matching the independently-confirmed
-Loy Krathong date (2027-11-14) — and neither is anywhere near the real Sangha
-Day/Magha Puja window (Feb/Mar 2027). **This is not a 2-day accuracy
-discrepancy to resolve between two sources — it reads as a content-modeling
-error:** the "Sangha Day" name appears to have been attached to what is
-actually a Loy Krathong-adjacent date, an entirely different festival. The
-reviewer question is no longer just "which date" but: **does this project
-have a real Magha Puja/Sangha Day definition at all (it does not appear to,
-under any slug checked here), and should `sangha-day`/`sangha-day-loy-krathong`
-be corrected, split into two genuinely separate definitions (a real Sangha
-Day in Feb/Mar, and a Loy Krathong in Nov), or retired if out of scope?**
+**External evidence (2026-09-05):** several general reference sources —
+[religionfacts.com](https://religionfacts.com/sangha-day),
+[learnreligions.com](https://www.learnreligions.com/magha-puja-449909),
+[Tricycle](https://tricycle.org/article/magha-puja/),
+[RE:ONLINE](https://www.reonline.org.uk/festival_event/magha-puja/) — none
+above Tier 5 on this project's rubric — describe "Sangha Day" as a common
+alternate name for Māgha Pūjā, observed on the full moon of the third lunar
+month (February or March), commemorating the gathering of 1,250 disciples —
+the same event `magha-puja` already describes. Separately, Loy Krathong
+(the Thai twelfth-lunar-month lantern festival) is reported by several
+Tier 5 tourism/calendar sources (e.g.
+[UME Travel](https://www.umetravel.com/loy-krathong-festival/dates.html))
+at **2027-11-14**.
+
+The two currently-stored rows (`sangha-day` 2027-11-11,
+`sangha-day-loy-krathong` 2027-11-13) both sit in November, near but not
+matching the Loy Krathong date reported above, and nowhere near the
+February/March window the sources above associate with Sangha Day/Magha
+Puja. **Candidate reading, pending reviewer judgment, not a determination:**
+this looks less like a 2-day accuracy gap between two sources for one event,
+and more like the "Sangha Day" name having been attached to Loy Krathong-
+adjacent content rather than to the Magha Puja event `magha-puja` already
+models. **Reconciliation question for the reviewer:** should `sangha-day`
+and `sangha-day-loy-krathong` be retired/merged into the existing
+`magha-puja` definition (once its own `deferred` status and dates are
+separately reviewed), should the Loy Krathong content be kept but renamed
+and correctly dated, or is there a reading of the source material this
+packet has missed that reconciles the current naming? This packet does not
+resolve source-tier or licensing questions for Loy Krathong content either —
+that would need its own citation work if kept.
 
 ---
 

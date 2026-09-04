@@ -651,35 +651,46 @@ higher-value to resolve first. Findings added directly to
 which-slug-survives call (still the reviewer's, per `source-governance.md`
 §5):
 
-- **Gudi Padwa/Ugadi**: already resolved by a Tier 1 source already in this
-  repo (`docs/sources/rashtriya-panchang-saka-1948.manifest.md:190`) —
-  2027-04-07 confirmed correct.
-- **Vassa Begins**: 2027-07-19 confirmed via Asalha Puja's independently-reported
-  2027-07-18 date + the traditional "begins the next day" rule. Matches both
-  stored rows — a confirmed-correct duplicate, not an accuracy dispute.
-- **Pavarana**: the astronomical full moon of October 2027 (2027-10-15,
-  TheSkyLive) matches the rules-engine sibling exactly; the manual-seed row's
-  2027-10-17 appears wrong.
-- **Samvatsari (2026)**: resolved by the same in-repo Tier 1 source
-  (manifest.md:230) — 2026-09-15 confirmed correct, matching the rules-engine
-  sibling; the manual-seed row's 2026-09-06 (9 days off) appears wrong. 2027
-  not independently re-checked.
-- **Sangha Day**: the most consequential finding — this is not a date
-  dispute at all. "Sangha Day" is independently and consistently documented
-  as Māgha Pūjā, a February/March full-moon observance commemorating an
-  unrelated event, with no connection to Loy Krathong (confirmed
-  independently at 2027-11-14, the Thai 12th-lunar-month lantern festival).
-  Both stored rows sit in November near-but-not-matching Loy Krathong,
-  nowhere near real Sangha Day's actual window. Reads as a genuine
-  content-modeling error (the wrong festival's name attached to a different
-  festival's date), not an accuracy discrepancy between two sources for the
-  same event.
+**Correction (2026-09-05):** the first pass of this section, and of the
+packet it summarizes, used language `source-governance.md` §6 explicitly
+prohibits ("confirmed correct," "the question is answered," "appears
+wrong") and stated a factual claim about the Sangha Day item that was
+simply wrong without having checked for it. Both are fixed at the source
+(`RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md`); this section is rewritten
+to match rather than repeat the error:
 
-4 of 5 items now have a real answer to "which date is correct"; none have a
-Tier 1-4 citation actually *attached* to the surviving row yet, and none of
-the structural questions (retire a duplicate slug, merge two into one,
-correct/split the Sangha Day content error) have been decided — those
-remain the reviewer's call.
+- **Gudi Padwa/Ugadi**: a Tier 1 source already in this repo
+  (`docs/sources/rashtriya-panchang-saka-1948.manifest.md:190`) lists
+  2027-04-07, matching all three currently-stored rows — the strongest
+  evidentiary position in this packet, still pending reviewer ratification.
+- **Vassa Begins**: a Tier 5 aggregator's reported Asalha Puja date
+  (2027-07-18) plus the traditional next-day convention yields a Tier
+  5-sourced candidate of 2027-07-19, matching both stored rows — evidence,
+  not a resolution; no Tier 1-4 source found yet.
+- **Pavarana**: the raw astronomical full moon of October 2027 (2027-10-15)
+  is evidence worth weighing, matching the rules-engine sibling and
+  diverging from the manual-seed row — not itself a finding about which
+  Gregorian date a tradition observes locally, per this packet's own
+  caution about UTC instants vs. local civil dates.
+- **Samvatsari (2026)**: the same in-repo Tier 1 source (manifest.md:230)
+  lists 2026-09-15 for 2026, matching the rules-engine sibling and
+  diverging from the manual-seed row (9 days) — a Tier 1 candidate, still
+  pending ratification. 2027 not independently checked.
+- **Sangha Day**: the most consequential finding, and the one where the
+  first pass got a fact wrong rather than just the wording. `rules.json`
+  already contains a `magha-puja` definition (deferred, no stored
+  occurrence) whose description exactly matches what general reference
+  sources call "Sangha Day" — the earlier claim that no such definition
+  existed was false and is retracted. Separately, those same sources place
+  real Sangha Day/Magha Puja in February/March, while both currently-stored
+  November rows sit near (not on) an independently-reported Loy Krathong
+  date instead. The reconciliation question is now against the existing
+  `magha-puja` definition, not "does one exist."
+
+None of this ratifies anything or attaches an actual Tier 1-4 citation to
+any surviving row. The structural questions (retire a duplicate slug, merge
+two into one, reconcile Sangha Day against `magha-puja`) remain entirely
+the reviewer's call.
 
 ## 11. Not yet done — explicitly deferred
 
