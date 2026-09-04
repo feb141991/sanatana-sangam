@@ -66,6 +66,7 @@ interface MaterializedOccurrenceRow {
   computed_longitude: number;
   computed_timezone: string;
   calculated_by: string;
+  final_date_source: string;
 }
 
 export interface FestivalMirrorDefinitionMeta {
@@ -245,6 +246,17 @@ export async function ensureYearMaterialized({
       computed_longitude: location.lon,
       computed_timezone: location.tz,
       calculated_by: 'lazy_materialize_on_read',
+      // Without this, the column defaults to 'legacy_seed' (confirmed via
+      // schema read, 2026-09-04) -- NOT one of the two values
+      // sync_occurrence_to_festival() checks for its kind:'vrat' exemption,
+      // so a lazily-materialized recurring vrat's second date in a year
+      // would hit the exact same festivals(name,year) collision this file's
+      // hardening exists to prevent. materialize.ts's cron path already
+      // sets this for the same reason; matching it here makes the DB
+      // trigger's own real exemption apply, rather than relying only on
+      // this file's separate kind:'vrat' skip in
+      // collapseFestivalMirrorNameCollisions as the sole protection.
+      final_date_source: 'calculation_engine',
     };
   }
   for (const occ of calculated) {

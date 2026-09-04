@@ -131,6 +131,27 @@ describe('ensureYearMaterialized — festival-mirror name collisions', () => {
     expect(new Set(supabase.upserted.map((r) => r.date)).size).toBe(ekadashiDates.length);
   });
 
+  it('sets final_date_source so the DB trigger\'s own vrat exemption actually applies', async () => {
+    // The column defaults to 'legacy_seed' (confirmed via schema read,
+    // 2026-09-04) when not set explicitly -- NOT one of the two values
+    // sync_occurrence_to_festival() checks for its kind:'vrat' exemption.
+    // Without this, a lazily-materialized vrat's second date in a year would
+    // still hit the festivals(name,year) collision this file exists to
+    // prevent, regardless of the app-level kind:'vrat' skip above.
+    calculateObservancesForYear.mockReturnValue([
+      { slug: 'ekadashi', date: '2026-01-10', ruleKey: 'ekadashi::legacy-default' },
+      { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },
+    ]);
+    const supabase = makeSupabase({ definitions: [genericEkadashi, janmashtami], traditionSlugs });
+
+    await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
+
+    expect(supabase.upserted.length).toBeGreaterThan(0);
+    for (const row of supabase.upserted) {
+      expect(row.final_date_source).toBe('calculation_engine');
+    }
+  });
+
   it('resolves a rules.json qualifier that is not itself a tradition_profiles slug via the evaluator crosswalk', async () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },

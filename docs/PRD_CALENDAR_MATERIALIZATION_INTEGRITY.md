@@ -181,7 +181,20 @@ per colliding `(display_name, year)` pair, preferring Smarta, skipping
 - `ensureYearMaterialized` (`resolve-occurrences.ts`, the self-heal-on-read
   path) — `collapseFestivalMirrorNameCollisions()`, gated to
   `calendar_profile === 'legacy-ujjain'` since this function serves every
-  profile. Tested: `__tests__/resolve-occurrences.test.ts` (5 tests).
+  profile. **A second, independent bug found and fixed in the same pass:**
+  this function never set `final_date_source` on its own insert payload, so
+  the column defaulted to `'legacy_seed'` (confirmed via schema read) —
+  NOT one of the two values (`'calculation_engine'`,
+  `'calculation_engine_reviewed'`) `sync_occurrence_to_festival()` checks
+  for its own `kind: 'vrat'` exemption. Without this, a recurring vrat's
+  *second* date in a year, lazily materialized for the first time under
+  `legacy-ujjain`, would hit the identical `festivals(name, year)`
+  collision regardless of this file's own app-level `kind: 'vrat'` skip —
+  the DB trigger's real exemption was simply never reached. Fixed by
+  setting `final_date_source: 'calculation_engine'` explicitly, matching
+  the cron path's existing convention for engine-computed rows. Tested:
+  `__tests__/resolve-occurrences.test.ts` (6 tests, including one asserting
+  every upserted row — vrat and non-vrat together — carries this value).
 - `materializeOccurrencesForYears`'s condition-evaluator branch
   (`materialize.ts`, the nightly cron —
   `vercel.json`: `/api/cron/materialize-occurrences`, `0 2 * * *`, confirmed
@@ -258,9 +271,9 @@ flagged for awareness only.
 
 - `npx tsc --noEmit` clean across all files touched this cycle (`route.ts`,
   `resolve-occurrences.ts`, `materialize.ts`).
-- `src/lib/calendar` test suite: 191 passed / 12 pre-existing, unrelated
+- `src/lib/calendar` test suite: 192 passed / 12 pre-existing, unrelated
   failures in `materialize-commit.test.ts` (stale mock, confirmed present
-  before this cycle's changes too) / 203 total.
+  before this cycle's changes too) / 204 total.
 - Production DB state (Supabase project `mnbwodcswxoojndytngu`) verified via
   direct SQL after each write: 54-row migration batch deleted (0 remaining),
   5-row targeted backfill landed with correct dates and no `festivals`
