@@ -82,10 +82,10 @@ const genericEkadashi = { id: 'def-ekadashi', slug: 'ekadashi', display_name: 'E
 const traditionSlugs = ['smarta', 'gaudiya_iskcon', 'unspecified'];
 
 describe('ensureYearMaterialized — festival-mirror name collisions', () => {
-  it('keeps exactly one row when one definition produces two same-year variant rows, preferring Smarta', async () => {
+  it('keeps exactly one row when one definition produces two same-year variant rows on different dates, preferring Smarta', async () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },
-      { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::gaudiya_iskcon' },
+      { slug: 'krishna-janmashtami', date: '2026-09-05', ruleKey: 'krishna-janmashtami::gaudiya_iskcon' },
       { slug: 'maha-shivaratri', date: '2026-02-15', ruleKey: 'maha-shivaratri::smarta' },
     ]);
     const supabase = makeSupabase({ definitions: [janmashtami, shivaratri], traditionSlugs });

@@ -83,13 +83,13 @@ export interface FestivalMirrorDefinitionMeta {
 // rows sharing a (display_name, year) ALWAYS collide on `festivals`
 // regardless of whether they also share definition_id.
 //
-// BUT the trigger itself already exempts `kind = 'vrat'` definitions --
-// those get DELETEd from festivals, never inserted (see
-// sync_occurrence_to_festival()'s own early-return). A recurring vrat (the
-// generic 'ekadashi' rule, ~24 dates/year, one definition/display_name) must
-// NOT be collapsed here: none of its rows ever reach the constraint this
-// function exists to protect, and collapsing them would silently destroy 23
-// of 24 real occurrences for the year. So this only ever collapses
+// For engine-generated `kind = 'vrat'` rows, the trigger deletes rather than
+// inserts only when final_date_source is `calculation_engine` or
+// `calculation_engine_reviewed` (the values this path writes). A recurring
+// vrat (the generic 'ekadashi' rule, ~24 dates/year, one definition/display_
+// name) must NOT be collapsed here: those generated rows never reach the
+// constraint this function exists to protect, and collapsing them would
+// silently destroy 23 of 24 real occurrences for the year. So this only ever collapses
 // non-vrat definitions -- confirmed by direct rules.json audit (2026-09-04)
 // that Krishna Janmashtami is currently the only kind != 'vrat' festival
 // with more than one materialized sampradaya variant.

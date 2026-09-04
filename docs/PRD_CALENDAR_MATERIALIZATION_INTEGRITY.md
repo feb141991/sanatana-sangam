@@ -137,16 +137,18 @@ the unique violation — same/definition-id-or-not makes no difference to this
 constraint.
 
 This also means the fix's applicability is much narrower than first framed:
-the trigger already exempts `kind: 'vrat'` definitions (it `DELETE`s rather
-than `INSERT`s for those), so a recurring vrat with many real dates per year
-sharing one display_name (the generic `ekadashi` rule, ~24/year) never
-reaches this constraint at all and must never be collapsed by the fix below —
-doing so would silently destroy nearly all of a recurring vrat's real
-occurrences for the year. A direct `rules.json` audit (2026-09-04) of the 13
+for engine-generated `kind: 'vrat'` rows whose `final_date_source` is
+`calculation_engine` or `calculation_engine_reviewed`, the trigger `DELETE`s
+rather than `INSERT`s. Both live materializers write one of those values, so a
+recurring vrat with many real dates per year sharing one display_name (the
+generic `ekadashi` rule, ~24/year) never reaches this constraint through those
+paths and must never be collapsed by the fix below — doing so would silently
+destroy nearly all of a recurring vrat's real occurrences for the year. A
+direct `rules.json` audit (2026-09-04) of the 13
 disputed/cited slugs confirmed **Krishna Janmashtami is currently the only
 slug in the whole ruleset** that is both `kind != 'vrat'` and has more than
 one materialized sampradaya variant — every named Ekadashi is `kind: 'vrat'`
-(exempt), and the other `kind: 'major'` slugs checked (Maha Shivaratri,
+(exempt for these engine-generated paths), and the other `kind: 'major'` slugs checked (Maha Shivaratri,
 Diwali, Naraka Chaturdashi) have only one rule entry each (no competing
 variant to collide with).
 

@@ -23,11 +23,11 @@ const definitionMetaBySlug = new Map<string, { displayName: string; kind: string
 ]);
 
 describe('collapseFestivalMirrorNameCollisionsForEvaluatorOutput', () => {
-  it('keeps one row when one definition produces two same-year variants, preferring Smarta', () => {
+  it('keeps one row when one definition produces two same-year variants on different dates, preferring Smarta', () => {
     const result = collapseFestivalMirrorNameCollisionsForEvaluatorOutput(
       [
         { slug: 'krishna-janmashtami', date: '2026-09-04', year: 2026, spiritual_tradition: 'smarta', variant_key: 'smarta_nishita' },
-        { slug: 'krishna-janmashtami', date: '2026-09-04', year: 2026, spiritual_tradition: 'gaudiya_iskcon', variant_key: 'gaudiya_iskcon' },
+        { slug: 'krishna-janmashtami', date: '2026-09-05', year: 2026, spiritual_tradition: 'gaudiya_iskcon', variant_key: 'gaudiya_iskcon' },
         { slug: 'maha-shivaratri', date: '2026-02-15', year: 2026, spiritual_tradition: 'smarta', variant_key: 'smarta' },
       ],
       definitionMetaBySlug,

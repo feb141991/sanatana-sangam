@@ -1250,11 +1250,12 @@ export function batchIdentityKey(row: any): string {
  * evaluator branch below hardcodes calendar_profile: 'legacy-ujjain' for
  * every row it produces, so this always applies here, unconditionally.
  *
- * The trigger itself already exempts kind: 'vrat' definitions (DELETEs
- * rather than INSERTs for those) -- a recurring vrat's many real dates in a
- * year (the generic 'ekadashi' rule, ~24/year, one definition/display_name)
- * must never be collapsed here, since none of its rows ever reach the
- * constraint this function protects against. Mirrors
+ * The trigger deletes engine-generated `kind: 'vrat'` rows only when their
+ * final_date_source is `calculation_engine` or
+ * `calculation_engine_reviewed`. This path stamps precisely those values via
+ * buildGeneratedOccurrenceReviewPatch(), so a recurring vrat's many real
+ * dates in a year (the generic 'ekadashi' rule, ~24/year, one
+ * definition/display_name) must never be collapsed here. Mirrors
  * collapseFestivalMirrorNameCollisions in resolve-occurrences.ts (the
  * self-heal-on-read path's equivalent hardening) -- kept as a separate,
  * smaller copy here rather than a shared import because this function
