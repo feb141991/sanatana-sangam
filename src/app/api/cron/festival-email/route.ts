@@ -62,12 +62,18 @@ export async function GET(request: Request) {
   // that function checks the RULE (launch_status/disputed_years), never the
   // individual row's own publication_status, outside one narrow bypass path
   // (fixtureScopedApproval) this route's rows never qualify for.
+  // No .limit() here -- it must apply AFTER policy filtering, not before.
+  // Capping the raw query at 3 let up to 3 withheld/unruled rows crowd out
+  // a 4th, genuinely publishable one for the same date, and with no ORDER
+  // BY which 3 of an unbounded set came back was nondeterministic run to
+  // run. Ordered by `id` purely for a stable, reproducible result -- there
+  // is no meaningful ordering across festivals sharing one date.
   const { data: upcoming, error: festError } = await supabase
     .from('observance_occurrences')
     .select('*, observance_definitions(*)')
     .eq('date', targetDate)
     .eq('publication_status', 'published')
-    .limit(3);
+    .order('id');
 
   if (festError) {
     return NextResponse.json({ error: festError.message }, { status: 500 });
@@ -88,11 +94,16 @@ export async function GET(request: Request) {
   // only ever emailing about content a reviewer has actually approved via a
   // real rule.
   const ruleFiltered = filterWithheldJoinedRows(upcoming ?? []);
-  const publishable = ruleFiltered.filter((row) => {
+  const eligible = ruleFiltered.filter((row) => {
     const def = (row as any).observance_definitions;
     const slug = Array.isArray(def) ? def[0]?.slug : def?.slug;
     return typeof slug === 'string' && RULED_SLUGS.has(slug);
   });
+  // The 3-item cap is a delivery-volume choice (don't send an email listing
+  // ten unrelated festivals), not a policy gate -- it belongs after both
+  // filters above, not on the raw query, so a withheld/unruled row can never
+  // count against it.
+  const publishable = eligible.slice(0, 3);
   if (!publishable.length) {
     return NextResponse.json({ message: 'No festivals in 3 days', sent: 0 });
   }

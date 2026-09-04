@@ -596,6 +596,18 @@ with no rule at all, a non-published row for an otherwise-fine rule, a real
 publishable+published festival (still sends), and the `display_name` fix
 (subject contains the real name, not `"undefined"`).
 
+**Fourth, non-blocking finding from the same review, fixed anyway (small
+and in the same file):** `.limit(3)` applied to the raw query, before either
+filter — up to 3 withheld/unruled rows could occupy the entire result set
+and crowd out a genuinely publishable 4th festival sharing the same date,
+with no `ORDER BY` making which 3 came back deterministic run to run. Not a
+safety leak (worst case is under-notification, not over-exposure), but
+fixed rather than deferred since it was a one-line move: the query now
+takes `.order('id')` with no limit, both filters run on the full result,
+and `.slice(0, 3)` applies only to the already-filtered list. 6th test:
+3 withheld rows plus a valid 4th sharing one date — only the valid one is
+emailed.
+
 **Not resolved, and explicitly not an engineering call:** whether the 48
 deferred slugs' 100+ published rows should be retracted/quarantined at the
 database level, per `withheld.ts`'s own suggestion. That is data cleanup at

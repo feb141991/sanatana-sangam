@@ -44,7 +44,7 @@ vi.mock('@supabase/supabase-js', () => ({
         // just downstream.
         const builder = (rows: any[]) => ({
           eq: (col: string, val: unknown) => builder(rows.filter(r => r[col] === val)),
-          limit: async (n: number) => ({ data: rows.slice(0, n), error: null }),
+          order: async (_col: string) => ({ data: rows, error: null }),
         });
         return { select: () => builder(occurrenceRows) };
       }
@@ -149,6 +149,28 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
 
     expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
     expect(body.sent).toBe(1);
+  });
+
+  it('a valid 4th festival is not crowded out by 3 withheld ones sharing its date', async () => {
+    // The cap on how many festivals one email run covers must apply AFTER
+    // policy filtering, not on the raw query -- otherwise up to 3
+    // withheld/unruled rows can occupy the entire result set and a real,
+    // publishable 4th festival for the same date never gets considered at
+    // all. This is the exact shape a naive `.limit(3)` on the raw query
+    // would have hidden.
+    occurrenceRows = [
+      row({ slug: 'gudi-padwa-ugadi', display_name: 'Gudi Padwa / Ugadi' }), // no rule
+      row({ slug: 'onam', display_name: 'Onam' }), // deferred rule
+      row({ slug: 'samvatsari', display_name: 'Samvatsari' }), // no rule
+      row({ slug: 'diwali', display_name: 'Diwali' }), // the valid 4th
+    ];
+
+    const res = await GET(makeRequest());
+    const body = await res.json();
+
+    expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+    expect(body.sent).toBe(1);
+    expect(sendShoonayaEmail.mock.calls[0][0].subject.toLowerCase()).toContain('diwali');
   });
 
   it('uses display_name for the email subject instead of the non-existent name/theme fields', async () => {
