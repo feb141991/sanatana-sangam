@@ -287,6 +287,26 @@ function getDefinition(row: ObservanceRow): ObservanceDefinitionJoin | null {
   return row.observance_definitions;
 }
 
+// 'ekadashi' is the sole generic lunar_tithi_recurring rule -- it fires on
+// every Ekadashi tithi year-round so months without their own named,
+// cited variant (Aja, Kamada, Nirjala, ...) still get a reminder. On a
+// date where a named Ekadashi ALSO lands, both rows survive the slug:date
+// dedup below (different slugs) and render as two cards for the same vrat
+// day. The named row carries the citation/significance content, so it wins;
+// this drops the generic row whenever a '*-ekadashi' row shares its date.
+function suppressGenericEkadashiWhenNamed(rows: ObservanceRow[]): ObservanceRow[] {
+  const namedEkadashiDates = new Set(
+    rows
+      .map((row) => ({ row, definition: getDefinition(row) }))
+      .filter(({ definition }) => definition?.slug?.endsWith('-ekadashi'))
+      .map(({ row }) => row.date),
+  );
+  return rows.filter((row) => {
+    const definition = getDefinition(row);
+    return !(definition?.slug === 'ekadashi' && namedEkadashiDates.has(row.date));
+  });
+}
+
 function buildObservanceEntry(
   row: ObservanceRow,
   definition: ObservanceDefinitionJoin,
@@ -824,7 +844,7 @@ export async function GET(request: NextRequest) {
   const rawObservanceData: ObservanceRow[] = Array.isArray(observanceSection.value)
     ? observanceSection.value
     : [];
-  const observanceRows: ObservanceRow[] = filterWithheldJoinedRows(rawObservanceData);
+  const observanceRows: ObservanceRow[] = suppressGenericEkadashiWhenNamed(filterWithheldJoinedRows(rawObservanceData));
   const batchSection = await settleOptionalSection(
     attachMaterialisationBatches(
       observanceRows,

@@ -20,7 +20,22 @@
  */
 import { calculateObservancesForYear } from './engine';
 import { CALENDAR_OCCURRENCE_SELECT } from './occurrence-reader';
+import { ruleQualifierToEvaluatorVariant } from './variant-qualifier';
 import type { LocationInput } from '@sangam/panchang-engine';
+
+// trg_sync_occurrence_to_festival (DB trigger, see
+// sync_occurrence_to_festival()) mirrors every row written under this one
+// calendar_profile into a legacy `festivals` table that predates sampradaya
+// variants: it is unique on (name, year) with no variant column at all.
+// Writing two variant rows whose observance_definitions.display_name is
+// identical (e.g. Krishna Janmashtami's Smarta and Gaudiya/ISKCON
+// definitions both display as plain "Krishna Janmashtami") violates that
+// constraint and rolls back the ENTIRE multi-row upsert -- including every
+// unrelated slug in the same batch. Confirmed 2026-09-04 while backfilling
+// this exact profile/location bucket after the corrected_2026_festival_
+// migration cleanup; see docs/PRD or the calendar governance notes for the
+// incident this hardening comes from.
+const FESTIVAL_MIRROR_CALENDAR_PROFILE = 'legacy-ujjain';
 
 export interface OccurrenceDefinitionJoin {
   slug: string;
@@ -37,6 +52,56 @@ export interface OccurrenceDefinitionJoin {
 export interface ResolvedOccurrenceRow extends Record<string, unknown> {
   date: string;
   observance_definitions: OccurrenceDefinitionJoin;
+}
+
+interface MaterializedOccurrenceRow {
+  definition_id: string;
+  year: number;
+  date: string;
+  occurrence_date: string;
+  calendar_profile: string;
+  spiritual_tradition: string | null;
+  variant_key: string;
+  computed_latitude: number;
+  computed_longitude: number;
+  computed_timezone: string;
+  calculated_by: string;
+}
+
+// See FESTIVAL_MIRROR_CALENDAR_PROFILE above. Multiple observance_definitions
+// rows can share one display_name (sampradaya variants of the same named
+// festival), and this profile's legacy mirror table can hold only one row
+// per (name, year). Keep a single row per colliding (display_name, year)
+// pair: prefer the Smarta/default variant per this project's own governance
+// rule (unspecified sampradaya -> Smarta), else the generic/no-variant row,
+// else whichever sorts first -- deterministic, not silently arbitrary.
+function collapseFestivalMirrorNameCollisions(
+  rows: MaterializedOccurrenceRow[],
+  displayNameById: Map<string, string>,
+): MaterializedOccurrenceRow[] {
+  const groups = new Map<string, MaterializedOccurrenceRow[]>();
+  for (const row of rows) {
+    const name = displayNameById.get(row.definition_id) ?? row.definition_id;
+    const key = `${name}|${row.year}`;
+    const group = groups.get(key);
+    if (group) group.push(row);
+    else groups.set(key, [row]);
+  }
+
+  const kept: MaterializedOccurrenceRow[] = [];
+  for (const group of groups.values()) {
+    const distinctDefinitionIds = new Set(group.map((r) => r.definition_id));
+    if (distinctDefinitionIds.size <= 1) {
+      kept.push(...group);
+      continue;
+    }
+    const preferred =
+      group.find((r) => r.spiritual_tradition === 'smarta') ??
+      group.find((r) => r.spiritual_tradition === null) ??
+      [...group].sort((a, b) => a.variant_key.localeCompare(b.variant_key))[0];
+    kept.push(preferred);
+  }
+  return kept;
 }
 
 /**
@@ -75,12 +140,29 @@ export async function ensureYearMaterialized({
 
   const { data: definitions, error: defsError } = await supabase
     .from('observance_definitions')
-    .select('id, slug')
+    .select('id, slug, display_name')
     .eq('active', true);
   if (defsError) throw defsError;
 
   const definitionIdBySlug = new Map<string, string>();
-  for (const def of definitions ?? []) definitionIdBySlug.set(def.slug, def.id);
+  const definitionDisplayNameById = new Map<string, string>();
+  for (const def of definitions ?? []) {
+    definitionIdBySlug.set(def.slug, def.id);
+    definitionDisplayNameById.set(def.id, def.display_name);
+  }
+
+  const isFestivalMirrorProfile = calendarProfile === FESTIVAL_MIRROR_CALENDAR_PROFILE;
+
+  // spiritual_tradition carries a FK into tradition_profiles.slug. A rule's
+  // own variant_key is sometimes in rules.json's qualifier vocabulary
+  // ('smarta_nishita') rather than a tradition_profiles slug ('smarta') --
+  // fetched once per call (small table) so buildRow can validate instead of
+  // writing a value that fails the FK and rolls back the whole batch.
+  const { data: traditionProfiles, error: traditionError } = await supabase
+    .from('tradition_profiles')
+    .select('slug');
+  if (traditionError) throw traditionError;
+  const validTraditionSlugs = new Set((traditionProfiles ?? []).map((t: { slug: string }) => t.slug));
 
   const calculated = calculateObservancesForYear(year, location);
 
@@ -92,7 +174,7 @@ export async function ensureYearMaterialized({
   // to the same date in a given year), so this is a real, expected case,
   // not just defensive padding -- last-wins is fine since they're
   // identical in every column that matters to the identity key.
-  const rowsByKey = new Map<string, ReturnType<typeof buildRow>>();
+  const rowsByKey = new Map<string, MaterializedOccurrenceRow>();
   // 'standard' is EVALUATOR_RULES' generic variantId for every single-
   // variant rule (diwali, karva-chauth, etc. -- there's no real sampradaya
   // split to record for these), so it's excluded here the same way
@@ -100,17 +182,29 @@ export async function ensureYearMaterialized({
   // 'standard' into spiritual_tradition.
   const GENERIC_VARIANT_KEYS = new Set(['legacy-default', 'standard']);
 
+  // occ.ruleKey's variant suffix is already normalized to rules.json's own
+  // qualifier convention by calculateObservancesForYear (see engine.ts's
+  // evaluatorVariantToRuleQualifier use). That vocabulary ('smarta_nishita',
+  // 'gaudiya_iskcon') doesn't always coincide with a tradition_profiles slug
+  // ('smarta', 'gaudiya_iskcon', ...) -- 'gaudiya_iskcon' happens to match
+  // directly, 'smarta_nishita' doesn't. Try the value as-is first (covers
+  // every rule where it already matches), then variant-qualifier.ts's own
+  // crosswalk to the evaluator vocabulary ('smarta'), and only null out if
+  // neither resolves to a real row -- writing an unresolvable value here
+  // fails the FK and rolls back every other row in the same upsert batch.
+  function resolveSpiritualTradition(slug: string, variantKey: string): string | null {
+    if (GENERIC_VARIANT_KEYS.has(variantKey)) return null;
+    if (validTraditionSlugs.has(variantKey)) return variantKey;
+    const evaluatorForm = ruleQualifierToEvaluatorVariant(slug, variantKey);
+    if (evaluatorForm && validTraditionSlugs.has(evaluatorForm)) return evaluatorForm;
+    return null;
+  }
+
   function buildRow(occ: (typeof calculated)[number]) {
     const definitionId = definitionIdBySlug.get(occ.slug);
     if (!definitionId) return null;
     const variantKey = occ.ruleKey.includes('::') ? occ.ruleKey.split('::')[1] : 'legacy-default';
-    // occ.ruleKey's variant suffix is already normalized to rules.json's own
-    // qualifier convention by calculateObservancesForYear (see engine.ts's
-    // evaluatorVariantToRuleQualifier use) -- spiritual_tradition mirrors
-    // that same value directly instead of re-deriving it via a second,
-    // separately-maintained mapping that could drift from the crosswalk in
-    // variant-qualifier.ts.
-    const spiritualTradition = GENERIC_VARIANT_KEYS.has(variantKey) ? null : variantKey;
+    const spiritualTradition = resolveSpiritualTradition(occ.slug, variantKey);
     return {
       definition_id: definitionId,
       year,
@@ -131,7 +225,11 @@ export async function ensureYearMaterialized({
     const key = `${row.definition_id}|${row.year}|${row.calendar_profile}|${row.occurrence_date}|${row.variant_key}|${row.computed_latitude}|${row.computed_longitude}|${row.computed_timezone}`;
     rowsByKey.set(key, row);
   }
-  const rows = Array.from(rowsByKey.values());
+  let rows = Array.from(rowsByKey.values());
+
+  if (isFestivalMirrorProfile) {
+    rows = collapseFestivalMirrorNameCollisions(rows, definitionDisplayNameById);
+  }
 
   if (rows.length === 0) return;
 
