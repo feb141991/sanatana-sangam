@@ -1239,6 +1239,65 @@ export function batchIdentityKey(row: any): string {
   ].join('|');
 }
 
+/**
+ * trg_sync_occurrence_to_festival (DB trigger) mirrors every legacy-ujjain
+ * occurrence into a legacy `festivals` table unique on (name, year) with no
+ * variant_key column -- so two occurrence rows sharing a display_name and
+ * year always collide there, EVEN THOUGH they may be the same single
+ * observance_definitions row producing two variant_key rows (Krishna
+ * Janmashtami: smarta_nishita, gaudiya_iskcon -- confirmed the only
+ * currently-affected slug, 2026-09-04 rules.json audit). The condition-
+ * evaluator branch below hardcodes calendar_profile: 'legacy-ujjain' for
+ * every row it produces, so this always applies here, unconditionally.
+ *
+ * The trigger itself already exempts kind: 'vrat' definitions (DELETEs
+ * rather than INSERTs for those) -- a recurring vrat's many real dates in a
+ * year (the generic 'ekadashi' rule, ~24/year, one definition/display_name)
+ * must never be collapsed here, since none of its rows ever reach the
+ * constraint this function protects against. Mirrors
+ * collapseFestivalMirrorNameCollisions in resolve-occurrences.ts (the
+ * self-heal-on-read path's equivalent hardening) -- kept as a separate,
+ * smaller copy here rather than a shared import because this function
+ * operates on calculateOccurrencesWithEvaluator's raw {slug, date,
+ * spiritual_tradition, variant_key} shape, not resolve-occurrences.ts's
+ * DB-row shape, and per this file's own header comment the two
+ * materialization paths are deliberately not sharing machinery.
+ */
+export function collapseFestivalMirrorNameCollisionsForEvaluatorOutput<
+  T extends { slug: string; date: string; year: number; spiritual_tradition?: string | null; variant_key?: string },
+>(
+  occurrences: T[],
+  definitionMetaBySlug: Map<string, { displayName: string; kind: string | null }>,
+): T[] {
+  const groups = new Map<string, T[]>();
+  let nonCollapsibleCounter = 0;
+  for (const occ of occurrences) {
+    const meta = definitionMetaBySlug.get(occ.slug);
+    if (!meta || meta.kind === 'vrat') {
+      groups.set(`__no_collapse__${nonCollapsibleCounter++}`, [occ]);
+      continue;
+    }
+    const key = `${meta.displayName}|${occ.year}`;
+    const group = groups.get(key);
+    if (group) group.push(occ);
+    else groups.set(key, [occ]);
+  }
+
+  const kept: T[] = [];
+  for (const group of groups.values()) {
+    if (group.length <= 1) {
+      kept.push(...group);
+      continue;
+    }
+    const preferred =
+      group.find((o) => o.spiritual_tradition === 'smarta') ??
+      group.find((o) => o.spiritual_tradition == null) ??
+      [...group].sort((a, b) => (a.variant_key ?? '').localeCompare(b.variant_key ?? ''))[0];
+    kept.push(preferred);
+  }
+  return kept;
+}
+
 export async function materializeOccurrencesForYears({
   supabase,
   targetYears,
@@ -1252,14 +1311,16 @@ export async function materializeOccurrencesForYears({
 }): Promise<MaterializeResult> {
   const { data: definitions, error: defsError } = await supabase
     .from('observance_definitions')
-    .select('id, slug')
+    .select('id, slug, display_name, kind')
     .eq('active', true);
 
   if (defsError) throw defsError;
 
   const definitionMap = new Map<string, string>();
+  const definitionMetaBySlug = new Map<string, { displayName: string; kind: string | null }>();
   for (const def of definitions ?? []) {
     definitionMap.set(def.slug, def.id);
+    definitionMetaBySlug.set(def.slug, { displayName: def.display_name, kind: def.kind ?? null });
   }
 
   const { data: existingRows, error: existingError } = await supabase
@@ -1322,7 +1383,8 @@ export async function materializeOccurrencesForYears({
 
     if (USE_CONDITION_EVALUATOR) {
       // ── Condition Evaluator Path ───────────────────────────────────────────
-      const { resolved: calculated, unresolved } = calculateOccurrencesWithEvaluator(year);
+      const { resolved: evaluatorResolved, unresolved } = calculateOccurrencesWithEvaluator(year);
+      const calculated = collapseFestivalMirrorNameCollisionsForEvaluatorOutput(evaluatorResolved, definitionMetaBySlug);
       summary[year].calculated = calculated.length;
 
       const namedDates = new Set(calculated.filter(o => !o.recurring).map(o => o.date));

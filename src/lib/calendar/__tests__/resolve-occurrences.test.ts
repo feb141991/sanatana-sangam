@@ -4,15 +4,24 @@
  * cleanup) hit two failures this file's changes are meant to prevent from
  * ever reaching production silently again:
  *
- * 1. Krishna Janmashtami's two variant definitions (Smarta, Gaudiya/ISKCON)
- *    share one observance_definitions.display_name. trg_sync_occurrence_to_
- *    festival mirrors every legacy-ujjain row into a legacy `festivals`
- *    table unique on (name, year) with no variant concept -- writing both
- *    variants in the same batch violates that constraint and rolls back the
- *    ENTIRE multi-row upsert, including every unrelated slug.
+ * 1. Krishna Janmashtami is a SINGLE observance_definitions row (kind:
+ *    'major') that legitimately produces two variant_key occurrence rows
+ *    for the same year -- smarta_nishita, gaudiya_iskcon. trg_sync_
+ *    occurrence_to_festival mirrors every legacy-ujjain row into a legacy
+ *    `festivals` table unique on (name, year) with no variant_key column at
+ *    all, keyed per occurrence row id -- so BOTH variant rows try to insert
+ *    their own festivals row under the same (name, year) and the second one
+ *    violates the constraint, aborting the write.
  * 2. rules.json's own variant vocabulary ('smarta_nishita') doesn't always
  *    match a tradition_profiles.slug FK target ('smarta') -- writing it
  *    verbatim fails the same way.
+ *
+ * The fix (collapseFestivalMirrorNameCollisions) must also NOT collapse a
+ * recurring vrat definition's many real dates in a year (e.g. the generic
+ * 'ekadashi' rule, ~24/year, one definition/display_name) -- the trigger
+ * itself already exempts kind: 'vrat' definitions (DELETEs rather than
+ * INSERTs for those), so none of their rows ever reach the constraint this
+ * function protects against.
  */
 import { describe, it, expect, vi } from 'vitest';
 
@@ -29,7 +38,7 @@ function makeSupabase({
   definitions,
   traditionSlugs,
 }: {
-  definitions: Array<{ id: string; slug: string; display_name: string }>;
+  definitions: Array<{ id: string; slug: string; display_name: string; kind: string }>;
   traditionSlugs: string[];
 }) {
   const upserted: any[] = [];
@@ -67,27 +76,24 @@ function makeSupabase({
 }
 
 const location = { lat: 23.1765, lon: 75.7885, tz: 'Asia/Kolkata' };
-const definitions = [
-  { id: 'def-smarta', slug: 'krishna-janmashtami', display_name: 'Krishna Janmashtami' },
-  { id: 'def-gaudiya', slug: 'krishna-janmashtami-gaudiya', display_name: 'Krishna Janmashtami' },
-  { id: 'def-shivaratri', slug: 'maha-shivaratri', display_name: 'Maha Shivaratri' },
-];
+const janmashtami = { id: 'def-janmashtami', slug: 'krishna-janmashtami', display_name: 'Krishna Janmashtami', kind: 'major' };
+const shivaratri = { id: 'def-shivaratri', slug: 'maha-shivaratri', display_name: 'Maha Shivaratri', kind: 'major' };
+const genericEkadashi = { id: 'def-ekadashi', slug: 'ekadashi', display_name: 'Ekadashi', kind: 'vrat' };
 const traditionSlugs = ['smarta', 'gaudiya_iskcon', 'unspecified'];
 
 describe('ensureYearMaterialized — festival-mirror name collisions', () => {
-  it('keeps exactly one row when two variant definitions share a display_name, preferring Smarta', async () => {
+  it('keeps exactly one row when one definition produces two same-year variant rows, preferring Smarta', async () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },
-      { slug: 'krishna-janmashtami-gaudiya', date: '2026-09-04', ruleKey: 'krishna-janmashtami-gaudiya::gaudiya_iskcon' },
+      { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::gaudiya_iskcon' },
       { slug: 'maha-shivaratri', date: '2026-02-15', ruleKey: 'maha-shivaratri::smarta' },
     ]);
-    const supabase = makeSupabase({ definitions, traditionSlugs });
+    const supabase = makeSupabase({ definitions: [janmashtami, shivaratri], traditionSlugs });
 
     await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
 
-    const janmashtamiRows = supabase.upserted.filter((r) => r.date === '2026-09-04');
+    const janmashtamiRows = supabase.upserted.filter((r) => r.definition_id === 'def-janmashtami');
     expect(janmashtamiRows).toHaveLength(1);
-    expect(janmashtamiRows[0].definition_id).toBe('def-smarta');
     expect(janmashtamiRows[0].variant_key).toBe('smarta_nishita');
     // The FK-unsafe value ('smarta_nishita') must not be written verbatim.
     expect(janmashtamiRows[0].spiritual_tradition).toBe('smarta');
@@ -98,9 +104,9 @@ describe('ensureYearMaterialized — festival-mirror name collisions', () => {
   it('does not collapse same-name variants for a calendar_profile the festival mirror never touches', async () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },
-      { slug: 'krishna-janmashtami-gaudiya', date: '2026-09-04', ruleKey: 'krishna-janmashtami-gaudiya::gaudiya_iskcon' },
+      { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::gaudiya_iskcon' },
     ]);
-    const supabase = makeSupabase({ definitions, traditionSlugs });
+    const supabase = makeSupabase({ definitions: [janmashtami], traditionSlugs });
 
     await ensureYearMaterialized({
       supabase,
@@ -112,14 +118,24 @@ describe('ensureYearMaterialized — festival-mirror name collisions', () => {
     expect(supabase.upserted).toHaveLength(2);
   });
 
+  it('never collapses a recurring vrat definition\'s many real dates in a year', async () => {
+    const ekadashiDates = ['2026-01-10', '2026-01-25', '2026-02-08', '2026-02-24'];
+    calculateObservancesForYear.mockReturnValue(
+      ekadashiDates.map((date) => ({ slug: 'ekadashi', date, ruleKey: 'ekadashi::legacy-default' })),
+    );
+    const supabase = makeSupabase({ definitions: [genericEkadashi], traditionSlugs });
+
+    await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
+
+    expect(supabase.upserted).toHaveLength(ekadashiDates.length);
+    expect(new Set(supabase.upserted.map((r) => r.date)).size).toBe(ekadashiDates.length);
+  });
+
   it('resolves a rules.json qualifier that is not itself a tradition_profiles slug via the evaluator crosswalk', async () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'krishna-janmashtami', date: '2026-09-04', ruleKey: 'krishna-janmashtami::smarta_nishita' },
     ]);
-    const supabase = makeSupabase({
-      definitions: [definitions[0]],
-      traditionSlugs,
-    });
+    const supabase = makeSupabase({ definitions: [janmashtami], traditionSlugs });
 
     await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
 
@@ -131,7 +147,7 @@ describe('ensureYearMaterialized — festival-mirror name collisions', () => {
     calculateObservancesForYear.mockReturnValue([
       { slug: 'maha-shivaratri', date: '2026-02-15', ruleKey: 'maha-shivaratri::some_unknown_variant' },
     ]);
-    const supabase = makeSupabase({ definitions: [definitions[2]], traditionSlugs });
+    const supabase = makeSupabase({ definitions: [shivaratri], traditionSlugs });
 
     await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
 

@@ -68,20 +68,49 @@ interface MaterializedOccurrenceRow {
   calculated_by: string;
 }
 
-// See FESTIVAL_MIRROR_CALENDAR_PROFILE above. Multiple observance_definitions
-// rows can share one display_name (sampradaya variants of the same named
-// festival), and this profile's legacy mirror table can hold only one row
-// per (name, year). Keep a single row per colliding (display_name, year)
-// pair: prefer the Smarta/default variant per this project's own governance
-// rule (unspecified sampradaya -> Smarta), else the generic/no-variant row,
-// else whichever sorts first -- deterministic, not silently arbitrary.
+export interface FestivalMirrorDefinitionMeta {
+  displayName: string;
+  kind: string | null;
+}
+
+// See FESTIVAL_MIRROR_CALENDAR_PROFILE above. `festivals` is unique on
+// (name, year) with no variant_key column at all -- so this collision is NOT
+// limited to two different observance_definitions rows sharing a
+// display_name (Krishna Janmashtami is in fact a SINGLE definition; it just
+// produces two variant_key occurrence rows -- smarta_nishita, gaudiya_iskcon
+// -- for the same year). Every row the trigger's INSERT ... ON CONFLICT (id)
+// runs against is keyed by the occurrence's own row id, so two occurrence
+// rows sharing a (display_name, year) ALWAYS collide on `festivals`
+// regardless of whether they also share definition_id.
+//
+// BUT the trigger itself already exempts `kind = 'vrat'` definitions --
+// those get DELETEd from festivals, never inserted (see
+// sync_occurrence_to_festival()'s own early-return). A recurring vrat (the
+// generic 'ekadashi' rule, ~24 dates/year, one definition/display_name) must
+// NOT be collapsed here: none of its rows ever reach the constraint this
+// function exists to protect, and collapsing them would silently destroy 23
+// of 24 real occurrences for the year. So this only ever collapses
+// non-vrat definitions -- confirmed by direct rules.json audit (2026-09-04)
+// that Krishna Janmashtami is currently the only kind != 'vrat' festival
+// with more than one materialized sampradaya variant.
+//
+// Within an actual collision, keep a single row: prefer the Smarta/default
+// variant per this project's own governance rule (unspecified sampradaya ->
+// Smarta), else the generic/no-variant row, else whichever sorts first --
+// deterministic, not silently arbitrary.
 function collapseFestivalMirrorNameCollisions(
   rows: MaterializedOccurrenceRow[],
-  displayNameById: Map<string, string>,
+  definitionMetaById: Map<string, FestivalMirrorDefinitionMeta>,
 ): MaterializedOccurrenceRow[] {
   const groups = new Map<string, MaterializedOccurrenceRow[]>();
   for (const row of rows) {
-    const name = displayNameById.get(row.definition_id) ?? row.definition_id;
+    const meta = definitionMetaById.get(row.definition_id);
+    if (meta?.kind === 'vrat') {
+      // Never reaches the festivals INSERT branch -- not this function's concern.
+      groups.set(`__no_collapse__${row.definition_id}|${row.year}|${row.date}|${row.variant_key}`, [row]);
+      continue;
+    }
+    const name = meta?.displayName ?? row.definition_id;
     const key = `${name}|${row.year}`;
     const group = groups.get(key);
     if (group) group.push(row);
@@ -90,8 +119,7 @@ function collapseFestivalMirrorNameCollisions(
 
   const kept: MaterializedOccurrenceRow[] = [];
   for (const group of groups.values()) {
-    const distinctDefinitionIds = new Set(group.map((r) => r.definition_id));
-    if (distinctDefinitionIds.size <= 1) {
+    if (group.length <= 1) {
       kept.push(...group);
       continue;
     }
@@ -140,15 +168,15 @@ export async function ensureYearMaterialized({
 
   const { data: definitions, error: defsError } = await supabase
     .from('observance_definitions')
-    .select('id, slug, display_name')
+    .select('id, slug, display_name, kind')
     .eq('active', true);
   if (defsError) throw defsError;
 
   const definitionIdBySlug = new Map<string, string>();
-  const definitionDisplayNameById = new Map<string, string>();
+  const definitionMetaById = new Map<string, FestivalMirrorDefinitionMeta>();
   for (const def of definitions ?? []) {
     definitionIdBySlug.set(def.slug, def.id);
-    definitionDisplayNameById.set(def.id, def.display_name);
+    definitionMetaById.set(def.id, { displayName: def.display_name, kind: def.kind ?? null });
   }
 
   const isFestivalMirrorProfile = calendarProfile === FESTIVAL_MIRROR_CALENDAR_PROFILE;
@@ -228,7 +256,7 @@ export async function ensureYearMaterialized({
   let rows = Array.from(rowsByKey.values());
 
   if (isFestivalMirrorProfile) {
-    rows = collapseFestivalMirrorNameCollisions(rows, definitionDisplayNameById);
+    rows = collapseFestivalMirrorNameCollisions(rows, definitionMetaById);
   }
 
   if (rows.length === 0) return;
