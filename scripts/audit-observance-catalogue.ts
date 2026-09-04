@@ -13,9 +13,11 @@
  * result is approved for publication -- "resolved" means "the engine
  * returned a date for this slug in the target year," nothing more. Reading
  * each ratification_note for pending-ratification/profile-scope caveats is
- * a separate, not-yet-automated pass (see missingRuleNote below for why
- * that one bucket got a deeper, scripted second check instead of staying a
- * flat guess).
+ * a separate, not-yet-automated pass (see `manual_seed_without_rule` in
+ * PrimaryStatus below for why the no-rule bucket needed a deeper, scripted
+ * second check against actual published occurrence data instead of staying
+ * a flat guess -- an earlier version guessed "migration pollution" here and
+ * was wrong).
  *
  * Run: npx tsx scripts/audit-observance-catalogue.ts [year]
  */
@@ -32,6 +34,7 @@ const YEAR = parseInt(process.argv[2] ?? '2026', 10);
 const OUTPUT_DIR = path.join(BACKEND_ROOT, 'docs/audits/observance-catalogue');
 
 type DbDefinition = {
+  id: string;
   slug: string;
   display_name: string;
   kind: string;
@@ -39,7 +42,23 @@ type DbDefinition = {
   created_at: string;
 };
 
-type PrimaryStatus = 'resolved' | 'deferred' | 'missing_rule' | 'expected_zero' | 'engine_anomaly';
+type PrimaryStatus =
+  | 'resolved'
+  | 'deferred'
+  | 'missing_rule'
+  // A slug with no rules.json entry, but with existing published
+  // observance_occurrences rows -- these are LIVE, currently-served dates
+  // from a distinct manual-seed mechanism (calculated_by: 'legacy_sync',
+  // real external source citations), not orphaned catalogue entries.
+  // Confirmed 2026-09-04 (docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §9)
+  // that this project's earlier "migration-era pollution" guess for these
+  // was wrong. NOT a safe deletion candidate -- see §9 for the reconciliation
+  // work these actually need (two confirmed exact-date duplicates against a
+  // rules.json-backed sibling slug, three unexplained day-level
+  // discrepancies).
+  | 'manual_seed_without_rule'
+  | 'expected_zero'
+  | 'engine_anomaly';
 
 /**
  * A zero-output year is not inherently an engine anomaly. Entries belong here
@@ -63,6 +82,7 @@ interface CatalogueRow {
   primary_status: PrimaryStatus;
   launch_status: string | null;
   resolved_dates: string[];
+  manual_seed_dates: Array<{ date: string; calculated_by: string | null; source_provenance: unknown }>;
   note: string | null;
 }
 
@@ -74,11 +94,28 @@ async function main() {
 
   const { data: definitions, error: defsError } = await db
     .from('observance_definitions')
-    .select('slug, display_name, kind, tradition, created_at')
+    .select('id, slug, display_name, kind, tradition, created_at')
     .eq('active', true)
     .order('slug');
   if (defsError) throw defsError;
   const defs = (definitions ?? []) as DbDefinition[];
+
+  // Existing published occurrence data, independent of what the engine can
+  // (re)compute -- this is what actually distinguishes an orphaned catalogue
+  // row from a slug that is live today via a manual-seed mechanism the
+  // engine knows nothing about. Queried for every definition, not just
+  // no-rule ones, so a future definition that loses its rule but keeps old
+  // data is caught the same way.
+  const { data: publishedOccurrences, error: occError } = await db
+    .from('observance_occurrences')
+    .select('definition_id, date, calculated_by, source_provenance')
+    .eq('publication_status', 'published');
+  if (occError) throw occError;
+  const publishedByDefinitionId = new Map<string, Array<{ date: string; calculated_by: string | null; source_provenance: unknown }>>();
+  for (const row of (publishedOccurrences ?? []) as Array<{ definition_id: string; date: string; calculated_by: string | null; source_provenance: unknown }>) {
+    if (!publishedByDefinitionId.has(row.definition_id)) publishedByDefinitionId.set(row.definition_id, []);
+    publishedByDefinitionId.get(row.definition_id)!.push({ date: row.date, calculated_by: row.calculated_by, source_provenance: row.source_provenance });
+  }
 
   const rulesPath = path.join(BACKEND_ROOT, 'packages/dharma-rules/src/festivals/rules.json');
   const rules = JSON.parse(fs.readFileSync(rulesPath, 'utf-8')) as Array<{
@@ -116,6 +153,7 @@ async function main() {
     const hasRule = ruleSlugs.has(def.slug);
     const launchStatuses = launchStatusBySlug.get(def.slug);
     const expectedZeroNote = EXPECTED_ZERO_OUTPUT[YEAR]?.get(def.slug);
+    const manualSeedDates = publishedByDefinitionId.get(def.id) ?? [];
 
     let primary_status: PrimaryStatus;
     let note: string | null = null;
@@ -123,16 +161,28 @@ async function main() {
     if (dates.length > 0) {
       primary_status = 'resolved';
     } else if (!hasRule) {
-      primary_status = 'missing_rule';
-      const createdAtMs = new Date(def.created_at).getTime();
-      if (createdAtMs >= MIGRATION_WINDOW_START && createdAtMs <= MIGRATION_WINDOW_END) {
-        note = 'created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only; inspect references before classifying it as orphaned, duplicated, or safe to remove.';
+      if (manualSeedDates.length > 0) {
+        // Confirmed 2026-09-04: this is the live, correct classification for
+        // this shape, not 'missing_rule'. See PrimaryStatus's own doc comment
+        // and docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §9 for the full
+        // reconciliation finding -- NOT a safe deletion/cleanup candidate.
+        primary_status = 'manual_seed_without_rule';
+        note = `${manualSeedDates.length} published occurrence row(s) exist from a manual-seed mechanism (${[...new Set(manualSeedDates.map(d => d.calculated_by))].join(', ')}), unrelated to this engine. Needs reconciliation against any rules.json-backed sibling slug before treating either source as authoritative -- see PRD §9.`;
+      } else {
+        primary_status = 'missing_rule';
+        const createdAtMs = new Date(def.created_at).getTime();
+        if (createdAtMs >= MIGRATION_WINDOW_START && createdAtMs <= MIGRATION_WINDOW_END) {
+          note = 'created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC). This is migration correlation only, and no published occurrence data exists for this slug at all -- inspect references before concluding anything further.';
+        }
       }
     } else if (expectedZeroNote) {
       primary_status = 'expected_zero';
       note = expectedZeroNote;
     } else if (launchStatuses?.has('deferred') && launchStatuses.size === 1) {
       primary_status = 'deferred';
+      if (manualSeedDates.length > 0) {
+        note = `GOVERNANCE GAP: this rule is launch_status:'deferred' (must never present a final date per this project's own governance rules), yet ${manualSeedDates.length} published occurrence row(s) already exist for it. Not resolved by this script -- see PRD §9's open item on deferred rules with pre-existing published rows.`;
+      }
     } else {
       primary_status = 'engine_anomaly';
       note = 'Has a rules.json entry, launch_status is not purely deferred, but produced zero occurrences for the target year. Requires the same bounded multi-year diagnosis saphala-ekadashi got before concluding anything -- do not assume defect or non-defect from this row alone.';
@@ -147,14 +197,15 @@ async function main() {
       primary_status,
       launch_status: launchStatuses ? [...launchStatuses].join(',') : null,
       resolved_dates: dates,
+      manual_seed_dates: manualSeedDates,
       note,
     });
   }
 
-  const counts: Record<PrimaryStatus, number> = { resolved: 0, deferred: 0, missing_rule: 0, expected_zero: 0, engine_anomaly: 0 };
+  const counts: Record<PrimaryStatus, number> = { resolved: 0, deferred: 0, missing_rule: 0, manual_seed_without_rule: 0, expected_zero: 0, engine_anomaly: 0 };
   for (const r of rows) counts[r.primary_status]++;
   const total = rows.length;
-  const sumCheck = counts.resolved + counts.deferred + counts.missing_rule + counts.expected_zero + counts.engine_anomaly;
+  const sumCheck = counts.resolved + counts.deferred + counts.missing_rule + counts.manual_seed_without_rule + counts.expected_zero + counts.engine_anomaly;
 
   const document = {
     generated_at: new Date().toISOString(),
@@ -205,10 +256,11 @@ function markdown(doc: ReturnType<typeof buildDocForTypeInference>): string {
   }
   lines.push('## Full rows');
   lines.push('');
-  lines.push('| Slug | Status | Launch status | Resolved date(s) | Note |');
-  lines.push('|---|---|---|---|---|');
+  lines.push('| Slug | Status | Launch status | Resolved date(s) | Manual-seed date(s) | Note |');
+  lines.push('|---|---|---|---|---|---|');
   for (const r of doc.rows) {
-    lines.push(`| ${r.slug} | ${r.primary_status} | ${r.launch_status ?? '—'} | ${r.resolved_dates.join(', ') || '—'} | ${r.note ?? ''} |`);
+    const seedDates = r.manual_seed_dates.map(d => d.date).join(', ') || '—';
+    lines.push(`| ${r.slug} | ${r.primary_status} | ${r.launch_status ?? '—'} | ${r.resolved_dates.join(', ') || '—'} | ${seedDates} | ${r.note ?? ''} |`);
   }
   lines.push('');
   return lines.join('\n');

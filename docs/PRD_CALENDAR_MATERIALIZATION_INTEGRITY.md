@@ -484,19 +484,140 @@ delete them. They are not at risk of accidental automated deletion.
   `ugadi` presenting a final published date despite `launch_status:
   'deferred'`) was not investigated further here — flagged only.
 
-## 10. Not yet done — explicitly deferred
+## 10. Manual-seed reconciliation and governance-gap closure (2026-09-04)
 
-- **Reconciliation decision** for the 5 slug-pairs above with duplicate or
-  discrepant dates — which source to trust, whether to merge into one
-  properly-ruled definition. Needs a named reviewer per this project's own
-  content-governance rule; not an engineering call to make unilaterally.
-- **Separate follow-up**: audit whether other `launch_status: 'deferred'`
-  slugs (beyond `gudi-padwa`/`ugadi`) also carry pre-existing `published`
-  occurrence rows that were never retracted when the rule was deferred —
-  a potentially broader instance of the same governance gap. Not started;
-  scope not yet bounded.
+Five further, concrete pieces of work, per explicit sequencing: trace
+exposure paths, reclassify, produce reviewer-owned reconciliation records,
+close the governance-contradiction mechanism, and add regression coverage.
+**"Legitimate manual seed" (§9) was correctly pushed back on as too strong a
+claim** — it proves these rows are intentionally persisted with provenance,
+not that their dates are authoritative. `myfest.in`, Drik Panchang, and
+timeanddate.com are source records to evaluate, not automatic approval.
+
+### 10.1 API/UI exposure trace
+
+Every one of these 7 manual-seed rows sits under `calendar_profile:
+'legacy-ujjain'` at the exact Ujjain reference coordinates — the default
+bucket served to any user with no saved location, i.e. most traffic, not an
+edge case.
+
+Of the 12 routes reading `observance_occurrences` directly: `home-summary`,
+`calendar/month`, `calendar/upcoming`, `calendar/day`, `calendar/export` are
+all protected — either by calling `filterWithheldJoinedRows` directly, or
+because they call `formatOccurrencesToResults`, which calls it internally
+(`observance-formatter.ts:249`). `ai/chat` filters to `kind: 'vrat'` only, so
+it structurally cannot surface any of the 7 (`kind: 'major'`/`'regional'`).
+
+**But `isWithheldOccurrence` (`withheld.ts:87`) returns `false` (not
+withheld) whenever a slug has zero `rules.json` rows at all** — so the
+protected paths' filter is a no-op for exactly these 7 slugs, on every one of
+them, regardless of how many other paths apply it correctly. The filter was
+built for rules that ARE disputed/deferred; a slug with no rule to check
+against was never something it was designed to catch.
+
+**`cron/festival-email` had zero withheld-filtering of any kind** — the one
+genuinely unprotected, user-facing path found. Fixed this cycle (§10.4).
+`vrat/stats` and the 3 admin routes were not traced further (not user-facing
+in the same way); `cron/verify-festival-dates` and `cron/calendar-health`
+were not traced (read-only diagnostic tooling, lower risk, not started).
+
+### 10.2 Reclassified: `missing_rule` → `manual_seed_without_rule`
+
+`scripts/audit-observance-catalogue.ts` now distinguishes a slug with
+genuinely nothing (no rule, no data — stays `missing_rule`, count now 0) from
+one with no rule but live `published` occurrence data
+(`manual_seed_without_rule`, count 7). The script also now flags, on every
+row regardless of bucket, whether `launch_status: 'deferred'` coexists with
+pre-existing published data — see §10.3. Regenerated:
+[`docs/audits/observance-catalogue/2026.json`](audits/observance-catalogue/2026.json)
+/ [`.md`](audits/observance-catalogue/2026.md). Updated counts: `resolved`
+47, `deferred` 48, `missing_rule` 0, `manual_seed_without_rule` 7,
+`expected_zero` 1, `engine_anomaly` 0 (sum 103, unchanged).
+
+### 10.3 Governance contradiction — far larger than the 2 cases first found
+
+Querying the new per-row flag across the whole catalogue: **all 48 of the
+currently-`deferred` definitions have pre-existing `published`
+`observance_occurrences` rows** — not just `gudi-padwa`/`ugadi`. This is
+systemic, not an edge case, and it is exactly the risk `withheld.ts`'s own
+header comment already named: *"The stored rows should also be quarantined
+at the database level. This filter is defence in depth, not a replacement
+for cleanup."* That comment was written before anyone had measured how many
+rows were actually affected — this is the first measurement, and the answer
+is all of them.
+
+**This is not a full incident on its own**, because §10.1 already confirmed
+`isPublishable()` correctly withholds every one of these 48 on every
+protected read path (`isWithheldOccurrence` finds their rule, sees
+`launch_status: 'deferred'`, returns withheld=true) — the defense-in-depth
+layer is doing its job on the paths that call it. The uncovered risk is
+narrower and now closed: paths that skip that layer entirely.
+
+**Resolved (mechanism, not data) this cycle:** `cron/festival-email`
+(`src/app/api/cron/festival-email/route.ts`) now calls
+`filterWithheldJoinedRows` before building its send list — the one
+user-facing path that had zero protection. 2 new tests in
+`src/app/api/cron/festival-email/__tests__/route.test.ts` (a deferred
+festival with a stray published row is never emailed; a real publishable
+one still is).
+
+**Not resolved, and explicitly not an engineering call:** whether the 48
+deferred slugs' 100+ published rows should be retracted/quarantined at the
+database level, per `withheld.ts`'s own suggestion. That is data cleanup at
+real scale, needs a reviewer decision on each affected family (or a policy
+decision to blanket-withhold all `deferred`-backed published rows at once),
+and was not attempted here.
+
+**Also found, unrelated, not fixed:** `cron/festival-email`'s subject-line
+lookup reads `def.name`/`def.theme`, but `observance_definitions` has no
+`name` or `theme` column (only `display_name`) — every email's subject
+silently falls back to the generic `"Festival is in 3 days"`. Flagged for
+its own separate fix; out of scope here.
+
+### 10.4 Reconciliation packet
+
+[`docs/RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md`](../RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md)
+— one reviewer-owned record per collision, in this project's established
+`[S]`-decision packet format (matching `COUNCIL_RATIFICATION_PACKET.md`'s
+house style: "nothing changed yet," one question per item, `draft` state).
+Covers the 5 discrepant/duplicate pairs (Gudi Padwa/Ugadi, Vassa, Pavarana,
+Samvatsari, Sangha Day) plus the Gudi Padwa/Ugadi deferred-yet-published
+contradiction specifically. Also surfaces a compliance point independent of
+which date is correct: `docs/source-governance.md` §2 classifies all three
+citation sources behind these 7 rows (myfest.in, drikpanchang.com,
+timeanddate.com) as **Tier 5 — "may corroborate, never sole authority"** —
+none of the 7 currently cite anything higher, so even the item that turns
+out to have the right date still needs a Tier 1-4 source before it can be
+`approved` under this project's own policy.
+
+### 10.5 Regression coverage: unbatched rows are structurally untouchable
+
+`src/lib/calendar/__tests__/materialize-unbatched-safety.test.ts` — proves,
+via a real call to `commitOccurrencesWithBatches` (not just source reading),
+that a manual-seed row (`batch_id: null`) is never deleted or unlinked when
+the engine writes an unrelated identity in the same run. The cleanup pass's
+query is `.eq('batch_id', batchId)` for a batch the run itself opened; a
+`null` batch_id can never match that filter. Confirmed structurally, not
+assumed.
+
+## 11. Not yet done — explicitly deferred
+
+- **Reconciliation decision** for the 5 slug-pairs in
+  `RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md` — which source to trust,
+  whether to merge into one properly-ruled definition, and separately
+  sourcing a Tier 1-4 citation for whichever date is confirmed correct.
+  Needs a named reviewer; not an engineering call.
+- **Database-level cleanup decision** for the 48 deferred-with-published-rows
+  definitions found in §10.3 — whether to retract/quarantine those rows at
+  the data level (matching `withheld.ts`'s own long-standing suggestion), on
+  what timeline, and whether per-family or as one blanket policy change.
+  Not started; explicitly a product/governance call, not resolved here.
+- **`cron/festival-email` subject-line bug** (`def.name`/`def.theme` reading
+  non-existent columns) — flagged in §10.3, not fixed; unrelated to this
+  investigation's scope.
 - **Prioritized external verification**: use §8's evidence — especially the
   26 `has_ratification_note_requiring_human_read` rows and the 36
   `no_structured_citation` rows — to prioritize by upcoming date,
   notification eligibility, audience size, and calendar-profile divergence.
-  Not started.
+  Not started; the 5 reconciliation-packet items above are now the first
+  priority once a reviewer answers them.

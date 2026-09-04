@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendShoonayaEmail } from '@/lib/email';
+import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
 
 const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
@@ -49,7 +50,19 @@ export async function GET(request: Request) {
   if (festError) {
     return NextResponse.json({ error: festError.message }, { status: 500 });
   }
-  if (!upcoming?.length) {
+
+  // This was the only calendar-facing read path querying observance_occurrences
+  // with no withheld-filtering at all -- every other consumer (home-summary,
+  // calendar/month, /upcoming, /day, /export) applies this via
+  // filterWithheldJoinedRows or formatOccurrencesToResults internally. An
+  // unfiltered read here is worse than an unfiltered screen: this route PUSHES
+  // content via email, which can't be un-sent once delivered. See
+  // docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §9 for the incident this
+  // closes (48 currently-deferred definitions, plus 7 manual-seed slugs with
+  // no rule at all, all have live `published` rows this query would otherwise
+  // read unfiltered).
+  const publishable = filterWithheldJoinedRows(upcoming ?? []);
+  if (!publishable.length) {
     return NextResponse.json({ message: 'No festivals in 3 days', sent: 0 });
   }
 
@@ -76,7 +89,7 @@ export async function GET(request: Request) {
     mahavir_jayanti: 'Mahavir Jayanti in 3 days 🤲 — the path of Ahimsa',
   };
 
-  for (const fest of upcoming) {
+  for (const fest of publishable) {
     const def: any = (fest as any).observance_definitions || {};
     const key = (def.name || '').toLowerCase().replace(/\s+/g, '_');
     const subject = subjects[key] || `${def.name ?? 'Festival'} is in 3 days ✨`;
