@@ -641,12 +641,55 @@ query is `.eq('batch_id', batchId)` for a batch the run itself opened; a
 `null` batch_id can never match that filter. Confirmed structurally, not
 assumed.
 
+### 10.6 Step 3, first pass: external verification of the reconciliation packet (2026-09-05)
+
+Per the agreed sequencing, step 3 (broad external verification of the 47
+`resolved` slugs) starts with the 5 reconciliation-packet discrepancies
+first, not the full 47 — these were already flagged as disputed and are
+higher-value to resolve first. Findings added directly to
+`RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md`, per item, without making the
+which-slug-survives call (still the reviewer's, per `source-governance.md`
+§5):
+
+- **Gudi Padwa/Ugadi**: already resolved by a Tier 1 source already in this
+  repo (`docs/sources/rashtriya-panchang-saka-1948.manifest.md:190`) —
+  2027-04-07 confirmed correct.
+- **Vassa Begins**: 2027-07-19 confirmed via Asalha Puja's independently-reported
+  2027-07-18 date + the traditional "begins the next day" rule. Matches both
+  stored rows — a confirmed-correct duplicate, not an accuracy dispute.
+- **Pavarana**: the astronomical full moon of October 2027 (2027-10-15,
+  TheSkyLive) matches the rules-engine sibling exactly; the manual-seed row's
+  2027-10-17 appears wrong.
+- **Samvatsari (2026)**: resolved by the same in-repo Tier 1 source
+  (manifest.md:230) — 2026-09-15 confirmed correct, matching the rules-engine
+  sibling; the manual-seed row's 2026-09-06 (9 days off) appears wrong. 2027
+  not independently re-checked.
+- **Sangha Day**: the most consequential finding — this is not a date
+  dispute at all. "Sangha Day" is independently and consistently documented
+  as Māgha Pūjā, a February/March full-moon observance commemorating an
+  unrelated event, with no connection to Loy Krathong (confirmed
+  independently at 2027-11-14, the Thai 12th-lunar-month lantern festival).
+  Both stored rows sit in November near-but-not-matching Loy Krathong,
+  nowhere near real Sangha Day's actual window. Reads as a genuine
+  content-modeling error (the wrong festival's name attached to a different
+  festival's date), not an accuracy discrepancy between two sources for the
+  same event.
+
+4 of 5 items now have a real answer to "which date is correct"; none have a
+Tier 1-4 citation actually *attached* to the surviving row yet, and none of
+the structural questions (retire a duplicate slug, merge two into one,
+correct/split the Sangha Day content error) have been decided — those
+remain the reviewer's call.
+
 ## 11. Not yet done — explicitly deferred
 
 - **Reconciliation decision** for the 5 slug-pairs in
-  `RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md` — which source to trust,
-  whether to merge into one properly-ruled definition, and separately
-  sourcing a Tier 1-4 citation for whichever date is confirmed correct.
+  `RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md` — now backed by real
+  external-verification findings (§10.6) for 4 of 5, but the which-source-
+  to-trust ratification, whether to merge into one properly-ruled
+  definition, the Sangha Day content-error correction, and attaching an
+  actual Tier 1-4 citation to whichever row survives are all still open,
+  still the reviewer's call.
   Needs a named reviewer; not an engineering call.
 - **Database-level cleanup decision** for the 48 deferred-with-published-rows
   definitions found in §10.3 — whether to retract/quarantine those rows at
