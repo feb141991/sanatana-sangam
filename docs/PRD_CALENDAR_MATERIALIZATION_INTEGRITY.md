@@ -281,49 +281,89 @@ flagged for awareness only.
   direct query that `krishna-janmashtami` is a single `observance_
   definitions` row (not two) before designing the collision-collapse fix.
 
-## 7. Full definition catalogue — first pass (2026-09-04)
+## 7. Full definition catalogue — reproducible audit (2026-09-04)
 
 Scope-out for the broader accuracy audit beyond the original 10 migration-
 touched slugs. `observance_definitions` has 103 active rows; `rules.json`
-has 97 rows / 95 distinct slugs. A first pass ran the pure, DB-free engine
-(`calculateOccurrencesWithEvaluator(2026)`) against every active slug and
-classified each into ONE mutually-exclusive primary status (verified by set
-arithmetic summing to exactly 103 — an earlier hand-transcribed version of
-this table double-counted 9 Navratri series-child pseudo-slugs and did not
-sum correctly; this version is script-derived from the real DB slug list
-and does not have that defect):
+has 97 rows / 95 distinct slugs.
+
+**Correction to an earlier version of this section**, per external review:
+a first pass was prose-only (hand-transcribed lists, no committed script or
+data snapshot) and its Saphala Ekadashi diagnosis cited an invented
+mechanism ("adhika-masa insertion") and reported only one of two real 2027
+occurrences. Both are fixed below. The audit is now a committed,
+re-runnable script — `scripts/audit-observance-catalogue.ts` — whose output
+is committed as data, not asserted as prose:
+[`docs/audits/observance-catalogue/2026.json`](audits/observance-catalogue/2026.json)
+/ [`.md`](audits/observance-catalogue/2026.md). Re-run with
+`npx tsx scripts/audit-observance-catalogue.ts 2026`; the script itself
+asserts its four-bucket count sums to the live DB total and throws if not,
+so this can't silently drift out of sync the way the hand-transcribed
+version did.
 
 | Primary status | Count | Meaning |
 |---|---|---|
-| `resolved` | 47 | Engine produces a 2026 date. **Not yet vetted per-note for `pending_ratification`/`profile_scope_unverified` secondary flags** — a substring grep for "PENDING COUNCIL RATIFICATION" hit 20 slugs, but most of those likely follow Krishna Janmashtami's own pattern (a specific *future* year flagged pending while 2026 is separately council-confirmed) rather than being unresolved outright. That distinction requires reading each note individually, not assumed from either direction — not yet done. |
-| `deferred` | 48 | `launch_status: 'deferred'`. Correctly show no date, pending real review — governance-correct, not a defect. Nearly half of all active definitions are in this state today. |
-| `missing-rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no entry in this rules file at all. Likely a separate Jain/Buddhist ruleset not yet located in this investigation; unconfirmed. |
-| `engine-anomaly` → resolved as **not a defect** | 1 | `saphala-ekadashi`, `included` but zero 2026 output. Bounded diagnosis (below) closed this. |
+| `resolved` | 47 | Engine produces a 2026 date. **This means "engine resolved," not "verified."** No broad accuracy conclusion should be drawn from this bucket until real-world source validation occurs — none of the 47 have been externally checked beyond the original 10 migration-touched slugs. |
+| `deferred` | 48 | `launch_status: 'deferred'`. Correctly show no date, pending real review — governance-correct, not a defect. |
+| `missing_rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no `rules.json` entry, and confirmed absent from `series.json` too (checked directly, not assumed). All 7 were created 2026-06-24 09:56-09:58 UTC — the exact window of the (now-deleted) `corrected_2026_festival_migration` batch. `gudi-padwa-ugadi` is also a clear duplicate of two separately-tracked slugs that already exist (`gudi-padwa`, `ugadi`, both `deferred`). This reads as migration-era catalogue pollution (orphaned/duplicate `observance_definitions` rows), not a separate unlocated Jain/Buddhist ruleset — the earlier version of this section guessed the latter without checking; that guess was wrong. Nothing deleted; flagged for a scoped cleanup task with explicit approval.
+| `engine_anomaly` | 1 | `saphala-ekadashi` — `included`, zero 2026 output. See diagnosis below; the script itself only classifies, it does not conclude defect/non-defect (see the row's own `note` field in the receipt). |
 
-### `saphala-ekadashi` diagnosis (closed, not a defect)
+### `saphala-ekadashi` diagnosis — corrected
 
-Ran `calculateOccurrencesWithEvaluator` for 2025/2026/2027 at the Ujjain
-reference location: 2025 → `2025-12-15`, 2026 → **none**, 2027 →
-`2027-01-03` (exact match to the rule's own cited Rashtriya Panchang, Saka
-1948 source). The ~384-day gap between the 2025 and 2027 occurrences is one
-full lunar year plus drift from an intervening adhika-masa insertion — a
-normal lunar/solar calendar phenomenon where a fixed lunar-month festival
-can fall zero times within a specific Gregorian calendar year. The engine
-producing nothing for 2026 is correct, not broken. Reclassified out of
-`engine-anomaly`.
+The real mechanism, found in already-existing project documentation
+(`docs/CALENDAR_ENGINE_ASSESSMENT.md`, 2026-08-11 entry) that an earlier
+pass of this investigation failed to search for before running its own
+throwaway diagnostic: **not** an adhika-masa insertion. Pausha's
+krishna-paksha fortnight straddles the Dec 31/Jan 1 boundary *twice* within
+Gregorian 2027 — once as the tail of the 2026 lunar cycle
+(`2027-01-01..01-07`) and once as the head of the next cycle
+(`2027-12-14..12-27`) — a "double window," confirmed live via the project's
+own existing tool, `scripts/sweep-adhika-masa-collisions.ts` (re-run
+2026-09-04 for 2025-2028, output verbatim):
 
-This confirms the general caution this section should carry forward: **do
-not treat "zero output for the target year" as proof of a defect** without
-checking adjacent years first — exactly this pattern could recur for any of
-the other 47 "resolved" slugs in a future year, or could explain some of
-the 7 "missing-rule" slugs' apparent absence if their real rule turns out to
-exist but just doesn't land in 2026.
+```
+=== 2027 ===
+  no adhika month this year
+  ⚠ DOUBLE WINDOW purnimanta="Pausha": [2027-01-01..2027-01-07] + [2027-12-14..2027-12-27]
 
-### Not yet done
-- Read each of the 20 "pending ratification"-language notes individually to
-  separate genuinely-unratified rules from Janmashtami-pattern
-  (future-year-disputed, current-year-confirmed) ones.
-- Locate the ruleset (if any) covering the 7 `missing-rule` slugs.
-- Real-world external verification (WebSearch/government source
-  cross-check) of any of the 47 `resolved` slugs beyond the original 10 —
-  none of the 47 have been checked against an outside source in this cycle.
+  2027 saphala-ekadashi (masa=Pausha, tithi=26) -> 2027-01-03, 2027-12-23 -- window 2 of 2 [2027-12-14..2027-12-27] (LATEST)
+```
+
+**Two real occurrences exist in 2027** — `2027-01-03` and `2027-12-23` — and
+the project's already-established rule (per the same 2026-08-11 assessment,
+with 5 passing regression tests in `harness/adhika-window.test.ts`) is that
+the LATEST of the two is canonical: `2027-12-23`, not `2027-01-03`. An
+earlier pass of this investigation reported only `2027-01-03`, from a
+throwaway script whose evaluator call returns the first match, not an
+exhaustive list — an incomplete receipt, corrected here.
+
+2026 itself having zero occurrences is the documented, natural complement
+of the 2027 double window (both nearby occurrences land in 2027; none lands
+in 2026) — confirmed correct, not a defect. This was already investigated
+and closed by prior work well before this session; this section's role is
+to document that closure accurately, not to re-derive it.
+
+**General caution this section carries forward:** do not treat "zero
+output for the target year" as proof of a defect, and do not treat "engine
+produced one date" as proof of completeness either — always check whether
+the source tooling already exists before running a fresh diagnostic, and
+check adjacent years for a double-window sibling before concluding
+anything.
+
+### Not yet done — explicitly deferred pending the above
+
+Per explicit instruction: a note-by-note ratification classification and
+broad external (web/government-source) verification pass should **not**
+start until the catalogue audit is reproducible (done, this section) and
+the Saphala receipt is corrected (done, this section). Still open:
+
+- Classify the ~20 "pending ratification"-language notes with structured
+  flags (`current_year_confirmed`, `future_year_disputed`,
+  `profile_scope_unverified`, `no_current_year_source`) rather than a flat
+  substring-match guess.
+- Confirm the `missing_rule` migration-pollution hypothesis (e.g., check
+  for any FK references to these 7 rows elsewhere before proposing cleanup)
+  rather than treating it as settled from timestamp correlation alone.
+- Prioritize external verification of the 47 `resolved` slugs by upcoming
+  date, notification eligibility, audience size, and calendar-profile
+  divergence — not by treating all 47 as equal-priority work.

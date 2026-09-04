@@ -1,0 +1,1322 @@
+{
+  "generated_at": "2026-09-04T13:54:25.676Z",
+  "target_year": 2026,
+  "generator": "scripts/audit-observance-catalogue.ts",
+  "db_active_definition_count": 103,
+  "engine_resolved_slugs_not_in_db": [
+    "navratri-day-1-shailaputri",
+    "navratri-day-2-brahmacharini",
+    "navratri-day-3-chandraghanta",
+    "navratri-day-4-kushmanda",
+    "navratri-day-5-skandamata",
+    "navratri-day-6-katyayani",
+    "navratri-day-7-kalaratri",
+    "durga-ashtami",
+    "maha-navami"
+  ],
+  "primary_status_counts": {
+    "resolved": 47,
+    "deferred": 48,
+    "missing_rule": 7,
+    "engine_anomaly": 1
+  },
+  "sum_check_passes": true,
+  "rows": [
+    {
+      "slug": "aja-ekadashi",
+      "display_name": "Aja Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-07"
+      ],
+      "note": null
+    },
+    {
+      "slug": "akshaya-tritiya",
+      "display_name": "Akshaya Tritiya",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "akshaya-tritiya-jain",
+      "display_name": "Akshaya Tritiya (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "amalaki-ekadashi",
+      "display_name": "Amalaki Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-02-27"
+      ],
+      "note": null
+    },
+    {
+      "slug": "amavasya-vrat",
+      "display_name": "Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-18",
+        "2026-02-17",
+        "2026-03-19",
+        "2026-04-17",
+        "2026-05-16",
+        "2026-06-15",
+        "2026-07-14",
+        "2026-08-12",
+        "2026-09-11",
+        "2026-10-10",
+        "2026-11-09",
+        "2026-12-08"
+      ],
+      "note": null
+    },
+    {
+      "slug": "apara-ekadashi",
+      "display_name": "Apara Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-05-13"
+      ],
+      "note": null
+    },
+    {
+      "slug": "asalha-puja",
+      "display_name": "Asalha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "baisakhi",
+      "display_name": "Baisakhi",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-04-14"
+      ],
+      "note": null
+    },
+    {
+      "slug": "bandhi-chhor-divas",
+      "display_name": "Bandhi Chhor Divas",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-08"
+      ],
+      "note": null
+    },
+    {
+      "slug": "bhai-dooj",
+      "display_name": "Bhai Dooj",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-10"
+      ],
+      "note": null
+    },
+    {
+      "slug": "bodhi-day",
+      "display_name": "Bodhi Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "chaitra-navratri-begins",
+      "display_name": "Chaitra Navratri begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "chhath-puja",
+      "display_name": "Chhath Puja",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "display_name": "Chintpurni Mata Chaitra Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "chintpurni-mata-sharad-navratri",
+      "display_name": "Chintpurni Mata Sharad Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "das-lakshana-dharma",
+      "display_name": "Das Lakshana Dharma",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-06-24T09:56:55.025911+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "das-lakshana-dharma-begins",
+      "display_name": "Das Lakshana Dharma begins",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "devshayani-ekadashi",
+      "display_name": "Devshayani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-07-25"
+      ],
+      "note": null
+    },
+    {
+      "slug": "devutthana-ekadashi",
+      "display_name": "Devutthana Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-21"
+      ],
+      "note": null
+    },
+    {
+      "slug": "dhanteras",
+      "display_name": "Dhanteras",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-06"
+      ],
+      "note": null
+    },
+    {
+      "slug": "diwali",
+      "display_name": "Diwali",
+      "kind": "major",
+      "tradition": "all",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-08"
+      ],
+      "note": null
+    },
+    {
+      "slug": "dussehra",
+      "display_name": "Dussehra",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": null,
+      "resolved_dates": [
+        "2026-10-21"
+      ],
+      "note": null
+    },
+    {
+      "slug": "ekadashi",
+      "display_name": "Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-22T14:15:37.904163+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-14",
+        "2026-01-29",
+        "2026-02-13",
+        "2026-02-27",
+        "2026-03-15",
+        "2026-03-29",
+        "2026-04-13",
+        "2026-04-27",
+        "2026-05-13",
+        "2026-06-11",
+        "2026-06-25",
+        "2026-07-11",
+        "2026-07-25",
+        "2026-08-09",
+        "2026-08-23",
+        "2026-09-07",
+        "2026-09-22",
+        "2026-10-06",
+        "2026-10-22",
+        "2026-11-05",
+        "2026-11-21",
+        "2026-12-04",
+        "2026-12-20"
+      ],
+      "note": null
+    },
+    {
+      "slug": "ganesh-chaturthi",
+      "display_name": "Ganesh Chaturthi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-14"
+      ],
+      "note": null
+    },
+    {
+      "slug": "gita-jayanti",
+      "display_name": "Gita Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "govardhan-puja",
+      "display_name": "Govardhan Puja",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-09"
+      ],
+      "note": null
+    },
+    {
+      "slug": "gudi-padwa",
+      "display_name": "Gudi Padwa",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "gudi-padwa-ugadi",
+      "display_name": "Gudi Padwa / Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T09:58:21.958748+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "gupt-navratri-ashadha-begins",
+      "display_name": "Ashadha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "gupt-navratri-magha-begins",
+      "display_name": "Magha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "guru-amar-das-gurpurab",
+      "display_name": "Guru Amar Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "guru-arjan-dev-martyrdom",
+      "display_name": "Guru Arjan Dev Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-06-18"
+      ],
+      "note": null
+    },
+    {
+      "slug": "guru-gobind-singh-gurpurab",
+      "display_name": "Guru Gobind Singh Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-15"
+      ],
+      "note": null
+    },
+    {
+      "slug": "guru-har-krishan-gurpurab",
+      "display_name": "Guru Har Krishan Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "guru-nanak-gurpurab",
+      "display_name": "Guru Nanak Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-24"
+      ],
+      "note": null
+    },
+    {
+      "slug": "guru-purnima",
+      "display_name": "Guru Purnima",
+      "kind": "major",
+      "tradition": "all",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-07-29"
+      ],
+      "note": null
+    },
+    {
+      "slug": "guru-ram-das-gurpurab",
+      "display_name": "Guru Ram Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "guru-ravidas-jayanti",
+      "display_name": "Guru Ravidas Jayanti",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-02-01"
+      ],
+      "note": null
+    },
+    {
+      "slug": "guru-tegh-bahadur-martyrdom",
+      "display_name": "Guru Tegh Bahadur Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-12-14"
+      ],
+      "note": null
+    },
+    {
+      "slug": "hanuman-jayanti",
+      "display_name": "Hanuman Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "hartalika-teej",
+      "display_name": "Hartalika Teej",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "holi",
+      "display_name": "Holi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-03-03"
+      ],
+      "note": null
+    },
+    {
+      "slug": "holla-mohalla",
+      "display_name": "Holla Mohalla",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-03-04"
+      ],
+      "note": null
+    },
+    {
+      "slug": "jagannath-rath-yatra",
+      "display_name": "Jagannath Rath Yatra",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "jain-diwali-nirvana-ladnun",
+      "display_name": "Jain Diwali (Nirvana Ladnun)",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "jain-new-year-pratipada",
+      "display_name": "Jain New Year (Pratipada)",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "kamada-ekadashi",
+      "display_name": "Kamada Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-03-29"
+      ],
+      "note": null
+    },
+    {
+      "slug": "kamika-ekadashi",
+      "display_name": "Kamika Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-08-09"
+      ],
+      "note": null
+    },
+    {
+      "slug": "kartik-purnima",
+      "display_name": "Kartik Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "kartik-purnima-jain",
+      "display_name": "Kartik Purnima (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "karva-chauth",
+      "display_name": "Karva Chauth",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-10-29"
+      ],
+      "note": null
+    },
+    {
+      "slug": "kathina",
+      "display_name": "Kathina",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "krishna-janmashtami",
+      "display_name": "Krishna Janmashtami",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-04",
+        "2026-09-04",
+        "2026-09-04",
+        "2026-09-04"
+      ],
+      "note": null
+    },
+    {
+      "slug": "lohri",
+      "display_name": "Lohri",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-13"
+      ],
+      "note": null
+    },
+    {
+      "slug": "losar-tibetan-new-year",
+      "display_name": "Losar (Tibetan New Year)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "magha-puja",
+      "display_name": "Magha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "maha-shivaratri",
+      "display_name": "Maha Shivaratri",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-02-15"
+      ],
+      "note": null
+    },
+    {
+      "slug": "mahalaya-amavasya",
+      "display_name": "Mahalaya Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "mahavir-jayanti",
+      "display_name": "Mahavir Jayanti",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-03-31"
+      ],
+      "note": null
+    },
+    {
+      "slug": "makar-sankranti",
+      "display_name": "Makar Sankranti",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-14"
+      ],
+      "note": null
+    },
+    {
+      "slug": "mangala-gauri-vrat",
+      "display_name": "Mangala Gauri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "nag-panchami",
+      "display_name": "Nag Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "naraka-chaturdashi",
+      "display_name": "Naraka Chaturdashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-08-24T14:49:16.516571+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-08"
+      ],
+      "note": null
+    },
+    {
+      "slug": "narasimha-jayanti",
+      "display_name": "Narasimha Jayanti",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "navratri-begins",
+      "display_name": "Navratri Begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-10-11"
+      ],
+      "note": null
+    },
+    {
+      "slug": "nirjala-ekadashi",
+      "display_name": "Nirjala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:41.229125+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-06-25"
+      ],
+      "note": null
+    },
+    {
+      "slug": "onam",
+      "display_name": "Onam",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "papmochani-ekadashi",
+      "display_name": "Papmochani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-04-13"
+      ],
+      "note": null
+    },
+    {
+      "slug": "parinirvana-day",
+      "display_name": "Parinirvana Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "parivartini-ekadashi",
+      "display_name": "Parivartini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-22"
+      ],
+      "note": null
+    },
+    {
+      "slug": "paryushana-parva",
+      "display_name": "Paryushana Parva",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-06-24T09:56:55.025911+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "paryushana-parva-begins",
+      "display_name": "Paryushana Parva begins",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-08"
+      ],
+      "note": null
+    },
+    {
+      "slug": "pavarana",
+      "display_name": "Pavarana",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-06-24T09:56:55.025911+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "pavarana-end-of-vassa",
+      "display_name": "Pavarana (End of Vassa)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "pradosh-vrat",
+      "display_name": "Pradosh Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-22T14:15:37.904163+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-01",
+        "2026-01-16",
+        "2026-01-30",
+        "2026-02-14",
+        "2026-03-16",
+        "2026-03-30",
+        "2026-04-15",
+        "2026-04-28",
+        "2026-05-14",
+        "2026-05-28",
+        "2026-06-27",
+        "2026-07-12",
+        "2026-07-26",
+        "2026-08-10",
+        "2026-08-25",
+        "2026-09-08",
+        "2026-09-24",
+        "2026-10-08",
+        "2026-10-23",
+        "2026-11-06",
+        "2026-11-22",
+        "2026-12-06",
+        "2026-12-21"
+      ],
+      "note": null
+    },
+    {
+      "slug": "purnima-vrat",
+      "display_name": "Purnima Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-01-03",
+        "2026-02-01",
+        "2026-03-03",
+        "2026-04-02",
+        "2026-05-01",
+        "2026-05-31",
+        "2026-06-29",
+        "2026-07-29",
+        "2026-08-28",
+        "2026-09-26",
+        "2026-10-26",
+        "2026-11-24"
+      ],
+      "note": null
+    },
+    {
+      "slug": "raksha-bandhan",
+      "display_name": "Raksha Bandhan",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-08-28"
+      ],
+      "note": null
+    },
+    {
+      "slug": "ram-navami",
+      "display_name": "Ram Navami",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-03-26"
+      ],
+      "note": null
+    },
+    {
+      "slug": "rama-ekadashi",
+      "display_name": "Rama Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-11-05"
+      ],
+      "note": null
+    },
+    {
+      "slug": "sahibzade-shaheedi-diwas",
+      "display_name": "Sahibzade Shaheedi Diwas",
+      "kind": "major",
+      "tradition": "sikh",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-12-26"
+      ],
+      "note": null
+    },
+    {
+      "slug": "samvatsari",
+      "display_name": "Samvatsari",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-06-24T09:56:55.025911+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "samvatsari-paryushana-ends",
+      "display_name": "Samvatsari (Paryushana ends)",
+      "kind": "major",
+      "tradition": "jain",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-09-15"
+      ],
+      "note": null
+    },
+    {
+      "slug": "sangha-day",
+      "display_name": "Sangha Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-06-24T09:58:21.958748+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "sangha-day-loy-krathong",
+      "display_name": "Sangha Day / Loy Krathong",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "sankashti-chaturthi",
+      "display_name": "Sankashti Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-22T14:15:37.904163+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "saphala-ekadashi",
+      "display_name": "Saphala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "engine_anomaly",
+      "launch_status": "included",
+      "resolved_dates": [],
+      "note": "Has a rules.json entry, launch_status is not purely deferred, but produced zero occurrences for the target year. Requires the same bounded multi-year diagnosis saphala-ekadashi got before concluding anything -- do not assume defect or non-defect from this row alone."
+    },
+    {
+      "slug": "shani-jayanti",
+      "display_name": "Shani Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "shravan-somvar",
+      "display_name": "Shravan Somvar",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "shravana-putrada-ekadashi",
+      "display_name": "Putrada Ekadashi (Shravana)",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-08-23"
+      ],
+      "note": null
+    },
+    {
+      "slug": "ugadi",
+      "display_name": "Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "ullambana-ancestor-day",
+      "display_name": "Ullambana / Ancestor Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "utpanna-ekadashi",
+      "display_name": "Utpanna Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-12-04"
+      ],
+      "note": null
+    },
+    {
+      "slug": "vaikunta-ekadashi",
+      "display_name": "Vaikunta Ekadashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vasant-panchami",
+      "display_name": "Vasant Panchami",
+      "kind": "major",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vassa-begins",
+      "display_name": "Vassa Begins",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-06-24T09:56:55.025911+00:00",
+      "primary_status": "missing_rule",
+      "launch_status": null,
+      "resolved_dates": [],
+      "note": "created_at falls within the corrected_2026_festival_migration window (2026-06-24 09:00-10:30 UTC) -- likely orphan/duplicate catalogue row from that event, not a separate unlocated ruleset."
+    },
+    {
+      "slug": "vassa-begins-rains-retreat",
+      "display_name": "Vassa begins (Rains Retreat)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vat-savitri-amavasya",
+      "display_name": "Vat Savitri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vat-savitri-purnima",
+      "display_name": "Vat Savitri Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vesak-buddha-purnima",
+      "display_name": "Vesak / Buddha Purnima",
+      "kind": "major",
+      "tradition": "buddhist",
+      "created_at": "2026-05-21T17:40:50.868701+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vijaya-ekadashi",
+      "display_name": "Vijaya Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "resolved",
+      "launch_status": "included",
+      "resolved_dates": [
+        "2026-02-13"
+      ],
+      "note": null
+    },
+    {
+      "slug": "vinayaka-chaturthi",
+      "display_name": "Vinayaka Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-06-24T20:30:40.846781+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "vivah-panchami",
+      "display_name": "Vivah Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "created_at": "2026-05-21T17:29:48.70369+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    },
+    {
+      "slug": "yogini-ekadashi",
+      "display_name": "Yogini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "created_at": "2026-08-12T12:23:07.454273+00:00",
+      "primary_status": "deferred",
+      "launch_status": "deferred",
+      "resolved_dates": [],
+      "note": null
+    }
+  ]
+}
