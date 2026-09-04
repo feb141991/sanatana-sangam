@@ -305,7 +305,7 @@ version did.
 |---|---|---|
 | `resolved` | 47 | Engine produces a 2026 date. **This means "engine resolved," not "verified."** No broad accuracy conclusion should be drawn from this bucket until real-world source validation occurs — none of the 47 have been externally checked beyond the original 10 migration-touched slugs. |
 | `deferred` | 48 | `launch_status: 'deferred'`. Correctly show no date, pending real review — governance-correct, not a defect. |
-| `missing_rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no `rules.json` entry, and confirmed absent from `series.json` too. All were created during the bad migration's time window. This is correlation, not proof of pollution: FK/reference analysis is required before any cleanup. `gudi-padwa-ugadi` is a separately-supported duplicate candidate because `gudi-padwa` and `ugadi` already exist as tracked slugs. |
+| `missing_rule` | 7 | `das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins` — no `rules.json` entry, and confirmed absent from `series.json` too. **This section's original "migration-era catalogue pollution" hypothesis was checked in §9 and is retracted**: all 7 have live, currently-`published` `observance_occurrences` rows from a distinct, legitimate manual-seed mechanism (`legacy_sync`, real external source citations) unrelated to the deleted migration batch. The real finding — two confirmed exact-date duplicates against a qualified sibling slug, three unexplained day-level discrepancies — is in §9, not here. |
 | `expected_zero` | 1 | `saphala-ekadashi` — no 2026 date is expected for a documented calendar-boundary reason. The generated receipt links to the committed evidence rather than mislabelling this as an engine anomaly. |
 | `engine_anomaly` | 0 | An included, rule-backed definition with no target-year output and no committed explanation. This status remains fail-closed for future discoveries. |
 
@@ -412,15 +412,91 @@ treat as authoritative — remains a human decision, consistent with this
 project's own rule that calendar/content judgment calls need a named
 reviewer, not an inferred one.
 
-## 9. Not yet done — explicitly deferred
+## 9. Missing-rule reference audit (2026-09-04)
 
-- **Missing-rule reference audit**: confirm the §7 migration-pollution
-  hypothesis for the 7 `missing_rule` slugs by checking for FK/reference
-  use elsewhere (notification templates, route mappings, anything pointing
-  at their IDs) before proposing cleanup. Read-only, bounded, not started.
+Read-only SQL against production (Supabase project `mnbwodcswxoojndytngu`).
+**Corrects §7's premature "migration-era catalogue pollution" hypothesis —
+that conclusion does not hold up and is retracted below.**
+
+### FK check
+
+Four tables carry a FK into `observance_definitions.id`:
+`observance_occurrences`, `observance_review_queue`,
+`observance_materialisation_batches`, `vrat_observations`. All 7
+`missing_rule` slugs have **zero** rows in the latter three, but **all 7
+have existing, `publication_status: 'published'` rows in
+`observance_occurrences`** for 2026 and/or 2027 (1-2 rows each) — they are
+not orphaned catalogue entries with no data; they are live, currently-served
+festival dates.
+
+### Where that data actually comes from
+
+`calculated_by: 'legacy_sync'`, `final_date_source: 'legacy_seed'`,
+`source_provenance` citing real external sites (myfest.in,
+drikpanchang.com, timeanddate.com) — a distinct, older manual-seed
+mechanism, unrelated to the deleted `corrected_2026_festival_migration`
+batch (different `calculated_by` value entirely). The migration-window
+timestamp correlation on `observance_definitions.created_at` that §7 flagged
+was coincidental, not evidence of shared origin with the bad migration —
+retracted.
+
+### Real finding: two are confirmed exact-date duplicates, three show unexplained discrepancies with their own qualified sibling
+
+Each of the 7 conceptually overlaps with an already-`rules.json`-backed
+"qualified" sibling (`-begins`/`-ends`/etc.). Comparing actual stored dates
+for years both have a row:
+
+| Slug (no rule) | Sibling (has rule) | Year | Base date | Sibling date | Finding |
+|---|---|---|---|---|---|
+| `gudi-padwa-ugadi` | `gudi-padwa` **and** `ugadi` | 2027 | 2027-04-07 | 2027-04-07 (both) | **Exact triple duplicate.** Note: `gudi-padwa`/`ugadi` are `launch_status: 'deferred'` in `rules.json` yet both have their own independently-`published` 2027-04-07 row (`calculated_by: manual_engine_run_v2`/`cron_job`) — a separate governance gap (a deferred rule should never present a final date; these already do) outside this audit's scope, flagged for its own follow-up. |
+| `vassa-begins` | `vassa-begins-rains-retreat` | 2027 | 2027-07-19 | 2027-07-19 | **Exact duplicate.** |
+| `pavarana` | `pavarana-end-of-vassa` | 2027 | 2027-10-17 | 2027-10-15 | 2-day discrepancy — same event, two sources disagree. |
+| `samvatsari` | `samvatsari-paryushana-ends` | 2026 | 2026-09-06 | 2026-09-15 | 9-day discrepancy. |
+| `samvatsari` | `samvatsari-paryushana-ends` | 2027 | 2027-09-04 | 2027-09-05 | 1-day discrepancy. |
+| `sangha-day` | `sangha-day-loy-krathong` | 2027 | 2027-11-11 | 2027-11-13 | 2-day discrepancy. |
+| `paryushana-parva` | `paryushana-parva-begins` | 2026, 2027 | differ (08-30 vs 09-08; 08-26 vs 07-30) | — | No collision: dates differ and the 2027 sibling row is `publication_status: 'withheld_disputed'` anyway. |
+| `das-lakshana-dharma` | `das-lakshana-dharma-begins` | — | 2026 only | no 2026 row | No overlapping year to compare. |
+
+### Deletion-safety check
+
+`materializeOccurrencesForYears`'s delete paths (`materialize.ts:1111`,
+`:1212`) only operate on rows tied to a `batch_id` from
+`observance_materialisation_batches` — confirmed zero such rows for all 7,
+so the nightly cron's regeneration/reconciliation logic cannot touch or
+delete them. They are not at risk of accidental automated deletion.
+
+### What this actually means (not resolved here — needs a product/content decision)
+
+- These are **not safe cleanup candidates** in the sense §7 first
+  suggested. Two show real, currently-live duplicate displays (matching the
+  Ekadashi-duplicate bug pattern fixed earlier this session); three show
+  unexplained day-level discrepancies between two live, independent sources
+  describing what should be the same festival moment.
+  Nothing has been changed — this needs a decision on which source to
+  trust, and likely consolidating each pair into one properly-`rules.json`-backed
+  definition rather than maintaining two parallel, disagreeing ones.
+- These 7 have **no automated path to generate dates beyond whatever years
+  are already manually seeded** (currently 2026 and/or 2027 only) — once
+  those pass, they will simply stop appearing unless someone repeats the
+  manual seed process or a real `rules.json` rule is written. This is a
+  maintenance gap, not an active bug today, but worth planning for.
+- The separate, out-of-scope governance gap noted above (`gudi-padwa`/
+  `ugadi` presenting a final published date despite `launch_status:
+  'deferred'`) was not investigated further here — flagged only.
+
+## 10. Not yet done — explicitly deferred
+
+- **Reconciliation decision** for the 5 slug-pairs above with duplicate or
+  discrepant dates — which source to trust, whether to merge into one
+  properly-ruled definition. Needs a named reviewer per this project's own
+  content-governance rule; not an engineering call to make unilaterally.
+- **Separate follow-up**: audit whether other `launch_status: 'deferred'`
+  slugs (beyond `gudi-padwa`/`ugadi`) also carry pre-existing `published`
+  occurrence rows that were never retracted when the rule was deferred —
+  a potentially broader instance of the same governance gap. Not started;
+  scope not yet bounded.
 - **Prioritized external verification**: use §8's evidence — especially the
-  26 `has_ratification_note_requiring_human_read` rows and the 21
-  `no_current_year_source` rows — to prioritize by upcoming date,
+  26 `has_ratification_note_requiring_human_read` rows and the 36
+  `no_structured_citation` rows — to prioritize by upcoming date,
   notification eligibility, audience size, and calendar-profile divergence.
-  Not started; explicitly gated on the above two passes landing first per
-  the agreed sequencing.
+  Not started.
