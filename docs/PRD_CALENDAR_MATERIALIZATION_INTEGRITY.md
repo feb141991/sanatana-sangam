@@ -351,20 +351,54 @@ the source tooling already exists before running a fresh diagnostic, and
 check adjacent years for a double-window sibling before concluding
 anything.
 
-### Not yet done — explicitly deferred pending the above
+## 8. Ratification-note evidence pass (2026-09-04)
 
-Per explicit instruction: a note-by-note ratification classification and
-broad external (web/government-source) verification pass should **not**
-start until the catalogue audit is reproducible (done, this section) and
-the Saphala receipt is corrected (done, this section). Still open:
+`scripts/classify-ratification-notes.ts` reads the `resolved` bucket from
+§7's catalogue and extracts structured evidence per rule row — never a
+free-text-derived verdict. Only two `rules.json` fields drive any flag:
+`disputed_years` (authoritative per-year dispute list) and `citation`
+(authoritative source name). `ratification_note` is carried through
+verbatim for human review, never parsed into a conclusion. Output:
+[`docs/audits/ratification-notes/2026.json`](audits/ratification-notes/2026.json)
+/ [`.md`](audits/ratification-notes/2026.md).
 
-- Classify the ~20 "pending ratification"-language notes with structured
-  flags (`current_year_confirmed`, `future_year_disputed`,
-  `profile_scope_unverified`, `no_current_year_source`) rather than a flat
-  substring-match guess.
-- Confirm the `missing_rule` migration-pollution hypothesis (e.g., check
-  for any FK references to these 7 rows elsewhere before proposing cleanup)
-  rather than treating it as settled from timestamp correlation alone.
-- Prioritize external verification of the 47 `resolved` slugs by upcoming
-  date, notification eligibility, audience size, and calendar-profile
-  divergence — not by treating all 47 as equal-priority work.
+**Self-caught false positive, fixed before this was reported anywhere:**
+the first version of this script emitted a flag named
+`current_year_confirmed` whenever a citation existed and the target year
+wasn't in `disputed_years`. Real data immediately falsified this —
+`maha-shivaratri` has a citation and empty `disputed_years`, yet its own
+`ratification_note` reads *"PENDING COUNCIL RATIFICATION — not fully
+settled."* `disputed_years` empty means "no specific year is flagged
+astronomically disputed"; it says nothing about undeclared-per-year
+disputes like month-system/profile-convention questions. Renamed to
+`no_structured_dispute_for_target_year` (a materially weaker, accurate
+claim) and added `has_ratification_note_requiring_human_read` so every row
+with a note is flagged for a human to actually read it, rather than the
+script pretending to have understood it.
+
+Summary for 2026 (47 `resolved` slugs): `no_current_year_source` 21,
+`future_year_disputed` 3, `no_structured_dispute_for_target_year` 11,
+`has_ratification_note_requiring_human_read` 26,
+`profile_scope_unverified` 47 (applies to all, by design — this audit run
+only computed against the Ujjain reference point).
+
+**This pass does not itself tell you which of the 47 are safe to trust.**
+It tells you which ones have a citation, which have a structured per-year
+dispute, and which have a note a human still needs to read. The actual
+per-slug judgment call — is this settled enough to publish, notify on, or
+treat as authoritative — remains a human decision, consistent with this
+project's own rule that calendar/content judgment calls need a named
+reviewer, not an inferred one.
+
+## 9. Not yet done — explicitly deferred
+
+- **Missing-rule reference audit**: confirm the §7 migration-pollution
+  hypothesis for the 7 `missing_rule` slugs by checking for FK/reference
+  use elsewhere (notification templates, route mappings, anything pointing
+  at their IDs) before proposing cleanup. Read-only, bounded, not started.
+- **Prioritized external verification**: use §8's evidence — especially the
+  26 `has_ratification_note_requiring_human_read` rows and the 21
+  `no_current_year_source` rows — to prioritize by upcoming date,
+  notification eligibility, audience size, and calendar-profile divergence.
+  Not started; explicitly gated on the above two passes landing first per
+  the agreed sequencing.
