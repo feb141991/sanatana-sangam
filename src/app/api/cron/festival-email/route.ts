@@ -3,6 +3,20 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendShoonayaEmail } from '@/lib/email';
 import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
+import { CANONICAL_RULES } from '@/lib/calendar/rules';
+
+// filterWithheldJoinedRows is rule-based: for a slug with ZERO rules.json
+// rows it returns `false` (not withheld) -- confirmed at withheld.ts:87,
+// `if (rulesForSlug.length === 0) return false`. It was never built to
+// gate content that has no rule to check against at all, so it provides NO
+// protection for the 7 manual-seed slugs (das-lakshana-dharma,
+// gudi-padwa-ugadi, paryushana-parva, pavarana, samvatsari, sangha-day,
+// vassa-begins -- see docs/RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md)
+// that this route would otherwise still email about. A prior fix here
+// claimed to close exposure for these too and did not -- corrected now:
+// fail closed and never email about a slug with no rules.json entry until
+// a reviewer has actually approved it there.
+const RULED_SLUGS = new Set(CANONICAL_RULES.map(r => r.slug));
 
 const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
@@ -41,27 +55,44 @@ export async function GET(request: Request) {
   const targetDate = threeDaysFromNow.toISOString().slice(0, 10);
 
   // ----- Fetch festivals on target date -----
+  // publication_status = 'published' is required at the query level: without
+  // it, a 'draft'/'withheld_disputed' row (e.g. paryushana-parva-begins'
+  // 2027 row, which is exactly withheld_disputed today) whose SLUG still has
+  // a currently-publishable rule would pass filterWithheldJoinedRows below --
+  // that function checks the RULE (launch_status/disputed_years), never the
+  // individual row's own publication_status, outside one narrow bypass path
+  // (fixtureScopedApproval) this route's rows never qualify for.
   const { data: upcoming, error: festError } = await supabase
     .from('observance_occurrences')
     .select('*, observance_definitions(*)')
     .eq('date', targetDate)
+    .eq('publication_status', 'published')
     .limit(3);
 
   if (festError) {
     return NextResponse.json({ error: festError.message }, { status: 500 });
   }
 
-  // This was the only calendar-facing read path querying observance_occurrences
-  // with no withheld-filtering at all -- every other consumer (home-summary,
-  // calendar/month, /upcoming, /day, /export) applies this via
-  // filterWithheldJoinedRows or formatOccurrencesToResults internally. An
-  // unfiltered read here is worse than an unfiltered screen: this route PUSHES
-  // content via email, which can't be un-sent once delivered. See
-  // docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §9 for the incident this
-  // closes (48 currently-deferred definitions, plus 7 manual-seed slugs with
-  // no rule at all, all have live `published` rows this query would otherwise
-  // read unfiltered).
-  const publishable = filterWithheldJoinedRows(upcoming ?? []);
+  // Two-stage gate. Every other calendar-facing read path (home-summary,
+  // calendar/month, /upcoming, /day, /export) applies filterWithheldJoinedRows
+  // or formatOccurrencesToResults internally; this route previously applied
+  // neither. An unfiltered read here is worse than an unfiltered screen: this
+  // route PUSHES content via email, which can't be un-sent once delivered.
+  // See docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §10 for the incident.
+  //
+  // Stage 1 (rule-based): withholds a currently-disputed/deferred RULE.
+  // Stage 2 (existence-based): filterWithheldJoinedRows returns `false` (not
+  // withheld) for a slug with zero rules.json rows at all -- it has nothing
+  // to check. That leaves the 7 manual-seed slugs completely unprotected by
+  // stage 1 alone, so stage 2 fails closed on them explicitly, rather than
+  // only ever emailing about content a reviewer has actually approved via a
+  // real rule.
+  const ruleFiltered = filterWithheldJoinedRows(upcoming ?? []);
+  const publishable = ruleFiltered.filter((row) => {
+    const def = (row as any).observance_definitions;
+    const slug = Array.isArray(def) ? def[0]?.slug : def?.slug;
+    return typeof slug === 'string' && RULED_SLUGS.has(slug);
+  });
   if (!publishable.length) {
     return NextResponse.json({ message: 'No festivals in 3 days', sent: 0 });
   }
@@ -90,13 +121,19 @@ export async function GET(request: Request) {
   };
 
   for (const fest of publishable) {
-    const def: any = (fest as any).observance_definitions || {};
-    const key = (def.name || '').toLowerCase().replace(/\s+/g, '_');
-    const subject = subjects[key] || `${def.name ?? 'Festival'} is in 3 days ✨`;
+    const rawDef = (fest as any).observance_definitions;
+    // observance_definitions has display_name, not name or theme -- neither
+    // of the latter has ever existed as a column. Reading them always
+    // resolved to undefined, so `key` was always '', the subjects lookup
+    // always missed, and every email's subject silently fell back to the
+    // generic "Festival is in 3 days" regardless of which festival it was.
+    const def: any = (Array.isArray(rawDef) ? rawDef[0] : rawDef) || {};
+    const name: string = def.display_name ?? 'Festival';
+    const key = name.toLowerCase().replace(/\s+/g, '_');
+    const subject = subjects[key] || `${name} is in 3 days ✨`;
 
     const lead = def.description ? `${def.description}\n\n` : '';
-    const across = `Across traditions — the theme of ${def.theme || 'light'} resonates across all four paths, reminding us of unity, liberation, and gratitude.\n\n`;
-    const bullets = `- Practice 1 related to ${def.name}\n- Practice 2 related to ${def.name}\n- Practice 3 related to ${def.name}\n`;
+    const bullets = `- Practice 1 related to ${name}\n- Practice 2 related to ${name}\n- Practice 3 related to ${name}\n`;
     const cta = `Set your reminder in Shoonaya → ${APP_BASE}/panchang`;
 
     for (const batch of userBatches) {
@@ -109,7 +146,7 @@ export async function GET(request: Request) {
             shloka: '',
             meaning: '',
             title: subject,
-            body: `${lead}${across}${bullets}\n${cta}`,
+            body: `${lead}${bullets}\n${cta}`,
             ctaText: 'Explore',
             ctaUrl: `${APP_BASE}/panchang`,
             unsubUrl: unsub,

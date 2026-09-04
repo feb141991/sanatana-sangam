@@ -553,13 +553,48 @@ protected read path (`isWithheldOccurrence` finds their rule, sees
 layer is doing its job on the paths that call it. The uncovered risk is
 narrower and now closed: paths that skip that layer entirely.
 
-**Resolved (mechanism, not data) this cycle:** `cron/festival-email`
-(`src/app/api/cron/festival-email/route.ts`) now calls
-`filterWithheldJoinedRows` before building its send list — the one
-user-facing path that had zero protection. 2 new tests in
-`src/app/api/cron/festival-email/__tests__/route.test.ts` (a deferred
-festival with a stray published row is never emailed; a real publishable
-one still is).
+**First fix attempt overstated its own coverage — caught and corrected by a
+second review before this closed.** The initial fix added
+`filterWithheldJoinedRows` to `cron/festival-email` and claimed, in its own
+commit message, to close exposure for "48 deferred definitions, plus 7
+manual-seed slugs." It did not: `filterWithheldJoinedRows` is rule-based —
+for a slug with **zero** `rules.json` rows it returns `false` (not withheld;
+`withheld.ts:87`, `if (rulesForSlug.length === 0) return false`) because it
+has no rule to check against. That function was correctly protecting the 48
+deferred-*rule*-backed definitions, but it structurally could not, and did
+not, protect the 7 manual-seed slugs at all — the route would have kept
+emailing about `gudi-padwa-ugadi`, `samvatsari`, etc. exactly as before. The
+one test added at the time (deferred Onam) happened to only exercise the
+case the fix actually covered, so it passed without proving the claim.
+
+Two further real gaps found in the same review, neither related to the
+first: the query never restricted to `publication_status: 'published'` (a
+`'draft'`/`'withheld_disputed'` row for an otherwise-fine rule would still
+reach and pass the rule-based filter, since that filter checks the rule,
+never the individual row's own publication status outside one narrow bypass
+this route's rows never qualify for — `paryushana-parva-begins`' own 2027
+row is `withheld_disputed` today, a live example of exactly this shape);
+and the subject-line lookup read `def.name`/`def.theme`, neither of which
+has ever existed as an `observance_definitions` column (only
+`display_name` does), so every email's subject silently fell back to the
+generic "Festival is in 3 days" regardless of which festival it was.
+
+**All three now actually fixed**, in `src/app/api/cron/festival-email/route.ts`:
+1. Query now includes `.eq('publication_status', 'published')`.
+2. A second, existence-based gate (`RULED_SLUGS`, built from
+   `CANONICAL_RULES`) runs after the rule-based filter and fails closed on
+   any slug with no `rules.json` entry at all — closing the actual gap for
+   the 7 manual-seed slugs, not just the 48 the first fix already covered.
+3. Subject/body copy now reads `display_name`; the fabricated "theme"
+   sentence (no such data ever existed to back it) was removed rather than
+   backfilled with a hardcoded placeholder.
+
+5 tests in `src/app/api/cron/festival-email/__tests__/route.test.ts`,
+one per finding plus the original deferred-Onam case and a real-festival
+control: a deferred rule with a stray published row, a manual-seed slug
+with no rule at all, a non-published row for an otherwise-fine rule, a real
+publishable+published festival (still sends), and the `display_name` fix
+(subject contains the real name, not `"undefined"`).
 
 **Not resolved, and explicitly not an engineering call:** whether the 48
 deferred slugs' 100+ published rows should be retracted/quarantined at the
@@ -567,12 +602,6 @@ database level, per `withheld.ts`'s own suggestion. That is data cleanup at
 real scale, needs a reviewer decision on each affected family (or a policy
 decision to blanket-withhold all `deferred`-backed published rows at once),
 and was not attempted here.
-
-**Also found, unrelated, not fixed:** `cron/festival-email`'s subject-line
-lookup reads `def.name`/`def.theme`, but `observance_definitions` has no
-`name` or `theme` column (only `display_name`) — every email's subject
-silently falls back to the generic `"Festival is in 3 days"`. Flagged for
-its own separate fix; out of scope here.
 
 ### 10.4 Reconciliation packet
 
@@ -612,9 +641,6 @@ assumed.
   the data level (matching `withheld.ts`'s own long-standing suggestion), on
   what timeline, and whether per-family or as one blanket policy change.
   Not started; explicitly a product/governance call, not resolved here.
-- **`cron/festival-email` subject-line bug** (`def.name`/`def.theme` reading
-  non-existent columns) — flagged in §10.3, not fixed; unrelated to this
-  investigation's scope.
 - **Prioritized external verification**: use §8's evidence — especially the
   26 `has_ratification_note_requiring_human_read` rows and the 36
   `no_structured_citation` rows — to prioritize by upcoming date,
