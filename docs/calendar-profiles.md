@@ -185,7 +185,9 @@ searched for real citations to back these three unratified profiles
 (`tamil_solar`, `malayalam_solar`, `bengali_solar` -- `odia`'s `same_day_rule`
 was not part of this pass). Every hit was a Tier 5 commercial panchang
 aggregator (prokerala, drikpanchang, myzodiaq, etc.) -- per
-`source-governance.md` these are QA signal only, never a citation, so **none
+`docs/CALENDAR_RULES_AND_VERIFICATION.md` (external sources are manual
+spot-check evidence, never a replacement calculator or sole authority)
+these are QA signal only, never a citation, so **none
 of the three profiles can be ratified from this research**. One concrete,
 checkable discrepancy did surface and is worth recording rather than
 silently discarding: a Malayalam-calendar description (myzodiaq.in, still
@@ -197,12 +199,13 @@ later** — not this codebase's current two-way split (before → same day;
 after → next day only, see `assignSankrantiToCivilDay`'s `aparahna_rule`
 branch in `packages/panchang-engine/src/solar-month/index.ts`). No Tamil or
 Bengali source was found that specifically corroborated or contradicted
-`sunset_rule`/`midnight_rule` as coded. **Still needed before ratification**:
-a real Tier 1-4 source per region -- a state/regional almanac board (parallel
-to how Rashtriya Panchang anchors the amānta batch), a recognized Jyotiṣa
-text, or a Council member with direct access to a primary regional
-panchangam -- not further web search, which has now been tried and tops out
-at Tier 5.
+`sunset_rule`/`midnight_rule` as coded. **Still needed before ratification**
+(per `docs/CALENDAR_RULES_AND_VERIFICATION.md`): documented manual spot-check
+evidence per region -- a state/regional almanac board (parallel to how
+Rashtriya Panchang anchors the amānta batch), a recognized Jyotiṣa text, or a
+named reviewer with direct access to a primary regional panchangam -- plus a
+named human review, not further web search, which has now been tried and
+tops out at commercial aggregators, not verifiable primary evidence.
 
 **Second pass, same day:** searched specifically for named institutional/
 scholarly authorities rather than general terms, and found three real

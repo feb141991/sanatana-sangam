@@ -183,9 +183,9 @@ After resolving the user's variant, the engine evaluates every *other* variant o
 the same `festivalId` whose `appliesTo` intersects a **recognised** profile. Any
 that yields a different `civilDate` is returned in `alternatives[]`.
 
-Alternatives are **informational and neutral**. Wording is fixed in
-`source-governance.md` §6. The engine must never emit a field implying another
-tradition is incorrect.
+Alternatives are **informational and neutral**: this is the "represent
+recognised variants neutrally" rule in `docs/CALENDAR_RULES_AND_VERIFICATION.md`.
+The engine must never emit a field implying another tradition is incorrect.
 
 ---
 

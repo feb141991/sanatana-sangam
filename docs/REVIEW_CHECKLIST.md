@@ -57,7 +57,7 @@ separate act, against §3 below — not as a general feeling of thoroughness.
 - **A source is a citation, not a label.** `source: 'USNO Ephemeris'` beside a
   self-computed number is worse than `unsourced`, because it defeats later audit.
   Record the service and the exact query parameters. **LLM output is never a
-  source** (`source-governance.md`; AGENTS.md). *(D23)*
+  source** (`docs/CALENDAR_RULES_AND_VERIFICATION.md`; AGENTS.md). *(D23)*
 - **Residual distributions are diagnostic.** Reference data compared against an
   imperfect engine scatters around zero in *both* directions. All-positive
   residuals inside one rounding interval mean the "reference" was derived from the

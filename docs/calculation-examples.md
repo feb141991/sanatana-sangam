@@ -5,7 +5,8 @@
 
 > **Values marked _illustrative_ are structural placeholders.** No date or time in
 > this document is authoritative until it exists as a golden fixture verified
-> against a `source-governance.md` Tier 1/2 source. The *reasoning shape* is the
+> against documented manual spot-check evidence attached to the fixture (see
+> `docs/CALENDAR_RULES_AND_VERIFICATION.md`). The *reasoning shape* is the
 > normative content here, not the numbers.
 
 ---
@@ -88,7 +89,8 @@ case the whole variant model exists to serve.
                     "period": "sunrise", "mode": "touches" } ] }
 ```
 
-**Required UI output** (wording from `source-governance.md` §6):
+**Example implementing the active neutral-variants rule**
+(`docs/CALENDAR_RULES_AND_VERIFICATION.md`):
 
 > Two recognised observances are available.
 > **Smārta Janmāṣṭamī — 3 September.** Aṣṭamī prevails during Nishita.

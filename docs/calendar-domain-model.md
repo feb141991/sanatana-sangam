@@ -15,7 +15,7 @@ a `[S]` item without a recorded scholar decision.
 |---|---|---|
 | `[A]` | **Astronomical.** Objectively determinable from ephemeris. No tradition input. | Engineering, with an ADR |
 | `[C]` | **Convention.** A defensible engineering choice among valid options. Must be documented, versioned, and disclosed in output. | Engineering, with an ADR + version bump |
-| `[S]` | **Scholar review required.** A religious/observance judgement. Must be ratified by the Calendar Advisory Council before shipping. | Council only (see `source-governance.md`) |
+| `[S]` | **Scholar review required.** A religious/observance judgement. Must be ratified by a named human reviewer before shipping. | Named human reviewer only (see `docs/CALENDAR_RULES_AND_VERIFICATION.md`) |
 
 ---
 
@@ -146,8 +146,8 @@ A Layer C rule may test conditions such as:
 
 When two or more recognised traditions place an observance on different civil
 dates, the engine returns **all** of them, marks the user's selected profile as
-primary, and never characterises the others as wrong. Product wording is fixed in
-`source-governance.md` §6.
+primary, and never characterises the others as wrong. This is the "represent
+recognised variants neutrally" rule in `docs/CALENDAR_RULES_AND_VERIFICATION.md`.
 
 ---
 
@@ -266,7 +266,8 @@ directly to derive a festival date.
 - `calendar-profiles.md` — Layer B + the profile registry
 - `festival-rule-schema.md` — Layer C + rule JSON and result contract
 - `calculation-examples.md` — worked examples and golden-case format
-- `source-governance.md` — sources, review workflow, disagreement policy
+- `CALENDAR_RULES_AND_VERIFICATION.md` — sources, review, disagreement policy
+  (supersedes the archived `archive/source-governance.md`)
 - `CALENDAR_ENGINE_ASSESSMENT.md` — current state, gap tracker, phase plan
 
 ---

@@ -303,7 +303,8 @@ A passing type-check or unit test does **not** authorise a convention change.
 
 ## 10. Validation targets
 
-Compare against the sources ranked in `source-governance.md` §2, at minimum for:
+Validate against documented manual spot-check evidence attached to the fixture
+or rule (see `docs/CALENDAR_RULES_AND_VERIFICATION.md`), at minimum for:
 
 **Cities:** Ujjain · Delhi · Varanasi · Mumbai · Chennai · Kolkata · Kathmandu ·
 London · Bedford · New York · Sydney · Reykjavík (high-latitude probe).

@@ -146,7 +146,8 @@ Binding for anything touching `packages/panchang-engine`, `packages/panchanga-co
 Specifications are authoritative: `docs/calendar-domain-model.md`,
 `docs/astronomy-conventions.md`, `docs/calendar-profiles.md`,
 `docs/festival-rule-schema.md`, `docs/calculation-examples.md`,
-`docs/source-governance.md`. Current state and open work:
+`docs/CALENDAR_RULES_AND_VERIFICATION.md` (supersedes the archived
+`docs/archive/source-governance.md`). Current state and open work:
 `docs/CALENDAR_ENGINE_ASSESSMENT.md`.
 
 1. **Never hard-code Gregorian festival dates.** A date belongs in an occurrence row
@@ -170,8 +171,8 @@ Specifications are authoritative: `docs/calendar-domain-model.md`,
 9. **Every rule change requires golden test cases.** A rule at `approved` without a
    sourced golden fixture fails CI.
 10. **A passing unit test does not prove religious correctness.** Items marked `[S]`
-    require Calendar Advisory Council ratification; engineering may implement and
-    flag, never ratify.
+    require a named human reviewer's ratification (`docs/CALENDAR_RULES_AND_VERIFICATION.md`);
+    engineering may implement and flag, never ratify.
 11. **Do not label a calendar result universal unless it is astronomical data.**
     Layer A is universal; Layers B and C are always profile-qualified.
 12. **Use appropriately precise calculations.** Respect the tolerance budget in
@@ -221,7 +222,8 @@ Additional hard constraints:
   Re-vendor from source; never hand-modify `vendor/*.tgz` contents.
 - **Swiss Ephemeris** must not be enabled without a recorded commercial-licence
   decision. Keep the existing `licenseMode: 'undecided'` guard.
-- **No scraping** of commercial panchāṅga services. See `docs/source-governance.md` §3.
+- **No scraping** of commercial panchāṅga services. See
+  `docs/CALENDAR_RULES_AND_VERIFICATION.md` ("No scraping, no bulk import").
 - **LLM output is never a source.** Triage signal only; it may not set
   `review_status` or write a published date.
 

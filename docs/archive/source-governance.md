@@ -1,3 +1,18 @@
+> **SUPERSEDED — 2026-09-05.** This document is no longer active policy.
+> It is retained as a historical record of the framework this project
+> originally specified, and of which pieces were actually built (see
+> `docs/audits/phase0-ground-truth/PHASE0_REPORT.md` §1 for a verified,
+> file-by-file account of what here is real/load-bearing code versus
+> unbuilt design intent — notably: the `source_references` table and the
+> literal 7-state `draft→...→published` workflow below were never
+> operationalized; `golden_fixtures`, the source-tier types, and
+> `ratification_note`/`disputed_years` on rules ARE real and still in use).
+>
+> Current active policy: [`docs/CALENDAR_RULES_AND_VERIFICATION.md`](../CALENDAR_RULES_AND_VERIFICATION.md).
+>
+> Nothing below this notice has been edited — it is kept verbatim for
+> factual/historical accuracy. Do not treat it as current guidance.
+
 # Source & Governance Policy
 
 **Status:** Draft v1.0.0 · Phase 1 specification
