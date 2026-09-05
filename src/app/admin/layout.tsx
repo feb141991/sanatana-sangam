@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import AdminNavHeader from "./AdminNavHeader";
+import AdminShell from "@/components/admin/AdminShell";
 
 export const metadata: Metadata = {
-  title: "Shoonaya Admin",
+  title: "Shoonaya Admin Console",
   robots: { index: false, follow: true },
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[var(--divine-bg,#FAF6EF)]">
-      <AdminNavHeader />
-      <main>{children}</main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

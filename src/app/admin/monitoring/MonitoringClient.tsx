@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams, usePathname } from "next/navigation";
+import {
+  parseMonitoringTab,
+  parseAdminStringParam,
+  parseAdminQueryParam,
+  buildAdminUrlWithParams,
+  type MonitoringTab,
+} from "@/lib/admin-url-state";
 import Link from "next/link";
 import {
   Globe, Activity, Bell, Smartphone, AlertTriangle, CheckCircle,
@@ -165,7 +173,35 @@ function formatReportStatus(status: string) {
 }
 
 export default function MonitoringClient({ report, recentEvents, aiReports: initialAiReports, aiReportsError, dbMetrics, offlineSyncStats }: Props) {
-  const [activeTab, setActiveTab] = useState<"apis" | "telemetry" | "push" | "errors" | "ai_reports">("apis");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const targetFingerprint = parseAdminStringParam(searchParams, "fingerprint");
+  const targetRequestId = parseAdminStringParam(searchParams, "requestId");
+  const targetSeverity = parseAdminQueryParam(searchParams, "severity", ["all", "P1", "P2", "info"] as const);
+
+  const initialTab: MonitoringTab = targetFingerprint ? "errors" : targetRequestId ? "telemetry" : parseMonitoringTab(searchParams, "apis");
+  const [activeTab, setActiveTab] = useState<MonitoringTab>(initialTab);
+
+  useEffect(() => {
+    const nextTab = targetFingerprint ? "errors" : targetRequestId ? "telemetry" : parseMonitoringTab(searchParams, "apis");
+    setActiveTab(nextTab);
+    if (targetSeverity) {
+      setSeverityFilter(targetSeverity);
+    }
+    if (targetRequestId) {
+      setEventSearch(targetRequestId);
+    }
+  }, [searchParams, targetFingerprint, targetRequestId, targetSeverity]);
+
+  const handleTabChange = (tab: MonitoringTab) => {
+    setActiveTab(tab);
+    const newUrl = buildAdminUrlWithParams(pathname || "/admin/monitoring", searchParams, {
+      tab,
+      section: null,
+    });
+    window.history.replaceState(null, "", newUrl);
+  };
   const [infoModal, setInfoModal] = useState<InfoModalData | null>(null);
 
   // Specialized Modals for Pulse Cards
@@ -174,6 +210,23 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
   const [showDbModal, setShowDbModal] = useState(false);
   const [showEphemerisModal, setShowEphemerisModal] = useState(false);
   const [showOfflineModal, setShowOfflineModal] = useState(false);
+
+  // Global Escape key listener to close active modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowProvidersModal(false);
+        setShowTtsModal(false);
+        setShowDbModal(false);
+        setShowEphemerisModal(false);
+        setShowOfflineModal(false);
+        setInfoModal(null);
+        setInspectEvent(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Telemetry event filters
   const [severityFilter, setSeverityFilter] = useState<string>("all");
@@ -240,7 +293,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold font-serif text-gray-900">Operational Monitoring Window</h1>
             <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
               Live Gateway Vitals
             </span>
           </div>
@@ -265,7 +318,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         {/* 1. AI Circuit Breakers & Wallet */}
         <div
           onClick={() => setShowProvidersModal(true)}
-          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-purple-300 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between"
+          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-purple-300  transition-all cursor-pointer flex flex-col justify-between"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -304,7 +357,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         {/* 2. Postgres Database Connection Pool */}
         <div
           onClick={() => setShowDbModal(true)}
-          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-blue-300 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between"
+          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-blue-300  transition-all cursor-pointer flex flex-col justify-between"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -341,7 +394,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         {/* 3. Astronomical Ephemeris & Panchang Drift */}
         <div
           onClick={() => setShowEphemerisModal(true)}
-          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-amber-300 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between"
+          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-amber-300  transition-all cursor-pointer flex flex-col justify-between"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -378,7 +431,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         {/* 4. Mobile Offline Sync Queue */}
         <div
           onClick={() => setShowOfflineModal(true)}
-          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-emerald-300 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between"
+          className="group text-left p-4 rounded-2xl bg-white border border-black/10 shadow-sm hover:shadow-md hover:border-emerald-300  transition-all cursor-pointer flex flex-col justify-between"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -416,7 +469,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
       {/* ─── TABBED WORKSTATIONS NAVIGATION ────────────────────────────────── */}
       <div className="flex items-center gap-2 border-b border-black/10 overflow-x-auto pb-px">
                 <button
-          onClick={() => setActiveTab("apis")}
+          onClick={() => handleTabChange("apis")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "apis"
               ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
@@ -428,7 +481,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
-          onClick={() => setActiveTab("telemetry")}
+          onClick={() => handleTabChange("telemetry")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "telemetry"
               ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
@@ -440,7 +493,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
-          onClick={() => setActiveTab("push")}
+          onClick={() => handleTabChange("push")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "push"
               ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
@@ -452,7 +505,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
-          onClick={() => setActiveTab("errors")}
+          onClick={() => handleTabChange("errors")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "errors"
               ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
@@ -464,7 +517,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
         </button>
 
         <button
-          onClick={() => setActiveTab("ai_reports")}
+          onClick={() => handleTabChange("ai_reports")}
           className={"flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all whitespace-nowrap " + (
             activeTab === "ai_reports"
               ? "border-amber-600 text-amber-900 bg-amber-500/5 rounded-t-xl"
@@ -623,7 +676,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
             </div>
           </div>
 
-          <ClientErrorMonitoringSection />
+          <ClientErrorMonitoringSection targetFingerprint={targetFingerprint} />
         </div>
       )}
 
@@ -737,7 +790,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: POSTGRES DATABASE CONNECTION POOL ────────────────────── */}
       {showDbModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -781,7 +834,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: ASTRONOMICAL EPHEMERIS CALIBRATION ───────────────────── */}
       {showEphemerisModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -824,7 +877,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: OFFLINE SADHANA SYNC QUEUE ───────────────────────────── */}
       {showOfflineModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -868,7 +921,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── MODAL: AI PROVIDERS & SARVAM WALLET ─────────────────────────── */}
       {showProvidersModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -962,7 +1015,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── (i) INFORMATION METADATA MODAL ────────────────────────────────── */}
       {infoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
@@ -1006,7 +1059,7 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
 
       {/* ─── EVENT INSPECT MODAL ────────────────────────────────────────────── */}
       {inspectEvent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 font-sans">
+        <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 font-sans animate-in fade-in duration-150 motion-reduce:animate-none">
           <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl border border-black/10 space-y-4 text-xs">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 className="font-bold text-sm text-gray-900">Telemetry Event Inspector</h3>

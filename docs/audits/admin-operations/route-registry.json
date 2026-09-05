@@ -1,0 +1,493 @@
+{
+  "version": "1.0.0",
+  "audited_at": "2026-09-05T14:55:00Z",
+  "screens": [
+    {
+      "id": "admin-overview",
+      "path": "/admin",
+      "title": "Command Center Home",
+      "category": "overview",
+      "icon": "Home",
+      "component": "src/app/admin/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/stats",
+        "/api/admin/alerts",
+        "/api/admin/calendar-governance/integrity"
+      ],
+      "actions": [
+        "flush_cache",
+        "quick_resolve_integrity_finding"
+      ],
+      "description": "Executive operations dashboard, active system alerts, and primary domain launchers."
+    },
+    {
+      "id": "calendar-governance",
+      "path": "/admin/calendar-governance",
+      "title": "Calendar Governance & Integrity",
+      "category": "canon",
+      "icon": "Calendar",
+      "component": "src/app/admin/calendar-governance/page.tsx",
+      "supported_query_params": [
+        "tab",
+        "findingId",
+        "slug",
+        "year"
+      ],
+      "tabs": [
+        "integrity",
+        "review",
+        "coverage",
+        "fixtures",
+        "activity"
+      ],
+      "data_sources": [
+        "/api/admin/calendar-governance/integrity",
+        "/api/admin/calendar-governance/review-queue",
+        "/api/admin/calendar-governance/coverage",
+        "/api/admin/calendar-governance/fixtures",
+        "/api/admin/calendar-governance/activity"
+      ],
+      "actions": [
+        "resolve_finding",
+        "resolve_all_findings",
+        "approve_fixture",
+        "recalculate_year"
+      ],
+      "description": "Astronomical rule verification, golden fixture audit, engine vs curated discrepancy triage."
+    },
+    {
+      "id": "observance-content",
+      "path": "/admin/observance-content",
+      "title": "Observance Content Studio",
+      "category": "canon",
+      "icon": "BookOpen",
+      "component": "src/app/admin/observance-content/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/observance-content"
+      ],
+      "actions": [
+        "save_story",
+        "publish_story",
+        "upload_artwork",
+        "manage_sources"
+      ],
+      "description": "Spiritual story authoring, scripture citations, deity artwork, and translation studio."
+    },
+    {
+      "id": "dharm-veer-review",
+      "path": "/admin/dharm-veer-review",
+      "title": "Dharm Veer Review",
+      "category": "canon",
+      "icon": "ShieldCheck",
+      "component": "src/app/admin/dharm-veer-review/page.tsx",
+      "supported_query_params": [],
+      "alert_deep_link_param": "slug",
+      "alert_deep_link_status": "broken",
+      "data_sources": [
+        "/api/admin/dharm-veer-review"
+      ],
+      "actions": [
+        "approve_biography",
+        "reject_biography",
+        "regenerate_biography"
+      ],
+      "description": "Historical Hindu hero biography verification, source validation, and publication review."
+    },
+    {
+      "id": "hindi-generator",
+      "path": "/admin/hindi-generator",
+      "title": "Sacred Hindi Generator",
+      "category": "canon",
+      "icon": "Languages",
+      "component": "src/app/admin/hindi-generator/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/generate-hindi-meanings"
+      ],
+      "actions": [
+        "run_batch_translation"
+      ],
+      "description": "Batch translation tool for Shloka and library meanings via Sarvam AI."
+    },
+    {
+      "id": "users-directory",
+      "path": "/admin/users",
+      "title": "Seeker Directory & Dossiers",
+      "category": "community",
+      "icon": "Users",
+      "component": "src/app/admin/users/page.tsx",
+      "supported_query_params": [
+        "segment",
+        "query",
+        "userId"
+      ],
+      "data_sources": [
+        "/api/admin/users",
+        "/api/admin/users/[userId]"
+      ],
+      "actions": [
+        "ban_user",
+        "unban_user",
+        "grant_pro",
+        "issue_warning",
+        "delete_user_hard",
+        "scrub_user_pii"
+      ],
+      "description": "Seeker search, devotional timeline dossiers, moderation history, and DPDP compliance purge."
+    },
+    {
+      "id": "user-dossier-direct",
+      "path": "/admin/users/[id]",
+      "title": "Seeker Dossier Detail",
+      "category": "community",
+      "icon": "Users",
+      "component": "src/app/admin/users/[id]/page.tsx",
+      "supported_query_params": [
+        "tab"
+      ],
+      "tabs": [
+        "timeline",
+        "notifications",
+        "karma",
+        "moderation",
+        "compliance"
+      ],
+      "data_sources": [
+        "/api/admin/users/[userId]"
+      ],
+      "actions": [
+        "ban_user",
+        "unban_user",
+        "issue_warning",
+        "delete_user_hard",
+        "scrub_user_pii"
+      ],
+      "description": "Direct 5-tab seeker profile view (redirects/delegates to unified user dossier)."
+    },
+    {
+      "id": "tirtha-mandali",
+      "path": "/admin/tirtha",
+      "title": "Mandali & Tirtha Hub",
+      "category": "community",
+      "icon": "MapPin",
+      "component": "src/app/admin/tirtha/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/mandalis"
+      ],
+      "actions": [
+        "view_mandali",
+        "manage_chapters"
+      ],
+      "description": "Pilgrimage node registry, local mandali community chapters, and regional hubs."
+    },
+    {
+      "id": "tirtha-review",
+      "path": "/admin/tirtha/review",
+      "title": "Mandali Review Queue",
+      "category": "community",
+      "icon": "MapPin",
+      "component": "src/app/admin/tirtha/review/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/mandalis/review"
+      ],
+      "actions": [
+        "approve_mandali",
+        "reject_mandali"
+      ],
+      "description": "Devotee-submitted Mandali creation approval queue."
+    },
+    {
+      "id": "moderation-hub",
+      "path": "/admin/moderation",
+      "title": "Trust & Moderation",
+      "category": "community",
+      "icon": "Shield",
+      "component": "src/app/admin/moderation/page.tsx",
+      "supported_query_params": [],
+      "alert_deep_link_param": "reportId",
+      "alert_deep_link_status": "broken",
+      "data_sources": [
+        "/api/admin/reports/[reportId]",
+        "/api/admin/users/[userId]/warn",
+        "/api/admin/posts/[postId]"
+      ],
+      "actions": [
+        "review_report",
+        "action_report",
+        "dismiss_report",
+        "warn_user",
+        "delete_content"
+      ],
+      "description": "Devotee reports, user flag resolution, content deletion, and community warnings."
+    },
+    {
+      "id": "monitoring-sentry",
+      "path": "/admin/monitoring",
+      "title": "Operational Sentry & Health",
+      "category": "telemetry",
+      "icon": "Radio",
+      "component": "src/app/admin/monitoring/page.tsx",
+      "supported_query_params": [
+        "aiReportStatus"
+      ],
+      "alert_deep_link_params": [
+        "section",
+        "fingerprint"
+      ],
+      "alert_deep_link_status": "partial",
+      "tabs": [
+        "apis",
+        "telemetry",
+        "push",
+        "errors",
+        "ai_reports"
+      ],
+      "data_sources": [
+        "monitoring_events table",
+        "content_reports table",
+        "/api/admin/client-errors",
+        "/api/admin/push-monitoring"
+      ],
+      "actions": [
+        "resolve_ai_report",
+        "dismiss_ai_report",
+        "revalidate_cache"
+      ],
+      "description": "Full-stack observability across AI models, DB connection pool, ephemeris, push gateways, and client crashes."
+    },
+    {
+      "id": "crons-telemetry",
+      "path": "/admin/crons",
+      "title": "Cron Health & Automation Telemetry",
+      "category": "telemetry",
+      "icon": "Activity",
+      "component": "src/app/admin/crons/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/crons",
+        "/api/admin/logs"
+      ],
+      "actions": [
+        "trigger_cron_manually",
+        "simulate_cron_log"
+      ],
+      "description": "35 background routines, lock status, execution history, and manual trigger console."
+    },
+    {
+      "id": "reports-analytics",
+      "path": "/admin/reports",
+      "title": "Executive Analytics & Export",
+      "category": "telemetry",
+      "icon": "FileText",
+      "component": "src/app/admin/reports/page.tsx",
+      "supported_query_params": [
+        "tab"
+      ],
+      "tabs": [
+        "overview",
+        "growth",
+        "sadhana",
+        "commercial",
+        "governance",
+        "logs"
+      ],
+      "data_sources": [
+        "/api/admin/reports",
+        "/api/admin/reports/export"
+      ],
+      "actions": [
+        "export_csv"
+      ],
+      "description": "Seeker retention, Japa sadhana milestones, commercial launch metrics, and CSV export."
+    },
+    {
+      "id": "notifications-studio",
+      "path": "/admin/notifications",
+      "title": "Notification Studio",
+      "category": "broadcast",
+      "icon": "Bell",
+      "component": "src/app/admin/notifications/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/notification-templates",
+        "/api/admin/notification-templates/test"
+      ],
+      "actions": [
+        "update_template",
+        "send_test_push"
+      ],
+      "description": "Push template copy editor, variables reference, and live lockscreen simulator."
+    },
+    {
+      "id": "broadcast-global",
+      "path": "/admin/broadcast",
+      "title": "Global Devotee Broadcast",
+      "category": "broadcast",
+      "icon": "Send",
+      "component": "src/app/admin/broadcast/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [
+        "/api/admin/broadcast"
+      ],
+      "actions": [
+        "dispatch_broadcast"
+      ],
+      "description": "Platform-wide instantaneous notification and SMS broadcast dispatch."
+    },
+    {
+      "id": "global-settings",
+      "path": "/admin/settings",
+      "title": "Platform Settings",
+      "category": "settings",
+      "icon": "Settings",
+      "component": "src/app/admin/settings/page.tsx",
+      "supported_query_params": [],
+      "data_sources": [],
+      "actions": [
+        "update_feature_flags",
+        "manage_admin_keys"
+      ],
+      "description": "Security credentials, environment controls, and maintenance switches."
+    },
+    {
+      "id": "admin-logs",
+      "path": "/admin/logs",
+      "title": "Unified Log Explorer",
+      "category": "telemetry",
+      "icon": "Terminal",
+      "component": "src/app/admin/logs/page.tsx",
+      "supported_query_params": [
+        "source",
+        "severity",
+        "route",
+        "requestId",
+        "fingerprint",
+        "cronJob",
+        "deploymentSha",
+        "userId",
+        "startDate",
+        "endDate",
+        "cursor",
+        "limit"
+      ],
+      "data_sources": [
+        "/api/admin/logs"
+      ],
+      "actions": [
+        "filter_logs",
+        "inspect_event",
+        "paginate_keyset"
+      ],
+      "description": "Cross-domain telemetry, correlation identifiers, and diagnostic evidence browser."
+    }
+  ],
+  "alert_deep_links": [
+    {
+      "source_alert": "client_error",
+      "generated_href": "/admin/monitoring?section=errors&fingerprint={fp}",
+      "target_screen": "/admin/monitoring",
+      "params": {
+        "section": "errors",
+        "fingerprint": "{fp}"
+      },
+      "destination_status": "broken",
+      "cause": "MonitoringClient defaults to activeTab='apis'; searchParams is not parsed by client to switch to 'errors' tab or filter fingerprints."
+    },
+    {
+      "source_alert": "integrity",
+      "generated_href": "/admin/calendar-governance?tab=integrity&findingId={id}&slug={slug}&year={year}",
+      "target_screen": "/admin/calendar-governance",
+      "params": {
+        "tab": "integrity",
+        "findingId": "{id}",
+        "slug": "{slug}",
+        "year": "{year}"
+      },
+      "destination_status": "working",
+      "cause": "calendar-governance/page.tsx parses tab, findingId, slug, and year, sets activeTab to integrity, and passes parameters to IntegritySection."
+    },
+    {
+      "source_alert": "report",
+      "generated_href": "/admin/moderation?reportId={id}",
+      "target_screen": "/admin/moderation",
+      "params": {
+        "reportId": "{id}"
+      },
+      "destination_status": "broken",
+      "cause": "moderation/page.tsx and ModerationClient.tsx do not consume useSearchParams or reportId, loading all reports without filtering or selecting target."
+    },
+    {
+      "source_alert": "dharm_veer",
+      "generated_href": "/admin/dharm-veer-review?slug={slug}",
+      "target_screen": "/admin/dharm-veer-review",
+      "params": {
+        "slug": "{slug}"
+      },
+      "destination_status": "broken",
+      "cause": "dharm-veer-review/page.tsx ignores query params and loads all pending biographies without filtering to the target slug."
+    },
+    {
+      "source_alert": "system (fallback)",
+      "generated_href": "/admin/monitoring",
+      "target_screen": "/admin/monitoring",
+      "params": {},
+      "destination_status": "working",
+      "cause": "Opens root monitoring dashboard."
+    }
+  ],
+  "navigation_redundancy_inventory": {
+    "header_dropdown_groups": [
+      {
+        "id": "canon",
+        "label": "Dharma & Canon",
+        "routes": [
+          "/admin/observance-content",
+          "/admin/calendar-governance",
+          "/admin/dharm-veer-review",
+          "/admin/hindi-generator"
+        ]
+      },
+      {
+        "id": "community",
+        "label": "Community & Trust",
+        "routes": [
+          "/admin/users",
+          "/admin/tirtha",
+          "/admin/moderation"
+        ]
+      },
+      {
+        "id": "telemetry",
+        "label": "Telemetry & Infra",
+        "routes": [
+          "/admin/crons",
+          "/admin/monitoring",
+          "/admin/reports"
+        ]
+      },
+      {
+        "id": "broadcast",
+        "label": "Communications",
+        "routes": [
+          "/admin/notifications",
+          "/admin/broadcast"
+        ]
+      }
+    ],
+    "dashboard_overview_card_groups": [
+      "Sacred Story & Content",
+      "Panchang & Astronomical Rules",
+      "Devotee Community & Trust",
+      "Telemetry & Systems Infrastructure"
+    ],
+    "quick_tools_duplicated": [
+      "Flush Edge & In-Memory Cache (Dashboard header + Settings)",
+      "Cron Health Matrix link (Monitoring pulse card & Telemetry menu)",
+      "Back to Command Center links (Present in 6 sub-screens with varied button styles)"
+    ]
+  }
+}

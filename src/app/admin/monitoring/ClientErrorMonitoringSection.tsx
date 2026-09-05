@@ -41,7 +41,7 @@ interface MonitoringMetrics {
   fingerprints: FingerprintGroup[];
 }
 
-export default function ClientErrorMonitoringSection() {
+export default function ClientErrorMonitoringSection({ targetFingerprint }: { targetFingerprint?: string | null } = {}) {
   const [data, setData] = useState<MonitoringMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +69,14 @@ export default function ClientErrorMonitoringSection() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (targetFingerprint && data?.fingerprints) {
+      if (data.fingerprints.some(f => f.fingerprint === targetFingerprint)) {
+        setExpandedFingerprint(targetFingerprint);
+      }
+    }
+  }, [targetFingerprint, data]);
 
   const copyText = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -130,6 +138,13 @@ export default function ClientErrorMonitoringSection() {
           Refresh Stream
         </button>
       </div>
+
+      {targetFingerprint && data && !data.fingerprints.some(f => f.fingerprint === targetFingerprint) && (
+        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-center gap-2">
+          <AlertTriangle size={15} className="text-amber-700 shrink-0" />
+          <span>Target error fingerprint <code className="font-mono bg-amber-100 px-1.5 py-0.5 rounded font-bold">{targetFingerprint}</code> was not found in the 24h client errors window.</span>
+        </div>
+      )}
 
       {/* Metrics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

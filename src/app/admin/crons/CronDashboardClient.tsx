@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { parseAdminStringParam } from "@/lib/admin-url-state";
 import {
   Clock, Play, AlertTriangle, CheckCircle, RefreshCw,
   Search, ShieldCheck, ArrowLeft, ChevronDown, ChevronUp,
@@ -115,6 +117,8 @@ function getNextCronRun(cronExpr: string) {
 }
 
 export default function CronDashboardClient() {
+  const searchParams = useSearchParams();
+  const targetJob = parseAdminStringParam(searchParams, "job") || parseAdminStringParam(searchParams, "cron") || parseAdminStringParam(searchParams, "route");
   const [crons, setCrons] = useState<CronStatusSummary[]>([]);
   const [queue, setQueue] = useState<NotificationQueueSummary>({
     pending: 0,
@@ -157,6 +161,18 @@ export default function CronDashboardClient() {
   const [inspectQueueItem, setInspectQueueItem] = useState<ScheduledNotificationItem | null>(null);
   const [dispatchingQueue, setDispatchingQueue] = useState<boolean>(false);
 
+  // Global Escape key listener for Cron modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setInspectExecution(null);
+        setInspectQueueItem(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
 
   const fetchCrons = useCallback(async () => {
     try {
@@ -179,6 +195,13 @@ export default function CronDashboardClient() {
   useEffect(() => {
     void fetchCrons();
   }, [fetchCrons]);
+
+  useEffect(() => {
+    if (targetJob) {
+      setSearchQuery(targetJob);
+      setExpandedCron(targetJob);
+    }
+  }, [targetJob]);
 
   const triggerCron = async (cronPath: string) => {
     setRunningRoute(cronPath);
@@ -493,8 +516,8 @@ export default function CronDashboardClient() {
               }}
               className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
                 queueFilter === "pending"
-                  ? "bg-amber-100/80 border-amber-500 ring-2 ring-amber-500/20 shadow-sm scale-[1.02]"
-                  : "bg-amber-50/60 border-amber-200/80 hover:bg-amber-100/60 hover:scale-[1.01]"
+                  ? "bg-amber-100/80 border-amber-500 ring-2 ring-amber-500/20 shadow-sm "
+                  : "bg-amber-50/60 border-amber-200/80 hover:bg-amber-100/60 "
               )}
             >
               <div className="flex items-center justify-between text-amber-800">
@@ -515,8 +538,8 @@ export default function CronDashboardClient() {
               }}
               className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
                 queueFilter === "claimed"
-                  ? "bg-blue-100/80 border-blue-500 ring-2 ring-blue-500/20 shadow-sm scale-[1.02]"
-                  : "bg-blue-50/60 border-blue-200/80 hover:bg-blue-100/60 hover:scale-[1.01]"
+                  ? "bg-blue-100/80 border-blue-500 ring-2 ring-blue-500/20 shadow-sm "
+                  : "bg-blue-50/60 border-blue-200/80 hover:bg-blue-100/60 "
               )}
             >
               <div className="flex items-center justify-between text-blue-800">
@@ -537,8 +560,8 @@ export default function CronDashboardClient() {
               }}
               className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
                 queueFilter === "sent"
-                  ? "bg-emerald-100/80 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm scale-[1.02]"
-                  : "bg-emerald-50/60 border-emerald-200/80 hover:bg-emerald-100/60 hover:scale-[1.01]"
+                  ? "bg-emerald-100/80 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm "
+                  : "bg-emerald-50/60 border-emerald-200/80 hover:bg-emerald-100/60 "
               )}
             >
               <div className="flex items-center justify-between text-emerald-800">
@@ -559,8 +582,8 @@ export default function CronDashboardClient() {
               }}
               className={"text-left p-4 rounded-xl border transition-all cursor-pointer " + (
                 queueFilter === "failed"
-                  ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-sm scale-[1.02]"
-                  : "bg-rose-50/60 border-rose-200/80 hover:bg-rose-100/60 hover:scale-[1.01]"
+                  ? "bg-rose-100/80 border-rose-500 ring-2 ring-rose-500/20 shadow-sm "
+                  : "bg-rose-50/60 border-rose-200/80 hover:bg-rose-100/60 "
               )}
             >
               <div className="flex items-center justify-between text-rose-800">
@@ -669,7 +692,7 @@ export default function CronDashboardClient() {
 
           {/* Queue Item Detail Modal */}
           {inspectQueueItem && (
-            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+            <div role="dialog" aria-modal="true" aria-label="Scheduled Notification Details" className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 motion-reduce:animate-none">
               <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border space-y-4 max-h-[85vh] overflow-y-auto">
                 <div className="flex items-center justify-between border-b pb-3">
                   <div className="flex items-center gap-2">
@@ -730,7 +753,7 @@ export default function CronDashboardClient() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <button
             onClick={() => setStatusFilter("all")}
-            className="text-left glass-panel p-5 rounded-2xl bg-white border border-black/5 shadow-sm hover:scale-[1.02] hover:border-amber-500/40 transition-all cursor-pointer"
+            className="text-left glass-panel p-5 rounded-2xl bg-white border border-black/5 shadow-sm  hover:border-amber-500/40 transition-all cursor-pointer"
           >
             <div className="flex items-center justify-between text-gray-500 mb-2">
               <span className="text-xs font-bold uppercase tracking-wider">Total in Scope</span>
@@ -742,7 +765,7 @@ export default function CronDashboardClient() {
 
           <button
             onClick={() => setStatusFilter(statusFilter === "active24h" ? "all" : "active24h")}
-            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm hover:scale-[1.02] transition-all cursor-pointer " + (
+            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm  transition-all cursor-pointer " + (
               statusFilter === "active24h" ? "bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/20" : "bg-white border-emerald-500/20 hover:border-emerald-500/50"
             )}
           >
@@ -756,7 +779,7 @@ export default function CronDashboardClient() {
 
           <button
             onClick={() => setStatusFilter(statusFilter === "failing" ? "all" : "failing")}
-            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm hover:scale-[1.02] transition-all cursor-pointer " + (
+            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm  transition-all cursor-pointer " + (
               statusFilter === "failing" ? "bg-rose-50 border-rose-500 ring-2 ring-rose-500/20" : "bg-white border-rose-500/20 hover:border-rose-500/50"
             )}
           >
@@ -779,7 +802,7 @@ export default function CronDashboardClient() {
 
           <button
             onClick={() => setStatusFilter(statusFilter === "untriggered" ? "all" : "untriggered")}
-            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm hover:scale-[1.02] transition-all cursor-pointer " + (
+            className={"text-left glass-panel p-5 rounded-2xl border shadow-sm  transition-all cursor-pointer " + (
               statusFilter === "untriggered" ? "bg-gray-100 border-gray-400 ring-2 ring-gray-400/20" : "bg-white border-black/5 hover:border-gray-400"
             )}
           >
@@ -1030,7 +1053,7 @@ export default function CronDashboardClient() {
                         {last ? (
                           <button
                             onClick={() => setInspectExecution({ cronName: cron.name, route: cron.route, log: last })}
-                            className={"text-left w-full p-2 rounded-xl border transition-all hover:scale-[1.02] cursor-pointer " + (
+                            className={"text-left w-full p-2 rounded-xl border transition-all  cursor-pointer " + (
                               last.status === "healthy"
                                 ? "bg-emerald-50/70 border-emerald-300 hover:border-emerald-500 text-emerald-900"
                                 : "bg-rose-50/70 border-rose-300 hover:border-rose-500 text-rose-900"

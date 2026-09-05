@@ -1,8 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, BookOpen, CheckCircle2, XCircle, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { AdminRecordInspector } from "@/components/admin/AdminRecordInspector";
+import type { DharmVeerRecord } from "@/lib/admin-inspector-types";
+import { ArrowLeft, BookOpen, CheckCircle2, XCircle, Link as LinkIcon, Loader2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { parseAdminStringParam } from "@/lib/admin-url-state";
 
 type SourceCitation = {
   sourceName: string;
@@ -32,10 +36,37 @@ type PendingDharmVeer = {
 };
 
 export default function DharmVeerReviewPage() {
+  const searchParams = useSearchParams();
+  const targetSlug = parseAdminStringParam(searchParams, "slug");
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<PendingDharmVeer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busySlug, setBusySlug] = useState<string | null>(null);
+
+  const inspectedHero: DharmVeerRecord | null = useMemo(() => {
+    if (!targetSlug) return null;
+    const match = rows.find((r) => r.slug === targetSlug);
+    if (!match) return null;
+    return {
+      type: "dharm_veer",
+      slug: match.slug,
+      name: match.name,
+      nameLocal: match.name_local,
+      tradition: match.tradition,
+      era: match.era,
+      tagline: match.tagline,
+      journey: match.journey,
+      trial: match.trial,
+      teaching: match.teaching,
+      moral: match.moral,
+      legacy: match.legacy,
+      quote: match.quote,
+      quoteSource: match.quote_source,
+      generatedBy: match.generated_by,
+      createdAt: match.created_at,
+      sourceCitations: match.source_citations,
+    };
+  }, [targetSlug, rows]);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -54,6 +85,14 @@ export default function DharmVeerReviewPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    if (targetSlug && rows.length > 0) {
+      if (rows.some((r) => r.slug === targetSlug)) {
+        setExpanded(targetSlug);
+      }
+    }
+  }, [targetSlug, rows]);
 
   async function act(slug: string, action: 'approve' | 'reject') {
     setBusySlug(slug);
@@ -101,6 +140,13 @@ export default function DharmVeerReviewPage() {
           users until approved — check the citation against the excerpt before approving.
         </p>
 
+        {targetSlug && !loading && !rows.some((r) => r.slug === targetSlug) && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs flex items-center gap-2">
+            <AlertCircle size={16} className="text-amber-600 shrink-0" />
+            <span>Target hero biography <code className="font-mono font-bold bg-amber-100 px-1.5 py-0.5 rounded">{targetSlug}</code> is not in the pending review queue.</span>
+          </div>
+        )}
+
         {error && (
           <div className="p-4 rounded-2xl bg-rose-500/10 text-rose-600 text-sm font-medium">{error}</div>
         )}
@@ -132,14 +178,14 @@ export default function DharmVeerReviewPage() {
                   <button
                     onClick={() => act(r.slug, 'approve')}
                     disabled={busySlug === r.slug}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                   >
                     <CheckCircle2 size={14} /> Approve
                   </button>
                   <button
                     onClick={() => act(r.slug, 'reject')}
                     disabled={busySlug === r.slug}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 text-xs font-bold hover:bg-rose-500 hover:text-white transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
                   >
                     <XCircle size={14} /> Reject
                   </button>
@@ -189,6 +235,21 @@ export default function DharmVeerReviewPage() {
           ))
         )}
       </div>
+
+      <AdminRecordInspector
+        record={inspectedHero}
+        isOpen={Boolean(targetSlug && inspectedHero)}
+        onClose={() => {
+          const sp = new URLSearchParams(window.location.search);
+          sp.delete("slug");
+          const qs = sp.toString();
+          const newUrl = qs ? `/admin/dharm-veer-review?${qs}` : "/admin/dharm-veer-review";
+          window.history.replaceState(null, "", newUrl);
+        }}
+        onActionComplete={(rec) => {
+          setRows((prev) => prev.filter((r) => r.slug !== (rec as DharmVeerRecord).slug));
+        }}
+      />
     </div>
   );
 }

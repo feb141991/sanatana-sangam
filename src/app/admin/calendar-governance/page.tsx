@@ -117,8 +117,9 @@ const isRealFixture = (f: GoldenFixtureRow) =>
 
 export default function CalendarGovernancePage() {
   const searchParams = useSearchParams();
-  const urlTab = searchParams.get('tab') as Tab | null;
-  const targetFindingId = searchParams.get('findingId');
+  const rawTab = searchParams.get('tab');
+  const urlTab = (rawTab === 'review' ? 'review-queue' : rawTab) as Tab | null;
+  const targetFindingId = searchParams.get('findingId') || searchParams.get('finding');
   const targetSlug = searchParams.get('slug');
   const targetYear = searchParams.get('year');
 
@@ -222,7 +223,7 @@ function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; on
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${
         active ? 'bg-[var(--premium-gold)] text-white' : 'text-[var(--brand-muted)] hover:bg-black/5'
       }`}
     >
