@@ -283,7 +283,7 @@ describe('materializeOccurrencesForYears — commit mode', () => {
       toStamp: [],
       expectedByIdentity,
       identityMeta,
-      versions: { engine: 'test', rule: 'test' },
+      versions: { engine: 'test', rule: 'test', dayBoundary: 'test' },
     })).rejects.toEqual({ message: 'forced first-insert failure' });
 
     const batches = [...c.batches.values()];

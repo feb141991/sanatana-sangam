@@ -22,42 +22,71 @@
  * itself already exempts kind: 'vrat' definitions (DELETEs rather than
  * INSERTs for those), so none of their rows ever reach the constraint this
  * function protects against.
+ *
+ * ADDED AFTER REVIEW (native Home "second hero pill" reliability fix): the
+ * original existence-check here ("does any occurrence row exist for this
+ * combo/year") was replaced with `isYearMaterialized`, which trusts a
+ * materialisation MANIFEST (expected identity count + hash + full
+ * provenance) rather than inferring completeness from whichever batch rows
+ * happen to exist. The tests below (`isYearMaterialized`) cover the specific
+ * failure modes a batch-only design could not: a missing batch despite a
+ * manifest expecting it, a stale provenance version, and a matching count
+ * with a mismatched identity set.
  */
 import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('../engine', () => ({
   calculateObservancesForYear: vi.fn(),
+  RULE_ENGINE_VERSION: '2.0.0',
 }));
 
 const { calculateObservancesForYear } = await import('../engine') as unknown as {
   calculateObservancesForYear: ReturnType<typeof vi.fn>;
 };
-const { ensureYearMaterialized } = await import('../resolve-occurrences');
+const { ensureYearMaterialized, isYearMaterialized } = await import('../resolve-occurrences');
+const { currentMaterializationProvenance } = await import('../materialisation-batch');
 
+const CURRENT_PROVENANCE = currentMaterializationProvenance('2.0.0');
+
+/**
+ * A minimal, in-memory fake covering exactly the tables/methods
+ * ensureYearMaterialized and isYearMaterialized use: observance_definitions,
+ * tradition_profiles, observance_occurrences (upsert only), and the two
+ * materialisation tables (manifest + batches), each keyed by their real
+ * unique identity so a re-run behaves like a real upsert would.
+ */
 function makeSupabase({
   definitions,
   traditionSlugs,
+  manifests = [],
+  batches = [],
 }: {
   definitions: Array<{ id: string; slug: string; display_name: string; kind: string }>;
   traditionSlugs: string[];
+  manifests?: any[];
+  batches?: any[];
 }) {
   const upserted: any[] = [];
+  const manifestStore = new Map<string, any>(
+    manifests.map((m) => [`${m.year}|${m.calendar_profile}|${m.computed_latitude}|${m.computed_longitude}|${m.computed_timezone}`, { ...m }]),
+  );
+  const batchStore = new Map<string, any>(
+    batches.map((b, i) => [
+      b.id ?? `seed-batch-${i}`,
+      { id: b.id ?? `seed-batch-${i}`, ...b },
+    ]),
+  );
+  let batchCounter = batchStore.size;
+
+  const manifestKey = (r: any) => `${r.year}|${r.calendar_profile}|${r.computed_latitude}|${r.computed_longitude}|${r.computed_timezone}`;
+
   return {
     upserted,
+    manifestStore,
+    batchStore,
     from(table: string) {
       if (table === 'observance_occurrences') {
         return {
-          select: () => ({
-            eq: () => ({
-              eq: () => ({
-                eq: () => ({
-                  eq: () => ({
-                    eq: () => ({ limit: async () => ({ data: [], error: null }) }),
-                  }),
-                }),
-              }),
-            }),
-          }),
           upsert: async (rows: any[]) => {
             upserted.push(...rows);
             return { error: null };
@@ -69,6 +98,82 @@ function makeSupabase({
       }
       if (table === 'tradition_profiles') {
         return { select: async () => ({ data: traditionSlugs.map((slug) => ({ slug })), error: null }) };
+      }
+      if (table === 'observance_materialisation_manifests') {
+        return {
+          select: () => {
+            const filters: Record<string, unknown> = {};
+            const chain: any = {
+              eq(col: string, val: unknown) {
+                filters[col] = val;
+                return chain;
+              },
+              maybeSingle: async () => {
+                const key = `${filters.year}|${filters.calendar_profile}|${filters.computed_latitude}|${filters.computed_longitude}|${filters.computed_timezone}`;
+                return { data: manifestStore.get(key) ?? null, error: null };
+              },
+            };
+            return chain;
+          },
+          upsert: async (row: any) => {
+            manifestStore.set(manifestKey(row), { ...row });
+            return { error: null };
+          },
+          update: (patch: any) => {
+            const filters: Record<string, unknown> = {};
+            const chain: any = {
+              eq(col: string, val: unknown) {
+                filters[col] = val;
+                if (Object.keys(filters).length === 5) {
+                  const key = `${filters.year}|${filters.calendar_profile}|${filters.computed_latitude}|${filters.computed_longitude}|${filters.computed_timezone}`;
+                  const existing = manifestStore.get(key);
+                  if (existing) manifestStore.set(key, { ...existing, ...patch });
+                  return Promise.resolve({ error: null });
+                }
+                return chain;
+              },
+            };
+            return chain;
+          },
+        };
+      }
+      if (table === 'observance_materialisation_batches') {
+        return {
+          select: () => {
+            const filters: Record<string, unknown> = {};
+            const chain: any = {
+              eq(col: string, val: unknown) {
+                filters[col] = val;
+                return chain;
+              },
+              then: (resolve: (v: { data: any[]; error: null }) => void) => {
+                const rows = [...batchStore.values()].filter((b) =>
+                  Object.entries(filters).every(([k, v]) => b[k] === v),
+                );
+                resolve({ data: rows, error: null });
+              },
+            };
+            return chain;
+          },
+          upsert: (row: any) => ({
+            select: () => ({
+              single: async () => {
+                const identityKey = `${row.definition_id}|${row.year}|${row.calendar_profile}|${row.spiritual_tradition ?? ''}|${row.variant_key ?? ''}|${row.computed_latitude}|${row.computed_longitude}|${row.computed_timezone}`;
+                const existing = [...batchStore.entries()].find(([, b]) => `${b.definition_id}|${b.year}|${b.calendar_profile}|${b.spiritual_tradition ?? ''}|${b.variant_key ?? ''}|${b.computed_latitude}|${b.computed_longitude}|${b.computed_timezone}` === identityKey);
+                const id = existing?.[0] ?? `batch-${batchCounter++}`;
+                batchStore.set(id, { ...row, id });
+                return { data: { id }, error: null };
+              },
+            }),
+          }),
+          update: (patch: any) => ({
+            eq: async (_col: string, id: string) => {
+              const existing = batchStore.get(id);
+              if (existing) batchStore.set(id, { ...existing, ...patch });
+              return { error: null };
+            },
+          }),
+        };
       }
       throw new Error(`unexpected table ${table}`);
     },
@@ -174,5 +279,163 @@ describe('ensureYearMaterialized — festival-mirror name collisions', () => {
 
     expect(supabase.upserted).toHaveLength(1);
     expect(supabase.upserted[0].spiritual_tradition).toBeNull();
+  });
+});
+
+describe('ensureYearMaterialized — manifest + batch ledger (round-trip)', () => {
+  it('opens a batch and records a matching manifest on a successful run', async () => {
+    calculateObservancesForYear.mockReturnValue([
+      { slug: 'maha-shivaratri', date: '2026-02-15', ruleKey: 'maha-shivaratri::smarta' },
+    ]);
+    const supabase = makeSupabase({ definitions: [shivaratri], traditionSlugs });
+
+    await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
+
+    const manifest = [...supabase.manifestStore.values()][0];
+    expect(manifest.status).toBe('complete');
+    expect(manifest.expected_identity_count).toBe(1);
+    expect(manifest.engine_version).toBe(CURRENT_PROVENANCE.engineVersion);
+    expect(manifest.day_boundary_version).toBe(CURRENT_PROVENANCE.dayBoundaryVersion);
+
+    const batch = [...supabase.batchStore.values()][0];
+    expect(batch.status).toBe('complete');
+    expect(batch.produced_row_count).toBe(1);
+    expect(batch.expected_row_count).toBe(1);
+    expect(batch.day_boundary_version).toBe(CURRENT_PROVENANCE.dayBoundaryVersion);
+  });
+
+  it('closes the batch and marks the manifest failed when the occurrence write throws', async () => {
+    calculateObservancesForYear.mockReturnValue([
+      { slug: 'maha-shivaratri', date: '2026-02-15', ruleKey: 'maha-shivaratri::smarta' },
+    ]);
+    const supabase = makeSupabase({ definitions: [shivaratri], traditionSlugs });
+    const originalFrom = supabase.from.bind(supabase);
+    (supabase as any).from = (table: string): any => {
+      if (table === 'observance_occurrences') {
+        return { upsert: async () => ({ error: { message: 'forced failure' } }) };
+      }
+      return originalFrom(table);
+    };
+
+    await expect(
+      ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location }),
+    ).rejects.toBeTruthy();
+
+    const manifest = [...supabase.manifestStore.values()][0];
+    expect(manifest.status).toBe('failed');
+    const batch = [...supabase.batchStore.values()][0];
+    expect(batch.status).toBe('failed');
+  });
+
+  it('does not recompute when isYearMaterialized already reports complete', async () => {
+    // Shared mock across the whole file -- clear the call count accumulated
+    // by earlier tests so this assertion reflects only THIS test's call.
+    calculateObservancesForYear.mockClear();
+    const expectedIdentity = {
+      definitionId: 'def-shivaratri',
+      slug: 'maha-shivaratri',
+      year: 2026,
+      calendarProfile: 'legacy-ujjain',
+      spiritualTradition: 'smarta',
+      variantKey: 'smarta',
+      lat: location.lat,
+      lon: location.lon,
+      tz: location.tz,
+    };
+    const { canonicalMaterializationIdentitySetHash } = await import('../materialisation-batch');
+    const supabase = makeSupabase({
+      definitions: [shivaratri],
+      traditionSlugs,
+      manifests: [{
+        year: 2026, calendar_profile: 'legacy-ujjain',
+        computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz,
+        expected_identity_count: 1,
+        expected_identity_hash: canonicalMaterializationIdentitySetHash([expectedIdentity]),
+        ...CURRENT_PROVENANCE_COLUMNS(),
+        status: 'complete',
+      }],
+      batches: [{
+        definition_id: 'def-shivaratri', year: 2026, calendar_profile: 'legacy-ujjain',
+        spiritual_tradition: 'smarta', variant_key: 'smarta',
+        computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz,
+        status: 'complete', expected_row_count: 1, produced_row_count: 1,
+      }],
+    });
+
+    await ensureYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location });
+
+    expect(calculateObservancesForYear).not.toHaveBeenCalled();
+    expect(supabase.upserted).toHaveLength(0);
+  });
+});
+
+function CURRENT_PROVENANCE_COLUMNS() {
+  return {
+    engine_version: CURRENT_PROVENANCE.engineVersion,
+    rule_version: CURRENT_PROVENANCE.ruleVersion,
+    astronomy_version: CURRENT_PROVENANCE.astronomyVersion,
+    day_boundary_version: CURRENT_PROVENANCE.dayBoundaryVersion,
+  };
+}
+
+describe('isYearMaterialized — completeness against the manifest, not batch existence alone', () => {
+  const baseManifest = {
+    year: 2026, calendar_profile: 'legacy-ujjain',
+    computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz,
+    status: 'complete',
+    ...CURRENT_PROVENANCE_COLUMNS(),
+  };
+
+  it('reports false when no manifest exists at all', async () => {
+    const supabase = makeSupabase({ definitions: [], traditionSlugs });
+    expect(await isYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location })).toBe(false);
+  });
+
+  it('reports false — a batch is missing entirely despite the manifest expecting it (the case a batch-only design could not detect)', async () => {
+    const { canonicalMaterializationIdentitySetHash } = await import('../materialisation-batch');
+    const identityA = { definitionId: 'def-a', slug: 'a', year: 2026, calendarProfile: 'legacy-ujjain', spiritualTradition: null, variantKey: null, lat: location.lat, lon: location.lon, tz: location.tz };
+    const identityB = { definitionId: 'def-b', slug: 'b', year: 2026, calendarProfile: 'legacy-ujjain', spiritualTradition: null, variantKey: null, lat: location.lat, lon: location.lon, tz: location.tz };
+    const supabase = makeSupabase({
+      definitions: [], traditionSlugs,
+      manifests: [{ ...baseManifest, expected_identity_count: 2, expected_identity_hash: canonicalMaterializationIdentitySetHash([identityA, identityB]) }],
+      // Only ONE of the two expected identities has a batch row -- the other was never opened.
+      batches: [{ definition_id: 'def-a', year: 2026, calendar_profile: 'legacy-ujjain', spiritual_tradition: null, variant_key: null, computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz, status: 'complete' }],
+    });
+    expect(await isYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location })).toBe(false);
+  });
+
+  it('reports false when the manifest was recorded under a stale provenance version (tested for each of the four fields)', async () => {
+    for (const field of ['engine_version', 'rule_version', 'astronomy_version', 'day_boundary_version'] as const) {
+      const supabase = makeSupabase({
+        definitions: [], traditionSlugs,
+        manifests: [{ ...baseManifest, expected_identity_count: 0, expected_identity_hash: 'irrelevant-for-this-check', [field]: 'stale-version' }],
+        batches: [],
+      });
+      expect(await isYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location })).toBe(false);
+    }
+  });
+
+  it('reports false when the count matches but the identity hash does not (a rule change swapped one identity for another, count unchanged)', async () => {
+    const { canonicalMaterializationIdentitySetHash } = await import('../materialisation-batch');
+    const identityA = { definitionId: 'def-a', slug: 'a', year: 2026, calendarProfile: 'legacy-ujjain', spiritualTradition: null, variantKey: null, lat: location.lat, lon: location.lon, tz: location.tz };
+    const identityC = { definitionId: 'def-c', slug: 'c', year: 2026, calendarProfile: 'legacy-ujjain', spiritualTradition: null, variantKey: null, lat: location.lat, lon: location.lon, tz: location.tz };
+    const supabase = makeSupabase({
+      definitions: [], traditionSlugs,
+      // Manifest recorded expecting identity A, but the live complete batch is for a DIFFERENT identity, C -- same count (1).
+      manifests: [{ ...baseManifest, expected_identity_count: 1, expected_identity_hash: canonicalMaterializationIdentitySetHash([identityA]) }],
+      batches: [{ definition_id: identityC.definitionId, year: 2026, calendar_profile: 'legacy-ujjain', spiritual_tradition: null, variant_key: null, computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz, status: 'complete' }],
+    });
+    expect(await isYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location })).toBe(false);
+  });
+
+  it('reports true when the manifest is complete, provenance matches, and the live complete-batch set matches both count and hash', async () => {
+    const { canonicalMaterializationIdentitySetHash } = await import('../materialisation-batch');
+    const identityA = { definitionId: 'def-a', slug: 'a', year: 2026, calendarProfile: 'legacy-ujjain', spiritualTradition: null, variantKey: null, lat: location.lat, lon: location.lon, tz: location.tz };
+    const supabase = makeSupabase({
+      definitions: [], traditionSlugs,
+      manifests: [{ ...baseManifest, expected_identity_count: 1, expected_identity_hash: canonicalMaterializationIdentitySetHash([identityA]) }],
+      batches: [{ definition_id: identityA.definitionId, year: 2026, calendar_profile: 'legacy-ujjain', spiritual_tradition: null, variant_key: null, computed_latitude: location.lat, computed_longitude: location.lon, computed_timezone: location.tz, status: 'complete' }],
+    });
+    expect(await isYearMaterialized({ supabase, year: 2026, calendarProfile: 'legacy-ujjain', location })).toBe(true);
   });
 });

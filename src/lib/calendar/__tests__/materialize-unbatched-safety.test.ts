@@ -147,7 +147,7 @@ describe('commitOccurrencesWithBatches — unbatched rows are structurally untou
       toStamp: [],
       expectedByIdentity: new Map([[key, 1]]),
       identityMeta: new Map([[key, { ...unrelatedRow, __slug: 'diwali' }]]),
-      versions: { engine: 'test', rule: 'test' },
+      versions: { engine: 'test', rule: 'test', dayBoundary: 'test' },
     });
 
     expect(deletedIds).not.toContain(manualSeedRow.id);

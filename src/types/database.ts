@@ -717,6 +717,8 @@ export interface Database {
           engine_version: string;
           rule_version: string;
           astronomy_version: string | null;
+          /** Added 20260905180000. Backfilled '1.0.0' on existing rows, NOT NULL going forward. */
+          day_boundary_version: string;
           status: 'complete' | 'partial' | 'failed' | 'retired';
           failure_reason: string | null;
           completed_at: string | null;
@@ -725,6 +727,31 @@ export interface Database {
         };
         Insert: Omit<Database['public']['Tables']['observance_materialisation_batches']['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Database['public']['Tables']['observance_materialisation_batches']['Insert']>;
+      };
+      /** Added 20260905180000. One row per (year, calendar_profile, location)
+       *  materialisation run -- records what it EXPECTED to produce (count +
+       *  content hash of the identity set) and the full provenance tuple it
+       *  ran under. See resolve-occurrences.ts's isYearMaterialized(). */
+      observance_materialisation_manifests: {
+        Row: {
+          id: string;
+          created_at: string;
+          updated_at: string;
+          year: number;
+          calendar_profile: string;
+          computed_latitude: number;
+          computed_longitude: number;
+          computed_timezone: string;
+          expected_identity_count: number;
+          expected_identity_hash: string;
+          engine_version: string;
+          rule_version: string;
+          astronomy_version: string;
+          day_boundary_version: string;
+          status: 'pending' | 'complete' | 'partial' | 'failed';
+        };
+        Insert: Omit<Database['public']['Tables']['observance_materialisation_manifests']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['observance_materialisation_manifests']['Insert']>;
       };
       observance_review_queue: {
         Row: {
@@ -1055,6 +1082,7 @@ export type CalendarProfile = Database['public']['Tables']['calendar_profiles'][
 export type TraditionProfile = Database['public']['Tables']['tradition_profiles']['Row'];
 export type CalendarIntegrityFinding = Database['public']['Tables']['calendar_integrity_findings']['Row'];
 export type ObservanceMaterialisationBatch = Database['public']['Tables']['observance_materialisation_batches']['Row'];
+export type ObservanceMaterialisationManifest = Database['public']['Tables']['observance_materialisation_manifests']['Row'];
 export type VratObservation = Database['public']['Tables']['vrat_observations']['Row'];
 
 export type PushTokenEvent = Database['public']['Tables']['push_token_events']['Row'];

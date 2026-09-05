@@ -1,5 +1,5 @@
 import { calculateObservancesForYear, RULE_ENGINE_VERSION, USE_CONDITION_EVALUATOR, calculateObservancesForYearMasaGated } from './engine';
-import { openBatch, closeBatch, buildSeriesInstanceKey, retireObsoleteBatchesForCompleteFamily } from './materialisation-batch';
+import { openBatch, closeBatch, buildSeriesInstanceKey, retireObsoleteBatchesForCompleteFamily, canonicalMaterializationIdentityKey, currentMaterializationProvenance } from './materialisation-batch';
 import {
   evaluateVariant,
   type EvaluationReason,
@@ -893,7 +893,7 @@ export async function commitOccurrencesWithBatches(
     expectedByIdentity: Map<string, number>;
     /** Identity metadata per key, so a batch can be opened for it. */
     identityMeta: Map<string, any>;
-    versions: { engine: string; rule: string; astronomy?: string };
+    versions: { engine: string; rule: string; astronomy?: string; dayBoundary: string };
   },
 ): Promise<{ inserted: number; updated: number }> {
   const { toInsert, toUpdate, toStamp, expectedByIdentity, identityMeta, versions } = args;
@@ -1232,11 +1232,22 @@ export async function commitOccurrencesWithBatches(
 // compute at all, without flipping the global flag) can reuse the exact
 // reviewed batch/commit contract instead of hand-rolling inserts.
 export function batchIdentityKey(row: any): string {
-  return [
-    row.definition_id, row.year, row.calendar_profile,
-    row.spiritual_tradition ?? '', row.variant_key ?? '',
-    row.computed_latitude, row.computed_longitude, row.computed_timezone,
-  ].join('|');
+  // Delegates to the ONE canonical identity serializer (materialisation-batch.ts)
+  // rather than keeping its own implementation -- fixed after review, which
+  // found the raw-interpolated lat/lon here had no numeric normalization
+  // (unlike buildSeriesInstanceKey's existing .toFixed(4) convention in the
+  // same file), and that resolve-occurrences.ts's lazy path was about to grow
+  // a second, independent reimplementation of this same concept.
+  return canonicalMaterializationIdentityKey({
+    definitionId: row.definition_id,
+    year: row.year,
+    calendarProfile: row.calendar_profile,
+    spiritualTradition: row.spiritual_tradition ?? null,
+    variantKey: row.variant_key ?? null,
+    lat: row.computed_latitude,
+    lon: row.computed_longitude,
+    tz: row.computed_timezone,
+  });
 }
 
 /**
@@ -1660,13 +1671,14 @@ export async function materializeOccurrencesForYears({
         if (!identityMeta.has(key)) identityMeta.set(key, row);
       }
 
+      const provenance = currentMaterializationProvenance(RULE_ENGINE_VERSION);
       const committed = await commitOccurrencesWithBatches(supabase, {
         toInsert,
         toUpdate,
         toStamp,
         expectedByIdentity,
         identityMeta,
-        versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
+        versions: { engine: provenance.engineVersion, rule: provenance.ruleVersion, astronomy: provenance.astronomyVersion, dayBoundary: provenance.dayBoundaryVersion },
       });
       summary[year].inserted = committed.inserted;
       summary[year].updated = committed.updated;
@@ -1926,13 +1938,14 @@ export async function materializeOccurrencesForYears({
         if (!identityMeta.has(key)) identityMeta.set(key, row);
       }
 
+      const provenance = currentMaterializationProvenance(RULE_ENGINE_VERSION);
       const committed = await commitOccurrencesWithBatches(supabase, {
         toInsert,
         toUpdate,
         toStamp,
         expectedByIdentity,
         identityMeta,
-        versions: { engine: RULE_ENGINE_VERSION, rule: '1.0.0', astronomy: '1.0.0' },
+        versions: { engine: provenance.engineVersion, rule: provenance.ruleVersion, astronomy: provenance.astronomyVersion, dayBoundary: provenance.dayBoundaryVersion },
       });
       summary[year].inserted = committed.inserted;
       summary[year].updated = committed.updated;

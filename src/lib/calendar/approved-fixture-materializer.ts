@@ -461,6 +461,7 @@ export async function materializeApprovedFixtures(
       engine: APPROVED_FIXTURE_ENGINE_VERSION,
       rule: RULE_ENGINE_VERSION,
       astronomy: '1.0.0',
+      dayBoundary: '1.0.0',
     },
   });
 

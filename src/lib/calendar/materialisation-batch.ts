@@ -43,6 +43,88 @@ export interface MaterialisationIdentity {
 }
 
 /**
+ * The ONE canonical serializer for a materialisation identity -- shared by
+ * every writer and reader that needs to name "which identity is this": batch
+ * opens/closes (both the heavy cron path and the lazy read-path materializer),
+ * the manifest's `expected_identity_hash` (see canonicalMaterializationIdentitySetHash
+ * below), and tests. `materialize.ts`'s `batchIdentityKey` delegates to this
+ * rather than keeping its own implementation -- there is no second, "lazy
+ * path" reimplementation anywhere.
+ *
+ * Fixed field order, and numeric normalization on lat/lon (`.toFixed(4)`,
+ * matching buildSeriesInstanceKey's existing convention in this same file):
+ * two identities that are the same location but arrived as floating-point
+ * values differing only in trailing precision must still serialize
+ * identically. `slug` is intentionally excluded -- `definitionId` is the
+ * real foreign key and already disambiguates it; including a display-only
+ * denormalization would just be redundant.
+ */
+export function canonicalMaterializationIdentityKey(identity: {
+  definitionId: string;
+  year: number;
+  calendarProfile: string;
+  spiritualTradition: string | null;
+  variantKey: string | null;
+  lat: number;
+  lon: number;
+  tz: string;
+}): string {
+  return [
+    identity.definitionId,
+    identity.year,
+    identity.calendarProfile,
+    identity.spiritualTradition ?? '',
+    identity.variantKey ?? '',
+    identity.lat.toFixed(4),
+    identity.lon.toFixed(4),
+    identity.tz,
+  ].join('|');
+}
+
+/**
+ * A single hash representing an entire EXPECTED SET of identities for one
+ * (year, calendar_profile, location) materialisation run -- what the
+ * `observance_materialisation_manifests.expected_identity_hash` column
+ * stores at write time, and what `isYearMaterialized` recomputes from the
+ * live `'complete'` batch rows at read time. Sorted before hashing so the
+ * result does not depend on enumeration order.
+ */
+export function canonicalMaterializationIdentitySetHash(
+  identities: Array<Parameters<typeof canonicalMaterializationIdentityKey>[0]>,
+): string {
+  const keys = identities.map(canonicalMaterializationIdentityKey).sort();
+  return createHash('sha256').update(keys.join('\n')).digest('hex');
+}
+
+/**
+ * The full calculation-input provenance tuple, centralized so a new literal
+ * version string never needs to be typed at a call site again. Only
+ * `engineVersion` is a parameter: it lives in `engine.ts` (RULE_ENGINE_VERSION)
+ * and importing it here directly would create a circular import
+ * (engine.ts -> materialize.ts -> materialisation-batch.ts). Every caller
+ * already imports RULE_ENGINE_VERSION from './engine' directly, so passing it
+ * in costs nothing and avoids the cycle.
+ *
+ * rule/astronomy/day_boundary versions are not yet independently versioned
+ * inputs in this codebase (they have always been the literal '1.0.0'
+ * wherever written) -- centralized here as the one place that fact lives,
+ * rather than left as repeated literals.
+ */
+export function currentMaterializationProvenance(engineVersion: string): {
+  engineVersion: string;
+  ruleVersion: string;
+  astronomyVersion: string;
+  dayBoundaryVersion: string;
+} {
+  return {
+    engineVersion,
+    ruleVersion: '1.0.0',
+    astronomyVersion: '1.0.0',
+    dayBoundaryVersion: '1.0.0',
+  };
+}
+
+/**
  * Stable identity for one observance instance.
  *
  * Deliberately EXCLUDES variantKey and spiritualTradition: variants of one
@@ -162,7 +244,7 @@ export async function openBatch(
   supabase: any,
   identity: MaterialisationIdentity,
   expectedRowCount: number,
-  versions: { engine: string; rule: string; astronomy?: string },
+  versions: { engine: string; rule: string; astronomy?: string; dayBoundary: string },
 ): Promise<string> {
   const { data, error } = await supabase
     .from('observance_materialisation_batches')
@@ -181,6 +263,7 @@ export async function openBatch(
         engine_version: versions.engine,
         rule_version: versions.rule,
         astronomy_version: versions.astronomy ?? null,
+        day_boundary_version: versions.dayBoundary,
         status: 'partial',
         failure_reason: null,
         completed_at: null,

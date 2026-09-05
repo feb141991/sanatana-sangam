@@ -177,6 +177,16 @@ type HomeSummaryResponse = {
     upcomingObservances: ObservanceEntry[];
     series?: ObservanceSeries[];
     storyCards?: HomeObservanceStoryCard[];
+    /**
+     * 'ready': occurrence data reflects this profile/location's actual
+     * materialized state (which may legitimately be empty for the window).
+     * 'pending': materialization for this combination is known to be
+     * incomplete or still running -- native should show a neutral loading
+     * state, never treat this the same as a confirmed-empty window.
+     * 'unavailable': a real error occurred (not a timeout) -- native should
+     * not imply an imminent retry will succeed.
+     */
+    calendarStatus: 'ready' | 'pending' | 'unavailable';
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -712,7 +722,7 @@ export async function GET(request: NextRequest) {
       location: observanceLocation,
     }),
     2_500,
-    [] as ObservanceRow[],
+    { rows: [] as ObservanceRow[], materializationPending: true },
   );
 
   const [
@@ -798,6 +808,23 @@ export async function GET(request: NextRequest) {
   );
   if (observanceSection.status !== 'ready') degradedSections.add('calendar_occurrences');
 
+  // calendarStatus is the honest signal native reads to decide between real
+  // content, a "materializing, check back shortly" pending state, and a
+  // genuine "will not resolve on retry" unavailable state -- previously only
+  // degradedSections existed for this, and it never reached the JSON body
+  // (header + server log only), so native had no way to distinguish "nothing
+  // to show" from "still preparing" and rendered both as an empty pill.
+  // 'failed' (a real thrown error) maps to 'unavailable', not 'pending' --
+  // implying an imminent retry for a genuine error would itself mislead.
+  const calendarStatus: 'ready' | 'pending' | 'unavailable' =
+    observanceSection.status === 'failed'
+      ? 'unavailable'
+      : observanceSection.status === 'timed_out'
+        ? 'pending'
+        : observanceSection.value.materializationPending
+          ? 'pending'
+          : 'ready';
+
   const [
     guidedResult,
     sadhanaResult,
@@ -841,8 +868,8 @@ export async function GET(request: NextRequest) {
   const nityaStreak = nityaStreakResult.data?.current_streak ?? 0;
   const malaRows = malaResult.data ?? [];
   const sankalpaRow = sankalpaResult.data ?? null;
-  const rawObservanceData: ObservanceRow[] = Array.isArray(observanceSection.value)
-    ? observanceSection.value
+  const rawObservanceData: ObservanceRow[] = Array.isArray(observanceSection.value?.rows)
+    ? observanceSection.value.rows
     : [];
   const observanceRows: ObservanceRow[] = suppressGenericEkadashiWhenNamed(filterWithheldJoinedRows(rawObservanceData));
   const batchSection = await settleOptionalSection(
@@ -1057,6 +1084,7 @@ export async function GET(request: NextRequest) {
       upcomingObservances,
       series,
       storyCards,
+      calendarStatus,
     },
     nextPractice: buildNextPractice(practices),
     practices,
