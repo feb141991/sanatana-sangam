@@ -15,6 +15,7 @@ import type { MonitoringEvent } from "@/lib/monitoring/events";
 import PushMonitoringSection from "./PushMonitoringSection";
 import ClientErrorMonitoringSection from "./ClientErrorMonitoringSection";
 import ApiMonitoringSection, { API_CATALOG } from "./ApiMonitoringSection";
+import { resolveContentReport } from "./actions";
 
 type HealthReport = ReturnType<typeof generateHealthReport>;
 
@@ -28,16 +29,18 @@ interface ContentReport {
     [key: string]: any;
   } | null;
   reported_by: string | null;
+  content_author_id?: string | null;
+  content_type?: string;
+  content_id?: string;
+  admin_note?: string | null;
   created_at: string;
-  resolved_at?: string | null;
-  resolved_by?: string | null;
-  resolution_notes?: string | null;
 }
 
 interface Props {
   report: HealthReport;
   recentEvents: MonitoringEvent[];
   aiReports: ContentReport[];
+  aiReportsError?: string | null;
   dbMetrics: { latencyMs: number; status: "healthy" | "degraded" | "error" };
   offlineSyncStats: { totalSynced: number; recentSyncs: number; status: string };
 }
@@ -145,7 +148,23 @@ function resolveServiceName(route?: string, domain?: string, context?: Record<st
   return { name: route.replace(/^\/api\//, "").replace(/-/g, " "), tag: route, icon: "⚡" };
 }
 
-export default function MonitoringClient({ report, recentEvents, aiReports: initialAiReports, dbMetrics, offlineSyncStats }: Props) {
+
+function formatReportStatus(status: string) {
+  switch (status) {
+    case "reviewed":
+      return "Reviewed";
+    case "actioned":
+      return "Action Taken";
+    case "dismissed":
+      return "Dismissed";
+    case "pending":
+      return "Pending Review";
+    default:
+      return status;
+  }
+}
+
+export default function MonitoringClient({ report, recentEvents, aiReports: initialAiReports, aiReportsError, dbMetrics, offlineSyncStats }: Props) {
   const [activeTab, setActiveTab] = useState<"apis" | "telemetry" | "push" | "errors" | "ai_reports">("apis");
   const [infoModal, setInfoModal] = useState<InfoModalData | null>(null);
 
@@ -167,16 +186,30 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
   const [selectedReport, setSelectedReport] = useState<ContentReport | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
-  const handleReportAction = async (reportId: string, status: "resolved" | "dismissed") => {
+  const [reportActionError, setReportActionError] = useState<string | null>(null);
+
+  const handleReportAction = async (reportId: string, targetStatus: "reviewed" | "dismissed" | "actioned") => {
     setActionInProgress(reportId);
+    setReportActionError(null);
+    const priorReport = aiReports.find(r => r.id === reportId);
+    const priorSelected = selectedReport?.id === reportId ? selectedReport : null;
+
+    // Optimistic update of ONLY the target report by ID
+    setAiReports(prev => prev.map(r => r.id === reportId ? { ...r, status: targetStatus } : r));
+    if (selectedReport?.id === reportId) {
+      setSelectedReport(prev => prev ? { ...prev, status: targetStatus } : null);
+    }
+
     try {
-      // Optimistic update
-      setAiReports(prev => prev.map(r => r.id === reportId ? { ...r, status } : r));
-      if (selectedReport?.id === reportId) {
-        setSelectedReport(prev => prev ? { ...prev, status } : null);
+      await resolveContentReport(reportId, targetStatus);
+    } catch (err: any) {
+      console.error("Failed to update report status:", err);
+      // Roll back ONLY the affected report item rather than replacing the entire collection
+      setAiReports(prev => prev.map(r => r.id === reportId ? (priorReport ?? r) : r));
+      if (priorSelected) {
+        setSelectedReport(priorSelected);
       }
-    } catch {
-      // revert on error
+      setReportActionError(err?.message || "Failed to update report in database");
     } finally {
       setActionInProgress(null);
     }
@@ -607,8 +640,28 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
             </div>
           </div>
 
+          {reportActionError && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center justify-between text-xs text-red-900">
+              <div className="flex items-center gap-2">
+                <AlertTriangle size={16} className="text-red-600 shrink-0" />
+                <span><b>Action Failed:</b> {reportActionError}</span>
+              </div>
+              <button onClick={() => setReportActionError(null)} className="text-red-700 font-bold hover:underline">
+                Dismiss
+              </button>
+            </div>
+          )}
+
           <div className="bg-white rounded-2xl border border-black/5 shadow-sm overflow-hidden">
-            {aiReports.length === 0 ? (
+            {aiReportsError ? (
+              <div className="p-8 text-center text-xs space-y-2 bg-red-50/50">
+                <AlertTriangle size={28} className="text-rose-600 mx-auto mb-2" />
+                <b className="text-rose-950 block text-sm">AI Content Reports Queue Degraded</b>
+                <p className="text-rose-800 max-w-md mx-auto">
+                  Database query failed: <code>{aiReportsError}</code>. The editorial triage queue could not be loaded.
+                </p>
+              </div>
+            ) : aiReports.length === 0 ? (
               <div className="p-8 text-center text-xs text-gray-400">
                 <CheckCircle size={28} className="text-emerald-500 mx-auto mb-2" />
                 <b className="text-gray-900 block text-sm">All AI Chat Responses Verified Clean</b>
@@ -621,10 +674,10 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-2">
                         <span className={"px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase " + (
-                          report.status === "pending" ? "bg-amber-100 text-amber-900" :
-                          report.status === "resolved" ? "bg-emerald-100 text-emerald-900" : "bg-gray-100 text-gray-700"
+                          report.status === "pending" ? "bg-amber-100 text-amber-900 border border-amber-200" :
+                          report.status === "reviewed" || report.status === "actioned" ? "bg-emerald-100 text-emerald-900 border border-emerald-200" : "bg-gray-100 text-gray-700 border border-gray-200"
                         )}>
-                          {report.status}
+                          {formatReportStatus(report.status)}
                         </span>
                         <b className="text-sm text-gray-900 capitalize">{report.reason.replace(/_/g, " ")}</b>
                       </div>
@@ -665,12 +718,12 @@ export default function MonitoringClient({ report, recentEvents, aiReports: init
                           Dismiss False Alarm
                         </button>
                         <button
-                          onClick={() => handleReportAction(report.id, "resolved")}
+                          onClick={() => handleReportAction(report.id, "reviewed")}
                           disabled={actionInProgress === report.id}
                           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-all shadow-sm"
                         >
                           <Check size={13} />
-                          <span>Resolve & Add Guardrail</span>
+                          <span>Mark Reviewed</span>
                         </button>
                       </div>
                     )}

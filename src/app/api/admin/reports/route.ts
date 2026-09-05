@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
     // Report stats
     const reportRows: any[] = (contentReports.data as any[]) || [];
     const pendingReports = reportRows.filter(r => r.status === "pending").length;
-    const resolvedReports = reportRows.filter(r => r.status === "resolved").length;
+    const resolvedReports = reportRows.filter(r => r.status === "reviewed" || r.status === "actioned").length;
 
     // Total sadhana count
     const malaCount = malaSessions.count || 0;

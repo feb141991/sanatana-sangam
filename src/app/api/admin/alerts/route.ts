@@ -1,13 +1,15 @@
-import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { fetchClientErrorMonitoringMetrics } from "@/lib/monitoring/client-error-aggregator";
+
+export const dynamic = "force-dynamic";
 
 export interface UrgentAlertItem {
   id: string;
   title: string;
   desc: string;
-  type: "integrity" | "report" | "dharm_veer" | "system" | "client_error";
+  type: "integrity" | "client_error" | "report" | "dharm_veer" | "system";
   severity: "high" | "medium" | "low";
   href: string;
   timestamp: string;
@@ -22,6 +24,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const alerts: UrgentAlertItem[] = [];
+    let hasDegradedSource = false;
 
     // 1. Client Error Spikes & New Fingerprints
     try {
@@ -105,12 +108,23 @@ export async function GET(request: NextRequest) {
           });
         }
       }
-    } catch (clientErr) {
+    } catch (clientErr: any) {
       console.error("[admin/alerts] Failed to evaluate client error alerts:", clientErr);
+      hasDegradedSource = true;
+      alerts.push({
+        id: "system-client-metrics-error",
+        title: "Diagnostic: Client Error Metrics Degraded",
+        desc: `Failed to query client error monitoring metrics: ${clientErr?.message || "Unknown error"}.`,
+        type: "client_error",
+        severity: "medium",
+        href: "/admin/monitoring?section=errors",
+        timestamp: new Date().toISOString(),
+        metadata: { error: clientErr?.message },
+      });
     }
 
     // 2. Calendar integrity findings
-    const { data: findings } = await (supabase
+    const { data: findings, error: findingsError } = await (supabase
       .from("calendar_integrity_findings") as any)
       .select("*")
       .eq("is_open", true)
@@ -118,7 +132,20 @@ export async function GET(request: NextRequest) {
       .order("last_seen_at", { ascending: false })
       .limit(10);
 
-    if (findings && findings.length > 0) {
+    if (findingsError) {
+      console.error("[admin/alerts] Calendar integrity query error:", findingsError);
+      hasDegradedSource = true;
+      alerts.push({
+        id: "system-integrity-query-error",
+        title: "Diagnostic: Calendar Integrity Query Degraded",
+        desc: `Database query to calendar_integrity_findings failed: ${findingsError.message}`,
+        type: "integrity",
+        severity: "high",
+        href: "/admin/calendar-governance?tab=integrity",
+        timestamp: new Date().toISOString(),
+        metadata: { error: findingsError.message },
+      });
+    } else if (findings && findings.length > 0) {
       for (const f of findings as any[]) {
         alerts.push({
           id: `integrity-${f.id}`,
@@ -148,14 +175,27 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Pending Content Reports
-    const { data: reports } = await (supabase
+    const { data: reports, error: reportsError } = await (supabase
       .from("content_reports") as any)
       .select("id, reason, created_at, reported_by, content_type, metadata")
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(5);
 
-    if (reports && reports.length > 0) {
+    if (reportsError) {
+      console.error("[admin/alerts] Content reports query error:", reportsError);
+      hasDegradedSource = true;
+      alerts.push({
+        id: "system-reports-query-error",
+        title: "Diagnostic: Content Reports Query Degraded",
+        desc: `Database query to content_reports failed: ${reportsError.message}`,
+        type: "report",
+        severity: "high",
+        href: "/admin/moderation",
+        timestamp: new Date().toISOString(),
+        metadata: { error: reportsError.message },
+      });
+    } else if (reports && reports.length > 0) {
       for (const r of reports as any[]) {
         alerts.push({
           id: `report-${r.id}`,
@@ -178,13 +218,26 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. Pending Dharm Veer Reviews
-    const { data: dharmVeers } = await (supabase
+    const { data: dharmVeers, error: dvError } = await (supabase
       .from("dharm_veers") as any)
       .select("slug, name, created_at, reviewed_at, tradition, era")
       .eq("review_status", "pending_review")
       .limit(5);
 
-    if (dharmVeers && dharmVeers.length > 0) {
+    if (dvError) {
+      console.error("[admin/alerts] Dharm Veer query error:", dvError);
+      hasDegradedSource = true;
+      alerts.push({
+        id: "system-dharmveer-query-error",
+        title: "Diagnostic: Dharm Veer Query Degraded",
+        desc: `Database query to dharm_veers failed: ${dvError.message}`,
+        type: "dharm_veer",
+        severity: "medium",
+        href: "/admin/dharm-veer-review",
+        timestamp: new Date().toISOString(),
+        metadata: { error: dvError.message },
+      });
+    } else if (dharmVeers && dharmVeers.length > 0) {
       for (const dv of dharmVeers as any[]) {
         alerts.push({
           id: `dv-${dv.slug}`,
@@ -205,8 +258,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fallback if no active issues
-    if (alerts.length === 0) {
+    // Fallback ONLY if no active issues and NO degraded sources
+    if (alerts.length === 0 && !hasDegradedSource) {
       alerts.push({
         id: "system-ok",
         title: "All Systems Operational",
@@ -219,7 +272,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ alerts, count: alerts.length });
+    return NextResponse.json({ alerts, count: alerts.length, degraded: hasDegradedSource });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch alerts" }, { status: 500 });
   }

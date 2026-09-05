@@ -42,10 +42,11 @@ export default async function MonitoringPage({ searchParams }: Props) {
   // 3. Fetch AI Content Reports with Full Metadata
   const aiReportStatus = resolvedSearchParams?.aiReportStatus ?? "pending";
   let aiReports: any[] = [];
+  let aiReportsError: string | null = null;
   try {
     let query = adminSupabase
       .from("content_reports")
-      .select("id, status, reason, metadata, reported_by, created_at, resolved_at, resolved_by, resolution_notes")
+      .select("id, status, reason, metadata, reported_by, content_type, content_id, content_author_id, admin_note, created_at")
       .eq("content_type", "ai_chat_response")
       .order("created_at", { ascending: false })
       .limit(50);
@@ -54,9 +55,16 @@ export default async function MonitoringPage({ searchParams }: Props) {
       query = query.eq("status", aiReportStatus);
     }
 
-    const { data } = await query;
-    aiReports = data ?? [];
-  } catch {
+    const { data, error } = await query;
+    if (error) {
+      console.error("[monitoring/page] Failed to fetch AI reports:", error);
+      aiReportsError = error.message;
+      aiReports = [];
+    } else {
+      aiReports = data ?? [];
+    }
+  } catch (err: any) {
+    aiReportsError = err?.message || "Failed to load reports queue";
     aiReports = [];
   }
 
@@ -76,6 +84,7 @@ export default async function MonitoringPage({ searchParams }: Props) {
       report={report}
       recentEvents={recentEvents}
       aiReports={aiReports}
+      aiReportsError={aiReportsError}
       dbMetrics={{ latencyMs: dbLatencyMs, status: dbStatus }}
       offlineSyncStats={offlineSyncStats}
     />

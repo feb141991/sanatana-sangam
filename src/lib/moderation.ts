@@ -1,76 +1,89 @@
-import { createClient } from './supabase';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
+export type ReportType = "post" | "comment" | "profile" | "user_profile";
 
-export type ReportType = 'post' | 'comment' | 'profile' | 'kul';
+const REASON_MAP: Record<string, string> = {
+  "Inappropriate Content": "other",
+  "Hate Speech / Harassment": "harassment",
+  "Spam / Misleading": "spam",
+  "Privacy Violation": "privacy",
+  "Other": "other",
+};
+
+const VALID_REASONS = new Set([
+  "harassment",
+  "hate",
+  "sexual_content",
+  "violence",
+  "spam",
+  "impersonation",
+  "privacy",
+  "other",
+]);
+
+function normalizeReason(raw: string): string {
+  if (REASON_MAP[raw]) return REASON_MAP[raw];
+  const lower = raw.toLowerCase().trim().replace(/\s+/g, "_");
+  return VALID_REASONS.has(lower) ? lower : "other";
+}
+
+function normalizeTargetType(raw: ReportType | string): "post" | "comment" | "user_profile" {
+  if (raw === "profile" || raw === "user_profile") return "user_profile";
+  if (raw === "post") return "post";
+  if (raw === "comment") return "comment";
+  throw new Error(`Unsupported report target type: ${raw}`);
+}
 
 /**
- * submitReport — called from client components (ReportDialog).
- * Uses the browser Supabase client so RLS applies and the reporter is
- * authenticated via the user's session.
+ * submitReport — client-safe helper called from user-facing components (e.g. ReportDialog).
+ * Sends an authenticated POST request to /api/mandali/report.
+ * User identity is strictly derived on the server side (Rule #4).
+ * Supports both standard (targetId, targetType, reason, details) and legacy (reporterId, targetId, ...) calls.
  */
 export async function submitReport(
-  reporterId: string,
-  targetId: string,
-  targetType: ReportType,
-  reason: string,
-  details?: string
+  arg1: string,
+  arg2: string | ReportType,
+  arg3: string | ReportType,
+  arg4?: string,
+  arg5?: string
 ) {
-  const supabase = createClient();
+  let targetId: string;
+  let targetType: string;
+  let reason: string;
+  let details: string | undefined;
 
-  const { data, error } = await supabase
-    .from('reports')
-    .insert({
-      reporter_id: reporterId,
-      target_id: targetId,
-      target_type: targetType,
-      reason: reason,
-      details: details,
-      status: 'pending',
-    });
+  // Detect whether 1st argument was legacy reporterId or modern targetId
+  if (
+    arg5 !== undefined ||
+    (typeof arg2 === "string" && ["post", "comment", "profile", "user_profile"].includes(arg3 as string))
+  ) {
+    targetId = String(arg2);
+    targetType = String(arg3);
+    reason = String(arg4 || "other");
+    details = arg5;
+  } else {
+    targetId = String(arg1);
+    targetType = String(arg2);
+    reason = String(arg3 || "other");
+    details = arg4;
+  }
 
-  if (error) throw error;
-  return data;
-}
+  const normalizedType = normalizeTargetType(targetType);
+  const normalizedReasonCode = normalizeReason(reason);
 
-/**
- * getServiceClient — returns a service-role Supabase client.
- * Only for use in server-side admin contexts (API routes, server actions).
- */
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('[moderation] Missing Supabase service role credentials');
-  return createServiceClient(url, key);
-}
+  const res = await fetch("/api/mandali/report", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      targetId,
+      targetType: normalizedType,
+      reason: normalizedReasonCode,
+      details,
+    }),
+  });
 
-/**
- * getPendingReports — server-side admin function.
- * Uses service role client to bypass RLS — MUST only be called from
- * authenticated admin API routes (behind verifyAdminCookieAuth).
- */
-export async function getPendingReports() {
-  const supabase = getServiceClient();
-  const { data, error } = await supabase
-    .from('reports')
-    .select('*, reporter:profiles!reporter_id(username, full_name)')
-    .eq('status', 'pending')
-    .order('created_at', { ascending: false });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ error: "Failed to submit report" }));
+    throw new Error(errorData.error || "Failed to submit report");
+  }
 
-  if (error) throw error;
-  return data;
-}
-
-/**
- * resolveReport — server-side admin function.
- * Uses service role client to bypass RLS — MUST only be called from
- * authenticated admin API routes (behind verifyAdminCookieAuth).
- */
-export async function resolveReport(reportId: string, action: 'resolved' | 'dismissed') {
-  const supabase = getServiceClient();
-  const { error } = await supabase
-    .from('reports')
-    .update({ status: action, resolved_at: new Date().toISOString() })
-    .eq('id', reportId);
-
-  if (error) throw error;
+  return res.json();
 }

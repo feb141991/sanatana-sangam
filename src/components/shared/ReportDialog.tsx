@@ -9,7 +9,7 @@ import { submitReport, type ReportType } from '@/lib/moderation';
 interface ReportDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  reporterId: string;
+  reporterId?: string;
   targetId: string;
   targetType: ReportType;
   targetName: string;
@@ -34,7 +34,7 @@ export default function ReportDialog({ isOpen, onClose, reporterId, targetId, ta
     
     setIsSubmitting(true);
     try {
-      await submitReport(reporterId, targetId, targetType, reason, details);
+      await submitReport(targetId, targetType, reason, details);
       setIsDone(true);
       setTimeout(() => {
         onClose();
@@ -42,8 +42,8 @@ export default function ReportDialog({ isOpen, onClose, reporterId, targetId, ta
         setReason('');
         setDetails('');
       }, 2000);
-    } catch (error) {
-      toast.error('Failed to submit report. Please try again.');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to submit report. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
