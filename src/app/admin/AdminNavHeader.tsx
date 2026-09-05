@@ -135,9 +135,6 @@ export default function AdminNavHeader() {
   const [activeAlertCount, setActiveAlertCount] = useState<number>(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Hide on login page
-  if (pathname === "/admin/login") return null;
-
   const handleLogout = () => {
     document.cookie = "admin_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     router.push("/admin/login");
@@ -145,6 +142,7 @@ export default function AdminNavHeader() {
 
   // Close dropdown on outside click
   useEffect(() => {
+    if (pathname === "/admin/login") return;
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setOpenGroup(null);
@@ -152,10 +150,11 @@ export default function AdminNavHeader() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [pathname]);
 
   // Fetch alert count for live badge
   useEffect(() => {
+    if (pathname === "/admin/login") return;
     async function checkAlerts() {
       try {
         const res = await fetch("/api/admin/alerts");
@@ -170,6 +169,9 @@ export default function AdminNavHeader() {
     }
     checkAlerts();
   }, [pathname]);
+
+  // Hide on login page
+  if (pathname === "/admin/login") return null;
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--divine-bg,#FAF6EF)]/95 backdrop-blur-xl border-b border-[rgba(197,160,89,0.2)] shadow-xs">
