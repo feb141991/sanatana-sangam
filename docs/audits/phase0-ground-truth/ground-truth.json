@@ -1,0 +1,2316 @@
+{
+  "generated_at": "2026-09-05T00:38:12.309Z",
+  "generator": "scripts/audit-phase0-ground-truth.ts",
+  "definitions_total": 103,
+  "rule_definitions": [
+    {
+      "slug": "aja-ekadashi",
+      "display_name": "Aja Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "akshaya-tritiya",
+      "display_name": "Akshaya Tritiya",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "akshaya-tritiya-jain",
+      "display_name": "Akshaya Tritiya (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "amalaki-ekadashi",
+      "display_name": "Amalaki Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "amavasya-vrat",
+      "display_name": "Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "apara-ekadashi",
+      "display_name": "Apara Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "asalha-puja",
+      "display_name": "Asalha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "baisakhi",
+      "display_name": "Baisakhi",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "solar_sankranti"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "bandhi-chhor-divas",
+      "display_name": "Bandhi Chhor Divas",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "bhai-dooj",
+      "display_name": "Bhai Dooj",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "bodhi-day",
+      "display_name": "Bodhi Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "solar_fixed"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "chaitra-navratri-begins",
+      "display_name": "Chaitra Navratri begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "chhath-puja",
+      "display_name": "Chhath Puja",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "display_name": "Chintpurni Mata Chaitra Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "chintpurni-mata-sharad-navratri",
+      "display_name": "Chintpurni Mata Sharad Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "das-lakshana-dharma",
+      "display_name": "Das Lakshana Dharma",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "das-lakshana-dharma-begins",
+      "display_name": "Das Lakshana Dharma begins",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "devshayani-ekadashi",
+      "display_name": "Devshayani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "devutthana-ekadashi",
+      "display_name": "Devutthana Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "dhanteras",
+      "display_name": "Dhanteras",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "diwali",
+      "display_name": "Diwali",
+      "kind": "major",
+      "tradition": "all",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "dussehra",
+      "display_name": "Dussehra",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_span:sub_observance_of:navratri-begins"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "ekadashi",
+      "display_name": "Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "ganesh-chaturthi",
+      "display_name": "Ganesh Chaturthi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "gita-jayanti",
+      "display_name": "Gita Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "govardhan-puja",
+      "display_name": "Govardhan Puja",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "gudi-padwa",
+      "display_name": "Gudi Padwa",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "gudi-padwa-ugadi",
+      "display_name": "Gudi Padwa / Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "gupt-navratri-ashadha-begins",
+      "display_name": "Ashadha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "gupt-navratri-magha-begins",
+      "display_name": "Magha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "guru-amar-das-gurpurab",
+      "display_name": "Guru Amar Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "guru-arjan-dev-martyrdom",
+      "display_name": "Guru Arjan Dev Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "guru-gobind-singh-gurpurab",
+      "display_name": "Guru Gobind Singh Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "guru-har-krishan-gurpurab",
+      "display_name": "Guru Har Krishan Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "guru-nanak-gurpurab",
+      "display_name": "Guru Nanak Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "guru-purnima",
+      "display_name": "Guru Purnima",
+      "kind": "major",
+      "tradition": "all",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 10,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "guru-ram-das-gurpurab",
+      "display_name": "Guru Ram Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "guru-ravidas-jayanti",
+      "display_name": "Guru Ravidas Jayanti",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "guru-tegh-bahadur-martyrdom",
+      "display_name": "Guru Tegh Bahadur Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "regional_calendar"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "hanuman-jayanti",
+      "display_name": "Hanuman Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 12,
+      "fixture_approved": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "hartalika-teej",
+      "display_name": "Hartalika Teej",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 12,
+      "fixture_approved": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "holi",
+      "display_name": "Holi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "holla-mohalla",
+      "display_name": "Holla Mohalla",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 6,
+      "fixture_approved": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "jagannath-rath-yatra",
+      "display_name": "Jagannath Rath Yatra",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "jain-diwali-nirvana-ladnun",
+      "display_name": "Jain Diwali (Nirvana Ladnun)",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "jain-new-year-pratipada",
+      "display_name": "Jain New Year (Pratipada)",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "kamada-ekadashi",
+      "display_name": "Kamada Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "kamika-ekadashi",
+      "display_name": "Kamika Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "kartik-purnima",
+      "display_name": "Kartik Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "kartik-purnima-jain",
+      "display_name": "Kartik Purnima (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "karva-chauth",
+      "display_name": "Karva Chauth",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "kathina",
+      "display_name": "Kathina",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "krishna-janmashtami",
+      "display_name": "Krishna Janmashtami",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 2,
+      "variants": [
+        "smarta_nishita",
+        "gaudiya_iskcon"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "lohri",
+      "display_name": "Lohri",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 1,
+      "fixture_placeholder_citations": 5,
+      "fixture_approved": 1,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "losar-tibetan-new-year",
+      "display_name": "Losar (Tibetan New Year)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "magha-puja",
+      "display_name": "Magha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "maha-shivaratri",
+      "display_name": "Maha Shivaratri",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "mahalaya-amavasya",
+      "display_name": "Mahalaya Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "mahavir-jayanti",
+      "display_name": "Mahavir Jayanti",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 2,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "makar-sankranti",
+      "display_name": "Makar Sankranti",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "solar_sankranti"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 10,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "mangala-gauri-vrat",
+      "display_name": "Mangala Gauri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "weekday_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "nag-panchami",
+      "display_name": "Nag Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "naraka-chaturdashi",
+      "display_name": "Naraka Chaturdashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 1,
+      "fixture_real_citations": 1,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 1,
+      "fixture_years": [
+        2026
+      ]
+    },
+    {
+      "slug": "narasimha-jayanti",
+      "display_name": "Narasimha Jayanti",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "navratri-begins",
+      "display_name": "Navratri Begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_span"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "nirjala-ekadashi",
+      "display_name": "Nirjala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "onam",
+      "display_name": "Onam",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "nakshatra_based"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "papmochani-ekadashi",
+      "display_name": "Papmochani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "parinirvana-day",
+      "display_name": "Parinirvana Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "solar_fixed"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "parivartini-ekadashi",
+      "display_name": "Parivartini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "paryushana-parva",
+      "display_name": "Paryushana Parva",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "paryushana-parva-begins",
+      "display_name": "Paryushana Parva begins",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 6,
+      "fixture_approved": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "pavarana",
+      "display_name": "Pavarana",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "pavarana-end-of-vassa",
+      "display_name": "Pavarana (End of Vassa)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "pradosh-vrat",
+      "display_name": "Pradosh Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "purnima-vrat",
+      "display_name": "Purnima Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "raksha-bandhan",
+      "display_name": "Raksha Bandhan",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "ram-navami",
+      "display_name": "Ram Navami",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 8,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 8,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "rama-ekadashi",
+      "display_name": "Rama Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "sahibzade-shaheedi-diwas",
+      "display_name": "Sahibzade Shaheedi Diwas",
+      "kind": "major",
+      "tradition": "sikh",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "solar_fixed"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 6,
+      "fixture_approved": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "samvatsari",
+      "display_name": "Samvatsari",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "samvatsari-paryushana-ends",
+      "display_name": "Samvatsari (Paryushana ends)",
+      "kind": "major",
+      "tradition": "jain",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 4,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "sangha-day",
+      "display_name": "Sangha Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "sangha-day-loy-krathong",
+      "display_name": "Sangha Day / Loy Krathong",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "relative_to_other_observance"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "sankashti-chaturthi",
+      "display_name": "Sankashti Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "saphala-ekadashi",
+      "display_name": "Saphala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "shani-jayanti",
+      "display_name": "Shani Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "shravan-somvar",
+      "display_name": "Shravan Somvar",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "weekday_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "shravana-putrada-ekadashi",
+      "display_name": "Putrada Ekadashi (Shravana)",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "ugadi",
+      "display_name": "Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "ullambana-ancestor-day",
+      "display_name": "Ullambana / Ancestor Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "utpanna-ekadashi",
+      "display_name": "Utpanna Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vaikunta-ekadashi",
+      "display_name": "Vaikunta Ekadashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vasant-panchami",
+      "display_name": "Vasant Panchami",
+      "kind": "major",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_placeholder_citations": 8,
+      "fixture_approved": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ]
+    },
+    {
+      "slug": "vassa-begins",
+      "display_name": "Vassa Begins",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": false,
+      "launch_statuses": [],
+      "rule_families": [],
+      "variant_count": 0,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vassa-begins-rains-retreat",
+      "display_name": "Vassa begins (Rains Retreat)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vat-savitri-amavasya",
+      "display_name": "Vat Savitri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vat-savitri-purnima",
+      "display_name": "Vat Savitri Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vesak-buddha-purnima",
+      "display_name": "Vesak / Buddha Purnima",
+      "kind": "major",
+      "tradition": "buddhist",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vijaya-ekadashi",
+      "display_name": "Vijaya Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 1,
+      "fixture_real_citations": 1,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 1,
+      "fixture_years": [
+        2027
+      ]
+    },
+    {
+      "slug": "vinayaka-chaturthi",
+      "display_name": "Vinayaka Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi_recurring"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "vivah-panchami",
+      "display_name": "Vivah Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 1,
+      "variants": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 0,
+      "fixture_years": []
+    },
+    {
+      "slug": "yogini-ekadashi",
+      "display_name": "Yogini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "rule_families": [
+        "lunar_tithi"
+      ],
+      "variant_count": 2,
+      "variants": [
+        "smarta",
+        "vaishnava_vidhava"
+      ],
+      "fixture_total": 2,
+      "fixture_real_citations": 2,
+      "fixture_placeholder_citations": 0,
+      "fixture_approved": 2,
+      "fixture_years": [
+        2026
+      ]
+    }
+  ],
+  "golden_fixtures_summary": {
+    "total_rows": 298,
+    "distinct_festivals": 34,
+    "real_citation_rows": 89,
+    "placeholder_citation_rows": 209,
+    "approved_rows": 89
+  },
+  "published_occurrences_total": 798,
+  "published_occurrences_by_bucket": {
+    "rule_backed": {
+      "row_count": 555,
+      "distinct_slugs": [
+        "aja-ekadashi",
+        "amalaki-ekadashi",
+        "amavasya-vrat",
+        "apara-ekadashi",
+        "baisakhi",
+        "bandhi-chhor-divas",
+        "bhai-dooj",
+        "devshayani-ekadashi",
+        "devutthana-ekadashi",
+        "dhanteras",
+        "diwali",
+        "dussehra",
+        "ekadashi",
+        "ganesh-chaturthi",
+        "govardhan-puja",
+        "guru-arjan-dev-martyrdom",
+        "guru-gobind-singh-gurpurab",
+        "guru-nanak-gurpurab",
+        "guru-purnima",
+        "guru-ravidas-jayanti",
+        "guru-tegh-bahadur-martyrdom",
+        "holi",
+        "holla-mohalla",
+        "kamada-ekadashi",
+        "kamika-ekadashi",
+        "karva-chauth",
+        "krishna-janmashtami",
+        "lohri",
+        "maha-shivaratri",
+        "mahavir-jayanti",
+        "makar-sankranti",
+        "navratri-begins",
+        "nirjala-ekadashi",
+        "papmochani-ekadashi",
+        "parivartini-ekadashi",
+        "paryushana-parva-begins",
+        "pradosh-vrat",
+        "purnima-vrat",
+        "raksha-bandhan",
+        "ram-navami",
+        "rama-ekadashi",
+        "sahibzade-shaheedi-diwas",
+        "samvatsari-paryushana-ends",
+        "shravana-putrada-ekadashi",
+        "utpanna-ekadashi",
+        "vijaya-ekadashi"
+      ]
+    },
+    "manual_seed_legacy": {
+      "row_count": 11,
+      "distinct_slugs": [
+        "das-lakshana-dharma",
+        "gudi-padwa-ugadi",
+        "paryushana-parva",
+        "pavarana",
+        "samvatsari",
+        "sangha-day",
+        "vassa-begins"
+      ]
+    },
+    "deferred_rule_backed_but_published": {
+      "row_count": 232,
+      "distinct_slugs": [
+        "akshaya-tritiya",
+        "akshaya-tritiya-jain",
+        "asalha-puja",
+        "bodhi-day",
+        "chaitra-navratri-begins",
+        "chhath-puja",
+        "chintpurni-mata-chaitra-navratri",
+        "chintpurni-mata-sharad-navratri",
+        "das-lakshana-dharma-begins",
+        "gita-jayanti",
+        "gudi-padwa",
+        "gupt-navratri-ashadha-begins",
+        "gupt-navratri-magha-begins",
+        "guru-amar-das-gurpurab",
+        "guru-har-krishan-gurpurab",
+        "guru-ram-das-gurpurab",
+        "hanuman-jayanti",
+        "hartalika-teej",
+        "jagannath-rath-yatra",
+        "jain-diwali-nirvana-ladnun",
+        "jain-new-year-pratipada",
+        "kartik-purnima",
+        "kartik-purnima-jain",
+        "kathina",
+        "losar-tibetan-new-year",
+        "magha-puja",
+        "mahalaya-amavasya",
+        "mangala-gauri-vrat",
+        "nag-panchami",
+        "narasimha-jayanti",
+        "onam",
+        "parinirvana-day",
+        "pavarana-end-of-vassa",
+        "sangha-day-loy-krathong",
+        "sankashti-chaturthi",
+        "shani-jayanti",
+        "shravan-somvar",
+        "ugadi",
+        "ullambana-ancestor-day",
+        "vaikunta-ekadashi",
+        "vasant-panchami",
+        "vassa-begins-rains-retreat",
+        "vat-savitri-amavasya",
+        "vat-savitri-purnima",
+        "vesak-buddha-purnima",
+        "vinayaka-chaturthi",
+        "vivah-panchami",
+        "yogini-ekadashi"
+      ]
+    }
+  },
+  "published_occurrences_by_calculated_by": {
+    "cron_job": 299,
+    "lazy_materialize_on_read": 226,
+    "manual_engine_run_v2": 109,
+    "codex-20260719-recurring-materialize": 93,
+    "scoped-corrected-ekadashi-materialize": 36,
+    "legacy_sync": 12,
+    "diagnostic-fix-commit": 8,
+    "targeted_backfill_2026_09_04": 5,
+    "scoped-corrected-vijaya-saphala-materialize": 3,
+    "approved-golden-pilot-v1": 3,
+    "engine_v1.1.0_ist_sunrise_scan": 2,
+    "admin_review": 1,
+    "manual_verified_correction_20260711": 1
+  }
+}
