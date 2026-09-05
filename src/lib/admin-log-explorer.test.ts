@@ -48,6 +48,16 @@ describe("Admin Log Explorer Contract & Utilities", () => {
       expect(parsed.limit).toBe(50); // Capped at 50 for bounded query bounds
     });
 
+    it("parses and preserves composite keyset cursor in filters", () => {
+      const compositeCursor = "2026-09-05T18:00:00.000Z__client_err_xyz123";
+      const params = new URLSearchParams({ cursor: compositeCursor });
+      const parsed = parseLogFiltersFromSearchParams(params);
+      expect(parsed.cursor).toBe(compositeCursor);
+
+      const serialized = serializeLogFiltersToSearchParams(parsed);
+      expect(serialized.get("cursor")).toBe(compositeCursor);
+    });
+
     it("serializes filters to URL search params round-trip", () => {
       const original: LogExplorerFilters = {
         source: "crons",

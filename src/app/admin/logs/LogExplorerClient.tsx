@@ -499,18 +499,30 @@ export function LogExplorerClient() {
         )}
 
         {/* Keyset Pagination Controls */}
-        {data && data.pagination.hasMore && (
+        {data && (data.pagination.hasMore || filters.cursor) && (
           <div className="pt-4 flex items-center justify-between">
-            <span className="text-[11px] text-gray-500">
-              Showing batch of {data.pagination.totalReturned} events
-            </span>
-            <button
-              onClick={() => updateFilters({ cursor: data.pagination.nextCursor || undefined })}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-900 text-white text-xs font-bold hover:bg-amber-800 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-            >
-              <span>Load Next Batch</span>
-              <ArrowRight size={13} />
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] text-gray-500">
+                Showing batch of {data.pagination.totalReturned} events
+              </span>
+              {filters.cursor && (
+                <button
+                  onClick={() => updateFilters({ cursor: undefined })}
+                  className="text-xs text-amber-900 underline hover:text-amber-950 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 rounded"
+                >
+                  Jump to Latest
+                </button>
+              )}
+            </div>
+            {data.pagination.hasMore && (
+              <button
+                onClick={() => updateFilters({ cursor: data.pagination.nextCursor || undefined })}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-900 text-white text-xs font-bold hover:bg-amber-800 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              >
+                <span>Load Next Batch</span>
+                <ArrowRight size={13} />
+              </button>
+            )}
           </div>
         )}
       </section>

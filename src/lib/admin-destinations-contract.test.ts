@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseMonitoringTab,
   parseModerationFilter,
+  parseCronTarget,
   parseAdminStringParam,
   parseAdminQueryParam,
   buildAdminUrlWithParams,
@@ -102,6 +103,11 @@ describe("Admin Destinations Contract Tests (Prompt 1)", () => {
   });
 
   describe("5. Cron Dashboard Destination URL Contract", () => {
+    it("parses routine parameter produced by Log Explorer correlation links", () => {
+      const sp = new URLSearchParams("routine=materialize-occurrences");
+      expect(parseCronTarget(sp)).toBe("materialize-occurrences");
+    });
+
     it("parses job, cron, and route target parameters", () => {
       const sp1 = new URLSearchParams("job=notification-dispatch");
       const target1 = parseAdminStringParam(sp1, "job") || parseAdminStringParam(sp1, "cron");

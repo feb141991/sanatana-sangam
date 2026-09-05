@@ -4,6 +4,7 @@ import {
   parseAdminStringParam,
   parseMonitoringTab,
   parseModerationFilter,
+  parseCronTarget,
   buildAdminUrlWithParams,
   MONITORING_TABS,
   MODERATION_FILTERS,
@@ -44,6 +45,25 @@ describe("Admin URL-State Helpers (lib/admin-url-state.ts)", () => {
     it("defaults safely to apis when invalid or omitted", () => {
       const sp = new URLSearchParams("section=unknown");
       expect(parseMonitoringTab(sp)).toBe("apis");
+    });
+  });
+
+
+  describe("parseCronTarget (Routine and Job Deep Links)", () => {
+    it("parses canonical routine parameter produced by Log Explorer", () => {
+      const sp = new URLSearchParams("routine=brahma-muhurta");
+      expect(parseCronTarget(sp)).toBe("brahma-muhurta");
+    });
+
+    it("parses legacy aliases job, cron, and route", () => {
+      expect(parseCronTarget(new URLSearchParams("job=panchang-cache"))).toBe("panchang-cache");
+      expect(parseCronTarget(new URLSearchParams("cron=festival-occurrences"))).toBe("festival-occurrences");
+      expect(parseCronTarget(new URLSearchParams("route=%2Fapi%2Fcron%2Fmaterialize"))).toBe("/api/cron/materialize");
+    });
+
+    it("returns null when no cron target parameter exists or is blank", () => {
+      expect(parseCronTarget(new URLSearchParams("other=value"))).toBeNull();
+      expect(parseCronTarget(new URLSearchParams("routine=%20%20"))).toBeNull();
     });
   });
 

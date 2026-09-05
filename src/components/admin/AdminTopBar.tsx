@@ -17,10 +17,16 @@ interface Props {
   onOpenCommandPalette: () => void;
 }
 
+export type AdminSystemStatusState =
+  | { status: "loading" }
+  | { status: "healthy" }
+  | { status: "alerts"; count: number }
+  | { status: "degraded"; reason?: string };
+
 export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
   const pathname = usePathname();
   const router = useRouter();
-  const [activeAlertCount, setActiveAlertCount] = useState<number>(0);
+  const [systemStatus, setSystemStatus] = useState<AdminSystemStatusState>({ status: "loading" });
 
   const routeMatch = getAdminRouteByPath(pathname);
 
@@ -34,13 +40,29 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
     async function checkAlerts() {
       try {
         const res = await fetch("/api/admin/alerts");
+        if (!res.ok) {
+          if (isMounted) {
+            setSystemStatus({ status: "degraded", reason: `HTTP ${res.status}` });
+          }
+          return;
+        }
         const data = await res.json();
-        if (data?.alerts && isMounted) {
-          const urgentCount = data.alerts.filter((a: any) => a.id !== "system-ok").length;
-          setActiveAlertCount(urgentCount);
+        if (!isMounted) return;
+
+        if (data && Array.isArray(data.alerts)) {
+          const urgentAlerts = data.alerts.filter((a: any) => a.id !== "system-ok");
+          if (urgentAlerts.length > 0) {
+            setSystemStatus({ status: "alerts", count: urgentAlerts.length });
+          } else {
+            setSystemStatus({ status: "healthy" });
+          }
+        } else {
+          setSystemStatus({ status: "degraded", reason: "Invalid response format" });
         }
       } catch {
-        // silent
+        if (isMounted) {
+          setSystemStatus({ status: "degraded", reason: "Alerts endpoint unreachable" });
+        }
       }
     }
     checkAlerts();
@@ -104,17 +126,25 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
           </kbd>
         </button>
 
-        {/* Live Active Alert Badge (Restrained, no indefinite pulse) */}
-        {activeAlertCount > 0 ? (
+        {/* Live Active Alert Badge (Resilient 3-state: loading | healthy | alerts | degraded) */}
+        {systemStatus.status === "loading" ? (
+          <div
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/5 text-gray-500 border border-black/10 text-[10px] font-medium"
+            title="Checking operational system health..."
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
+            <span>Checking...</span>
+          </div>
+        ) : systemStatus.status === "alerts" ? (
           <Link
             href="/admin"
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-900 border border-rose-500/30 text-[10px] font-bold hover:bg-rose-500/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
-            title={`${activeAlertCount} active operational alerts need attention`}
+            title={`${systemStatus.count} active operational alert${systemStatus.count === 1 ? "" : "s"} need attention`}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
-            <span>{activeAlertCount} Alert{activeAlertCount === 1 ? "" : "s"}</span>
+            <span>{systemStatus.count} Alert{systemStatus.count === 1 ? "" : "s"}</span>
           </Link>
-        ) : (
+        ) : systemStatus.status === "healthy" ? (
           <div
             className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/20 text-[10px] font-bold"
             title="All background systems operational"
@@ -122,6 +152,15 @@ export function AdminTopBar({ onOpenMobileMenu, onOpenCommandPalette }: Props) {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span>Systems OK</span>
           </div>
+        ) : (
+          <Link
+            href="/admin/monitoring"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/30 text-[10px] font-bold hover:bg-amber-500/25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+            title="Operational status check degraded or unavailable"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+            <span>Status Degraded</span>
+          </Link>
         )}
 
         {/* Settings Link */}

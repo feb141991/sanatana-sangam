@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { parseAdminStringParam } from "@/lib/admin-url-state";
+import { parseCronTarget } from "@/lib/admin-url-state";
 import {
   Clock, Play, AlertTriangle, CheckCircle, RefreshCw,
   Search, ShieldCheck, ArrowLeft, ChevronDown, ChevronUp,
@@ -118,7 +118,7 @@ function getNextCronRun(cronExpr: string) {
 
 export default function CronDashboardClient() {
   const searchParams = useSearchParams();
-  const targetJob = parseAdminStringParam(searchParams, "job") || parseAdminStringParam(searchParams, "cron") || parseAdminStringParam(searchParams, "route");
+  const targetJob = parseCronTarget(searchParams);
   const [crons, setCrons] = useState<CronStatusSummary[]>([]);
   const [queue, setQueue] = useState<NotificationQueueSummary>({
     pending: 0,

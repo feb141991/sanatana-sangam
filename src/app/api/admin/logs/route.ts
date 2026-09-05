@@ -28,6 +28,20 @@ export async function GET(request: NextRequest) {
   const startDate = filters.startDate || defaultStart;
   const endDate = filters.endDate || now.toISOString();
   const limit = filters.limit || 25;
+  const fetchLimit = limit + 1;
+
+  // Composite Keyset Cursor resolution (timestamp__id or timestamp)
+  let cursorTimestamp: string | null = null;
+  let cursorId: string | null = null;
+  if (filters.cursor) {
+    if (filters.cursor.includes("__")) {
+      const [ts, ...idParts] = filters.cursor.split("__");
+      cursorTimestamp = ts;
+      cursorId = idParts.join("__");
+    } else {
+      cursorTimestamp = filters.cursor;
+    }
+  }
 
   const allEvents: NormalizedLogEvent[] = [];
   let isAnySourceDegraded = false;
@@ -47,14 +61,13 @@ export async function GET(request: NextRequest) {
         .from("client_error_events")
         .select("*")
         .gte("created_at", startDate)
-        .lte("created_at", endDate)
+        .lte("created_at", cursorTimestamp || endDate)
         .order("created_at", { ascending: false })
-        .limit(limit);
+        .limit(fetchLimit);
 
       if (filters.route) query = query.eq("route", filters.route);
       if (filters.fingerprint) query = query.eq("fingerprint", filters.fingerprint);
       if (filters.deploymentSha) query = query.eq("client_release_sha", filters.deploymentSha);
-      if (filters.cursor) query = query.lt("created_at", filters.cursor);
 
       const { data, error } = await query;
 
@@ -112,13 +125,12 @@ export async function GET(request: NextRequest) {
         .from("monitoring_events")
         .select("*")
         .gte("timestamp", startDate)
-        .lte("timestamp", endDate)
+        .lte("timestamp", cursorTimestamp || endDate)
         .order("timestamp", { ascending: false })
-        .limit(limit);
+        .limit(fetchLimit);
 
       if (filters.route) query = query.eq("route", filters.route);
       if (filters.requestId) query = query.eq("request_id", filters.requestId);
-      if (filters.cursor) query = query.lt("timestamp", filters.cursor);
 
       const { data, error } = await query;
 
@@ -129,7 +141,7 @@ export async function GET(request: NextRequest) {
         const memEvents = _eventSink.filter((e) => {
           if (filters.route && e.route !== filters.route) return false;
           if (filters.requestId && e.request_id !== filters.requestId) return false;
-          if (filters.cursor && e.timestamp >= filters.cursor) return false;
+          if (cursorTimestamp && e.timestamp > cursorTimestamp) return false;
           if (e.timestamp < startDate || e.timestamp > endDate) return false;
           return true;
         });
@@ -186,7 +198,8 @@ export async function GET(request: NextRequest) {
 
       for (const ce of cronEvents) {
         if (filters.cronJob && !ce.route?.includes(filters.cronJob)) continue;
-        if (filters.cursor && ce.timestamp >= filters.cursor) continue;
+        if (cursorTimestamp && ce.timestamp > cursorTimestamp) continue;
+        if (ce.timestamp < startDate || ce.timestamp > endDate) continue;
 
         const sev = (ce.severity === "P0" || ce.severity === "P1") ? "critical" : ce.severity === "P2" ? "warning" : "info";
         if (filters.severity !== "all" && filters.severity !== sev) continue;
@@ -194,7 +207,7 @@ export async function GET(request: NextRequest) {
         const cronDef = CRON_CATALOGUE.find((c) => c.route === ce.route);
 
         allEvents.push({
-          id: `cron_${Math.random().toString(36).slice(2)}`,
+          id: `cron_${ce.request_id || ce.route || Math.random().toString(36).slice(2)}`,
           timestamp: ce.timestamp,
           source: "crons",
           severity: sev,
@@ -225,12 +238,11 @@ export async function GET(request: NextRequest) {
         .from("notification_dispatch_events")
         .select("*")
         .gte("created_at", startDate)
-        .lte("created_at", endDate)
+        .lte("created_at", cursorTimestamp || endDate)
         .order("created_at", { ascending: false })
-        .limit(limit);
+        .limit(fetchLimit);
 
       if (filters.userId) query = query.eq("user_id", filters.userId);
-      if (filters.cursor) query = query.lt("created_at", filters.cursor);
 
       const { data, error } = await query;
 
@@ -282,11 +294,9 @@ export async function GET(request: NextRequest) {
         .from("golden_fixture_audit_logs")
         .select("*")
         .gte("created_at", startDate)
-        .lte("created_at", endDate)
+        .lte("created_at", cursorTimestamp || endDate)
         .order("created_at", { ascending: false })
-        .limit(limit);
-
-      if (filters.cursor) query = query.lt("created_at", filters.cursor);
+        .limit(fetchLimit);
 
       const { data, error } = await query;
 
@@ -330,20 +340,46 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Sort unified events by timestamp descending
-  allEvents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  // ── Unified Keyset Filter, Deterministic Sort & Deduplication ──
+  const candidateEvents = allEvents.filter((e) => {
+    if (!cursorTimestamp) return true;
+    if (e.timestamp < cursorTimestamp) return true;
+    if (e.timestamp === cursorTimestamp) {
+      if (cursorId) {
+        return e.id.localeCompare(cursorId) < 0;
+      }
+      return false;
+    }
+    return false;
+  });
+
+  candidateEvents.sort((a, b) => {
+    const timeDiff = new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    if (timeDiff !== 0) return timeDiff;
+    return b.id.localeCompare(a.id);
+  });
+
+  const seenIds = new Set<string>();
+  const uniqueEvents: NormalizedLogEvent[] = [];
+  for (const ev of candidateEvents) {
+    if (!seenIds.has(ev.id)) {
+      seenIds.add(ev.id);
+      uniqueEvents.push(ev);
+    }
+  }
 
   // Bounded pagination slicing
-  const paginatedEvents = allEvents.slice(0, limit);
-  const hasMore = allEvents.length > limit;
-  const nextCursor = paginatedEvents.length > 0 ? paginatedEvents[paginatedEvents.length - 1].timestamp : null;
+  const paginatedEvents = uniqueEvents.slice(0, limit);
+  const hasMore = uniqueEvents.length > limit;
+  const lastEvent = paginatedEvents[paginatedEvents.length - 1];
+  const nextCursor = hasMore && lastEvent ? `${lastEvent.timestamp}__${lastEvent.id}` : null;
 
   const response: LogExplorerApiResponse = {
     events: paginatedEvents,
     sources: sourcesStatus,
     pagination: {
       hasMore,
-      nextCursor: hasMore ? nextCursor : null,
+      nextCursor,
       limit,
       totalReturned: paginatedEvents.length,
     },

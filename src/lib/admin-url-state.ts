@@ -107,6 +107,24 @@ export function parseMonitoringTab(
 /**
  * Resolves moderation filter parameters with backward-compatible mapping.
  */
+/**
+ * Resolves cron routine/job target parameter with alias support.
+ * Prioritizes `routine` (canonical from Log Explorer / navigation),
+ * followed by legacy aliases `job`, `cron`, and `route`.
+ */
+export function parseCronTarget(
+  searchParams: SearchParamsLike | null | undefined
+): string | null {
+  if (!searchParams) return null;
+  return (
+    parseAdminStringParam(searchParams, "routine") ||
+    parseAdminStringParam(searchParams, "job") ||
+    parseAdminStringParam(searchParams, "cron") ||
+    parseAdminStringParam(searchParams, "route") ||
+    null
+  );
+}
+
 export function parseModerationFilter(
   searchParams: SearchParamsLike | null | undefined,
   fallback: ModerationFilter = "all"
