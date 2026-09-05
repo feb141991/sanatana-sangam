@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   ArrowLeft, RefreshCw, User, Shield, ShieldAlert, Sparkles,
   Clock, Calendar, Bell, Heart, Flame, Flag, AlertTriangle,
@@ -120,7 +120,21 @@ export default function UserDetailPage() {
   const [dossier, setDossier] = useState<UserDossier | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"timeline" | "notifications" | "karma" | "moderation" | "compliance">("timeline");
+  const searchParams = useSearchParams();
+  const urlTab = searchParams.get("tab") as "timeline" | "notifications" | "karma" | "moderation" | "compliance" | null;
+
+  const [activeTab, setActiveTab] = useState<"timeline" | "notifications" | "karma" | "moderation" | "compliance">(() => {
+    if (urlTab && ["timeline", "notifications", "karma", "moderation", "compliance"].includes(urlTab)) {
+      return urlTab;
+    }
+    return "timeline";
+  });
+
+  useEffect(() => {
+    if (urlTab && ["timeline", "notifications", "karma", "moderation", "compliance"].includes(urlTab)) {
+      setActiveTab(urlTab);
+    }
+  }, [urlTab]);
 
   // Timeline filters
   const [timelineDomain, setTimelineDomain] = useState<string>("all");

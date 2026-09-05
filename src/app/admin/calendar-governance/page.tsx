@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
+import IntegritySection from './IntegritySection';
 import {
   ArrowLeft, CheckCircle2, XCircle, Loader2, Pencil, Save, X,
   BarChart3, ListChecks, FileCheck2, ChevronDown, ChevronUp, ChevronRight,
-  Filter, Search, AlertCircle, History, Clock, RefreshCw, FileEdit,
+  Filter, Search, AlertCircle, AlertTriangle, History, Clock, RefreshCw, FileEdit,
   Sparkles, Info, RotateCcw, Check, Layers
 } from 'lucide-react';
 import Link from 'next/link';
@@ -93,7 +95,7 @@ type ToastFeedback = {
   timestamp: string;
 };
 
-type Tab = 'fixtures' | 'review-queue' | 'coverage' | 'activity';
+type Tab = 'fixtures' | 'review-queue' | 'coverage' | 'integrity' | 'activity';
 type SourceFilter = 'needs_review' | 'all' | 'real' | 'stub' | 'approved';
 type CategorySel = { tradition: string; kind: string | null } | null;
 
@@ -114,12 +116,31 @@ const isRealFixture = (f: GoldenFixtureRow) =>
   f.expected != null && !(f.source?.ref ?? '').startsWith('TODO');
 
 export default function CalendarGovernancePage() {
-  const [tab, setTab] = useState<Tab>('coverage');
+  const searchParams = useSearchParams();
+  const urlTab = searchParams.get('tab') as Tab | null;
+  const targetFindingId = searchParams.get('findingId');
+  const targetSlug = searchParams.get('slug');
+  const targetYear = searchParams.get('year');
+
+  const [tab, setTab] = useState<Tab>(() => {
+    if (urlTab === 'integrity' || targetFindingId || targetSlug) return 'integrity';
+    if (urlTab && ['coverage', 'fixtures', 'review-queue', 'integrity', 'activity'].includes(urlTab)) return urlTab;
+    return 'coverage';
+  });
+
   const [toasts, setToasts] = useState<ToastFeedback[]>([]);
   const [governanceFilter, setGovernanceFilter] = useState<{
     tradition?: string;
     filterType?: SourceFilter;
   } | null>(null);
+
+  useEffect(() => {
+    if (urlTab === 'integrity' || targetFindingId || targetSlug) {
+      setTab('integrity');
+    } else if (urlTab && ['coverage', 'fixtures', 'review-queue', 'integrity', 'activity'].includes(urlTab)) {
+      setTab(urlTab);
+    }
+  }, [urlTab, targetFindingId, targetSlug]);
 
   const addToast = useCallback((t: ToastFeedback) => {
     setToasts(prev => [t, ...prev.slice(0, 4)]);
@@ -153,6 +174,7 @@ export default function CalendarGovernancePage() {
             <TabButton active={tab === 'coverage'} onClick={() => setTab('coverage')} icon={BarChart3} label="Coverage" />
             <TabButton active={tab === 'fixtures'} onClick={() => setTab('fixtures')} icon={FileCheck2} label="Fixtures" />
             <TabButton active={tab === 'review-queue'} onClick={() => setTab('review-queue')} icon={ListChecks} label="Review Queue" />
+            <TabButton active={tab === 'integrity'} onClick={() => setTab('integrity')} icon={AlertTriangle} label="Integrity Findings" />
             <TabButton active={tab === 'activity'} onClick={() => setTab('activity')} icon={History} label="Activity Log" />
           </div>
         </div>
@@ -189,6 +211,7 @@ export default function CalendarGovernancePage() {
         {tab === 'coverage' && <CoverageSection onSelectFilter={navigateToFixtures} />}
         {tab === 'fixtures' && <FixturesSection initialFilter={governanceFilter} onToast={addToast} />}
         {tab === 'review-queue' && <ReviewQueueSection onToast={addToast} />}
+        {tab === 'integrity' && <IntegritySection targetFindingId={targetFindingId} targetSlug={targetSlug} targetYear={targetYear} onToast={addToast} onInspectFixture={(slug) => { setGovernanceFilter({ tradition: undefined, filterType: 'all' }); setTab('fixtures'); }} />}
         {tab === 'activity' && <ActivitySection />}
       </div>
     </div>

@@ -11,6 +11,7 @@ export interface UrgentAlertItem {
   severity: "high" | "medium" | "low";
   href: string;
   timestamp: string;
+  metadata?: Record<string, any>;
 }
 
 export async function GET(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
       for (const fp of clientMetrics.fingerprints) {
         const isBrandNew = fp.first_seen >= oneHourAgo;
         const isSpike = fp.count_1h >= 10;
-        const isHomeSpike = fp.route === '/home' && fp.count_1h >= 3;
+        const isHomeSpike = fp.route === "/home" && fp.count_1h >= 3;
         const isStaleSpike = fp.stale_client_count >= 5;
 
         if (isBrandNew) {
@@ -39,9 +40,23 @@ export async function GET(request: NextRequest) {
             title: `New Client Crash: ${fp.error_name} on ${fp.route}`,
             desc: `Brand new fingerprint first seen at ${new Date(fp.first_seen).toLocaleTimeString()}. Message: ${fp.error_message.slice(0, 80)}`,
             type: "client_error",
-            severity: fp.route === '/home' ? "high" : "medium",
-            href: "/admin/monitoring",
+            severity: fp.route === "/home" ? "high" : "medium",
+            href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
             timestamp: fp.last_seen,
+            metadata: {
+              fingerprint: fp.fingerprint,
+              errorName: fp.error_name,
+              errorMessage: fp.error_message,
+              route: fp.route,
+              source: fp.source,
+              firstSeen: fp.first_seen,
+              lastSeen: fp.last_seen,
+              count1h: fp.count_1h,
+              count24h: fp.count_24h,
+              distinctSessionsCount: fp.distinct_sessions_count,
+              sampleStack: fp.sample_stack,
+              sampleComponentStack: fp.sample_component_stack,
+            },
           });
         } else if (isHomeSpike || isSpike) {
           alerts.push({
@@ -50,8 +65,22 @@ export async function GET(request: NextRequest) {
             desc: `Error frequency crossed threshold. ${fp.distinct_sessions_count} unique sessions affected in the last hour.`,
             type: "client_error",
             severity: "high",
-            href: "/admin/monitoring",
+            href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
             timestamp: fp.last_seen,
+            metadata: {
+              fingerprint: fp.fingerprint,
+              errorName: fp.error_name,
+              errorMessage: fp.error_message,
+              route: fp.route,
+              source: fp.source,
+              firstSeen: fp.first_seen,
+              lastSeen: fp.last_seen,
+              count1h: fp.count_1h,
+              count24h: fp.count_24h,
+              distinctSessionsCount: fp.distinct_sessions_count,
+              sampleStack: fp.sample_stack,
+              sampleComponentStack: fp.sample_component_stack,
+            },
           });
         } else if (isStaleSpike) {
           alerts.push({
@@ -60,13 +89,24 @@ export async function GET(request: NextRequest) {
             desc: `${fp.stale_client_count} requests with stale bundle SHA detected (client !== server).`,
             type: "client_error",
             severity: "medium",
-            href: "/admin/monitoring",
+            href: `/admin/monitoring?section=errors&fingerprint=${encodeURIComponent(fp.fingerprint)}`,
             timestamp: fp.last_seen,
+            metadata: {
+              fingerprint: fp.fingerprint,
+              errorName: fp.error_name,
+              errorMessage: fp.error_message,
+              route: fp.route,
+              firstSeen: fp.first_seen,
+              lastSeen: fp.last_seen,
+              staleClientCount: fp.stale_client_count,
+              latestClientSha: fp.latest_client_sha,
+              latestServerSha: fp.latest_server_sha,
+            },
           });
         }
       }
     } catch (clientErr) {
-      console.error('[admin/alerts] Failed to evaluate client error alerts:', clientErr);
+      console.error("[admin/alerts] Failed to evaluate client error alerts:", clientErr);
     }
 
     // 2. Calendar integrity findings
@@ -74,9 +114,9 @@ export async function GET(request: NextRequest) {
       .from("calendar_integrity_findings") as any)
       .select("*")
       .eq("is_open", true)
-      .in("issue_type", ["engine_curated_mismatch", "calculation_failed", "disputed_unratified"])
+      .in("issue_type", ["engine_curated_mismatch", "calculation_failed", "disputed_unratified", "missing_external_source", "multiple_candidates_needs_review", "unreviewed_or_not_verified"])
       .order("last_seen_at", { ascending: false })
-      .limit(5);
+      .limit(10);
 
     if (findings && findings.length > 0) {
       for (const f of findings as any[]) {
@@ -86,8 +126,23 @@ export async function GET(request: NextRequest) {
           desc: f.reason || `Issue type: ${f.issue_type}`,
           type: "integrity",
           severity: f.issue_type === "engine_curated_mismatch" ? "high" : "medium",
-          href: "/admin/calendar-governance",
+          href: `/admin/calendar-governance?tab=integrity&findingId=${f.id}&slug=${encodeURIComponent(f.slug)}&year=${f.year}`,
           timestamp: f.last_seen_at || new Date().toISOString(),
+          metadata: {
+            findingId: f.id,
+            slug: f.slug,
+            displayName: f.display_name,
+            year: f.year,
+            storedDate: f.stored_date,
+            engineDate: f.engine_date,
+            candidateDates: f.candidate_dates,
+            issueType: f.issue_type,
+            reason: f.reason,
+            engineVersion: f.engine_version,
+            detectedAt: f.detected_at,
+            lastSeenAt: f.last_seen_at,
+            isOpen: f.is_open,
+          },
         });
       }
     }
@@ -95,7 +150,7 @@ export async function GET(request: NextRequest) {
     // 3. Pending Content Reports
     const { data: reports } = await (supabase
       .from("content_reports") as any)
-      .select("id, reason, created_at, reporter_id")
+      .select("id, reason, created_at, reporter_id, content_type, details")
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(5);
@@ -108,8 +163,16 @@ export async function GET(request: NextRequest) {
           desc: `Reason: ${r.reason || "Flagged by user"}`,
           type: "report",
           severity: "high",
-          href: "/admin/moderation",
+          href: `/admin/moderation?reportId=${r.id}`,
           timestamp: r.created_at || new Date().toISOString(),
+          metadata: {
+            reportId: r.id,
+            reason: r.reason,
+            reporterId: r.reporter_id,
+            contentType: r.content_type,
+            details: r.details,
+            createdAt: r.created_at,
+          },
         });
       }
     }
@@ -117,7 +180,7 @@ export async function GET(request: NextRequest) {
     // 4. Pending Dharm Veer Reviews
     const { data: dharmVeers } = await (supabase
       .from("dharm_veers") as any)
-      .select("slug, name, updated_at")
+      .select("slug, name, updated_at, tradition, era")
       .eq("review_status", "pending_review")
       .limit(5);
 
@@ -129,8 +192,15 @@ export async function GET(request: NextRequest) {
           desc: "Auto-sourced biography awaiting admin verification before live release.",
           type: "dharm_veer",
           severity: "medium",
-          href: "/admin/dharm-veer-review",
+          href: `/admin/dharm-veer-review?slug=${encodeURIComponent(dv.slug)}`,
           timestamp: dv.updated_at || new Date().toISOString(),
+          metadata: {
+            slug: dv.slug,
+            name: dv.name,
+            tradition: dv.tradition,
+            era: dv.era,
+            updatedAt: dv.updated_at,
+          },
         });
       }
     }
@@ -145,6 +215,7 @@ export async function GET(request: NextRequest) {
         severity: "low",
         href: "/admin/monitoring",
         timestamp: new Date().toISOString(),
+        metadata: {},
       });
     }
 
