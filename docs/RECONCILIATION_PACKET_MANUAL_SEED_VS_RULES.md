@@ -134,21 +134,29 @@ should still be sought.
 (neither currently cites a Tier 1-4 source), and should these two slugs merge
 into one properly-`rules.json`-backed definition?
 
-**External evidence (2026-09-05):** [TheSkyLive](https://theskylive.com/full-moon-october-2027)
-reports the raw astronomical full moon of October 2027 at **2027-10-15,
-14:47 UTC**. This is not evaluated on this project's Tier 1-5 rubric — it is
-neither an official calendrical authority nor a panchāṅga/commercial
-service, just a lunar-ephemeris calculation, independently reproducible.
-Per this packet's own earlier caution (§source-tier note above), a raw UTC
-instant does not by itself establish which Gregorian date a Theravada
-tradition observes locally — timezone, local moonrise/moonset convention,
-and monastic-sighting practice can all shift the observed day from the raw
-astronomical moment. **This is evidence worth weighing, matching the
-rules-engine sibling's stored date (`pavarana-end-of-vassa`, 2027-10-15) and
-diverging from the manual-seed slug's 2027-10-17 — it is not a finding that
-either row is correct or incorrect.** A Buddhist-authority source (a
-national Theravada calendar) is still needed to actually resolve which
-Gregorian date the tradition observes.
+**External evidence (2026-09-05, corrected 2026-09-05):** the original
+version of this note cited [TheSkyLive](https://theskylive.com/full-moon-october-2027)
+for the October 2027 full-moon instant. That URL returns HTTP 403 to
+automated fetches and is **not independently reproducible from the link
+alone** — flagged on review. Replaced with a reproducible calculation using
+this project's own elongation-based bisection (the same engine that
+produces every other date in this codebase, not a third-party source under
+the Tier 1-5 rubric): `scripts/verify-pavarana-full-moon.ts` (re-run with
+`npx tsx scripts/verify-pavarana-full-moon.ts`) independently computes the
+October 2027 full moon at **2027-10-15, 13:47 UTC** — within an hour of
+TheSkyLive's original figure and the same civil date, but now verifiable
+without depending on that site being reachable.
+
+Per this packet's own earlier caution, a raw UTC instant does not by itself
+establish which Gregorian date a Theravada tradition observes locally —
+timezone, local moonrise/moonset convention, and monastic-sighting practice
+can all shift the observed day from the raw astronomical moment. **This is
+evidence worth weighing, matching the rules-engine sibling's stored date
+(`pavarana-end-of-vassa`, 2027-10-15) and diverging from the manual-seed
+slug's 2027-10-17 — it is not a finding that either row is correct or
+incorrect.** A Buddhist-authority source (a national Theravada calendar) is
+still needed to actually resolve which Gregorian date the tradition
+observes.
 
 ---
 
