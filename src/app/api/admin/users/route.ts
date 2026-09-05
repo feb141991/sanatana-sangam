@@ -55,18 +55,30 @@ export async function GET(req: NextRequest) {
     const { data: users, error } = await request.limit(60);
     if (error) throw error;
 
-    // Aggregate KPI Statistics
-    const { data: allProfiles } = await (supabase.from('profiles') as any)
-      .select('id, created_at, shloka_streak, karma_points, is_banned, is_deleting, deletion_requested_at');
+    // High-Performance Head:True KPI Aggregations (Zero Payload Transfer)
+    const [
+      totalRes,
+      newRes,
+      activeRes,
+      staleRes,
+      bannedRes,
+      deletingRes,
+    ] = await Promise.all([
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }),
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo),
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }).or('shloka_streak.gt.0,karma_points.gt.50').eq('is_banned', false),
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }).eq('shloka_streak', 0).lte('created_at', thirtyDaysAgo).eq('is_banned', false),
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }).eq('is_banned', true),
+      (supabase.from('profiles') as any).select('id', { count: 'exact', head: true }).or('is_deleting.eq.true,deletion_requested_at.not.is.null'),
+    ]);
 
-    const list = allProfiles || [];
     const stats = {
-      total: list.length,
-      newThisWeek: list.filter((u: any) => u.created_at >= sevenDaysAgo).length,
-      activeSadhaks: list.filter((u: any) => (u.shloka_streak > 0 || u.karma_points > 50) && !u.is_banned).length,
-      staleUsers: list.filter((u: any) => u.shloka_streak === 0 && u.created_at <= thirtyDaysAgo && !u.is_banned).length,
-      banned: list.filter((u: any) => u.is_banned).length,
-      deletionPending: list.filter((u: any) => u.is_deleting || u.deletion_requested_at).length,
+      total: totalRes.count || 0,
+      newThisWeek: newRes.count || 0,
+      activeSadhaks: activeRes.count || 0,
+      staleUsers: staleRes.count || 0,
+      banned: bannedRes.count || 0,
+      deletionPending: deletingRes.count || 0,
     };
 
     return NextResponse.json({

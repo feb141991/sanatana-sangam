@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
     // 3. Pending Content Reports
     const { data: reports } = await (supabase
       .from("content_reports") as any)
-      .select("id, reason, created_at, reporter_id, content_type, details")
+      .select("id, reason, created_at, reported_by, content_type, metadata")
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(5);
@@ -168,9 +168,9 @@ export async function GET(request: NextRequest) {
           metadata: {
             reportId: r.id,
             reason: r.reason,
-            reporterId: r.reporter_id,
+            reporterId: r.reported_by,
             contentType: r.content_type,
-            details: r.details,
+            details: r.metadata,
             createdAt: r.created_at,
           },
         });
@@ -180,7 +180,7 @@ export async function GET(request: NextRequest) {
     // 4. Pending Dharm Veer Reviews
     const { data: dharmVeers } = await (supabase
       .from("dharm_veers") as any)
-      .select("slug, name, updated_at, tradition, era")
+      .select("slug, name, created_at, reviewed_at, tradition, era")
       .eq("review_status", "pending_review")
       .limit(5);
 
@@ -193,13 +193,13 @@ export async function GET(request: NextRequest) {
           type: "dharm_veer",
           severity: "medium",
           href: `/admin/dharm-veer-review?slug=${encodeURIComponent(dv.slug)}`,
-          timestamp: dv.updated_at || new Date().toISOString(),
+          timestamp: dv.reviewed_at || dv.created_at || new Date().toISOString(),
           metadata: {
             slug: dv.slug,
             name: dv.name,
             tradition: dv.tradition,
             era: dv.era,
-            updatedAt: dv.updated_at,
+            updatedAt: dv.reviewed_at || dv.created_at,
           },
         });
       }

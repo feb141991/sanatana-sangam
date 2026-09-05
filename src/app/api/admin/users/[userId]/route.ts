@@ -78,7 +78,7 @@ export async function GET(
       supabase.from("karma_ledger").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
       supabase.from("karma_award_log").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
       supabase.from("kul_members").select("*, kuls(*)").eq("user_id", userId),
-      supabase.from("content_reports").select("*").or(`reporter_id.eq.${userId},target_user_id.eq.${userId}`).limit(30),
+      supabase.from("content_reports").select("*").or(`reported_by.eq.${userId},content_author_id.eq.${userId}`).limit(30),
       supabase.from("user_warnings").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
     ]);
 
@@ -499,7 +499,7 @@ export async function DELETE(
     admin.supabase.from("user_settings").delete().eq("user_id", userId),
     admin.supabase.from("birth_profiles").delete().eq("user_id", userId),
     admin.supabase.from("user_warnings").delete().eq("user_id", userId),
-    admin.supabase.from("user_activity_log").delete().or(`user_id.eq.${userId},target_id.eq.${userId}`),
+    admin.supabase.from("user_activity_log").delete().or(`actor_id.eq.${userId},target_id.eq.${userId}`),
     admin.supabase.from("deleted_accounts").delete().eq("user_id", userId),
   ];
 

@@ -59,12 +59,12 @@ export async function GET(request: NextRequest) {
       });
     } else if (type === "moderation") {
       const { data: reports } = await (supabase.from("content_reports") as any)
-        .select("id, reporter_id, content_type, reason, status, created_at")
+        .select("id, reported_by, content_type, reason, status, created_at")
         .order("created_at", { ascending: false });
 
       csvContent = "Report ID,Reporter ID,Content Type,Reason,Status,Created At\n";
       (reports || []).forEach((r: any) => {
-        csvContent += `"${r.id}","${r.reporter_id || ""}","${r.content_type || ""}","${(r.reason || "").replace(/"/g, "''")}","${r.status || "pending"}","${r.created_at}"\n`;
+        csvContent += `"${r.id}","${r.reported_by || ""}","${r.content_type || ""}","${(r.reason || "").replace(/"/g, "''")}","${r.status || "pending"}","${r.created_at}"\n`;
       });
     } else {
       return NextResponse.json({ error: "Invalid export type" }, { status: 400 });

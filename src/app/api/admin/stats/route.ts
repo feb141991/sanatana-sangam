@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       supabase.from("profiles").select("id", { count: "exact", head: true }).gt("shloka_streak", 0),
       supabase.from("content_reports").select("id", { count: "exact", head: true }).eq("status", "pending"),
       supabase.from("mandalis").select("id", { count: "exact", head: true }),
-      supabase.from("profiles").select("tradition"),
+      supabase.from("profiles").select("tradition").limit(2000),
       supabase.from("dharm_veers").select("slug", { count: "exact", head: true }).eq("review_status", "pending_review"),
       supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_pro", true),
     ]);
