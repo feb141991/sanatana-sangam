@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T00:38:12.309Z",
+  "generated_at": "2026-09-05T00:57:35.947Z",
   "generator": "scripts/audit-phase0-ground-truth.ts",
   "definitions_total": 103,
   "rule_definitions": [
@@ -2182,7 +2182,7 @@
   "published_occurrences_total": 798,
   "published_occurrences_by_bucket": {
     "rule_backed": {
-      "row_count": 555,
+      "row_count": 553,
       "distinct_slugs": [
         "aja-ekadashi",
         "amalaki-ekadashi",
@@ -2232,17 +2232,15 @@
         "vijaya-ekadashi"
       ]
     },
-    "manual_seed_legacy": {
-      "row_count": 11,
+    "ambiguous_variant_rule_backed": {
+      "row_count": 2,
       "distinct_slugs": [
-        "das-lakshana-dharma",
-        "gudi-padwa-ugadi",
-        "paryushana-parva",
-        "pavarana",
-        "samvatsari",
-        "sangha-day",
-        "vassa-begins"
+        "krishna-janmashtami"
       ]
+    },
+    "ambiguous_variant_deferred_risk": {
+      "row_count": 0,
+      "distinct_slugs": []
     },
     "deferred_rule_backed_but_published": {
       "row_count": 232,
@@ -2296,6 +2294,22 @@
         "vivah-panchami",
         "yogini-ekadashi"
       ]
+    },
+    "unruled_published_legacy_sync_confirmed": {
+      "row_count": 11,
+      "distinct_slugs": [
+        "das-lakshana-dharma",
+        "gudi-padwa-ugadi",
+        "paryushana-parva",
+        "pavarana",
+        "samvatsari",
+        "sangha-day",
+        "vassa-begins"
+      ]
+    },
+    "unruled_published_other_provenance": {
+      "row_count": 0,
+      "distinct_slugs": []
     }
   },
   "published_occurrences_by_calculated_by": {

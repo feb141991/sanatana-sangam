@@ -92,13 +92,42 @@ entry per sub-observance before classification. `durga-ashtami` and
 row of their own), so they don't appear in the 103-definition set at all —
 expected, not a gap.
 
-## 3. Published occurrences grouped by provenance (798 total, sum-check PASS)
+## 3. Published occurrences classified by provenance (798 total, sum-check PASS)
+
+**Corrected after review (2026-09-05)** — two real contract defects fixed
+in `scripts/audit-phase0-ground-truth.ts` before this was treated as a
+migration baseline. See the script's own header comment and
+`scripts/audit-phase0-ground-truth.test.ts` (7 tests) for the full
+before/after. In short: the original pass classified deferred status at
+the SLUG level (a slug counted as deferred only if *every* rule variant for
+it was) and inferred "manual seed" purely from "no rule exists" without
+checking `calculated_by`. Both are fixed — `classifyOccurrence()` now
+resolves each row to its specific matching rule variant via
+`variant_key`/`spiritual_tradition` first, and the unruled bucket is split
+by whether `calculated_by === 'legacy_sync'` is actually verified.
 
 | Bucket | Rows | Distinct slugs |
 |---|---|---|
-| `rule_backed` (has a rule, not all-deferred) | 555 | 46 |
-| `manual_seed_legacy` (no rule anywhere, incl. span sub-observances) | 11 | 7 |
+| `rule_backed` | 553 | 46 |
+| `ambiguous_variant_rule_backed` (couldn't match to a specific variant; none of the slug's variants are deferred) | 2 | 1 (`krishna-janmashtami`) |
+| `ambiguous_variant_deferred_risk` (couldn't match to a specific variant; ≥1 of the slug's variants IS deferred) | **0** | 0 |
 | `deferred_rule_backed_but_published` | 232 | **48** |
+| `unruled_published_legacy_sync_confirmed` (no rule anywhere, `calculated_by` verified as `legacy_sync`) | 11 | 7 |
+| `unruled_published_other_provenance` (no rule anywhere, NOT verified as `legacy_sync`) | **0** | 0 |
+
+**The corrected classification does not change the headline story, but it
+was necessary rather than assumed**: `ambiguous_variant_deferred_risk` and
+`unruled_published_other_provenance` both come back at zero — meaning, for
+today's actual data, no row's deferred-publication status was being masked
+by the slug-level bug, and all 11 previously-bucketed "manual seed" rows
+are genuinely confirmed `legacy_sync`, not just assumed to be. That is a
+fact now established by the audit, not inferred from how the data looked.
+One real, previously-invisible edge case did surface:
+`krishna-janmashtami` has 2 published rows whose `variant_key`/
+`spiritual_tradition` don't match either of its rule variants' own
+`variant_key`/`sampradaya` field exactly (a data inconsistency from this
+slug's own materialization history, documented earlier this session) —
+correctly flagged as ambiguous rather than silently guessed either way.
 
 The `deferred_rule_backed_but_published` bucket is the same governance gap
 flagged earlier this session for `gudi-padwa`/`ugadi` specifically
@@ -108,9 +137,9 @@ published rows**, each one a rule the codebase's own `launch_status:
 'deferred'` flag says "not ready to stand behind," already presenting a
 final date regardless. Full slug lists in `ground-truth.json`.
 
-The 7 `manual_seed_legacy` slugs match the reconciliation packet exactly:
-`das-lakshana-dharma`, `gudi-padwa-ugadi`, `paryushana-parva`, `pavarana`,
-`samvatsari`, `sangha-day`, `vassa-begins`.
+The 7 `unruled_published_legacy_sync_confirmed` slugs match the
+reconciliation packet exactly: `das-lakshana-dharma`, `gudi-padwa-ugadi`,
+`paryushana-parva`, `pavarana`, `samvatsari`, `sangha-day`, `vassa-begins`.
 
 Raw `calculated_by` distribution (13 distinct values, reflecting
 accumulated one-off batch scripts over time — `cron_job` 299,

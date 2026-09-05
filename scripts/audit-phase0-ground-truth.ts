@@ -4,8 +4,9 @@
  *
  *   (2) every rules.json definition: launch_status, calendar profile/
  *       tradition scope, rule_family, and golden_fixtures coverage
- *   (3) published observance_occurrences rows grouped into
- *       rule-backed / manual-seed-legacy / deferred-rule-backed-but-published
+ *   (3) published observance_occurrences rows classified by provenance
+ *       and by the SPECIFIC rule variant each row's own variant_key/
+ *       spiritual_tradition matches (see classifyOccurrence below)
  *   (5) golden_fixtures coverage per festival: total rows, real vs.
  *       placeholder (TODO) citations, approved vs. not
  *
@@ -13,6 +14,28 @@
  * modification. Companion items (1) runtime references to governance
  * terminology and (4) API/cron/UI read paths are reported separately in
  * prose (grep-based code survey, not meaningfully tabular).
+ *
+ * Corrected after review (2026-09-05), two real contract defects fixed
+ * before this was treated as a migration baseline:
+ *
+ * 1. The original classification was SLUG-level: a slug counted as
+ *    deferred only if EVERY rule variant for it was deferred. A slug with
+ *    one included and one deferred variant (e.g. a regional/sampradaya
+ *    split) was counted as ordinary rule_backed even when the specific
+ *    STORED ROW belonged to the deferred variant -- because the query
+ *    never fetched variant_key/spiritual_tradition to check. Fixed:
+ *    classifyOccurrence() now resolves each row to its specific matching
+ *    rule variant first, and only falls back to slug-level aggregation
+ *    (flagged as `ambiguous_variant_*`, never silently as clean
+ *    `rule_backed`) when no specific variant can be matched.
+ * 2. The old `manual_seed_legacy` bucket was inferred purely from "no rule
+ *    exists for this slug" -- `calculated_by` was fetched but never
+ *    checked. Renamed to `unruled_published`, split into
+ *    `unruled_published_legacy_sync_confirmed` (calculated_by ===
+ *    'legacy_sync', actually verified) and
+ *    `unruled_published_other_provenance` (no rule, but NOT verified as
+ *    that specific writer) so later cleanup work can't act on an unproven
+ *    provenance assumption.
  *
  * Run: npx tsx scripts/audit-phase0-ground-truth.ts
  */
@@ -32,7 +55,7 @@ type SubObservance = {
   citation?: string;
 };
 
-type Rule = {
+export type Rule = {
   slug: string;
   launch_status?: string;
   rule_family?: string;
@@ -42,6 +65,71 @@ type Rule = {
   corrected_month_system?: string;
   sub_observances?: SubObservance[];
 };
+
+export type OccurrenceRow = {
+  definition_id: string;
+  calculated_by: string | null;
+  variant_key: string | null;
+  spiritual_tradition: string | null;
+};
+
+export type Bucket =
+  | 'rule_backed'
+  // A slug has 2+ rule variants and this row's variant_key/spiritual_tradition
+  // didn't match any of them specifically (e.g. a generic 'legacy-default'
+  // variant_key on a multi-variant rule). Deliberately NOT folded into
+  // rule_backed: if the un-matched variants are all non-deferred, the
+  // ambiguity is cosmetic; if any of them IS deferred, silently defaulting
+  // to rule_backed would understate the deferred-publication gap, which is
+  // exactly the failure mode this bucket exists to avoid.
+  | 'ambiguous_variant_rule_backed'
+  | 'ambiguous_variant_deferred_risk'
+  | 'deferred_rule_backed_but_published'
+  // Split from the old single manual_seed_legacy bucket: only rows whose
+  // calculated_by is ACTUALLY verified as 'legacy_sync' land here. Every
+  // other unruled row -- regardless of how plausible its provenance looks --
+  // goes to unruled_published_other_provenance instead, so a later cleanup
+  // pass can't inherit an unproven assumption about where the row came from.
+  | 'unruled_published_legacy_sync_confirmed'
+  | 'unruled_published_other_provenance';
+
+/**
+ * Classifies one published occurrence row against the rule(s) for its slug.
+ * Pure function, no I/O -- see scripts/__tests__/audit-phase0-ground-truth.test.ts
+ * for the three required cases (mixed included/deferred variants, an
+ * unruled row NOT from legacy_sync, a true legacy_sync unruled row).
+ */
+export function classifyOccurrence(occ: OccurrenceRow, ruleEntries: Rule[]): Bucket {
+  if (ruleEntries.length === 0) {
+    return occ.calculated_by === 'legacy_sync'
+      ? 'unruled_published_legacy_sync_confirmed'
+      : 'unruled_published_other_provenance';
+  }
+
+  if (ruleEntries.length === 1) {
+    return ruleEntries[0].launch_status === 'deferred' ? 'deferred_rule_backed_but_published' : 'rule_backed';
+  }
+
+  // 2+ variants for this slug: resolve THIS ROW to its specific variant via
+  // variant_key first, then spiritual_tradition, matching against each
+  // rule's own variant_key or sampradaya field. This is the fix for the
+  // slug-level-only classification an earlier version of this script used.
+  const rowKey = occ.variant_key || occ.spiritual_tradition;
+  const matched = rowKey
+    ? ruleEntries.find(r => (r.variant_key ?? r.sampradaya) === rowKey)
+    : undefined;
+
+  if (matched) {
+    return matched.launch_status === 'deferred' ? 'deferred_rule_backed_but_published' : 'rule_backed';
+  }
+
+  // Could not resolve to a specific variant. Fail toward visibility, not
+  // toward the reassuring answer: if ANY variant for this slug is deferred,
+  // this row's own governance status is genuinely unknown and must not be
+  // reported as clean rule_backed.
+  const anyDeferred = ruleEntries.some(r => r.launch_status === 'deferred');
+  return anyDeferred ? 'ambiguous_variant_deferred_risk' : 'ambiguous_variant_rule_backed';
+}
 
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -124,29 +212,35 @@ async function main() {
     };
   });
 
-  // --- (3) published occurrences grouped into 3 buckets ---
+  // --- (3) published occurrences classified by provenance ---
   const { data: occurrences, error: occError } = await db
     .from('observance_occurrences')
-    .select('definition_id, date, year, calculated_by, calendar_profile')
+    .select('definition_id, date, year, calculated_by, calendar_profile, variant_key, spiritual_tradition')
     .eq('publication_status', 'published');
   if (occError) throw occError;
 
-  type Bucket = 'rule_backed' | 'manual_seed_legacy' | 'deferred_rule_backed_but_published';
-  const bucketCounts: Record<Bucket, number> = { rule_backed: 0, manual_seed_legacy: 0, deferred_rule_backed_but_published: 0 };
-  const bucketSlugs: Record<Bucket, Set<string>> = { rule_backed: new Set(), manual_seed_legacy: new Set(), deferred_rule_backed_but_published: new Set() };
+  const bucketCounts: Record<Bucket, number> = {
+    rule_backed: 0,
+    ambiguous_variant_rule_backed: 0,
+    ambiguous_variant_deferred_risk: 0,
+    deferred_rule_backed_but_published: 0,
+    unruled_published_legacy_sync_confirmed: 0,
+    unruled_published_other_provenance: 0,
+  };
+  const bucketSlugs: Record<Bucket, Set<string>> = {
+    rule_backed: new Set(),
+    ambiguous_variant_rule_backed: new Set(),
+    ambiguous_variant_deferred_risk: new Set(),
+    deferred_rule_backed_but_published: new Set(),
+    unruled_published_legacy_sync_confirmed: new Set(),
+    unruled_published_other_provenance: new Set(),
+  };
 
-  for (const occ of (occurrences ?? []) as any[]) {
+  for (const occ of (occurrences ?? []) as OccurrenceRow[]) {
     const slug = defIdToSlug.get(occ.definition_id);
     if (!slug) continue;
     const ruleEntries = rulesBySlug.get(slug) ?? [];
-    const hasRule = ruleEntries.length > 0;
-    const allDeferred = hasRule && ruleEntries.every(r => r.launch_status === 'deferred');
-
-    let bucket: Bucket;
-    if (!hasRule) bucket = 'manual_seed_legacy';
-    else if (allDeferred) bucket = 'deferred_rule_backed_but_published';
-    else bucket = 'rule_backed';
-
+    const bucket = classifyOccurrence(occ, ruleEntries);
     bucketCounts[bucket]++;
     bucketSlugs[bucket].add(slug);
   }
@@ -164,11 +258,12 @@ async function main() {
       approved_rows: (fixtures ?? []).filter((f: any) => f.approved).length,
     },
     published_occurrences_total: (occurrences ?? []).length,
-    published_occurrences_by_bucket: {
-      rule_backed: { row_count: bucketCounts.rule_backed, distinct_slugs: [...bucketSlugs.rule_backed].sort() },
-      manual_seed_legacy: { row_count: bucketCounts.manual_seed_legacy, distinct_slugs: [...bucketSlugs.manual_seed_legacy].sort() },
-      deferred_rule_backed_but_published: { row_count: bucketCounts.deferred_rule_backed_but_published, distinct_slugs: [...bucketSlugs.deferred_rule_backed_but_published].sort() },
-    },
+    published_occurrences_by_bucket: Object.fromEntries(
+      (Object.keys(bucketCounts) as Bucket[]).map(b => [
+        b,
+        { row_count: bucketCounts[b], distinct_slugs: [...bucketSlugs[b]].sort() },
+      ]),
+    ),
     published_occurrences_by_calculated_by: Object.fromEntries(
       Object.entries(
         (occurrences ?? []).reduce((acc: Record<string, number>, o: any) => {
@@ -179,7 +274,7 @@ async function main() {
     ),
   };
 
-  const sumCheck = bucketCounts.rule_backed + bucketCounts.manual_seed_legacy + bucketCounts.deferred_rule_backed_but_published;
+  const sumCheck = (Object.keys(bucketCounts) as Bucket[]).reduce((sum, b) => sum + bucketCounts[b], 0);
   if (sumCheck !== document.published_occurrences_total) {
     throw new Error(`Sum check FAILED: bucket total ${sumCheck} !== published total ${document.published_occurrences_total}`);
   }
@@ -192,10 +287,15 @@ async function main() {
   console.log(`\nDefinitions: ${document.definitions_total}`);
   console.log(`Golden fixtures: ${document.golden_fixtures_summary.total_rows} rows, ${document.golden_fixtures_summary.distinct_festivals} festivals, ${document.golden_fixtures_summary.real_citation_rows} real citations, ${document.golden_fixtures_summary.placeholder_citation_rows} placeholders, ${document.golden_fixtures_summary.approved_rows} approved`);
   console.log(`Published occurrences: ${document.published_occurrences_total} total`);
-  console.log(`  rule_backed: ${bucketCounts.rule_backed} rows / ${bucketSlugs.rule_backed.size} slugs`);
-  console.log(`  manual_seed_legacy: ${bucketCounts.manual_seed_legacy} rows / ${bucketSlugs.manual_seed_legacy.size} slugs`);
-  console.log(`  deferred_rule_backed_but_published: ${bucketCounts.deferred_rule_backed_but_published} rows / ${bucketSlugs.deferred_rule_backed_but_published.size} slugs`);
+  for (const b of Object.keys(bucketCounts) as Bucket[]) {
+    console.log(`  ${b}: ${bucketCounts[b]} rows / ${bucketSlugs[b].size} slugs`);
+  }
   console.log(`  sum check: ${sumCheck === document.published_occurrences_total ? 'PASS' : 'FAIL'}`);
 }
 
-main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
+// Guards against running the full DB-querying main() as a side effect of
+// importing this module for its exported pure functions (classifyOccurrence,
+// Rule, OccurrenceRow) -- see audit-phase0-ground-truth.test.ts.
+if (require.main === module) {
+  main().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
+}
