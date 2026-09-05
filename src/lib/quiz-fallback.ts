@@ -1,11 +1,13 @@
-export const DAILY_FALLBACK_QUIZ: Record<string, Record<string, {
+export type DailyFallbackQuiz = {
   question: string;
   options: string[];
   answerIndex: number;
   explanation: string;
   fact: string;
   source: string;
-}[]>> = {
+};
+
+export const DAILY_FALLBACK_QUIZ: Record<string, Record<string, DailyFallbackQuiz[]>> = {
   en: {
     hindu: [
       {
@@ -323,3 +325,30 @@ export const DAILY_FALLBACK_QUIZ: Record<string, Record<string, {
     }]
   }
 };
+
+export function getDailyFallbackQuiz(
+  tradition: string,
+  language: string,
+  dateStr: string,
+): { quiz: DailyFallbackQuiz; fallbackLanguage?: string } {
+  const requestedLanguagePool = DAILY_FALLBACK_QUIZ[language];
+  const languagePool = requestedLanguagePool ?? DAILY_FALLBACK_QUIZ.en;
+  const quizPool =
+    languagePool[tradition] ??
+    languagePool.all ??
+    DAILY_FALLBACK_QUIZ.en[tradition] ??
+    DAILY_FALLBACK_QUIZ.en.all;
+
+  let hash = 0;
+  for (let index = 0; index < dateStr.length; index += 1) {
+    hash = (hash << 5) - hash + dateStr.charCodeAt(index);
+    hash |= 0;
+  }
+
+  return {
+    quiz: quizPool[Math.abs(hash) % quizPool.length],
+    fallbackLanguage: requestedLanguagePool && (requestedLanguagePool[tradition] || requestedLanguagePool.all)
+      ? undefined
+      : 'en',
+  };
+}

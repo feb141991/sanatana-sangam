@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { getLanguageInstruction } from '@/lib/language-runtime';
 import { emitEvent, emitError } from '@/lib/monitoring/events';
 import { recordCronTelemetry } from '@/lib/monitoring/cron-telemetry';
-import { DAILY_FALLBACK_QUIZ } from '@/lib/quiz-fallback';
+import { getDailyFallbackQuiz } from '@/lib/quiz-fallback';
 import { getQuizJobTerminalState } from '@/lib/content-job-policy';
 
 const TRADITION_CONTEXT: Record<string, string> = {
@@ -57,21 +57,6 @@ Respond ONLY with valid JSON matching this schema exactly:
 
 function extractJsonBlock(raw: string): string {
   return raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
-}
-
-function getFallbackQuizFor(tradition: string, language: string, dateStr: string) {
-  const langPool = DAILY_FALLBACK_QUIZ[language] || DAILY_FALLBACK_QUIZ['en'] || {};
-  const traditionPool = langPool[tradition] || langPool['hindu'] || [];
-  if (traditionPool.length === 0) return null;
-
-  // Pick deterministic index from date
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
-    hash |= 0;
-  }
-  const index = Math.abs(hash) % traditionPool.length;
-  return traditionPool[index];
 }
 
 const TRADITIONS = ['hindu', 'sikh', 'buddhist', 'jain'];
@@ -139,7 +124,7 @@ async function handleGenerateDaily(req: NextRequest) {
 
   const { data: claimedRows, error: claimError } = await supabase.rpc(
     'claim_quiz_generation_jobs' as never,
-    { p_batch_limit: requestedJobs.length, p_lease_minutes: 5 } as never,
+    { p_batch_limit: requestedJobs.length, p_lease_minutes: 5, p_quiz_date: dateStr } as never,
   );
   if (claimError) {
     return NextResponse.json({ error: `Unable to claim quiz jobs: ${claimError.message}` }, { status: 500 });
@@ -278,38 +263,33 @@ async function handleGenerateDaily(req: NextRequest) {
         finalError = errorMessage;
         
         // Fallback data seeding so the user never sees empty state
-        const fallbackQuiz = getFallbackQuizFor(tradition, language, jobDate);
-        if (fallbackQuiz) {
-          try {
-            const { error: fallbackInsertError } = await supabase
-              .from('daily_quiz' as unknown as 'quiz_responses')
-              .upsert({
-                tradition,
-                language,
-                date: jobDate,
-                question: fallbackQuiz.question,
-                options: fallbackQuiz.options,
-                answer_index: fallbackQuiz.answerIndex,
-                explanation: fallbackQuiz.explanation,
-                fact: fallbackQuiz.fact,
-                source: fallbackQuiz.source,
-              } as unknown as never, { onConflict: 'tradition,language,date', ignoreDuplicates: true });
-            if (fallbackInsertError) throw fallbackInsertError;
+        const { quiz: fallbackQuiz } = getDailyFallbackQuiz(tradition, language, jobDate);
+        try {
+          const { error: fallbackInsertError } = await supabase
+            .from('daily_quiz' as unknown as 'quiz_responses')
+            .upsert({
+              tradition,
+              language,
+              date: jobDate,
+              question: fallbackQuiz.question,
+              options: fallbackQuiz.options,
+              answer_index: fallbackQuiz.answerIndex,
+              explanation: fallbackQuiz.explanation,
+              fact: fallbackQuiz.fact,
+              source: fallbackQuiz.source,
+            } as unknown as never, { onConflict: 'tradition,language,date', ignoreDuplicates: true });
+          if (fallbackInsertError) throw fallbackInsertError;
 
-            seededFallback++;
-            finalStatus = 'fallback';
-            results.push({ tradition, language, date: jobDate, status: 'seeded_from_fallback', error: errorMessage });
-          } catch (seedErr) {
-            failed++;
-            finalError = `${errorMessage} (fallback insert failed: ${seedErr})`;
-            results.push({ tradition, language, date: jobDate, status: 'failed', error: finalError });
-          }
-        } else {
+          seededFallback++;
+          finalStatus = 'fallback';
+          results.push({ tradition, language, date: jobDate, status: 'seeded_from_fallback', error: errorMessage });
+        } catch (seedErr) {
           failed++;
-          results.push({ tradition, language, date: jobDate, status: 'failed', error: errorMessage });
+          finalError = `${errorMessage} (fallback insert failed: ${seedErr})`;
+          results.push({ tradition, language, date: jobDate, status: 'failed', error: finalError });
         }
 
-        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: !!fallbackQuiz } });
+        emitError('ai', err, 'P2', { route: '/api/quiz/generate-daily', context: { tradition, language, date: jobDate, seededFallback: true } });
       } finally {
         const persistedStatus = getQuizJobTerminalState(finalStatus, job.attempt_count, job.max_attempts);
         const retryable = persistedStatus === 'pending';
