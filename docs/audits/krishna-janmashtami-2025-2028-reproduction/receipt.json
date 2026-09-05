@@ -1,0 +1,2909 @@
+{
+  "_label": "CURRENT EVALUATOR OUTPUT -- NOT PROOF OF HISTORICAL OUTPUT, NOT AN APPROVED FIXTURE, NOT AN INDEPENDENT CITATION, NOT A PROFILE-AWARE EVALUATION",
+  "_explanation": "This file records the current checkout's evaluator output at explicit Ujjain coordinates; it is not independent verification or evidence of historical output. There is no stored historical evaluator output, source revision, or transactional record to compare today's run against -- only the ratification_note's prose description of some earlier manual run -- so this file cannot and does not claim to prove today's result matches a prior one. It also does not independently verify its result against any external source, and it is NOT a `calendar_profile`-aware evaluation: calculateOccurrencesWithEvaluator takes a raw lat/lon/tz, not a profile string, so this is an evaluator-current-output reproduction at the coordinates the 'legacy-ujjain' profile happens to resolve to elsewhere in this codebase (materialize.ts:770) -- not proof the evaluator consumed that profile. Do not cite this file as evidence in golden_fixtures, in a ratification_note, or in any user-facing claim of correctness. It exists solely to compare currently-stored occurrence rows against the engine's current output for the purpose of Prompt 3's krishna-janmashtami remediation scope.",
+  "generated_at": "2026-09-05T15:43:31.583Z",
+  "generator": "scripts/reproduce-krishna-janmashtami-2025-2028.ts",
+  "slug": "krishna-janmashtami",
+  "location_used": {
+    "lat": 23.1765,
+    "lon": 75.7885,
+    "tz": "Asia/Kolkata",
+    "label": "Ujjain, India -- passed explicitly as raw coordinates; matches, but is not derived from, the legacy-ujjain calendar_profile string"
+  },
+  "years": [
+    {
+      "year": 2025,
+      "computed_variants": [
+        {
+          "variant_id": "smarta",
+          "spiritual_tradition": "smarta",
+          "status": "resolved",
+          "computed_date": "2025-08-15",
+          "reasons": [
+            {
+              "code": "lunar_month_check",
+              "text": "Lunar month on 2025-08-15 at sunrise is Shravana (target: Shravana, system: amanta).",
+              "details": {
+                "actualMasa": "Shravana",
+                "targetMasa": "Shravana",
+                "system": "amanta"
+              }
+            },
+            {
+              "code": "paksha_check",
+              "text": "Paksha on 2025-08-15 at sunrise is krishna (tithi 22, target: krishna).",
+              "details": {
+                "actualPaksha": "krishna",
+                "targetPaksha": "krishna",
+                "tithiIndex": 22
+              }
+            },
+            {
+              "code": "tithi_presence_check",
+              "text": "Tithi Ashtami (8 krishna) presence mode 'touches' during 'nishita' [2025-08-16 00:09 to 2025-08-16 00:53]: MATCHED. (Start: Ashtami, End: Ashtami).",
+              "details": {
+                "targetTithi": 8,
+                "targetPaksha": "krishna",
+                "period": "nishita",
+                "mode": "touches",
+                "startTithi": 23,
+                "endTithi": 23,
+                "startUtc": "2025-08-15T18:39:13.882Z",
+                "endUtc": "2025-08-15T19:23:30.527Z",
+                "isExtendedMoonrise": false
+              }
+            }
+          ],
+          "diagnostics": [],
+          "raw_result_count": 2
+        },
+        {
+          "variant_id": "vaishnava",
+          "spiritual_tradition": "gaudiya_iskcon",
+          "status": "unresolved",
+          "computed_date": null,
+          "reasons": {
+            "ruleId": "vaishnava",
+            "festivalId": "krishna-janmashtami",
+            "windowSize": 15,
+            "allEvaluations": [
+              {
+                "date": "2025-08-01",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-01 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-01 at sunrise is shukla (tithi 8, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 8
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-01 05:57 to 2025-08-01 05:57]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2025-08-01T00:27:23.309Z",
+                      "endUtc": "2025-08-01T00:27:23.309Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Swati, End: Swati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-02",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-02 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-02 at sunrise is shukla (tithi 8, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 8
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-02 05:57 to 2025-08-02 05:57]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2025-08-02T00:27:48.868Z",
+                      "endUtc": "2025-08-02T00:27:48.868Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Vishakha, End: Vishakha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-03",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-03 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-03 at sunrise is shukla (tithi 9, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 9
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-03 05:58 to 2025-08-03 05:58]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2025-08-03T00:28:14.278Z",
+                      "endUtc": "2025-08-03T00:28:14.278Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Vishakha, End: Vishakha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-04",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-04 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-04 at sunrise is shukla (tithi 10, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 10
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-04 05:58 to 2025-08-04 05:58]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 10,
+                      "endTithi": 10,
+                      "startUtc": "2025-08-04T00:28:39.527Z",
+                      "endUtc": "2025-08-04T00:28:39.527Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Anuradha, End: Anuradha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-05",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-05 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-05 at sunrise is shukla (tithi 11, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 11
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-05 05:59 to 2025-08-05 05:59]: DID NOT MATCH. (Start: Ekadashi, End: Ekadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 11,
+                      "endTithi": 11,
+                      "startUtc": "2025-08-05T00:29:04.605Z",
+                      "endUtc": "2025-08-05T00:29:04.605Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Jyeshtha, End: Jyeshtha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-06",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-06 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-06 at sunrise is shukla (tithi 12, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 12
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-06 05:59 to 2025-08-06 05:59]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 12,
+                      "endTithi": 12,
+                      "startUtc": "2025-08-06T00:29:29.501Z",
+                      "endUtc": "2025-08-06T00:29:29.501Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Mula, End: Mula)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-07",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-07 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-07 at sunrise is shukla (tithi 13, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 13
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-07 05:59 to 2025-08-07 05:59]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 13,
+                      "endTithi": 13,
+                      "startUtc": "2025-08-07T00:29:54.208Z",
+                      "endUtc": "2025-08-07T00:29:54.208Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Ashadha, End: Purva Ashadha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-08",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-08 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-08 at sunrise is shukla (tithi 14, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 14
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-08 06:00 to 2025-08-08 06:00]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 14,
+                      "endTithi": 14,
+                      "startUtc": "2025-08-08T00:30:18.718Z",
+                      "endUtc": "2025-08-08T00:30:18.718Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Ashadha, End: Uttara Ashadha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-09",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-09 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-09 at sunrise is shukla (tithi 15, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 15
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-09 06:00 to 2025-08-09 06:00]: DID NOT MATCH. (Start: Purnima, End: Purnima).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 15,
+                      "endTithi": 15,
+                      "startUtc": "2025-08-09T00:30:43.023Z",
+                      "endUtc": "2025-08-09T00:30:43.023Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Shravana, End: Shravana)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-10",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-10 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-10 at sunrise is krishna (tithi 16, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 16
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-10 06:01 to 2025-08-10 06:01]: DID NOT MATCH. (Start: Pratipada, End: Pratipada).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 16,
+                      "endTithi": 16,
+                      "startUtc": "2025-08-10T00:31:07.119Z",
+                      "endUtc": "2025-08-10T00:31:07.119Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Dhanishtha, End: Dhanishtha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-11",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-11 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-11 at sunrise is krishna (tithi 17, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 17
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-11 06:01 to 2025-08-11 06:01]: DID NOT MATCH. (Start: Dwitiya, End: Dwitiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 17,
+                      "endTithi": 17,
+                      "startUtc": "2025-08-11T00:31:30.999Z",
+                      "endUtc": "2025-08-11T00:31:30.999Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Shatabhisha, End: Shatabhisha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-12",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-12 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-12 at sunrise is krishna (tithi 18, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 18
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-12 06:01 to 2025-08-12 06:01]: DID NOT MATCH. (Start: Tritiya, End: Tritiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 18,
+                      "endTithi": 18,
+                      "startUtc": "2025-08-12T00:31:54.659Z",
+                      "endUtc": "2025-08-12T00:31:54.659Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Bhadrapada, End: Purva Bhadrapada)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-13",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-13 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-13 at sunrise is krishna (tithi 19, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 19
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-13 06:02 to 2025-08-13 06:02]: DID NOT MATCH. (Start: Chaturthi, End: Chaturthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 19,
+                      "endTithi": 19,
+                      "startUtc": "2025-08-13T00:32:18.096Z",
+                      "endUtc": "2025-08-13T00:32:18.096Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Bhadrapada, End: Uttara Bhadrapada)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-14",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-14 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-14 at sunrise is krishna (tithi 21, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 21
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-14 06:02 to 2025-08-14 06:02]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 21,
+                      "endTithi": 21,
+                      "startUtc": "2025-08-14T00:32:41.307Z",
+                      "endUtc": "2025-08-14T00:32:41.307Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Revati, End: Revati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-15",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-15 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-15 at sunrise is krishna (tithi 22, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 22
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-15 06:03 to 2025-08-15 06:03]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 22,
+                      "endTithi": 22,
+                      "startUtc": "2025-08-15T00:33:04.289Z",
+                      "endUtc": "2025-08-15T00:33:04.289Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ashwini, End: Ashwini)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-16",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-16 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-16 at sunrise is krishna (tithi 23, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 23
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-16 06:03 to 2025-08-16 06:03]: MATCHED. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 23,
+                      "endTithi": 23,
+                      "startUtc": "2025-08-16T00:33:27.043Z",
+                      "endUtc": "2025-08-16T00:33:27.043Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Bharani, End: Bharani)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-17",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-17 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-17 at sunrise is krishna (tithi 24, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 24
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-17 06:03 to 2025-08-17 06:03]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 24,
+                      "endTithi": 24,
+                      "startUtc": "2025-08-17T00:33:49.566Z",
+                      "endUtc": "2025-08-17T00:33:49.566Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': MATCHED (Start: Rohini, End: Rohini)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-18",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-18 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-18 at sunrise is krishna (tithi 25, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 25
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-18 06:04 to 2025-08-18 06:04]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 25,
+                      "endTithi": 25,
+                      "startUtc": "2025-08-18T00:34:11.861Z",
+                      "endUtc": "2025-08-18T00:34:11.861Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Mrigashira, End: Mrigashira)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-19",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-19 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-19 at sunrise is krishna (tithi 26, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 26
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-19 06:04 to 2025-08-19 06:04]: DID NOT MATCH. (Start: Ekadashi, End: Ekadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 26,
+                      "endTithi": 26,
+                      "startUtc": "2025-08-19T00:34:33.926Z",
+                      "endUtc": "2025-08-19T00:34:33.926Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ardra, End: Ardra)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-20",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-20 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-20 at sunrise is krishna (tithi 27, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 27
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-20 06:04 to 2025-08-20 06:04]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 27,
+                      "endTithi": 27,
+                      "startUtc": "2025-08-20T00:34:55.765Z",
+                      "endUtc": "2025-08-20T00:34:55.765Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Punarvasu, End: Punarvasu)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-21",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-21 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-21 at sunrise is krishna (tithi 28, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 28
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-21 06:05 to 2025-08-21 06:05]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 28,
+                      "endTithi": 28,
+                      "startUtc": "2025-08-21T00:35:17.380Z",
+                      "endUtc": "2025-08-21T00:35:17.380Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Pushya, End: Pushya)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-22",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-22 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-22 at sunrise is krishna (tithi 29, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 29
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-22 06:05 to 2025-08-22 06:05]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 29,
+                      "endTithi": 29,
+                      "startUtc": "2025-08-22T00:35:38.773Z",
+                      "endUtc": "2025-08-22T00:35:38.773Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ashlesha, End: Ashlesha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-23",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-23 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-23 at sunrise is krishna (tithi 30, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 30
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-23 06:05 to 2025-08-23 06:05]: DID NOT MATCH. (Start: Amavasya, End: Amavasya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 30,
+                      "endTithi": 30,
+                      "startUtc": "2025-08-23T00:35:59.948Z",
+                      "endUtc": "2025-08-23T00:35:59.948Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Magha, End: Magha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-24",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-24 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-24 at sunrise is shukla (tithi 1, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 1
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-24 06:06 to 2025-08-24 06:06]: DID NOT MATCH. (Start: Pratipada, End: Pratipada).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 1,
+                      "endTithi": 1,
+                      "startUtc": "2025-08-24T00:36:20.910Z",
+                      "endUtc": "2025-08-24T00:36:20.910Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Phalguni, End: Purva Phalguni)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-25",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-25 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-25 at sunrise is shukla (tithi 2, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 2
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-25 06:06 to 2025-08-25 06:06]: DID NOT MATCH. (Start: Dwitiya, End: Dwitiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 2,
+                      "endTithi": 2,
+                      "startUtc": "2025-08-25T00:36:41.664Z",
+                      "endUtc": "2025-08-25T00:36:41.664Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Phalguni, End: Uttara Phalguni)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-26",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-26 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-26 at sunrise is shukla (tithi 3, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 3
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-26 06:07 to 2025-08-26 06:07]: DID NOT MATCH. (Start: Tritiya, End: Tritiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 3,
+                      "endTithi": 3,
+                      "startUtc": "2025-08-26T00:37:02.214Z",
+                      "endUtc": "2025-08-26T00:37:02.214Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Hasta, End: Hasta)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-27",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-27 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-27 at sunrise is shukla (tithi 4, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 4
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-27 06:07 to 2025-08-27 06:07]: DID NOT MATCH. (Start: Chaturthi, End: Chaturthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 4,
+                      "endTithi": 4,
+                      "startUtc": "2025-08-27T00:37:22.567Z",
+                      "endUtc": "2025-08-27T00:37:22.567Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Chitra, End: Chitra)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-28",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-28 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-28 at sunrise is shukla (tithi 5, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 5
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-28 06:07 to 2025-08-28 06:07]: DID NOT MATCH. (Start: Panchami, End: Panchami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 5,
+                      "endTithi": 5,
+                      "startUtc": "2025-08-28T00:37:42.730Z",
+                      "endUtc": "2025-08-28T00:37:42.730Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Chitra, End: Chitra)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-29",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-29 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-29 at sunrise is shukla (tithi 6, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 6
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-29 06:08 to 2025-08-29 06:08]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 6,
+                      "endTithi": 6,
+                      "startUtc": "2025-08-29T00:38:02.709Z",
+                      "endUtc": "2025-08-29T00:38:02.709Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Swati, End: Swati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-30",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-30 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-30 at sunrise is shukla (tithi 7, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 7
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-30 06:08 to 2025-08-30 06:08]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 7,
+                      "endTithi": 7,
+                      "startUtc": "2025-08-30T00:38:22.513Z",
+                      "endUtc": "2025-08-30T00:38:22.513Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Vishakha, End: Vishakha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2025-08-31",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2025-08-31 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2025-08-31 at sunrise is shukla (tithi 8, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 8
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2025-08-31 06:08 to 2025-08-31 06:08]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2025-08-31T00:38:42.148Z",
+                      "endUtc": "2025-08-31T00:38:42.148Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Anuradha, End: Anuradha)."
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "zero_candidates"
+            ]
+          },
+          "diagnostics": null,
+          "ambiguity_type": "no_qualified_date",
+          "candidate_dates": [],
+          "raw_result_count": 2
+        }
+      ],
+      "stored_occurrences": [
+        {
+          "stored_row_selector_sha256": "cceb32e2d2711b5a8f16ba5512aa21449cd02bf072c439c564be9185b4c1bc32",
+          "stored_date": "2025-08-16",
+          "stored_publication_status": "published",
+          "stored_calculated_by": "manual_engine_run_v2",
+          "stored_variant_key": "legacy-default",
+          "stored_spiritual_tradition": null,
+          "stored_calendar_profile": "legacy-ujjain",
+          "matches_variant_count": 0,
+          "matched_traditions": [],
+          "classification": "matches_neither_variant"
+        }
+      ]
+    },
+    {
+      "year": 2028,
+      "computed_variants": [
+        {
+          "variant_id": "smarta",
+          "spiritual_tradition": "smarta",
+          "status": "resolved",
+          "computed_date": "2028-08-13",
+          "reasons": [
+            {
+              "code": "lunar_month_check",
+              "text": "Lunar month on 2028-08-13 at sunrise is Shravana (target: Shravana, system: amanta).",
+              "details": {
+                "actualMasa": "Shravana",
+                "targetMasa": "Shravana",
+                "system": "amanta"
+              }
+            },
+            {
+              "code": "paksha_check",
+              "text": "Paksha on 2028-08-13 at sunrise is krishna (tithi 23, target: krishna).",
+              "details": {
+                "actualPaksha": "krishna",
+                "targetPaksha": "krishna",
+                "tithiIndex": 23
+              }
+            },
+            {
+              "code": "tithi_presence_check",
+              "text": "Tithi Ashtami (8 krishna) presence mode 'touches' during 'nishita' [2028-08-14 00:09 to 2028-08-14 00:53]: MATCHED. (Start: Ashtami, End: Ashtami).",
+              "details": {
+                "targetTithi": 8,
+                "targetPaksha": "krishna",
+                "period": "nishita",
+                "mode": "touches",
+                "startTithi": 23,
+                "endTithi": 23,
+                "startUtc": "2028-08-13T18:39:38.283Z",
+                "endUtc": "2028-08-13T19:23:47.026Z",
+                "isExtendedMoonrise": false
+              }
+            }
+          ],
+          "diagnostics": [],
+          "raw_result_count": 2
+        },
+        {
+          "variant_id": "vaishnava",
+          "spiritual_tradition": "gaudiya_iskcon",
+          "status": "unresolved",
+          "computed_date": null,
+          "reasons": {
+            "ruleId": "vaishnava",
+            "festivalId": "krishna-janmashtami",
+            "windowSize": 15,
+            "allEvaluations": [
+              {
+                "date": "2028-07-29",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-07-29 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-07-29 at sunrise is shukla (tithi 8, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 8
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-07-29 05:56 to 2028-07-29 05:56]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2028-07-29T00:26:13.664Z",
+                      "endUtc": "2028-07-29T00:26:13.664Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Swati, End: Swati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-07-30",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-07-30 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-07-30 at sunrise is shukla (tithi 9, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 9
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-07-30 05:56 to 2028-07-30 05:56]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2028-07-30T00:26:39.564Z",
+                      "endUtc": "2028-07-30T00:26:39.564Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Vishakha, End: Vishakha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-07-31",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-07-31 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-07-31 at sunrise is shukla (tithi 10, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 10
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-07-31 05:57 to 2028-07-31 05:57]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 10,
+                      "endTithi": 10,
+                      "startUtc": "2028-07-31T00:27:05.349Z",
+                      "endUtc": "2028-07-31T00:27:05.349Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Anuradha, End: Anuradha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-01",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-01 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-01 at sunrise is shukla (tithi 11, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 11
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-01 05:57 to 2028-08-01 05:57]: DID NOT MATCH. (Start: Ekadashi, End: Ekadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 11,
+                      "endTithi": 11,
+                      "startUtc": "2028-08-01T00:27:31.005Z",
+                      "endUtc": "2028-08-01T00:27:31.005Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Jyeshtha, End: Jyeshtha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-02",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-02 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-02 at sunrise is shukla (tithi 12, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 12
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-02 05:57 to 2028-08-02 05:57]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 12,
+                      "endTithi": 12,
+                      "startUtc": "2028-08-02T00:27:56.521Z",
+                      "endUtc": "2028-08-02T00:27:56.521Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Mula, End: Mula)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-03",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-03 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-03 at sunrise is shukla (tithi 13, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 13
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-03 05:58 to 2028-08-03 05:58]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 13,
+                      "endTithi": 13,
+                      "startUtc": "2028-08-03T00:28:21.883Z",
+                      "endUtc": "2028-08-03T00:28:21.883Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Ashadha, End: Purva Ashadha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-04",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-04 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-04 at sunrise is shukla (tithi 14, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 14
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-04 05:58 to 2028-08-04 05:58]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 14,
+                      "endTithi": 14,
+                      "startUtc": "2028-08-04T00:28:47.081Z",
+                      "endUtc": "2028-08-04T00:28:47.081Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Ashadha, End: Uttara Ashadha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-05",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-05 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-05 at sunrise is shukla (tithi 15, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 15
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-05 05:59 to 2028-08-05 05:59]: DID NOT MATCH. (Start: Purnima, End: Purnima).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 15,
+                      "endTithi": 15,
+                      "startUtc": "2028-08-05T00:29:12.104Z",
+                      "endUtc": "2028-08-05T00:29:12.104Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Shravana, End: Shravana)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-06",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-06 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-06 at sunrise is krishna (tithi 16, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 16
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-06 05:59 to 2028-08-06 05:59]: DID NOT MATCH. (Start: Pratipada, End: Pratipada).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 16,
+                      "endTithi": 16,
+                      "startUtc": "2028-08-06T00:29:36.944Z",
+                      "endUtc": "2028-08-06T00:29:36.944Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Dhanishtha, End: Dhanishtha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-07",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-07 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-07 at sunrise is krishna (tithi 17, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 17
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-07 06:00 to 2028-08-07 06:00]: DID NOT MATCH. (Start: Dwitiya, End: Dwitiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 17,
+                      "endTithi": 17,
+                      "startUtc": "2028-08-07T00:30:01.593Z",
+                      "endUtc": "2028-08-07T00:30:01.593Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Shatabhisha, End: Shatabhisha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-08",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-08 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-08 at sunrise is krishna (tithi 18, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 18
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-08 06:00 to 2028-08-08 06:00]: DID NOT MATCH. (Start: Tritiya, End: Tritiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 18,
+                      "endTithi": 18,
+                      "startUtc": "2028-08-08T00:30:26.041Z",
+                      "endUtc": "2028-08-08T00:30:26.041Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Bhadrapada, End: Purva Bhadrapada)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-09",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-09 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-09 at sunrise is krishna (tithi 19, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 19
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-09 06:00 to 2028-08-09 06:00]: DID NOT MATCH. (Start: Chaturthi, End: Chaturthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 19,
+                      "endTithi": 19,
+                      "startUtc": "2028-08-09T00:30:50.284Z",
+                      "endUtc": "2028-08-09T00:30:50.284Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Purva Bhadrapada, End: Purva Bhadrapada)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-10",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-10 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-10 at sunrise is krishna (tithi 20, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 20
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-10 06:01 to 2028-08-10 06:01]: DID NOT MATCH. (Start: Panchami, End: Panchami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 20,
+                      "endTithi": 20,
+                      "startUtc": "2028-08-10T00:31:14.315Z",
+                      "endUtc": "2028-08-10T00:31:14.315Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Bhadrapada, End: Uttara Bhadrapada)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-11",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-11 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-11 at sunrise is krishna (tithi 21, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 21
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-11 06:01 to 2028-08-11 06:01]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 21,
+                      "endTithi": 21,
+                      "startUtc": "2028-08-11T00:31:38.129Z",
+                      "endUtc": "2028-08-11T00:31:38.129Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Revati, End: Revati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-12",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-12 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-12 at sunrise is krishna (tithi 22, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 22
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-12 06:02 to 2028-08-12 06:02]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 22,
+                      "endTithi": 22,
+                      "startUtc": "2028-08-12T00:32:01.722Z",
+                      "endUtc": "2028-08-12T00:32:01.722Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ashwini, End: Ashwini)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-13",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-13 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-13 at sunrise is krishna (tithi 23, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 23
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-13 06:02 to 2028-08-13 06:02]: MATCHED. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 23,
+                      "endTithi": 23,
+                      "startUtc": "2028-08-13T00:32:25.091Z",
+                      "endUtc": "2028-08-13T00:32:25.091Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Bharani, End: Bharani)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-14",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-14 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-14 at sunrise is krishna (tithi 24, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 24
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-14 06:02 to 2028-08-14 06:02]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 24,
+                      "endTithi": 24,
+                      "startUtc": "2028-08-14T00:32:48.232Z",
+                      "endUtc": "2028-08-14T00:32:48.232Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Krittika, End: Krittika)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-15",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-15 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-15 at sunrise is krishna (tithi 25, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 25
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-15 06:03 to 2028-08-15 06:03]: DID NOT MATCH. (Start: Dashami, End: Dashami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 25,
+                      "endTithi": 25,
+                      "startUtc": "2028-08-15T00:33:11.146Z",
+                      "endUtc": "2028-08-15T00:33:11.146Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': MATCHED (Start: Rohini, End: Rohini)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-16",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-16 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-16 at sunrise is krishna (tithi 26, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 26
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-16 06:03 to 2028-08-16 06:03]: DID NOT MATCH. (Start: Ekadashi, End: Ekadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 26,
+                      "endTithi": 26,
+                      "startUtc": "2028-08-16T00:33:33.829Z",
+                      "endUtc": "2028-08-16T00:33:33.829Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Mrigashira, End: Mrigashira)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-17",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-17 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-17 at sunrise is krishna (tithi 27, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 27
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-17 06:03 to 2028-08-17 06:03]: DID NOT MATCH. (Start: Dwadashi, End: Dwadashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 27,
+                      "endTithi": 27,
+                      "startUtc": "2028-08-17T00:33:56.283Z",
+                      "endUtc": "2028-08-17T00:33:56.283Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ardra, End: Ardra)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-18",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-18 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-18 at sunrise is krishna (tithi 28, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 28
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-18 06:04 to 2028-08-18 06:04]: DID NOT MATCH. (Start: Trayodashi, End: Trayodashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 28,
+                      "endTithi": 28,
+                      "startUtc": "2028-08-18T00:34:18.507Z",
+                      "endUtc": "2028-08-18T00:34:18.507Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Punarvasu, End: Punarvasu)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-19",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-19 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-19 at sunrise is krishna (tithi 29, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 29
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-19 06:04 to 2028-08-19 06:04]: DID NOT MATCH. (Start: Chaturdashi, End: Chaturdashi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 29,
+                      "endTithi": 29,
+                      "startUtc": "2028-08-19T00:34:40.503Z",
+                      "endUtc": "2028-08-19T00:34:40.503Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Pushya, End: Pushya)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-20",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-20 at sunrise is Shravana (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Shravana",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-20 at sunrise is krishna (tithi 30, target: krishna).",
+                    "details": {
+                      "actualPaksha": "krishna",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 30
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-20 06:05 to 2028-08-20 06:05]: DID NOT MATCH. (Start: Amavasya, End: Amavasya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 30,
+                      "endTithi": 30,
+                      "startUtc": "2028-08-20T00:35:02.273Z",
+                      "endUtc": "2028-08-20T00:35:02.273Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Ashlesha, End: Ashlesha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-21",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-21 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-21 at sunrise is shukla (tithi 1, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 1
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-21 06:05 to 2028-08-21 06:05]: DID NOT MATCH. (Start: Pratipada, End: Pratipada).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 1,
+                      "endTithi": 1,
+                      "startUtc": "2028-08-21T00:35:23.819Z",
+                      "endUtc": "2028-08-21T00:35:23.819Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Magha, End: Magha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-22",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-22 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-22 at sunrise is shukla (tithi 2, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 2
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-22 06:05 to 2028-08-22 06:05]: DID NOT MATCH. (Start: Dwitiya, End: Dwitiya).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 2,
+                      "endTithi": 2,
+                      "startUtc": "2028-08-22T00:35:45.145Z",
+                      "endUtc": "2028-08-22T00:35:45.145Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Uttara Phalguni, End: Uttara Phalguni)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-23",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-23 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-23 at sunrise is shukla (tithi 4, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 4
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-23 06:06 to 2028-08-23 06:06]: DID NOT MATCH. (Start: Chaturthi, End: Chaturthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 4,
+                      "endTithi": 4,
+                      "startUtc": "2028-08-23T00:36:06.254Z",
+                      "endUtc": "2028-08-23T00:36:06.254Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Hasta, End: Hasta)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-24",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-24 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-24 at sunrise is shukla (tithi 5, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 5
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-24 06:06 to 2028-08-24 06:06]: DID NOT MATCH. (Start: Panchami, End: Panchami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 5,
+                      "endTithi": 5,
+                      "startUtc": "2028-08-24T00:36:27.150Z",
+                      "endUtc": "2028-08-24T00:36:27.150Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Chitra, End: Chitra)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-25",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-25 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-25 at sunrise is shukla (tithi 6, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 6
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-25 06:06 to 2028-08-25 06:06]: DID NOT MATCH. (Start: Shashthi, End: Shashthi).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 6,
+                      "endTithi": 6,
+                      "startUtc": "2028-08-25T00:36:47.839Z",
+                      "endUtc": "2028-08-25T00:36:47.839Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Swati, End: Swati)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-26",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-26 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-26 at sunrise is shukla (tithi 7, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 7
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-26 06:07 to 2028-08-26 06:07]: DID NOT MATCH. (Start: Saptami, End: Saptami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 7,
+                      "endTithi": 7,
+                      "startUtc": "2028-08-26T00:37:08.327Z",
+                      "endUtc": "2028-08-26T00:37:08.327Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Vishakha, End: Vishakha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-27",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-27 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-27 at sunrise is shukla (tithi 8, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 8
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-27 06:07 to 2028-08-27 06:07]: DID NOT MATCH. (Start: Ashtami, End: Ashtami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 8,
+                      "endTithi": 8,
+                      "startUtc": "2028-08-27T00:37:28.619Z",
+                      "endUtc": "2028-08-27T00:37:28.619Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Anuradha, End: Anuradha)."
+                  }
+                ],
+                "diagnostics": []
+              },
+              {
+                "date": "2028-08-28",
+                "qualified": false,
+                "reasons": [
+                  {
+                    "code": "lunar_month_check",
+                    "text": "Lunar month on 2028-08-28 at sunrise is Bhadrapada (target: Shravana, system: amanta).",
+                    "details": {
+                      "actualMasa": "Bhadrapada",
+                      "targetMasa": "Shravana",
+                      "system": "amanta"
+                    }
+                  },
+                  {
+                    "code": "paksha_check",
+                    "text": "Paksha on 2028-08-28 at sunrise is shukla (tithi 9, target: krishna).",
+                    "details": {
+                      "actualPaksha": "shukla",
+                      "targetPaksha": "krishna",
+                      "tithiIndex": 9
+                    }
+                  },
+                  {
+                    "code": "tithi_presence_check",
+                    "text": "Tithi Ashtami (8 krishna) presence mode 'at' during 'sunrise' [2028-08-28 06:07 to 2028-08-28 06:07]: DID NOT MATCH. (Start: Navami, End: Navami).",
+                    "details": {
+                      "targetTithi": 8,
+                      "targetPaksha": "krishna",
+                      "period": "sunrise",
+                      "mode": "at",
+                      "startTithi": 9,
+                      "endTithi": 9,
+                      "startUtc": "2028-08-28T00:37:48.723Z",
+                      "endUtc": "2028-08-28T00:37:48.723Z",
+                      "isExtendedMoonrise": false
+                    }
+                  },
+                  {
+                    "code": "nakshatra_presence_check",
+                    "text": "Nakshatra 'rohini' presence mode 'touches' during 'sunrise': DID NOT MATCH (Start: Jyeshtha, End: Jyeshtha)."
+                  }
+                ],
+                "diagnostics": []
+              }
+            ],
+            "diagnostics": [
+              "zero_candidates"
+            ]
+          },
+          "diagnostics": null,
+          "ambiguity_type": "no_qualified_date",
+          "candidate_dates": [],
+          "raw_result_count": 2
+        }
+      ],
+      "stored_occurrences": [
+        {
+          "stored_row_selector_sha256": "a7e0969c5923acd42ab4d695548529e342228fb5b3fc2943bd8416d99f629049",
+          "stored_date": "2028-08-13",
+          "stored_publication_status": "withheld_disputed",
+          "stored_calculated_by": "cron_job",
+          "stored_variant_key": "legacy-default",
+          "stored_spiritual_tradition": null,
+          "stored_calendar_profile": "legacy-ujjain",
+          "matches_variant_count": 1,
+          "matched_traditions": [
+            "smarta"
+          ],
+          "classification": "matches_only_smarta"
+        }
+      ]
+    }
+  ]
+}

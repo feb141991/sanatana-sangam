@@ -1,0 +1,28 @@
+{
+  "_label": "POST-HOC CONTAINMENT VERIFICATION -- current-state facts only, not a transactional mutation receipt, not a historical comparison",
+  "_explanation": "Asserts three facts about CURRENT database state, each independently queried: (1) exactly one row exists for this slug/year; (2) that row's publication_status is withheld_disputed; (3) zero published rows exist for this slug/year. It does NOT compare against any historical/preflight snapshot -- an earlier version of this script did, using a selector later found not to be unique across this table's own rows for other years, which meant its multi-row comparison silently dropped information and could not have proven what it claimed. Removed rather than patched. See the file header for the full explanation. No raw database id appears anywhere in this file.",
+  "generated_at": "2026-09-05T14:09:04.085Z",
+  "generator": "scripts/krishna-janmashtami-2028-containment-write-receipt.ts",
+  "target": {
+    "slug": "krishna-janmashtami",
+    "year": 2028
+  },
+  "current_row": {
+    "date": "2028-08-13",
+    "variant_key": "legacy-default",
+    "spiritual_tradition": null,
+    "calendar_profile": "legacy-ujjain",
+    "calculated_by": "cron_job",
+    "publication_status": "withheld_disputed",
+    "computed_latitude": 23.1765,
+    "computed_longitude": 75.7885,
+    "computed_timezone": "Asia/Kolkata"
+  },
+  "assertions": {
+    "exactly_one_row_for_slug_and_year": true,
+    "row_count_for_slug_and_year": 1,
+    "current_publication_status_is_withheld_disputed": true,
+    "published_row_count_for_slug_and_year": 0,
+    "published_row_count_is_zero": true
+  }
+}
