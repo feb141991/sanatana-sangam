@@ -111,13 +111,17 @@ export function classifyOccurrence(occ: OccurrenceRow, ruleEntries: Rule[]): Buc
   }
 
   // 2+ variants for this slug: resolve THIS ROW to its specific variant via
-  // variant_key first, then spiritual_tradition, matching against each
-  // rule's own variant_key or sampradaya field. This is the fix for the
-  // slug-level-only classification an earlier version of this script used.
-  const rowKey = occ.variant_key || occ.spiritual_tradition;
-  const matched = rowKey
-    ? ruleEntries.find(r => (r.variant_key ?? r.sampradaya) === rowKey)
-    : undefined;
+  // variant_key first, then spiritual_tradition -- two SEPARATE lookup
+  // attempts, not one combined `||` value. `occ.variant_key || occ.
+  // spiritual_tradition` (an earlier version of this line) picks whichever
+  // is truthy and tries only that one: a row with a present-but-generic
+  // variant_key (e.g. 'legacy-default' on a legacy row that never recorded
+  // a real variant) would never fall through to spiritual_tradition, even
+  // when spiritual_tradition alone would have matched a real rule variant
+  // exactly. Caught on review before this was treated as final.
+  const matchField = (value: string | null | undefined) =>
+    value ? ruleEntries.find(r => (r.variant_key ?? r.sampradaya) === value) : undefined;
+  const matched = matchField(occ.variant_key) ?? matchField(occ.spiritual_tradition);
 
   if (matched) {
     return matched.launch_status === 'deferred' ? 'deferred_rule_backed_but_published' : 'rule_backed';

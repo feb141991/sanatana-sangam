@@ -94,17 +94,23 @@ expected, not a gap.
 
 ## 3. Published occurrences classified by provenance (798 total, sum-check PASS)
 
-**Corrected after review (2026-09-05)** — two real contract defects fixed
-in `scripts/audit-phase0-ground-truth.ts` before this was treated as a
-migration baseline. See the script's own header comment and
-`scripts/audit-phase0-ground-truth.test.ts` (7 tests) for the full
+**Corrected after two rounds of review (2026-09-05)** — three real contract
+defects fixed in `scripts/audit-phase0-ground-truth.ts` before this was
+treated as a migration baseline. See the script's own header comment and
+`scripts/audit-phase0-ground-truth.test.ts` (8 tests) for the full
 before/after. In short: the original pass classified deferred status at
 the SLUG level (a slug counted as deferred only if *every* rule variant for
 it was) and inferred "manual seed" purely from "no rule exists" without
-checking `calculated_by`. Both are fixed — `classifyOccurrence()` now
-resolves each row to its specific matching rule variant via
-`variant_key`/`spiritual_tradition` first, and the unruled bucket is split
-by whether `calculated_by === 'legacy_sync'` is actually verified.
+checking `calculated_by`. A first fix resolved each row to its specific
+rule variant via `occ.variant_key || occ.spiritual_tradition` — but that is
+ONE combined value, not two separate lookup attempts: a row with a
+present-but-generic `variant_key` (e.g. `'legacy-default'`) would never
+fall through to try `spiritual_tradition` even when that alone matched a
+real rule variant exactly. Second review caught this; fixed to try
+`variant_key` and `spiritual_tradition` as two genuinely separate lookups,
+`variant_key` first. The unruled bucket split by whether `calculated_by
+=== 'legacy_sync'` is actually verified was correct from the first fix and
+unchanged.
 
 | Bucket | Rows | Distinct slugs |
 |---|---|---|
@@ -116,18 +122,19 @@ by whether `calculated_by === 'legacy_sync'` is actually verified.
 | `unruled_published_other_provenance` (no rule anywhere, NOT verified as `legacy_sync`) | **0** | 0 |
 
 **The corrected classification does not change the headline story, but it
-was necessary rather than assumed**: `ambiguous_variant_deferred_risk` and
-`unruled_published_other_provenance` both come back at zero — meaning, for
-today's actual data, no row's deferred-publication status was being masked
-by the slug-level bug, and all 11 previously-bucketed "manual seed" rows
-are genuinely confirmed `legacy_sync`, not just assumed to be. That is a
-fact now established by the audit, not inferred from how the data looked.
-One real, previously-invisible edge case did surface:
-`krishna-janmashtami` has 2 published rows whose `variant_key`/
-`spiritual_tradition` don't match either of its rule variants' own
-`variant_key`/`sampradaya` field exactly (a data inconsistency from this
-slug's own materialization history, documented earlier this session) —
-correctly flagged as ambiguous rather than silently guessed either way.
+was necessary rather than assumed, and this was checked again after the
+second fix, not just re-asserted** — the numbers above are unchanged from
+before the variant/spiritual_tradition fallback fix, confirmed by
+regenerating the receipt a second time: `ambiguous_variant_deferred_risk`
+and `unruled_published_other_provenance` both come back at zero, and all 11
+previously-bucketed "manual seed" rows are genuinely confirmed
+`legacy_sync`. The remaining `krishna-janmashtami` ambiguous case (2 rows)
+is confirmed to be a genuine data inconsistency, not a lookup-order
+artifact — its `variant_key`/`spiritual_tradition` don't match either of
+its rule variants' own `variant_key`/`sampradaya` field via *either* lookup
+attempt (a data inconsistency from this slug's own materialization history,
+documented earlier this session) — correctly flagged as ambiguous rather
+than silently guessed either way.
 
 The `deferred_rule_backed_but_published` bucket is the same governance gap
 flagged earlier this session for `gudi-padwa`/`ugadi` specifically

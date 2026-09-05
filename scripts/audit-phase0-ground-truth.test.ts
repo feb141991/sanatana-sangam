@@ -44,6 +44,22 @@ test('resolves a row to its DEFERRED variant when a slug has both included and d
   assert.equal(classifyOccurrence(occ({ variant_key: 'regional' }), rules), 'deferred_rule_backed_but_published');
 });
 
+test('falls back to spiritual_tradition when variant_key is present but generic/non-matching -- not a combined || value', () => {
+  // The exact case an earlier version of this line missed:
+  // `occ.variant_key || occ.spiritual_tradition` picks variant_key here
+  // (it's truthy) and never tries spiritual_tradition at all, even though
+  // spiritual_tradition alone matches a real rule variant exactly.
+  const rules: Rule[] = [
+    { slug: 'x', launch_status: 'included', sampradaya: 'smarta_nishita' },
+    { slug: 'x', launch_status: 'deferred', sampradaya: 'gaudiya_iskcon' },
+  ];
+  const result = classifyOccurrence(
+    occ({ variant_key: 'legacy-default', spiritual_tradition: 'smarta_nishita' }),
+    rules,
+  );
+  assert.equal(result, 'rule_backed');
+});
+
 test('flags ambiguous-and-deferred-risk, never silently rule_backed, when the row cannot be matched to a specific variant and one variant is deferred', () => {
   const rules: Rule[] = [
     { slug: 'x', launch_status: 'included', variant_key: 'smarta' },
