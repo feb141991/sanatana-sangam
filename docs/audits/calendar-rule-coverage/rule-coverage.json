@@ -1,0 +1,3275 @@
+{
+  "generated_at": "2026-09-05T12:24:13.813Z",
+  "generator": "scripts/audit-calendar-rule-coverage.ts",
+  "based_on": "docs/audits/phase0-ground-truth/ground-truth.json (definitions, rules, fixtures) plus fresh queries for upcoming_occurrence_date and known_opted_in_user_exposure",
+  "definitions_total": 103,
+  "category_counts": {
+    "rule-backed and fixture-covered": 1,
+    "rule-backed but lacking adequate fixtures": 43,
+    "deferred because the rule convention is incomplete": 37,
+    "manual-seed-only or unruled": 0,
+    "possible duplicate, incorrect identity, or incorrect content model": 22
+  },
+  "manual_seed_unruled_finding": {
+    "description": "Rows with has_rule=false, reported separately because category-5 identity-flag precedence can make category 4 read as zero when it is not the same thing as \"no unruled rows exist\".",
+    "unruled_total": 7,
+    "unruled_absorbed_into_category_5": 7,
+    "unruled_absorbed_slugs": [
+      "das-lakshana-dharma",
+      "gudi-padwa-ugadi",
+      "paryushana-parva",
+      "pavarana",
+      "samvatsari",
+      "sangha-day",
+      "vassa-begins"
+    ],
+    "unruled_not_absorbed_slugs": []
+  },
+  "known_opted_in_users_by_tradition": {
+    "hindu": 4,
+    "jain": 1
+  },
+  "known_opted_in_users_total": 5,
+  "rows": [
+    {
+      "slug": "diwali",
+      "display_name": "Diwali",
+      "kind": "major",
+      "tradition": "all",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 5,
+      "upcoming_occurrence_date": "2026-11-08",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Jain Diwali (Nirvana Ladnun)\" contains \"Jain Diwali\", which overlaps another active definition's name: \"Diwali\"",
+          "with_slugs": [
+            "jain-diwali-nirvana-ladnun"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "guru-purnima",
+      "display_name": "Guru Purnima",
+      "kind": "major",
+      "tradition": "all",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 5,
+      "upcoming_occurrence_date": "2027-07-18",
+      "identity_flags": []
+    },
+    {
+      "slug": "aja-ekadashi",
+      "display_name": "Aja Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-07",
+      "identity_flags": []
+    },
+    {
+      "slug": "ekadashi",
+      "display_name": "Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-07",
+      "identity_flags": []
+    },
+    {
+      "slug": "pradosh-vrat",
+      "display_name": "Pradosh Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-08",
+      "identity_flags": []
+    },
+    {
+      "slug": "amavasya-vrat",
+      "display_name": "Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-11",
+      "identity_flags": []
+    },
+    {
+      "slug": "ganesh-chaturthi",
+      "display_name": "Ganesh Chaturthi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "parivartini-ekadashi",
+      "display_name": "Parivartini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-22",
+      "identity_flags": []
+    },
+    {
+      "slug": "purnima-vrat",
+      "display_name": "Purnima Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-26",
+      "identity_flags": []
+    },
+    {
+      "slug": "navratri-begins",
+      "display_name": "Navratri Begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-11",
+      "identity_flags": []
+    },
+    {
+      "slug": "karva-chauth",
+      "display_name": "Karva Chauth",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-15",
+      "identity_flags": []
+    },
+    {
+      "slug": "dussehra",
+      "display_name": "Dussehra",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-21",
+      "identity_flags": []
+    },
+    {
+      "slug": "rama-ekadashi",
+      "display_name": "Rama Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-04",
+      "identity_flags": []
+    },
+    {
+      "slug": "dhanteras",
+      "display_name": "Dhanteras",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-06",
+      "identity_flags": []
+    },
+    {
+      "slug": "govardhan-puja",
+      "display_name": "Govardhan Puja",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-09",
+      "identity_flags": []
+    },
+    {
+      "slug": "bhai-dooj",
+      "display_name": "Bhai Dooj",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-10",
+      "identity_flags": []
+    },
+    {
+      "slug": "devutthana-ekadashi",
+      "display_name": "Devutthana Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-20",
+      "identity_flags": []
+    },
+    {
+      "slug": "utpanna-ekadashi",
+      "display_name": "Utpanna Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-12-04",
+      "identity_flags": []
+    },
+    {
+      "slug": "makar-sankranti",
+      "display_name": "Makar Sankranti",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-01-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "vijaya-ekadashi",
+      "display_name": "Vijaya Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 1,
+      "fixture_real_citations": 1,
+      "fixture_years": [
+        2027
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-04",
+      "identity_flags": []
+    },
+    {
+      "slug": "maha-shivaratri",
+      "display_name": "Maha Shivaratri",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-06",
+      "identity_flags": []
+    },
+    {
+      "slug": "ram-navami",
+      "display_name": "Ram Navami",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 1,
+      "category_label": "rule-backed and fixture-covered",
+      "next_action": "no_action_required",
+      "underlying_category": 1,
+      "underlying_category_label": "rule-backed and fixture-covered",
+      "underlying_next_action": "no_action_required",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 8,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026,
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-17",
+      "identity_flags": []
+    },
+    {
+      "slug": "amalaki-ekadashi",
+      "display_name": "Amalaki Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-18",
+      "identity_flags": []
+    },
+    {
+      "slug": "holi",
+      "display_name": "Holi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-22",
+      "identity_flags": []
+    },
+    {
+      "slug": "kamada-ekadashi",
+      "display_name": "Kamada Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-17",
+      "identity_flags": []
+    },
+    {
+      "slug": "papmochani-ekadashi",
+      "display_name": "Papmochani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-05-02",
+      "identity_flags": []
+    },
+    {
+      "slug": "apara-ekadashi",
+      "display_name": "Apara Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-06-01",
+      "identity_flags": []
+    },
+    {
+      "slug": "devshayani-ekadashi",
+      "display_name": "Devshayani Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "raksha-bandhan",
+      "display_name": "Raksha Bandhan",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-18",
+      "identity_flags": []
+    },
+    {
+      "slug": "kamika-ekadashi",
+      "display_name": "Kamika Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-30",
+      "identity_flags": []
+    },
+    {
+      "slug": "shravana-putrada-ekadashi",
+      "display_name": "Putrada Ekadashi (Shravana)",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-08-12",
+      "identity_flags": []
+    },
+    {
+      "slug": "krishna-janmashtami",
+      "display_name": "Krishna Janmashtami",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2028-08-13",
+      "identity_flags": [
+        {
+          "reason": "confirmed_data_inconsistency_from_phase0_audit",
+          "detail": "Phase 0 audit (docs/audits/phase0-ground-truth/PHASE0_REPORT.md §3): 2 published occurrence rows for this slug match neither of its own rule variants (smarta_nishita / gaudiya_iskcon) via variant_key or spiritual_tradition -- a within-slug data inconsistency from its materialization history, not a cross-slug collision.",
+          "with_slugs": []
+        }
+      ]
+    },
+    {
+      "slug": "naraka-chaturdashi",
+      "display_name": "Naraka Chaturdashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 1,
+      "fixture_real_citations": 1,
+      "fixture_years": [
+        2026
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": null,
+      "identity_flags": []
+    },
+    {
+      "slug": "nirjala-ekadashi",
+      "display_name": "Nirjala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": null,
+      "identity_flags": []
+    },
+    {
+      "slug": "saphala-ekadashi",
+      "display_name": "Saphala Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": null,
+      "identity_flags": []
+    },
+    {
+      "slug": "paryushana-parva-begins",
+      "display_name": "Paryushana Parva begins",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2026-09-08",
+      "identity_flags": [
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"paryushana-parva\" is a prefix of \"paryushana-parva-begins\" (shared leading tokens: paryushana-parva)",
+          "with_slugs": [
+            "paryushana-parva"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "samvatsari-paryushana-ends",
+      "display_name": "Samvatsari (Paryushana ends)",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2026-09-15",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Samvatsari (Paryushana ends)\" contains \"Samvatsari\", which is exactly another active definition's name: \"Samvatsari\"",
+          "with_slugs": [
+            "samvatsari"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "mahavir-jayanti",
+      "display_name": "Mahavir Jayanti",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026,
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-03-20",
+      "identity_flags": []
+    },
+    {
+      "slug": "bandhi-chhor-divas",
+      "display_name": "Bandhi Chhor Divas",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2026-11-08",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-nanak-gurpurab",
+      "display_name": "Guru Nanak Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2026-11-24",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-tegh-bahadur-martyrdom",
+      "display_name": "Guru Tegh Bahadur Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2026-12-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "sahibzade-shaheedi-diwas",
+      "display_name": "Sahibzade Shaheedi Diwas",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2026-12-26",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-gobind-singh-gurpurab",
+      "display_name": "Guru Gobind Singh Gurpurab",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-01-05",
+      "identity_flags": []
+    },
+    {
+      "slug": "lohri",
+      "display_name": "Lohri",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 1,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-01-13",
+      "identity_flags": []
+    },
+    {
+      "slug": "holla-mohalla",
+      "display_name": "Holla Mohalla",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-02-21",
+      "identity_flags": []
+    },
+    {
+      "slug": "baisakhi",
+      "display_name": "Baisakhi",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-04-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-arjan-dev-martyrdom",
+      "display_name": "Guru Arjan Dev Martyrdom",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-06-16",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-ravidas-jayanti",
+      "display_name": "Guru Ravidas Jayanti",
+      "kind": "major",
+      "tradition": "sikh",
+      "category": 2,
+      "category_label": "rule-backed but lacking adequate fixtures",
+      "next_action": "add fixture",
+      "underlying_category": 2,
+      "underlying_category_label": "rule-backed but lacking adequate fixtures",
+      "underlying_next_action": "add fixture",
+      "has_rule": true,
+      "launch_statuses": [
+        "included"
+      ],
+      "fixture_total": 6,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [],
+      "notification_eligible": true,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2028-02-10",
+      "identity_flags": []
+    },
+    {
+      "slug": "sankashti-chaturthi",
+      "display_name": "Sankashti Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-09-30",
+      "identity_flags": []
+    },
+    {
+      "slug": "mahalaya-amavasya",
+      "display_name": "Mahalaya Amavasya",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-10",
+      "identity_flags": []
+    },
+    {
+      "slug": "chintpurni-mata-sharad-navratri",
+      "display_name": "Chintpurni Mata Sharad Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-11",
+      "identity_flags": []
+    },
+    {
+      "slug": "vinayaka-chaturthi",
+      "display_name": "Vinayaka Chaturthi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-10-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "chhath-puja",
+      "display_name": "Chhath Puja",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-11-15",
+      "identity_flags": []
+    },
+    {
+      "slug": "vivah-panchami",
+      "display_name": "Vivah Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2026-12-14",
+      "identity_flags": []
+    },
+    {
+      "slug": "gupt-navratri-magha-begins",
+      "display_name": "Magha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-02-07",
+      "identity_flags": []
+    },
+    {
+      "slug": "vasant-panchami",
+      "display_name": "Vasant Panchami",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-02-11",
+      "identity_flags": []
+    },
+    {
+      "slug": "hanuman-jayanti",
+      "display_name": "Hanuman Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-03-22",
+      "identity_flags": []
+    },
+    {
+      "slug": "chaitra-navratri-begins",
+      "display_name": "Chaitra Navratri begins",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-07",
+      "identity_flags": []
+    },
+    {
+      "slug": "chintpurni-mata-chaitra-navratri",
+      "display_name": "Chintpurni Mata Chaitra Navratri",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-07",
+      "identity_flags": []
+    },
+    {
+      "slug": "gudi-padwa",
+      "display_name": "Gudi Padwa",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2027
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-07",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Gudi Padwa / Ugadi\" contains \"Gudi Padwa\", which is exactly another active definition's name: \"Gudi Padwa\"",
+          "with_slugs": [
+            "gudi-padwa-ugadi"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"gudi-padwa\" is a prefix of \"gudi-padwa-ugadi\" (shared leading tokens: gudi-padwa)",
+          "with_slugs": [
+            "gudi-padwa-ugadi"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "gudi-padwa-ugadi",
+      "display_name": "Gudi Padwa / Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-07",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Gudi Padwa / Ugadi\" contains \"Gudi Padwa\", which is exactly another active definition's name: \"Gudi Padwa\"",
+          "with_slugs": [
+            "gudi-padwa"
+          ]
+        },
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Gudi Padwa / Ugadi\" contains \"Ugadi\", which is exactly another active definition's name: \"Ugadi\"",
+          "with_slugs": [
+            "ugadi"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"gudi-padwa\" is a prefix of \"gudi-padwa-ugadi\" (shared leading tokens: gudi-padwa)",
+          "with_slugs": [
+            "gudi-padwa"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "ugadi",
+      "display_name": "Ugadi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-07",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Gudi Padwa / Ugadi\" contains \"Ugadi\", which is exactly another active definition's name: \"Ugadi\"",
+          "with_slugs": [
+            "gudi-padwa-ugadi"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "narasimha-jayanti",
+      "display_name": "Narasimha Jayanti",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-04-19",
+      "identity_flags": []
+    },
+    {
+      "slug": "akshaya-tritiya",
+      "display_name": "Akshaya Tritiya",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-05-09",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Akshaya Tritiya (Jain)\" contains \"Akshaya Tritiya\", which is exactly another active definition's name: \"Akshaya Tritiya\"",
+          "with_slugs": [
+            "akshaya-tritiya-jain"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"akshaya-tritiya\" is a prefix of \"akshaya-tritiya-jain\" (shared leading tokens: akshaya-tritiya)",
+          "with_slugs": [
+            "akshaya-tritiya-jain"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "vat-savitri-purnima",
+      "display_name": "Vat Savitri Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-05-20",
+      "identity_flags": []
+    },
+    {
+      "slug": "shani-jayanti",
+      "display_name": "Shani Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-06-04",
+      "identity_flags": []
+    },
+    {
+      "slug": "vat-savitri-amavasya",
+      "display_name": "Vat Savitri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-06-04",
+      "identity_flags": []
+    },
+    {
+      "slug": "gupt-navratri-ashadha-begins",
+      "display_name": "Ashadha Gupt Navratri begins",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-05",
+      "identity_flags": []
+    },
+    {
+      "slug": "jagannath-rath-yatra",
+      "display_name": "Jagannath Rath Yatra",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-05",
+      "identity_flags": []
+    },
+    {
+      "slug": "mangala-gauri-vrat",
+      "display_name": "Mangala Gauri Vrat",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-20",
+      "identity_flags": []
+    },
+    {
+      "slug": "shravan-somvar",
+      "display_name": "Shravan Somvar",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-07-26",
+      "identity_flags": []
+    },
+    {
+      "slug": "nag-panchami",
+      "display_name": "Nag Panchami",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-08-06",
+      "identity_flags": []
+    },
+    {
+      "slug": "hartalika-teej",
+      "display_name": "Hartalika Teej",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 0,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-09-03",
+      "identity_flags": []
+    },
+    {
+      "slug": "onam",
+      "display_name": "Onam",
+      "kind": "regional",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 12,
+      "fixture_real_citations": 4,
+      "fixture_years": [
+        2026,
+        2027,
+        2028
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Bedford, UK",
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "gujarati_amanta",
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-09-12",
+      "identity_flags": []
+    },
+    {
+      "slug": "kartik-purnima",
+      "display_name": "Kartik Purnima",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-11-13",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Kartik Purnima (Jain)\" contains \"Kartik Purnima\", which is exactly another active definition's name: \"Kartik Purnima\"",
+          "with_slugs": [
+            "kartik-purnima-jain"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"kartik-purnima\" is a prefix of \"kartik-purnima-jain\" (shared leading tokens: kartik-purnima)",
+          "with_slugs": [
+            "kartik-purnima-jain"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "gita-jayanti",
+      "display_name": "Gita Jayanti",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-12-09",
+      "identity_flags": []
+    },
+    {
+      "slug": "vaikunta-ekadashi",
+      "display_name": "Vaikunta Ekadashi",
+      "kind": "major",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": "2027-12-09",
+      "identity_flags": []
+    },
+    {
+      "slug": "yogini-ekadashi",
+      "display_name": "Yogini Ekadashi",
+      "kind": "vrat",
+      "tradition": "hindu",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 2,
+      "fixture_real_citations": 2,
+      "fixture_years": [
+        2026
+      ],
+      "fixture_real_years": [
+        2026
+      ],
+      "fixture_real_locations": [
+        "Ujjain, India"
+      ],
+      "fixture_real_profiles": [
+        "north_indian_purnimanta"
+      ],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 4,
+      "upcoming_occurrence_date": null,
+      "identity_flags": []
+    },
+    {
+      "slug": "das-lakshana-dharma",
+      "display_name": "Das Lakshana Dharma",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2026-09-06",
+      "identity_flags": [
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"das-lakshana-dharma\" is a prefix of \"das-lakshana-dharma-begins\" (shared leading tokens: das-lakshana-dharma)",
+          "with_slugs": [
+            "das-lakshana-dharma-begins"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "samvatsari",
+      "display_name": "Samvatsari",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2026-09-06",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Samvatsari (Paryushana ends)\" contains \"Samvatsari\", which is exactly another active definition's name: \"Samvatsari\"",
+          "with_slugs": [
+            "samvatsari-paryushana-ends"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "akshaya-tritiya-jain",
+      "display_name": "Akshaya Tritiya (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-05-09",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Akshaya Tritiya (Jain)\" contains \"Akshaya Tritiya\", which is exactly another active definition's name: \"Akshaya Tritiya\"",
+          "with_slugs": [
+            "akshaya-tritiya"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"akshaya-tritiya\" is a prefix of \"akshaya-tritiya-jain\" (shared leading tokens: akshaya-tritiya)",
+          "with_slugs": [
+            "akshaya-tritiya"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "paryushana-parva",
+      "display_name": "Paryushana Parva",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-08-26",
+      "identity_flags": [
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"paryushana-parva\" is a prefix of \"paryushana-parva-begins\" (shared leading tokens: paryushana-parva)",
+          "with_slugs": [
+            "paryushana-parva-begins"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "das-lakshana-dharma-begins",
+      "display_name": "Das Lakshana Dharma begins",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-09-05",
+      "identity_flags": [
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"das-lakshana-dharma\" is a prefix of \"das-lakshana-dharma-begins\" (shared leading tokens: das-lakshana-dharma)",
+          "with_slugs": [
+            "das-lakshana-dharma"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "jain-diwali-nirvana-ladnun",
+      "display_name": "Jain Diwali (Nirvana Ladnun)",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-10-28",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Jain Diwali (Nirvana Ladnun)\" contains \"Jain Diwali\", which overlaps another active definition's name: \"Diwali\"",
+          "with_slugs": [
+            "diwali"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "jain-new-year-pratipada",
+      "display_name": "Jain New Year (Pratipada)",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-10-29",
+      "identity_flags": []
+    },
+    {
+      "slug": "kartik-purnima-jain",
+      "display_name": "Kartik Purnima (Jain)",
+      "kind": "major",
+      "tradition": "jain",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "add an explicit profile/region variant",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 1,
+      "upcoming_occurrence_date": "2027-11-13",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Kartik Purnima (Jain)\" contains \"Kartik Purnima\", which is exactly another active definition's name: \"Kartik Purnima\"",
+          "with_slugs": [
+            "kartik-purnima"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"kartik-purnima\" is a prefix of \"kartik-purnima-jain\" (shared leading tokens: kartik-purnima)",
+          "with_slugs": [
+            "kartik-purnima"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pavarana",
+      "display_name": "Pavarana",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2026-10-09",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Pavarana (End of Vassa)\" contains \"Pavarana\", which is exactly another active definition's name: \"Pavarana\"",
+          "with_slugs": [
+            "pavarana-end-of-vassa"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "magha-puja",
+      "display_name": "Magha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-01-22",
+      "identity_flags": []
+    },
+    {
+      "slug": "parinirvana-day",
+      "display_name": "Parinirvana Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-02-15",
+      "identity_flags": []
+    },
+    {
+      "slug": "losar-tibetan-new-year",
+      "display_name": "Losar (Tibetan New Year)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-03-09",
+      "identity_flags": []
+    },
+    {
+      "slug": "vesak-buddha-purnima",
+      "display_name": "Vesak / Buddha Purnima",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-04-20",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-amar-das-gurpurab",
+      "display_name": "Guru Amar Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-05-23",
+      "identity_flags": []
+    },
+    {
+      "slug": "asalha-puja",
+      "display_name": "Asalha Puja",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-07-18",
+      "identity_flags": []
+    },
+    {
+      "slug": "ullambana-ancestor-day",
+      "display_name": "Ullambana / Ancestor Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-07-18",
+      "identity_flags": []
+    },
+    {
+      "slug": "vassa-begins",
+      "display_name": "Vassa Begins",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-07-19",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Vassa begins (Rains Retreat)\" contains \"Vassa begins\", which is exactly another active definition's name: \"Vassa Begins\"",
+          "with_slugs": [
+            "vassa-begins-rains-retreat"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"vassa-begins\" is a prefix of \"vassa-begins-rains-retreat\" (shared leading tokens: vassa-begins)",
+          "with_slugs": [
+            "vassa-begins-rains-retreat"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "vassa-begins-rains-retreat",
+      "display_name": "Vassa begins (Rains Retreat)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-07-19",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Vassa begins (Rains Retreat)\" contains \"Vassa begins\", which is exactly another active definition's name: \"Vassa Begins\"",
+          "with_slugs": [
+            "vassa-begins"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"vassa-begins\" is a prefix of \"vassa-begins-rains-retreat\" (shared leading tokens: vassa-begins)",
+          "with_slugs": [
+            "vassa-begins"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "guru-har-krishan-gurpurab",
+      "display_name": "Guru Har Krishan Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-07-23",
+      "identity_flags": []
+    },
+    {
+      "slug": "guru-ram-das-gurpurab",
+      "display_name": "Guru Ram Das Gurpurab",
+      "kind": "regional",
+      "tradition": "sikh",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-10-09",
+      "identity_flags": []
+    },
+    {
+      "slug": "pavarana-end-of-vassa",
+      "display_name": "Pavarana (End of Vassa)",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-10-15",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Pavarana (End of Vassa)\" contains \"Pavarana\", which is exactly another active definition's name: \"Pavarana\"",
+          "with_slugs": [
+            "pavarana"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "kathina",
+      "display_name": "Kathina",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-10-16",
+      "identity_flags": []
+    },
+    {
+      "slug": "sangha-day",
+      "display_name": "Sangha Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 4,
+      "underlying_category_label": "manual-seed-only or unruled",
+      "underlying_next_action": "clarify convention",
+      "has_rule": false,
+      "launch_statuses": [],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-11-11",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Sangha Day / Loy Krathong\" contains \"Sangha Day\", which is exactly another active definition's name: \"Sangha Day\"",
+          "with_slugs": [
+            "sangha-day-loy-krathong"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"sangha-day\" is a prefix of \"sangha-day-loy-krathong\" (shared leading tokens: sangha-day)",
+          "with_slugs": [
+            "sangha-day-loy-krathong"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sangha-day-loy-krathong",
+      "display_name": "Sangha Day / Loy Krathong",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 5,
+      "category_label": "possible duplicate, incorrect identity, or incorrect content model",
+      "next_action": "submit a merge/retirement decision for human approval",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-11-13",
+      "identity_flags": [
+        {
+          "reason": "compound_name_matches_standalone_definition",
+          "detail": "\"Sangha Day / Loy Krathong\" contains \"Sangha Day\", which is exactly another active definition's name: \"Sangha Day\"",
+          "with_slugs": [
+            "sangha-day"
+          ]
+        },
+        {
+          "reason": "slug_is_prefix_of_another_definition",
+          "detail": "\"sangha-day\" is a prefix of \"sangha-day-loy-krathong\" (shared leading tokens: sangha-day)",
+          "with_slugs": [
+            "sangha-day"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "bodhi-day",
+      "display_name": "Bodhi Day",
+      "kind": "major",
+      "tradition": "buddhist",
+      "category": 3,
+      "category_label": "deferred because the rule convention is incomplete",
+      "next_action": "leave deferred",
+      "underlying_category": 3,
+      "underlying_category_label": "deferred because the rule convention is incomplete",
+      "underlying_next_action": "leave deferred",
+      "has_rule": true,
+      "launch_statuses": [
+        "deferred"
+      ],
+      "fixture_total": 0,
+      "fixture_real_citations": 0,
+      "fixture_years": [],
+      "fixture_real_years": [],
+      "fixture_real_locations": [],
+      "fixture_real_profiles": [],
+      "notification_eligible": false,
+      "known_opted_in_user_exposure": 0,
+      "upcoming_occurrence_date": "2027-12-08",
+      "identity_flags": []
+    }
+  ]
+}
