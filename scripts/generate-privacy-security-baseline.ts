@@ -606,10 +606,17 @@ export function buildCategories(files: SourceFile[]): CategoryAudit[] {
 
 function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbeState; discoveries: BaselineReport["discoveries"] }): InventoryItem[] {
   const webTrackerEvidence = evidenceFor(input.files, [/googletagmanager\.com\/gtag/, /pagead2\.googlesyndication\.com/, /OneSignalSDK/]);
+  // Only 2 gates as of WEB_CONSENT_VERSION 2026-08-28.v2 (web-consent.ts) --
+  // the `push` category (OneSignal PWA web push) was deliberately removed
+  // there, with the version bump documented in that file's own header
+  // comment. This checker still expected 3 and had been reporting a false
+  // DRIFT ever since; keep this count in sync with WebConsentPreferences'
+  // actual fields, not the other way around.
   const webConsentGateEvidence = evidenceFor(
     input.files.filter((file) => file.relativePath === "src/components/privacy/WebConsentManager.tsx"),
-    [/preferences\.analytics/, /preferences\.advertising/, /preferences\.push/],
+    [/preferences\.analytics/, /preferences\.advertising/],
   );
+  const WEB_CONSENT_GATE_COUNT = 2;
   const analyticsConsentEvidence = evidenceFor(input.files, [/setAnalyticsCollectionEnabled/, /analytics.*consent|consent.*analytics/i]);
   const nativeAnalyticsSdkEvidence = evidenceFor(
     input.files.filter((file) => file.repository === "native"),
@@ -634,8 +641,8 @@ function buildInventory(input: { files: SourceFile[]; profilesState: AccessProbe
     },
     {
       id: "INV-SDK-01", category: "Third-party SDKs and trackers", name: "Web tracker initialization",
-      status: webTrackerEvidence.length === 0 || webConsentGateEvidence.length === 3 ? "VERIFIED" : "DRIFT", canonicalOwnership: "backend",
-      description: `${webTrackerEvidence.length} shipped-source tracker references were found; ${webConsentGateEvidence.length} of 3 optional consent gates were verified.`,
+      status: webTrackerEvidence.length === 0 || webConsentGateEvidence.length === WEB_CONSENT_GATE_COUNT ? "VERIFIED" : "DRIFT", canonicalOwnership: "backend",
+      description: `${webTrackerEvidence.length} shipped-source tracker references were found; ${webConsentGateEvidence.length} of ${WEB_CONSENT_GATE_COUNT} optional consent gates were verified.`,
       evidence: [...webTrackerEvidence, ...webConsentGateEvidence].slice(0, 30),
     },
     {

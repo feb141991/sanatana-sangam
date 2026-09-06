@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
-  "sourceFingerprint": "b49314e0d7a944b6d17bf8cf2205830a2988859aa2cc40a94240722677d75924",
+  "sourceFingerprint": "45e04fbf512d99dc08e432dc1f90489926393c33dd9986f3cd6b37619c414afe",
   "repositories": {
     "backend": {
-      "headCommit": "c987493e81918bcebae6237330a087f5f9973f61",
+      "headCommit": "d8d039e18f4a0041207f5c350e7c2d3e57358ec5",
       "isClean": false
     },
     "native": {
-      "headCommit": "e5d79e47fddb20b849661a1b472ea6e0c93ce133",
-      "isClean": true
+      "headCommit": "a543765ccf416aef2ec644bae7ea27a6d1f14b88",
+      "isClean": false
     }
   },
   "environment": {
@@ -34,42 +34,42 @@
       "DECISION_REQUIRED": 3
     },
     "scannedFiles": {
-      "backend": 2432,
-      "native": 937
+      "backend": 2580,
+      "native": 462
     },
     "discoveredStorageKeys": {
       "backend": 44,
-      "native": 22
+      "native": 39
     },
-    "discoveredProviders": 11
+    "discoveredProviders": 10
   },
   "databaseAccessProbe": {
     "profiles": {
       "state": "SECURED",
       "anonymousCount": null,
-      "administrativeCount": 16,
+      "administrativeCount": 7,
       "errorCode": "42501",
       "explanation": "The anonymous role was explicitly denied access."
     },
     "tableCounts": {
       "profiles": {
         "state": "OK",
-        "count": 16,
+        "count": 7,
         "code": null
       },
       "birth_profiles": {
         "state": "OK",
-        "count": 15,
+        "count": 0,
         "code": null
       },
       "posts": {
         "state": "OK",
-        "count": 4,
+        "count": 0,
         "code": null
       },
       "post_comments": {
         "state": "OK",
-        "count": 3,
+        "count": 0,
         "code": null
       },
       "content_reports": {
@@ -89,7 +89,7 @@
       },
       "user_hidden_content": {
         "state": "OK",
-        "count": 1,
+        "count": 0,
         "code": null
       },
       "deleted_accounts": {
@@ -104,7 +104,7 @@
       },
       "calendar_governance_diagnostics_cache": {
         "state": "OK",
-        "count": 7,
+        "count": 12,
         "code": null
       },
       "user_settings": {
@@ -157,13 +157,13 @@
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 90,
+          "line": 95,
           "marker": "google-auth-library"
         },
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 101,
+          "line": 106,
           "marker": "twilio"
         },
         {
@@ -659,7 +659,7 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 184,
+          "line": 181,
           "marker": "date_of_birth"
         }
       ]
@@ -693,19 +693,19 @@
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 70,
+          "line": 382,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 93,
+          "line": 404,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 94,
+          "line": 405,
           "marker": "home_longitude"
         },
         {
@@ -734,14 +734,50 @@
         },
         {
           "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4684,
+          "marker": "home_latitude"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4685,
+          "marker": "home_longitude"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4793,
+          "marker": "home_latitude"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4794,
+          "marker": "home_longitude"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4902,
+          "marker": "home_latitude"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4903,
+          "marker": "home_longitude"
+        },
+        {
+          "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 180,
+          "line": 238,
           "marker": "home_latitude"
         },
         {
           "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 181,
+          "line": 239,
           "marker": "home_longitude"
         },
         {
@@ -769,46 +805,40 @@
           "marker": "home_longitude"
         },
         {
-          "repository": "native",
-          "file": "app/(tabs)/tirtha.tsx",
-          "line": 342,
-          "marker": "getCurrentPositionAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+          "line": 89,
+          "marker": "home_latitude"
         },
         {
-          "repository": "native",
-          "file": "app/(tabs)/tirtha.tsx",
-          "line": 386,
-          "marker": "requestForegroundPermissionsAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+          "line": 90,
+          "marker": "home_longitude"
         },
         {
-          "repository": "native",
-          "file": "app/(tabs)/tirtha.tsx",
-          "line": 390,
-          "marker": "getCurrentPositionAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+          "line": 110,
+          "marker": "home_latitude"
         },
         {
-          "repository": "native",
-          "file": "components/mandali/JoinMandaliPrompt.tsx",
-          "line": 29,
-          "marker": "getCurrentPositionAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+          "line": 111,
+          "marker": "home_longitude"
         },
         {
-          "repository": "native",
-          "file": "components/mandali/JoinMandaliPrompt.tsx",
-          "line": 138,
-          "marker": "requestForegroundPermissionsAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql",
+          "line": 126,
+          "marker": "home_latitude"
         },
         {
-          "repository": "native",
-          "file": "lib/locationSync.ts",
-          "line": 33,
-          "marker": "getCurrentPositionAsync"
-        },
-        {
-          "repository": "native",
-          "file": "lib/locationSync.ts",
-          "line": 98,
-          "marker": "requestForegroundPermissionsAsync"
+          "repository": "backend",
+          "file": "supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql",
+          "line": 142,
+          "marker": "home_latitude"
         }
       ]
     },
@@ -916,31 +946,31 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 457,
+          "line": 458,
           "marker": "sankalpas|sankalpa_text|\\/api\\/sankalpa"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 522,
+          "line": 523,
           "marker": "sankalpas|sankalpa_text|\\/api\\/sankalpa"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 702,
+          "line": 703,
           "marker": "mood_score|mood_logs|\\/api\\/mood"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 848,
+          "line": 850,
           "marker": "mood_score|mood_logs|\\/api\\/mood"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 1166,
+          "line": 1162,
           "marker": "sankalpas|sankalpa_text|\\/api\\/sankalpa"
         },
         {
@@ -1116,13 +1146,13 @@
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 321,
+          "line": 320,
           "marker": "japa_sessions|bead_count|\\/api\\/japa"
         },
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 331,
+          "line": 330,
           "marker": "japa_sessions|bead_count|\\/api\\/japa"
         },
         {
@@ -1293,19 +1323,19 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 855,
+          "line": 789,
           "marker": "user_blocked_profiles"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 874,
+          "line": 808,
           "marker": "user_muted_profiles"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 893,
+          "line": 827,
           "marker": "user_hidden_content"
         },
         {
@@ -1317,25 +1347,25 @@
         {
           "repository": "backend",
           "file": "src/app/admin/monitoring/actions.ts",
-          "line": 12,
+          "line": 34,
           "marker": "content_reports"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/monitoring/actions.ts",
-          "line": 25,
-          "marker": "content_reports"
+          "file": "src/app/admin/monitoring/ApiMonitoringSection.tsx",
+          "line": 181,
+          "marker": "\\/api\\/mandali\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/monitoring/page.tsx",
-          "line": 44,
-          "marker": "content_reports"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/monitoring/page.tsx",
+          "file": "src/app/admin/monitoring/ApiMonitoringSection.tsx",
           "line": 193,
+          "marker": "\\/api\\/mandali\\/"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/monitoring/MonitoringClient.tsx",
+          "line": 109,
           "marker": "content_reports"
         }
       ]
@@ -1384,20 +1414,8 @@
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 64,
+          "line": 71,
           "marker": "sarvam"
-        },
-        {
-          "repository": "backend",
-          "file": "package.json",
-          "line": 21,
-          "marker": "ai_pipeline"
-        },
-        {
-          "repository": "backend",
-          "file": "package.json",
-          "line": 22,
-          "marker": "ai_pipeline"
         },
         {
           "repository": "backend",
@@ -1439,6 +1457,18 @@
           "repository": "backend",
           "file": "package.json",
           "line": 29,
+          "marker": "ai_pipeline"
+        },
+        {
+          "repository": "backend",
+          "file": "package.json",
+          "line": 30,
+          "marker": "ai_pipeline"
+        },
+        {
+          "repository": "backend",
+          "file": "package.json",
+          "line": 31,
           "marker": "ai_pipeline"
         },
         {
@@ -1544,51 +1574,57 @@
       "evidence": [
         {
           "repository": "backend",
-          "file": "next.config.js",
-          "line": 48,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/OneSignalSDKUpdaterWorker.js",
-          "line": 1,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/OneSignalSDKWorker.js",
-          "line": 2,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
           "file": "public/sw.js",
-          "line": 5,
+          "line": 6,
           "marker": "OneSignalSDK"
         },
         {
           "repository": "backend",
-          "file": "public/sw.js",
-          "line": 12,
-          "marker": "OneSignalSDK"
+          "file": "src/app/admin/monitoring/MonitoringClient.tsx",
+          "line": 95,
+          "marker": "push_tokens"
         },
         {
           "repository": "backend",
-          "file": "public/sw.js",
-          "line": 13,
-          "marker": "OneSignalSDK"
+          "file": "src/app/api/admin/push-monitoring/route.ts",
+          "line": 20,
+          "marker": "push_tokens"
         },
         {
           "repository": "backend",
-          "file": "public/sw.js",
-          "line": 15,
-          "marker": "OneSignalSDK"
+          "file": "src/app/api/admin/push-monitoring/route.ts",
+          "line": 22,
+          "marker": "notification_deliveries"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/push-monitoring/route.ts",
+          "line": 27,
+          "marker": "notification_deliveries"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/push-monitoring/route.ts",
+          "line": 34,
+          "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 147,
+          "line": 68,
           "marker": "push_tokens"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 469,
+          "marker": "push_tokens"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 472,
+          "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
@@ -1599,74 +1635,68 @@
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 64,
+          "line": 44,
           "marker": "push_tokens"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 69,
+          "line": 49,
           "marker": "push_tokens"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 72,
+          "line": 52,
           "marker": "push_tokens"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 78,
+          "line": 58,
           "marker": "push_tokens"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 80,
+          "line": 60,
           "marker": "push_tokens"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 149,
+          "line": 127,
           "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 153,
+          "line": 131,
           "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 156,
+          "line": 134,
           "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 157,
+          "line": 135,
           "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 160,
+          "line": 138,
           "marker": "notification_deliveries"
         },
         {
           "repository": "backend",
           "file": "src/app/api/notifications/diagnostics/route.ts",
-          "line": 162,
+          "line": 140,
           "marker": "notification_deliveries"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/api/notifications/register-token/route.ts",
-          "line": 9,
-          "marker": "push_tokens"
         },
         {
           "repository": "backend",
@@ -1676,20 +1706,20 @@
         },
         {
           "repository": "backend",
-          "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 60,
+          "file": "src/app/api/notifications/register-token/route.ts",
+          "line": 11,
+          "marker": "push_tokens"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/client-error-contract.test.ts",
+          "line": 16,
           "marker": "OneSignalSDK"
         },
         {
           "repository": "backend",
-          "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 62,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/config.ts",
-          "line": 59,
+          "file": "src/lib/client-error-contract.test.ts",
+          "line": 25,
           "marker": "OneSignalSDK"
         }
       ]
@@ -1723,25 +1753,25 @@
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 63,
+          "line": 70,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 64,
+          "line": 71,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 67,
+          "line": 74,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 82,
+          "line": 87,
           "marker": "@vercel\\/analytics"
         },
         {
@@ -1753,7 +1783,7 @@
         {
           "repository": "backend",
           "file": "src/app/layout.tsx",
-          "line": 188,
+          "line": 189,
           "marker": "WebConsentManager"
         },
         {
@@ -1783,7 +1813,7 @@
         {
           "repository": "backend",
           "file": "src/lib/web-consent.test.ts",
-          "line": 33,
+          "line": 32,
           "marker": "WebConsentManager"
         }
       ]
@@ -1838,19 +1868,19 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 417,
+          "line": 419,
           "marker": "supabase\\.storage"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 418,
+          "line": 420,
           "marker": "avatars"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 423,
+          "line": 425,
           "marker": "supabase\\.storage"
         },
         {
@@ -1874,25 +1904,25 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 594,
+          "line": 567,
           "marker": "avatars"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 595,
+          "line": 568,
           "marker": "supabase\\.storage"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 596,
+          "line": 569,
           "marker": "avatars"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 600,
+          "line": 573,
           "marker": "supabase\\.storage"
         },
         {
@@ -1915,6 +1945,24 @@
         },
         {
           "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 452,
+          "marker": "avatars"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 456,
+          "marker": "supabase\\.storage"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 459,
+          "marker": "supabase\\.storage"
+        },
+        {
+          "repository": "backend",
           "file": "src/app/api/native/profile/route.ts",
           "line": 84,
           "marker": "avatars"
@@ -1933,33 +1981,15 @@
         },
         {
           "repository": "backend",
-          "file": "src/lib/ai/reasoning-cache.ts",
-          "line": 96,
-          "marker": "supabase\\.storage"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/ai/reasoning-cache.ts",
-          "line": 154,
-          "marker": "supabase\\.storage"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/data/bhagavatam-canto-1-ch-3.ts",
-          "line": 7,
+          "file": "src/lib/account-deletion.ts",
+          "line": 81,
           "marker": "avatars"
         },
         {
           "repository": "backend",
-          "file": "src/lib/epics-registry.ts",
-          "line": 88,
+          "file": "src/lib/account-deletion.ts",
+          "line": 95,
           "marker": "avatars"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/tts/cache.ts",
-          "line": 78,
-          "marker": "supabase\\.storage"
         }
       ]
     },
@@ -1993,7 +2023,7 @@
         {
           "repository": "backend",
           "file": "package.json",
-          "line": 94,
+          "line": 99,
           "marker": "razorpay"
         },
         {
@@ -2005,31 +2035,31 @@
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 151,
+          "line": 150,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 171,
+          "line": 170,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 273,
+          "line": 272,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 293,
+          "line": 292,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "packages/sangam_pro_and_notifications.md",
-          "line": 312,
+          "line": 311,
           "marker": "razorpay"
         },
         {
@@ -2043,6 +2073,24 @@
           "file": "src/app/(main)/settings/subscription/SubscriptionClient.tsx",
           "line": 103,
           "marker": "\\/api\\/payment"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/reports/page.tsx",
+          "line": 303,
+          "marker": "subscriptions"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/reports/page.tsx",
+          "line": 413,
+          "marker": "subscriptions"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/reports/export/route.ts",
+          "line": 50,
+          "marker": "subscriptions"
         },
         {
           "repository": "backend",
@@ -2065,25 +2113,31 @@
         {
           "repository": "backend",
           "file": "src/app/api/payment/checkout/route.ts",
-          "line": 29,
+          "line": 17,
+          "marker": "\\/api\\/payment"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/payment/checkout/route.ts",
+          "line": 41,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "src/app/api/payment/checkout/route.ts",
-          "line": 37,
+          "line": 49,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "src/app/api/payment/checkout/route.ts",
-          "line": 47,
+          "line": 59,
           "marker": "razorpay"
         },
         {
           "repository": "backend",
           "file": "src/app/api/payment/checkout/route.ts",
-          "line": 50,
+          "line": 62,
           "marker": "razorpay"
         },
         {
@@ -2115,30 +2169,6 @@
           "file": "src/app/api/payment/lifetime/activate/route.ts",
           "line": 22,
           "marker": "razorpay"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/api/payment/lifetime/activate/route.ts",
-          "line": 32,
-          "marker": "razorpay"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/api/payment/lifetime/activate/route.ts",
-          "line": 34,
-          "marker": "razorpay"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/api/payment/lifetime/activate/route.ts",
-          "line": 38,
-          "marker": "razorpay"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/api/payment/lifetime/activate/route.ts",
-          "line": 39,
-          "marker": "razorpay"
         }
       ]
     },
@@ -2168,7 +2198,7 @@
         {
           "repository": "backend",
           "file": "src/app/(auth)/signup/page.tsx",
-          "line": 203,
+          "line": 204,
           "marker": "session_token"
         },
         {
@@ -2288,31 +2318,31 @@
         {
           "repository": "backend",
           "file": "src/app/api/jyotish/chart/route.ts",
-          "line": 130,
+          "line": 125,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 137,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 168,
+          "marker": "session_token"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 199,
           "marker": "session_token"
         },
         {
           "repository": "backend",
           "file": "supabase/migrations/016_birth_profiles.sql",
           "line": 3,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/016_birth_profiles.sql",
-          "line": 49,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/016_birth_profiles.sql",
-          "line": 63,
-          "marker": "session_token"
-        },
-        {
-          "repository": "backend",
-          "file": "supabase/migrations/016_birth_profiles.sql",
-          "line": 86,
           "marker": "session_token"
         }
       ]
@@ -2363,86 +2393,98 @@
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 225,
+          "file": "src/app/admin/calendar-governance/IntegritySection.tsx",
+          "line": 83,
+          "marker": "\\/api\\/admin\\/"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/calendar-governance/IntegritySection.tsx",
+          "line": 114,
+          "marker": "\\/api\\/admin\\/"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/calendar-governance/IntegritySection.tsx",
+          "line": 148,
+          "marker": "\\/api\\/admin\\/"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/calendar-governance/IntegritySection.tsx",
+          "line": 187,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 614,
+          "line": 249,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 746,
+          "line": 638,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 810,
+          "line": 770,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 860,
+          "line": 834,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 1472,
+          "line": 884,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 1493,
+          "line": 1496,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/calendar-governance/page.tsx",
-          "line": 1603,
+          "line": 1517,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/content/page.tsx",
-          "line": 104,
+          "file": "src/app/admin/calendar-governance/page.tsx",
+          "line": 1627,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/content/page.tsx",
-          "line": 164,
+          "file": "src/app/admin/crons/CronDashboardClient.tsx",
+          "line": 181,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/content/page.tsx",
-          "line": 203,
-          "marker": "\\/api\\/admin\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/content/page.tsx",
-          "line": 235,
+          "file": "src/app/admin/crons/CronDashboardClient.tsx",
+          "line": 210,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/dharm-veer-review/page.tsx",
-          "line": 43,
+          "line": 74,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/dharm-veer-review/page.tsx",
-          "line": 61,
+          "line": 100,
           "marker": "\\/api\\/admin\\/"
         },
         {
@@ -2459,38 +2501,26 @@
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/moderation/ModerationClient.tsx",
-          "line": 44,
+          "file": "src/app/admin/logs/LogExplorerClient.tsx",
+          "line": 77,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
           "file": "src/app/admin/moderation/ModerationClient.tsx",
-          "line": 64,
+          "line": 95,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/page.tsx",
-          "line": 31,
+          "file": "src/app/admin/moderation/ModerationClient.tsx",
+          "line": 112,
           "marker": "\\/api\\/admin\\/"
         },
         {
           "repository": "backend",
-          "file": "src/app/admin/page.tsx",
-          "line": 32,
-          "marker": "\\/api\\/admin\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/reports/page.tsx",
-          "line": 24,
-          "marker": "\\/api\\/admin\\/"
-        },
-        {
-          "repository": "backend",
-          "file": "src/app/admin/reports/page.tsx",
-          "line": 289,
+          "file": "src/app/admin/monitoring/ApiMonitoringSection.tsx",
+          "line": 241,
           "marker": "\\/api\\/admin\\/"
         }
       ]
@@ -2982,7 +3012,7 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/home/HomeDashboard.tsx",
-        "line": 783,
+        "line": 784,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -2994,13 +3024,13 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/home/sections/HeroSection.tsx",
-        "line": 427,
+        "line": 429,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/home/sections/HeroSection.tsx",
-        "line": 649,
+        "line": 653,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3072,13 +3102,13 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/layout.tsx",
-        "line": 54,
+        "line": 52,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/layout.tsx",
-        "line": 113,
+        "line": 99,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3126,7 +3156,7 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-        "line": 1301,
+        "line": 1292,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3216,50 +3246,32 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 31,
+        "line": 28,
         "marker": "\\/api\\/(?:profile|onboarding)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 336,
+        "line": 479,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 496,
+        "line": 576,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 518,
+        "line": 596,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 603,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 623,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 912,
+        "line": 846,
         "marker": "\\/api\\/(?:profile|onboarding)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2388,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
@@ -3365,6 +3377,12 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/admin/monitoring/page.tsx",
+        "line": 21,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/admin/tirtha/[id]/page.tsx",
         "line": 38,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
@@ -3377,26 +3395,56 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/admin/reports/route.ts",
-        "line": 24,
+        "file": "src/app/api/admin/notification-templates/test/route.ts",
+        "line": 31,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/export/route.ts",
+        "line": 21,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/export/route.ts",
+        "line": 52,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/reports/route.ts",
-        "line": 25,
+        "line": 33,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/reports/route.ts",
-        "line": 26,
+        "line": 34,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/reports/route.ts",
-        "line": 27,
+        "line": 35,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/route.ts",
+        "line": 36,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/route.ts",
+        "line": 37,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/route.ts",
+        "line": 38,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3438,43 +3486,97 @@
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 28,
+        "line": 66,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 58,
+        "line": 287,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 74,
+        "line": 305,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 185,
+        "line": 340,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 370,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 386,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 516,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/route.ts",
-        "line": 15,
+        "line": 21,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/route.ts",
-        "line": 42,
+        "line": 67,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 68,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 69,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 70,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 71,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 72,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 102,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/ai/chat/route.ts",
-        "line": 326,
+        "line": 346,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3534,7 +3636,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/festival-email/route.ts",
-        "line": 58,
+        "line": 113,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3546,13 +3648,19 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/japa-reminder/route.ts",
-        "line": 52,
+        "line": 53,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/cron/journal-anniversary/route.ts",
         "line": 35,
+        "marker": "\\.from\\(['\"]profiles['\"]\\)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/cron/materialize-occurrences/route.ts",
+        "line": 108,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3564,7 +3672,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/mood-reminder-evening/route.ts",
-        "line": 40,
+        "line": 41,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3576,19 +3684,19 @@
       {
         "repository": "backend",
         "file": "src/app/api/cron/nitya-reminder-madhyahn/route.ts",
-        "line": 59,
+        "line": 60,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/cron/nitya-reminder-sandhya/route.ts",
-        "line": 59,
+        "line": 60,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/cron/notification-dispatch/route.ts",
-        "line": 116,
+        "line": 130,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3642,7 +3750,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/digest/generate/route.ts",
-        "line": 179,
+        "line": 184,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3661,18 +3769,6 @@
         "repository": "backend",
         "file": "src/app/api/home/personalise/route.ts",
         "line": 68,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/japa/complete/route.ts",
-        "line": 129,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/japa/complete/route.ts",
-        "line": 260,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3719,8 +3815,8 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/mandali/join/route.ts",
-        "line": 41,
+        "file": "src/app/api/mandali/member-profile/route.ts",
+        "line": 24,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3744,7 +3840,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/mandali/posts/route.ts",
-        "line": 26,
+        "line": 34,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3756,7 +3852,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/native/home-summary/route.ts",
-        "line": 560,
+        "line": 598,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3786,7 +3882,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/native/profile/route.ts",
-        "line": 275,
+        "line": 285,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3810,7 +3906,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/notifications/diagnostics/route.ts",
-        "line": 232,
+        "line": 201,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3846,7 +3942,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/payment/lifetime/route.ts",
-        "line": 41,
+        "line": 50,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -3948,13 +4044,13 @@
       {
         "repository": "backend",
         "file": "src/app/api/sankalpa/complete/route.ts",
-        "line": 57,
+        "line": 66,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/sankalpa/complete/route.ts",
-        "line": 66,
+        "line": 75,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
       },
       {
@@ -4028,72 +4124,6 @@
         "file": "src/app/api/user/highlights-consent/route.ts",
         "line": 20,
         "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/report/route.ts",
-        "line": 34,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/rhythm-mode/route.ts",
-        "line": 30,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/user/rhythm-mode/route.ts",
-        "line": 46,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/vrat/observe/route.ts",
-        "line": 27,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/api/whatsapp/send-daily/route.ts",
-        "line": 137,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/invite/[userId]/page.tsx",
-        "line": 87,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/invite/[userId]/page.tsx",
-        "line": 126,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/hooks/usePremium.ts",
-        "line": 20,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/hooks/useProfile.ts",
-        "line": 4,
-        "marker": "\\/api\\/(?:profile|onboarding)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/account-deletion.ts",
-        "line": 21,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/account-deletion.ts",
-        "line": 45,
-        "marker": "\\.from\\(['\"]profiles['\"]\\)"
       }
     ],
     "storageKeys": {
@@ -4115,13 +4145,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-              "line": 1273,
+              "line": 1264,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-              "line": 2689,
+              "line": 2680,
               "marker": "storage_key"
             }
           ]
@@ -4313,13 +4343,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/profile/ProfileClient.tsx",
-              "line": 453,
+              "line": 437,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/profile/ProfileClient.tsx",
-              "line": 2295,
+              "line": 2229,
               "marker": "storage_key"
             }
           ]
@@ -4347,19 +4377,7 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 386,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
-              "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 508,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
-              "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 509,
+              "line": 512,
               "marker": "storage_key"
             }
           ]
@@ -4376,13 +4394,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/profile/ProfileClient.tsx",
-              "line": 436,
+              "line": 420,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/profile/ProfileClient.tsx",
-              "line": 447,
+              "line": 431,
               "marker": "storage_key"
             }
           ]
@@ -4393,7 +4411,7 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 847,
+              "line": 849,
               "marker": "storage_key"
             },
             {
@@ -4477,13 +4495,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 575,
+              "line": 576,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 1028,
+              "line": 1023,
               "marker": "storage_key"
             }
           ]
@@ -4545,13 +4563,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 186,
+              "line": 187,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-              "line": 270,
+              "line": 269,
               "marker": "storage_key"
             }
           ]
@@ -4562,7 +4580,7 @@
             {
               "repository": "backend",
               "file": "src/components/home/FirstWeekGuide.tsx",
-              "line": 29,
+              "line": 30,
               "marker": "storage_key"
             }
           ]
@@ -4573,7 +4591,7 @@
             {
               "repository": "backend",
               "file": "src/components/home/FirstWeekGuide.tsx",
-              "line": 28,
+              "line": 29,
               "marker": "storage_key"
             }
           ]
@@ -4584,13 +4602,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 493,
+              "line": 494,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 496,
+              "line": 497,
               "marker": "storage_key"
             }
           ]
@@ -4601,7 +4619,7 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 346,
+              "line": 347,
               "marker": "storage_key"
             },
             {
@@ -4641,7 +4659,7 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 370,
+              "line": 371,
               "marker": "storage_key"
             },
             {
@@ -4686,24 +4704,7 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 1016,
-              "marker": "storage_key"
-            }
-          ]
-        },
-        {
-          "key": "shoonaya-sensory-muted",
-          "evidence": [
-            {
-              "repository": "backend",
-              "file": "src/contexts/ZenithSensoryContext.tsx",
-              "line": 32,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
-              "file": "src/contexts/ZenithSensoryContext.tsx",
-              "line": 40,
+              "line": 1018,
               "marker": "storage_key"
             }
           ]
@@ -4736,13 +4737,13 @@
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 505,
+              "line": 506,
               "marker": "storage_key"
             },
             {
               "repository": "backend",
               "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 508,
+              "line": 509,
               "marker": "storage_key"
             }
           ]
@@ -4759,12 +4760,23 @@
           ]
         },
         {
+          "key": "shoonaya.apple-auth-tokens.v1",
+          "evidence": [
+            {
+              "repository": "backend",
+              "file": "src/lib/apple-auth-service.ts",
+              "line": 34,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
           "key": "shoonaya.web-consent",
           "evidence": [
             {
               "repository": "backend",
               "file": "src/lib/web-consent.ts",
-              "line": 2,
+              "line": 7,
               "marker": "storage_key"
             }
           ]
@@ -4774,26 +4786,8 @@
           "evidence": [
             {
               "repository": "backend",
-              "file": "src/app/(main)/home/HomeDashboard.tsx",
-              "line": 482,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
               "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 394,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
-              "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 434,
-              "marker": "storage_key"
-            },
-            {
-              "repository": "backend",
-              "file": "src/app/(main)/home/sections/HeroSection.tsx",
-              "line": 648,
+              "line": 652,
               "marker": "storage_key"
             }
           ]
@@ -4805,8 +4799,30 @@
           "evidence": [
             {
               "repository": "native",
-              "file": "app/settings.tsx",
-              "line": 56,
+              "file": "app/settings/detail-screen.tsx",
+              "line": 74,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_device_startup_prefs_v1",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/startup-scenes/preferences.ts",
+              "line": 9,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_floating_scroll_position_v1",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/heroLayoutPreference.ts",
+              "line": 4,
               "marker": "storage_key"
             }
           ]
@@ -4839,7 +4855,30 @@
             {
               "repository": "native",
               "file": "lib/heroPreference.ts",
-              "line": 10,
+              "line": 17,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_hero_size",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/hero-size-configuration.test.ts",
+              "line": 68,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "lib/heroLayoutPreference.ts",
+              "line": 3,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "lib/heroPreference.ts",
+              "line": 18,
               "marker": "storage_key"
             }
           ]
@@ -4850,7 +4889,7 @@
             {
               "repository": "native",
               "file": "lib/homeCache.ts",
-              "line": 116,
+              "line": 128,
               "marker": "storage_key"
             }
           ]
@@ -4861,7 +4900,46 @@
             {
               "repository": "native",
               "file": "lib/homeCache.ts",
-              "line": 117,
+              "line": 129,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "lib/startup-scenes/preferences.ts",
+              "line": 10,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_home_discovery_v1_user_user_corrupt",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/home-discovery.test.ts",
+              "line": 235,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_mandali_cache_v1_guest",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/mandaliCache.ts",
+              "line": 44,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_mandali_cache_v1_user_",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/mandaliCache.ts",
+              "line": 45,
               "marker": "storage_key"
             }
           ]
@@ -4871,8 +4949,26 @@
           "evidence": [
             {
               "repository": "native",
-              "file": "app/settings.tsx",
-              "line": 55,
+              "file": "__tests__/settings-cache.test.ts",
+              "line": 62,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "__tests__/settings-cache.test.ts",
+              "line": 90,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "__tests__/settings-cache.test.ts",
+              "line": 95,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "lib/settingsCache.ts",
+              "line": 29,
               "marker": "storage_key"
             }
           ]
@@ -4889,6 +4985,56 @@
           ]
         },
         {
+          "key": "shoonaya_notifications_cache_v1_user_user-O",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/notifications-cache.test.ts",
+              "line": 195,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "__tests__/notifications-cache.test.ts",
+              "line": 197,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_notifications_cache_v2_user_user-G",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/notifications-cache.test.ts",
+              "line": 87,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_reaction_outbox_v1_user_user-E",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/reaction-outbox.test.ts",
+              "line": 95,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_reaction_outbox_v1_user_user-F",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/reaction-outbox.test.ts",
+              "line": 105,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
           "key": "shoonaya_reader_intro_seen",
           "evidence": [
             {
@@ -4900,12 +5046,45 @@
           ]
         },
         {
+          "key": "shoonaya_sankalpa_outbox_v1_user_user-E",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/sankalpa-outbox.test.ts",
+              "line": 96,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_settings_cache_v2_user_user-G",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/settings-cache.test.ts",
+              "line": 127,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya_telemetry_v1_user_user-G",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/telemetry.test.ts",
+              "line": 94,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
           "key": "shoonaya-brahma-dismissed-",
           "evidence": [
             {
               "repository": "native",
               "file": "components/home/BrahmaMuhurtaPrompt.tsx",
-              "line": 59,
+              "line": 60,
               "marker": "storage_key"
             }
           ]
@@ -4916,25 +5095,25 @@
             {
               "repository": "native",
               "file": "app/dharm-veer/[id].tsx",
-              "line": 230,
+              "line": 278,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/dharm-veer/[id].tsx",
-              "line": 235,
+              "line": 283,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/dharm-veer/[id].tsx",
-              "line": 266,
+              "line": 314,
               "marker": "storage_key"
             },
             {
               "repository": "native",
               "file": "app/dharm-veer/[id].tsx",
-              "line": 271,
+              "line": 319,
               "marker": "storage_key"
             },
             {
@@ -4990,8 +5169,8 @@
           "evidence": [
             {
               "repository": "native",
-              "file": "components/home/FirstWeekGuide.tsx",
-              "line": 35,
+              "file": "lib/firstWeekGuideStorage.ts",
+              "line": 8,
               "marker": "storage_key"
             }
           ]
@@ -5001,8 +5180,53 @@
           "evidence": [
             {
               "repository": "native",
-              "file": "components/home/FirstWeekGuide.tsx",
-              "line": 34,
+              "file": "lib/firstWeekGuideStorage.ts",
+              "line": 7,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya-rashiphal-nudge-v1",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/rashiphalPreference.ts",
+              "line": 5,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya:startup:last-receipt",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "app/_layout.tsx",
+              "line": 177,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "app/_layout.tsx",
+              "line": 192,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "app/_layout.tsx",
+              "line": 200,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya.japa.context.v1",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "lib/japaContextCache.ts",
+              "line": 5,
               "marker": "storage_key"
             }
           ]
@@ -5013,18 +5237,18 @@
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 107,
+              "line": 112,
               "marker": "storage_key"
             }
           ]
         },
         {
-          "key": "shoonaya.japa.lifetime",
+          "key": "shoonaya.japa.guestLifetime",
           "evidence": [
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 110,
+              "line": 115,
               "marker": "storage_key"
             }
           ]
@@ -5035,7 +5259,24 @@
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
+              "line": 113,
+              "marker": "storage_key"
+            }
+          ]
+        },
+        {
+          "key": "shoonaya.japa.pending_completion.v1_user_user-A",
+          "evidence": [
+            {
+              "repository": "native",
+              "file": "__tests__/japa-pending-completion.test.ts",
               "line": 108,
+              "marker": "storage_key"
+            },
+            {
+              "repository": "native",
+              "file": "__tests__/japa-pending-completion.test.ts",
+              "line": 113,
               "marker": "storage_key"
             }
           ]
@@ -5046,7 +5287,7 @@
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 106,
+              "line": 111,
               "marker": "storage_key"
             }
           ]
@@ -5057,7 +5298,7 @@
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 105,
+              "line": 110,
               "marker": "storage_key"
             }
           ]
@@ -5068,7 +5309,7 @@
             {
               "repository": "native",
               "file": "app/(tabs)/japa.tsx",
-              "line": 109,
+              "line": 114,
               "marker": "storage_key"
             }
           ]
@@ -5105,13 +5346,13 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 79,
+            "line": 84,
             "marker": "@supabase\\/"
           },
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 80,
+            "line": 85,
             "marker": "@supabase\\/"
           },
           {
@@ -5709,19 +5950,19 @@
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 63,
+            "line": 70,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 64,
+            "line": 71,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 67,
+            "line": 74,
             "marker": "pagead2\\.googlesyndication\\.com"
           },
           {
@@ -5775,24 +6016,6 @@
             "repository": "backend",
             "file": "LAUNCH_TRACKER.md",
             "line": 118,
-            "marker": "onesignal"
-          },
-          {
-            "repository": "backend",
-            "file": "next.config.js",
-            "line": 48,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "next.config.js",
-            "line": 63,
-            "marker": "onesignal"
-          },
-          {
-            "repository": "backend",
-            "file": "next.config.js",
-            "line": 64,
             "marker": "onesignal"
           },
           {
@@ -6104,19 +6327,19 @@
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 70,
+            "line": 69,
             "marker": "onesignal"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 99,
+            "line": 98,
             "marker": "onesignal"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 120,
+            "line": 119,
             "marker": "onesignal"
           },
           {
@@ -6271,86 +6494,87 @@
           },
           {
             "repository": "backend",
-            "file": "public/OneSignalSDKUpdaterWorker.js",
-            "line": 1,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "public/OneSignalSDKWorker.js",
-            "line": 1,
-            "marker": "onesignal"
-          },
-          {
-            "repository": "backend",
-            "file": "public/OneSignalSDKWorker.js",
-            "line": 2,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "public/OneSignalSDKWorker.js",
-            "line": 5,
-            "marker": "onesignal"
-          },
-          {
-            "repository": "backend",
             "file": "public/sw.js",
             "line": 5,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "public/sw.js",
-            "line": 7,
             "marker": "onesignal"
           },
           {
             "repository": "backend",
             "file": "public/sw.js",
-            "line": 10,
-            "marker": "onesignal"
-          },
-          {
-            "repository": "backend",
-            "file": "public/sw.js",
-            "line": 12,
+            "line": 6,
             "marker": "OneSignalSDK"
           },
           {
             "repository": "backend",
-            "file": "public/sw.js",
+            "file": "src/app/admin/monitoring/MonitoringClient.tsx",
+            "line": 650,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/admin/monitoring/PushMonitoringSection.tsx",
             "line": 13,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "public/sw.js",
-            "line": 15,
-            "marker": "OneSignalSDK"
-          },
-          {
-            "repository": "backend",
-            "file": "public/sw.js",
-            "line": 16,
             "marker": "onesignal"
-          }
-        ]
-      },
-      {
-        "provider": "Firebase Analytics",
-        "evidence": [
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/RNFBAnalytics.build/Objects-normal/arm64/RNFBAnalytics-OutputFileMap.json",
-            "line": 11,
-            "marker": "@react-native-firebase\\/analytics"
           },
           {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/RNFBAnalytics.build/Objects-normal/x86_64/RNFBAnalytics-OutputFileMap.json",
-            "line": 11,
-            "marker": "@react-native-firebase\\/analytics"
+            "repository": "backend",
+            "file": "src/app/admin/monitoring/PushMonitoringSection.tsx",
+            "line": 40,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/admin/monitoring/PushMonitoringSection.tsx",
+            "line": 233,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 45,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 53,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 54,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 55,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 68,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 69,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 70,
+            "marker": "onesignal"
+          },
+          {
+            "repository": "backend",
+            "file": "src/app/api/admin/push-monitoring/route.ts",
+            "line": 71,
+            "marker": "onesignal"
           }
         ]
       },
@@ -6360,247 +6584,7 @@
           {
             "repository": "native",
             "file": "app.json",
-            "line": 129,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 11,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 16,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 21,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 26,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 31,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 36,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 41,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 46,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 51,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 56,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 61,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 66,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 71,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 76,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 81,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 86,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 91,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 96,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 101,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/arm64/ExpoNotifications-OutputFileMap.json",
-            "line": 106,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 11,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 16,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 21,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 26,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 31,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 36,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 41,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 46,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 51,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 56,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 61,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 66,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 71,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 76,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 81,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 86,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 91,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 96,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 101,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/ExpoNotifications.build/Objects-normal/x86_64/ExpoNotifications-OutputFileMap.json",
-            "line": 106,
+            "line": 146,
             "marker": "expo-notifications"
           },
           {
@@ -6612,13 +6596,7 @@
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 13,
-            "marker": "expo-notifications"
-          },
-          {
-            "repository": "native",
-            "file": "lib/notifications.ts",
-            "line": 28,
+            "line": 17,
             "marker": "expo-notifications"
           },
           {
@@ -6630,13 +6608,19 @@
           {
             "repository": "native",
             "file": "lib/notifications.ts",
-            "line": 184,
+            "line": 35,
+            "marker": "expo-notifications"
+          },
+          {
+            "repository": "native",
+            "file": "lib/notifications.ts",
+            "line": 219,
             "marker": "getExpoPushTokenAsync"
           },
           {
             "repository": "native",
             "file": "package.json",
-            "line": 38,
+            "line": 37,
             "marker": "expo-notifications"
           }
         ]
@@ -6647,37 +6631,37 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 94,
+            "line": 99,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 151,
+            "line": 150,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 171,
+            "line": 170,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 273,
+            "line": 272,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 293,
+            "line": 292,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "packages/sangam_pro_and_notifications.md",
-            "line": 312,
+            "line": 311,
             "marker": "razorpay"
           },
           {
@@ -6695,25 +6679,25 @@
           {
             "repository": "backend",
             "file": "src/app/api/payment/checkout/route.ts",
-            "line": 29,
+            "line": 41,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/checkout/route.ts",
-            "line": 37,
+            "line": 49,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/checkout/route.ts",
-            "line": 47,
+            "line": 59,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/checkout/route.ts",
-            "line": 50,
+            "line": 62,
             "marker": "razorpay"
           },
           {
@@ -6815,25 +6799,25 @@
           {
             "repository": "backend",
             "file": "src/app/api/payment/lifetime/route.ts",
-            "line": 53,
+            "line": 62,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/lifetime/route.ts",
-            "line": 55,
+            "line": 64,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/lifetime/route.ts",
-            "line": 72,
+            "line": 81,
             "marker": "razorpay"
           },
           {
             "repository": "backend",
             "file": "src/app/api/payment/lifetime/route.ts",
-            "line": 75,
+            "line": 84,
             "marker": "razorpay"
           },
           {
@@ -7126,7 +7110,7 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 101,
+            "line": 106,
             "marker": "twilio"
           },
           {
@@ -7293,7 +7277,7 @@
           {
             "repository": "backend",
             "file": "next.config.js",
-            "line": 64,
+            "line": 71,
             "marker": "sarvam"
           },
           {
@@ -7880,7 +7864,7 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 82,
+            "line": 87,
             "marker": "@vercel\\/analytics"
           },
           {
@@ -7897,7 +7881,7 @@
           {
             "repository": "backend",
             "file": "package.json",
-            "line": 83,
+            "line": 88,
             "marker": "@vercel\\/speed-insights"
           },
           {
@@ -8057,103 +8041,103 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 184,
+        "line": 181,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 411,
+        "line": 395,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 430,
+        "line": 414,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 642,
+        "line": 615,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 643,
+        "line": 616,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 646,
+        "line": 619,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2145,
+        "line": 2079,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2147,
+        "line": 2081,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2151,
+        "line": 2085,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2152,
+        "line": 2086,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2153,
+        "line": 2087,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2164,
+        "line": 2098,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 68,
+        "line": 380,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 70,
+        "line": 382,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 84,
+        "line": 396,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 93,
+        "line": 404,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 94,
+        "line": 405,
         "marker": "home_(?:latitude|longitude)"
       },
       {
@@ -8255,25 +8239,25 @@
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 134,
+        "line": 129,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 138,
+        "line": 133,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 139,
+        "line": 134,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "src/app/api/jyotish/chart/route.ts",
-        "line": 140,
+        "line": 135,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
@@ -8392,20 +8376,164 @@
       },
       {
         "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 180,
+        "file": "src/types/database.generated.ts",
+        "line": 115,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 116,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 117,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 122,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 146,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 147,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 148,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 153,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 177,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 178,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 179,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 184,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 2036,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 2060,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 2084,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4671,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4684,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4685,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4780,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4793,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4794,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4889,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4902,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4903,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.ts",
-        "line": 181,
+        "line": 238,
         "marker": "home_(?:latitude|longitude)"
       },
       {
         "repository": "backend",
         "file": "src/types/database.ts",
-        "line": 229,
+        "line": 239,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.ts",
+        "line": 287,
         "marker": "date_of_birth"
       },
       {
@@ -8494,32 +8622,62 @@
       },
       {
         "repository": "backend",
+        "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+        "line": 89,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+        "line": 90,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+        "line": 110,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20260826200000_mandali_auto_coordinates_and_count_sync.sql",
+        "line": 111,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql",
+        "line": 126,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql",
+        "line": 142,
+        "marker": "home_(?:latitude|longitude)"
+      },
+      {
+        "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 3730,
+        "line": 3738,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 3734,
+        "line": 3742,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 3735,
+        "line": 3743,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 3736,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 4245,
+        "line": 3744,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
@@ -8531,19 +8689,25 @@
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 4256,
+        "line": 4261,
         "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 5326,
+        "line": 4264,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "backend",
+        "file": "supabase/public_schema.sql",
+        "line": 5334,
         "marker": "date_of_birth"
       },
       {
         "repository": "backend",
         "file": "supabase/public_schema.sql",
-        "line": 9242,
+        "line": 9250,
         "marker": "date_of_birth"
       },
       {
@@ -8650,6 +8814,42 @@
       },
       {
         "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 189,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 193,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 194,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 195,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 247,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
+        "file": "__tests__/kundali-contract-and-detail.test.ts",
+        "line": 253,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
         "file": "__tests__/personal-details-contract.test.ts",
         "line": 23,
         "marker": "date_of_birth"
@@ -8663,32 +8863,20 @@
       {
         "repository": "native",
         "file": "app/(tabs)/tirtha.tsx",
-        "line": 386,
+        "line": 389,
         "marker": "requestForegroundPermissionsAsync"
       },
       {
         "repository": "native",
         "file": "app/kundali.tsx",
-        "line": 29,
+        "line": 30,
         "marker": "date_of_birth"
       },
       {
         "repository": "native",
         "file": "app/kundali.tsx",
-        "line": 118,
+        "line": 120,
         "marker": "date_of_birth"
-      },
-      {
-        "repository": "native",
-        "file": "app/kundali.tsx",
-        "line": 122,
-        "marker": "birth_(?:lat|lng|time|place)"
-      },
-      {
-        "repository": "native",
-        "file": "app/kundali.tsx",
-        "line": 123,
-        "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "native",
@@ -8699,7 +8887,19 @@
       {
         "repository": "native",
         "file": "app/kundali.tsx",
-        "line": 270,
+        "line": 125,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "app/kundali.tsx",
+        "line": 126,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "app/kundali.tsx",
+        "line": 272,
         "marker": "date_of_birth"
       },
       {
@@ -8759,8 +8959,62 @@
       {
         "repository": "native",
         "file": "components/mandali/JoinMandaliPrompt.tsx",
-        "line": 138,
+        "line": 143,
         "marker": "requestForegroundPermissionsAsync"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 133,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 137,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 138,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 139,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 487,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 500,
+        "marker": "date_of_birth"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 504,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 505,
+        "marker": "birth_(?:lat|lng|time|place)"
+      },
+      {
+        "repository": "native",
+        "file": "lib/kundali-contract.ts",
+        "line": 506,
+        "marker": "birth_(?:lat|lng|time|place)"
       },
       {
         "repository": "native",
@@ -8947,13 +9201,13 @@
       {
         "repository": "backend",
         "file": "package.json",
-        "line": 65,
+        "line": 68,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "package.json",
-        "line": 67,
+        "line": 70,
         "marker": "privacy"
       },
       {
@@ -9277,38 +9531,32 @@
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
-        "line": 97,
+        "line": 98,
         "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
-        "line": 123,
+        "line": 124,
         "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
-        "line": 163,
-        "marker": "terms"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/(auth)/signup/page.tsx",
-        "line": 195,
+        "line": 164,
         "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
         "line": 196,
-        "marker": "privacy"
+        "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
-        "line": 266,
-        "marker": "terms"
+        "line": 197,
+        "marker": "privacy"
       },
       {
         "repository": "backend",
@@ -9319,13 +9567,19 @@
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
-        "line": 270,
-        "marker": "privacy"
+        "line": 268,
+        "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(auth)/signup/page.tsx",
         "line": 271,
+        "marker": "privacy"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/(auth)/signup/page.tsx",
+        "line": 272,
         "marker": "privacy"
       },
       {
@@ -9361,25 +9615,25 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 42,
+        "line": 39,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 1669,
+        "line": 1603,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 1670,
+        "line": 1604,
         "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2475,
+        "line": 2391,
         "marker": "privacy"
       },
       {
@@ -9402,6 +9656,18 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/(main)/settings/page.tsx",
+        "line": 36,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/(main)/settings/page.tsx",
+        "line": 58,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/(main)/settings/SettingsClient.tsx",
         "line": 19,
         "marker": "privacy"
@@ -9409,7 +9675,13 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/settings/SettingsClient.tsx",
-        "line": 764,
+        "line": 580,
+        "marker": "consent_religious_data"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/(main)/settings/SettingsClient.tsx",
+        "line": 795,
         "marker": "privacy"
       },
       {
@@ -9492,14 +9764,26 @@
       },
       {
         "repository": "backend",
+        "file": "src/app/admin/monitoring/ClientErrorMonitoringSection.tsx",
+        "line": 128,
+        "marker": "privacy"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/observance-content/page.tsx",
+        "line": 1191,
+        "marker": "privacy"
+      },
+      {
+        "repository": "backend",
         "file": "src/app/api/ai/chat/route.ts",
-        "line": 327,
+        "line": 347,
         "marker": "consent_religious_data"
       },
       {
         "repository": "backend",
         "file": "src/app/api/ai/chat/route.ts",
-        "line": 335,
+        "line": 355,
         "marker": "consent_religious_data"
       },
       {
@@ -9517,7 +9801,7 @@
       {
         "repository": "backend",
         "file": "src/app/api/calendar/upcoming/route.ts",
-        "line": 202,
+        "line": 245,
         "marker": "privacy"
       },
       {
@@ -9582,14 +9866,8 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/quiz/daily/route.ts",
-        "line": 10,
-        "marker": "terms"
-      },
-      {
-        "repository": "backend",
         "file": "src/app/api/quiz/generate-daily/route.ts",
-        "line": 8,
+        "line": 11,
         "marker": "terms"
       },
       {
@@ -9691,37 +9969,37 @@
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 29,
+        "line": 31,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 108,
+        "line": 117,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 114,
+        "line": 123,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 115,
+        "line": 124,
         "marker": "privacy"
       },
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 118,
+        "line": 127,
         "marker": "terms"
       },
       {
         "repository": "backend",
         "file": "src/app/data-deletion/page.tsx",
-        "line": 119,
+        "line": 128,
         "marker": "terms"
       },
       {
@@ -9950,30 +10228,6 @@
         "repository": "backend",
         "file": "src/components/privacy/PrivacyChoicesButton.tsx",
         "line": 6,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/components/privacy/WebConsentManager.tsx",
-        "line": 8,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/components/privacy/WebConsentManager.tsx",
-        "line": 30,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/components/privacy/WebConsentManager.tsx",
-        "line": 31,
-        "marker": "privacy"
-      },
-      {
-        "repository": "backend",
-        "file": "src/components/privacy/WebConsentManager.tsx",
-        "line": 67,
         "marker": "privacy"
       }
     ],
@@ -10245,37 +10499,103 @@
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 855,
+        "line": 789,
         "marker": "user_blocked_profiles"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 874,
+        "line": 808,
         "marker": "user_muted_profiles"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 893,
+        "line": 827,
         "marker": "user_hidden_content"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2455,
+        "line": 2371,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 38,
+        "line": 10,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/moderation/ModerationClient.tsx",
-        "line": 108,
+        "line": 12,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 13,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 46,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 52,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 54,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 57,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 83,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 85,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 156,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 161,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 181,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/moderation/ModerationClient.tsx",
+        "line": 309,
         "marker": "moderation"
       },
       {
@@ -10305,79 +10625,73 @@
       {
         "repository": "backend",
         "file": "src/app/admin/monitoring/actions.ts",
-        "line": 12,
+        "line": 34,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
-        "file": "src/app/admin/monitoring/actions.ts",
-        "line": 25,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/admin/monitoring/page.tsx",
-        "line": 44,
+        "file": "src/app/admin/monitoring/MonitoringClient.tsx",
+        "line": 109,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/monitoring/page.tsx",
-        "line": 193,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/admin/monitoring/page.tsx",
-        "line": 198,
+        "line": 48,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/page.tsx",
-        "line": 113,
+        "line": 437,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/page.tsx",
-        "line": 143,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/app/admin/page.tsx",
-        "line": 145,
+        "line": 441,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 130,
+        "line": 210,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 132,
+        "line": 213,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 133,
+        "line": 214,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 134,
+        "line": 215,
         "marker": "moderation"
       },
       {
         "repository": "backend",
         "file": "src/app/admin/reports/page.tsx",
-        "line": 218,
+        "line": 423,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/reports/page.tsx",
+        "line": 424,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/reports/page.tsx",
+        "line": 425,
         "marker": "moderation"
       },
       {
@@ -10388,14 +10702,224 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/admin/alerts/route.ts",
-        "line": 48,
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 109,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 124,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 126,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 127,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 134,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 401,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 403,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 409,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 655,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 656,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 661,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 663,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 667,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 684,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 687,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 694,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 6,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 7,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 71,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 90,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 142,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 204,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 208,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 232,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 251,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 279,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 345,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 403,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 404,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 407,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 459,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 469,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 516,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/alerts/route.ts",
-        "line": 62,
+        "line": 199,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/route.ts",
+        "line": 211,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/route.ts",
+        "line": 214,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/alerts/route.ts",
+        "line": 226,
         "marker": "moderation"
       },
       {
@@ -10406,14 +10930,26 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/admin/reports/route.ts",
-        "line": 28,
+        "file": "src/app/api/admin/reports/export/route.ts",
+        "line": 60,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/export/route.ts",
+        "line": 61,
         "marker": "content_reports"
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/reports/route.ts",
-        "line": 90,
+        "line": 39,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/reports/route.ts",
+        "line": 144,
         "marker": "moderation"
       },
       {
@@ -10421,6 +10957,36 @@
         "file": "src/app/api/admin/stats/route.ts",
         "line": 25,
         "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 81,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 250,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 495,
+        "marker": "user_blocked_profiles"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 496,
+        "marker": "user_muted_profiles"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 498,
+        "marker": "moderation"
       },
       {
         "repository": "backend",
@@ -10448,9 +11014,27 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/mandali/comments/route.ts",
-        "line": 35,
+        "file": "src/app/api/mandali/comments/comments.test.ts",
+        "line": 25,
         "marker": "user_blocked_profiles"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/mandali/comments/route.ts",
+        "line": 54,
+        "marker": "user_blocked_profiles"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/mandali/comments/route.ts",
+        "line": 140,
+        "marker": "content_reports"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/mandali/comments/route.ts",
+        "line": 142,
+        "marker": "moderation"
       },
       {
         "repository": "backend",
@@ -10508,6 +11092,48 @@
       },
       {
         "repository": "backend",
+        "file": "src/components/admin/AdminCommandPalette.tsx",
+        "line": 104,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 84,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 394,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 397,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 568,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 575,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/components/admin/AdminRecordInspector.tsx",
+        "line": 584,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
         "file": "src/components/ai/AiReportButton.tsx",
         "line": 64,
         "marker": "content_reports"
@@ -10534,6 +11160,234 @@
         "repository": "backend",
         "file": "src/components/shared/ReportDialog.tsx",
         "line": 7,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 4,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 10,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 43,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 56,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 57,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 59,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 65,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 70,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 132,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 133,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-destinations-contract.test.ts",
+        "line": 136,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-overview.test.ts",
+        "line": 115,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-overview.test.ts",
+        "line": 206,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.test.ts",
+        "line": 16,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.ts",
+        "line": 45,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.ts",
+        "line": 46,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.ts",
+        "line": 47,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.ts",
+        "line": 48,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-route-registry.ts",
+        "line": 49,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 6,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 10,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 70,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 71,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 73,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 78,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 83,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 112,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 113,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.test.ts",
+        "line": 117,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 10,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 11,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 19,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 108,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 128,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 130,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 131,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 136,
+        "marker": "moderation"
+      },
+      {
+        "repository": "backend",
+        "file": "src/lib/admin-url-state.ts",
+        "line": 137,
         "marker": "moderation"
       },
       {
@@ -10574,628 +11428,28 @@
       },
       {
         "repository": "backend",
-        "file": "src/lib/moderation.ts",
-        "line": 42,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 28,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 29,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 30,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 31,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 83,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 86,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/lib/user-safety.ts",
-        "line": 90,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 447,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 484,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 491,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 494,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 501,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 504,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 512,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "src/types/database.ts",
-        "line": 912,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 3,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 5,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 11,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 14,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 20,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 23,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 32,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 33,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 35,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 36,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 38,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 39,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 41,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 42,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 44,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 45,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 46,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 49,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 51,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 53,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
+        "file": "src/lib/mandali-data-server.ts",
         "line": 56,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 58,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 60,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 63,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 65,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 67,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 70,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 74,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 78,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 82,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 86,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 90,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 94,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 98,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v14-user-safety.sql",
-        "line": 102,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v44-profiles-update-guard.sql",
-        "line": 53,
         "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 53,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 54,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 65,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 68,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 72,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 77,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/archive/migration-v5-fixes.sql",
-        "line": 95,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/00000000000000_BASELINE_README.sql",
-        "line": 12,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 1,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 2,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 4,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 10,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 11,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 22,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/014_user_moderation.sql",
-        "line": 23,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260606000000_add_content_reports_metadata.sql",
-        "line": 1,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260606000000_add_content_reports_metadata.sql",
-        "line": 10,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260606000000_add_content_reports_metadata.sql",
-        "line": 13,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260611100000_mandali_slice0_data_integrity.sql",
-        "line": 65,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260704112914_native_phase0_security_rls.sql",
-        "line": 4,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260704203733_native_phase0_mandali_security.sql",
-        "line": 44,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260704203733_native_phase0_mandali_security.sql",
-        "line": 46,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260704203733_native_phase0_mandali_security.sql",
-        "line": 48,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727165847_mandali_connections_reactions_activity_log.sql",
-        "line": 105,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727165847_mandali_connections_reactions_activity_log.sql",
-        "line": 157,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727165847_mandali_connections_reactions_activity_log.sql",
-        "line": 164,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727165847_mandali_connections_reactions_activity_log.sql",
-        "line": 187,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 8,
-        "marker": "moderation"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 34,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 53,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 82,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 112,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/migrations/20260727225429_wire_silent_mandali_notifications.sql",
-        "line": 161,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 3782,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 3785,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 3795,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 3799,
-        "marker": "content_reports"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 5996,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 5999,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6004,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6008,
-        "marker": "user_blocked_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6011,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6014,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6020,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6024,
-        "marker": "user_hidden_content"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6057,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6060,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6065,
-        "marker": "user_muted_profiles"
-      },
-      {
-        "repository": "backend",
-        "file": "supabase/public_schema.sql",
-        "line": 6069,
-        "marker": "user_muted_profiles"
       }
     ],
     "deletionAndExportPaths": [
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 315,
+        "line": 310,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 910,
+        "line": 844,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/app/(main)/profile/ProfileClient.tsx",
-        "line": 2480,
+        "line": 2396,
         "marker": "\\/api\\/user\\/export"
       },
       {
@@ -11206,15 +11460,51 @@
       },
       {
         "repository": "backend",
-        "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 105,
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 34,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/[id]/page.tsx",
+        "line": 307,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/admin/users/page.tsx",
+        "line": 32,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/admin-routes-contract.test.ts",
+        "line": 336,
         "marker": "deleteUser\\("
       },
       {
         "repository": "backend",
         "file": "src/app/api/admin/users/[userId]/route.ts",
-        "line": 178,
+        "line": 416,
         "marker": "deleteUser\\("
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/[userId]/route.ts",
+        "line": 509,
+        "marker": "deleteUser\\("
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 40,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/app/api/admin/users/route.ts",
+        "line": 72,
+        "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
@@ -11297,49 +11587,49 @@
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 15,
+        "line": 16,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 22,
+        "line": 23,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 26,
+        "line": 27,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 32,
+        "line": 33,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 40,
+        "line": 41,
         "marker": "purgeDueDeletedAccounts"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 46,
+        "line": 47,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 48,
+        "line": 49,
         "marker": "deletion_requested_at"
       },
       {
         "repository": "backend",
         "file": "src/lib/account-deletion.ts",
-        "line": 83,
+        "line": 131,
         "marker": "deleteUser\\("
       },
       {
@@ -11362,8 +11652,26 @@
       },
       {
         "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4672,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4781,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
+        "file": "src/types/database.generated.ts",
+        "line": 4890,
+        "marker": "deletion_requested_at"
+      },
+      {
+        "repository": "backend",
         "file": "src/types/database.ts",
-        "line": 243,
+        "line": 301,
         "marker": "deletion_requested_at"
       },
       {
@@ -11404,14 +11712,14 @@
       },
       {
         "repository": "native",
-        "file": "app/settings.tsx",
-        "line": 376,
+        "file": "app/settings/detail-screen.tsx",
+        "line": 629,
         "marker": "\\/api\\/user\\/export"
       },
       {
         "repository": "native",
-        "file": "app/settings.tsx",
-        "line": 398,
+        "file": "app/settings/detail-screen.tsx",
+        "line": 651,
         "marker": "deletion_requested_at"
       }
     ]
@@ -11512,7 +11820,7 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 783,
+          "line": 784,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
@@ -11524,13 +11832,13 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 427,
+          "line": 429,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 649,
+          "line": 653,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
@@ -11642,7 +11950,7 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/HomeDashboard.tsx",
-          "line": 783,
+          "line": 784,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
@@ -11654,13 +11962,13 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 427,
+          "line": 429,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 649,
+          "line": 653,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         },
         {
@@ -11732,7 +12040,7 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/layout.tsx",
-          "line": 54,
+          "line": 52,
           "marker": "\\.from\\(['\"]profiles['\"]\\)"
         }
       ]
@@ -11743,66 +12051,30 @@
       "name": "Web tracker initialization",
       "status": "VERIFIED",
       "canonicalOwnership": "backend",
-      "description": "18 shipped-source tracker references were found; 3 of 3 optional consent gates were verified.",
+      "description": "9 shipped-source tracker references were found; 2 of 2 optional consent gates were verified.",
       "evidence": [
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 48,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "next.config.js",
-          "line": 63,
+          "line": 70,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 64,
+          "line": 71,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
           "file": "next.config.js",
-          "line": 67,
+          "line": 74,
           "marker": "pagead2\\.googlesyndication\\.com"
         },
         {
           "repository": "backend",
-          "file": "public/OneSignalSDKUpdaterWorker.js",
-          "line": 1,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/OneSignalSDKWorker.js",
-          "line": 2,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
           "file": "public/sw.js",
-          "line": 5,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/sw.js",
-          "line": 12,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/sw.js",
-          "line": 13,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "public/sw.js",
-          "line": 15,
+          "line": 6,
           "marker": "OneSignalSDK"
         },
         {
@@ -11819,38 +12091,20 @@
         },
         {
           "repository": "backend",
-          "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 60,
+          "file": "src/lib/client-error-contract.test.ts",
+          "line": 16,
           "marker": "OneSignalSDK"
         },
         {
           "repository": "backend",
-          "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 62,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/config.ts",
-          "line": 59,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/onesignal.ts",
-          "line": 62,
-          "marker": "OneSignalSDK"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/onesignal.ts",
-          "line": 63,
+          "file": "src/lib/client-error-contract.test.ts",
+          "line": 25,
           "marker": "OneSignalSDK"
         },
         {
           "repository": "backend",
           "file": "src/lib/web-consent.test.ts",
-          "line": 31,
+          "line": 30,
           "marker": "OneSignalSDK"
         },
         {
@@ -11864,12 +12118,6 @@
           "file": "src/components/privacy/WebConsentManager.tsx",
           "line": 55,
           "marker": "preferences\\.advertising"
-        },
-        {
-          "repository": "backend",
-          "file": "src/components/privacy/WebConsentManager.tsx",
-          "line": 58,
-          "marker": "preferences\\.push"
         }
       ]
     },
@@ -11879,24 +12127,18 @@
       "name": "Native analytics consent control",
       "status": "VERIFIED",
       "canonicalOwnership": "native",
-      "description": "Native analytics is present and a consent-control path was discovered; event ordering still requires focused tests.",
+      "description": "No Native Firebase Analytics SDK was discovered; an analytics-consent runtime control is therefore not required.",
       "evidence": [
-        {
-          "repository": "native",
-          "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/RNFBAnalytics.build/Objects-normal/arm64/RNFBAnalytics-OutputFileMap.json",
-          "line": 11,
-          "marker": "@react-native-firebase\\/analytics"
-        },
-        {
-          "repository": "native",
-          "file": "ios/build-simulator/Build/Intermediates.noindex/Pods.build/Release-iphonesimulator/RNFBAnalytics.build/Objects-normal/x86_64/RNFBAnalytics-OutputFileMap.json",
-          "line": 11,
-          "marker": "@react-native-firebase\\/analytics"
-        },
         {
           "repository": "backend",
           "file": "src/components/privacy/WebConsentManager.tsx",
           "line": 34,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "backend",
+          "file": "src/lib/web-consent.test.ts",
+          "line": 19,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
@@ -11908,25 +12150,25 @@
         {
           "repository": "backend",
           "file": "src/lib/web-consent.test.ts",
-          "line": 21,
-          "marker": "analytics.*consent|consent.*analytics"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/web-consent.test.ts",
-          "line": 25,
+          "line": 24,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
           "repository": "backend",
           "file": "src/lib/web-consent.ts",
-          "line": 30,
+          "line": 33,
           "marker": "analytics.*consent|consent.*analytics"
         },
         {
           "repository": "backend",
           "file": "src/lib/web-consent.ts",
-          "line": 36,
+          "line": 39,
+          "marker": "analytics.*consent|consent.*analytics"
+        },
+        {
+          "repository": "native",
+          "file": "lib/telemetry.ts",
+          "line": 7,
           "marker": "analytics.*consent|consent.*analytics"
         }
       ]
@@ -11937,7 +12179,7 @@
       "name": "Discovered browser and native storage keys",
       "status": "VERIFIED",
       "canonicalOwnership": "shared_contract",
-      "description": "44 backend/PWA and 22 Native literal storage keys were discovered. Dynamic keys require manual review.",
+      "description": "44 backend/PWA and 39 Native literal storage keys were discovered. Dynamic keys require manual review.",
       "evidence": [
         {
           "repository": "backend",
@@ -11948,13 +12190,13 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-          "line": 1273,
+          "line": 1264,
           "marker": "storage_key"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/nitya-karma/NityaKarmaClient.tsx",
-          "line": 2689,
+          "line": 2680,
           "marker": "storage_key"
         },
         {
@@ -12086,13 +12328,13 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 453,
+          "line": 437,
           "marker": "storage_key"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 2295,
+          "line": 2229,
           "marker": "storage_key"
         },
         {
@@ -12110,13 +12352,13 @@
         {
           "repository": "backend",
           "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 386,
+          "line": 512,
           "marker": "storage_key"
         },
         {
           "repository": "backend",
-          "file": "src/app/(main)/home/sections/HeroSection.tsx",
-          "line": 508,
+          "file": "src/app/(main)/kosh/KoshClient.tsx",
+          "line": 349,
           "marker": "storage_key"
         }
       ]
@@ -12127,7 +12369,7 @@
       "name": "Centralized age-policy enforcement",
       "status": "VERIFIED",
       "canonicalOwnership": "backend",
-      "description": "144 DOB/location source locations were discovered. Threshold and parental-consent semantics require approved policy.",
+      "description": "189 DOB/location source locations were discovered. Threshold and parental-consent semantics require approved policy.",
       "evidence": [
         {
           "repository": "backend",
@@ -12321,6 +12563,24 @@
       "evidence": [
         {
           "repository": "backend",
+          "file": "src/app/admin/users/[id]/page.tsx",
+          "line": 47,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/users/[id]/page.tsx",
+          "line": 725,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 67,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
           "file": "src/app/api/user/legal-acceptance/route.ts",
           "line": 3,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
@@ -12369,14 +12629,32 @@
         },
         {
           "repository": "backend",
-          "file": "src/types/database.ts",
-          "line": 269,
+          "file": "src/types/database.generated.ts",
+          "line": 2433,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 2441,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 2449,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
           "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 277,
+          "line": 327,
+          "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.ts",
+          "line": 335,
           "marker": "terms_version|termsVersion|terms_acceptances|accepted_at"
         },
         {
@@ -12403,14 +12681,32 @@
       "evidence": [
         {
           "repository": "backend",
-          "file": "src/app/api/ai/chat/route.ts",
-          "line": 327,
+          "file": "src/app/(main)/settings/page.tsx",
+          "line": 36,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/(main)/settings/page.tsx",
+          "line": 58,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/(main)/settings/SettingsClient.tsx",
+          "line": 580,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "src/app/api/ai/chat/route.ts",
-          "line": 335,
+          "line": 347,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/ai/chat/route.ts",
+          "line": 355,
           "marker": "consent_religious_data"
         },
         {
@@ -12451,8 +12747,26 @@
         },
         {
           "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4664,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4773,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
+          "file": "src/types/database.generated.ts",
+          "line": 4882,
+          "marker": "consent_religious_data"
+        },
+        {
+          "repository": "backend",
           "file": "src/types/database.ts",
-          "line": 175,
+          "line": 233,
           "marker": "consent_religious_data"
         },
         {
@@ -12470,19 +12784,19 @@
         {
           "repository": "backend",
           "file": "supabase/public_schema.sql",
-          "line": 5336,
+          "line": 5344,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "supabase/public_schema.sql",
-          "line": 5418,
+          "line": 5426,
           "marker": "consent_religious_data"
         },
         {
           "repository": "backend",
           "file": "supabase/public_schema.sql",
-          "line": 5421,
+          "line": 5429,
           "marker": "consent_religious_data"
         },
         {
@@ -12523,38 +12837,26 @@
         },
         {
           "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 52,
+          "file": "__tests__/settings-cache.test.ts",
+          "line": 44,
           "marker": "consent_religious_data"
         },
         {
           "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 67,
+          "file": "__tests__/settings-cache.test.ts",
+          "line": 157,
           "marker": "consent_religious_data"
         },
         {
           "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 102,
+          "file": "__tests__/settings-cache.test.ts",
+          "line": 160,
           "marker": "consent_religious_data"
         },
         {
           "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 263,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 614,
-          "marker": "consent_religious_data"
-        },
-        {
-          "repository": "native",
-          "file": "app/settings.tsx",
-          "line": 615,
+          "file": "app/settings/detail-screen.tsx",
+          "line": 85,
           "marker": "consent_religious_data"
         }
       ],
@@ -12856,24 +13158,24 @@
       "name": "Account deletion and export paths",
       "status": "VERIFIED",
       "canonicalOwnership": "backend",
-      "description": "39 deletion/export source locations were discovered. Completeness requires cascade tests.",
+      "description": "48 deletion/export source locations were discovered. Completeness requires cascade tests.",
       "evidence": [
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 315,
+          "line": 310,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 910,
+          "line": 844,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/app/(main)/profile/ProfileClient.tsx",
-          "line": 2480,
+          "line": 2396,
           "marker": "\\/api\\/user\\/export"
         },
         {
@@ -12884,15 +13186,51 @@
         },
         {
           "repository": "backend",
-          "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 105,
+          "file": "src/app/admin/users/[id]/page.tsx",
+          "line": 34,
+          "marker": "deletion_requested_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/users/[id]/page.tsx",
+          "line": 307,
+          "marker": "deletion_requested_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/admin/users/page.tsx",
+          "line": 32,
+          "marker": "deletion_requested_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/admin-routes-contract.test.ts",
+          "line": 336,
           "marker": "deleteUser\\("
         },
         {
           "repository": "backend",
           "file": "src/app/api/admin/users/[userId]/route.ts",
-          "line": 178,
+          "line": 416,
           "marker": "deleteUser\\("
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 509,
+          "marker": "deleteUser\\("
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/route.ts",
+          "line": 40,
+          "marker": "deletion_requested_at"
+        },
+        {
+          "repository": "backend",
+          "file": "src/app/api/admin/users/route.ts",
+          "line": 72,
+          "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
@@ -12975,68 +13313,32 @@
         {
           "repository": "backend",
           "file": "src/lib/account-deletion.ts",
-          "line": 15,
+          "line": 16,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/lib/account-deletion.ts",
-          "line": 22,
+          "line": 23,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/lib/account-deletion.ts",
-          "line": 26,
+          "line": 27,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/lib/account-deletion.ts",
-          "line": 32,
+          "line": 33,
           "marker": "deletion_requested_at"
         },
         {
           "repository": "backend",
           "file": "src/lib/account-deletion.ts",
-          "line": 40,
+          "line": 41,
           "marker": "purgeDueDeletedAccounts"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion.ts",
-          "line": 46,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion.ts",
-          "line": 48,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/account-deletion.ts",
-          "line": 83,
-          "marker": "deleteUser\\("
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/api/profile.ts",
-          "line": 36,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/mocks/mandali.ts",
-          "line": 79,
-          "marker": "deletion_requested_at"
-        },
-        {
-          "repository": "backend",
-          "file": "src/lib/mocks/profile.ts",
-          "line": 76,
-          "marker": "deletion_requested_at"
         }
       ]
     },
@@ -13050,14 +13352,32 @@
       "evidence": [
         {
           "repository": "backend",
+          "file": "src/app/api/admin/users/[userId]/route.ts",
+          "line": 500,
+          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
+        },
+        {
+          "repository": "backend",
           "file": "supabase/public_schema.sql",
-          "line": 10207,
+          "line": 10215,
           "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
         },
         {
           "repository": "backend",
           "file": "supabase/step2_constraints_policies.sql",
           "line": 3384,
+          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/birth-profiles-safety.test.ts",
+          "line": 30,
+          "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
+        },
+        {
+          "repository": "native",
+          "file": "__tests__/birth-profiles-safety.test.ts",
+          "line": 31,
           "marker": "birth_profiles.*delete|delete.*birth_profiles|guest.*retention|retention.*guest"
         }
       ]

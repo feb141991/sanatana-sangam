@@ -1,8 +1,8 @@
 # Machine-Generated Privacy and Security Engineering Baseline
 
 **Schema version:** 2
-**Source fingerprint:** `b49314e0d7a944b6d17bf8cf2205830a2988859aa2cc40a94240722677d75924`
-**Repositories:** Backend `c987493e81` (modified), Native `e5d79e47fd` (clean)
+**Source fingerprint:** `45e04fbf512d99dc08e432dc1f90489926393c33dd9986f3cd6b37619c414afe`
+**Repositories:** Backend `d8d039e18f` (modified), Native `a543765ccf` (modified)
 
 > This is an engineering evidence inventory, not legal advice. UNKNOWN and
 > ERROR states are never equivalent to a secure or compliant result.
@@ -11,9 +11,9 @@
 
 - Audited data categories: 14
 - Inventory checks: 12
-- Scanned files: backend 2432, Native 937
-- Literal storage keys: backend 44, Native 22
-- Providers/SDKs discovered: 11
+- Scanned files: backend 2580, Native 462
+- Literal storage keys: backend 44, Native 39
+- Providers/SDKs discovered: 10
 - Check VERIFIED: 11
 - Check NOT_FOUND: 0
 - Check DRIFT: 0
@@ -32,7 +32,7 @@
 | `CAT-01-AUTH` | Account and authentication data | `auth.users, public.profiles` | Supabase Auth, Google OAuth, Apple Auth, Twilio | PENDING_DECISION (Active account duration; 30d cool-off before hard delete) | **VERIFIED** | 25 |
 | `CAT-02-RELIGIOUS` | Profile and religious/spiritual data | `public.profiles, public.user_settings` | Supabase | PENDING_DECISION (Special-category consent and retention rule pending approval) | **DECISION_REQUIRED** | 25 |
 | `CAT-03-BIRTH-JYOTISH` | DOB, birth time/place, Jyotish and family/Kul data | `public.birth_profiles, public.profiles, client localStorage` | Supabase, Astronomia / Astronomy-engine (in-process) | PENDING_DECISION (Guest chart cleanup and family data retention pending decision) | **DECISION_REQUIRED** | 25 |
-| `CAT-04-LOCATION` | Current and foreground location | `Client memory / AsyncStorage, public.profiles (home_latitude, home_longitude, city, state, country, timezone)` | Supabase, OpenStreetMap / Nominatim (if enabled) | PENDING_DECISION (Transient in memory; persisted home coordinates tied to account lifecycle) | **VERIFIED** | 20 |
+| `CAT-04-LOCATION` | Current and foreground location | `Client memory / AsyncStorage, public.profiles (home_latitude, home_longitude, city, state, country, timezone)` | Supabase, OpenStreetMap / Nominatim (if enabled) | PENDING_DECISION (Transient in memory; persisted home coordinates tied to account lifecycle) | **VERIFIED** | 25 |
 | `CAT-05-MOOD-SANKALPA` | Mood, journal, reflections and sankalpa | `public.mood_logs, public.sankalpas, public.daily_reflections, client AsyncStorage` | Supabase | PENDING_DECISION (User-directed deletion; retention period pending decision) | **VERIFIED** | 25 |
 | `CAT-06-PRACTICE-PROGRESS` | Japa, Panchang, practice, quiz and progress history | `public.japa_sessions, public.pathshala_progress, public.quiz_attempts, public.user_streaks, public.vrat_observations` | Supabase | PENDING_DECISION (Retained during active membership; account deletion purge) | **VERIFIED** | 25 |
 | `CAT-07-COMMUNITY-MANDALI` | Mandali/community content and safety actions | `public.posts, public.post_comments, public.content_reports, public.user_blocked_profiles, public.user_muted_profiles, public.user_hidden_content, public.moderation_logs` | Supabase | PENDING_DECISION (Content deleted on user request; safety reports retention pending counsel decision) | **PARTIAL** | 25 |
@@ -48,7 +48,7 @@
 
 - Profiles state: **SECURED**
 - Anonymous row count: unavailable
-- Administrative row count: 16
+- Administrative row count: 7
 - Explanation: The anonymous role was explicitly denied access.
 - Limitation: The Data API probes verify effective anonymous access and aggregate counts. Exact live PostgreSQL grants, policy expressions, view security and RPC privileges require a separate metadata query through an approved database connection or Supabase MCP.
 
@@ -58,16 +58,16 @@
 |---|---|---|---|---:|
 | INV-PROF-01 | VERIFIED | Sensitive profile access | Anonymous profiles access probe | 20 |
 | INV-PROF-02 | VERIFIED | Sensitive profile access | Profile read and write paths | 30 |
-| INV-SDK-01 | VERIFIED | Third-party SDKs and trackers | Web tracker initialization | 21 |
-| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 8 |
+| INV-SDK-01 | VERIFIED | Third-party SDKs and trackers | Web tracker initialization | 11 |
+| INV-SDK-02 | VERIFIED | Third-party SDKs and trackers | Native analytics consent control | 7 |
 | INV-CACHE-01 | VERIFIED | Client storage and identity | Discovered browser and native storage keys | 30 |
 | INV-AGE-01 | VERIFIED | DOB, birth and location | Centralized age-policy enforcement | 30 |
-| INV-TERMS-01 | VERIFIED | Terms and consent | Versioned Terms acceptance receipts | 12 |
-| INV-CONSENT-01 | NEEDS_POLICY_DECISION | Terms and consent | Religious-profile consent | 26 |
+| INV-TERMS-01 | VERIFIED | Terms and consent | Versioned Terms acceptance receipts | 18 |
+| INV-CONSENT-01 | NEEDS_POLICY_DECISION | Terms and consent | Religious-profile consent | 30 |
 | INV-UGC-01 | VERIFIED | UGC safety | Mandali safety paths | 30 |
 | INV-UGC-02 | VERIFIED | UGC safety | Published support path | 15 |
 | INV-LIFE-01 | VERIFIED | Data lifecycle | Account deletion and export paths | 30 |
-| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 2 |
+| INV-LIFE-02 | VERIFIED | Data lifecycle | Guest birth-profile retention | 5 |
 
 ## Profile Contract
 
@@ -161,8 +161,7 @@ Generated types expose 79 profile columns:
 - Google Analytics 4: 1 evidence locations
 - Google AdSense: 4 evidence locations
 - OneSignal: 100 evidence locations
-- Firebase Analytics: 2 evidence locations
-- Expo Notifications: 47 evidence locations
+- Expo Notifications: 7 evidence locations
 - Razorpay: 79 evidence locations
 - Twilio: 24 evidence locations
 - Sarvam AI: 100 evidence locations
