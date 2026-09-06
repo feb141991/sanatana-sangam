@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { STOTRAMS, DEITY_META, MOOD_META, type Stotram } from '@/lib/stotrams';
 
 /**
- * GET /api/bhakti/stotram?tradition=hindu&deity=ganesha&mood=morning&type=stotram&limit=30
+ * GET /api/bhakti/stotram?tradition=hindu&deity=ganesha&mood=devotional&type=stotram&limit=30
  *
  * Public, read-only endpoint — no auth required. Backs both the native
  * "Stotrams & Hymns" / "Sacred Chants" Bhakti cards (Phase 5, filtered by

@@ -10665,12 +10665,29 @@ export const DEITY_META: Record<string, { label: string; emoji: string; color: s
   universal: { label: 'Universal',emoji: '', color: '#8b9e6e' },
 };
 
+// Keys must match StotramSummary['mood'] values actually used below --
+// verified against the live catalog (56 items: devotional 21, meditative
+// 15, energetic 7, protective 6, gratitude 5, celebratory 2; `grief` is
+// declared in the type union but not currently used by any item, so it
+// has no entry here -- adding one would just be a second dead button).
+// This previously used a disjoint, unrelated vocabulary (morning/evening/
+// meditation/festival/difficult) that never matched any stored `mood`
+// value at all -- s.mood === mood (both here and in Native's
+// app/bhakti/browse.tsx) filtered every mood button to zero results.
+// `morning`/`evening` are genuinely time-of-day categories with no
+// corresponding content mood tag today and are intentionally NOT
+// preserved here under a different key -- introducing one would require
+// its own reviewed content-tagging decision, not a rename. `festival` and
+// `difficult`'s descriptions, though, describe exactly what `celebratory`
+// and `protective` already mean, so those two carry their prior label/
+// desc across the rename rather than being reworded from scratch.
 export const MOOD_META: Record<string, { label: string; emoji: string; desc: string }> = {
-  morning:    { label: 'Morning Sadhana', emoji: '', desc: 'Dawn practice & Brahma Muhurta' },
-  evening:    { label: 'Evening Aarti',   emoji: '', desc: 'Sandhya vandana & gratitude' },
-  meditation: { label: 'Deep Meditation', emoji: '', desc: 'Stillness & inner journey' },
-  festival:   { label: 'Festival',        emoji: '', desc: 'Celebration & sacred joy' },
-  difficult:  { label: 'Difficult Times', emoji: '', desc: 'Strength, healing & protection' },
+  devotional:  { label: 'Devotional',  emoji: '', desc: 'Bhakti and heartfelt surrender' },
+  meditative:  { label: 'Meditative',  emoji: '', desc: 'Stillness & inner journey' },
+  energetic:   { label: 'Energetic',   emoji: '', desc: 'Vigor, courage & uplifting energy' },
+  protective:  { label: 'Protective',  emoji: '', desc: 'Strength, healing & protection' },
+  gratitude:   { label: 'Gratitude',   emoji: '', desc: 'Thankfulness and appreciation' },
+  celebratory: { label: 'Celebratory', emoji: '', desc: 'Celebration & sacred joy' },
 };
 
 export interface StotramSummary {
