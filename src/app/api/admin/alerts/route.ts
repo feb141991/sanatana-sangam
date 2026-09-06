@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminCookieAuth } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { fetchClientErrorMonitoringMetrics } from "@/lib/monitoring/client-error-aggregator";
+import { isAppleEnvConfigured } from "@/lib/apple-auth-service";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,25 @@ export async function GET(request: NextRequest) {
   try {
     const alerts: UrgentAlertItem[] = [];
     let hasDegradedSource = false;
+
+    // 0. Apple Sign-In token custody configuration -- boolean-only check,
+    // never reads or exposes the actual env var values. Surfaces the exact
+    // 503 condition src/app/api/auth/apple/store-token/route.ts hits
+    // (isAppleEnvConfigured() false) here, in the admin-only diagnostics
+    // surface, instead of only as a runtime failure a real sign-in attempt
+    // would hit.
+    if (!isAppleEnvConfigured()) {
+      alerts.push({
+        id: "apple-token-custody-not-configured",
+        title: "Apple Sign-In token custody is not configured",
+        desc: "APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY, and/or APPLE_TOKEN_ENC_KEY are missing from this environment. Apple sign-in itself still works, but refresh-token storage (needed for account deletion/revocation) is disabled -- /api/auth/apple/store-token returns 503.",
+        type: "system",
+        severity: "high",
+        href: "/admin/monitoring",
+        timestamp: new Date().toISOString(),
+        metadata: {},
+      });
+    }
 
     // 1. Client Error Spikes & New Fingerprints
     try {
