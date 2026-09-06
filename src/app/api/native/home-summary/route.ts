@@ -187,6 +187,20 @@ type HomeSummaryResponse = {
      * not imply an imminent retry will succeed.
      */
     calendarStatus: 'ready' | 'pending' | 'unavailable';
+    /**
+     * The resolved calendar_profile ('legacy-ujjain' when the viewer has
+     * none set) actually used to compute this response's observance data.
+     * Exposed so a client-side retry/cache-invalidation key can detect a
+     * calendar-profile/sampradaya change directly, instead of only
+     * inferring it indirectly through `tradition` (a much coarser
+     * category -- e.g. multiple distinct calendar_profile values can share
+     * the same `tradition`).
+     */
+    calendarProfile: string;
+    /** The viewer's sampradaya at response time, null if unset. Also feeds
+     * observance-variant selection (formatOccurrencesToResults) independently
+     * of calendarProfile/tradition -- exposed for the same reason. */
+    sampradaya: string | null;
   };
   nextPractice: {
     id: PracticeRow['id'];
@@ -1085,6 +1099,8 @@ export async function GET(request: NextRequest) {
       series,
       storyCards,
       calendarStatus,
+      calendarProfile: observanceCalendarProfile,
+      sampradaya: profile?.sampradaya ?? null,
     },
     nextPractice: buildNextPractice(practices),
     practices,
