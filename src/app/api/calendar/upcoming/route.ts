@@ -13,6 +13,7 @@ import type { ObservanceSeries } from '../../../../../contracts/observance-serie
 import type { HomeObservanceStoryCard } from '../../../../../contracts/observance-story-contract';
 import { selectDisplayObservances } from '@/lib/calendar/display-observances';
 import { getPublishedObservanceStoryCards } from '@/lib/observance-content';
+import { ServerTimingCollector } from '@/lib/server-timing';
 
 export const runtime = 'nodejs';
 
@@ -26,6 +27,7 @@ export interface UpcomingResponse {
 }
 
 export async function GET(request: NextRequest) {
+  const timings = new ServerTimingCollector();
   try {
     const searchParams = request.nextUrl.searchParams;
     
@@ -41,7 +43,9 @@ export async function GET(request: NextRequest) {
 
     // Cookie OR Bearer: the native app sends a Bearer token, so the previous
     // cookie-only lookup silently gave every native user the default calendar.
-    const resolved = await resolveRequestProfile(request, { tradition, calendarProfile });
+    const resolved = await timings.measure('profile', 'Profile Resolution', () =>
+      resolveRequestProfile(request, { tradition, calendarProfile })
+    );
     // Credentials were sent and rejected: say so instead of quietly serving
     // the default calendar, which leaves a stale client with no way to learn
     // it must refresh.
@@ -100,7 +104,9 @@ export async function GET(request: NextRequest) {
       occurrencesQuery = occurrencesQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
 
-    const { data: occurrencesData, error: occError } = await occurrencesQuery.order('date', { ascending: true });
+    const { data: occurrencesData, error: occError } = await timings.measure(
+      'occurrences_query', 'Occurrences Query', () => occurrencesQuery.order('date', { ascending: true })
+    );
 
     if (occError) {
       console.error('[API Calendar Upcoming] Occurrences error:', occError);
@@ -109,11 +115,13 @@ export async function GET(request: NextRequest) {
 
     let occurrencesWithBatches = occurrencesData || [];
     try {
-      occurrencesWithBatches = await attachMaterialisationBatches(
-        occurrencesWithBatches,
-        undefined,
-        calendarProfile,
-        resolved.context.effectiveCalculationLocation,
+      occurrencesWithBatches = await timings.measure('batch_enrichment', 'Materialisation Batch Enrichment', () =>
+        attachMaterialisationBatches(
+          occurrencesWithBatches,
+          undefined,
+          calendarProfile,
+          resolved.context.effectiveCalculationLocation,
+        )
       );
     } catch (error) {
       console.warn('[API Calendar Upcoming] Batch enrichment unavailable; serving core occurrences:', error);
@@ -164,7 +172,9 @@ export async function GET(request: NextRequest) {
       queueQuery = queueQuery.in('observance_definitions.kind', ['major', 'vrat']);
     }
 
-    const { data: queueResult, error: queueError } = await queueQuery;
+    const { data: queueResult, error: queueError } = await timings.measure(
+      'review_queue', 'Review Queue Query', () => queueQuery
+    );
     let queueData = queueResult || [];
 
     if (queueError) {
@@ -172,6 +182,7 @@ export async function GET(request: NextRequest) {
       queueData = [];
     }
 
+    const formatStartedAt = performance.now();
     const formattedResults = formatOccurrencesToResults(
       occurrencesWithBatches,
       queueData || [],
@@ -206,12 +217,15 @@ export async function GET(request: NextRequest) {
         console.warn('[API Calendar Upcoming] Series enrichment unavailable:', error);
       }
     }
+    timings.record('format', performance.now() - formatStartedAt, 'Format, Sort & Series');
 
     const requestedLanguage = searchParams.get('lang');
     const language = requestedLanguage === 'hi' || requestedLanguage === 'pa' ? requestedLanguage : 'en';
     let storyCards: HomeObservanceStoryCard[] = [];
     try {
-      storyCards = await getPublishedObservanceStoryCards(displayObservances, language, fromStr);
+      storyCards = await timings.measure('story_cards', 'Story Card Enrichment', () =>
+        getPublishedObservanceStoryCards(displayObservances, language, fromStr)
+      );
     } catch (error) {
       console.warn('[API Calendar Upcoming] Story-card enrichment unavailable:', error);
     }
@@ -237,6 +251,7 @@ export async function GET(request: NextRequest) {
         // only. Making this `public` again would require every selection input
         // to be an explicit URL parameter.
         'Cache-Control': 'private, max-age=1800',
+        'Server-Timing': timings.toHeaderValue(),
       },
     });
   } catch (err) {

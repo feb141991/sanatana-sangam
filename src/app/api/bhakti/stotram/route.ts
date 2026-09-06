@@ -31,6 +31,7 @@ function toListItem(s: Stotram) {
 }
 
 export async function GET(req: NextRequest) {
+  const startedAt = performance.now();
   const { searchParams } = req.nextUrl;
   const tradition = searchParams.get('tradition');
   const deity = searchParams.get('deity');
@@ -49,8 +50,19 @@ export async function GET(req: NextRequest) {
 
   if (limit) stotrams = stotrams.slice(0, limit);
 
+  const totalMs = (performance.now() - startedAt).toFixed(2);
   return NextResponse.json(
     { stotrams: stotrams.map(toListItem), total: stotrams.length, deityMeta: DEITY_META, moodMeta: MOOD_META },
-    { headers: { 'Cache-Control': 'public, max-age=3600' } }
+    {
+      headers: {
+        'Cache-Control': 'public, max-age=3600',
+        // No DB/network I/O here (STOTRAMS is an in-memory catalogue), so
+        // this is one stage, not a ServerTimingCollector breakdown like
+        // home-summary/mandali-feed -- still useful for Native to tell
+        // "slow network" from "slow server" on this route, matching the
+        // performance plan's "measure before indexing or rewriting" step.
+        'Server-Timing': `total;dur=${totalMs};desc="Total"`,
+      },
+    }
   );
 }
