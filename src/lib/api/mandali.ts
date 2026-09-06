@@ -9,28 +9,23 @@ export async function fetchMandaliData(userId: string): Promise<MandaliData> {
   return response.json() as Promise<MandaliData>;
 }
 
-export async function joinMandaliForLocation(userId: string, city: string, country: string, lat?: number, lon?: number) {
+export async function joinMandaliForLocation(_userId: string, city: string, country: string, lat?: number, lon?: number) {
   const supabase = createClient();
-  const { data: mandaliId, error: rpcError } = await supabase.rpc('find_or_create_mandali', {
+  const { data, error: rpcError } = await supabase.rpc('join_mandali' as never, {
+    p_mandali_id: null,
     p_city: city.trim(),
     p_country: country.trim(),
     p_lat: lat ?? null,
     p_lon: lon ?? null,
-  });
+  } as never);
 
   if (rpcError) throw rpcError;
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({
-      city: city.trim(),
-      country: country.trim(),
-      mandali_id: mandaliId,
-    })
-    .eq('id', userId);
-
-  if (error) throw error;
-  return mandaliId as string;
+  const result: unknown = data;
+  if (!result || typeof result !== 'object' || !('mandaliId' in result) || typeof result.mandaliId !== 'string' || !result.mandaliId) {
+    throw new Error('Membership was not confirmed. Please refresh and try again.');
+  }
+  return result.mandaliId;
 }
 
 export async function leaveMandali(userId: string) {

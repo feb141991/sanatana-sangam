@@ -1,0 +1,72 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+// Isolated local PostgreSQL only. No credentials or production connection.
+test('Mandali forward repair under authenticated role and RLS', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'mandali-review-'));
+  const dataDir = join(dir, 'db');
+  let started = false;
+  const sql = (query: string) => execFileSync('psql', ['-h', dir, '-p', '55473', '-d', 'postgres', '-XAt', '-v', 'ON_ERROR_STOP=1', '-c', query], { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+  const uid = '11111111-1111-4111-8111-111111111111';
+  const call = (query: string) => sql(`set role authenticated; set request.jwt.claim.sub = '${uid}'; ${query}`);
+  try {
+    execFileSync('initdb', ['-D', dataDir, '-A', 'trust'], { stdio: 'pipe' });
+    execFileSync('pg_ctl', ['-D', dataDir, '-l', join(dir, 'postgres.log'), '-o', `-F -k ${dir} -h '' -p 55473`, '-w', 'start'], { stdio: 'pipe' });
+    started = true;
+    sql(`create role authenticated; create role anon; create role service_role;
+      create schema auth;
+      create function auth.uid() returns uuid language sql as $$select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid$$;
+      grant usage on schema auth to authenticated;
+      create table public.mandalis(id uuid primary key default gen_random_uuid(), name text, city text, country text, latitude float8, longitude float8, radius_km integer, member_count integer default 0);
+      create table public.profiles(id uuid primary key, is_banned boolean default false, mandali_id uuid references public.mandalis, city text, country text, latitude float8, longitude float8, home_latitude float8, home_longitude float8);
+      alter table mandalis enable row level security;
+      grant select on mandalis to authenticated;
+      grant select on profiles to authenticated;
+      grant update(mandali_id) on profiles to authenticated;
+      alter table profiles enable row level security;
+      create policy own_profiles on profiles to authenticated using (id=auth.uid()) with check(id=auth.uid());
+      create policy read_mandalis on mandalis for select to authenticated using (true);
+      create function public.resolve_mandali_location(text,text) returns table(canonical_city text,canonical_country text) language sql as $$select btrim($1), btrim($2)$$;
+      create function public.haversine_distance_km(float8,float8,float8,float8) returns float8 language sql as $$select sqrt(power($1-$3,2)+power($2-$4,2))*111$$;
+      insert into profiles(id) values('${uid}');`);
+    const previous = readFileSync('supabase/migrations/20260906002021_repair_mandali_join_privilege_and_member_count.sql', 'utf8');
+    sql(previous.slice(previous.indexOf('create or replace function public.update_mandali_member_count()'), previous.indexOf('-- One atomic,')));
+    sql('create trigger counts after insert or update or delete on profiles for each row execute function public.update_mandali_member_count();');
+    sql(readFileSync('supabase/migrations/20260906113108_harden_mandali_existing_city_resolution.sql', 'utf8'));
+    sql('create trigger assign_insert before insert on profiles for each row execute function public.auto_assign_mandali_on_insert(); create trigger assign_update before update on profiles for each row execute function public.auto_assign_mandali();');
+    sql("insert into profiles(id,city,country) values('22222222-2222-4222-8222-222222222222','Server City','Albania')");
+    assert.equal(sql("select count(*) from mandalis where city='Server City'"), '0');
+    call("select join_mandali(null,'Tirana','Albania',41.3,19.8)");
+    assert.equal(sql("select count(*) from mandalis where city='Tirana'"), '1');
+    call("select join_mandali(null,'Tirana','Albania',41.3,19.8)");
+    assert.equal(sql("select member_count from mandalis where city='Tirana'"), '1');
+    assert.throws(() => call("select join_mandali(null,'Tirana','Albania',45,25)"), /different location/);
+    const id = sql("select id from mandalis where city='Tirana'");
+    call(`update profiles set mandali_id=null where id='${uid}'`);
+    assert.equal(sql(`select member_count from mandalis where id='${id}'`), '0');
+    call("select find_or_create_mandali('Tirana','Albania',41.3,19.8)");
+    call(`update profiles set mandali_id='${id}' where id='${uid}'`);
+    assert.equal(sql(`select member_count from mandalis where id='${id}'`), '1');
+    assert.throws(() => call(`select join_mandali('${id}',null,null,100,0)`), /Invalid coordinates/);
+    assert.throws(() => call("select find_or_create_mandali('New','Albania',null,20)"), /Invalid coordinates/);
+    assert.throws(() => call("select find_or_create_mandali('New','Albania','NaN',20)"), /Invalid coordinates/);
+    sql("insert into mandalis(name,city,country) values('Duplicate','Tirana','Albania')");
+    assert.throws(() => call("select join_mandali(null,'Tirana','Albania',41.3,19.8)"), /Multiple Mandalis/);
+    call(`select join_mandali('${id}')`);
+    assert.equal(sql('select count(*) from mandalis'), '2');
+    sql(`update profiles set is_banned=true where id='${uid}'`);
+    assert.throws(() => call("select find_or_create_mandali('New','Albania',41,20)"), /suspended/);
+    assert.throws(() => call(`select join_mandali('${id}')`), /suspended/);
+    const duplicate = sql(`select id from mandalis where id <> '${id}'`);
+    assert.throws(() => call(`update profiles set mandali_id='${duplicate}' where id='${uid}'`), /suspended/);
+    assert.throws(() => sql(`set role anon; select join_mandali('${id}')`), /permission denied/);
+    assert.equal(sql('select count(*) from mandalis'), '2');
+  } finally {
+    if (started) execFileSync('pg_ctl', ['-D', dataDir, '-m', 'immediate', '-w', 'stop'], { stdio: 'pipe' });
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

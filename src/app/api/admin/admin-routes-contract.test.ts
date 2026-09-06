@@ -7,6 +7,9 @@ import { submitReport } from "@/lib/moderation";
 import { getPendingReports, resolveReport } from "@/lib/moderation-admin";
 import { resolveContentReport } from "@/app/admin/monitoring/actions";
 
+const mockAppleConfigured = vi.fn();
+vi.mock('@/lib/apple-auth-service', () => ({ isAppleEnvConfigured: () => mockAppleConfigured() }));
+
 // Mock next/headers and next/cache for Server Actions
 vi.mock("next/headers", () => ({
   cookies: async () => ({
@@ -48,6 +51,7 @@ vi.mock("@/lib/supabase-admin", () => ({
 
 describe("Admin Route Contracts & Schema Integrity", () => {
   beforeEach(() => {
+    mockAppleConfigured.mockReturnValue(true);
     mockVerifyAdminCookieAuth.mockReset();
     mockVerifyAdminCookieAuth.mockResolvedValue(null); // auth ok
     mockFetchClientErrorMonitoringMetrics.mockReset();
@@ -188,6 +192,11 @@ describe("Admin Route Contracts & Schema Integrity", () => {
       expect(json.alerts).toHaveLength(1);
       expect(json.alerts[0].id).toBe("system-ok");
       expect(json.alerts[0].title).toBe("All Systems Operational");
+      mockAppleConfigured.mockReturnValue(false);
+      const unconfigured = await getAlerts(req);
+      const unconfiguredJson = await unconfigured.json();
+      expect(unconfiguredJson.alerts.some((alert: { id: string }) => alert.id === 'apple-token-custody-not-configured')).toBe(true);
+      expect(unconfiguredJson.alerts.some((alert: { id: string }) => alert.id === 'system-ok')).toBe(false);
     });
   });
 
