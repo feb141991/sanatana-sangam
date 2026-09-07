@@ -24,28 +24,35 @@ interface ProbeResult {
 const PROBE_TARGETS = [
   { endpoint: "/api/calendar/upcoming?days=7", method: "GET" },
   { endpoint: "/api/calendar/month?month=2026-09", method: "GET" },
-  { endpoint: "/api/calendar/day?date=2026-09-01", method: "GET" },
-  { endpoint: "/api/panchang", method: "GET" },
-  { endpoint: "/api/dharm-veer/roster", method: "GET" },
-  { endpoint: "/api/vrat/occurrence?slug=ekadashi", method: "GET" },
-  { endpoint: "/api/live-darshans", method: "GET" },
+  { endpoint: "/api/calendar/day?date=2026-09-08", method: "GET" },
+  { endpoint: "/api/dharm-veer/roster?tradition=all", method: "GET" },
+  { endpoint: "/api/vrat/stats?vrat_id=ekadashi", method: "GET" },
+  { endpoint: "/api/health", method: "GET" },
   { endpoint: "/api/admin/stats", method: "GET" },
 ];
 
-async function probeUrl(baseUrl: string, endpoint: string, method = "GET"): Promise<ProbeResult> {
+async function probeUrl(baseUrl: string, endpoint: string, method = "GET", authHeaders?: { cookie?: string; auth?: string }): Promise<ProbeResult> {
   const url = `${baseUrl}${endpoint}`;
   const t0 = Date.now();
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 6000);
 
+    const headers: Record<string, string> = {
+      "x-shoonaya-probe": "admin-monitoring",
+      "accept": "application/json",
+    };
+    if (authHeaders?.cookie) {
+      headers["cookie"] = authHeaders.cookie;
+    }
+    if (authHeaders?.auth) {
+      headers["authorization"] = authHeaders.auth;
+    }
+
     const res = await fetch(url, {
       method,
       signal: controller.signal,
-      headers: {
-        "x-shoonaya-probe": "admin-monitoring",
-        "accept": "application/json",
-      },
+      headers,
     });
     clearTimeout(timeout);
 
@@ -99,14 +106,19 @@ export async function POST(req: NextRequest) {
     const host = req.headers.get("host") || "localhost:3000";
     const baseUrl = `${protocol}//${host}`;
 
+    const authHeaders = {
+      cookie: req.headers.get("cookie") || undefined,
+      auth: req.headers.get("authorization") || undefined,
+    };
+
     if (targetEndpoint) {
-      const result = await probeUrl(baseUrl, targetEndpoint, body.method || "GET");
+      const result = await probeUrl(baseUrl, targetEndpoint, body.method || "GET", authHeaders);
       return NextResponse.json({ success: true, result });
     }
 
     // Probe default fleet
     const results = await Promise.all(
-      PROBE_TARGETS.map((t) => probeUrl(baseUrl, t.endpoint, t.method))
+      PROBE_TARGETS.map((t) => probeUrl(baseUrl, t.endpoint, t.method, authHeaders))
     );
 
     return NextResponse.json({
