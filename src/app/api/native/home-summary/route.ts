@@ -18,7 +18,13 @@ import { getOrMaterializeOccurrences } from '@/lib/calendar/resolve-occurrences'
 import { resolveObservanceLocationBucket } from '@sangam/panchang-engine';
 import { buildObservanceSeries } from '@/lib/calendar/observance-series';
 import type { ObservanceSeries } from '../../../../../contracts/observance-series-contract';
-import { formatOccurrencesToResults } from '@/lib/calendar/observance-formatter';
+import {
+  formatOccurrencesToResults,
+  buildObservanceEntry,
+  type ObservanceDefinitionJoin,
+  type ObservanceRow,
+  type ObservanceEntry,
+} from '@/lib/calendar/observance-formatter';
 import { resolveCalendarContext, type TraditionProfileDefinition } from '@/lib/calendar/calendar-context';
 import { toEkadashiMethod, toJanmashtamiMethod } from '@/lib/calendar/request-profile';
 import { buildObservanceHref, getPulseRouteSlug } from '@/lib/observance-route';
@@ -84,40 +90,7 @@ type SankalpaRow = {
   related_practice: string | null;
 };
 
-type ObservanceDefinitionJoin = {
-  slug: string;
-  display_name: string;
-  emoji: string | null;
-  description: string | null;
-  kind: string | null;
-  tradition: string | null;
-  route_kind: string | null;
-  route_slug: string | null;
-  active: boolean | null;
-};
 
-type ObservanceRow = {
-  date: string;
-  observance_definitions: ObservanceDefinitionJoin | ObservanceDefinitionJoin[] | null;
-};
-
-type ObservanceEntry = {
-  name: string;
-  emoji: string | null;
-  daysLeft: number;
-  routeKind: string;
-  routeSlug: string;
-  href: string;
-  label: string;
-  monthLabel: string | null;
-  description: string | null;
-  // Absolute ISO spiritual date (YYYY-MM-DD, row.date) this entry is for.
-  // Lets native index a cached upcoming-observances window by date and
-  // promote the matching entry to "today's" observance on a spiritual-date
-  // rollover, instead of showing a loading skeleton for data it already has
-  // -- see shoonaya-mobile's lib/homeCache.ts (findObservanceForDate).
-  date: string;
-};
 
 type PracticeRow = {
   id: 'japa' | 'nitya' | 'pathshala' | 'quiz' | 'dharmveer';
@@ -338,40 +311,7 @@ function suppressGenericEkadashiWhenNamed(rows: ObservanceRow[]): ObservanceRow[
   });
 }
 
-export function buildObservanceEntry(
-  row: ObservanceRow,
-  definition: ObservanceDefinitionJoin,
-  today: string,
-  monthSystem: string | null,
-): ObservanceEntry {
-  const daysLeft = Math.round((new Date(row.date).getTime() - new Date(today).getTime()) / 86_400_000);
-  const name = definition.display_name;
-  const routeKind = definition.route_kind || 'festival';
-  const routeSlug = definition.route_slug || definition.slug;
-  const href = buildObservanceHref(routeKind, routeSlug);
-  const label = daysLeft === 0
-    ? `Today is ${name}`
-    : daysLeft === 1
-      ? `Tomorrow is ${name}`
-      : `${name} in ${daysLeft} days`;
-  // Display-only label for the viewer's own calendar_profile month-system;
-  // never changes `row.date`/`daysLeft` -- see month-label-resolver.ts's
-  // governing invariant.
-  const monthLabel = resolveMonthLabelForSlug(row.date, definition.slug, monthSystem)?.formattedLabel ?? null;
 
-  return {
-    name,
-    emoji: definition.emoji ?? '🪔',
-    daysLeft,
-    routeKind,
-    routeSlug,
-    href,
-    label,
-    monthLabel,
-    description: definition.description ?? null,
-    date: row.date,
-  };
-}
 
 function clampProgress(value: number) {
   return Math.max(0, Math.min(1, value));

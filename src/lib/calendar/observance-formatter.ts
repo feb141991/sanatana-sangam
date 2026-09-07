@@ -2,7 +2,8 @@ import { isBatchTrustworthy, type BatchRow } from './materialisation-batch';
 import { filterWithheldJoinedRows } from './withheld';
 import { resolveCalendarContext, type ResolvedCalendarContext } from './calendar-context';
 import { selectTraditionVariant, type EkadashiVariantCandidate } from './ekadashi-selection';
-import { resolveMonthLabelForProfile, type MonthLabelResult } from './month-label-resolver';
+import { resolveMonthLabelForProfile, resolveMonthLabelForSlug, type MonthLabelResult } from './month-label-resolver';
+import { buildObservanceHref } from '@/lib/observance-route';
 import type { SourceReference, EvaluationReason } from '@sangam/dharma-rules';
 import rulesData from '@sangam/dharma-rules/src/festivals/rules.json';
 
@@ -673,4 +674,66 @@ export function formatOccurrencesToResults(
   }
 
   return results;
+}
+
+export type ObservanceDefinitionJoin = {
+  slug: string;
+  display_name: string;
+  emoji: string | null;
+  description: string | null;
+  kind: string | null;
+  tradition: string | null;
+  route_kind: string | null;
+  route_slug: string | null;
+  active: boolean | null;
+};
+
+export type ObservanceRow = {
+  date: string;
+  observance_definitions: ObservanceDefinitionJoin | ObservanceDefinitionJoin[] | null;
+};
+
+export type ObservanceEntry = {
+  name: string;
+  emoji: string | null;
+  daysLeft: number;
+  routeKind: string;
+  routeSlug: string;
+  href: string;
+  label: string;
+  monthLabel: string | null;
+  description: string | null;
+  date: string;
+};
+
+export function buildObservanceEntry(
+  row: ObservanceRow,
+  definition: ObservanceDefinitionJoin,
+  today: string,
+  monthSystem: string | null,
+): ObservanceEntry {
+  const daysLeft = Math.round((new Date(row.date).getTime() - new Date(today).getTime()) / 86_400_000);
+  const name = definition.display_name;
+  const routeKind = definition.route_kind || 'festival';
+  const routeSlug = definition.route_slug || definition.slug;
+  const href = buildObservanceHref(routeKind, routeSlug);
+  const label = daysLeft === 0
+    ? `Today is ${name}`
+    : daysLeft === 1
+      ? `Tomorrow is ${name}`
+      : `${name} in ${daysLeft} days`;
+  const monthLabel = resolveMonthLabelForSlug(row.date, definition.slug, monthSystem)?.formattedLabel ?? null;
+
+  return {
+    name,
+    emoji: definition.emoji ?? '🪔',
+    daysLeft,
+    routeKind,
+    routeSlug,
+    href,
+    label,
+    monthLabel,
+    description: definition.description ?? null,
+    date: row.date,
+  };
 }

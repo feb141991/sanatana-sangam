@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildObservanceEntry } from './route';
+import { buildObservanceEntry } from '@/lib/calendar/observance-formatter';
 
 describe('buildObservanceEntry date field', () => {
   it('attaches the occurrence row\'s absolute date, distinct from daysLeft', () => {
