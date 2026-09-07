@@ -2,11 +2,11 @@ import React from 'react';
 import type { GeoModel } from '@/lib/seo/geo-model';
 import type { PanchangData } from '@/lib/panchang';
 
-export function JsonLd({ data }: { data: any }) {
+export function JsonLd({ data }: { data: unknown }) {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}
     />
   );
 }

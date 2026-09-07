@@ -2,12 +2,16 @@ import type { MetadataRoute } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { VRAT_DATABASE } from '@/lib/vrat-data';
 import { STOTRAMS } from '@/lib/stotrams';
-import { ALL_KATHAS } from '@/lib/katha-library';
+import { ALL_KATHAS, getCanonicalKathaId } from '@/lib/katha-library';
+import { SEED_PATHS } from '@/lib/pathshala-paths';
+import { getPublishableFestivalSlugs } from '@/lib/festival-data';
+import { deduplicateSitemap, readSitemapPages } from '@/lib/seo/sitemap-pages';
 
 // Search indexing has one canonical production origin. Do not derive sitemap
 // URLs from deployment environment variables, which may point at preview
 // domains or a non-canonical hostname.
 const BASE_URL = 'https://www.shoonaya.com';
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -51,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const kathaRoutes: MetadataRoute.Sitemap = ALL_KATHAS.map(katha => ({
-    url: `${BASE_URL}/bhakti/katha/${katha.id}`,
+    url: `${BASE_URL}/bhakti/katha/${getCanonicalKathaId(katha.id)}`,
     changeFrequency: 'monthly',
     priority: 0.7,
   }));
@@ -64,19 +68,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (supabaseUrl && supabaseKey) {
       const client = createClient(supabaseUrl, supabaseKey);
       
-      const [discoverResult, nameStoryResult] = await Promise.all([
-        client
+      const [discoverRows, nameStoryRows] = await Promise.all([
+        readSitemapPages((from, to) => client
           .from('discover_content')
           .select('slug, created_at')
-          .eq('published', true),
-        client
+          .eq('published', true).order('slug').range(from, to)
+          .abortSignal(AbortSignal.timeout(10_000))),
+        readSitemapPages((from, to) => client
           .from('name_stories')
           .select('share_slug, generated_at')
-          .eq('is_public', true)
+          .eq('is_public', true).order('share_slug').range(from, to)
+          .abortSignal(AbortSignal.timeout(10_000)))
       ]);
       
-      if (discoverResult.data) {
-        discoverRoutes = discoverResult.data.map(item => ({
+      if (discoverRows) {
+        discoverRoutes = discoverRows.filter(item => item.slug).map(item => ({
           url: `${BASE_URL}/discover/${item.slug}`,
           ...(item.created_at ? { lastModified: new Date(item.created_at) } : {}),
           changeFrequency: 'weekly',
@@ -84,25 +90,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
       }
 
-      if (nameStoryResult.data) {
-        nameStoryRoutes = nameStoryResult.data.map(item => ({
+      if (nameStoryRows) {
+        nameStoryRoutes = nameStoryRows.filter(item => item.share_slug).map(item => ({
           url: `${BASE_URL}/name/${item.share_slug}`,
           ...(item.generated_at ? { lastModified: new Date(item.generated_at) } : {}),
           changeFrequency: 'monthly',
           priority: 0.5,
         }));
       }
-    }
+    } else throw new Error('Sitemap database configuration is missing');
   } catch (err) {
     console.error('Error generating dynamic routes for sitemap:', err);
+    throw new Error('Sitemap temporarily unavailable');
   }
 
-  return [
+  return deduplicateSitemap([
     ...staticRoutes,
     ...vratRoutes,
     ...stotramRoutes,
     ...kathaRoutes,
     ...discoverRoutes,
     ...nameStoryRoutes,
-  ];
+    ...SEED_PATHS.map(path => ({ url: `${BASE_URL}/pathshala/${path.id}` })),
+    ...getPublishableFestivalSlugs().map(slug => ({ url: `${BASE_URL}/festival/${slug}` })),
+  ]);
 }

@@ -23,6 +23,12 @@
  * 3. Email content read def.name/def.theme, neither of which has ever
  *    existed as an observance_definitions column (only display_name does) --
  *    every subject silently fell back to a generic "Festival is in 3 days."
+ * 4. `profiles` (and its public_profiles projection) carry no `email` column
+ *    at all -- verified directly against the live schema -- so the route's
+ *    original `.select('id, email, ...')` would 400 or, worse, silently
+ *    return every row with email undefined. Email now comes only from
+ *    public.get_recipient_emails (a service-role-only RPC reading
+ *    auth.users), resolved via src/lib/server/recipient-emails.ts.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -30,9 +36,12 @@ const sendShoonayaEmail = vi.fn().mockResolvedValue(undefined);
 vi.mock('@/lib/email', () => ({ sendShoonayaEmail: (...a: unknown[]) => sendShoonayaEmail(...a) }));
 
 let occurrenceRows: any[] = [];
+// profiles carries no email column -- only fields that actually exist there.
 const profileRows = [
-  { id: 'u1', email: 'user@example.com', full_name: 'Test User', tradition: 'hindu', unsubscribe_token: 'tok' },
+  { id: 'u1', full_name: 'Test User', tradition: 'hindu', unsubscribe_token: 'tok' },
 ];
+// Simulates auth.users, resolved only via the get_recipient_emails RPC.
+const emailByUserId: Record<string, string> = { u1: 'user@example.com' };
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
@@ -51,11 +60,20 @@ vi.mock('@supabase/supabase-js', () => ({
       if (table === 'profiles') {
         return {
           select: () => ({
-            eq: () => ({ not: () => ({ not: async () => ({ data: profileRows, error: null }) }) }),
+            eq: async () => ({ data: profileRows, error: null }),
           }),
         };
       }
       throw new Error(`unexpected table ${table}`);
+    },
+    rpc: async (fn: string, params: { p_user_ids: string[] }) => {
+      if (fn === 'get_recipient_emails') {
+        return {
+          data: params.p_user_ids.map(id => ({ id, email: emailByUserId[id] ?? null })),
+          error: null,
+        };
+      }
+      throw new Error(`unexpected rpc ${fn}`);
     },
   }),
 }));
@@ -171,6 +189,23 @@ describe('GET /api/cron/festival-email — withheld filtering', () => {
     expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
     expect(body.sent).toBe(1);
     expect(sendShoonayaEmail.mock.calls[0][0].subject.toLowerCase()).toContain('diwali');
+  });
+
+  it('excludes a candidate profile with no resolvable email (auth.users has none) rather than emailing "undefined"', async () => {
+    occurrenceRows = [row()];
+    profileRows.push({ id: 'u2', full_name: 'No Email User', tradition: 'hindu', unsubscribe_token: 'tok2' });
+    // u2 deliberately absent from emailByUserId -- get_recipient_emails returns null.
+
+    try {
+      const res = await GET(makeRequest());
+      const body = await res.json();
+
+      expect(sendShoonayaEmail).toHaveBeenCalledTimes(1);
+      expect(body.sent).toBe(1);
+      expect(sendShoonayaEmail.mock.calls[0][0].to).toBe('user@example.com');
+    } finally {
+      profileRows.pop();
+    }
   });
 
   it('uses display_name for the email subject instead of the non-existent name/theme fields', async () => {

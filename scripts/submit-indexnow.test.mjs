@@ -1,9 +1,49 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { inferUpdatedUrls, parseSitemap } from './submit-indexnow.mjs';
+import { inferUpdatedUrls, parseSitemap, run } from './submit-indexnow.mjs';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const ORIGIN = 'https://www.shoonaya.com';
+
+test('course and festival source edits select their public narratives', () => {
+  const urls = new Set([`${ORIGIN}/pathshala/gita`, `${ORIGIN}/festival/diwali`, `${ORIGIN}/about`]);
+  assert.deepEqual([...inferUpdatedUrls(['src/lib/pathshala-paths.ts',
+    'packages/dharma-rules/src/festivals/festival-content.json'], urls, new Set())].sort(),
+  [`${ORIGIN}/festival/diwali`, `${ORIGIN}/pathshala/gita`]);
+});
+
+for (const mode of ['dry', 'accepted', 'pending', 'rejected']) {
+  test(`submission checkpoint: ${mode}`, async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'shoonaya-indexnow-'));
+    const snapshotPath = join(dir, 'snapshot.json');
+    const original = JSON.stringify({ deploymentSha: null, entries: [[`${ORIGIN}/old`, null]] });
+    await writeFile(snapshotPath, original);
+    const key = (await readFile('public/ecb13bc18920487faed9fce877b7c386.txt', 'utf8')).trim();
+    let posts = 0;
+    try {
+      const attempt = run({ snapshotPath, deploymentSha: null, forceSubmit: false,
+        dryRun: mode === 'dry', fetchImpl: async (url, options) => {
+          if (url.endsWith('/sitemap.xml')) return new Response(`<urlset><url><loc>${ORIGIN}/new</loc></url></urlset>`);
+          if (url.endsWith('.txt')) return new Response(key);
+          posts++;
+          assert.equal(options.method, 'POST');
+          assert.deepEqual(JSON.parse(options.body).urlList, [`${ORIGIN}/new`, `${ORIGIN}/old`]);
+          return new Response('', { status: mode === 'pending' ? 202 : mode === 'rejected' ? 429 : 200 });
+        } });
+      if (mode === 'pending' || mode === 'rejected') await assert.rejects(attempt);
+      else await attempt;
+      assert.equal(posts, mode === 'dry' ? 0 : 1);
+      const after = await readFile(snapshotPath, 'utf8');
+      if (mode !== 'accepted') assert.equal(after, original);
+      else assert.deepEqual(JSON.parse(after).entries, [[`${ORIGIN}/new`, null]]);
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+}
 
 test('parseSitemap keeps canonical URLs and last-modified values', () => {
   const entries = parseSitemap(`

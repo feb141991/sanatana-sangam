@@ -7,11 +7,10 @@ import { getApiUser } from '@/lib/api-auth';
 import { ensureAuthProfile } from '@/lib/auth-profile';
 import { getDharmVeerRoster, selectDharmVeerOfTheDayFromRoster } from '@/lib/dharm-veer-db';
 import { NATIVE_NITYA_STEP_ORDER, countCompletedNativeNityaSteps } from '@/lib/native-nitya-karma';
-import { getTodayShloka } from '@/lib/shlokas';
 import { localSpiritualDate } from '@/lib/sacred-time';
-import { getDailySacredText, getDayOfYear } from '@/lib/sacred-texts';
+import { getDayOfYear } from '@/lib/sacred-texts';
 import { SACRED_RELICS } from '@/lib/relics';
-import { getSacredTextLabel, getTraditionMeta } from '@/lib/tradition-config';
+import { buildDailySacredText } from '@/lib/daily-sacred-text';
 import { PATHSHALA_PATH_IDS } from '@/lib/pathshala-paths';
 import { calculatePanchang, getTodaySpiritualPulses } from '@/lib/panchang';
 import { resolveMonthLabelForSlug } from '@/lib/calendar/month-label-resolver';
@@ -112,6 +111,12 @@ type ObservanceEntry = {
   label: string;
   monthLabel: string | null;
   description: string | null;
+  // Absolute ISO spiritual date (YYYY-MM-DD, row.date) this entry is for.
+  // Lets native index a cached upcoming-observances window by date and
+  // promote the matching entry to "today's" observance on a spiritual-date
+  // rollover, instead of showing a loading skeleton for data it already has
+  // -- see shoonaya-mobile's lib/homeCache.ts (findObservanceForDate).
+  date: string;
 };
 
 type PracticeRow = {
@@ -174,6 +179,7 @@ type HomeSummaryResponse = {
       routeSlug: string;
       href: string;
       label: string;
+      date: string;
     } | null;
     upcomingObservances: ObservanceEntry[];
     series?: ObservanceSeries[];
@@ -363,6 +369,7 @@ function buildObservanceEntry(
     label,
     monthLabel,
     description: definition.description ?? null,
+    date: row.date,
   };
 }
 
@@ -394,37 +401,6 @@ function toFestivalTradition(value?: string | null): TraditionKey {
   return value === 'hindu' || value === 'sikh' || value === 'buddhist' || value === 'jain' || value === 'all'
     ? value
     : 'all';
-}
-
-function buildSacredText(profile: ProfileRow | null, dayIndex: number) {
-  const tradition = profile?.tradition ?? 'hindu';
-  const meta = getTraditionMeta(tradition);
-  const sacredText = getDailySacredText(tradition, dayIndex);
-
-  if (sacredText) {
-    return {
-      label: getSacredTextLabel(tradition, profile?.app_language ?? 'en'),
-      icon: meta.sacredTextIcon,
-      original: sacredText.original,
-      transliteration: sacredText.transliteration,
-      meaning: sacredText.meaning,
-      source: sacredText.source,
-      accentColour: meta.accentColour,
-      accentLight: meta.accentLight,
-    };
-  }
-
-  const shloka = getTodayShloka(profile?.timezone ?? undefined);
-  return {
-    label: getSacredTextLabel(tradition, profile?.app_language ?? 'en'),
-    icon: meta.sacredTextIcon,
-    original: shloka.sanskrit,
-    transliteration: shloka.transliteration ?? '',
-    meaning: shloka.meaning,
-    source: shloka.source,
-    accentColour: meta.accentColour,
-    accentLight: meta.accentLight,
-  };
 }
 
 function buildPractices({
@@ -938,6 +914,7 @@ export async function GET(request: NextRequest) {
       label: `${fallbackPulse.label} Today`,
       monthLabel: null,
       description: null,
+      date: today,
     };
   } else if (firstDefinition && firstObservance) {
     observance = buildObservanceEntry(firstObservance.row, firstDefinition, today, monthSystem);
@@ -1051,7 +1028,7 @@ export async function GET(request: NextRequest) {
       latitude,
       longitude,
     },
-    sacredText: buildSacredText(profile, getDayOfYear()),
+    sacredText: buildDailySacredText(profile, getDayOfYear()),
     panchang: {
       href: '/panchang',
       tithiLabel: 'Today’s Panchang',

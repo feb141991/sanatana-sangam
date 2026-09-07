@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, appendFile, rename } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -129,6 +129,15 @@ export function inferUpdatedUrls(changedFiles, currentUrls, previousUrls, siteOr
       continue;
     }
 
+    if (file.startsWith('src/lib/pathshala-')) {
+      selectPrefix('/pathshala/');
+      continue;
+    }
+    if (file === 'src/lib/festival-data.ts' || file.endsWith('/festival-content.json')) {
+      selectPrefix('/festival/');
+      continue;
+    }
+
     const routePattern = routePatternFromAppFile(file);
     if (routePattern !== null) {
       for (const url of allUrls) {
@@ -151,8 +160,7 @@ function changedFilesBetween(previousSha, currentSha) {
     );
     return output.split('\n').map(file => file.trim()).filter(Boolean);
   } catch (error) {
-    console.warn(`Could not inspect changed files: ${error.message}`);
-    return [];
+    throw new Error(`Could not inspect deployed changes; submission checkpoint not advanced: ${error.message}`);
   }
 }
 
@@ -172,13 +180,14 @@ async function readSnapshot(snapshotPath) {
 async function writeSnapshot(snapshotPath, deploymentSha, entries) {
   await mkdir(dirname(snapshotPath), { recursive: true });
   await writeFile(
-    snapshotPath,
+    `${snapshotPath}.tmp`,
     `${JSON.stringify({
       deploymentSha: deploymentSha || null,
       generatedAt: new Date().toISOString(),
       entries: [...entries.entries()].sort(([left], [right]) => left.localeCompare(right)),
     }, null, 2)}\n`,
   );
+  await rename(`${snapshotPath}.tmp`, snapshotPath);
 }
 
 async function appendSummary(lines) {
@@ -190,7 +199,7 @@ export async function run({
   fetchImpl = fetch,
   siteOrigin = process.env.SITE_ORIGIN || DEFAULT_ORIGIN,
   snapshotPath = resolve(process.env.INDEXNOW_SNAPSHOT_PATH || '.indexnow/sitemap.json'),
-  deploymentSha = process.env.DEPLOYMENT_SHA || process.env.GITHUB_SHA || null,
+  deploymentSha = process.env.DEPLOYMENT_SHA || null,
   forceSubmit = process.env.INDEXNOW_FORCE_SUBMIT === 'true',
   dryRun = process.env.INDEXNOW_DRY_RUN === 'true',
 } = {}) {
@@ -204,6 +213,7 @@ export async function run({
   const previous = await readSnapshot(snapshotPath);
 
   const sitemapResponse = await fetchImpl(sitemapUrl, {
+    signal: AbortSignal.timeout(30_000),
     headers: { 'user-agent': 'Shoonaya-IndexNow/1.0' },
   });
   if (!sitemapResponse.ok) {
@@ -240,8 +250,10 @@ export async function run({
     throw new Error(`Refusing to submit ${urlList.length} URLs; IndexNow accepts at most ${MAX_URLS_PER_REQUEST}`);
   }
 
+  let submissionStatus = null;
   if (urlList.length > 0 && !dryRun) {
     const keyResponse = await fetchImpl(keyLocation, {
+      signal: AbortSignal.timeout(30_000),
       headers: { 'user-agent': 'Shoonaya-IndexNow/1.0' },
     });
     if (!keyResponse.ok || (await keyResponse.text()).trim() !== key) {
@@ -249,6 +261,7 @@ export async function run({
     }
 
     const indexNowResponse = await fetchImpl(INDEXNOW_ENDPOINT, {
+      signal: AbortSignal.timeout(30_000),
       method: 'POST',
       headers: { 'content-type': 'application/json; charset=utf-8' },
       body: JSON.stringify({
@@ -263,20 +276,27 @@ export async function run({
         `IndexNow rejected the submission (${indexNowResponse.status} ${indexNowResponse.statusText})`,
       );
     }
+    submissionStatus = indexNowResponse.status;
+    // 202 is pending key validation, not confirmed acceptance. Leave the
+    // checkpoint intact so a later run can retry the same changes.
+    if (submissionStatus === 202) throw new Error('IndexNow HTTP 202: key validation pending; checkpoint unchanged');
   }
 
-  await writeSnapshot(snapshotPath, deploymentSha, currentEntries);
+  if (!dryRun) await writeSnapshot(snapshotPath, deploymentSha || previous.deploymentSha, currentEntries);
   const mode = dryRun ? 'dry run' : 'live';
   console.log(`IndexNow ${mode}: ${urlList.length} URL(s) selected from ${currentEntries.size} sitemap URL(s).`);
+  if (submissionStatus === 200) console.log('HTTP 200: submission accepted. Crawling and indexing are not guaranteed.');
   await appendSummary([
     '### IndexNow submission',
     '',
     `- Sitemap URLs: ${currentEntries.size}`,
-    `- Submitted URLs: ${urlList.length}`,
+    `- Selected URLs: ${urlList.length}`,
+    `- Submitted URLs: ${dryRun ? 0 : urlList.length}`,
     `- Mode: ${mode}`,
+    '- Acceptance does not confirm crawling, indexing, or any completion deadline.',
   ]);
 
-  return { currentEntries, urlList, changedFiles };
+  return { currentEntries, urlList, changedFiles, submissionStatus };
 }
 
 const isCli = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);

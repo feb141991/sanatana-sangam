@@ -2,21 +2,19 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendShoonayaEmail } from '@/lib/email';
-import { filterWithheldJoinedRows } from '@/lib/calendar/withheld';
-import { CANONICAL_RULES } from '@/lib/calendar/rules';
+import { filterEligibleMarketingObservances } from '@/lib/marketing/sources/published-observance';
+import { resolveRecipientEmails } from '@/lib/server/recipient-emails';
 
-// filterWithheldJoinedRows is rule-based: for a slug with ZERO rules.json
-// rows it returns `false` (not withheld) -- confirmed at withheld.ts:87,
-// `if (rulesForSlug.length === 0) return false`. It was never built to
-// gate content that has no rule to check against at all, so it provides NO
-// protection for the 7 manual-seed slugs (das-lakshana-dharma,
-// gudi-padwa-ugadi, paryushana-parva, pavarana, samvatsari, sangha-day,
-// vassa-begins -- see docs/RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md)
-// that this route would otherwise still email about. A prior fix here
-// claimed to close exposure for these too and did not -- corrected now:
-// fail closed and never email about a slug with no rules.json entry until
-// a reviewer has actually approved it there.
-const RULED_SLUGS = new Set(CANONICAL_RULES.map(r => r.slug));
+// filterEligibleMarketingObservances applies the same three-stage safety gate the
+// admin marketing pipeline uses (publication_status='published', then
+// filterWithheldJoinedRows for currently-disputed/deferred rules, then the
+// RULED_SLUGS allowlist so a slug with zero rules.json rows -- the 7 manual-seed
+// slugs: das-lakshana-dharma, gudi-padwa-ugadi, paryushana-parva, pavarana,
+// samvatsari, sangha-day, vassa-begins -- fails closed instead of passing by
+// default). Previously duplicated inline here; now one shared implementation so the
+// two call sites can't drift. See docs/RECONCILIATION_PACKET_MANUAL_SEED_VS_RULES.md
+// and docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §10 for why this matters: this
+// route PUSHES content via email, which can't be un-sent once delivered.
 
 const APP_BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.shoonaya.com';
 
@@ -55,19 +53,15 @@ export async function GET(request: Request) {
   const targetDate = threeDaysFromNow.toISOString().slice(0, 10);
 
   // ----- Fetch festivals on target date -----
-  // publication_status = 'published' is required at the query level: without
-  // it, a 'draft'/'withheld_disputed' row (e.g. paryushana-parva-begins'
-  // 2027 row, which is exactly withheld_disputed today) whose SLUG still has
-  // a currently-publishable rule would pass filterWithheldJoinedRows below --
-  // that function checks the RULE (launch_status/disputed_years), never the
-  // individual row's own publication_status, outside one narrow bypass path
-  // (fixtureScopedApproval) this route's rows never qualify for.
   // No .limit() here -- it must apply AFTER policy filtering, not before.
   // Capping the raw query at 3 let up to 3 withheld/unruled rows crowd out
   // a 4th, genuinely publishable one for the same date, and with no ORDER
   // BY which 3 of an unbounded set came back was nondeterministic run to
   // run. Ordered by `id` purely for a stable, reproducible result -- there
   // is no meaningful ordering across festivals sharing one date.
+  // publication_status='published' is also re-applied inside
+  // filterEligibleMarketingObservances, but kept here too so this raw query never
+  // returns a withheld_disputed row to begin with.
   const { data: upcoming, error: festError } = await supabase
     .from('observance_occurrences')
     .select('*, observance_definitions(*)')
@@ -79,46 +73,46 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: festError.message }, { status: 500 });
   }
 
-  // Two-stage gate. Every other calendar-facing read path (home-summary,
-  // calendar/month, /upcoming, /day, /export) applies filterWithheldJoinedRows
-  // or formatOccurrencesToResults internally; this route previously applied
-  // neither. An unfiltered read here is worse than an unfiltered screen: this
-  // route PUSHES content via email, which can't be un-sent once delivered.
-  // See docs/PRD_CALENDAR_MATERIALIZATION_INTEGRITY.md §10 for the incident.
-  //
-  // Stage 1 (rule-based): withholds a currently-disputed/deferred RULE.
-  // Stage 2 (existence-based): filterWithheldJoinedRows returns `false` (not
-  // withheld) for a slug with zero rules.json rows at all -- it has nothing
-  // to check. That leaves the 7 manual-seed slugs completely unprotected by
-  // stage 1 alone, so stage 2 fails closed on them explicitly, rather than
-  // only ever emailing about content a reviewer has actually approved via a
-  // real rule.
-  const ruleFiltered = filterWithheldJoinedRows(upcoming ?? []);
-  const eligible = ruleFiltered.filter((row) => {
-    const def = (row as any).observance_definitions;
-    const slug = Array.isArray(def) ? def[0]?.slug : def?.slug;
-    return typeof slug === 'string' && RULED_SLUGS.has(slug);
-  });
+  const eligible = filterEligibleMarketingObservances(upcoming ?? []);
   // The 3-item cap is a delivery-volume choice (don't send an email listing
-  // ten unrelated festivals), not a policy gate -- it belongs after both
-  // filters above, not on the raw query, so a withheld/unruled row can never
+  // ten unrelated festivals), not a policy gate -- it belongs after
+  // filtering, not on the raw query, so a withheld/unruled row can never
   // count against it.
   const publishable = eligible.slice(0, 3);
   if (!publishable.length) {
     return NextResponse.json({ message: 'No festivals in 3 days', sent: 0 });
   }
 
-  // ----- Users opted‑in for festival emails -----
-  const { data: users, error: usersError } = await supabase
+  // ----- Users opted-in for festival emails -----
+  // profiles carries no email column (see src/lib/server/recipient-emails.ts) --
+  // resolve eligible profile IDs first, then look up email via auth.users
+  // separately, in that order, so the RPC is only ever called with IDs already
+  // filtered to this specific eligible set.
+  const { data: candidateProfiles, error: profilesError } = await supabase
     .from('profiles')
-    .select('id, email, full_name, tradition, unsubscribe_token')
-    .eq('email_festivals', true)
-    .not('email', 'is', null)
-    .not('email', 'like', '%@whatsapp.shoonaya.app');
+    .select('id, full_name, tradition, unsubscribe_token')
+    .eq('email_festivals', true);
 
-  if (usersError) {
-    return NextResponse.json({ error: usersError.message }, { status: 500 });
+  if (profilesError) {
+    return NextResponse.json({ error: profilesError.message }, { status: 500 });
   }
+
+  interface CandidateProfile {
+    id: string;
+    full_name: string | null;
+    tradition: string | null;
+    unsubscribe_token: string | null;
+  }
+  interface EmailableProfile extends CandidateProfile {
+    email: string;
+  }
+
+  const profiles = (candidateProfiles ?? []) as CandidateProfile[];
+  const emailByUserId = await resolveRecipientEmails(supabase, profiles.map(p => p.id));
+
+  const users: EmailableProfile[] = profiles
+    .map(p => ({ ...p, email: emailByUserId[p.id] ?? '' }))
+    .filter((u): u is EmailableProfile => Boolean(u.email) && !u.email.endsWith('@whatsapp.shoonaya.app'));
 
   const userBatches = chunk(users ?? [], 50);
   let totalSent = 0;

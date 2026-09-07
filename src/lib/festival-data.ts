@@ -28,6 +28,10 @@ const FESTIVAL_CONTENT_BY_SLUG: Record<string, FestivalContent> = Object.fromEnt
   FESTIVAL_CONTENT.map((f) => [f.definitionKey, f]),
 );
 
+export function getPublishableFestivalSlugs(): string[] {
+  return FESTIVAL_CONTENT.filter(isFestivalPublishable).map(festival => festival.definitionKey);
+}
+
 /** Exact-slug lookup — festivals are not fuzzy/alias-matched like recurring vrats. */
 export function lookupFestivalData(slug: string): FestivalContent | null {
   return FESTIVAL_CONTENT_BY_SLUG[slug] ?? null;

@@ -62,7 +62,8 @@ jobs:
 
       - name: Submit changed canonical URLs
         env:
-          DEPLOYMENT_SHA: ${{ github.event.deployment.sha || github.sha }}
+          # Scheduled/manual runs inspect live sitemap changes, not un-deployed main commits.
+          DEPLOYMENT_SHA: ${{ github.event.deployment.sha || '' }}
           INDEXNOW_FORCE_SUBMIT: ${{ inputs.submit_all || 'false' }}
         run: node scripts/submit-indexnow.mjs
 

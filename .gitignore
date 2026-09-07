@@ -46,3 +46,4 @@ venv/
 .env.production
 .env.production
 .env*
+.indexnow/
