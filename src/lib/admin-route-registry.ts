@@ -135,6 +135,16 @@ export const ADMIN_ROUTES: AdminRouteItem[] = [
     iconName: "MapPin",
   },
   {
+    id: "marketing",
+    path: "/admin/marketing",
+    title: "Marketing Campaign Hub",
+    shortTitle: "Marketing",
+    description: "Consent-aware newsletter, festival reminder & broadcast campaign engine",
+    group: "content_community",
+    iconName: "Mail",
+    badge: "Engine",
+  },
+  {
     id: "broadcast",
     path: "/admin/broadcast",
     title: "Global Devotee Broadcast",
