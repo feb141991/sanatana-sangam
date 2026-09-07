@@ -568,6 +568,24 @@ export async function getOrMaterializeOccurrences({
 
   let materializationPending = false;
   if (rows.length === 0) {
+    let fallbackQuery = supabase
+      .from('observance_occurrences')
+      .select(CALENDAR_OCCURRENCE_SELECT)
+      .gte('date', fromDate)
+      .lte('date', toDate)
+      .eq('observance_definitions.active', true)
+      .in('observance_definitions.tradition', [tradition, 'all'])
+      .eq('publication_status', 'published')
+      .in('calendar_profile', [calendarProfile, 'legacy-ujjain']);
+
+    if (calendarScope === 'major_only') {
+      fallbackQuery = fallbackQuery.in('observance_definitions.kind', ['major', 'vrat']);
+    }
+
+    const { data: fallbackData } = await fallbackQuery.order('date', { ascending: true }).limit(8);
+    if (fallbackData && fallbackData.length > 0) {
+      return { rows: fallbackData as ResolvedOccurrenceRow[], materializationPending: false };
+    }
     // Nothing found for this (profile, location) combination in the window
     // -- check whether that's because a requested year genuinely is not yet
     // materialized (report pending, kick off background work) or because the
