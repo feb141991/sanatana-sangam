@@ -338,7 +338,7 @@ function suppressGenericEkadashiWhenNamed(rows: ObservanceRow[]): ObservanceRow[
   });
 }
 
-function buildObservanceEntry(
+export function buildObservanceEntry(
   row: ObservanceRow,
   definition: ObservanceDefinitionJoin,
   today: string,
