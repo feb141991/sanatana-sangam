@@ -4,22 +4,42 @@ Status: **design only, no migration written yet**. Per review: document
 timestamp validation, timezone handling, the permitted recovery window,
 and legacy queued entries before touching `complete_japa_session`.
 
-**Revision note:** a second review pass found three defects in the first
-draft of this document, all now corrected below (search "CORRECTED" for
-the exact spots): (1) the fallback path derived its date as `v_today` and
-then compared that date to `v_today` to decide streak eligibility — which
-is always true by construction, so every fallback case silently qualified
-for the same-day streak-touching path, reproducing the exact bug this
-design exists to fix. (2) "a future attributed date cannot occur" was
-asserted as an invariant and would have `raise exception`ed in production
--- it is reachable via ordinary clock skew crossing the 4 AM boundary, or
-via a client/profile timezone mismatch, with no malicious or broken
-client required. (3) "idempotent replay is unaffected" was true of the
-*existing* replay branch but did not account for the *new* response
-fields this design adds (`recoveredAcrossDay`/`attributedDate`) --
-`get_japa_context()` returns live current state, not what a specific past
-completion was attributed to, so a naive replay would have needed to
-either omit those fields or recompute wrong ones.
+**Revision history:**
+
+- **Rev 2** found three defects in Rev 1, all corrected (search
+  "CORRECTED" for the spots): (1) the fallback path derived its date as
+  `v_today` and then compared that date to `v_today` to decide streak
+  eligibility — always true by construction, so every fallback case
+  silently qualified for the same-day streak-touching path, reproducing
+  the exact bug this design exists to fix. (2) "a future attributed date
+  cannot occur" was asserted as an invariant and would have `raise
+  exception`ed in production — reachable via ordinary clock skew crossing
+  the 4 AM boundary, or a client/profile timezone mismatch, no malicious
+  or broken client required. (3) "idempotent replay is unaffected" didn't
+  account for the *new* response fields this design adds — a naive
+  replay would have needed to either omit them or recompute wrong ones
+  from `get_japa_context()`'s always-current state.
+- **Rev 3** found two further defects in Rev 2's fix, both corrected
+  (search "REV 3" for the spots): (1) Rev 2's single `unknown_day`
+  fallback conflated two genuinely different situations — a request from
+  an app version that predates this feature entirely (which will keep
+  happening for as long as any user hasn't updated, for perfectly normal
+  real-time completions) and a request from an *updated* client whose
+  timestamp genuinely couldn't be trusted. Skipping the streak for the
+  first case would have silently stopped streak credit for every
+  not-yet-updated install — the server cannot distinguish the two from
+  the payload alone, so the fix is a fourth, explicit `unverified` state
+  rather than trying to guess. (2) Backfilling every pre-existing
+  `mala_sessions` row as `'confirmed_same_day'` invented certainty this
+  design has no basis for — some existing rows may already be exactly
+  the delayed-recovery-mis-dated case this whole effort exists to
+  address, and backfilling them as "confirmed" would falsely certify
+  data that never went through this validation. Backfill to `'unverified'`
+  instead, which preserves their existing dates/rewards/streak effects
+  exactly (same as Rev 3's fix for #1) without claiming a verification
+  that never happened. Rev 3 also stopped presenting `v_today` as a known
+  practice date for the two unconfirmed states — see "Response contract"
+  below.
 
 ## The bug this fixes
 
@@ -65,13 +85,26 @@ completions (rejected outright):
   unchanged."* instead of the normal completion celebration.
 - Never silently drop a completion the server can't confidently place on
   its original day — fall back to *today's date* (never rejection), same
-  as the current behavior's date-attribution. Critically, this fallback
-  gets the **same streak-untouched treatment as a genuine cross-day
-  recovery**, not the normal same-day path — only an actually validated,
-  confirmed-same-day timestamp may touch `daily_sadhana`/streak. (An
-  earlier draft of this document got this specific point wrong; see the
-  design doc's "Classifying the completion" section for the corrected
-  three-state design.)
+  as the current behavior's date-attribution.
+- That fallback splits into two genuinely different cases (REV 3): a
+  request that never included a client timestamp at all gets **exactly
+  today's normal, unmodified streak treatment** — this is not a
+  regression to avoid, it is *required*, since it also covers every
+  request from an app version that predates this feature and will keep
+  making perfectly normal real-time completions for as long as that
+  install exists. A request that *did* include a client timestamp but
+  couldn't be trusted (bad data, expired window, unconfirmable date) gets
+  the same streak-untouched treatment as a genuine cross-day recovery.
+  Only two of the four states below may touch `daily_sadhana`/streak, and
+  "no timestamp was sent" is deliberately one of them. (Rev 1/2 of this
+  document got this point wrong in different ways; see "Classifying the
+  completion" for the corrected four-state design.)
+- Existing `mala_sessions` rows are backfilled as **unverified**, not
+  confirmed — this design has no basis to certify that pre-existing
+  historical data was validated (some of it may already be exactly the
+  delayed-recovery-mis-dated case this document addresses), and
+  `unverified` preserves their existing dates, karma, and streak effects
+  exactly without inventing that certainty.
 - Retroactive streak repair is explicitly out of scope — a separate,
   future, explicitly-designed feature.
 
@@ -95,9 +128,10 @@ manual) replays the *same* values, never a freshly-computed one:
   since a traveling user's profile timezone can change between completion
   and sync).
 
-Both are optional from the server's point of view (see Legacy entries,
-below) — native should still always send them going forward, but the
-contract must not assume every request has them.
+Both are optional from the server's point of view (a missing pair
+classifies as `unverified` — see "Classifying the completion" below) —
+native should still always send them going forward, but the contract
+must not assume every request has them.
 
 ## What the server must add
 
@@ -124,11 +158,15 @@ clock, clock-skewed-into-the-future). Validate before trusting:
 3. `p_completed_at_client` must fall within the **permitted recovery
    window** (below).
 
-Any validation failure does **not** reject the request — it falls back to
-the server-derived `now()`-based date exactly as today (see Fallback,
-below). Validation is about deciding *whether to trust the client value*,
-not about accepting or rejecting the completion itself — a completion is
-never rejected for having a suspicious timestamp, only re-attributed.
+Any validation failure does **not** reject the request. A timestamp that
+was actually offered but fails one of these checks classifies as
+`unknown_day` (see "Classifying the completion" below) — dated to
+`v_today`, streak/`daily_sadhana` skipped. Validation is about deciding
+*whether to trust the client value*, not about accepting or rejecting the
+completion itself — a completion is never rejected for having a
+suspicious timestamp, only re-attributed. (A request with *no* timestamp
+at all is a different case — `unverified`, not a validation failure —
+see "Classifying the completion.")
 
 ### Permitted recovery window
 
@@ -150,51 +188,58 @@ this codebase — flag for explicit confirmation before the migration ships,
 since it directly bounds how much "recovered practice" a user can see
 credited to a past day versus silently folded into today.
 
-### Fallback (no trusted client timestamp)
+### Classifying the completion: four states, split on whether a timestamp exists at all
 
-Classified as `unknown_day` (see below) — attributed to `v_today` from
-server `now()`, same date-attribution as today's current live behavior,
-but **not** the same streak handling: `unknown_day` skips
-`daily_sadhana`/streak entirely, which current live behavior does not.
-That's the actual fix -- see "Classifying the completion" below for why.
-Covers three cases identically, by design, so there is exactly one
-fallback code path rather than three ad hoc ones:
+**REV 3.** Rev 2 fixed the vacuous date-comparison bug (see revision
+history) but still routed every untrusted case through one `unknown_day`
+bucket that skipped `daily_sadhana`/streak. That bucket silently included
+"no timestamp was sent at all" — which is not one narrow legacy-queue
+case, it is **every completion from an app version that predates this
+feature**, for as long as that version remains installed. A native
+rollout is never instant: some fraction of the install base can stay on
+an older build for weeks, sometimes indefinitely. Every one of those
+users' perfectly normal, real-time, same-day completions would have
+silently stopped incrementing their streak, because the payload of "old
+app making a live request" and "queued request from before the update,
+now finally delivered" is **identical** — the server has no field to
+tell them apart.
 
-- **Legacy queued entries**: a completion durably queued by an app version
-  older than this change has a `requestBody` with no
-  `completedAtClient`/`completedAtTimezone` fields at all. `jsonb -> 'foo'`
-  (or the request parser's equivalent) yields `null`, which flows straight
-  into "no trusted client timestamp" — no separate migration-version
-  branch needed in the function itself.
-- **Failed validation** (future-dated beyond skew allowance, invalid
-  timezone name).
-- **Outside the recovery window** (older than 7 days).
+The fix: split "untrusted" into two states based on **whether a
+timestamp was offered at all**, not just on whether it validated:
 
-### Classifying the completion: three states, not a date comparison
-
-**CORRECTED.** The first draft derived `v_attributed_date` (client date if
-trusted, else `v_today`) and then compared `v_attributed_date = v_today`
-to decide whether the streak-touching path applied. That comparison is
-vacuous for every fallback case: the fallback *is* `v_today` by
-definition, so `v_attributed_date = v_today` is always true whenever the
-client timestamp wasn't trusted at all — meaning a legacy entry, an
-invalid timezone, or a stale (out-of-window) completion would all have
-silently taken the normal-streak path, exactly reproducing the bug this
-document exists to fix (a late-arriving completion crediting a day the
-user didn't actually practice on).
-
-The fix: classify into an explicit `v_recovery_status`, computed from
-**whether the client timestamp was actually trusted**, never from
-comparing derived dates. Only one of the three states is allowed to touch
-`daily_sadhana`/streaks at all:
+- **`unverified`** — no `p_completed_at_client`/`p_completed_at_timezone`
+  in the request at all. Gets **exactly today's current, unmodified
+  behavior**: normal `daily_sadhana` upsert, normal streak
+  increment/freeze, dated to `v_today`. This is not a compromise or a
+  known-remaining gap — it is required, specifically so that an
+  old-app-version user's ordinary same-day practice keeps crediting their
+  streak exactly as it does today, for as long as their install exists.
+- **`unknown_day`** — a timestamp *was* offered (this is an updated,
+  timestamp-capable client) but couldn't be trusted: invalid timezone
+  name, outside the recovery window, or an unconfirmable
+  today-or-later date (see below). Only reachable from an updated client
+  reporting something anomalous about its own data — never from a
+  rollout/versioning ambiguity — so this is the state that actually gets
+  the streak-skip treatment.
 
 ```sql
-if p_completed_at_client is not null
-   and p_completed_at_timezone is not null
-   and exists (select 1 from pg_timezone_names where name = p_completed_at_timezone)
-   and p_completed_at_client <= now() + interval '5 minutes'
-   and p_completed_at_client >= now() - interval '7 days'
-then
+if p_completed_at_client is null or p_completed_at_timezone is null then
+  -- No timestamp offered: an app version that predates this feature
+  -- (still making perfectly normal real-time completions), or a request
+  -- replaying a durably-queued body captured before the client was
+  -- updated. Indistinguishable from the payload alone -- must not guess
+  -- "delayed," which would silently stop streak credit for every
+  -- not-yet-updated install.
+  v_recovery_status := 'unverified';
+elsif not exists (select 1 from pg_timezone_names where name = p_completed_at_timezone) then
+  -- An updated client sent a garbage timezone -- a genuine anomaly, not
+  -- a rollout ambiguity, since only updated clients attempt this field.
+  v_recovery_status := 'unknown_day';
+elsif p_completed_at_client > now() + interval '5 minutes' then
+  v_recovery_status := 'unknown_day';
+elsif p_completed_at_client < now() - interval '7 days' then
+  v_recovery_status := 'unknown_day';
+else
   v_client_today := ((p_completed_at_client at time zone p_completed_at_timezone) - interval '4 hours')::date;
   if v_client_today = v_today then
     v_recovery_status := 'confirmed_same_day';
@@ -206,65 +251,87 @@ then
     -- 04:02 -- only 4 minutes apart, well inside the 5-minute skew
     -- allowance, but the shift lands them on different calendar dates),
     -- or by a client/profile timezone mismatch producing a different
-    -- "today" for the same instant. This is NOT a validation failure to
-    -- reject or an invariant to assert -- it is simply not confirmable
-    -- as either same-day or a genuine past day, so it degrades to the
-    -- same treatment as any other untrusted timestamp.
+    -- "today" for the same instant. Not confirmable as same-day or a
+    -- genuine past day -- degrades to unknown_day, not an exception.
     v_recovery_status := 'unknown_day';
   end if;
-else
-  v_recovery_status := 'unknown_day';
 end if;
 
+v_touches_streak := v_recovery_status in ('confirmed_same_day', 'unverified');
 v_attributed_date := case
   when v_recovery_status = 'confirmed_cross_day' then v_client_today
-  else v_today  -- confirmed_same_day, and unknown_day's best-available guess
+  else v_today
 end;
 ```
 
-- **`confirmed_same_day`** — the client timestamp was validated and lands
-  on today. Take the existing code path completely unchanged: normal
-  `daily_sadhana` upsert, normal streak increment/freeze logic, normal
-  `spiritual_date = v_today`. This is the common case (99%+ of traffic)
+The four states, and their treatment:
+
+- **`confirmed_same_day`** — validated timestamp, lands on today. Existing
+  code path, completely unchanged: normal `daily_sadhana` upsert, normal
+  streak logic. The common case (99%+ of traffic once fully rolled out)
   and must not regress.
-- **`confirmed_cross_day`** — the client timestamp was validated and
-  lands strictly before today, within the trust window. New path:
-  - Insert `mala_sessions` with `date = v_attributed_date`,
-    `spiritual_date = v_attributed_date` (historical accuracy — this
-    session genuinely happened that day, and `get_japa_context()`'s
-    lifetime aggregates already sum across all of `mala_sessions`
-    unconditionally, so totals update correctly for free).
-  - Award karma exactly once, same formula as today
-    (`least(p_rounds * 5, 540)`), same `karma_ledger` insert, with
-    `earned_date = v_attributed_date` — karma here has never been
-    streak-shaped (it's a pure function of `p_rounds`), so "normal
-    eligible karma" requires no new formula.
-  - **Skip the `daily_sadhana` upsert entirely** — for both
-    `v_attributed_date` and today. This is the literal mechanism behind
-    "do not rewrite previously finalized streaks."
-- **`unknown_day`** — no trusted client timestamp at all (legacy entry,
-  failed validation, outside the window) **or** a client timestamp that
-  computed to today-or-later without being confirmably same-day (the
-  future-relative-to-`v_today` case above). Treated **identically to
-  `confirmed_cross_day` for streak purposes** — this is the actual fix
-  for the reported bug: session and karma are recorded (attributed to
-  `v_today`, the best available guess, same as today's live behavior),
-  but `daily_sadhana`/streak are **skipped**, exactly like a confirmed
-  cross-day recovery. The only difference from `confirmed_cross_day` is
-  which date the session lands on (today's best guess, vs. a validated
-  historical date) — never whether the streak is touched.
-- Response gains `recoveredAcrossDay: v_recovery_status <> 'confirmed_same_day'`
-  and `attributedDate: v_attributed_date`, so the client shows *"Practice
-  recovered; earlier streak unchanged"* for both `confirmed_cross_day` and
-  `unknown_day` — both are honestly "we couldn't confirm this happened
-  today," and the copy should say so identically. `recoveredAcrossDay:
-  false` only for the confirmed-same-day path — no client-visible change
-  there.
+- **`unverified`** — no timestamp offered. **Also** takes the normal
+  `daily_sadhana`/streak path, identically to `confirmed_same_day` —
+  this is the fix for the rollout defect above. Differs from
+  `confirmed_same_day` only in that the response is honest about not
+  having confirmed anything (see "Response contract" below); the
+  database write is identical.
+- **`confirmed_cross_day`** — validated timestamp, lands strictly before
+  today, within the trust window. New path: insert `mala_sessions` with
+  `date = v_attributed_date`, `spiritual_date = v_attributed_date`
+  (historical accuracy — `get_japa_context()`'s lifetime aggregates sum
+  across all of `mala_sessions` unconditionally, so totals update
+  correctly for free); award karma exactly once, same formula as today
+  (`least(p_rounds * 5, 540)`), `earned_date = v_attributed_date`; **skip
+  the `daily_sadhana` upsert entirely**, for both `v_attributed_date` and
+  today — the literal mechanism behind "do not rewrite previously
+  finalized streaks."
+- **`unknown_day`** — timestamp offered but untrustworthy. Same
+  streak-skip treatment as `confirmed_cross_day` (session/karma recorded,
+  `daily_sadhana` untouched), but dated to `v_today` (the only date
+  actually available) rather than a validated historical date.
+
+Only `confirmed_same_day` and `unverified` may touch
+`daily_sadhana`/streak. `confirmed_cross_day` and `unknown_day` never do,
+regardless of what the recovery/skew/window constants are tuned to.
+
+### Response contract: don't present an unconfirmed date as a known one
+
+**REV 3.** Rev 2's response set `attributedDate: v_today` and
+`recoveredAcrossDay: true` for `unknown_day` — presenting *today* as if
+it were a confirmed practice date, and labeling a save "recovered" when
+the server has no idea what day the practice actually happened, or
+whether it was "recovered" from anything at all. Both fields overstate
+what's actually known.
+
+Fix: return the explicit classification, and only populate a practice
+date when one was actually confirmed:
+
+```sql
+'recoveryStatus', v_recovery_status,
+'attributedDate', case
+  when v_recovery_status in ('confirmed_same_day', 'confirmed_cross_day') then v_attributed_date
+  else null  -- unverified and unknown_day: no confirmed practice date to report
+end,
+'processedDate', v_today  -- always known: when the server actually handled this write
+```
+
+`recoveredAcrossDay` (the Rev 1/2 boolean) is dropped from the contract
+entirely rather than kept as a derived convenience — the whole point of
+this correction is that a single boolean can't honestly represent four
+states. The client selects its copy directly from `recoveryStatus`:
+
+| `recoveryStatus` | Client-visible behavior |
+|---|---|
+| `confirmed_same_day` | Normal completion celebration. No special copy. |
+| `unverified` | Normal completion celebration. No special copy — this must look and feel identical to today's app, since nothing unusual is being claimed. |
+| `confirmed_cross_day` | *"Practice recovered; earlier streak unchanged."* Shows `attributedDate`. |
+| `unknown_day` | *"Practice recorded; original day could not be confirmed."* Does **not** show a date (there isn't a confirmed one) — may reference `processedDate` if the copy needs to say when it was recorded. |
 
 ### Idempotent replay reconstructs the original attribution
 
-**CORRECTED.** The existing idempotency check runs before any date
-computation, unchanged by this design:
+The existing idempotency check runs before any date computation,
+unchanged by this design:
 
 ```sql
 select id into v_existing_session_id
@@ -272,40 +339,37 @@ from public.mala_sessions
 where user_id = v_user_id and client_completion_id = p_client_completion_id;
 ```
 
-The first draft claimed this made replay "unaffected" — true for the
-*existing* fields, but this design adds two *new* response fields
-(`recoveredAcrossDay`, `attributedDate`) that describe a specific past
-completion's attribution, not current state. `get_japa_context()` (what
-the replay branch returns today) computes **live, current** dashboard
-data — today's streak, today's `japaDone`, current lifetime totals — it
-has no memory of what a specific historical session was attributed to. A
-replay must reconstruct the ORIGINAL completion's classification, not
-recompute a new one from `p_completed_at_client`-as-replayed (which could
-even be absent or different on a manual retry) and not silently omit the
-new fields on a replay.
+Rev 1 claimed this made replay "unaffected" — true for the *existing*
+fields, but this design adds new response fields describing a specific
+past completion's classification, not current state.
+`get_japa_context()` (what the replay branch returns today) computes
+**live, current** dashboard data — it has no memory of what a specific
+historical session was attributed to. A replay must reconstruct the
+ORIGINAL completion's classification, not recompute one from
+`p_completed_at_client`-as-replayed (which could even be absent or
+different on a manual retry) and not silently omit the new fields.
 
 Fix: persist the classification on the row itself, and read it back on
-replay instead of recomputing anything. `mala_sessions` gains one new
-column:
+replay. `mala_sessions` gains one new column — four states, backfilled to
+`unverified` (REV 3; Rev 2 defaulted to `confirmed_same_day`, which is
+exactly the "invented certainty" problem from the revision history):
 
 ```sql
 alter table public.mala_sessions
-  add column recovery_status text not null default 'confirmed_same_day'
-    check (recovery_status in ('confirmed_same_day', 'confirmed_cross_day', 'unknown_day'));
+  add column recovery_status text not null default 'unverified'
+    check (recovery_status in ('confirmed_same_day', 'confirmed_cross_day', 'unknown_day', 'unverified'));
 ```
 
-(Default `'confirmed_same_day'` backfills every pre-existing row
-correctly — they all predate this feature and were, by definition, normal
-same-day completions. No `attributed_date` column is needed: the
-existing `date` column already stores exactly that value for every
-session, old and new, since a normal same-day session's `date` already
-equals `v_today` today.)
-
-The replay branch becomes:
+No new `attributed_date` column is needed — the existing `date` column
+already stores exactly that value for every session (old and new alike);
+what changes is only whether the *response* is willing to call it
+confirmed. `processedDate` for a replay comes from the existing
+`completed_at` column (already set to `now()` at original insert time —
+no new column needed for this either):
 
 ```sql
-select id, date, recovery_status
-  into v_existing_session_id, v_existing_date, v_existing_recovery_status
+select id, date, recovery_status, completed_at
+  into v_existing_session_id, v_existing_date, v_existing_recovery_status, v_existing_completed_at
 from public.mala_sessions
 where user_id = v_user_id and client_completion_id = p_client_completion_id;
 
@@ -317,75 +381,96 @@ if v_existing_session_id is not null then
     'sessionId', v_existing_session_id,
     'karmaPoints', v_karma_points,
     'karmaAwarded', 0,
-    'recoveredAcrossDay', v_existing_recovery_status <> 'confirmed_same_day',
-    'attributedDate', v_existing_date
+    'recoveryStatus', v_existing_recovery_status,
+    'attributedDate', case
+      when v_existing_recovery_status in ('confirmed_same_day', 'confirmed_cross_day') then v_existing_date
+      else null
+    end,
+    'processedDate', v_existing_completed_at::date
   );
 end if;
 ```
 
-A retry of an already-committed operation (manual Retry from the failed-
-item review sheet, or an automatic resume racing a request that actually
-landed) now returns the *original* `recoveredAcrossDay`/`attributedDate`
-exactly as first written, regardless of what `p_completed_at_client` the
-retry happens to carry — nothing about this design re-evaluates or
-re-awards an already-committed completion. This must be an explicit test
-(see below), not an assumption.
+A retry of an already-committed operation (manual Retry from the
+failed-item review sheet, or an automatic resume racing a request that
+actually landed) now returns the *original* classification exactly as
+first written, regardless of what `p_completed_at_client` the retry
+happens to carry — nothing about this design re-evaluates or re-awards
+an already-committed completion. This must be an explicit test (see
+below), not an assumption.
 
 ## Required test coverage before this ships
 
 1. Same-day completion with a trusted, validated client timestamp landing
    on today (`confirmed_same_day`): behavior byte-for-byte identical to
    today's live function — normal `daily_sadhana` upsert, normal streak
-   increment/freeze — this is the regression-risk case, since it's 99%+
-   of traffic. `recoveredAcrossDay: false`.
-2. Cross-day recovery within the window (`confirmed_cross_day`):
+   increment/freeze. `recoveryStatus: 'confirmed_same_day'`,
+   `attributedDate` set, no `recoveredAcrossDay` field in the response at
+   all (dropped from the contract).
+2. **No timestamp fields sent at all (`unverified`) — the rollout-safety
+   case.** Same-day, real-time semantics: normal `daily_sadhana` upsert,
+   normal streak increment/freeze, **streak must actually increment**
+   (not just "not decrement") when this is the day's first completion.
+   This is the regression test for the versioning defect: an app version
+   that predates this feature (or a request replaying a pre-update queued
+   body) must keep crediting streaks exactly as today, indefinitely, for
+   as long as that install exists. `attributedDate: null` in the
+   response (not confirmed), even though the underlying row is dated
+   `v_today`.
+3. Cross-day recovery within the window (`confirmed_cross_day`):
    `mala_sessions`/karma dated to the original day; **today's streak AND
    the original day's `daily_sadhana` both unchanged** (assert both
-   explicitly, not just one); response carries `recoveredAcrossDay: true`
-   with the correct `attributedDate`.
-3. Legacy entry (no `completedAtClient`/`completedAtTimezone` at all):
-   classified `unknown_day`, attributed to today's date (matching current
-   live behavior for the date), **but streak/`daily_sadhana` must NOT be
-   touched** — this is the specific case the first draft got wrong
-   (it would have taken the same-day path since its fallback date always
-   equaled `v_today` by construction). Assert the streak is unchanged
-   before and after this call, not just that the call succeeds.
-4. Client timestamp beyond the recovery window: classified `unknown_day`,
-   same streak-skip assertion as #3, not rejected.
-5. A client timestamp within the 5-minute skew allowance that crosses the
+   explicitly); `recoveryStatus: 'confirmed_cross_day'`, `attributedDate`
+   set to the original day.
+4. A validated, in-window client timestamp that fails to land on today
+   (i.e. `unknown_day` reached via the classification's `else` branch,
+   not via a missing timestamp): streak/`daily_sadhana` must NOT be
+   touched, `attributedDate: null` in the response even though the
+   underlying row is dated `v_today` (this is the specific "invented
+   certainty" case — assert the response does NOT claim a confirmed date).
+5. Client timestamp beyond the recovery window: classified `unknown_day`
+   (not `unverified` — the timestamp was present, just untrustworthy),
+   same streak-skip and `attributedDate: null` assertions as #4.
+6. A client timestamp within the 5-minute skew allowance that crosses the
    4 AM boundary into a date *after* `v_today` (e.g. server `now()` at
    03:58, client timestamp at 04:02): classified `unknown_day` (not an
-   exception, not treated as `confirmed_cross_day` or `confirmed_same_day`),
-   same streak-skip assertion. This is the concrete reproduction of the
-   "future attributed date" case the first draft asserted couldn't happen.
-6. A validated client timestamp and timezone that, compared against the
-   *profile's* timezone for the same instant, disagree on which
-   day it is: confirm which one governs `v_today` (the profile's, since
-   that's what the rest of the function already uses) and that a resulting
-   client-side "future" date is handled by test 5's same path, not a
+   exception, not `confirmed_cross_day`/`confirmed_same_day`), same
+   streak-skip assertion.
+7. A validated client timestamp and timezone that, compared against the
+   *profile's* timezone for the same instant, disagree on which day it
+   is: confirm which one governs `v_today` (the profile's, since that's
+   what the rest of the function already uses) and that a resulting
+   client-side "future" date is handled by test 6's same path, not a
    crash.
-7. Invalid `completedAtTimezone` (not a real IANA name): classified
-   `unknown_day`, same streak-skip assertion.
-8. Idempotent replay of an already-committed `confirmed_cross_day`
-   completion: returns the *original* `recoveredAcrossDay: true` and
-   `attributedDate` read back from the stored row (not recomputed from
+8. Invalid `completedAtTimezone` (not a real IANA name): classified
+   `unknown_day` (timestamp was present, so this is NOT `unverified`),
+   same streak-skip assertion.
+9. Idempotent replay of an already-committed `confirmed_cross_day`
+   completion: returns the *original* `recoveryStatus`/`attributedDate`
+   read back from the stored row (not recomputed from
    `get_japa_context()` or from whatever `p_completed_at_client` the
    replay happens to carry), does not re-derive a new date, does not
    re-award karma.
-9. Idempotent replay of an already-committed `unknown_day` completion:
-   same assertions as #8 — `recoveredAcrossDay: true` reconstructed from
-   the stored `recovery_status`, not re-derived.
-10. Idempotent replay of an already-committed `confirmed_same_day`
-    completion: `recoveredAcrossDay: false`, reconstructed the same way
-    (proves the reconstruction path doesn't accidentally mark every
-    replay as recovered).
-11. Manual Retry (from the failed-item review sheet) of a completion whose
+10. Idempotent replay of an already-committed `unknown_day` completion:
+    same assertions as #9 — `attributedDate: null` reconstructed
+    (proves a replay doesn't retroactively invent a confirmed date
+    either).
+11. Idempotent replay of an already-committed `unverified` completion:
+    `attributedDate: null` reconstructed, streak/karma not re-touched.
+12. Idempotent replay of an already-committed `confirmed_same_day`
+    completion: `attributedDate` set, reconstructed the same way (proves
+    the reconstruction path doesn't treat every replay as unconfirmed
+    either).
+13. Manual Retry (from the failed-item review sheet) of a completion whose
     original attempt actually succeeded server-side already: resolves as
-    idempotent replay (tests 8-10), not a new classification evaluation.
-12. Pre-existing `mala_sessions` rows (written before this migration):
-    `recovery_status` backfills to `'confirmed_same_day'` and a replay of
-    one of them (if ever retried) returns `recoveredAcrossDay: false`
-    correctly.
+    idempotent replay (tests 9-12), not a new classification evaluation.
+14. Pre-existing `mala_sessions` rows (written before this migration):
+    `recovery_status` backfills to `'unverified'` (not
+    `'confirmed_same_day'`), their existing `date`/karma/streak
+    contribution is completely unchanged by the migration itself, and a
+    replay of one of them (if ever retried) returns `attributedDate: null`
+    — the migration must not retroactively certify data it never
+    validated.
 
 ## Open questions to confirm before implementation
 
@@ -396,19 +481,30 @@ re-awards an already-committed completion. This must be an explicit test
   not confirmed constants — need explicit sign-off. Per review: these may
   ship as configurable initial limits, but neither may ever authorize
   moving historical practice into today's streak -- that guarantee comes
-  from the recovery_status classification above (only `confirmed_same_day`
-  touches `daily_sadhana`/streak, and that requires actual validated
-  confirmation, never a fallback), not from the window/skew values
-  themselves, and must hold regardless of what either is tuned to.
-- Whether `recoveredAcrossDay`/`attributedDate` need to also flow through
+  from the recovery_status classification (only `confirmed_same_day` and
+  `unverified` touch `daily_sadhana`/streak, and `unverified` exists
+  specifically to protect not-yet-updated installs, never to launder an
+  untrusted timestamp), not from the window/skew values themselves, and
+  must hold regardless of what either is tuned to.
+- Whether `recoveryStatus`/`attributedDate` need to also flow through
   `get_japa_context()` (for a cold app relaunch to know a *past* recovery
   happened) or are only meaningful on the completion response itself that
   triggered them — affects whether `daily_sadhana`-adjacent read paths
   need any change at all (current design says no).
+- Whether `unverified` should eventually sunset (e.g. once telemetry shows
+  pre-feature app versions have dropped below some threshold of live
+  traffic, tightening it to `unknown_day`'s treatment) — explicitly a
+  future decision, not part of this initial release; would need its own
+  telemetry signal (e.g. counting `unverified` classifications server-side)
+  to inform when it's safe.
 
-**Resolved by this revision** (previously open, now designed for
+**Resolved across revisions** (previously open, now designed for
 explicitly): whether a future-relative-to-`v_today` attributed date can
 occur (yes, via clock skew or timezone mismatch near the 4 AM boundary —
-see "Classifying the completion") and whether idempotent replay needs new
+see "Classifying the completion"); whether idempotent replay needs new
 handling for the fields this design adds (yes — see "Idempotent replay
-reconstructs the original attribution").
+reconstructs the original attribution"); whether "no timestamp" can be
+safely treated the same as "confirmed untrustworthy" (no — see
+"unverified" above, this was Rev 3's fix); whether backfilling existing
+rows as confirmed is defensible (no — see "unverified" backfill, also
+Rev 3).
