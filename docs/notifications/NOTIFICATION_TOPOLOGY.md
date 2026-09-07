@@ -4,15 +4,15 @@
 
 ## Summary
 
-- Route-level producers/workers discovered: **26**
-- Direct push callers: **20**
+- Route-level producers/workers discovered: **27**
+- Direct push callers: **21**
 - Queue writers: **6**
 - Live database queried: **yes**
 - Live table reachability verified: **yes**
 
 | Classification | Count |
 | --- | ---: |
-| `admin_or_test` | 1 |
+| `admin_or_test` | 2 |
 | `direct_send_legacy` | 15 |
 | `scheduled_queue_producer` | 5 |
 | `delivery_worker` | 1 |
@@ -23,6 +23,7 @@
 | Route | Classification | Vercel schedule | Direct push | Queue write | Preference references |
 | --- | --- | --- | --- | --- | --- |
 | `/api/admin/broadcast` | `admin_or_test` | not in vercel.json | yes | no | none detected |
+| `/api/admin/notification-templates/test` | `admin_or_test` | not in vercel.json | yes | no | none detected |
 | `/api/cron/aarti-notify` | `direct_send_legacy` | `30 12 * * *` | yes | no | none detected |
 | `/api/cron/brahma-muhurta` | `direct_send_legacy` | `0 3 * * *` | yes | no | none detected |
 | `/api/cron/calendar-health` | `direct_send_legacy` | `0 9 1 * *` | yes | no | none detected |
@@ -93,6 +94,7 @@ Migration files are repository evidence only. They are not labelled applied to p
 - `20260825221500_push_token_and_dispatch_audit_logs.sql`: repository present; production not verified by source scan.
 - `20260828043000_fix_notification_schedule_onconflict_index.sql`: repository present; production not verified by source scan.
 - `20260828140000_drop_onesignal_player_id.sql`: repository present; production not verified by source scan.
+- `20260902150000_notification_templates.sql`: repository present; production not verified by source scan.
 
 ## Live database evidence
 
@@ -104,12 +106,12 @@ Migration files are repository evidence only. They are not labelled applied to p
   "tables": {
     "notification_schedule": {
       "reachable": true,
-      "count": 47,
+      "count": 115,
       "error": null
     },
     "notifications": {
       "reachable": true,
-      "count": 67,
+      "count": 136,
       "error": null
     },
     "push_tokens": {
@@ -119,7 +121,7 @@ Migration files are repository evidence only. They are not labelled applied to p
     },
     "notification_dispatch_events": {
       "reachable": true,
-      "count": 52,
+      "count": 119,
       "error": null
     },
     "push_token_events": {

@@ -160,13 +160,66 @@ export async function GET(request: NextRequest) {
         const sev = (ev.severity === "P0" || ev.severity === "P1") ? "critical" : ev.severity === "P2" ? "warning" : "info";
         if (filters.severity !== "all" && filters.severity !== sev) continue;
 
+        let displayTitle = "";
+        let displayMessage = "";
+
+        const r = ev.route?.toLowerCase() || "";
+        const serviceName = r.includes("analytics/reader")
+          ? "Reader & Scripture Recitation Analytics"
+          : r.includes("ai/chat")
+          ? "Pramana AI Dharma Guru Chat"
+          : r.includes("tts")
+          ? "Sanskrit Shloka Audio Synthesis"
+          : r.includes("calendar/day") || r.includes("panchang")
+          ? "Panchang & Astronomical Muhurta"
+          : r.includes("calendar/upcoming")
+          ? "Upcoming Observances & Story Cards"
+          : r.includes("calendar/month")
+          ? "Monthly Calendar Matrix"
+          : r.includes("vrat")
+          ? "Vrat Observation & Fasting Stats"
+          : r.includes("dharm-veer")
+          ? "Dharm Veer Hero Roster"
+          : r.includes("japa")
+          ? "Japa Mala Sync & Ledger"
+          : r.includes("sadhana")
+          ? "Daily Sadhana Habits & Streak"
+          : r.includes("mandali")
+          ? "Mandali Community & Satsang Feed"
+          : r.includes("notifications")
+          ? "Push Notification Dispatcher"
+          : r.includes("auth")
+          ? "Authentication & Token Security"
+          : ev.route
+          ? `API Service: ${ev.route}`
+          : `${ev.domain ? ev.domain.toUpperCase() : "Platform"} Telemetry Event`;
+
+        if (ev.error_code && ev.error_code !== "200") {
+          displayTitle = `[${(ev.domain || "API").toUpperCase()}] ${ev.error_code}: ${serviceName}`;
+          displayMessage = ev.error_message || `Request to ${ev.route || "endpoint"} returned HTTP ${ev.error_code}`;
+        } else {
+          displayTitle = serviceName;
+          if (ev.error_message) {
+            displayMessage = ev.error_message;
+          } else if (ev.latency_ms) {
+            displayMessage = `Processed in ${ev.latency_ms}ms (HTTP ${ev.error_code || "200 OK"})`;
+          } else if (ev.context && typeof ev.context === "object" && Object.keys(ev.context).length > 0) {
+            const ctxStr = Object.entries(ev.context)
+              .map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : v}`)
+              .join(" • ");
+            displayMessage = ctxStr || "Telemetry event captured";
+          } else {
+            displayMessage = `HTTP ${ev.error_code || "200 OK"} telemetry recorded for ${ev.route || ev.domain || "platform"}`;
+          }
+        }
+
         allEvents.push({
           id: `mon_${ev.id || Math.random().toString(36).slice(2)}`,
           timestamp: ev.timestamp,
           source: "monitoring",
           severity: sev,
-          title: `[${ev.domain || "app"}] ${ev.error_code || "Monitoring Event"}`,
-          message: ev.error_message || "System event captured by monitoring layer",
+          title: displayTitle,
+          message: displayMessage,
           route: ev.route,
           correlation: {
             requestId: ev.request_id,
@@ -177,6 +230,7 @@ export async function GET(request: NextRequest) {
             provider: ev.provider,
             model: ev.model,
             latencyMs: ev.latency_ms,
+            errorCode: ev.error_code,
             context: ev.context,
           }) as Record<string, unknown>,
         });

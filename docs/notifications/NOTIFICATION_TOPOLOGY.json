@@ -1,16 +1,16 @@
 {
-  "sourceFingerprint": "8919748f486ab15d46a07efcde4ab15c9de7706884b0b3af5a6810263744dbee",
+  "sourceFingerprint": "b830e304df7c1d29ea436d554b98c2a88bd58ec997157fbedf6023c1bdba553d",
   "schemaVersion": "2.0.0",
   "ownership": {
     "canonicalRepository": "Sanatan Sangam/Shoonaya",
     "nativeRepositoryAudited": true
   },
   "summary": {
-    "totalRoutes": 26,
-    "directPushCallers": 20,
+    "totalRoutes": 27,
+    "directPushCallers": 21,
     "queueWriters": 6,
     "byClassification": {
-      "admin_or_test": 1,
+      "admin_or_test": 2,
       "direct_send_legacy": 15,
       "scheduled_queue_producer": 5,
       "delivery_worker": 1,
@@ -31,6 +31,20 @@
       "preferenceColumns": [],
       "notificationKeyLiterals": [
         ",\n  }));\n\n  let inserted = 0;\n  for (let i = 0; i < notifications.length; i += 200) {\n    const { data: rows, error } = await admin.supabase\n      .from("
+      ]
+    },
+    {
+      "route": "/api/admin/notification-templates/test",
+      "sourceFile": "src/app/api/admin/notification-templates/test/route.ts",
+      "classification": "admin_or_test",
+      "schedule": null,
+      "callsPushDirectly": true,
+      "readsSchedule": false,
+      "writesSchedule": false,
+      "writesBell": false,
+      "preferenceColumns": [],
+      "notificationKeyLiterals": [
+        " }, { status: 400 });\n  }\n\n  const pushResult = await sendPushNotification({\n    userIds,\n    title: "
       ]
     },
     {
@@ -126,7 +140,7 @@
       "notificationKeyLiterals": [
         " },\n    }, {\n      notificationKey: ",
         ",\n          notification_key: ",
-        ";\n\n        notificationsToInsert.push({\n          user_id: user.id,\n          title,\n          body,\n          emoji: ",
+        ",\n        });\n\n        notificationsToInsert.push({\n          user_id: user.id,\n          title,\n          body,\n          emoji: ",
         ";\n\ntype JapaNotificationInsert = {\n  user_id: string;\n  title: string;\n  body: string;\n  emoji: string;\n  type: ",
         "[japa-reminder] insert error:",
         "[japa-reminder] sadhana batch fetch warning for date ${groupLocalDate}:"
@@ -656,6 +670,11 @@
       "migrationFile": "20260828140000_drop_onesignal_player_id.sql",
       "repositoryStatus": "present",
       "productionStatus": "not_verified_by_source_scan"
+    },
+    {
+      "migrationFile": "20260902150000_notification_templates.sql",
+      "repositoryStatus": "present",
+      "productionStatus": "not_verified_by_source_scan"
     }
   ],
   "liveDatabase": {
@@ -665,12 +684,12 @@
     "tables": {
       "notification_schedule": {
         "reachable": true,
-        "count": 47,
+        "count": 115,
         "error": null
       },
       "notifications": {
         "reachable": true,
-        "count": 67,
+        "count": 136,
         "error": null
       },
       "push_tokens": {
@@ -680,7 +699,7 @@
       },
       "notification_dispatch_events": {
         "reachable": true,
-        "count": 52,
+        "count": 119,
         "error": null
       },
       "push_token_events": {
