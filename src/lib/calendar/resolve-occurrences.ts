@@ -78,6 +78,11 @@ export interface OccurrenceDefinitionJoin {
 
 export interface ResolvedOccurrenceRow extends Record<string, unknown> {
   date: string;
+  review_status?: string | null;
+  verification_status?: string | null;
+  final_date_source?: string | null;
+  calendar_profile?: string | null;
+  series_instance_key?: string | null;
   observance_definitions: OccurrenceDefinitionJoin;
 }
 
@@ -94,6 +99,64 @@ interface MaterializedOccurrenceRow {
   computed_timezone: string;
   calculated_by: string;
   final_date_source: string;
+}
+
+function occurrenceTrustScore(row: ResolvedOccurrenceRow, exactProfile: string): number {
+  let score = 0;
+  if (row.review_status === 'reviewed') score += 8;
+  if (row.verification_status === 'verified') score += 8;
+  if (row.final_date_source === 'manual_override') score += 7;
+  if (row.final_date_source === 'calculation_engine_reviewed') score += 6;
+  if (row.calendar_profile === exactProfile) score += 2;
+  if (row.calendar_profile === FESTIVAL_MIRROR_CALENDAR_PROFILE) score += 1;
+  if (row.final_date_source === 'legacy_seed') score -= 3;
+  return score;
+}
+
+function presentationMergeKey(row: ResolvedOccurrenceRow): string {
+  const definition = row.observance_definitions;
+  const slug = definition?.slug?.trim() || 'unknown';
+  const kind = definition?.kind?.trim() || 'unknown';
+
+  // Home's observance rail is a compact presentation surface, not a full
+  // audit view. If a sparse location bucket and the canonical calendar bucket
+  // disagree on a recurring observance by one civil day, show the more trusted
+  // source once rather than surfacing duplicate Pradosh/Ekadashi cards.
+  return `${kind}:${slug}`;
+}
+
+function mergeOccurrenceRows({
+  exactRows,
+  canonicalRows,
+  exactProfile,
+}: {
+  exactRows: ResolvedOccurrenceRow[];
+  canonicalRows: ResolvedOccurrenceRow[];
+  exactProfile: string;
+}): ResolvedOccurrenceRow[] {
+  const merged = new Map<string, ResolvedOccurrenceRow>();
+
+  for (const row of [...exactRows, ...canonicalRows]) {
+    const key = presentationMergeKey(row);
+    const existing = merged.get(key);
+    if (!existing) {
+      merged.set(key, row);
+      continue;
+    }
+
+    const rowScore = occurrenceTrustScore(row, exactProfile);
+    const existingScore = occurrenceTrustScore(existing, exactProfile);
+    if (
+      rowScore > existingScore ||
+      (rowScore === existingScore && row.date.localeCompare(existing.date) < 0)
+    ) {
+      merged.set(key, row);
+    }
+  }
+
+  return [...merged.values()]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 8);
 }
 
 export interface FestivalMirrorDefinitionMeta {
@@ -541,7 +604,7 @@ export async function getOrMaterializeOccurrences({
   const toYear = Number(toDate.slice(0, 4));
   const years = fromYear === toYear ? [fromYear] : [fromYear, toYear];
 
-  let query = supabase
+  let exactQuery = supabase
     .from('observance_occurrences')
     .select(CALENDAR_OCCURRENCE_SELECT)
     .gte('date', fromDate)
@@ -549,43 +612,42 @@ export async function getOrMaterializeOccurrences({
     .eq('observance_definitions.active', true)
     .in('observance_definitions.tradition', [tradition, 'all'])
     .eq('publication_status', 'published')
-    // No 'legacy-ujjain' fallback: rows are keyed to this caller's exact
-    // (calendarProfile, location), not Ujjain's coordinates. If nothing is
-    // materialized yet for this combination, the background kick-off below
-    // populates it for the next read rather than this one blocking on it.
     .eq('calendar_profile', calendarProfile)
     .eq('computed_latitude', location.lat)
     .eq('computed_longitude', location.lon)
     .eq('computed_timezone', location.tz);
 
+  let canonicalQuery = supabase
+    .from('observance_occurrences')
+    .select(CALENDAR_OCCURRENCE_SELECT)
+    .gte('date', fromDate)
+    .lte('date', toDate)
+    .eq('observance_definitions.active', true)
+    .in('observance_definitions.tradition', [tradition, 'all'])
+    .eq('publication_status', 'published')
+    .eq('calendar_profile', FESTIVAL_MIRROR_CALENDAR_PROFILE);
+
   if (calendarScope === 'major_only') {
-    query = query.in('observance_definitions.kind', ['major', 'vrat']);
+    exactQuery = exactQuery.in('observance_definitions.kind', ['major', 'vrat']);
+    canonicalQuery = canonicalQuery.in('observance_definitions.kind', ['major', 'vrat']);
   }
 
-  const { data, error } = await query.order('date', { ascending: true }).limit(8);
-  if (error) throw error;
-  const rows = (data ?? []) as ResolvedOccurrenceRow[];
+  const [
+    { data: exactData, error: exactError },
+    { data: canonicalData, error: canonicalError },
+  ] = await Promise.all([
+    exactQuery.order('date', { ascending: true }).limit(8),
+    canonicalQuery.order('date', { ascending: true }).limit(8),
+  ]);
+  if (exactError) throw exactError;
+  if (canonicalError) throw canonicalError;
+
+  const exactRows = (exactData ?? []) as ResolvedOccurrenceRow[];
+  const canonicalRows = (canonicalData ?? []) as ResolvedOccurrenceRow[];
+  const rows = mergeOccurrenceRows({ exactRows, canonicalRows, exactProfile: calendarProfile });
 
   let materializationPending = false;
-  if (rows.length === 0) {
-    let fallbackQuery = supabase
-      .from('observance_occurrences')
-      .select(CALENDAR_OCCURRENCE_SELECT)
-      .gte('date', fromDate)
-      .lte('date', toDate)
-      .eq('observance_definitions.active', true)
-      .in('observance_definitions.tradition', [tradition, 'all'])
-      .eq('publication_status', 'published')
-      .in('calendar_profile', [calendarProfile, 'legacy-ujjain']);
-
-    if (calendarScope === 'major_only') {
-      fallbackQuery = fallbackQuery.in('observance_definitions.kind', ['major', 'vrat']);
-    }
-
-    const { data: fallbackData } = await fallbackQuery.order('date', { ascending: true }).limit(8);
-    if (fallbackData && fallbackData.length > 0) {
-      return { rows: fallbackData as ResolvedOccurrenceRow[], materializationPending: false };
-    }
+  if (exactRows.length === 0) {
     // Nothing found for this (profile, location) combination in the window
     // -- check whether that's because a requested year genuinely is not yet
     // materialized (report pending, kick off background work) or because the
@@ -611,5 +673,5 @@ export async function getOrMaterializeOccurrences({
     }
   }
 
-  return { rows, materializationPending };
+  return { rows, materializationPending: rows.length === 0 && materializationPending };
 }

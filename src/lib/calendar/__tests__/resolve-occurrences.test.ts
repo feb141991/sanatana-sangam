@@ -43,7 +43,7 @@ vi.mock('../engine', () => ({
 const { calculateObservancesForYear } = await import('../engine') as unknown as {
   calculateObservancesForYear: ReturnType<typeof vi.fn>;
 };
-const { ensureYearMaterialized, isYearMaterialized } = await import('../resolve-occurrences');
+const { ensureYearMaterialized, getOrMaterializeOccurrences, isYearMaterialized } = await import('../resolve-occurrences');
 const { currentMaterializationProvenance } = await import('../materialisation-batch');
 
 const CURRENT_PROVENANCE = currentMaterializationProvenance('2.0.0');
@@ -377,6 +377,157 @@ function CURRENT_PROVENANCE_COLUMNS() {
     day_boundary_version: CURRENT_PROVENANCE.dayBoundaryVersion,
   };
 }
+
+function makeOccurrenceReadSupabase(rows: any[]) {
+  return {
+    from(table: string) {
+      if (table !== 'observance_occurrences') throw new Error(`unexpected table ${table}`);
+      const filters: Array<(row: any) => boolean> = [];
+      const chain: any = {
+        select: () => chain,
+        gte: (column: string, value: string) => {
+          filters.push((row) => String(row[column]) >= value);
+          return chain;
+        },
+        lte: (column: string, value: string) => {
+          filters.push((row) => String(row[column]) <= value);
+          return chain;
+        },
+        eq: (column: string, value: unknown) => {
+          filters.push((row) => {
+            if (column.startsWith('observance_definitions.')) {
+              return row.observance_definitions?.[column.split('.')[1]] === value;
+            }
+            return row[column] === value;
+          });
+          return chain;
+        },
+        in: (column: string, values: unknown[]) => {
+          filters.push((row) => {
+            if (column.startsWith('observance_definitions.')) {
+              return values.includes(row.observance_definitions?.[column.split('.')[1]]);
+            }
+            return values.includes(row[column]);
+          });
+          return chain;
+        },
+        order: (column: string) => ({
+          limit: async (limit: number) => ({
+            data: rows
+              .filter((row) => filters.every((filter) => filter(row)))
+              .sort((a, b) => String(a[column]).localeCompare(String(b[column])))
+              .slice(0, limit),
+            error: null,
+          }),
+        }),
+      };
+      return chain;
+    },
+  };
+}
+
+function occurrenceRow({
+  slug,
+  name,
+  date,
+  profile,
+  lat,
+  lon,
+  tz,
+  source = 'legacy_seed',
+  review = null,
+  verification = null,
+}: {
+  slug: string;
+  name: string;
+  date: string;
+  profile: string;
+  lat: number;
+  lon: number;
+  tz: string;
+  source?: string;
+  review?: string | null;
+  verification?: string | null;
+}) {
+  return {
+    date,
+    occurrence_date: date,
+    calendar_profile: profile,
+    computed_latitude: lat,
+    computed_longitude: lon,
+    computed_timezone: tz,
+    publication_status: 'published',
+    review_status: review,
+    verification_status: verification,
+    final_date_source: source,
+    observance_definitions: {
+      slug,
+      display_name: name,
+      emoji: null,
+      description: null,
+      kind: 'vrat',
+      tradition: 'hindu',
+      route_kind: 'vrat',
+      route_slug: slug,
+      active: true,
+    },
+  };
+}
+
+describe('getOrMaterializeOccurrences — canonical fallback merge', () => {
+  it('keeps canonical sacred days when a sparse exact-location bucket has some rows', async () => {
+    const userLocation = { lat: 52, lon: -0.5, tz: 'Europe/London' };
+    const supabase = makeOccurrenceReadSupabase([
+      occurrenceRow({
+        slug: 'pradosh-vrat',
+        name: 'Pradosh Vrat',
+        date: '2026-09-08',
+        profile: 'north_indian_purnimanta',
+        ...userLocation,
+      }),
+      occurrenceRow({
+        slug: 'aja-ekadashi',
+        name: 'Aja Ekadashi',
+        date: '2026-09-07',
+        profile: 'legacy-ujjain',
+        lat: 23.1765,
+        lon: 75.7885,
+        tz: 'Asia/Kolkata',
+        source: 'calculation_engine_reviewed',
+        review: 'reviewed',
+        verification: 'verified',
+      }),
+      occurrenceRow({
+        slug: 'pradosh-vrat',
+        name: 'Pradosh Vrat',
+        date: '2026-09-09',
+        profile: 'legacy-ujjain',
+        lat: 23.1765,
+        lon: 75.7885,
+        tz: 'Asia/Kolkata',
+        source: 'calculation_engine_reviewed',
+        review: 'reviewed',
+        verification: 'verified',
+      }),
+    ]);
+
+    const result = await getOrMaterializeOccurrences({
+      supabase,
+      fromDate: '2026-09-07',
+      toDate: '2026-09-14',
+      tradition: 'hindu',
+      calendarScope: 'all_observances',
+      calendarProfile: 'north_indian_purnimanta',
+      location: userLocation,
+    });
+
+    expect(result.materializationPending).toBe(false);
+    expect(result.rows.map((row) => `${row.observance_definitions.slug}:${row.date}`)).toEqual([
+      'aja-ekadashi:2026-09-07',
+      'pradosh-vrat:2026-09-09',
+    ]);
+  });
+});
 
 describe('isYearMaterialized — completeness against the manifest, not batch existence alone', () => {
   const baseManifest = {

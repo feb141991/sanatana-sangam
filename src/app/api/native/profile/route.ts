@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { getApiUser } from "@/lib/api-auth";
+import { createAdminClient } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
 
@@ -46,6 +47,7 @@ const VALID_GOALS = new Set([
 ]);
 
 const HINDU_ONLY_FIELDS = ["rashi", "nakshatra", "gotra", "calendar_profile", "calendar_scope"] as const;
+const USERNAME_RE = /^[a-z0-9_]{3,24}$/;
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -56,6 +58,13 @@ function sanitizeText(value: unknown, maxLength: number) {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed.slice(0, maxLength) : null;
+}
+
+function sanitizeUsername(value: unknown) {
+  if (typeof value !== "string") return undefined;
+  const normalized = value.trim().toLowerCase().replace(/^@+/, "");
+  if (!USERNAME_RE.test(normalized)) return undefined;
+  return normalized;
 }
 
 const DATE_OF_BIRTH_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -137,6 +146,14 @@ export async function PATCH(req: NextRequest) {
         return NextResponse.json({ error: field + " must be a string or null" }, { status: 400 });
       }
       updates[field] = value;
+    }
+
+    if ("username" in rawBody) {
+      const value = sanitizeUsername(rawBody.username);
+      if (value === undefined) {
+        return NextResponse.json({ error: "username must be 3-24 lowercase letters, numbers, or underscores" }, { status: 400 });
+      }
+      updates.username = value;
     }
 
     if ("avatar_url" in rawBody) {
@@ -271,6 +288,24 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "No editable profile fields provided" }, { status: 400 });
     }
 
+    if ("username" in updates && typeof updates.username === "string") {
+      const admin = createAdminClient();
+      const { data: existingUsername, error: usernameError } = await admin
+        .from("profiles")
+        .select("id")
+        .eq("username", updates.username)
+        .neq("id", user.id)
+        .maybeSingle();
+
+      if (usernameError) {
+        return NextResponse.json({ error: usernameError.message }, { status: 500 });
+      }
+
+      if (existingUsername) {
+        return NextResponse.json({ error: "Username is already taken" }, { status: 409 });
+      }
+    }
+
     // Returns the persisted values plus updated_at (auto-maintained by the
     // set_profiles_updated_at trigger) so a client-side desired-state cache
     // can acknowledge exactly this write -- a later, unrelated GET is not
@@ -289,6 +324,9 @@ export async function PATCH(req: NextRequest) {
       .single();
 
     if (error) {
+      if ("username" in updates && (error.code === "23505" || /username/i.test(error.message))) {
+        return NextResponse.json({ error: "Username is already taken" }, { status: 409 });
+      }
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
