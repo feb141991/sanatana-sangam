@@ -98,10 +98,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           priority: 0.5,
         }));
       }
-    } else throw new Error('Sitemap database configuration is missing');
+    }
   } catch (err) {
-    console.error('Error generating dynamic routes for sitemap:', err);
-    throw new Error('Sitemap temporarily unavailable');
+    console.warn('Warning: could not fetch dynamic routes for build-time sitemap, falling back to static routes:', err);
   }
 
   return deduplicateSitemap([
