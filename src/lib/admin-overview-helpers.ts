@@ -5,6 +5,7 @@ import type {
   ContentReportRecord,
   ClientErrorRecord,
   DharmVeerRecord,
+  SystemAlertRecord,
 } from "@/lib/admin-inspector-types";
 
 export interface SystemStatusSummary {
@@ -183,7 +184,38 @@ export function alertToInspectableRecord(alert: UrgentAlertItem): AdminInspectab
       return record;
     }
 
-    default:
-      return null;
+    case "system": {
+      const meta = alert.metadata || {};
+      const record: SystemAlertRecord = {
+        type: "system_alert",
+        id: alert.id,
+        title: alert.title,
+        summary: alert.desc,
+        severity: alert.severity || "medium",
+        timestamp: alert.timestamp || new Date().toISOString(),
+        href: alert.href || "/admin/monitoring",
+        serviceCategory: "System Infrastructure & Security",
+        remediation: alert.id.includes("apple")
+          ? "Set APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY, and APPLE_TOKEN_ENC_KEY in environment variables to enable Apple account revocation token custody (required by Apple App Store Review guideline 5.1.1(v))."
+          : "Review service environment configuration and gateway health logs.",
+        metadata: meta,
+      };
+      return record;
+    }
+
+    default: {
+      const record: SystemAlertRecord = {
+        type: "system_alert",
+        id: alert.id,
+        title: alert.title,
+        summary: alert.desc,
+        severity: alert.severity || "medium",
+        timestamp: alert.timestamp || new Date().toISOString(),
+        href: alert.href || "/admin/monitoring",
+        serviceCategory: "Operational Alert",
+        metadata: alert.metadata || {},
+      };
+      return record;
+    }
   }
 }

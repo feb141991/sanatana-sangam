@@ -7,7 +7,21 @@ export type AdminRecordType =
   | "calendar_finding"
   | "content_report"
   | "client_error"
-  | "dharm_veer";
+  | "dharm_veer"
+  | "system_alert";
+
+export interface SystemAlertRecord {
+  type: "system_alert";
+  id: string;
+  title: string;
+  summary: string;
+  severity: "high" | "medium" | "low";
+  timestamp: string;
+  href?: string;
+  serviceCategory?: string;
+  remediation?: string;
+  metadata?: Record<string, unknown>;
+}
 
 export interface CalendarFindingRecord {
   type: "calendar_finding";
@@ -102,7 +116,8 @@ export type AdminInspectableRecord =
   | CalendarFindingRecord
   | ContentReportRecord
   | ClientErrorRecord
-  | DharmVeerRecord;
+  | DharmVeerRecord
+  | SystemAlertRecord;
 
 /**
  * Sanitizes metadata objects by redacting known sensitive keys (passwords, tokens, auth headers).

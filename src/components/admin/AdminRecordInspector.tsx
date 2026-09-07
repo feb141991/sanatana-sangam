@@ -200,6 +200,12 @@ export function AdminRecordInspector({
                 Dharm Veer Biography
               </span>
             )}
+            {record?.type === "system_alert" && (
+              <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 border border-rose-500/20">
+                <AlertTriangle size={11} />
+                System Alert
+              </span>
+            )}
             {!record && (
               <span className="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-700 text-[10px] font-bold uppercase tracking-wider">
                 Record Inspector
@@ -544,6 +550,68 @@ export function AdminRecordInspector({
                   </div>
                 </div>
               )}
+
+              {/* ── RECORD VIEW: SYSTEM ALERT ── */}
+              {record.type === "system_alert" && (
+                <div className="space-y-4 select-text">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                        record.severity === "high" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
+                      }`}>
+                        {record.severity}
+                      </span>
+                      <span className="text-xs text-gray-500 font-mono">
+                        {new Date(record.timestamp).toLocaleString()}
+                      </span>
+                    </div>
+                    <h2 className="text-base font-bold font-serif theme-ink mt-2">{record.title}</h2>
+                    <p className="text-xs text-gray-700 leading-relaxed mt-1">{record.summary}</p>
+                  </div>
+
+                  {/* Remediation guidance */}
+                  {record.remediation && (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1">
+                        <Shield size={12} className="text-amber-700" />
+                        Recommended Operator Action
+                      </span>
+                      <p className="text-xs text-amber-950 leading-relaxed">{record.remediation}</p>
+                    </div>
+                  )}
+
+                  {/* Metadata / Config Details */}
+                  {record.metadata && Object.keys(record.metadata).length > 0 && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Diagnostic Context</span>
+                        <button
+                          onClick={() => copyText(JSON.stringify(record.metadata, null, 2), "meta")}
+                          className="flex items-center gap-1 text-[10px] font-bold text-gray-500 hover:text-gray-800 rounded px-1 cursor-pointer"
+                        >
+                          {copiedKey === "meta" ? <Check size={10} className="text-emerald-600" /> : <Copy size={10} />}
+                          <span>{copiedKey === "meta" ? "Copied" : "Copy JSON"}</span>
+                        </button>
+                      </div>
+                      <pre className="p-3 rounded-xl bg-gray-900 text-amber-200 font-mono text-[10px] overflow-x-auto max-h-48 whitespace-pre-wrap">
+                        {JSON.stringify(record.metadata, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+
+                  {record.href && (
+                    <div className="pt-2">
+                      <Link
+                        href={record.href}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 transition-colors shadow-xs"
+                      >
+                        <span>Open Related Workspace</span>
+                        <ExternalLink size={12} />
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -619,6 +687,16 @@ export function AdminRecordInspector({
               >
                 {copiedKey === "footer_copy" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
                 <span>{copiedKey === "footer_copy" ? "Copied Signature" : "Copy Signature"}</span>
+              </button>
+            )}
+
+            {record.type === "system_alert" && (
+              <button
+                onClick={() => copyText(`${record.title}\n\n${record.summary}\n\nRemediation: ${record.remediation || "N/A"}`, "system_copy")}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-gray-800 font-bold text-xs transition-colors cursor-pointer"
+              >
+                {copiedKey === "system_copy" ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                <span>{copiedKey === "system_copy" ? "Copied Details" : "Copy Alert Details"}</span>
               </button>
             )}
           </div>
