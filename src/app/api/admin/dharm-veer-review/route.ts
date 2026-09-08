@@ -36,7 +36,15 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase
     .from('dharm_veers')
     .select(
-      'slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, teaching, moral, legacy, quote, quote_source, source_citations, generated_by, created_at',
+      'slug, name, name_local, name_pa, tradition, era, ' +
+        'tagline, tagline_local, tagline_pa, ' +
+        'journey, journey_local, journey_pa, ' +
+        'trial, trial_local, trial_pa, ' +
+        'teaching, teaching_local, teaching_pa, ' +
+        'moral, moral_local, moral_pa, ' +
+        'legacy, legacy_local, legacy_pa, ' +
+        'quote, quote_local, quote_pa, quote_source, ' +
+        'source_citations, generated_by, created_at',
     )
     .eq('review_status', 'pending_review')
     .order('created_at', { ascending: true });

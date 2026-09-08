@@ -49,3 +49,20 @@ export function getInitialReaderDisplayMode(
 ): ReaderDisplayMode {
   return hasLocalContent && preferences.preferLocalLanguage ? 'local' : 'en';
 }
+
+export type LocalContentLanguage = 'hi' | 'pa';
+
+/**
+ * Which actual language "local" content should render as, for readers
+ * (like Dharm Veer) with genuine Hindi AND Punjabi content available.
+ * Deliberately keyed to the VIEWER's own effectiveMeaningLanguage -- the
+ * same signal preferLocalLanguage already uses to decide whether to show
+ * local content at all -- never to a content item's own tradition/category.
+ * (Dharm Veer previously keyed this off hero.tradition === 'sikh', which
+ * showed Punjabi UI labels over Hindi data for Sikh heroes regardless of
+ * the viewer's actual language, and Hindi regardless of a Punjabi-preferring
+ * viewer's choice for every other tradition.)
+ */
+export function resolveLocalContentLanguage(preferences: ReadablePreferences): LocalContentLanguage {
+  return preferences.effectiveMeaningLanguage === 'pa' ? 'pa' : 'hi';
+}

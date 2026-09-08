@@ -4,28 +4,41 @@ import { DHARM_VEERS, TRADITION_META, type DharmVeer } from '@/lib/dharm-veer';
 
 // ── Shared select columns ─────────────────────────────────────────────────────
 const DAILY_COLS = 'slug, name, name_local, tradition, era, tagline, journey, journey_local, trial, trial_local, teaching, teaching_local, moral, moral_local, legacy, legacy_local, quote, quote_local, quote_source, tags';
-const DHARM_VEER_COLS = `${DAILY_COLS}, illustration_prompt, day_index, created_at`;
+// Punjabi + tagline_local columns exist ONLY on dharm_veers, not the legacy
+// dharm_veer_daily table (see getDharmVeerBySlug's fallback query below,
+// which still uses DAILY_COLS) -- adding them to DAILY_COLS would make that
+// fallback query reference nonexistent columns and fail at query-plan time.
+const DHARM_VEER_COLS = `${DAILY_COLS}, illustration_prompt, day_index, created_at, name_pa, tagline_local, tagline_pa, journey_pa, trial_pa, teaching_pa, moral_pa, legacy_pa, quote_pa`;
 const CORE_TRADITIONS: Array<DharmVeer['tradition']> = ['hindu', 'sikh', 'buddhist', 'jain'];
 
 type DailyRow = {
   slug: string;
   name: string;
   name_local: string | null;
+  name_pa?: string | null;
   tradition: DharmVeer['tradition'];
   era: string | null;
   tagline: string;
+  tagline_local?: string | null;
+  tagline_pa?: string | null;
   journey: string;
   journey_local: string | null;
+  journey_pa?: string | null;
   trial: string;
   trial_local: string | null;
+  trial_pa?: string | null;
   teaching: string;
   teaching_local: string | null;
+  teaching_pa?: string | null;
   moral: string;
   moral_local: string | null;
+  moral_pa?: string | null;
   legacy: string | null;
   legacy_local: string | null;
+  legacy_pa?: string | null;
   quote: string | null;
   quote_local: string | null;
+  quote_pa?: string | null;
   quote_source: string | null;
   tags?: string[] | null;
   illustration_prompt?: string | null;
@@ -39,26 +52,37 @@ function rowToDharmVeer(row: DailyRow): DharmVeer {
     id: row.slug,
     name: row.name,
     nameLocal: row.name_local ?? undefined,
+    namePa: row.name_pa ?? undefined,
     era: row.era ?? 'Dharmic Era',
     tradition: row.tradition,
     region: meta.label,
     regionLocal: meta.labelLocal,
     emoji: meta.emoji,
     tagline: row.tagline,
+    taglineLocal: row.tagline_local ?? undefined,
+    taglinePa: row.tagline_pa ?? undefined,
     journey: row.journey,
     journeyLocal: row.journey_local ?? undefined,
+    journeyPa: row.journey_pa ?? undefined,
     trial: row.trial,
     trialLocal: row.trial_local ?? undefined,
+    trialPa: row.trial_pa ?? undefined,
     teaching: row.teaching,
     teachingLocal: row.teaching_local ?? undefined,
+    teachingPa: row.teaching_pa ?? undefined,
     moral: row.moral,
     moralLocal: row.moral_local ?? undefined,
+    moralPa: row.moral_pa ?? undefined,
     legacy: row.legacy ?? undefined,
     legacyLocal: row.legacy_local ?? undefined,
+    legacyPa: row.legacy_pa ?? undefined,
     illustrationPrompt: row.illustration_prompt ?? undefined,
     quote: row.quote ? { text: row.quote, attribution: row.quote_source ?? row.name } : undefined,
     quoteLocal: row.quote_local
       ? { text: row.quote_local, attribution: row.quote_source ?? row.name_local ?? row.name }
+      : undefined,
+    quotePa: row.quote_pa
+      ? { text: row.quote_pa, attribution: row.quote_source ?? row.name_pa ?? row.name }
       : undefined,
     tags: row.tags ?? undefined,
   };

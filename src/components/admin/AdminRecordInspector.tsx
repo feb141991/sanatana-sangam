@@ -523,20 +523,13 @@ export function AdminRecordInspector({
                     </div>
                   )}
 
-                  {/* Biography text */}
+                  {/* Biography text, with Hindi/Punjabi length ratio so a thin
+                      translation is visible here too, not just in the full
+                      review queue page this links out to. */}
                   <div className="space-y-2.5 border-t pt-3">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Journey</span>
-                      <p className="text-xs text-gray-700 leading-relaxed mt-0.5">{record.journey}</p>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Trial & Conflict</span>
-                      <p className="text-xs text-gray-700 leading-relaxed mt-0.5">{record.trial}</p>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Dharmic Teaching</span>
-                      <p className="text-xs text-gray-700 leading-relaxed mt-0.5">{record.teaching}</p>
-                    </div>
+                    <DharmVeerLocalizedField label="Journey" en={record.journey} hi={record.journeyLocal} pa={record.journeyPa} />
+                    <DharmVeerLocalizedField label="Trial & Conflict" en={record.trial} hi={record.trialLocal} pa={record.trialPa} />
+                    <DharmVeerLocalizedField label="Dharmic Teaching" en={record.teaching} hi={record.teachingLocal} pa={record.teachingPa} />
                   </div>
 
                   <div className="pt-2">
@@ -702,6 +695,52 @@ export function AdminRecordInspector({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// Shows English biography prose alongside its Hindi/Punjabi siblings with a
+// visible length ratio, so a reviewer glancing at this compact inspector can
+// catch a thin/stub translation (a prior version of this admin surface
+// didn't show *_local/*_pa fields at all -- see the review-queue page's
+// LocalizedField for the fuller version of this same fix).
+function DharmVeerLocalizedField({
+  label,
+  en,
+  hi,
+  pa,
+}: {
+  label: string;
+  en: string;
+  hi?: string | null;
+  pa?: string | null;
+}) {
+  const enLen = en.length;
+  const ratioLabel = (text: string | null | undefined) => {
+    if (!enLen || !text) return null;
+    const ratio = text.length / enLen;
+    return (
+      <span className={ratio < 0.6 ? "text-rose-600" : "text-emerald-600"}>
+        {" "}
+        ({Math.round(ratio * 100)}% of EN)
+      </span>
+    );
+  };
+
+  return (
+    <div>
+      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">{label}</span>
+      <p className="text-xs text-gray-700 leading-relaxed mt-0.5">{en}</p>
+      <p className="text-xs text-gray-700 leading-relaxed mt-1">
+        <span className="text-[9px] font-bold text-gray-400 mr-1">HI</span>
+        {hi || <span className="text-rose-600 italic">missing</span>}
+        {ratioLabel(hi)}
+      </p>
+      <p className="text-xs text-gray-700 leading-relaxed mt-1">
+        <span className="text-[9px] font-bold text-gray-400 mr-1">PA</span>
+        {pa || <span className="text-rose-600 italic">missing</span>}
+        {ratioLabel(pa)}
+      </p>
     </div>
   );
 }

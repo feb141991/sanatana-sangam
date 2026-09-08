@@ -8,11 +8,11 @@ import {
   Book, Quote, Shield, Lightbulb, Share2, Copy, Check
 } from 'lucide-react';
 import type { DharmVeer } from '@/lib/dharm-veer';
-import { TRADITION_META } from '@/lib/dharm-veer';
+import { TRADITION_META, pickDharmVeerLocalizedText } from '@/lib/dharm-veer';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { t as translateFn, type AppLang } from '@/lib/i18n/translations';
 import { ReaderIntro } from '@/components/ui/ReaderIntro';
-import { getInitialReaderDisplayMode, resolveReadablePreferences } from '@/lib/readable-preferences';
+import { getInitialReaderDisplayMode, resolveReadablePreferences, resolveLocalContentLanguage } from '@/lib/readable-preferences';
 import { buildReadableCapabilities } from '@/lib/readable-content';
 import { useReaderControls } from '@/hooks/useReaderControls';
 import { createClient } from '@/lib/supabase';
@@ -42,8 +42,17 @@ export default function DharmVeerClient({
   const [theme, setTheme] = useState<ReadingTheme>('light');
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const { lang: contextLang } = useLanguage();
-  const localContentLanguage: AppLang = hero.tradition === 'sikh' ? 'pa' : 'hi';
-  const localLanguageLabel = hero.tradition === 'sikh' ? 'ਪੰਜਾਬੀ' : 'हिंदी';
+  const preferences = resolveReadablePreferences({
+    appLanguage: appLanguage ?? contextLang,
+    meaningLanguage,
+  });
+  // Which language "local" actually renders as, keyed to the VIEWER's own
+  // preference -- not hero.tradition. Previously a Sikh hero's card showed
+  // Punjabi UI chrome over Hindi data regardless of what the viewer chose,
+  // and every other hero showed Hindi regardless of a Punjabi-preferring
+  // viewer's choice.
+  const localContentLanguage = resolveLocalContentLanguage(preferences);
+  const localLanguageLabel = localContentLanguage === 'pa' ? 'ਪੰਜਾਬੀ' : 'हिंदी';
   const hasCompleteLocalContent =
     !!hero.nameLocal &&
     !!hero.journeyLocal &&
@@ -51,10 +60,6 @@ export default function DharmVeerClient({
     !!hero.teachingLocal &&
     !!hero.moralLocal &&
     (!hero.quote || !!hero.quoteLocal?.text);
-  const preferences = resolveReadablePreferences({
-    appLanguage: appLanguage ?? contextLang,
-    meaningLanguage,
-  });
   const [lang, setLang] = useState<'en' | 'local'>(
     getInitialReaderDisplayMode(preferences, hasCompleteLocalContent)
   );
@@ -93,19 +98,34 @@ export default function DharmVeerClient({
 
   const displayLang: AppLang = lang === 'local' ? localContentLanguage : 'en';
   const meta = TRADITION_META[hero.tradition];
-  const title = lang === 'local' && hero.nameLocal ? hero.nameLocal : hero.name;
+  // namePa/eraLocal have no Punjabi-specific sibling yet (era is a display
+  // label, not biography prose) -- name still prefers Hindi over English
+  // when Punjabi content isn't available, matching pickDharmVeerLocalizedText's
+  // own fallback chain rather than jumping straight to English.
+  const title = lang === 'local' ? (localContentLanguage === 'pa' ? hero.namePa || hero.nameLocal || hero.name : hero.nameLocal || hero.name) : hero.name;
   const era = lang === 'local' && hero.eraLocal ? hero.eraLocal : hero.era;
   const region = lang === 'local' && hero.regionLocal ? hero.regionLocal : hero.region;
-  const tagline = lang === 'local' ? hero.taglineLocal : hero.tagline;
-  const journeyText = lang === 'local' && hero.journeyLocal ? hero.journeyLocal : hero.journey;
-  const trialText = lang === 'local' && hero.trialLocal ? hero.trialLocal : hero.trial;
-  const teachingText = lang === 'local' && hero.teachingLocal ? hero.teachingLocal : hero.teaching;
-  const moralText = lang === 'local' && hero.moralLocal ? hero.moralLocal : hero.moral;
-  const quoteText = lang === 'local' && hero.quoteLocal?.text ? hero.quoteLocal.text : hero.quote?.text;
-  const quoteAttribution =
-    lang === 'local' && hero.quoteLocal?.attribution
-      ? hero.quoteLocal.attribution
-      : hero.quote?.attribution;
+  const tagline = lang === 'local'
+    ? pickDharmVeerLocalizedText(hero.tagline, hero.taglineLocal, hero.taglinePa, localContentLanguage)
+    : hero.tagline;
+  const journeyText = lang === 'local'
+    ? pickDharmVeerLocalizedText(hero.journey, hero.journeyLocal, hero.journeyPa, localContentLanguage)
+    : hero.journey;
+  const trialText = lang === 'local'
+    ? pickDharmVeerLocalizedText(hero.trial, hero.trialLocal, hero.trialPa, localContentLanguage)
+    : hero.trial;
+  const teachingText = lang === 'local'
+    ? pickDharmVeerLocalizedText(hero.teaching, hero.teachingLocal, hero.teachingPa, localContentLanguage)
+    : hero.teaching;
+  const moralText = lang === 'local'
+    ? pickDharmVeerLocalizedText(hero.moral, hero.moralLocal, hero.moralPa, localContentLanguage)
+    : hero.moral;
+  const quoteText = lang === 'local'
+    ? (localContentLanguage === 'pa' ? hero.quotePa?.text : undefined) || hero.quoteLocal?.text || hero.quote?.text
+    : hero.quote?.text;
+  const quoteAttribution = lang === 'local'
+    ? (localContentLanguage === 'pa' ? hero.quotePa?.attribution : undefined) || hero.quoteLocal?.attribution || hero.quote?.attribution
+    : hero.quote?.attribution;
 
   // Map font sizes to tailwind/css classes or styles
   const fontStyles: Record<FontSize, string> = {

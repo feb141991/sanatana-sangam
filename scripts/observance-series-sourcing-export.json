@@ -1,0 +1,411 @@
+[
+  {
+    "definitionKey": "sharad-navratri",
+    "series_name_status": "pending_source",
+    "children": [
+      {
+        "slug": "navratri-day-1-shailaputri",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 1 — Shailaputri",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Pratipada (Ghatasthapana)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Shailaputri",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Ghatasthapana",
+              "Shailaputri Puja"
+            ],
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Pratipada mentions Kalashasthapana",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "significance": {
+            "current_value_en": "First form of Navadurga, daughter of the Himalayas, symbol of steadfast devotion.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-2-brahmacharini",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 2 — Brahmacharini",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Dwitiya",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Brahmacharini",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Brahmacharini Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Second form of Navadurga, embodiment of penance, austerity, and sacred wisdom.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-3-chandraghanta",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 3 — Chandraghanta",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Tritiya",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Chandraghanta",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Chandraghanta Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Third form of Navadurga, bearer of the crescent bell, symbol of courage and grace.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-4-kushmanda",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 4 — Kushmanda",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Chaturthi",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Kushmanda",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Kushmanda Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Fourth form of Navadurga, creator of the cosmic egg with her divine smile.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-5-skandamata",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 5 — Skandamata",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Panchami",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Skandamata",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Skandamata Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Fifth form of Navadurga, mother of Lord Skanda (Kartikeya), bestower of maternal grace and salvation.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-6-katyayani",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 6 — Katyayani",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Shashthi (Durga Sasthi)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Katyayani",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Bilva Nimantran",
+              "Sasthi Bodhon",
+              "Katyayani Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Sixth form of Navadurga, fierce warrior manifestation who vanquished Mahishasura.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "navratri-day-7-kalaratri",
+        "fields": {
+          "canonicalTitle": {
+            "current_value_en": "Navratri Day 7 — Kalaratri",
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Ashwin Shukla Saptami (Maha Saptami)",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "deityOrTheme": {
+            "current_value_en": "Maa Kalaratri",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Maha Saptami Puja",
+              "Kola Bou / Nabapatrika"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Seventh form of Navadurga, destroyer of darkness and fear, also revered as Shubhankari.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "durga-ashtami",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Maa Mahagauri",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Maha Ashtami Puja",
+              "Sandhi Puja",
+              "Kanya Pujan"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Eighth form of Navadurga, embodiment of purity and luminous grace, Sandhi Puja worship.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "maha-navami",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Maa Siddhidatri",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Maha Navami Puja",
+              "Ayudha Puja",
+              "Chandi Havan"
+            ],
+            "existing_sourceRefs": [
+              {
+                "sourceName": "Rashtriya Panchang Saka 1948",
+                "pageOrSection": "Index #50 (p.7, English edition) mentions Ayudha Puja",
+                "tier": 1,
+                "usagePermitted": "academic_citation"
+              }
+            ]
+          },
+          "significance": {
+            "current_value_en": "Ninth form of Navadurga, bestower of all mystical accomplishments (siddhis) and cosmic blessings.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "dussehra",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Victory of Dharma",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Dussehra",
+              "Durga Visarjan",
+              "Sindoor Khela",
+              "Vidyarambham"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Culmination of Navratri, celebrating the victory of righteousness over unrighteousness.",
+            "existing_sourceRefs": []
+          }
+        }
+      }
+    ]
+  },
+  {
+    "definitionKey": "diwali-five-days",
+    "series_name_status": "source_backed",
+    "children": [
+      {
+        "slug": "dhanteras",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Lord Dhanvantari & Devi Lakshmi",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Dhanvantari Puja",
+              "Yamadeepdaan",
+              "Kuber Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Inception of Diwali festival; marks the appearance of Lord Dhanvantari with the pot of Amrita.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "naraka-chaturdashi",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Purvarunodaya Snana & Deep Daan",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Abhyanga Snana",
+              "Yama Tarpana",
+              "Deep Daan"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Pre-dawn Chaturdashi observance celebrated with sacred bath and lighting lamps.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "diwali",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Maa Lakshmi & Lord Ganesha",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Lakshmi Puja",
+              "Ganesh Puja",
+              "Deepotsava",
+              "Chopda Pujan"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "The great festival of lights on Amavasya pradosha, welcoming auspiciousness, prosperity, and light.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "govardhan-puja",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Govardhan Hill & Lord Krishna",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Govardhan Puja",
+              "Annakut",
+              "Gau Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Commemorates Lord Krishna lifting Govardhan Hill to protect the inhabitants of Braj; celebrated with Annakut feasts.",
+            "existing_sourceRefs": []
+          }
+        }
+      },
+      {
+        "slug": "bhai-dooj",
+        "fields": {
+          "deityOrTheme": {
+            "current_value_en": "Yama & Yamuna / Sibling Bond",
+            "existing_sourceRefs": []
+          },
+          "rituals": {
+            "current_value_en": [
+              "Bhai Tika",
+              "Yama Dwitiya Puja"
+            ],
+            "existing_sourceRefs": []
+          },
+          "significance": {
+            "current_value_en": "Celebrates the sacred bond of brothers and sisters, blessed by Yamuna welcoming her brother Yamaraj.",
+            "existing_sourceRefs": []
+          }
+        }
+      }
+    ]
+  }
+]

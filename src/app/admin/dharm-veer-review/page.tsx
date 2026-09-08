@@ -19,16 +19,30 @@ type PendingDharmVeer = {
   slug: string;
   name: string;
   name_local: string | null;
+  name_pa: string | null;
   tradition: string;
   era: string | null;
   tagline: string;
+  tagline_local: string | null;
+  tagline_pa: string | null;
   journey: string;
   journey_local: string | null;
+  journey_pa: string | null;
   trial: string;
+  trial_local: string | null;
+  trial_pa: string | null;
   teaching: string;
+  teaching_local: string | null;
+  teaching_pa: string | null;
   moral: string;
+  moral_local: string | null;
+  moral_pa: string | null;
   legacy: string | null;
+  legacy_local: string | null;
+  legacy_pa: string | null;
   quote: string | null;
+  quote_local: string | null;
+  quote_pa: string | null;
   quote_source: string | null;
   source_citations: SourceCitation[] | null;
   generated_by: string | null;
@@ -52,15 +66,30 @@ export default function DharmVeerReviewPage() {
       slug: match.slug,
       name: match.name,
       nameLocal: match.name_local,
+      namePa: match.name_pa,
       tradition: match.tradition,
       era: match.era,
       tagline: match.tagline,
+      taglineLocal: match.tagline_local,
+      taglinePa: match.tagline_pa,
       journey: match.journey,
+      journeyLocal: match.journey_local,
+      journeyPa: match.journey_pa,
       trial: match.trial,
+      trialLocal: match.trial_local,
+      trialPa: match.trial_pa,
       teaching: match.teaching,
+      teachingLocal: match.teaching_local,
+      teachingPa: match.teaching_pa,
       moral: match.moral,
+      moralLocal: match.moral_local,
+      moralPa: match.moral_pa,
       legacy: match.legacy,
+      legacyLocal: match.legacy_local,
+      legacyPa: match.legacy_pa,
       quote: match.quote,
+      quoteLocal: match.quote_local,
+      quotePa: match.quote_pa,
       quoteSource: match.quote_source,
       generatedBy: match.generated_by,
       createdAt: match.created_at,
@@ -222,13 +251,21 @@ export default function DharmVeerReviewPage() {
               </button>
 
               {expanded === r.slug && (
-                <div className="space-y-3 text-sm theme-ink border-t border-black/5 pt-4">
-                  <Field label="Journey" value={r.journey} />
-                  <Field label="Trial" value={r.trial} />
-                  <Field label="Teaching" value={r.teaching} />
-                  <Field label="Moral" value={r.moral} />
-                  {r.legacy && <Field label="Legacy" value={r.legacy} />}
-                  {r.quote && <Field label="Quote" value={`"${r.quote}" — ${r.quote_source || 'unattributed'}`} />}
+                <div className="space-y-4 text-sm theme-ink border-t border-black/5 pt-4">
+                  <LocalizedField label="Tagline" en={r.tagline} hi={r.tagline_local} pa={r.tagline_pa} />
+                  <LocalizedField label="Journey" en={r.journey} hi={r.journey_local} pa={r.journey_pa} />
+                  <LocalizedField label="Trial" en={r.trial} hi={r.trial_local} pa={r.trial_pa} />
+                  <LocalizedField label="Teaching" en={r.teaching} hi={r.teaching_local} pa={r.teaching_pa} />
+                  <LocalizedField label="Moral" en={r.moral} hi={r.moral_local} pa={r.moral_pa} />
+                  {r.legacy && <LocalizedField label="Legacy" en={r.legacy} hi={r.legacy_local} pa={r.legacy_pa} />}
+                  {r.quote && (
+                    <LocalizedField
+                      label="Quote"
+                      en={`"${r.quote}" — ${r.quote_source || 'unattributed'}`}
+                      hi={r.quote_local}
+                      pa={r.quote_pa}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -259,6 +296,54 @@ function Field({ label, value }: { label: string; value: string }) {
     <div>
       <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)] mb-1">{label}</p>
       <p className="text-sm leading-relaxed">{value}</p>
+    </div>
+  );
+}
+
+// Shows English alongside its Hindi/Punjabi siblings with a visible
+// length ratio, so a reviewer can actually catch a thin/stub translation
+// before approving -- previously this admin page didn't surface the
+// *_local/*_pa fields at all, so a reviewer had no way to see this class of
+// defect (see the 41%-average-length audit that prompted this fix).
+function LocalizedField({
+  label,
+  en,
+  hi,
+  pa,
+}: {
+  label: string;
+  en: string;
+  hi: string | null;
+  pa: string | null;
+}) {
+  const enLen = en.length;
+  const ratioBadge = (text: string | null) => {
+    if (!enLen) return null;
+    if (!text) return <span className="text-rose-600 font-bold">missing</span>;
+    const ratio = text.length / enLen;
+    const color = ratio < 0.6 ? 'text-rose-600' : 'text-emerald-600';
+    return <span className={`${color} font-bold`}>{Math.round(ratio * 100)}% of EN length</span>;
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--brand-muted)]">{label}</p>
+      <div className="grid grid-cols-1 gap-2">
+        <p className="text-sm leading-relaxed">
+          <span className="text-[10px] font-bold text-[var(--brand-muted)] mr-1.5">EN</span>
+          {en}
+        </p>
+        <p className="text-sm leading-relaxed">
+          <span className="text-[10px] font-bold text-[var(--brand-muted)] mr-1.5">HI</span>
+          {hi || <span className="text-rose-600 italic">missing</span>}{' '}
+          <span className="text-[10px]">{ratioBadge(hi)}</span>
+        </p>
+        <p className="text-sm leading-relaxed">
+          <span className="text-[10px] font-bold text-[var(--brand-muted)] mr-1.5">PA</span>
+          {pa || <span className="text-rose-600 italic">missing</span>}{' '}
+          <span className="text-[10px]">{ratioBadge(pa)}</span>
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,810 @@
+[
+  {
+    "slug": "arjuna",
+    "name": "Arjuna",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi"
+        ],
+        "issue": "Hindi adds 'गांडीवधारी' (Gandiva, the name of Arjuna's bow) which is not present in the English teaching field. Punjabi is clean for this field.",
+        "english_source": "Wherever there is Krishna, the Lord of Yoga, and Arjuna, the supreme archer, there will be prosperity, victory, and sound policy.",
+        "current_hindi_wrong": "जहाँ योगेश्वर कृष्ण और गांडीवधारी अर्जुन हैं, वहीं समृद्धि, विजय और सुदृढ़ नीति होगी।"
+      },
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English says 'grand-uncle...and cousins'; both Hindi and Punjabi change this to 'grandfather...and brothers' -- a specific relational claim not licensed by the English.",
+        "english_source": "The third Pandava prince, Arjuna was the greatest warrior of his time, possessing laser-like focus. Right before the great war of Kurukshetra, seeing his grand-uncle, teacher, and cousins in the enemy ranks, he dropped his bow in moral paralysis.",
+        "current_hindi_wrong": "तीसरे पांडव राजकुमार, अर्जुन अपने समय के सबसे महान योद्धा थे, जिनके पास लेज़र जैसा सटीक ध्यान था। कुरुक्षेत्र के महायुद्ध से ठीक पहले, शत्रु सेना में अपने पितामह, शिक्षक और चचेरे भाइयों को देखकर, वे नैतिक जड़ता में डूब गए और अपना धनुष गिरा दिया।",
+        "current_punjabi_wrong": "ਤੀਜੇ ਪਾਂਡਵ ਰਾਜਕੁਮਾਰ, ਅਰਜੁਨ ਆਪਣੇ ਸਮੇਂ ਦੇ ਸਭ ਤੋਂ ਮਹਾਨ ਯੋਧਾ ਸਨ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਅਚੂਕ ਇਕਾਗਰਤਾ ਸੀ। ਕੁਰੂਕਸ਼ੇਤਰ ਦੇ ਮਹਾਂਯੁੱਧ ਤੋਂ ਠੀਕ ਪਹਿਲਾਂ, ਦੁਸ਼ਮਣ ਦੀਆਂ ਕਤਾਰਾਂ ਵਿੱਚ ਆਪਣੇ ਦਾਦਾ, ਗੁਰੂ ਅਤੇ ਚਚੇਰੇ ਭਰਾਵਾਂ ਨੂੰ ਵੇਖ ਕੇ, ਉਹ ਨੈਤਿਕ ਦੁਚਿੱਤੀ ਵਿੱਚ ਪੈ ਗਏ ਅਤੇ ਆਪਣਾ ਧਨੁੱਖ ਸੁੱਟ ਦਿੱਤਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "atisha",
+    "name": "Atisha Dipankara Srijnana",
+    "tradition": "buddhist",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Both add the original-language title 'Bodhipathapradipa' (बोधिपथप्रदीप / ਬੋਧੀਪਥਪ੍ਰਦੀਪ) which is not present in the English -- English only gives the English title 'Lamp for the Path to Enlightenment'.",
+        "english_source": "Atisha was one of the major figures in the spread of Mahayana and Vajrayana Buddhism. Despite his advanced age and the immense dangers of the Himalayan crossing, he accepted the invitation of the Tibetan king to reform Tibetan Buddhism, which had fallen into degenerate practices. He wrote the \"Lamp for the Path to Enlightenment,\" synthesizing the stages of the path.",
+        "current_hindi_wrong": "अतीश महायान और वज्रयान बौद्ध धर्म के प्रसार में प्रमुख व्यक्तियों में से एक थे। अपनी वृद्धावस्था और हिमालय पार करने के अत्यधिक खतरों के बावजूद, उन्होंने तिब्बती बौद्ध धर्म में सुधार के लिए तिब्बती राजा के निमंत्रण को स्वीकार किया, जो विकृत प्रथाओं में पड़ चुका था। उन्होंने 'बोधिपथप्रदीप' (ज्ञान के मार्ग का दीपक) लिखा, जिसमें साधना के चरणों का समन्वय किया गया।",
+        "current_punjabi_wrong": "ਅਤੀਸ਼ ਮਹਾਯਾਨ ਅਤੇ ਵਜ੍ਰਯਾਨ ਬੁੱਧ ਧਰਮ ਦੇ ਪ੍ਰਸਾਰ ਵਿੱਚ ਪ੍ਰਮੁੱਖ ਵਿਅਕਤੀਆਂ ਵਿੱਚੋਂ ਇੱਕ ਸਨ। ਆਪਣੀ ਵੱਡੀ ਉਮਰ ਅਤੇ ਹਿਮਾਲਿਆ ਪਾਰ ਕਰਨ ਦੇ ਭਾਰੀ ਖ਼ਤਰਿਆਂ ਦੇ ਬਾਵਜੂਦ, ਉਨ੍ਹਾਂ ਨੇ ਤਿੱਬਤੀ ਬੁੱਧ ਧਰਮ ਵਿੱਚ ਸੁਧਾਰ ਲਈ ਤਿੱਬਤੀ ਰਾਜੇ ਦਾ ਸੱਦਾ ਸਵੀਕਾਰ ਕੀਤਾ, ਜੋ ਵਿਗੜੀਆਂ ਪ੍ਰਥਾਵਾਂ ਵਿੱਚ ਡਿੱਗ ਚੁੱਕਾ ਸੀ। ਉਨ੍ਹਾਂ ਨੇ 'ਬੋਧੀਪਥਪ੍ਰਦੀਪ' (ਗਿਆਨ ਦੇ ਮਾਰਗ ਦਾ ਦੀਵਾ) ਲਿਖਿਆ, ਜਿਸ ਵਿੱਚ ਸਾਧਨਾ ਦੇ ਪੜਾਵਾਂ ਦਾ ਸੁਮੇਲ ਕੀਤਾ ਗਿਆ।"
+      }
+    ]
+  },
+  {
+    "slug": "banda-singh-bahadur",
+    "name": "Banda Singh Bahadur",
+    "tradition": "sikh",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Both add an unstated age/character qualifier to the son ('little'/'innocent') not present in English, which just says 'his son's execution'.",
+        "english_source": "Captured after an eight-month siege, he was offered a pardon if he converted. He refused. He witnessed his son's execution before being subjected to unspeakable torture. He remained calm to his last breath.",
+        "current_hindi_wrong": "आठ महीने के घेरे के बाद बंदी बनाए जाने पर, यदि वे धर्म परिवर्तन कर लें तो उन्हें क्षमादान की पेशकश की गई। उन्होंने इनकार कर दिया। अकथनीय यातनाएं सहने से पहले उन्होंने अपने पुत्र के वध को देखा। वे अपनी अंतिम सांस तक शांत रहे।",
+        "current_punjabi_wrong": "ਅੱਠ ਮਹੀਨਿਆਂ ਦੇ ਘੇਰੇ ਤੋਂ ਬਾਅਦ ਗ੍ਰਿਫ਼ਤਾਰ ਹੋਣ 'ਤੇ, ਜੇ ਉਹ ਧਰਮ ਬਦਲ ਲੈਣ ਤਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਮਾਫ਼ੀ ਦੀ ਪੇਸ਼ਕਸ਼ ਕੀਤੀ ਗਈ। ਉਨ੍ਹਾਂ ਨੇ ਇਨਕਾਰ ਕਰ ਦਿੱਤਾ। ਅਸਹਿ ਤਸੀਹੇ ਝੱਲਣ ਤੋਂ ਪਹਿਲਾਂ ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਪੁੱਤਰ ਦੀ ਸ਼ਹਾਦਤ ਵੇਖੀ। ਉਹ ਆਪਣੇ ਆਖਰੀ ਸਾਹ ਤੱਕ ਸ਼ਾਂਤ ਰਹੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "bhai-mani-singh",
+    "name": "Bhai Mani Singh Ji",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates a 'childhood friend' relationship with Guru Gobind Singh (not in English); drops the fact that he transcribed the final Guru Granth Sahib (in English, missing from HI/PA); fabricates an entire new event referencing Banda Singh Bahadur's martyrdom that is not in the English at all.",
+        "english_source": "A profound scholar who served under Guru Gobind Singh and transcribed the final version of the Guru Granth Sahib. Later, as the Head Granthi of the Harmandir Sahib, he sought permission from the Mughal governor to hold a Diwali gathering, promising a large tax. When he realized the governor planned a secret attack on the unarmed gathering, he sent messages to cancel the event.",
+        "current_hindi_wrong": "गुरु गोबिंद सिंह के बाल सखा, विद्वान, और हरिमंदिर साहिब के मुख्य ग्रंथी। उन्होंने बंदा सिंह बहादुर की शहादत के बाद के अंधकारमय दौर में सिख समुदाय को एकजुट रखा। उन्होंने दिवाली मनाने के लिए लाहौर के मुग़ल गवर्नर को एक बड़ा कर देने पर सहमति व्यक्त की, किंतु जब उन्हें पता चला कि मुग़ल सिखों पर हमला करने की योजना बना रहे हैं, तो उन्होंने तुरंत सभा को रद्द कर दिया।",
+        "current_punjabi_wrong": "ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਦੇ ਬਚਪਨ ਦੇ ਮਿੱਤਰ, ਵਿਦਵਾਨ, ਅਤੇ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੇ ਮੁੱਖ ਗ੍ਰੰਥੀ। ਉਨ੍ਹਾਂ ਨੇ ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ ਜੀ ਦੀ ਸ਼ਹੀਦੀ ਤੋਂ ਬਾਅਦ ਦੇ ਹਨੇਰੇ ਦੌਰ ਵਿੱਚ ਸਿੱਖ ਕੌਮ ਨੂੰ ਇਕਮੁੱਠ ਰੱਖਿਆ। ਉਨ੍ਹਾਂ ਨੇ ਦੀਵਾਲੀ ਮਨਾਉਣ ਲਈ ਲਾਹੌਰ ਦੇ ਮੁਗ਼ਲ ਗਵਰਨਰ ਨੂੰ ਵੱਡਾ ਟੈਕਸ ਦੇਣ ਦੀ ਸ਼ਰਤ ਮੰਨੀ, ਪਰ ਜਦੋਂ ਉਨ੍ਹਾਂ ਨੂੰ ਪਤਾ ਲੱਗਾ ਕਿ ਮੁਗ਼ਲ ਸਿੱਖਾਂ 'ਤੇ ਹਮਲਾ ਕਰਨ ਦੀ ਯੋਜਨਾ ਬਣਾ ਰਹੇ ਹਨ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਤੁਰੰਤ ਇਕੱਠ ਰੱਦ ਕਰ ਦਿੱਤਾ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates an Islam-or-death conversion ultimatum not present in English (English only describes dismemberment for failing to pay a tax); fabricates unstated behavior (smiling, reciting Gurbani) not in English.",
+        "english_source": "Arrested for failing to pay the tax, he was sentenced to death by having his body dismembered joint by joint (band-band). As the executioner began at the wrist, Bhai Mani Singh calmly instructed him to start at the finger joints first, honoring the precise terms of his sentence without a flinch.",
+        "current_hindi_wrong": "कर न चुका पाने के कारण, उन्हें इस्लाम स्वीकार करने या मृत्यु में से एक चुनने को कहा गया। जब जल्लाद ने उनकी कलाई काटना शुरू किया, तो भाई मनी सिंह ने उसे रोका और याद दिलाया कि आदेश के अनुसार उनके शरीर को 'जोड़-जोड़' (अंग-अंग) से काटा जाना चाहिए, उँगलियों के पोरों से शुरुआत करते हुए। वे मुस्कुराते रहे और इस अमानवीय यातना के दौरान भी गुरबाणी का पाठ करते रहे।",
+        "current_punjabi_wrong": "ਟੈਕਸ ਨਾ ਅਦਾ ਕਰ ਸਕਣ ਕਰਕੇ, ਉਨ੍ਹਾਂ ਨੂੰ ਇਸਲਾਮ ਕਬੂਲ ਕਰਨ ਜਾਂ ਮੌਤ ਵਿੱਚੋਂ ਇੱਕ ਚੁਣਨ ਲਈ ਕਿਹਾ ਗਿਆ। ਜਦੋਂ ਜਲਾਦ ਨੇ ਉਨ੍ਹਾਂ ਦੇ ਗੁੱਟ ਤੋਂ ਕੱਟਣਾ ਸ਼ੁਰੂ ਕੀਤਾ, ਤਾਂ ਭਾਈ ਮਨੀ ਸਿੰਘ ਜੀ ਨੇ ਉਸਨੂੰ ਰੋਕਿਆ ਅਤੇ ਯਾਦ ਕਰਵਾਇਆ ਕਿ ਹੁਕਮ ਅਨੁਸਾਰ ਉਨ੍ਹਾਂ ਦਾ ਸਰੀਰ 'ਬੰਦ-ਬੰਦ' ਤੋਂ ਕੱਟਿਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ, ਉਂਗਲਾਂ ਦੇ ਪੋਟਿਆਂ ਤੋਂ ਸ਼ੁਰੂ ਕਰਕੇ। ਉਹ ਮੁਸਕਰਾਉਂਦੇ ਰਹੇ ਅਤੇ ਇਸ ਅਸਹਿ ਤਸੀਹੇ ਦੌਰਾਨ ਵੀ ਗੁਰਬਾਣੀ ਦਾ ਜਾਪ ਕਰਦੇ ਰਹੇ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Completely substitutes a different statement for the English quote ('The body perishes, but the word of the Guru lives forever.') -- not a translation.",
+        "english_source": "The body perishes, but the word of the Guru lives forever.",
+        "current_hindi_wrong": "सत्य के प्रति निष्ठा में पूर्ण सटीकता होनी चाहिए, भले ही इसकी कीमत असहनीय पीड़ा हो।",
+        "current_punjabi_wrong": "ਸੱਚ ਪ੍ਰਤੀ ਵਫ਼ਾਦਾਰੀ ਵਿੱਚ ਪੂਰੀ ਦ੍ਰਿੜ੍ਹਤਾ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ, ਭਾਵੇਂ ਇਸਦੀ ਕੀਮਤ ਅਸਹਿ ਦਰਦ ਹੀ ਕਿਉਂ ਨਾ ਹੋਵੇ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drifts from the English claim ('unshakable poise...is the ultimate proof of spiritual mastery') to a different framing about pain being temporary and honor eternal.",
+        "english_source": "Unshakable poise in the face of excruciating pain is the ultimate proof of spiritual mastery.",
+        "current_hindi_wrong": "शारीरिक पीड़ा अस्थायी है, किंतु सम्मान और आत्मिक सत्यनिष्ठा शाश्वਤ है।",
+        "current_punjabi_wrong": "ਸਰੀਰਕ ਕਸ਼ਟ ਅਸਥਾਈ ਹੈ, ਪਰ ਸਵੈ-ਮਾਣ ਅਤੇ ਆਤਮਿਕ ਸੱਚਾਈ ਸਦਾ ਰਹਿਣ ਵਾਲੀ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "bhai-taru-singh",
+    "name": "Bhai Taru Singh Ji",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds a specific village name 'Poohla' and the word 'young' not present in English; drops the named arresting officer 'Zakariya Khan' (present in English) and instead adds 'taken to Lahore' (not in this field's English).",
+        "english_source": "A simple, compassionate farmer who secretly provided food and shelter to Sikh fighters hiding in the jungles from Mughal persecution. He was betrayed by a village informant and arrested by Zakariya Khan.",
+        "current_hindi_wrong": "पूलहा गाँव के एक युवा, विनम्र सिख किसान। वे दिन-रात खेतों में पसीना बहाते और गुप्त रूप से मुग़ल अत्याचारों से बचने के लिए जंगलों में छिपे सिख स्वतंत्रता सेनानियों को भोजन और आश्रय प्रदान करते थे। एक जासूस द्वारा मुखबिरी किए जाने पर उन्हें लाहौर ले जाया गया।",
+        "current_punjabi_wrong": "ਪੂਹਲਾ ਪਿੰਡ ਦੇ ਇੱਕ ਨੌਜਵਾਨ, ਨਿਮਰ ਸਿੱਖ ਕਿਸਾਨ। ਉਹ ਦਿਨ-ਰਾਤ ਖੇਤਾਂ ਵਿੱਚ ਮਿਹਨਤ ਕਰਦੇ ਅਤੇ ਮੁਗ਼ਲ ਜ਼ੁਲਮ ਤੋਂ ਬਚਣ ਲਈ ਜੰਗਲਾਂ ਵਿੱਚ ਰਹਿ ਰਹੇ ਸਿੱਖ ਯੋਧਿਆਂ ਨੂੰ ਗੁਪਤ ਰੂਪ ਵਿੱਚ ਲੰਗਰ ਅਤੇ ਆਸਰਾ ਪਹੁੰਚਾਉਂਦੇ ਸਨ। ਇੱਕ ਮੁਖ਼ਬਰ ਦੁਆਰਾ ਚੁਗ਼ਲੀ ਕਰਨ 'ਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਲਾਹੌਰ ਲਿਜਾਇਆ ਗਿਆ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the 'marriage' offer from the English list (pardon, wealth, and marriage); drops the specific scripture name 'Japji Sahib'; fabricates a specific executor ('a cobbler') and instrument ('rambi/curved knife') not present in English, which just says 'ordered his hair to be scraped off along with his scalp'.",
+        "english_source": "Offered pardon, wealth, and marriage if he converted to Islam and cut his hair, Taru Singh refused. Furious, the governor ordered his hair to be scraped off along with his scalp. Taru Singh endured the horrific torture while reciting Japji Sahib, proving that physical pain cannot conquer the soul.",
+        "current_hindi_wrong": "गवर्नर ज़कारिया खान ने उन्हें अपने केश काटने और इस्लाम स्वीकार करने पर धन-संपदा और स्वतंत्रता का प्रस्ताव दिया। भाई तारू सिंह ने दृढ़ता से उत्तर दिया कि उनके केश उनके प्राणों के साथ ही अलग होंगे। क्रोधित होकर गवर्नर ने एक मोची को रम्बे (खुरपी) से उनकी पूरी खोपड़ी उधेड़ने का आदेश दिया। वे बिना किसी विलाप के, परमात्मा के नाम का स्मरण करते हुए इस भयानक यातना को सहते रहे।",
+        "current_punjabi_wrong": "ਗਵਰਨਰ ਜ਼ਕਰੀਆ ਖ਼ਾਨ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਕੇਸ ਕਟਵਾਉਣ ਅਤੇ ਇਸਲਾਮ ਕਬੂਲਣ 'ਤੇ ਧਨ-ਦੌਲਤ ਅਤੇ ਰਿਹਾਈ ਦੀ ਪੇਸ਼ਕਸ਼ ਕੀਤੀ। ਭਾਈ ਤਾਰੂ ਸਿੰਘ ਜੀ ਨੇ ਦ੍ਰਿੜ੍ਹਤਾ ਨਾਲ ਜਵਾਬ ਦਿੱਤਾ ਕਿ ਉਨ੍ਹਾਂ ਦੇ ਕੇਸ ਉਨ੍ਹਾਂ ਦੇ ਪ੍ਰਾਣਾਂ ਦੇ ਨਾਲ ਹੀ ਜਾਣਗੇ। ਗੁੱਸੇ ਵਿੱਚ ਆ ਕੇ ਗਵਰਨਰ ਨੇ ਇੱਕ ਮੋਚੀ ਨੂੰ ਰੰਬੀ ਨਾਲ ਉਨ੍ਹਾਂ ਦੀ ਪੂਰੀ ਖੋਪੜੀ ਉਤਾਰਨ ਦਾ ਹੁਕਮ ਦਿੱਤਾ। ਉਹ ਬਿਨਾਂ ਕਿਸੇ ਚੀਕ ਦੇ, ਪ੍ਰਮਾਤਮਾ ਦਾ ਨਾਮ ਜਪਦੇ ਹੋਏ ਇਹ ਭਿਆਨਕ ਕਸ਼ਟ ਸਹਾਰਦੇ ਰਹੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "bhishma",
+    "name": "Bhishma Pitamah",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English says 'by his own nephews'; both translations change this to 'by his own grandsons' -- a specific relational claim not licensed by this English field.",
+        "english_source": "His trial was the agony of watching Dharma be destroyed by his own nephews, yet being forced by his vow to fight against the righteous Pandavas, ultimately lying on a bed of arrows to await an auspicious time to die.",
+        "current_hindi_wrong": "उनकी परीक्षा अपने ही भतीजों द्वारा धर्म को नष्ट होते देखने की पीड़ा थी, फिर भी अपनी प्रतिज्ञा के कारण वे धर्मपरायण पांडवों के विरुद्ध लड़ने को विवश थे, और अंततः मरने के लिए एक शुभ समय की प्रतीक्षा करते हुए बाणों की शय्या पर लेटे रहे।",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਆਪਣੇ ਹੀ ਭਤੀਜਿਆਂ ਹੱਥੋਂ ਧਰਮ ਦਾ ਵਿਨਾਸ਼ ਹੁੰਦਾ ਵੇਖਣ ਦਾ ਦਰਦ ਸੀ, ਪਰ ਆਪਣੀ ਪ੍ਰਤਿੱਗਿਆ ਕਾਰਨ ਉਹ ਧਰਮੀ ਪਾਂਡਵਾਂ ਵਿਰੁੱਧ ਲੜਨ ਲਈ ਮਜਬੂਰ ਸਨ, ਅਤੇ ਅੰਤ ਵਿੱਚ ਮੌਤ ਦੇ ਸ਼ੁੱਭ ਸਮੇਂ ਦੀ ਉਡੀਕ ਕਰਦਿਆਂ ਤੀਰਾਂ ਦੀ ਸੇਜ 'ਤੇ ਪਏ ਰਹੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "emperor-ashoka",
+    "name": "Emperor Ashoka",
+    "tradition": "buddhist",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds 'third emperor of the Mauryan empire' (not in English) and a fabricated figure of '150,000 rendered homeless' in addition to the '100,000 dead' that IS in English. Also drops the 'Chandashoka'/'Dharmashoka' naming, the drum imagery, and 'including his own children' -- all present in English.",
+        "english_source": "Ashoka began his rule as 'Chandashoka' (Ashoka the Fierce), violently expanding the Mauryan Empire. The climax of his conquests was the Kalinga War, which resulted in the deaths of over 100,000 people. Walking through the blood-soaked battlefield, listening to the wails of orphans and widows, Ashoka experienced a profound existential crisis and overwhelming remorse.\n\nHe renounced violence, embraced Buddhism, and became 'Dharmashoka' (Ashoka the Pious). He replaced the drum of war (Bheri-ghosha) with the drum of righteousness (Dhamma-ghosha). He carved edicts on rocks and pillars across his vast empire, promoting religious tolerance, animal welfare, medical care for all, and moral conduct. He sent emissaries, including his own children, to spread the Buddha's peaceful message across Asia.",
+        "current_hindi_wrong": "अशोक ने 'चंडाशोक' (उग्र अशोक) के रूप में अपना शासन प्रारंभ किया और मौर्य साम्राज्य का हिंसक रूप से विस्तार किया। उनकी विजयों का चरम कलिंग युद्ध था, जिसके परिणामस्वरूप 1,00,000 से अधिक लोगों की मृत्यु हुई। खून से लथपथ युद्ध के मैदान में चलते हुए, अनाथों और विधवाओं के विलाप को सुनते हुए, अशोक ने एक गहरे अस्तित्वगत संकट और अत्यधिक पश्चाताप का अनुभव किया।\n\nउन्होंने हिंसा का त्याग किया, बौद्ध धर्म अपनाया और 'धर्माशोक' (धर्मी अशोक) बन गए। उन्होंने युद्ध के नगाड़े (भेरी-घोष) को धर्म के नगाड़े (धम्म-घोष) से बदल दिया। उन्होंने अपने विशाल साम्राज्य में चट्टानों और स्तंभों पर शिलालेख उत्कीर्ण करवाए, जिनमें धार्मिक सहिष्णुता, पशु कल्याण, सभी के लिए चिकित्सा सेवा और नैतिक आचरण को बढ़ावा दिया गया। उन्होंने पूरे एशिया में बुद्ध के शांति संदेश को फैलाने के लिए अपने बच्चों सहित दूत भेजे।",
+        "current_punjabi_wrong": "ਅਸ਼ੋਕ ਨੇ 'ਚੰਡਾਸ਼ੋਕ' (ਉਗਰ ਅਸ਼ੋਕ) ਵਜੋਂ ਆਪਣਾ ਰਾਜ ਸ਼ੁਰੂ ਕੀਤਾ ਅਤੇ ਮੌਰੀਆ ਸਾਮਰਾਜ ਦਾ ਹਿੰਸਕ ਢੰਗ ਨਾਲ ਵਿਸਥਾਰ ਕੀਤਾ। ਉਨ੍ਹਾਂ ਦੀਆਂ ਜਿੱਤਾਂ ਦਾ ਸਿਖਰ ਕਲਿੰਗ ਯੁੱਧ ਸੀ, ਜਿਸ ਦੇ ਸਿੱਟੇ ਵਜੋਂ 1,00,000 ਤੋਂ ਵੱਧ ਲੋਕਾਂ ਦੀ ਮੌਤ ਹੋ ਗਈ ਸੀ। ਖੂਨ ਨਾਲ ਲੱਥਪੱਥ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚੋਂ ਲੰਘਦਿਆਂ, ਅਨਾਥਾਂ ਅਤੇ ਵਿਧਵਾਵਾਂ ਦੇ ਵਿਰਲਾਪ ਨੂੰ ਸੁਣਦਿਆਂ, ਅਸ਼ੋਕ ਨੇ ਇੱਕ ਡੂੰਘੇ ਹੋਂਦ ਦੇ ਸੰਕਟ ਅਤੇ ਭਾਰੀ ਪਛਤਾਵੇ ਦਾ ਅਨੁਭਵ ਕੀਤਾ।\n\nਉਨ੍ਹਾਂ ਨੇ ਹਿੰਸਾ ਦਾ ਤਿਆਗ ਕੀਤਾ, ਬੁੱਧ ਧਰਮ ਅਪਣਾਇਆ ਅਤੇ 'ਧਰਮਾਸ਼ੋਕ' (ਧਰਮੀ ਅਸ਼ੋਕ) ਬਣ ਗਏ। ਉਨ੍ਹਾਂ ਨੇ ਯੁੱਧ ਦੇ ਨਗਾੜੇ (ਭੇਰੀ-ਘੋਸ਼) ਨੂੰ ਧਰਮ ਦੇ ਨਗਾੜੇ (ਧੰਮ-ਘੋਸ਼) ਨਾਲ ਬਦਲ ਦਿੱਤਾ। ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਵਿਸ਼ਾਲ ਸਾਮਰਾਜ ਵਿੱਚ ਚੱਟਾਨਾਂ ਅਤੇ ਥੰਮ੍ਹਾਂ 'ਤੇ ਸ਼ਿਲਾਲੇਖ ਉਕਰਵਾਏ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਧਾਰਮਿਕ ਸਹਿਣਸ਼ੀਲਤਾ, ਪਸ਼ੂ ਭਲਾਈ, ਸਾਰਿਆਂ ਲਈ ਡਾਕਟਰੀ ਦੇਖਭਾਲ ਅਤੇ ਨੈਤਿਕ ਆਚਰਣ ਨੂੰ ਉਤਸ਼ਾਹਿਤ ਕੀਤਾ ਗਿਆ। ਉਨ੍ਹਾਂ ਨੇ ਪੂਰੇ ਏਸ਼ੀਆ ਵਿੱਚ ਬੁੱਧ ਦੇ ਸ਼ਾਂਤੀ ਸੰਦੇਸ਼ ਨੂੰ ਫੈਲਾਉਣ ਲਈ ਆਪਣੇ ਬੱਚਿਆਂ ਸਮੇਤ ਦੂਤ ਭੇਜੇ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the English's second sentence entirely and substitutes an unrelated line about 'the victory of Dharma' -- not a translation of the given English teaching.",
+        "english_source": "All men are my children. Just as I desire for my children that they may obtain every kind of welfare and happiness, so do I desire for all men.",
+        "current_hindi_wrong": "सभी मनुष्य मेरी संतान हैं। जिस प्रकार मैं अपनी संतान के लिए चाहता हूँ कि उन्हें हर प्रकार का कल्याण और सुख प्राप्त हो, उसी प्रकार मैं सभी मनुष्यों के लिए भी चाहता हूँ।",
+        "current_punjabi_wrong": "ਸਾਰੇ ਮਨੁੱਖ ਮੇਰੇ ਬੱਚੇ ਹਨ। ਜਿਵੇਂ ਮੈਂ ਆਪਣੇ ਬੱਚਿਆਂ ਲਈ ਚਾਹੁੰਦਾ ਹਾਂ ਕਿ ਉਨ੍ਹਾਂ ਨੂੰ ਹਰ ਤਰ੍ਹਾਂ ਦੀ ਭਲਾਈ ਅਤੇ ਖੁਸ਼ੀ ਮਿਲੇ, ਉਸੇ ਤਰ੍ਹਾਂ ਮੈਂ ਸਾਰੇ ਮਨੁੱਖਾਂ ਲਈ ਵੀ ਚਾਹੁੰਦਾ ਹਾਂ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Substitutes an entirely different aphorism not present in or derivable from the English moral ('True power is not measured by the lands you conquer, but by the hearts you heal.').",
+        "english_source": "True power is not measured by the lands you conquer, but by the hearts you heal.",
+        "current_hindi_wrong": "सच्ची शक्ति आपके द्वारा जीती गई भूमियों से नहीं, बल्कि आपके द्वारा ठीक किए गए दिलों से मापी जाती है।",
+        "current_punjabi_wrong": "ਸੱਚੀ ਤਾਕਤ ਤੁਹਾਡੇ ਦੁਆਰਾ ਜਿੱਤੀਆਂ ਗਈਆਂ ਜ਼ਮੀਨਾਂ ਨਾਲ ਨਹੀਂ, ਸਗੋਂ ਤੁਹਾਡੇ ਦੁਆਰਾ ਜੋੜੇ ਗਏ ਦਿਲਾਂ ਨਾਲ ਮਾਪੀ ਜਾਂਦੀ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "gautama-swami",
+    "name": "Gautama Swami (Indrabhuti)",
+    "tradition": "jain",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds 'of Magadha' (place name not in English) and a fabricated '500 disciples' figure (not in English); drops 'welcomed him by his secret name' which IS in English.",
+        "english_source": "Indrabhuti Gautama was the most famous and proud Vedic scholar of his time. He went to confront Mahavira, intending to defeat him in debate. However, Mahavira welcomed him by his secret name and answered all the unasked doubts in Gautama's mind regarding the nature of the soul. Deeply moved, Gautama surrendered his immense pride and became Mahavira's chief disciple (Ganadhara).",
+        "current_hindi_wrong": "इंद्रभूति गौतम अपने समय के सबसे प्रसिद्ध और अभिमानी वैदिक विद्वान थे। वे शास्त्रार्थ में महावीर को पराजित करने के उद्देश्य से उनके पास गए। किंतु, महावीर ने उनका उनके गुप्त नाम से स्वागत किया और आत्मा के स्वरूप के विषय में गौतम के मन के सभी अनकहे संदेहों का उत्तर दिया। इससे अत्यंत प्रभावित होकर, गौतम ने अपने भारी अहंकार का त्याग कर दिया और महावीर के प्रमुख शिष्य (गणधर) बन गए।",
+        "current_punjabi_wrong": "ਇੰਦਰਭੂਤੀ ਗੌਤਮ ਆਪਣੇ ਸਮੇਂ ਦੇ ਸਭ ਤੋਂ ਪ੍ਰਸਿੱਧ ਅਤੇ ਹੰਕਾਰੀ ਵੈਦਿਕ ਵਿਦਵਾਨ ਸਨ। ਉਹ ਚਰਚਾ ਵਿੱਚ ਮਹਾਵੀਰ ਨੂੰ ਹਰਾਉਣ ਦੇ ਇਰਾਦੇ ਨਾਲ ਉਨ੍ਹਾਂ ਕੋਲ ਗਏ। ਪਰ, ਮਹਾਵੀਰ ਨੇ ਉਨ੍ਹਾਂ ਦਾ ਉਨ੍ਹਾਂ ਦੇ ਗੁਪਤ ਨਾਮ ਨਾਲ ਸਵਾਗਤ ਕੀਤਾ ਅਤੇ ਆਤਮਾ ਦੇ ਸਰੂਪ ਬਾਰੇ ਗੌਤਮ ਦੇ ਮਨ ਦੇ ਸਾਰੇ ਅਣਕਹੇ ਸ਼ੰਕਿਆਂ ਦੇ ਜਵਾਬ ਦਿੱਤੇ। ਇਸ ਤੋਂ ਬਹੁਤ ਪ੍ਰਭਾਵਿਤ ਹੋ ਕੇ, ਗੌਤਮ ਨੇ ਆਪਣੇ ਵੱਡੇ ਹੰਕਾਰ ਨੂੰ ਤਿਆਗ ਦਿੱਤਾ ਅਤੇ ਮਹਾਵੀਰ ਦੇ ਮੁੱਖ ਚੇਲੇ (ਗਣਧਰ) ਬਣ ਗਏ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates a specific timing/event -- 'only on the night of Mahavira's nirvana did he attain self-knowledge' -- not stated in the English trial field at all.",
+        "english_source": "Despite his vast knowledge, his deep personal attachment and love for Mahavira prevented him from attaining omniscience while Mahavira was alive. He had to learn to detach even from his beloved Guru.",
+        "current_hindi_wrong": "अपने विशाल ज्ञान के बावजूद, महावीर के प्रति उनका गहरा व्यक्तिगत लगाव और प्रेम उन्हें महावीर के जीवित रहते केवल ज्ञान (सर्वज्ञता) प्राप्त करने से रोकता रहा। उन्हें अपने प्रिय गुरु से भी अनासक्त होना सीखना पड़ा।",
+        "current_punjabi_wrong": "ਆਪਣੇ ਵਿਸ਼ਾਲ ਗਿਆਨ ਦੇ ਬਾਵਜੂਦ, ਮਹਾਵੀਰ ਪ੍ਰਤੀ ਉਨ੍ਹਾਂ ਦਾ ਡੂੰਘਾ ਨਿੱਜੀ ਮੋਹ ਅਤੇ ਪਿਆਰ ਉਨ੍ਹਾਂ ਨੂੰ ਮਹਾਵੀਰ ਦੇ ਜਿਉਂਦੇ ਜੀਅ ਪੂਰਨ ਗਿਆਨ ਪ੍ਰਾਪਤ ਕਰਨ ਤੋਂ ਰੋਕਦਾ ਰਿਹਾ। ਉਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ ਪਿਆਰੇ ਗੁਰੂ ਤੋਂ ਵੀ ਮੋਹ-ਮੁਕਤ ਹੋਣਾ ਸਿੱਖਣਾ ਪਿਆ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Substitutes a totally different (though real) Jain aphorism ('Do not be negligent even for a moment, O Gautama!') for the given English teaching sentence -- not a translation of it.",
+        "english_source": "True knowledge requires the complete surrender of intellectual pride.",
+        "current_hindi_wrong": "सच्चे ज्ञान के लिए बौद्धिक अहंकार के पूर्ण समर्पण की आवश्यकता होती है।",
+        "current_punjabi_wrong": "ਸੱਚੇ ਗਿਆਨ ਲਈ ਬੌਧਿਕ ਹੰਕਾਰ ਦੇ ਪੂਰਨ ਸਮਰਪਣ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "guru-arjan-dev",
+    "name": "Guru Arjan Dev Ji",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Minor: adds 'in Amritsar' -- this place name does not appear anywhere in the English content for this entry.",
+        "english_source": "Guru Arjan Dev Ji consolidated the Sikh faith by compiling the hymns of the previous Gurus and other saints (including Hindu and Sufi mystics) into the Adi Granth. He also built the Harmandir Sahib (Golden Temple) with four doors, welcoming people from all directions and castes. His growing influence alarmed the Mughal Emperor Jahangir.",
+        "current_hindi_wrong": "गुरु अर्जन देव जी ने पूर्ववर्ती गुरुओं और अन्य संतों (जिनमें हिंदू और सूफी रहस्यवादी शामिल थे) के भजनों को आदि ग्रंथ में संकलित करके सिख पंथ को सुदृढ़ किया। उन्होंने चारों दिशाओं और जातियों के लोगों का स्वागत करने के लिए चार दरवाजों वाले हरिमंदिर साहिब (स्वर्ण मंदिर) का निर्माण भी करवाया। उनके बढ़ते प्रभाव ने मुगल सम्राट जहांगीर को आशंकित कर दिया।",
+        "current_punjabi_wrong": "ਗੁਰੂ ਅਰਜਨ ਦੇਵ ਜੀ ਨੇ ਪਹਿਲੇ ਗੁਰੂ ਸਾਹਿਬਾਨ ਅਤੇ ਹੋਰ ਸੰਤਾਂ (ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਹਿੰਦੂ ਅਤੇ ਸੂਫੀ ਸੰਤ ਸ਼ਾਮਲ ਸਨ) ਦੀ ਬਾਣੀ ਨੂੰ ਆਦਿ ਗ੍ਰੰਥ ਵਿੱਚ ਸੰਕਲਿਤ ਕਰਕੇ ਸਿੱਖ ਧਰਮ ਨੂੰ ਮਜ਼ਬੂਤ ਕੀਤਾ। ਉਨ੍ਹਾਂ ਨੇ ਚਾਰੇ ਦਿਸ਼ਾਵਾਂ ਅਤੇ ਜਾਤਾਂ ਦੇ ਲੋਕਾਂ ਦਾ ਸੁਆਗਤ ਕਰਨ ਲਈ ਚਾਰ ਦਰਵਾਜ਼ਿਆਂ ਵਾਲੇ ਹਰਿਮੰਦਰ ਸਾਹਿਬ (ਸਵਰਨ ਮੰਦਰ) ਦਾ ਨਿਰਮਾਣ ਵੀ ਕਰਵਾਇਆ। ਉਨ੍ਹਾਂ ਦੇ ਵਧਦੇ ਪ੍ਰਭਾਵ ਨੇ ਮੁਗ਼ਲ ਬਾਦਸ਼ਾਹ ਜਹਾਂਗੀਰ ਨੂੰ ਚਿੰਤਤ ਕਰ ਦਿੱਤਾ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates an ultimatum not in English -- 'asked to alter the Adi Granth or accept Islam' -- and fabricates an additional torture method 'put into boiling water', neither present in the English trial text (which only describes the burning iron plate and hot sand).",
+        "english_source": "Arrested on false charges, he was subjected to excruciating torture—made to sit on a burning iron plate while hot sand was poured over him. Through days of agony, he remained in deep meditation, repeating \"Tera kiya meetha laage\" (Your will is sweet to me).",
+        "current_hindi_wrong": "झूठे आरोपों में गिरफ्तार किए जाने के बाद, उन्हें असहनीय यातनाएं दी गईं—उन्हें जलती हुई लोहे की तवी पर बैठाया गया और उनके ऊपर गर्म रेत डाली गई। कई दिनों की असह्य पीड़ा के दौरान भी, वे गहरे ध्यान में लीन रहे और \"तेरा कीया मीठा लागे\" दोहराते रहे।",
+        "current_punjabi_wrong": "ਝੂਠੇ ਦੋਸ਼ਾਂ ਹੇਠ ਗ੍ਰਿਫ਼ਤਾਰ ਕੀਤੇ ਜਾਣ ਤੋਂ ਬਾਅਦ, ਉਨ੍ਹਾਂ ਨੂੰ ਅਸਹਿ ਤਸੀਹੇ ਦਿੱਤੇ ਗਏ—ਉਨ੍ਹਾਂ ਨੂੰ ਤੱਤੀ ਤਵੀ 'ਤੇ ਬਿਠਾਇਆ ਗਿਆ ਅਤੇ ਉਨ੍ਹਾਂ ਦੇ ਉੱਪਰ ਤੱਤੀ ਰੇਤ ਪਾਈ ਗਈ। ਕਈ ਦਿਨਾਂ ਦੇ ਅਸਹਿ ਕਸ਼ਟ ਦੌਰਾਨ ਵੀ, ਉਹ ਡੂੰਘੇ ਧਿਆਨ ਵਿੱਚ ਲੀਨ ਰਹੇ ਅਤੇ \"ਤੇਰਾ ਕੀਆ ਮੀਠਾ ਲਾਗੈ\" ਉਚਾਰਦੇ ਰਹੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "guru-gobind-singh",
+    "name": "Guru Gobind Singh Ji",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the ENTIRE first English paragraph (becoming Guru at age nine, father Guru Tegh Bahadur's martyrdom, martial arts/multilingual scholar/prolific poet facts). Adds 'in Anandpur Sahib' (not named in English). Drops the ENTIRE Panj Pyare narrative (asking for five heads, amrit, the surname 'Singh', the Guru kneeling to be initiated). Fabricates an unrelated idiom about 'making sparrows fight hawks' that has no basis in the English at all.",
+        "english_source": "Becoming the tenth Guru at the tender age of nine after his father, Guru Tegh Bahadur, was martyred, Gobind Rai knew that passive resistance was no longer enough. He was a master of martial arts, a scholar of multiple languages, and a prolific poet.\n\nOn Vaisakhi in 1699, he forged the Khalsa, an order of saint-soldiers. He asked for five heads in sacrifice, and the 'Panj Pyare' who stepped forward were given amrit and the surname 'Singh' (Lion). In a historic act of humility, the Guru then knelt and asked them to initiate him into the Khalsa.",
+        "current_hindi_wrong": "अपने पिता, गुरु तेग बहादुर जी के बलिदान के बाद मात्र नौ वर्ष की कोमल आयु में दसवें गुरु बने गोबिंद राय जानते थे कि अब केवल मूक प्रतिरोध पर्याप्त नहीं था। वे युद्ध कला में निपुण, अनेक भाषाओं के विद्वान और एक प्रखर कवि थे।\n\n1699 में बैसाखी के दिन, उन्होंने संत-सिपाहियों के संगठन 'खालसा' का सृजन किया। उन्होंने बलिदान के लिए पाँच शीश मांगे, और जो 'पंज प्यारे' आगे आए, उन्हें अमृत छकाया गया तथा 'सिंह' (शेर) का उपनाम दिया गया। विनम्रता के एक ऐतिहासिक कार्य में, गुरु जी ने स्वयं उनके आगे घुटने टेके और उनसे स्वयं को खालसा में दीक्षित करने का अनुरोध किया।",
+        "current_punjabi_wrong": "ਆਪਣੇ ਪਿਤਾ, ਗੁਰੂ ਤੇਗ ਬਹਾਦਰ ਜੀ ਦੀ ਸ਼ਹੀਦੀ ਤੋਂ ਬਾਅਦ ਨੌਂ ਸਾਲ ਦੀ ਛੋਟੀ ਉਮਰ ਵਿੱਚ ਦਸਵੇਂ ਗੁਰੂ ਬਣੇ ਗੋਬਿੰਦ ਰਾਏ ਜਾਣਦੇ ਸਨ ਕਿ ਹੁਣ ਸਿਰਫ਼ ਸ਼ਾਂਤਮਈ ਵਿਰੋਧ ਕਾਫ਼ੀ ਨਹੀਂ ਸੀ। ਉਹ ਜੰਗੀ ਕਲਾਵਾਂ ਦੇ ਮਾਹਿਰ, ਕਈ ਭਾਸ਼ਾਵਾਂ ਦੇ ਵਿਦਵਾਨ ਅਤੇ ਇੱਕ ਉੱਘੇ ਕਵੀ ਸਨ।\n\n1699 ਦੀ ਵਿਸਾਖੀ ਵਾਲੇ ਦਿਨ, ਉਨ੍ਹਾਂ ਨੇ ਸੰਤ-ਸਿਪਾਹੀਆਂ ਦੇ ਪੰਥ 'ਖ਼ਾਲਸਾ' ਦੀ ਸਾਜਨਾ ਕੀਤੀ। ਉਨ੍ਹਾਂ ਨੇ ਕੁਰਬਾਨੀ ਲਈ ਪੰਜ ਸੀਸ ਮੰਗੇ, ਅਤੇ ਅੱਗੇ ਆਉਣ ਵਾਲੇ 'ਪੰਜ ਪਿਆਰਿਆਂ' ਨੂੰ ਅੰਮ੍ਰਿਤ ਛਕਾਇਆ ਅਤੇ 'ਸਿੰਘ' (ਸ਼ੇਰ) ਦਾ ਉਪਨਾਮ ਦਿੱਤਾ। ਨਿਮਰਤਾ ਦੇ ਇੱਕ ਇਤਿਹਾਸਕ ਕਾਰਜ ਵਿੱਚ, ਗੁਰੂ ਜੀ ਨੇ ਫਿਰ ਗੋਡੇ ਟੇਕੇ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਖ਼ਾਲਸੇ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਬੇਨਤੀ ਕੀਤੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "guru-tegh-bahadur",
+    "name": "Guru Tegh Bahadur Ji",
+    "tradition": "sikh",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi only adds a specific place 'Baba Bakala' not present in English ('spent years in contemplation'). The Hindi version of this same field is clean -- only the Punjabi needs correction.",
+        "english_source": "A quiet, meditative man who spent years in contemplation before assuming Guruship. When a delegation of Kashmiri Pandits, facing forced conversion under Emperor Aurangzeb, pleaded for help, the Guru stepped forward. He told Aurangzeb that if he could convert the Guru, all Hindus would follow. Thus, he knowingly placed himself in the path of execution to save others.",
+        "current_punjabi_wrong": "ਇੱਕ ਸ਼ਾਂਤ, ਧਿਆਨਮਗਨ ਸ਼ਖ਼ਸੀਅਤ ਜਿਨ੍ਹਾਂ ਨੇ ਗੁਰਗੱਦੀ ਸੰਭਾਲਣ ਤੋਂ ਪਹਿਲਾਂ ਕਈ ਸਾਲ ਚਿੰਤਨ ਵਿੱਚ ਬਿਤਾਏ। ਜਦੋਂ ਬਾਦਸ਼ਾਹ ਔਰੰਗਜ਼ੇਬ ਦੇ ਅਧੀਨ ਜ਼ਬਰਦਸਤੀ ਧਰਮ ਪਰਿਵਰਤਨ ਦਾ ਸਾਹਮਣਾ ਕਰ ਰਹੇ ਕਸ਼ਮੀਰੀ ਪੰਡਤਾਂ ਦੇ ਇੱਕ ਵਫ਼ਦ ਨੇ ਮਦਦ ਦੀ ਫ਼ਰਿਆਦ ਕੀਤੀ, ਤਾਂ ਗੁਰੂ ਸਾਹਿਬ ਅੱਗੇ ਆਏ। ਉਨ੍ਹਾਂ ਨੇ ਔਰੰਗਜ਼ੇਬ ਨੂੰ ਕਿਹਾ ਕਿ ਜੇਕਰ ਉਹ ਗੁਰੂ ਜੀ ਦਾ ਧਰਮ ਬਦਲ ਸਕਿਆ, ਤਾਂ ਸਾਰੇ ਹਿੰਦੂ ਉਸਦੇ ਮਗਰ ਲੱਗ ਜਾਣਗੇ। ਇਸ ਤਰ੍ਹਾਂ, ਉਨ੍ਹਾਂ ਨੇ ਦੂਜਿਆਂ ਨੂੰ ਬਚਾਉਣ ਲਈ ਜਾਣਬੁੱਝ ਕੇ ਆਪਣੇ ਆਪ ਨੂੰ ਸ਼ਹਾਦਤ ਦੇ ਰਾਹ 'ਤੇ ਪਾ ਦਿੱਤਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "harishchandra",
+    "name": "King Harishchandra",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds fabricated lineage/place facts not in English -- 'King of Ayodhya, of the Solar/Suryavansha dynasty' -- and adds a specific unstated reason for selling his family ('to pay the dakshina') not present in English.",
+        "english_source": "To honor a promise made to Sage Vishwamitra in a dream, he gave away his entire kingdom. Left penniless, he sold his wife, his son, and himself into slavery. Working as a corpse-burner in a crematorium, he maintained his vow of truth.",
+        "current_hindi_wrong": "एक स्वप्न में महर्षि विश्वामित्र को दिए गए वचन का मान रखने के लिए, उन्होंने अपना पूरा राज्य दान कर दिया। सर्वस्वहीन होने पर, उन्होंने अपनी पत्नी, अपने पुत्र और स्वयं को दासता में बेच दिया। श्मशान घाट में शवदाहक के रूप में कार्य करते हुए भी, उन्होंने सत्य के अपने व्रत का पालन किया।",
+        "current_punjabi_wrong": "ਇੱਕ ਸੁਪਨੇ ਵਿੱਚ ਰਿਸ਼ੀ ਵਿਸ਼ਵਾਮਿੱਤਰ ਨੂੰ ਦਿੱਤੇ ਗਏ ਬਚਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੇ ਆਪਣਾ ਸਾਰਾ ਰਾਜ ਦਾਨ ਕਰ ਦਿੱਤਾ। ਕੰਗਾਲ ਹੋਣ 'ਤੇ, ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੀ ਪਤਨੀ, ਆਪਣੇ ਪੁੱਤਰ ਅਤੇ ਆਪਣੇ ਆਪ ਨੂੰ ਗੁਲਾਮੀ ਵਿੱਚ ਵੇਚ ਦਿੱਤਾ। ਸ਼ਮਸ਼ਾਨ ਘਾਟ ਵਿੱਚ ਮੁਰਦੇ ਸਾੜਨ ਦਾ ਕੰਮ ਕਰਦਿਆਂ ਵੀ, ਉਨ੍ਹਾਂ ਨੇ ਸੱਚ ਦੇ ਆਪਣੇ ਪ੍ਰਣ ਨੂੰ ਕਾਇਮ ਰੱਖਿਆ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Does not translate the English mantra 'Satyamev Jayate (Truth alone triumphs)' at all -- substitutes different claims about truth being supreme dharma / the form of God.",
+        "english_source": "Satyamev Jayate (Truth alone triumphs).",
+        "current_hindi_wrong": "सत्यमेव जयते (सत्य की ही विजय होती है)।",
+        "current_punjabi_wrong": "ਸਤਿਆਮੇਵ ਜਯਤੇ (ਸੱਚ ਦੀ ਹੀ ਜਿੱਤ ਹੁੰਦੀ ਹੈ)।"
+      }
+    ]
+  },
+  {
+    "slug": "lord-mahavira",
+    "name": "Lord Mahavira",
+    "tradition": "jain",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "English lists 4 internal enemies (anger, ego, deceit, greed). Hindi correctly lists 4. Punjabi adds a 5th item 'ਕਾਮ' (lust/desire) not authorized by this English passage -- only the Punjabi needs correction.",
+        "english_source": "His trial was absolute endurance. Once, a cowherd drove nails into Mahavira's ears while he was in deep meditation, but Mahavira felt only compassion for the man's ignorance. His true conquest was not over external lands, but over the internal enemies of anger, ego, deceit, and greed.",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਪੂਰਨ ਸਹਿਣਸ਼ੀਲਤਾ ਸੀ। ਇੱਕ ਵਾਰ, ਜਦੋਂ ਮਹਾਵੀਰ ਡੂੰਘੇ ਧਿਆਨ ਵਿੱਚ ਸਨ ਤਾਂ ਇੱਕ ਆਜੜੀ ਨੇ ਉਨ੍ਹਾਂ ਦੇ ਕੰਨਾਂ ਵਿੱਚ ਕਿੱਲ ਠੋਕ ਦਿੱਤੇ, ਪਰ ਮਹਾਵੀਰ ਨੇ ਉਸ ਵਿਅਕਤੀ ਦੀ ਅਗਿਆਨਤਾ ਪ੍ਰਤੀ ਸਿਰਫ਼ ਦਇਆ ਹੀ ਮਹਿਸੂਸ ਕੀਤੀ। ਉਨ੍ਹਾਂ ਦੀ ਅਸਲ ਜਿੱਤ ਬਾਹਰੀ ਜ਼ਮੀਨਾਂ 'ਤੇ ਨਹੀਂ, ਸਗੋਂ ਕ੍ਰੋਧ, ਹੰਕਾਰ, ਕਪਟ ਅਤੇ ਲੋਭ ਦੇ ਅੰਦਰੂਨੀ ਦੁਸ਼ਮਣਾਂ 'ਤੇ ਸੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "maharana-pratap",
+    "name": "Maharana Pratap",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi adds 'hunger' (ਭੁੱਖ) alongside 'poverty' -- a specific condition not stated in the English ('watching his family endure poverty in the jungles'). The Hindi version of this field does not have this addition -- only Punjabi needs correction.",
+        "english_source": "His trial was watching his family endure poverty in the jungles, yet his commitment to freedom outweighed comfort.",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਆਪਣੇ ਪਰਿਵਾਰ ਨੂੰ ਜੰਗਲਾਂ ਵਿੱਚ ਗ਼ਰੀਬੀ ਝੱਲਦੇ ਦੇਖਣਾ ਸੀ, ਫਿਰ ਵੀ ਆਜ਼ਾਦੀ ਪ੍ਰਤੀ ਉਨ੍ਹਾਂ ਦੀ ਵਚਨਬੱਧਤਾ ਸੁੱਖ-ਸਹੂਲਤਾਂ ਨਾਲੋਂ ਕਿਤੇ ਵੱਡੀ ਸੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "mai-bhago",
+    "name": "Mai Bhago",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops 'armor' and 'horse' from English entirely; fabricates that she told the men to wear 'bangles' (not 'clothes' as in English) and that she herself carried a 'spear/lance' -- none of this is in the English.",
+        "english_source": "During the grueling siege of Anandpur Sahib, 40 Sikhs signed a declaration abandoning Guru Gobind Singh and returned home. Mai Bhago, a devout village woman, was furious. She dressed in armor, mounted a horse, and challenged the men: \"Either you stay here and act like women, or give me your clothes and I will go fight for the Guru.\" Shamed, the 40 men followed her back to the battlefield of Muktsar.",
+        "current_hindi_wrong": "आनंदपुर साहिब की भीषण घेराबंदी के दौरान, 40 सिखों ने गुरु गोबिंद सिंह जी को छोड़ने का बेदावा लिखकर हस्ताक्षर किए और घर लौट आए। एक धर्मनिष्ठ ग्रामीण महिला माई भागो अत्यंत क्रोधित हुईं। उन्होंने कवच पहना, घोड़े पर सवार हुईं, और उन पुरुषों को ललकारा: \"या तो तुम यहाँ रहो और औरतों की तरह बर्ताव करो, या मुझे अपने कपड़े दे दो और मैं गुरु के लिए लड़ने जाऊँगी।\" लज्जित होकर, वे 40 पुरुष उनके पीछे-पीछे मुक्तसर के युद्ध के मैदान में लौट आए।",
+        "current_punjabi_wrong": "ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਦੀ ਔਖੀ ਘੇਰਾਬੰਦੀ ਦੌਰਾਨ, 40 ਸਿੱਖਾਂ ਨੇ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦਾ ਸਾਥ ਛੱਡਣ ਦਾ ਬੇਦਾਵਾ ਲਿਖ ਕੇ ਦਸਤਖ਼ਤ ਕੀਤੇ ਅਤੇ ਘਰ ਪਰਤ ਆਏ। ਇੱਕ ਧਰਮੀ ਪੇਂਡੂ ਔਰਤ ਮਾਈ ਭਾਗੋ ਬਹੁਤ ਗੁੱਸੇ ਹੋਈ। ਉਨ੍ਹਾਂ ਨੇ ਬਸਤਰ ਤੇ ਹਥਿਆਰ ਪਹਿਨੇ, ਘੋੜੇ 'ਤੇ ਸਵਾਰ ਹੋਏ, ਅਤੇ ਮਰਦਾਂ ਨੂੰ ਵੰਗਾਰਿਆ: \"ਜਾਂ ਤਾਂ ਤੁਸੀਂ ਇੱਥੇ ਰਹੋ ਅਤੇ ਔਰਤਾਂ ਵਾਂਗ ਰਹੋ, ਜਾਂ ਮੈਨੂੰ ਆਪਣੇ ਕੱਪੜੇ ਦੇ ਦਿਓ ਅਤੇ ਮੈਂ ਗੁਰੂ ਜੀ ਲਈ ਲੜਨ ਜਾਵਾਂਗੀ।\" ਸ਼ਰਮਸਾਰ ਹੋ ਕੇ, ਉਹ 40 ਆਦਮੀ ਉਨ੍ਹਾਂ ਦੇ ਪਿੱਛੇ-ਪਿੱਛੇ ਮੁਕਤਸਰ ਦੇ ਜੰਗ ਦੇ ਮੈਦਾਨ ਵਿੱਚ ਵਾਪਸ ਆ ਗਏ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Not a translation at all -- substitutes a wholly different statement about leadership reminding others of lost honor/duty; the actual English message ('Never abandon your Guru in times of hardship') is dropped entirely.",
+        "english_source": "Never abandon your Guru in times of hardship.",
+        "current_hindi_wrong": "कठिनाई के समय में कभी भी अपने गुरु का साथ मत छोड़ो।",
+        "current_punjabi_wrong": "ਮੁਸੀਬਤ ਦੇ ਸਮੇਂ ਕਦੇ ਵੀ ਆਪਣੇ ਗੁਰੂ ਦਾ ਸਾਥ ਨਾ ਛੱਡੋ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Not a translation -- substitutes unrelated content about courage not being an exclusive male privilege, in place of the actual English moral about righteous indignation awakening a community's conscience.",
+        "english_source": "Righteous indignation can awaken the dead conscience of an entire community.",
+        "current_hindi_wrong": "धर्मसम्मत आक्रोश पूरे समाज की सोई हुई चेतना को जगा सकता है।",
+        "current_punjabi_wrong": "ਧਰਮੀ ਰੋਹ ਪੂਰੇ ਸਮਾਜ ਦੀ ਮਰੀ ਹੋਈ ਜ਼ਮੀਰ ਨੂੰ ਜਗਾ ਸਕਦਾ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "maitreyi",
+    "name": "Maitreyi",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English explicitly states no source material exists for her life path. Hindi/Punjabi instead fabricate an entire narrative: sage 'Yajnavalkya' (name never in English), splitting property between two wives, a wealth-vs-immortality dialogue, renunciation of wealth.",
+        "english_source": "The provided source material does not contain details about Maitreyi's life path.",
+        "current_hindi_wrong": "उपलब्ध स्रोत सामग्री में मैत्रेयी के जीवन मार्ग के बारे में विवरण शामिल नहीं हैं।",
+        "current_punjabi_wrong": "ਉਪਲਬਧ ਸਰੋਤ ਸਮੱਗਰੀ ਵਿੱਚ ਮੈਤ੍ਰੇਈ ਦੇ ਜੀਵਨ ਮਾਰਗ ਬਾਰੇ ਵੇਰਵੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English explicitly states no trial is described. Hindi/Punjabi invent a specific trial description about giving up worldly security for the abstract truth of the soul.",
+        "english_source": "The source does not describe a specific trial or spiritual crisis for Maitreyi.",
+        "current_hindi_wrong": "स्रोत में मैत्रेयी के लिए किसी विशिष्ट परीक्षा या आध्यात्मिक संकट का वर्णन नहीं है।",
+        "current_punjabi_wrong": "ਸਰੋਤ ਵਿੱਚ ਮੈਤ੍ਰੇਈ ਲਈ ਕਿਸੇ ਖਾਸ ਪ੍ਰੀਖਿਆ ਜਾਂ ਅਧਿਆਤਮਿਕ ਸੰਕਟ ਦਾ ਵਰਣਨ ਨਹੀਂ ਹੈ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English explicitly states no teaching details are provided. Hindi/Punjabi insert a fabricated Sanskrit quotation attributed to her from the Brihadaranyaka Upanishad.",
+        "english_source": "The source material does not provide details on Maitreyi's core contributions to dharma.",
+        "current_hindi_wrong": "स्रोत सामग्री धर्म में मैत्रेयी के मुख्य योगदान पर विवरण प्रदान नहीं करती है।",
+        "current_punjabi_wrong": "ਸਰੋਤ ਸਮੱਗਰੀ ਧਰਮ ਵਿੱਚ ਮੈਤ੍ਰੇਈ ਦੇ ਮੁੱਖ ਯੋਗਦਾਨ ਬਾਰੇ ਵੇਰਵੇ ਪ੍ਰਦਾਨ ਨਹੀਂ ਕਰਦੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "markandeya",
+    "name": "Markandeya",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates the father's name 'Mrikandu' (not in English), a fabricated age of '16' (not in English), and names the deity 'Yamraj' (not in English, which is generic prose).",
+        "english_source": "Markandeya, a sage of ancient India, is renowned for his devotion to Lord Shiva. His life is a testament to the power of unwavering faith, which earned him the boon of immortality. This divine gift allowed him to witness the cycles of creation and destruction, becoming a living repository of spiritual wisdom. His existence bridges the mortal and divine, embodying the ideal of a devotee whose purity of heart transcends the boundaries of life and death. His story is preserved in ancient texts, highlighting the profound connection between devotion and liberation.",
+        "current_hindi_wrong": "प्राचीन भारत के एक ऋषि, मार्कंडेय भगवान शिव के प्रति अपनी भक्ति के लिए प्रसिद्ध हैं। उनका जीवन अटूट विश्वास की शक्ति का प्रमाण है, जिसने उन्हें अमरता का वरदान दिलाया। इस दिव्य उपहार ने उन्हें सृष्टि और विनाश के चक्रों को देखने की अनुमति दी, जिससे वे आध्यात्मिक ज्ञान के जीवित भंडार बन गए। उनका अस्तित्व नश्वर और दिव्य के बीच एक सेतु है, जो एक ऐसे भक्त के आदर्श को साकार करता है जिसकी हृदय की पवित्रता जीवन और मृत्यु की सीमाओं से परे है। उनकी कथा प्राचीन ग्रंथों में सुरक्षित है, जो भक्ति और मुक्ति के बीच गहरे संबंध पर प्रकाश डालती है।",
+        "current_punjabi_wrong": "ਪ੍ਰਾਚੀਨ ਭਾਰਤ ਦੇ ਇੱਕ ਰਿਸ਼ੀ, ਮਾਰਕੰਡੇਯ ਭਗਵਾਨ ਸ਼ਿਵ ਪ੍ਰਤੀ ਆਪਣੀ ਭਗਤੀ ਲਈ ਪ੍ਰਸਿੱਧ ਹਨ। ਉਨ੍ਹਾਂ ਦਾ ਜੀਵਨ ਅਟੱਲ ਵਿਸ਼ਵਾਸ ਦੀ ਸ਼ਕਤੀ ਦਾ ਪ੍ਰਮਾਣ ਹੈ, ਜਿਸ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਅਮਰਤਾ ਦਾ ਵਰਦਾਨ ਦਿਵਾਇਆ। ਇਸ ਬ੍ਰਹਮ ਤੋਹਫ਼ੇ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸ੍ਰਿਸ਼ਟੀ ਅਤੇ ਵਿਨਾਸ਼ ਦੇ ਚੱਕਰਾਂ ਦਾ ਗਵਾਹ ਬਣਨ ਦਾ ਮੌਕਾ ਦਿੱਤਾ, ਜਿਸ ਨਾਲ ਉਹ ਅਧਿਆਤਮਿਕ ਗਿਆਨ ਦਾ ਇੱਕ ਜਿਉਂਦਾ ਜਾਗਦਾ ਖ਼ਜ਼ਾਨਾ ਬਣ ਗਏ। ਉਨ੍ਹਾਂ ਦੀ ਹੋਂਦ ਨਾਸ਼ਵਾਨ ਅਤੇ ਬ੍ਰਹਮ ਵਿਚਕਾਰ ਇੱਕ ਪੁਲ ਹੈ, ਜੋ ਅਜਿਹੇ ਭਗਤ ਦੇ ਆਦਰਸ਼ ਨੂੰ ਦਰਸਾਉਂਦੀ ਹੈ ਜਿਸਦੇ ਦਿਲ ਦੀ ਪਵਿੱਤਰਤਾ ਜੀਵਨ ਅਤੇ ਮੌਤ ਦੀਆਂ ਹੱਦਾਂ ਤੋਂ ਪਰੇ ਹੈ। ਉਨ੍ਹਾਂ ਦੀ ਕਹਾਣੀ ਪ੍ਰਾਚੀਨ ਗ੍ਰੰਥਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਹੈ, ਜੋ ਭਗਤੀ ਅਤੇ ਮੁਕਤੀ ਵਿਚਕਾਰ ਡੂੰਘੇ ਸੰਬੰਧ ਨੂੰ ਉਜਾਗਰ ਕਰਦੀ ਹੈ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English is a full paragraph naming 'sixteen', 'parents' curse', 'the Lord himself intervened, sparing his life', and framing this as establishing him as 'guardian of sacred lore'. Hindi/Punjabi compress this to one generic sentence, dropping all specifics.",
+        "english_source": "Markandeya's defining trial was his confrontation with death itself. As a young boy, he was destined to die at sixteen, a fate sealed by his parents' curse. Undeterred, he worshipped Shiva with such fervor that the Lord himself intervened, sparing his life. This moment tested the limits of his faith and the power of divine grace. It was a spiritual crisis that could have ended his existence, but instead, it cemented his status as a blessed soul. His survival was not just a personal victory but a divine endorsement of his devotion, setting the stage for his future role as a guardian of sacred lore.",
+        "current_hindi_wrong": "मार्कंडेय की सबसे बड़ी परीक्षा स्वयं मृत्यु से उनका सामना था। एक बालक के रूप में, वे सोलह वर्ष की आयु में मृत्यु को प्राप्त होने वाले थे, जो उनके माता-पिता के एक शाप द्वारा तय किया गया भाग्य था। विचलित हुए बिना, उन्होंने इतने उत्साह के साथ शिव की पूजा की कि स्वयं भगवान ने हस्तक्षेप किया और उनके जीवन की रक्षा की। इस क्षण ने उनके विश्वास की सीमाओं और दैवीय कृपा की शक्ति की परीक्षा ली। यह एक ऐसा आध्यात्मिक संकट था जो उनके अस्तित्व को समाप्त कर सकता था, किंतु इसके बजाय इसने उन्हें एक धन्य आत्मा के रूप में स्थापित कर दिया। उनका जीवित बचना केवल एक व्यक्तिगत विजय नहीं थी बल्कि उनकी भक्ति का एक दैवीय समर्थन था, जिसने पवित्र ज्ञान के संरक्षक के रूप में उनकी भावी भूमिका की नींव रखी।",
+        "current_punjabi_wrong": "ਮਾਰਕੰਡੇਯ ਦੀ ਸਭ ਤੋਂ ਵੱਡੀ ਪ੍ਰੀਖਿਆ ਖ਼ੁਦ ਮੌਤ ਨਾਲ ਉਨ੍ਹਾਂ ਦਾ ਸਾਹਮਣਾ ਸੀ। ਇੱਕ ਛੋਟੇ ਬਾਲਕ ਦੇ ਰੂਪ ਵਿੱਚ, ਉਹ ਸੋਲਾਂ ਸਾਲ ਦੀ ਉਮਰ ਵਿੱਚ ਮਰਨ ਲਈ ਨਿਸ਼ਚਿਤ ਸਨ, ਜੋ ਉਨ੍ਹਾਂ ਦੇ ਮਾਪਿਆਂ ਦੇ ਸਰਾਪ ਦੁਆਰਾ ਤੈਅ ਕੀਤਾ ਗਿਆ ਭਾਗ ਸੀ। ਬਿਨਾਂ ਡਰੇ, ਉਨ੍ਹਾਂ ਨੇ ਸ਼ਿਵ ਦੀ ਇੰਨੀ ਸ਼ਰਧਾ ਨਾਲ ਪੂਜਾ ਕੀਤੀ ਕਿ ਖ਼ੁਦ ਪ੍ਰਮਾਤਮਾ ਨੇ ਦਖ਼ਲ ਦਿੱਤਾ ਅਤੇ ਉਨ੍ਹਾਂ ਦੇ ਪ੍ਰਾਣ ਬਚਾਏ। ਇਸ ਪਲ ਨੇ ਉਨ੍ਹਾਂ ਦੇ ਵਿਸ਼ਵਾਸ ਦੀਆਂ ਹੱਦਾਂ ਅਤੇ ਬ੍ਰਹਮ ਕਿਰਪਾ ਦੀ ਸ਼ਕਤੀ ਦੀ ਪਰਖ ਕੀਤੀ। ਇਹ ਇੱਕ ਅਧਿਆਤਮਿਕ ਸੰਕਟ ਸੀ ਜੋ ਉਨ੍ਹਾਂ ਦੀ ਹੋਂਦ ਨੂੰ ਖ਼ਤਮ ਕਰ ਸਕਦਾ ਸੀ, ਪਰ ਇਸ ਦੀ ਬਜਾਏ ਇਸਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਇੱਕ ਬਖ਼ਸ਼ੀ ਹੋਈ ਰੂਹ ਵਜੋਂ ਸਥਾਪਿਤ ਕਰ ਦਿੱਤਾ। ਉਨ੍ਹਾਂ ਦਾ ਜਿਉਂਦਾ ਬਚਣਾ ਸਿਰਫ਼ ਇੱਕ ਨਿੱਜੀ ਜਿੱਤ ਨਹੀਂ ਸੀ ਸਗੋਂ ਉਨ੍ਹਾਂ ਦੀ ਭਗਤੀ ਦੀ ਇੱਕ ਬ੍ਰਹਮ ਪ੍ਰਵਾਨਗੀ ਸੀ, ਜਿਸ ਨੇ ਪਵਿੱਤਰ ਗਿਆਨ ਦੇ ਰਖਵਾਲੇ ਵਜੋਂ ਉਨ੍ਹਾਂ ਦੀ ਭਵਿੱਖ ਦੀ ਭੂਮਿਕਾ ਦਾ ਮੁੱਢ ਬੰਨ੍ਹਿਆ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English discusses bhakti/surrender/dharma in prose. Hindi/Punjabi replace it entirely with the Mahamrityunjaya Mantra ('ॐ त्र्यम्बकं यजामहे...') -- a specific real scriptural text substituted in, not a translation of the English content.",
+        "english_source": "Markandeya's core contribution to dharma is the embodiment of unwavering devotion (bhakti) as a path to liberation. His life teaches that absolute faith in the divine can overcome even the most certain fate of death. He is a living example of how surrender to God (sharanagati) and righteous living can lead to spiritual immortality. His teachings, preserved in the texts, emphasize that true knowledge is not just intellectual but is rooted in devotion and purity of heart. He demonstrates that the grace of God is accessible to all, regardless of age, and that sincere worship can alter the course of destiny, making dharma a dynamic and personal journey.",
+        "current_hindi_wrong": "धर्म के प्रति मार्कंडेय का मुख्य योगदान मुक्ति के मार्ग के रूप में अटूट भक्ति का मूर्त रूप बनना है। उनका जीवन सिखाता है कि ईश्वर में पूर्ण विश्वास मृत्यु जैसे निश्चित भाग्य पर भी विजय प्राप्त कर सकता है। वे इस बात के जीवित उदाहरण हैं कि कैसे ईश्वर के प्रति समर्पण और धार्मिक जीवन आध्यात्मिक अमरता की ओर ले जा सकता है। ग्रंथों में सुरक्षित उनकी शिक्षाएं इस बात पर बल देती हैं कि सच्चा ज्ञान केवल बौद्धिक नहीं होता बल्कि भक्ति और हृदय की पवित्रता में निहित होता है। वे दर्शाते हैं कि ईश्वर की कृपा आयु की परवाह किए बिना सभी के लिए सुलभ है, और सच्ची पूजा भाग्य की दिशा बदल सकती है, जिससे धर्म एक गतिशील और व्यक्तिगत यात्रा बन जाता है।",
+        "current_punjabi_wrong": "ਧਰਮ ਵਿੱਚ ਮਾਰਕੰਡੇਯ ਦਾ ਮੁੱਖ ਯੋਗਦਾਨ ਮੁਕਤੀ ਦੇ ਮਾਰਗ ਵਜੋਂ ਅਟੱਲ ਭਗਤੀ ਦਾ ਪ੍ਰਤੀਕ ਬਣਨਾ ਹੈ। ਉਨ੍ਹਾਂ ਦਾ ਜੀਵਨ ਸਿਖਾਉਂਦਾ ਹੈ ਕਿ ਪ੍ਰਮਾਤਮਾ ਵਿੱਚ ਪੂਰਨ ਵਿਸ਼ਵਾਸ ਮੌਤ ਦੀ ਸਭ ਤੋਂ ਨਿਸ਼ਚਿਤ ਹੋਣੀ 'ਤੇ ਵੀ ਕਾਬੂ ਪਾ ਸਕਦਾ ਹੈ। ਉਹ ਇੱਕ ਜਿਉਂਦੀ ਜਾਗਦੀ ਉਦਾਹਰਣ ਹਨ ਕਿ ਕਿਵੇਂ ਪ੍ਰਮਾਤਮਾ ਅੱਗੇ ਸਮਰਪਣ ਅਤੇ ਧਰਮੀ ਜੀਵਨ ਅਧਿਆਤਮਿਕ ਅਮਰਤਾ ਵੱਲ ਲੈ ਜਾ ਸਕਦਾ ਹੈ। ਗ੍ਰੰਥਾਂ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਉਨ੍ਹਾਂ ਦੀਆਂ ਸਿੱਖਿਆਵਾਂ ਇਸ ਗੱਲ 'ਤੇ ਜ਼ੋਰ ਦਿੰਦੀਆਂ ਹਨ ਕਿ ਸੱਚਾ ਗਿਆਨ ਸਿਰਫ਼ ਬੌਧਿਕ ਨਹੀਂ ਹੁੰਦਾ ਸਗੋਂ ਭਗਤੀ ਅਤੇ ਦਿਲ ਦੀ ਪਵਿੱਤਰਤਾ ਵਿੱਚ ਜੜ੍ਹਿਆ ਹੁੰਦਾ ਹੈ। ਉਹ ਦਰਸਾਉਂਦੇ ਹਨ ਕਿ ਪ੍ਰਮਾਤਮਾ ਦੀ ਕਿਰਪਾ ਉਮਰ ਦੀ ਪਰਵਾਹ ਕੀਤੇ ਬਿਨਾਂ ਸਾਰਿਆਂ ਲਈ ਪਹੁੰਚਯੋਗ ਹੈ, ਅਤੇ ਸੱਚੀ ਭਗਤੀ ਕਿਸਮਤ ਦੇ ਰੁਖ਼ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ, ਜਿਸ ਨਾਲ ਧਰਮ ਇੱਕ ਗਤੀਸ਼ੀਲ ਅਤੇ ਨਿੱਜੀ ਸਫ਼ਰ ਬਣ ਜਾਂਦਾ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "mata-gujri",
+    "name": "Mata Gujri Ji",
+    "tradition": "sikh",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds the specific servant name 'Gangu' not present in English ('their servant'). Punjabi additionally adds his occupation 'cook' and a specific place name 'Sarsa river' -- neither present in the English journey text.",
+        "english_source": "Wife of the ninth Guru, mother of the tenth, and grandmother to the Chaar Sahibzaade. During the chaotic evacuation of Anandpur Sahib, she was separated from the main contingent along with her two youngest grandsons, aged 7 and 9. Betrayed by their servant, they were captured by Wazir Khan, the cruel governor of Sirhind.",
+        "current_hindi_wrong": "नौवें गुरु की धर्मपत्नी, दसवें गुरु की माता और चार साहिबज़ादों की दादी। आनंदपुर साहिब की विषम परिस्थितियों में निकासी के दौरान, वे अपने दो सबसे छोटे पौत्रों (आयु 7 और 9 वर्ष) के साथ मुख्य जत्थे से बिछड़ गईं। अपने सेवक द्वारा विश्वासघात किए जाने पर, उन्हें सरहिंद के क्रूर सूबेदार वज़ीर ख़ान द्वारा बंदी बना लिया गया।",
+        "current_punjabi_wrong": "ਨੌਵੇਂ ਗੁਰੂ ਜੀ ਦੇ ਮਹਿਲ, ਦਸਵੇਂ ਗੁਰੂ ਜੀ ਦੀ ਮਾਤਾ ਅਤੇ ਚਾਰ ਸਾਹਿਬਜ਼ਾਦਿਆਂ ਦੀ ਦਾਦੀ। ਅਨੰਦਪੁਰ ਸਾਹਿਬ ਦੇ ਖਾਲੀ ਕਰਨ ਦੇ ਔਖੇ ਹਾਲਾਤਾਂ ਦੌਰਾਨ, ਉਹ ਆਪਣੇ ਦੋ ਛੋਟੇ ਪੋਤਿਆਂ (ਉਮਰ 7 ਅਤੇ 9 ਸਾਲ) ਸਮੇਤ ਮੁੱਖ ਜਥੇ ਨਾਲੋਂ ਵਿਛੜ ਗਏ। ਆਪਣੇ ਨੌਕਰ ਵੱਲੋਂ ਧੋਖਾ ਦਿੱਤੇ ਜਾਣ 'ਤੇ, ਉਨ੍ਹਾਂ ਨੂੰ ਸਰਹਿੰਦ ਦੇ ਜ਼ਾਲਮ ਸੂਬੇਦਾਰ ਵਜ਼ੀਰ ਖ਼ਾਨ ਨੇ ਕੈਦ ਕਰ ਲਿਆ।"
+      }
+    ]
+  },
+  {
+    "slug": "prahlad",
+    "name": "Bhakta Prahlad",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "FACTUAL ERROR: Punjabi names the father as 'Hiranaksh' (Hiranyaksha, a DIFFERENT demon slain by Vishnu's Varaha avatar) instead of 'Hiranyakashipu' (Prahlad's actual father per the English, slain by Narasimha). Hindi correctly says 'हिरण्यकशिपु' -- only Punjabi needs correction.",
+        "english_source": "Born to the tyrant demon king Hiranyakashipu, Prahlad was devoted to Lord Vishnu from the womb. Despite his father's horrific attempts to assassinate him, Prahlad's faith never wavered.",
+        "current_punjabi_wrong": "ਜ਼ਾਲਮ ਰਾਖਸ਼ ਰਾਜਾ ਹਿਰਨਾਕਸ਼ਪ ਦੇ ਘਰ ਜਨਮੇ, ਪ੍ਰਹਿਲਾਦ ਗਰਭ ਤੋਂ ਹੀ ਭਗਵਾਨ ਵਿਸ਼ਨੂੰ ਦੇ ਭਗਤ ਸਨ। ਆਪਣੇ ਪਿਤਾ ਦੁਆਰਾ ਉਨ੍ਹਾਂ ਨੂੰ ਮਾਰਨ ਦੀਆਂ ਭਿਆਨਕ ਕੋਸ਼ਿਸ਼ਾਂ ਦੇ ਬਾਵਜੂਦ, ਪ੍ਰਹਿਲਾਦ ਦਾ ਵਿਸ਼ਵਾਸ ਕਦੇ ਨਹੀਂ ਡੋਲਿਆ।"
+      }
+    ]
+  },
+  {
+    "slug": "savitri",
+    "name": "Sati Savitri",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds the father's name 'Ashwapati' not present in English ('She chose Satyavan as her husband...'). Drops the English's actual climax entirely -- 'she outwitted Yama and won back her husband's life' is missing; Hindi/Punjabi instead end on an unresolved discussion about Dharma.",
+        "english_source": "She chose Satyavan as her husband, knowing he had only one year to live. When Yama, the God of Death, came to take Satyavan's soul, Savitri followed him into the afterlife. Through her brilliant intellect, knowledge of Dharma, and pure devotion, she outwitted Yama and won back her husband's life.",
+        "current_hindi_wrong": "उसने सत्यवान को अपने पति के रूप में चुना, यह जानते हुए भी कि उसके पास जीने के लिए केवल एक वर्ष था। जब मृत्यु के देवता यम सत्यवान के प्राण लेने आए, तो सावित्री परलोक तक उनके पीछे-पीछे चली गई। अपनी प्रखर बुद्धि, धर्म के ज्ञान और शुद्ध भक्ति के माध्यम से, उसने यम को निरुत्तर कर दिया और अपने पति का जीवन वापस जीत लिया।",
+        "current_punjabi_wrong": "ਉਸਨੇ ਸਤਿਆਵਾਨ ਨੂੰ ਆਪਣੇ ਪਤੀ ਵਜੋਂ ਚੁਣਿਆ, ਇਹ ਜਾਣਦੇ ਹੋਏ ਵੀ ਕਿ ਉਸਦੇ ਜਿਉਣ ਲਈ ਸਿਰਫ਼ ਇੱਕ ਸਾਲ ਬਾਕੀ ਸੀ। ਜਦੋਂ ਮੌਤ ਦਾ ਦੇਵਤਾ ਯਮ ਸਤਿਆਵਾਨ ਦੇ ਪ੍ਰਾਣ ਲੈਣ ਆਇਆ, ਤਾਂ ਸਾਵਿਤਰੀ ਪਰਲੋਕ ਤੱਕ ਉਸਦੇ ਮਗਰ ਚਲੀ ਗਈ। ਆਪਣੀ ਤੀਖਣ ਬੁੱਧੀ, ਧਰਮ ਦੇ ਗਿਆਨ ਅਤੇ ਸ਼ੁੱਧ ਭਗਤੀ ਰਾਹੀਂ, ਉਸਨੇ ਯਮ ਨੂੰ ਲਾਜਵਾਬ ਕਰ ਦਿੱਤਾ ਅਤੇ ਆਪਣੇ ਪਤੀ ਦਾ ਜੀਵਨ ਵਾਪਸ ਹਾਸਲ ਕੀਤਾ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Does not translate the actual English trial ('Walking into the terrifying realm of Death while maintaining her poise and philosophical clarity') at all. Instead fabricates unrelated content: 'the last boon was to become the mother of a hundred sons' -- a specific fact appearing nowhere in the English.",
+        "english_source": "Walking into the terrifying realm of Death while maintaining her poise and philosophical clarity.",
+        "current_hindi_wrong": "अपने संयम और दार्शनिक स्पष्टता को बनाए रखते हुए मृत्यु के भयानक लोक में प्रवेश करना।",
+        "current_punjabi_wrong": "ਆਪਣੇ ਸੰਜਮ ਅਤੇ ਦਾਰਸ਼ਨਿਕ ਸਪੱਸ਼ਟਤਾ ਨੂੰ ਕਾਇਮ ਰੱਖਦਿਆਂ ਮੌਤ ਦੇ ਭਿਆਨਕ ਖੇਤਰ ਵਿੱਚ ਕਦਮ ਰੱਖਣਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "shabari",
+    "name": "Mata Shabari",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Fabricates a backstory not in English -- 'distressed by animal sacrifice at her wedding, she left home' -- English only says 'she renounced violence'. Also changes 'sweeping the forest path' to 'decorating the path with flowers' -- a different specific action not in English.",
+        "english_source": "A woman of a tribal hunter community, she renounced violence and sought spiritual guidance from Sage Matanga. Before dying, the sage told her that Lord Rama would one day visit her hermitage. She spent decades sweeping the forest path and tasting wild berries to ensure they were sweet for her Lord.",
+        "current_hindi_wrong": "एक वनवासी शिकारी समुदाय की महिला, उन्होंने हिंसा का त्याग किया और महर्षि मातंग से आध्यात्मिक मार्गदर्शन प्राप्त किया। अपने देहांत से पूर्व, महर्षि ने उनसे कहा कि भगवान राम एक दिन उनके आश्रम अवश्य आएंगे। उन्होंने अपने प्रभु के लिए वन के मार्ग में झाड़ू लगाते हुए और जंगली बेरों के मीठे होने की पुष्टि करने के लिए उन्हें चखते हुए कई दशक बिता दिए।",
+        "current_punjabi_wrong": "ਇੱਕ ਵਣਵਾਸੀ ਸ਼ਿਕਾਰੀ ਭਾਈਚਾਰੇ ਦੀ ਔਰਤ, ਉਨ੍ਹਾਂ ਨੇ ਹਿੰਸਾ ਦਾ ਤਿਆਗ ਕੀਤਾ ਅਤੇ ਰਿਸ਼ੀ ਮਾਤੰਗ ਤੋਂ ਅਧਿਆਤਮਿਕ ਸੇਧ ਪ੍ਰਾਪਤ ਕੀਤੀ। ਅਕਾਲ ਚਲਾਣੇ ਤੋਂ ਪਹਿਲਾਂ, ਰਿਸ਼ੀ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਦੱਸਿਆ ਕਿ ਭਗਵਾਨ ਰਾਮ ਇੱਕ ਦਿਨ ਉਨ੍ਹਾਂ ਦੇ ਆਸ਼ਰਮ ਜ਼ਰੂਰ ਆਉਣਗੇ। ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਪ੍ਰਭੂ ਲਈ ਜੰਗਲ ਦੇ ਰਸਤੇ 'ਤੇ ਝਾੜੂ ਦਿੰਦਿਆਂ ਅਤੇ ਜੰਗਲੀ ਬੇਰਾਂ ਦੇ ਮਿੱਠੇ ਹੋਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਉਨ੍ਹਾਂ ਨੂੰ ਚੱਖਦਿਆਂ ਕਈ ਦਹਾਕੇ ਬਿਤਾਏ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English states 'Patience born of pure love is the highest form of meditation.' Hindi/Punjabi substitute a different claim about patience and devotion drawing God to the devotee's hut.",
+        "english_source": "Patience born of pure love is the highest form of meditation.",
+        "current_hindi_wrong": "शुद्ध प्रेम से उत्पन्न धैर्य ही ध्यान का सर्वोच्च रूप है।",
+        "current_punjabi_wrong": "ਸ਼ੁੱਧ ਪ੍ਰੇਮ ਵਿੱਚੋਂ ਪੈਦਾ ਹੋਇਆ ਸਬਰ ਹੀ ਧਿਆਨ ਦਾ ਸਰਵਉੱਚ ਰੂਪ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "shrimad-rajchandra",
+    "name": "Shrimad Rajchandra",
+    "tradition": "jain",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds a fabricated specific number -- 'ability to remember 100 things simultaneously' -- not in English. Fabricates an entirely new named work -- 'Atmasiddhi Shastra' presenting 'six fundamental truths' -- neither the text name nor the number six appear in English. Meanwhile the ACTUAL English content (the Gandhi letters / South Africa detail) is dropped entirely, replaced with a vague 'Gandhiji considered him his spiritual guide'.",
+        "english_source": "A householder and successful jeweler, Shrimad possessed extraordinary memory (Shatavadhana) and profound spiritual insight. He answered Gandhi's deepest questions about religion and non-violence via letters when Gandhi was in South Africa. Despite living in the worldly business environment, his internal state was that of a totally detached ascetic.",
+        "current_hindi_wrong": "एक गृहस्थ और सफल जौहरी, श्रीमद् के पास असाधारण स्मरण शक्ति (शतावधान) और गहन आध्यात्मिक अंतर्दृष्टि थी। जब गांधी दक्षिण अफ्रीका में थे, तब उन्होंने पत्रों के माध्यम से धर्म और अहिंसा के बारे में गांधी के गहरे प्रश्नों के उत्तर दिए। सांसारिक व्यावसायिक परिवेश में रहने के बावजूद, उनकी आंतरिक अवस्था पूरी तरह से अनासक्त संन्यासी जैसी थी।",
+        "current_punjabi_wrong": "ਇੱਕ ਗ੍ਰਹਿਸਥੀ ਅਤੇ ਸਫ਼ਲ ਜੌਹਰੀ, ਸ਼੍ਰੀਮਦ ਕੋਲ ਅਸਾਧਾਰਨ ਯਾਦਦਾਸ਼ਤ (ਸ਼ਤਾਵਧਾਨ) ਅਤੇ ਡੂੰਘੀ ਅਧਿਆਤਮਿਕ ਸੂਝ ਸੀ। ਜਦੋਂ ਗਾਂਧੀ ਦੱਖਣੀ ਅਫ਼ਰੀਕਾ ਵਿੱਚ ਸਨ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਚਿੱਠੀਆਂ ਰਾਹੀਂ ਧਰਮ ਅਤੇ ਅਹਿੰਸਾ ਬਾਰੇ ਗਾਂਧੀ ਦੇ ਡੂੰਘੇ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਦਿੱਤੇ। ਸੰਸਾਰਕ ਕਾਰੋਬਾਰੀ ਮਾਹੌਲ ਵਿੱਚ ਰਹਿਣ ਦੇ ਬਾਵਜੂਦ, ਉਨ੍ਹਾਂ ਦੀ ਅੰਦਰੂਨੀ ਅਵਸਥਾ ਇੱਕ ਪੂਰੀ ਤਰ੍ਹਾਂ ਨਿਰਲੇਪ ਤਪੱਸਵੀ ਵਾਲੀ ਸੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "siddhartha-gautama",
+    "name": "Siddhartha Gautama (The Buddha)",
+    "tradition": "buddhist",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds 'Prince of Kapilavastu' (place not in English), the named concept 'Four Sights' (not in English), age '29' (no age in English), '6 years' of asceticism (no duration in English), 'at Bodh Gaya' (English only says 'Under the Bodhi tree'), and 'Four Noble Truths and Eightfold Path' -- 'Eightfold Path' appears in NO English field anywhere for this entry.",
+        "english_source": "Born as a prince shielded from the world's miseries, Siddhartha encountered old age, sickness, and death. Recognizing the inevitability of suffering, he renounced his royal life and practiced extreme asceticism before discovering the Middle Way. Under the Bodhi tree, he attained Enlightenment, becoming the Buddha. He then spent 45 years turning the Wheel of Dhamma across the Gangetic plains.",
+        "current_hindi_wrong": "संसार के कष्टों से दूर रखे गए एक राजकुमार के रूप में जन्मे, सिद्धार्थ का सामना वृद्धावस्था, बीमारी और मृत्यु से हुआ। दुःख की अनिवार्यता को पहचानते हुए, उन्होंने अपने राजसी जीवन का त्याग किया और मध्यम मार्ग की खोज करने से पहले कठोर तपस्या का अभ्यास किया। बोधि वृक्ष के नीचे, उन्होंने ज्ञान प्राप्त किया और बुद्ध बने। इसके बाद उन्होंने गंगा के मैदानी इलाकों में धम्म चक्र का प्रवर्तन करते हुए 45 वर्ष बिताए।",
+        "current_punjabi_wrong": "ਦੁਨੀਆਂ ਦੇ ਦੁੱਖਾਂ ਤੋਂ ਬਚਾ ਕੇ ਰੱਖੇ ਗਏ ਇੱਕ ਰਾਜਕੁਮਾਰ ਵਜੋਂ ਜਨਮੇ, ਸਿਧਾਰਥ ਦਾ ਸਾਹਮਣਾ ਬੁਢਾਪੇ, ਬਿਮਾਰੀ ਅਤੇ ਮੌਤ ਨਾਲ ਹੋਇਆ। ਦੁੱਖ ਦੀ ਅਟੱਲਤਾ ਨੂੰ ਪਛਾਣਦਿਆਂ, ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਸ਼ਾਹੀ ਜੀਵਨ ਦਾ ਤਿਆਗ ਕੀਤਾ ਅਤੇ ਮੱਧ ਮਾਰਗ ਦੀ ਖੋਜ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਘੋਰ ਤਪੱਸਿਆ ਦਾ ਅਭਿਆਸ ਕੀਤਾ। ਬੋਧੀ ਰੁੱਖ ਦੇ ਹੇਠਾਂ, ਉਨ੍ਹਾਂ ਨੇ ਗਿਆਨ ਪ੍ਰਾਪਤ ਕੀਤਾ ਅਤੇ ਬੁੱਧ ਬਣੇ। ਫਿਰ ਉਨ੍ਹਾਂ ਨੇ ਗੰਗਾ ਦੇ ਮੈਦਾਨੀ ਇਲਾਕਿਆਂ ਵਿੱਚ ਧੰਮ ਚੱਕਰ ਚਲਾਉਂਦਿਆਂ 45 ਸਾਲ ਬਿਤਾਏ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the earth-touching gesture entirely (present in English: 'touching the earth as his witness') and instead inserts Middle-Way/two-extremes content that actually belongs to the journey field, not trial.",
+        "english_source": "His greatest trial was the assault of Mara, the demon of illusion, who attacked him with armies of lust, fear, and doubt on the night of his enlightenment. Siddhartha remained unshakeable, touching the earth as his witness.",
+        "current_hindi_wrong": "उनकी सबसे बड़ी परीक्षा भ्रम के असुर मार का हमला था, जिसने उनके ज्ञान प्राप्ति की रात वासना, भय और संदेह की सेनाओं के साथ उन पर आक्रमण किया। सिद्धार्थ पृथ्वी को अपनी साक्षी के रूप में स्पर्श करते हुए अडिग रहे।",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਸਭ ਤੋਂ ਵੱਡੀ ਪ੍ਰੀਖਿਆ ਭਰਮ ਦੇ ਦੈਂਤ ਮਾਰ ਦਾ ਹਮਲਾ ਸੀ, ਜਿਸਨੇ ਗਿਆਨ ਪ੍ਰਾਪਤੀ ਦੀ ਰਾਤ ਵਾਸਨਾ, ਡਰ ਅਤੇ ਸ਼ੰਕੇ ਦੀਆਂ ਫ਼ੌਜਾਂ ਨਾਲ ਉਨ੍ਹਾਂ 'ਤੇ ਹਮਲਾ ਕੀਤਾ। ਸਿਧਾਰਥ ਧਰਤੀ ਨੂੰ ਆਪਣੀ ਗਵਾਹ ਵਜੋਂ ਛੂਹ ਕੇ ਅਡੋਲ ਰਹੇ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Replaces the actual English teaching (the Four Noble Truths, stated in prose) with a completely different, unrelated quote about being 'your own lamp' and impermanence -- zero textual overlap with the English.",
+        "english_source": "Suffering exists, it has a cause, it has an end, and there is a path to its end (The Four Noble Truths).",
+        "current_hindi_wrong": "दुःख है, इसका एक कारण है, इसका एक अंत है, और इसके अंत का एक मार्ग है (चार आर्य सत्य)।",
+        "current_punjabi_wrong": "ਦੁੱਖ ਹੈ, ਇਸਦਾ ਇੱਕ ਕਾਰਨ ਹੈ, ਇਸਦਾ ਇੱਕ ਅੰਤ ਹੈ, ਅਤੇ ਇਸਦੇ ਅੰਤ ਦਾ ਇੱਕ ਰਸਤਾ ਹੈ (ਚਾਰ ਆਰੀਆ ਸੱਚ)।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Substitutes a different concept ('external grace' vs English's 'avoiding the world') and adds 'compassion'/'middle path' framing absent from the English moral.",
+        "english_source": "True freedom is found not in avoiding the world, but in awakening to the nature of reality.",
+        "current_hindi_wrong": "सच्ची मुक्ति संसार से भागने में नहीं, बल्कि वास्तविकता के स्वरूप को जानने में मिलती है।",
+        "current_punjabi_wrong": "ਸੱਚੀ ਆਜ਼ਾਦੀ ਸੰਸਾਰ ਤੋਂ ਬਚਣ ਵਿੱਚ ਨਹੀਂ, ਸਗੋਂ ਹਕੀਕਤ ਦੇ ਅਸਲ ਸੁਭਾਅ ਨੂੰ ਸਮਝਣ ਵਿੱਚ ਮਿਲਦੀ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "sister-nivedita",
+    "name": "Sister Nivedita",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the years '1895' (met Vivekananda) and '1898' (arrived in India), and drops the location 'Bagbazar' for the school -- all present in English, all missing here. Adds 'Kolkata's plague crisis' (belongs to a different field's English text, not this one) and adds support for 'the freedom struggle/art renaissance' (belongs to the English legacy field, not journey).",
+        "english_source": "Born Margaret Elizabeth Noble in Ireland, she met Swami Vivekananda in London in 1895. Inspired by his teachings of Vedanta and service to humanity, she arrived in India in 1898. Initiated as Sister Nivedita ('Dedicated to God'), she opened a girls' school in Bagbazar, Kolkata, and served tirelessly during epidemics and floods.",
+        "current_hindi_wrong": "आयरलैंड में मार्गरेट एलिजाबेथ नोबल के रूप में जन्मी, वे 1895 में लंदन में स्वामी विवेकानंद से मिलीं। वेदांत और मानवता की सेवा की उनकी शिक्षाओं से प्रेरित होकर, वे 1898 में भारत आईं। भगिनी निवेदिता ('ईश्वर को समर्पित') के रूप में दीक्षित होकर, उन्होंने बागबाजार, कोलकाता में बालिकाओं के लिए एक विद्यालय खोला, और महामारियों तथा बाढ़ के दौरान अथक सेवा की।",
+        "current_punjabi_wrong": "ਆਇਰਲੈਂਡ ਵਿੱਚ ਮਾਰਗਰੇਟ ਐਲਿਜ਼ਾਬੈਥ ਨੋਬਲ ਵਜੋਂ ਜਨਮੀ, ਉਹ 1895 ਵਿੱਚ ਲੰਡਨ ਵਿਖੇ ਸੁਆਮੀ ਵਿਵੇਕਾਨੰਦ ਨੂੰ ਮਿਲੀ। ਵੇਦਾਂਤ ਅਤੇ ਮਨੁੱਖਤਾ ਦੀ ਸੇਵਾ ਦੀਆਂ ਉਨ੍ਹਾਂ ਦੀਆਂ ਸਿੱਖਿਆਵਾਂ ਤੋਂ ਪ੍ਰੇਰਿਤ ਹੋ ਕੇ, ਉਹ 1898 ਵਿੱਚ ਭਾਰਤ ਆਈ। ਭੈਣ ਨਿਵੇਦਿਤਾ ('ਪ੍ਰਮਾਤਮਾ ਨੂੰ ਸਮਰਪਿਤ') ਵਜੋਂ ਦੀਖਿਆ ਲੈ ਕੇ, ਉਨ੍ਹਾਂ ਨੇ ਬਾਗਬਾਜ਼ਾਰ, ਕੋਲਕਾਤਾ ਵਿੱਚ ਕੁੜੀਆਂ ਦਾ ਸਕੂਲ ਖੋਲ੍ਹਿਆ, ਅਤੇ ਮਹਾਂਮਾਰੀਆਂ ਤੇ ਹੜ੍ਹਾਂ ਦੌਰਾਨ ਅਣਥੱਕ ਸੇਵਾ ਕੀਤੀ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds 'facing colonial rulers' displeasure/scrutiny' not present in English at all, while dropping 'financial scarcity', the year '1899', 'cleaned streets herself', and 'inspired youth to serve fearlessly' -- all of which ARE in the English trial field.",
+        "english_source": "Facing social orthodoxy, financial scarcity, and the severe plague epidemic of Kolkata in 1899, Sister Nivedita nursed patients, cleaned streets herself, and inspired youth to serve fearlessly.",
+        "current_hindi_wrong": "सामाजिक रूढ़िवादिता, वित्तीय संकट और 1899 में कोलकाता की भीषण प्लेग महामारी का सामना करते हुए, भगिनी निवेदिता ने रोगियों की सेवा की, स्वयं सड़कों की सफाई की, और युवाओं को निडर होकर सेवा करने के लिए प्रेरित किया।",
+        "current_punjabi_wrong": "ਸਮਾਜਿਕ ਕੱਟੜਤਾ, ਵਿੱਤੀ ਤੰਗੀ ਅਤੇ 1899 ਵਿੱਚ ਕੋਲਕਾਤਾ ਦੀ ਭਿਆਨਕ ਪਲੇਗ ਮਹਾਂਮਾਰੀ ਦਾ ਸਾਹਮਣਾ ਕਰਦਿਆਂ, ਸਿਸਟਰ ਨਿਵੇਦਿਤਾ ਨੇ ਮਰੀਜ਼ਾਂ ਦੀ ਸੇਵਾ ਕੀਤੀ, ਖ਼ੁਦ ਸੜਕਾਂ ਸਾਫ਼ ਕੀਤੀਆਂ, ਅਤੇ ਨੌਜਵਾਨਾਂ ਨੂੰ ਨਿਡਰ ਹੋ ਕੇ ਸੇਵਾ ਕਰਨ ਲਈ ਪ੍ਰੇਰਿਆ।"
+      }
+    ]
+  },
+  {
+    "slug": "sri-krishna",
+    "name": "Sri Krishna",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English says raised in 'Vrindavan' with no antagonist named and no city-building event. Hindi/Punjabi add 'raised in Gokul' (contradicts Vrindavan), name the antagonist 'Kansa' (never in English), and add 'built Dwarka' (event never in English).",
+        "english_source": "Krishna was born in a prison cell in Mathura. His childhood in Vrindavan was filled with divine play, but his life was a continuous series of duties. He stood as the charioteer to Arjuna, not as a king, but as a guide. In the midst of the greatest battlefield of the era, Kurukshetra, he delivered the Bhagavad Gita.",
+        "current_hindi_wrong": "कृष्ण का जन्म मथुरा के एक कारागार के प्रकोष्ठ में हुआ था। वृंदावन में उनका बचपन दिव्य बाल-लीलाओं से भरा था, किंतु उनका जीवन कर्तव्यों की एक निरंतर श्रृंखला था। वे अर्जुन के सारथी के रूप में खड़े रहे, एक राजा के रूप में नहीं, बल्कि एक मार्गदर्शक के रूप में। उस युग के सबसे बड़े युद्धक्षेत्र, कुरुक्षेत्र के मध्य में, उन्होंने भगवद्गीता का उपदेश दिया।",
+        "current_punjabi_wrong": "ਕ੍ਰਿਸ਼ਨ ਦਾ ਜਨਮ ਮਥੁਰਾ ਦੀ ਇੱਕ ਜੇਲ੍ਹ ਦੀ ਕੋਠੜੀ ਵਿੱਚ ਹੋਇਆ ਸੀ। ਵਰਿੰਦਾਵਨ ਵਿੱਚ ਉਨ੍ਹਾਂ ਦਾ ਬਚਪਨ ਇਲਾਹੀ ਲੀਲਾਵਾਂ ਨਾਲ ਭਰਿਆ ਹੋਇਆ ਸੀ, ਪਰ ਉਨ੍ਹਾਂ ਦਾ ਜੀਵਨ ਫ਼ਰਜ਼ਾਂ ਦਾ ਇੱਕ ਨਿਰੰਤਰ ਸਿਲਸਿਲਾ ਸੀ। ਉਹ ਅਰਜੁਨ ਦੇ ਸਾਰਥੀ ਵਜੋਂ ਖੜ੍ਹੇ ਰਹੇ, ਇੱਕ ਰਾਜੇ ਵਜੋਂ ਨਹੀਂ, ਸਗੋਂ ਇੱਕ ਮਾਰਗਦਰਸ਼ਕ ਵਜੋਂ। ਉਸ ਦੌਰ ਦੇ ਸਭ ਤੋਂ ਵੱਡੇ ਜੰਗ ਦੇ ਮੈਦਾਨ, ਕੁਰੂਕਸ਼ੇਤਰ ਦੇ ਵਿਚਕਾਰ, ਉਨ੍ਹਾਂ ਨੇ ਭਗਵਦ ਗੀਤਾ ਦਾ ਉਪਦੇਸ਼ ਦਿੱਤਾ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English: 'He had to convince a broken Arjuna to fight his own kin for the sake of a higher Dharma.' Hindi/Punjabi replace this entirely with unrelated content about political conspiracies/wars/personal traumas -- no mention of Arjuna or the actual trial.",
+        "english_source": "His greatest trial was not the battlefield, but the silence between the words of the Gita. He had to convince a broken Arjuna to fight his own kin for the sake of a higher Dharma.",
+        "current_hindi_wrong": "उनकी सबसे बड़ी परीक्षा युद्ध का मैदान नहीं, बल्कि गीता के शब्दों के बीच का मौन था। उन्हें एक उच्चतर धर्म की खातिर एक टूटे हुए अर्जुन को अपने ही संबंधियों से युद्ध करने के लिए सहमत करना था।",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਸਭ ਤੋਂ ਵੱਡੀ ਪ੍ਰੀਖਿਆ ਜੰਗ ਦਾ ਮੈਦਾਨ ਨਹੀਂ, ਸਗੋਂ ਗੀਤਾ ਦੇ ਬੋਲਾਂ ਵਿਚਕਾਰਲੀ ਚੁੱਪ ਸੀ। ਉਨ੍ਹਾਂ ਨੂੰ ਇੱਕ ਉੱਚੇ ਧਰਮ ਦੀ ਖ਼ਾਤਰ ਇੱਕ ਟੁੱਟੇ ਹੋਏ ਅਰਜੁਨ ਨੂੰ ਆਪਣੇ ਹੀ ਰਿਸ਼ਤੇਦਾਰਾਂ ਵਿਰੁੱਧ ਲੜਨ ਲਈ ਮਨਾਉਣਾ ਪਿਆ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English: 'Detachment is not the absence of love; it is a love so large it does not own the outcome.' Hindi/Punjabi drop 'love' entirely (the central word) and substitute a 'duty without attachment to outcome is the highest yoga' framing absent from English.",
+        "english_source": "Detachment is not the absence of love; it is a love so large it does not own the outcome.",
+        "current_hindi_wrong": "अनासक्ति प्रेम का अभाव नहीं है; यह इतना विशाल प्रेम है जो परिणाम पर अपना अधिकार नहीं जमाता।",
+        "current_punjabi_wrong": "ਨਿਰਲੇਪਤਾ ਪਿਆਰ ਦੀ ਘਾਟ ਨਹੀਂ ਹੈ; ਇਹ ਇੰਨਾ ਵੱਡਾ ਪਿਆਰ ਹੈ ਜੋ ਨਤੀਜੇ 'ਤੇ ਆਪਣਾ ਹੱਕ ਨਹੀਂ ਜਤਾਉਂਦਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "sri-rama",
+    "name": "Sri Rama",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English never names the antagonist or gives an exile duration. Hindi/Punjabi add '14 years of exile' (no duration in English), name 'Ravana' explicitly (antagonist never named in English), and add 'established Ram Rajya' (event never in English).",
+        "english_source": "On the eve of his coronation, Rama surrendered his crown and walked into the forest to fulfill his father's boon. When Sita was abducted, he fought an impossible war with an army of forest dwellers, teaching the world that righteousness itself is the greatest weapon.",
+        "current_hindi_wrong": "अपने राज्याभिषेक की पूर्व संध्या पर, राम ने अपने मुकुट का त्याग कर दिया और अपने पिता के वरदान को पूरा करने के लिए वन की ओर चले गए। जब सीता का हरण हुआ, तो उन्होंने वनवासियों की सेना के साथ एक असंभव युद्ध लड़ा, और संसार को सिखाया कि धर्म ही स्वयं सबसे बड़ा अस्त्र है।",
+        "current_punjabi_wrong": "ਆਪਣੇ ਰਾਜ-ਤਿਲਕ ਦੀ ਪੂਰਵ ਸੰਧਿਆ 'ਤੇ, ਰਾਮ ਨੇ ਆਪਣੇ ਤਾਜ ਨੂੰ ਤਿਆਗ ਦਿੱਤਾ ਅਤੇ ਆਪਣੇ ਪਿਤਾ ਦੇ ਵਰਦਾਨ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਜੰਗਲ ਵੱਲ ਤੁਰ ਪਏ। ਜਦੋਂ ਸੀਤਾ ਨੂੰ ਅਗਵਾ ਕਰ ਲਿਆ ਗਿਆ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਜੰਗਲ ਵਾਸੀਆਂ ਦੀ ਫ਼ੌਜ ਨਾਲ ਇੱਕ ਅਸੰਭਵ ਜੰਗ ਲੜੀ, ਅਤੇ ਸੰਸਾਰ ਨੂੰ ਸਿਖਾਇਆ ਕਿ ਧਰਮ ਹੀ ਖ਼ੁਦ ਸਭ ਤੋਂ ਵੱਡਾ ਹਥਿਆਰ ਹੈ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English: 'Dharma is supreme in this world; truth is the foundation of Dharma.' Hindi/Punjabi substitute an entirely different verse from the Ramcharitmanas about keeping one's word ('life may go, but the word must never go') -- a different theme not stated in the English teaching.",
+        "english_source": "Dharma is supreme in this world; truth is the foundation of Dharma.",
+        "current_hindi_wrong": "इस संसार में धर्म ही सर्वोच्च है; सत्य ही धर्म की नींव है।",
+        "current_punjabi_wrong": "ਇਸ ਸੰਸਾਰ ਵਿੱਚ ਧਰਮ ਹੀ ਸਰਵਉੱਚ ਹੈ; ਸੱਚ ਹੀ ਧਰਮ ਦੀ ਨੀਂਹ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "swami-vivekananda",
+    "name": "Swami Vivekananda",
+    "tradition": "hindu",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Minor: adds 'Chicago' (factually correct, but this place name is not present in the English field, which only says 'the 1893 World's Parliament of Religions').",
+        "english_source": "Transformed by Ramakrishna, he wandered India, witnessed its poverty, and then electrified the 1893 World's Parliament of Religions. He emphasized serving God in the poor.",
+        "current_hindi_wrong": "रामकृष्ण द्वारा रूपांतरित होकर, उन्होंने पूरे भारत का भ्रमण किया, इसकी निर्धनता को देखा, और फिर 1893 के विश्व धर्म संसद को मंत्रमुग्ध कर दिया। उन्होंने दरिद्रों में ईश्वर की सेवा करने पर बल दिया।",
+        "current_punjabi_wrong": "ਰਾਮਕ੍ਰਿਸ਼ਨ ਦੁਆਰਾ ਪ੍ਰਭਾਵਿਤ ਹੋ ਕੇ, ਉਨ੍ਹਾਂ ਨੇ ਪੂਰੇ ਭਾਰਤ ਦਾ ਦੌਰਾ ਕੀਤਾ, ਇਸਦੀ ਗ਼ਰੀਬੀ ਨੂੰ ਦੇਖਿਆ, ਅਤੇ ਫਿਰ 1893 ਦੀ ਵਿਸ਼ਵ ਧਰਮ ਸੰਸਦ ਨੂੰ ਕੀਲ ਲਿਆ। ਉਨ੍ਹਾਂ ਨੇ ਗ਼ਰੀਬਾਂ ਵਿੱਚ ਪ੍ਰਮਾਤਮਾ ਦੀ ਸੇਵਾ ਕਰਨ 'ਤੇ ਜ਼ੋਰ ਦਿੱਤਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "tukaram",
+    "name": "Sant Tukaram",
+    "tradition": "hindu",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Minor: adds 'Indrayani River' by name (factually correct, but not named in the English field, which only says 'the river').",
+        "english_source": "Orthodox Brahmins threw his manuscript of poems into the river. He fasted on the riverbank until the river miraculously returned the intact manuscript.",
+        "current_hindi_wrong": "रूढ़िवादी ब्राह्मणों ने उनकी कविताओं की पांडुलिपि को नदी में फेंक दिया। उन्होंने नदी के तट पर तब तक उपवास किया जब तक कि नदी ने चमत्कारिक रूप से वह पांडुलिपि सुरक्षित वापस नहीं लौटा दी।",
+        "current_punjabi_wrong": "ਰੂੜ੍ਹੀਵਾਦੀ ਬ੍ਰਾਹਮਣਾਂ ਨੇ ਉਨ੍ਹਾਂ ਦੀਆਂ ਕਵਿਤਾਵਾਂ ਦੇ ਖਰੜੇ ਨੂੰ ਨਦੀ ਵਿੱਚ ਸੁੱਟ ਦਿੱਤਾ। ਉਨ੍ਹਾਂ ਨੇ ਨਦੀ ਦੇ ਕੰਢੇ ਉਦੋਂ ਤੱਕ ਵਰਤ ਰੱਖਿਆ ਜਦੋਂ ਤੱਕ ਨਦੀ ਨੇ ਚਮਤਕਾਰੀ ਢੰਗ ਨਾਲ ਉਹ ਖਰੜਾ ਸਹੀ-ਸਲਾਮਤ ਵਾਪਸ ਨਹੀਂ ਕਰ ਦਿੱਤਾ।"
+      }
+    ]
+  }
+]
