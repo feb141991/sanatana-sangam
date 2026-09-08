@@ -1,0 +1,129 @@
+[
+  {
+    "slug": "navratri-day-5-skandamata",
+    "field": "significance",
+    "issue": "Cited source \"Skanda Purana, Kaumarika Khanda\" is wrong for Skandamata's story. Independent verification found Kaumarika Khanda is a 66-chapter pilgrimage/geography section about the Cambay confluence (Mahisagara-Sangama), unrelated to Skanda's mother -- the name similarity (\"Kaumarika\" vs \"Kaumara\") is the likely source of the error.",
+    "current_wrong_citation": {
+      "sourceName": "Skanda Purana",
+      "pageOrSection": "Kaumarika Khanda",
+      "tier": 1
+    },
+    "current_claim_text": "Fifth form of Navadurga, mother of Lord Skanda (Kartikeya), bestower of maternal grace and salvation.",
+    "ask": "Find the correct source for Skandamata's significance as the fifth Navadurga form and mother of Skanda -- likely Devi Bhagavata Purana Book 3 Ch.26 (already correctly cited for other days) or a different, correctly-identified Skanda Purana section. If no genuine source can be found, report unverifiable."
+  },
+  {
+    "slug": "navratri-day-6-katyayani",
+    "field": "significance",
+    "issue": "TWO separate citation errors in this one record: (1) \"Devi Mahatmya Chapter 5\" is cited for Katyayani's combined-devas-effulgence origin to slay Mahishasura -- wrong, that origin story is in Chapter 2-4 (Mahishasura is slain in Ch.3); Chapter 5 is actually the later, unrelated Shumbha-messenger episode. (2) \"Vamana Purana, Chapter 18, Verses 1-15\" -- the chapter is right but the verse range is wrong; independent scholarly sources place the Katyayani myth at Vamana Purana 18.39-21.52, not verses 1-15.",
+    "current_wrong_citation": [
+      {
+        "sourceName": "Devi Mahatmya (Durga Saptashati)",
+        "pageOrSection": "Chapter 5 and Devi Kavacham, Verse 4",
+        "tier": 1
+      },
+      {
+        "sourceName": "Vamana Purana",
+        "pageOrSection": "Chapter 18, Verses 1-15",
+        "tier": 1
+      }
+    ],
+    "current_claim_text": "Incarnated from the combined effulgence of the devas in the hermitage of Sage Katyayana to slay Mahishasura.",
+    "ask": "Correct the Devi Mahatmya chapter reference (likely Ch.2-4, where Mahishasura is actually slain) and correct the Vamana Purana verse range to 18.39-21.52 or verify the actual range independently. If either cannot be corrected with a genuine source, report that field unverifiable rather than leaving a wrong pinpoint."
+  },
+  {
+    "slug": "dussehra",
+    "field": "deityOrTheme",
+    "issue": "Cites \"Devi Mahatmya, Chapter 10 (Slaying of Mahishasura on Vijaya Dashami)\" -- wrong. Chapter 10 of Devi Mahatmya is the slaying of Shumbha, not Mahishasura (Mahishasura is slain earlier, in Chapter 3).",
+    "current_wrong_citation": {
+      "sourceName": "Devi Mahatmya (Durga Saptashati)",
+      "pageOrSection": "Chapter 10 (Slaying of Mahishasura on Vijaya Dashami)",
+      "tier": 1
+    },
+    "current_claim_text": "Victory of Dharma (righteousness over unrighteousness) as exemplified by Sri Rama over Ravana and Durga over Mahishasura.",
+    "ask": "Correct the Devi Mahatmya chapter reference for the Mahishasura-slaying claim (should point to the Ch.2-4 narrative, likely Ch.3 specifically), or find the correct citation for why Vijaya Dashami is associated with Durga's victory if that association is sourced differently. If unverifiable, report so."
+  },
+  {
+    "slug": "dussehra",
+    "field": "significance",
+    "issue": "Same error repeated: cites \"Devi Mahatmya, Chapter 10, Verses 1-28\" for the Mahishasura-slaying claim -- Chapter 10 is the Shumbha episode, not Mahishasura.",
+    "current_wrong_citation": {
+      "sourceName": "Devi Mahatmya (Durga Saptashati)",
+      "pageOrSection": "Chapter 10, Verses 1-28",
+      "tier": 1
+    },
+    "current_claim_text": "Grand culmination of Navratri celebrating the ultimate triumph of Satya and Dharma over Adharma.",
+    "ask": "Same correction as the deityOrTheme field above -- fix the chapter reference or report unverifiable."
+  },
+  {
+    "slug": "naraka-chaturdashi",
+    "field": "rituals",
+    "issue": "Cites \"Padma Purana, Uttara Khanda, Chapter 124, Verses 1-3\" -- wrong. Independently verified: Padma Purana Uttara Khanda Chapter 122 is titled \"The Celebration of Dipavali\" and covers exactly this content (oil bath on Chaturdashi, water offerings to Yama, lamps). Chapter 124 is confirmed to be about Haribodhini and Bhishmapanchaka -- an unrelated Ekadashi-cycle topic. This same Ch.124-should-be-122 error repeats in 3 more records below (diwali/deityOrTheme, diwali/rituals, diwali/significance) -- looks like one systematic mistake reused across records, not four independent errors.",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 124, Verses 1-3",
+      "tier": 1
+    },
+    "current_claim_text": "Pre-dawn Abhyanga Snana (oil bath with Apamarga), Yama Tarpana with sesame water, and 4-wick Deepa Daan are directly prescribed in Skanda Purana and Padma Purana.",
+    "ask": "Change the Padma Purana chapter citation from 124 to 122 (confirmed correct chapter for this exact content), with an appropriate verse range within Chapter 122."
+  },
+  {
+    "slug": "diwali",
+    "field": "deityOrTheme",
+    "issue": "Same systematic error: cites Padma Purana \"Chapter 124\" -- should be Chapter 122 (\"The Celebration of Dipavali\").",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 124 (Amavasya Lakshmi Puja)",
+      "tier": 1
+    },
+    "current_claim_text": "Pradosha-kala Lakshmi and Ganesha-Kuber worship on Kartika Amavasya is canonically established in Skanda and Padma Puranas.",
+    "ask": "Change the Padma Purana chapter citation from 124 to 122."
+  },
+  {
+    "slug": "diwali",
+    "field": "rituals",
+    "issue": "Same systematic error: cites Padma Purana \"Chapter 124, Verses 4-25\" -- should be Chapter 122.",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 124, Verses 4-25",
+      "tier": 1
+    },
+    "current_claim_text": "Lakshmi Puja, Ganesh Puja, Deepotsava (festival of illumination), and traditional accounting ledger consecration (Chopda / Sharda Pujan) during Pradosha.",
+    "ask": "Change the Padma Purana chapter citation from 124 to 122, with an appropriate verse range within Chapter 122."
+  },
+  {
+    "slug": "diwali",
+    "field": "significance",
+    "issue": "Same systematic error: cites Padma Purana \"Chapter 124\" -- should be Chapter 122.",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 124",
+      "tier": 1
+    },
+    "current_claim_text": "The supreme festival of lights celebrating the dispelling of darkness, welcoming prosperity, auspiciousness, and spiritual illumination on Amavasya Pradosha.",
+    "ask": "Change the Padma Purana chapter citation from 124 to 122."
+  },
+  {
+    "slug": "bhai-dooj",
+    "field": "deityOrTheme",
+    "issue": "LOWER CONFIDENCE FLAG (not confirmed wrong, but suspicious by pattern): cites Padma Purana \"Uttara Khanda, Chapter 125\" -- given the confirmed Ch.124 error sits on an unrelated Ekadashi-cycle topic immediately before it, a Chapter 125 citation for Bhai Dooj (day-2, unrelated content) is worth double-checking against the same source of error.",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 125",
+      "tier": 1
+    },
+    "current_claim_text": "Yama & Yamuna / Sibling Bond",
+    "ask": "Independently verify what Padma Purana Uttara Khanda Chapter 125 actually contains, and confirm or correct this citation."
+  },
+  {
+    "slug": "bhai-dooj",
+    "field": "significance",
+    "issue": "Same lower-confidence flag as the deityOrTheme field above -- same Chapter 125 citation, same reason for suspicion.",
+    "current_wrong_citation": {
+      "sourceName": "Padma Purana",
+      "pageOrSection": "Uttara Khanda, Chapter 125",
+      "tier": 1
+    },
+    "current_claim_text": "Celebrates the sacred bond of brothers and sisters, blessed by Yamuna welcoming her brother Yamaraj.",
+    "ask": "Same verification as above."
+  }
+]

@@ -1,0 +1,368 @@
+[
+  {
+    "slug": "maitreyi",
+    "name": "Maitreyi",
+    "tradition": "hindu",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "SEVERE, repeat of the original violation type: the English explicitly states 'The source does not offer a specific moral for modern seekers based on Maitreyi's life.' Hindi/Punjabi instead fabricate a full moral statement ('Truth and spiritual realization hold the highest value, beyond material reality'). This directly violates the rule that unsupported content must stay withheld, not be filled with generic prose. All 4 other fields for this slug correctly translate the 'no data' disclaimer -- only moral breaks that pattern.",
+        "english_source": "The source does not offer a specific moral for modern seekers based on Maitreyi's life.",
+        "current_hindi_wrong": "सत्य और आध्यात्मिक अनुभूति सर्वोच्च मूल्य रखते हैं, जो भौतिक वास्तविकता से परे हैं।",
+        "current_punjabi_wrong": "ਸੱਚ ਅਤੇ ਰੂਹਾਨੀ ਗਿਆਨ ਸਭ ਤੋਂ ਵੱਡਾ ਮੁੱਲ ਰੱਖਦੇ ਹਨ, ਜੋ ਭੌਤਿਕ ਹੋਂਦ ਤੋਂ ਪਰੇ ਹਨ।"
+      }
+    ]
+  },
+  {
+    "slug": "shrimad-rajchandra",
+    "name": "Shrimad Rajchandra",
+    "tradition": "jain",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops both specific images from English ('Himalayan cave', 'bustling diamond markets of Mumbai') and adds an unsupported negative judgment ('deceptive/fraudulent realities of business and family life') not present in English.",
+        "english_source": "His trial was demonstrating that absolute spiritual purity is possible not just in a Himalayan cave, but in the bustling diamond markets of Mumbai.",
+        "current_hindi_wrong": "व्यापार और पारिवारिक जीवन की कपटपूर्ण वास्तविकताओं के बीच रहते हुए भी शुद्ध आध्यात्मिक चेतना और संन्यासी जैसी अनासक्ति को बनाए रखना।",
+        "current_punjabi_wrong": "ਵਪਾਰ ਅਤੇ ਪਰਿਵਾਰਕ ਜੀਵਨ ਦੇ ਔਖੇ ਹਾਲਾਤਾਂ ਦਰਮਿਆਨ ਸ਼ੁੱਧ ਅਧਿਆਤਮਿਕ ਚੇਤਨਾ ਅਤੇ ਸੰਨਿਆਸੀ ਵਰਗੀ ਨਿਰਲੇਪਤਾ ਨੂੰ ਬਣਾਈ ਰੱਖਣਾ।"
+      },
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Completely unrelated substituted content. English: 'The soul is the maker and non-maker of its own destiny; the soul is the doer and enjoyer of its own karma.' Hindi/Punjabi instead discuss self-realization vs. ritual -- a different topic entirely, not a translation.",
+        "english_source": "The soul is the maker and the non-maker of its own destiny; the soul is the doer and the enjoyer of its own karma.",
+        "current_hindi_wrong": "अपने वास्तविक स्वरूप (आत्म-स्वरूप) को जानो, क्योंकि आत्म-साक्षात्कार के बिना सभी धार्मिक आचरण केवल बाहरी कर्मकांड हैं।",
+        "current_punjabi_wrong": "ਆਪਣੇ ਅਸਲ ਸਰੂਪ ਨੂੰ ਪਛਾਣੋ, ਕਿਉਂਕਿ ਆਤਮ-ਗਿਆਨ ਤੋਂ ਬਿਨਾਂ ਸਾਰੇ ਧਾਰਮਿਕ ਕਰਮ ਸਿਰਫ਼ ਬਾਹਰੀ ਰਸਮਾਂ ਹਨ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Different concrete claim than English. English: 'Your environment does not dictate your spiritual state; your internal detachment does.' Hindi/Punjabi: 'self-knowledge means renouncing inner illusion, not the external world' -- a different framing not licensed by the English.",
+        "english_source": "Your environment does not dictate your spiritual state; your internal detachment does.",
+        "current_hindi_wrong": "आत्मज्ञान का अर्थ संसार का बाहरी रूप से त्याग करना नहीं है, बल्कि भीतर के भ्रम का त्याग करना है।",
+        "current_punjabi_wrong": "ਮੁਕਤੀ ਦਾ ਅਰਥ ਸੰਸਾਰ ਨੂੰ ਬਾਹਰੀ ਤੌਰ 'ਤੇ ਤਿਆਗਣਾ ਨਹੀਂ, ਸਗੋਂ ਅੰਦਰਲੇ ਭਰਮ ਨੂੰ ਤਿਆਗਣਾ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "guru-gobind-singh",
+    "name": "Guru Gobind Singh Ji",
+    "tradition": "sikh",
+    "severity_tier": "A",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds an unsourced event detail and a specific name not in the English trial field: English never specifies how the four sons died; Hindi/Punjabi add 'two martyred in battle, two bricked alive in a wall by the Mughals' and the name 'Char Sahibzade' -- historically accurate facts, but not present in THIS English field, so not a faithful translation of it.",
+        "english_source": "His trials were unimaginably severe. He fought endless defensive wars, lost all four of his sons, and his mother. Yet, through this devastating personal loss, he wrote the 'Zafarnama' to Emperor Aurangzeb, declaring that moral victory belonged to the Khalsa.",
+        "current_hindi_wrong": "उन्होंने अपने चारों पुत्रों (चार साहिबज़ादे)—दो युद्ध में शहीद हुए, दो को मुगलों द्वारा जीवित दीवार में चुनवा दिया गया—और अपनी माता का बलिदान दिया, फिर भी उन्होंने अत्याचारी शासन पर नैतिक विजय का उद्घोष करते हुए औरंगजेब को ज़फ़रनामा (विजय पत्र) लिखा।",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਨੇ ਆਪਣੇ ਚਾਰੇ ਪੁੱਤਰਾਂ (ਚਾਰ ਸਾਹਿਬਜ਼ਾਦੇ)—ਦੋ ਜੰਗ ਵਿੱਚ ਸ਼ਹੀਦ ਹੋਏ, ਦੋ ਨੂੰ ਮੁਗ਼ਲਾਂ ਦੁਆਰਾ ਜਿਉਂਦੇ ਨੀਹਾਂ ਵਿੱਚ ਚਿਣਵਾ ਦਿੱਤਾ ਗਿਆ—ਅਤੇ ਆਪਣੀ ਮਾਤਾ ਜੀ ਦੀ ਕੁਰਬਾਨੀ ਦਿੱਤੀ, ਫਿਰ ਵੀ ਉਨ੍ਹਾਂ ਨੇ ਜ਼ੁਲਮ 'ਤੇ ਨੈਤਿਕ ਜਿੱਤ ਦਾ ਦਾਅਵਾ ਕਰਦੇ ਹੋਏ ਔਰੰਗਜ਼ੇਬ ਨੂੰ ਜ਼ਫ਼ਰਨਾਮਾ (ਜਿੱਤ ਦੀ ਚਿੱਠੀ) ਲਿਖਿਆ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Substituted theme. English: 'Courage is fighting for justice even when you have lost everything.' Hindi/Punjabi: 'true victory is the spiritual dignity that no worldly empire can crush' -- a different claim (victory/dignity vs. courage/fighting), not a translation.",
+        "english_source": "Courage is fighting for justice even when you have lost everything.",
+        "current_hindi_wrong": "सच्ची विजय वह आध्यात्मिक गरिमा है जिसे कोई भी सांसारिक साम्राज्य कुचल नहीं सकता।",
+        "current_punjabi_wrong": "ਸੱਚੀ ਜਿੱਤ ਉਹ ਰੂਹਾਨੀ ਸ਼ਾਨ ਹੈ ਜਿਸਨੂੰ ਕੋਈ ਵੀ ਦੁਨਿਆਵੀ ਸਾਮਰਾਜ ਕੁਚਲ ਨਹੀਂ ਸਕਦਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "sister-nivedita",
+    "name": "Sister Nivedita",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Subject changed and content substituted. English: 'True education must awaken national self-respect, cultural pride, and fearless compassion for the oppressed.' Hindi/Punjabi: 'the highest service is awakening self-respect, national consciousness and moral strength in a subjugated society' -- 'education' becomes 'service', 'cultural pride'/'compassion for the oppressed' replaced with 'national consciousness'/'moral strength'.",
+        "english_source": "True education must awaken national self-respect, cultural pride, and fearless compassion for the oppressed.",
+        "current_hindi_wrong": "सर्वोच्च सेवा किसी पराधीन समाज में आत्मसम्मान, राष्ट्रीय चेतना और नैतिक शक्ति को जागृत करना है।",
+        "current_punjabi_wrong": "ਸਭ ਤੋਂ ਵੱਡੀ ਸੇਵਾ ਕਿਸੇ ਗ਼ੁਲਾਮ ਕੌਮ ਵਿੱਚ ਸਵੈ-ਮਾਣ, ਰਾਸ਼ਟਰੀ ਚੇਤਨਾ ਅਤੇ ਨੈਤਿਕ ਸ਼ਕਤੀ ਨੂੰ ਜਗਾਉਣਾ ਹੈ।"
+      },
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds an unsourced poetic clause not in English at all: '...when love is boundless, another's motherland becomes your own altar of sacrifice.' English only says dedication to a higher ideal transcends nationality/race/self-interest boundaries -- no altar-of-sacrifice imagery.",
+        "english_source": "Dedication to a higher ideal transcends all boundaries of nationality, race, and self-interest.",
+        "current_hindi_wrong": "सच्चा समर्पण नस्ल या राष्ट्रीयता की कोई सीमा नहीं जानता; जब प्रेम असीम होता है, तो दूसरे की मातृभूमि आपकी अपनी बलिदान-वेदी बन जाती है।",
+        "current_punjabi_wrong": "ਸੱਚਾ ਸਮਰਪਣ ਨਸਲ ਜਾਂ ਕੌਮੀਅਤ ਦੀਆਂ ਹੱਦਾਂ ਨੂੰ ਨਹੀਂ ਮੰਨਦਾ; ਜਦੋਂ ਪਿਆਰ ਬੇਅੰਤ ਹੁੰਦਾ ਹੈ, ਤਾਂ ਦੂਜੇ ਦੀ ਮਾਤ-ਭੂਮੀ ਤੁਹਾਡੀ ਆਪਣੀ ਕੁਰਬਾਨਗਾਹ ਬਣ ਜਾਂਦੀ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "shabari",
+    "name": "Mata Shabari",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Adds an 'oppressed' characterization not in English, drops 'renounced violence' entirely, and changes 'sought spiritual guidance from Sage Matanga' to 'served Sage Matanga' -- a different, more submissive framing than the English 'sought guidance'.",
+        "english_source": "A woman of a tribal hunter community, she renounced violence and sought spiritual guidance from Sage Matanga. Before dying, the sage told her that Lord Rama would one day visit her hermitage. She spent decades sweeping the forest path and tasting wild berries to ensure they were sweet for her Lord.",
+        "current_hindi_wrong": "एक उत्पीड़ित वनवासी समुदाय से संबंध रखने वाली, शबरी ने गहरी विनम्रता के साथ ऋषि मतंग की सेवा की। देहत्याग से पूर्व, ऋषि ने उन्हें वचन दिया कि भगवान राम एक दिन उनकी कुटिया में अवश्य आएंगे। दशकों तक, एक वृद्धा बनने तक, वे प्रतिदिन जंगल के रास्तों पर झाड़ू लगाती रहीं और मीठे जंगली बेर चुनती रहीं, और प्रत्येक बेर को चखती रहीं ताकि यह सुनिश्चित हो सके कि केवल सबसे मीठे बेर ही राम को अर्पित किए जाएं।",
+        "current_punjabi_wrong": "ਇੱਕ ਦੱਬੇ-ਕੁਚਲੇ ਵਣਵਾਸੀ ਭਾਈਚਾਰੇ ਨਾਲ ਸੰਬੰਧਤ, ਸ਼ਬਰੀ ਨੇ ਡੂੰਘੀ ਨਿਮਰਤਾ ਨਾਲ ਰਿਸ਼ੀ ਮਤੰਗ ਦੀ ਸੇਵਾ ਕੀਤੀ। ਸਰੀਰ ਤਿਆਗਣ ਤੋਂ ਪਹਿਲਾਂ, ਰਿਸ਼ੀ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਬਚਨ ਦਿੱਤਾ ਕਿ ਭਗਵਾਨ ਰਾਮ ਇੱਕ ਦਿਨ ਉਨ੍ਹਾਂ ਦੇ ਆਸ਼ਰਮ ਵਿੱਚ ਜ਼ਰੂਰ ਆਉਣਗੇ। ਦਹਾਕਿਆਂ ਤੱਕ, ਬਿਰਧ ਹੋਣ ਤੱਕ, ਉਹ ਰੋਜ਼ਾਨਾ ਜੰਗਲ ਦੇ ਰਸਤਿਆਂ ਨੂੰ ਸਾਫ਼ ਕਰਦੀ ਰਹੀ ਅਤੇ ਮਿੱਠੇ ਜੰਗਲੀ ਬੇਰ ਇਕੱਠੇ ਕਰਦੀ ਰਹੀ, ਹਰ ਇੱਕ ਬੇਰ ਨੂੰ ਚੱਖਦੀ ਰਹੀ ਤਾਂ ਜੋ ਇਹ ਯਕੀਨੀ ਬਣਾਇਆ ਜਾ ਸਕੇ ਕਿ ਸਿਰਫ਼ ਸਭ ਤੋਂ ਮਿੱਠੇ ਬੇਰ ਹੀ ਰਾਮ ਜੀ ਨੂੰ ਭੇਟ ਕੀਤੇ ਜਾਣ।"
+      },
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the specific English details 'growing old and blind' and 'orthodox ascetics who believed an unlettered tribal woman could never see God', replacing them with a generic 'facing others' mockery' -- losing the specific reasoning (caste/literacy prejudice) that is the point of this trial.",
+        "english_source": "Waiting day after day, year after year, growing old and blind, while facing the mockery of orthodox ascetics who believed an unlettered tribal woman could never see God.",
+        "current_hindi_wrong": "एक निर्जन वन में दूसरों के उपहास का सामना करते हुए पूरा जीवन प्रतीक्षा में बिताना, फिर भी अपने गुरु के इस वचन पर कभी संदेह न करना कि भगवान आएंगे।",
+        "current_punjabi_wrong": "ਇੱਕ ਇਕਾਂਤ ਜੰਗਲ ਵਿੱਚ ਦੂਜਿਆਂ ਦੇ ਮਜ਼ਾਕ ਦਾ ਸਾਹਮਣਾ ਕਰਦਿਆਂ ਸਾਰੀ ਉਮਰ ਉਡੀਕ ਵਿੱਚ ਬਿਤਾਉਣੀ, ਫਿਰ ਵੀ ਆਪਣੇ ਗੁਰੂ ਦੇ ਇਸ ਬਚਨ 'ਤੇ ਕਦੇ ਸ਼ੱਕ ਨਾ ਕਰਨਾ ਕਿ ਪ੍ਰਮਾਤਮਾ ਜ਼ਰੂਰ ਆਉਣਗੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "emperor-ashoka",
+    "name": "Emperor Ashoka",
+    "tradition": "buddhist",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the specific English claim 'publicly admit his horrific mistakes, apologize to his subjects via stone edicts' and replaces it with generic guilt/remorse language ('facing the darkness of his own guilt and remorse'). The stone-edicts detail is a specific, important historical fact (Ashoka's edicts) that's lost.",
+        "english_source": "His trial was the transformation of his own nature. Having built his identity on unmatched power and terror, it took immense courage for the most powerful emperor on earth to publicly admit his horrific mistakes, apologize to his subjects via stone edicts, and fundamentally change the mechanics of an empire from conquest to compassion.",
+        "current_hindi_wrong": "उनकी परीक्षा अपने स्वयं के अपराधबोध और पश्चाताप के अंधकार का सामना करना था, और शक्ति व विजय के नशे में चूर एक विशाल साम्राज्य को शांति, क्षमा और अहिंसा के मार्ग पर मोड़ना था।",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਆਪਣੇ ਹੀ ਅਪਰਾਧ-ਬੋਧ ਅਤੇ ਪਛਤਾਵੇ ਦੇ ਹਨੇਰੇ ਦਾ ਸਾਹਮਣਾ ਕਰਨਾ ਸੀ, ਅਤੇ ਸ਼ਕਤੀ ਤੇ ਜਿੱਤ ਦੇ ਨਸ਼ੇ ਵਿੱਚ ਚੂਰ ਇੱਕ ਵਿਸ਼ਾਲ ਸਾਮਰਾਜ ਨੂੰ ਸ਼ਾਂਤੀ, ਮਾਫ਼ੀ ਅਤੇ ਅਹਿੰਸਾ ਦੇ ਰਾਹ 'ਤੇ ਮੋੜਨਾ ਸੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "guru-arjan-dev",
+    "name": "Guru Arjan Dev Ji",
+    "tradition": "sikh",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "moral",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Substitutes a specific transformation claim ('surrender turns death and physical suffering into peaceful bliss') for English's general principle ('Absolute surrender to the Divine will is the highest form of spiritual strength') -- a different, more specific claim not licensed by the English sentence.",
+        "english_source": "Absolute surrender to the Divine will is the highest form of spiritual strength.",
+        "current_hindi_wrong": "परमात्मा की इच्छा (हुक्म) के प्रति पूर्ण समर्पण मृत्यु और शारीरिक कष्ट को शांत आनंद में बदल देता है।",
+        "current_punjabi_wrong": "ਪ੍ਰਮਾਤਮਾ ਦੀ ਰਜ਼ਾ (ਹੁਕਮ) ਅੱਗੇ ਪੂਰਨ ਸਮਰਪਣ ਮੌਤ ਅਤੇ ਸਰੀਰਕ ਕਸ਼ਟ ਨੂੰ ਵੀ ਸ਼ਾਂਤ ਅਨੰਦ ਵਿੱਚ ਬਦਲ ਦਿੰਦਾ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "mai-bhago",
+    "name": "Mai Bhago",
+    "tradition": "sikh",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Drops the final sentence of the English field entirely: 'She later dedicated her life as the personal bodyguard to Guru Gobind Singh.' Hindi/Punjabi stop after the Chali Mukte (40 martyrs) detail.",
+        "english_source": "She led the charge at the Battle of Muktsar, suffering severe wounds while fighting the vast Mughal army. She survived, while all 40 men achieved martyrdom (the Chali Mukte). She later dedicated her life as the personal bodyguard to Guru Gobind Singh.",
+        "current_hindi_wrong": "मुक्तसर के युद्ध में विशाल मुगल सेना के विरुद्ध 40 पुरुषों के साथ निडर होकर लड़ते हुए, गंभीर घावों के बावजूद जीवित रहना, जबकि सभी 40 पुरुषों ने वीरगति (चालीस मुक्ते) प्राप्त की।",
+        "current_punjabi_wrong": "ਮੁਕਤਸਰ ਦੀ ਜੰਗ ਵਿੱਚ ਵਿਸ਼ਾਲ ਮੁਗ਼ਲ ਫ਼ੌਜਾਂ ਵਿਰੁੱਧ 40 ਮਰਦਾਂ ਨਾਲ ਨਿਡਰਤਾ ਨਾਲ ਲੜਨਾ, ਗੰਭੀਰ ਜ਼ਖ਼ਮਾਂ ਦੇ ਬਾਵਜੂਦ ਜਿਉਂਦੇ ਰਹਿਣਾ ਜਦੋਂ ਕਿ ਸਾਰੇ 40 ਸਿੰਘ ਸ਼ਹਾਦਤ (ਚਾਲੀ ਮੁਕਤੇ) ਪਾ ਗਏ।"
+      }
+    ]
+  },
+  {
+    "slug": "savitri",
+    "name": "Sati Savitri",
+    "tradition": "hindu",
+    "severity_tier": "B",
+    "fields_to_regenerate": [
+      {
+        "field": "teaching",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Unrelated substituted content. English: 'The power of pure love and applied Dharma can alter destiny.' Hindi/Punjabi: 'Dharma is the eternal protector; no darkness can extinguish the light of a devoted mind' -- a different metaphor and claim, not a translation.",
+        "english_source": "The power of pure love and applied Dharma can alter destiny.",
+        "current_hindi_wrong": "धर्म ही शाश्वत रक्षक है; कोई भी अंधकार एक समर्पित मन के प्रकाश को बुझा नहीं सकता।",
+        "current_punjabi_wrong": "ਧਰਮ ਹੀ ਸਦੀਵੀ ਰਖਵਾਲਾ ਹੈ; ਕੋਈ ਵੀ ਹਨੇਰਾ ਸਮਰਪਿਤ ਮਨ ਦੀ ਰੌਸ਼ਨੀ ਨੂੰ ਬੁਝਾ ਨਹੀਂ ਸਕਦਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "banda-singh-bahadur",
+    "name": "Banda Singh Bahadur",
+    "tradition": "sikh",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi swaps the generic English phrase 'established a sovereign state' for the specific named entity 'Khalsa Raj' -- not fabricated (the record's own tagline does say 'first Khalsa Raj'), but an unwarranted addition in THIS specific field, and only in Punjabi (Hindi correctly stays generic).",
+        "english_source": "Madho Das was an ascetic with mystical powers. His life shifted when Guru Gobind Singh visited his ashram. Recognizing his true master, he submitted. Baptized as Banda Singh Bahadur, the Guru armed him and sent him to Punjab to end tyrannical rule. He mobilized the oppressed peasantry, captured Sirhind, established a sovereign state, and abolished the Zamindari system.",
+        "current_punjabi_wrong": "ਮਾਧੋ ਦਾਸ ਕਰਾਮਾਤੀ ਸ਼ਕਤੀਆਂ ਵਾਲੇ ਇੱਕ ਤਪੱਸਵੀ ਸਨ। ਉਨ੍ਹਾਂ ਦਾ ਜੀਵਨ ਉਦੋਂ ਬਦਲਿਆ ਜਦੋਂ ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਉਨ੍ਹਾਂ ਦੇ ਆਸ਼ਰਮ ਪਹੁੰਚੇ। ਆਪਣੇ ਸੱਚੇ ਗੁਰੂ ਨੂੰ ਪਛਾਣ ਕੇ, ਉਨ੍ਹਾਂ ਨੇ ਸਮਰਪਣ ਕਰ ਦਿੱਤਾ। ਬੰਦਾ ਸਿੰਘ ਬਹਾਦਰ ਵਜੋਂ ਅੰਮ੍ਰਿਤ ਛਕ ਕੇ, ਗੁਰੂ ਜੀ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸ਼ਸਤਰ ਦਿੱਤੇ ਅਤੇ ਜ਼ਾਲਮ ਰਾਜ ਦਾ ਖ਼ਾਤਮਾ ਕਰਨ ਲਈ ਪੰਜਾਬ ਭੇਜਿਆ। ਉਨ੍ਹਾਂ ਨੇ ਦੱਬੇ-ਕੁਚਲੇ ਕਿਸਾਨਾਂ ਨੂੰ ਇਕੱਠਾ ਕੀਤਾ, ਸਰਹਿੰਦ 'ਤੇ ਕਬਜ਼ਾ ਕੀਤਾ, ਖ਼ਾਲਸਾ ਰਾਜ ਸਥਾਪਿਤ ਕੀਤਾ, ਅਤੇ ਜ਼ਿਮੀਂਦਾਰੀ ਪ੍ਰਥਾ ਦਾ ਖ਼ਾਤਮਾ ਕੀਤਾ।"
+      }
+    ]
+  },
+  {
+    "slug": "baba-deep-singh",
+    "name": "Baba Deep Singh Ji",
+    "tradition": "sikh",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi drops the word 'severed' from 'Supporting his severed head with one hand' -- just says 'his head', losing the central miraculous detail of the story. Hindi correctly keeps it ('कटे हुए').",
+        "english_source": "During the fierce battle, he sustained a fatal blow to the neck. Supporting his severed head with one hand and wielding his massive sword with the other, he miraculously fought his way to the perimeter of the Golden Temple to fulfill his vow before finally breathing his last.",
+        "current_punjabi_wrong": "ਭਿਆਨਕ ਯੁੱਧ ਦੌਰਾਨ, ਉਨ੍ਹਾਂ ਦੀ ਧੌਣ 'ਤੇ ਘਾਤਕ ਵਾਰ ਲੱਗਾ। ਇੱਕ ਹੱਥ ਨਾਲ ਆਪਣੇ ਸੀਸ ਨੂੰ ਸਹਾਰਾ ਦਿੰਦੇ ਹੋਏ ਅਤੇ ਦੂਜੇ ਹੱਥ ਨਾਲ ਆਪਣਾ ਭਾਰੀ ਖੰਡਾ ਚਲਾਉਂਦੇ ਹੋਏ, ਉਹ ਆਪਣਾ ਅੰਤਿਮ ਸਵਾਸ ਲੈਣ ਤੋਂ ਪਹਿਲਾਂ ਪ੍ਰਣ ਪੂਰਾ ਕਰਨ ਲਈ ਕਰਾਮਾਤੀ ਤਰੀਕੇ ਨਾਲ ਲੜਦੇ ਹੋਏ ਹਰਿਮੰਦਰ ਸਾਹਿਬ ਦੀ ਪਰਕਰਮਾ ਤੱਕ ਪਹੁੰਚੇ।"
+      }
+    ]
+  },
+  {
+    "slug": "bodhidharma",
+    "name": "Bodhidharma",
+    "tradition": "buddhist",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi drops the hedge word 'allegedly' from 'his legs allegedly withered away', presenting an unverified traditional claim as flat fact. Hindi correctly keeps the hedge ('कथित तौर पर'). This matters for the site's rule that unsupported/hedged content must stay labeled.",
+        "english_source": "His trial was transmitting the \"mind-to-mind\" seal of awakening in a foreign land obsessed with texts and rituals, sitting in absolute stillness until his legs allegedly withered away to prove the primacy of direct experience.",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਗ੍ਰੰਥਾਂ ਅਤੇ ਰਸਮਾਂ ਵਿੱਚ ਉਲਝੇ ਇੱਕ ਪਰਦੇਸ ਵਿੱਚ ਜਾਗ੍ਰਿਤੀ ਦੀ ਸਿੱਧੀ ਅਨੁਭੂਤੀ ਦਾ ਸੰਚਾਰ ਕਰਨਾ ਸੀ, ਅਤੇ ਸਿੱਧੇ ਤਜਰਬੇ ਦੀ ਮਹੱਤਤਾ ਸਾਬਤ ਕਰਨ ਲਈ ਉਹ ਇੰਨੀ ਅਡੋਲਤਾ ਵਿੱਚ ਬੈਠੇ ਰਹੇ ਕਿ ਉਨ੍ਹਾਂ ਦੀਆਂ ਲੱਤਾਂ ਤੱਕ ਸੁੱਕ ਗਈਆਂ।"
+      }
+    ]
+  },
+  {
+    "slug": "chandanbala",
+    "name": "Sadhvi Chandanbala",
+    "tradition": "jain",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi drops the word 'meager' from 'her meager dry lentils' -- just says 'her dry lentils', losing the poverty/scarcity emphasis that is part of the story's point. Hindi correctly keeps it ('अल्प').",
+        "english_source": "A beautiful princess whose kingdom was destroyed, Vasumati was sold into slavery, tortured, and starved by a jealous mistress. Her head was shaved and her feet chained. Lord Mahavira had taken a nearly impossible vow to accept food only from a chained, starving princess who offered it with tears of joy. When Mahavira arrived at her door, she wept with pure devotion and offered him her meager dry lentils. Her chains shattered miraculously.",
+        "current_punjabi_wrong": "ਇੱਕ ਸੁੰਦਰ ਰਾਜਕੁਮਾਰੀ ਜਿਸਦਾ ਰਾਜ ਤਬਾਹ ਹੋ ਗਿਆ ਸੀ, ਵਸੂਮਤੀ ਨੂੰ ਗ਼ੁਲਾਮੀ ਵਿੱਚ ਵੇਚ ਦਿੱਤਾ ਗਿਆ, ਅਤੇ ਇੱਕ ਈਰਖਾਲੂ ਮਾਲਕਣ ਦੁਆਰਾ ਤਸੀਹੇ ਦਿੱਤੇ ਗਏ ਅਤੇ ਭੁੱਖਾ ਰੱਖਿਆ ਗਿਆ। ਉਸਦਾ ਸਿਰ ਮੁੰਨ ਦਿੱਤਾ ਗਿਆ ਅਤੇ ਪੈਰਾਂ ਵਿੱਚ ਸੰਗਲ ਪਾ ਦਿੱਤੇ ਗਏ। ਭਗਵਾਨ ਮਹਾਵੀਰ ਨੇ ਇੱਕ ਲਗਭਗ ਅਸੰਭਵ ਪ੍ਰਣ ਲਿਆ ਸੀ ਕਿ ਉਹ ਕੇਵਲ ਇੱਕ ਸੰਗਲਾਂ ਵਿੱਚ ਬੱਝੀ, ਭੁੱਖੀ ਰਾਜਕੁਮਾਰੀ ਤੋਂ ਹੀ ਭੋਜਨ ਲੈਣਗੇ ਜੋ ਖੁਸ਼ੀ ਦੇ ਹੰਝੂਆਂ ਨਾਲ ਭੇਟ ਕਰੇ। ਜਦੋਂ ਮਹਾਵੀਰ ਉਸਦੇ ਦਰਵਾਜ਼ੇ 'ਤੇ ਪਹੁੰਚੇ, ਤਾਂ ਉਹ ਸੱਚੀ ਸ਼ਰਧਾ ਨਾਲ ਰੋ ਪਈ ਅਤੇ ਆਪਣੀ ਸੁੱਕੀ ਦਾਲ ਭੇਟ ਕੀਤੀ। ਉਸਦੇ ਸੰਗਲ ਕਰਾਮਾਤੀ ਢੰਗ ਨਾਲ ਟੁੱਟ ਗਏ।"
+      }
+    ]
+  },
+  {
+    "slug": "haribhadra",
+    "name": "Haribhadra Suri",
+    "tradition": "jain",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "trial",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi upgrades English's general 'a violent magical revenge' to the specific esoteric-practice term 'tantric revenge' ('ਤਾਂਤਰਿਕ') -- a more specific claim not licensed by the English word 'magical'. Hindi correctly stays generic ('जादुई').",
+        "english_source": "His trial was overcoming severe anger. When his two nephews were killed by rival Buddhist monks, he plotted a violent magical revenge. His Guru stopped him, making him realize that anger destroys one's own soul first.",
+        "current_punjabi_wrong": "ਉਨ੍ਹਾਂ ਦੀ ਪ੍ਰੀਖਿਆ ਭਾਰੀ ਕ੍ਰੋਧ 'ਤੇ ਕਾਬੂ ਪਾਉਣਾ ਸੀ। ਜਦੋਂ ਉਨ੍ਹਾਂ ਦੇ ਦੋ ਭਤੀਜੇ ਵਿਰੋਧੀ ਬੋਧੀ ਭਿਕਸ਼ੂਆਂ ਦੁਆਰਾ ਮਾਰੇ ਗਏ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੇ ਇੱਕ ਹਿੰਸਕ ਤਾਂਤਰਿਕ ਬਦਲੇ ਦੀ ਯੋਜਨਾ ਬਣਾਈ। ਉਨ੍ਹਾਂ ਦੇ ਗੁਰੂ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਰੋਕਿਆ ਅਤੇ ਅਹਿਸਾਸ ਕਰਵਾਇਆ ਕਿ ਗੁੱਸਾ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਆਪਣੀ ਹੀ ਆਤਮਾ ਨੂੰ ਨਸ਼ਟ ਕਰਦਾ ਹੈ।"
+      }
+    ]
+  },
+  {
+    "slug": "valmiki",
+    "name": "Maharishi Valmiki",
+    "tradition": "hindu",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "Both languages drop two parentheticals from English: '(which became \"Rama Rama\")' and '(Valmika)' -- the Mara-to-Rama chant transformation and the anthill/Valmika name etymology are the central point of this legend (explaining his name 'Valmiki'), not incidental detail, and are missing from both.",
+        "english_source": "Born as Ratnakar, a violent bandit who supported his family through robbery. Sage Narada made him realize that his family would share his wealth, but not his karma. Horrified, he sat in meditation chanting \"Mara Mara\" (which became \"Rama Rama\") for so long that an anthill (Valmika) formed over him.",
+        "current_hindi_wrong": "रत्नाकर के रूप में जन्मे, वे एक हिंसक डाकू थे जो डकैती के माध्यम से अपने परिवार का पालन-पोषण करते थे। देवर्षि नारद ने उन्हें यह अहसास कराया कि उनका परिवार उनके धन का भागीदार तो बनेगा, किंतु उनके पाप-कर्मों का नहीं। स्तब्ध होकर, वे \"मरा मरा\" जपते हुए इतने लंबे समय तक ध्यान में बैठे रहे कि उनके ऊपर बांबी बन गई।",
+        "current_punjabi_wrong": "ਰਤਨਾਕਰ ਵਜੋਂ ਜਨਮੇ, ਉਹ ਇੱਕ ਹਿੰਸਕ ਡਾਕੂ ਸਨ ਜੋ ਲੁੱਟ-ਖੋਹ ਰਾਹੀਂ ਆਪਣੇ ਪਰਿਵਾਰ ਦਾ ਪਾਲਣ-ਪੋਸ਼ਣ ਕਰਦੇ ਸਨ। ਦੇਵਰਿਸ਼ੀ ਨਾਰਦ ਨੇ ਉਨ੍ਹਾਂ ਨੂੰ ਅਹਿਸਾਸ ਕਰਵਾਇਆ ਕਿ ਉਨ੍ਹਾਂ ਦਾ ਪਰਿਵਾਰ ਉਨ੍ਹਾਂ ਦੀ ਦੌਲਤ ਵਿੱਚ ਤਾਂ ਹਿੱਸੇਦਾਰ ਬਣੇਗਾ, ਪਰ ਉਨ੍ਹਾਂ ਦੇ ਪਾਪ ਕਰਮਾਂ ਵਿੱਚ ਨਹੀਂ। ਹੈਰਾਨ ਰਹਿ ਕੇ, ਉਹ \"ਮਰਾ ਮਰਾ\" ਜਪਦੇ ਹੋਏ ਇੰਨੇ ਲੰਬੇ ਸਮੇਂ ਤੱਕ ਸਮਾਧੀ ਵਿੱਚ ਬੈਠੇ ਰਹੇ ਕਿ ਉਨ੍ਹਾਂ ਦੇ ਉੱਪਰ ਭੌਂ ਬਣ ਗਈ।"
+      }
+    ]
+  },
+  {
+    "slug": "nawab-jassa-singh",
+    "name": "Nawab Jassa Singh Ahluwalia",
+    "tradition": "sikh",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "hi",
+          "pa"
+        ],
+        "issue": "English says 'Mata Sundari (Guru Gobind Singh's widow)'. Hindi says 'wife' (पत्नी), Punjabi says 'consort' (ਮਹਿਲ) -- both drop the fact that Guru Gobind Singh had already died, which is the detail that explains why Mata Sundari, not the Guru, was raising him.",
+        "english_source": "Raised under the care of Mata Sundari (Guru Gobind Singh's widow), he became the supreme commander of the Dal Khalsa. He led the Sikhs through the horrific Afghan holocausts (Ghallughara), rebuilding the fractured forces time and again. He briefly captured the Red Fort in Delhi and established the Ahluwalia Misl.",
+        "current_hindi_wrong": "माता सुंदरी (गुरु गोबिंद सिंह जी की पत्नी) की देखरेख में पले-बढ़े, वे दल खालसा के सर्वोच्च सेनापति बने। उन्होंने भयानक अफगान नरसंहारों (घल्लूघारा) के दौरान सिखों का नेतृत्व किया, और बिखरी हुई ताकतों को बार-बार पुनर्गठित किया। उन्होंने कुछ समय के लिए दिल्ली के लाल किले पर भी अधिकार किया और आहलुवालिया मिसल की स्थापना की।",
+        "current_punjabi_wrong": "ਮਾਤਾ ਸੁੰਦਰੀ ਜੀ (ਗੁਰੂ ਗੋਬਿੰਦ ਸਿੰਘ ਜੀ ਦੇ ਮਹਿਲ) ਦੀ ਦੇਖ-ਰੇਖ ਹੇਠ ਪਲੇ-ਵੱਡੇ, ਉਹ ਦਲ ਖ਼ਾਲਸਾ ਦੇ ਮੁੱਖ ਸੈਨਾਪਤੀ ਬਣੇ। ਉਨ੍ਹਾਂ ਨੇ ਭਿਆਨਕ ਅਫ਼ਗਾਨ ਘੱਲੂਘਾਰਿਆਂ ਦੌਰਾਨ ਸਿੱਖਾਂ ਦੀ ਅਗਵਾਈ ਕੀਤੀ, ਅਤੇ ਖਿੰਡੀਆਂ ਹੋਈਆਂ ਫ਼ੌਜਾਂ ਨੂੰ ਵਾਰ-ਵਾਰ ਇਕੱਠਾ ਕੀਤਾ। ਉਨ੍ਹਾਂ ਨੇ ਕੁਝ ਸਮੇਂ ਲਈ ਦਿੱਲੀ ਦੇ ਲਾਲ ਕਿਲ੍ਹੇ 'ਤੇ ਵੀ ਕਬਜ਼ਾ ਕੀਤਾ ਅਤੇ ਆਹਲੂਵਾਲੀਆ ਮਿਸਲ ਦੀ ਸਥਾਪਨਾ ਕੀਤੀ।"
+      }
+    ]
+  },
+  {
+    "slug": "ananda",
+    "name": "Ananda",
+    "tradition": "buddhist",
+    "severity_tier": "C",
+    "fields_to_regenerate": [
+      {
+        "field": "journey",
+        "languages_to_fix": [
+          "pa"
+        ],
+        "issue": "Punjabi renders 'After the Buddha's passing' using 'ਜੋਤੀ-ਜੋਤਿ ਸਮਾਉਣ' -- a Sikh-specific theological term reserved for a Guru's passing into Waheguru. Applying it to the Buddha imports a Sikh doctrinal frame onto a Buddhist figure; use a neutral term instead (Hindi correctly uses the neutral 'महापरिनिर्वाण').",
+        "english_source": "Ananda was the Buddha's first cousin and served as his personal attendant for 25 years. He possessed an extraordinary memory and memorized the vast majority of the Buddha's discourses. After the Buddha's passing, Ananda was crucial at the First Buddhist Council, reciting the Suttas which begin with the famous phrase \"Thus have I heard.\" He was also instrumental in convincing the Buddha to establish the order of nuns (Bhikkhunis).",
+        "current_punjabi_wrong": "ਆਨੰਦ ਬੁੱਧ ਦੇ ਚਚੇਰੇ ਭਰਾ ਸਨ ਅਤੇ ਉਨ੍ਹਾਂ ਨੇ 25 ਸਾਲਾਂ ਤੱਕ ਉਨ੍ਹਾਂ ਦੇ ਨਿੱਜੀ ਸੇਵਕ ਵਜੋਂ ਸੇਵਾ ਨਿਭਾਈ। ਉਨ੍ਹਾਂ ਕੋਲ ਇੱਕ ਅਸਾਧਾਰਨ ਯਾਦਦਾਸ਼ਤ ਸੀ ਅਤੇ ਉਨ੍ਹਾਂ ਨੇ ਬੁੱਧ ਦੇ ਉਪਦੇਸ਼ਾਂ ਦਾ ਵੱਡਾ ਹਿੱਸਾ ਜ਼ਬਾਨੀ ਯਾਦ ਕਰ ਲਿਆ ਸੀ। ਬੁੱਧ ਦੇ ਜੋਤੀ-ਜੋਤਿ ਸਮਾਉਣ ਤੋਂ ਬਾਅਦ, ਆਨੰਦ ਪਹਿਲੀ ਬੋਧੀ ਸੰਗੀਤੀ ਵਿੱਚ ਬਹੁਤ ਅਹਿਮ ਸਨ, ਜਿੱਥੇ ਉਨ੍ਹਾਂ ਨੇ ਸੂਤਰਾਂ ਦਾ ਉਚਾਰਨ ਕੀਤਾ ਜੋ ਮਸ਼ਹੂਰ ਵਾਕ 'ਇੰਝ ਮੈਂ ਸੁਣਿਆ ਹੈ' ਨਾਲ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ। ਉਹ ਬੁੱਧ ਨੂੰ ਭਿਕਸ਼ੁਣੀਆਂ (ਨਨਾਂ) ਦੇ ਸੰਘ ਦੀ ਸਥਾਪਨਾ ਲਈ ਮਨਾਉਣ ਵਿੱਚ ਵੀ ਮੋਹਰੀ ਰਹੇ।"
+      }
+    ]
+  }
+]
