@@ -2634,6 +2634,137 @@
           }
         }
       ]
+    },
+    {
+      "definitionKey": "ganeshotsav",
+      "name": {
+        "value": { "en": "Ganeshotsav", "hi": "गणेशोत्सव", "pa": "ਗਣੇਸ਼ੋਤਸਵ" },
+        "status": "source_backed",
+        "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Ganesh Chaturthi, Bhadrapada Shukla Chaturthi", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }],
+        "applicability": { "traditions": ["hindu"], "universal": false },
+        "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "ganesh-chaturthi",
+          "sequence": 1,
+          "canonicalTitle": { "value": { "en": "Ganesh Chaturthi", "hi": "गणेश चतुर्थी", "pa": "ਗਣੇਸ਼ ਚਤੁਰਥੀ" }, "status": "source_backed", "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Ganesh Chaturthi", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }], "applicability": { "traditions": ["hindu"], "universal": false }, "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Ganesha Puja", "Modak offering"], "hi": ["गणेश पूजा", "मोदक अर्पण"], "pa": ["ਗਣੇਸ਼ ਪੂਜਾ", "ਮੋਦਕ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "The opening day invokes Shri Ganesha before new beginnings and community worship.", "hi": "आरंभ का दिन नए कार्यों और सामुदायिक पूजा से पहले श्री गणेश का स्मरण कराता है।", "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਨਵੇਂ ਕੰਮਾਂ ਅਤੇ ਸੰਗਤਕ ਪੂਜਾ ਤੋਂ ਪਹਿਲਾਂ ਸ਼੍ਰੀ ਗਣੇਸ਼ ਦਾ ਸਿਮਰਨ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-2",
+          "sequence": 2,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 2", "hi": "गणेशोत्सव दिन २", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੨" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Daily aarti", "Naivedya"], "hi": ["दैनिक आरती", "नैवेद्य"], "pa": ["ਰੋਜ਼ਾਨਾ ਆਰਤੀ", "ਨੈਵੇਦਯ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A steady day for keeping the household or mandal puja alive.", "hi": "घर या मंडल की पूजा को स्थिर रखने का दिन।", "pa": "ਘਰ ਜਾਂ ਮੰਡਲ ਦੀ ਪੂਜਾ ਨੂੰ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-3",
+          "sequence": 3,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 3", "hi": "गणेशोत्सव दिन ३", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੩" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Ganesha nama japa", "Prasad sharing"], "hi": ["गणेश नाम जप", "प्रसाद वितरण"], "pa": ["ਗਣੇਸ਼ ਨਾਮ ਜਪ", "ਪ੍ਰਸਾਦ ਵੰਡਣਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A day for repeating Ganesha's name and sharing blessings.", "hi": "गणेश नाम के जप और आशीर्वाद बांटने का दिन।", "pa": "ਗਣੇਸ਼ ਨਾਮ ਦੇ ਜਪ ਅਤੇ ਅਸੀਸਾਂ ਸਾਂਝੀਆਂ ਕਰਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-4",
+          "sequence": 4,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 4", "hi": "गणेशोत्सव दिन ४", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੪" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Aarti", "Family prayer"], "hi": ["आरती", "परिवारिक प्रार्थना"], "pa": ["ਆਰਤੀ", "ਪਰਿਵਾਰਕ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A quiet continuation of devotion, discipline, and gratitude.", "hi": "भक्ति, अनुशासन और कृतज्ञता को शांत रूप से जारी रखने का दिन।", "pa": "ਭਗਤੀ, ਅਨੁਸ਼ਾਸਨ ਅਤੇ ਕ੍ਰਿਤਜਤਾ ਨੂੰ ਸ਼ਾਂਤੀ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-5",
+          "sequence": 5,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 5", "hi": "गणेशोत्सव दिन ५", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੫" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Community aarti", "Offering sweets"], "hi": ["सामुदायिक आरती", "मिठाई अर्पण"], "pa": ["ਸੰਗਤਕ ਆਰਤੀ", "ਮਿਠਾਈ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A mid-festival day centered on shared worship and goodwill.", "hi": "उत्सव के मध्य में सामूहिक पूजा और सद्भाव का दिन।", "pa": "ਉਤਸਵ ਦੇ ਵਿਚਕਾਰ ਸਾਂਝੀ ਪੂਜਾ ਅਤੇ ਸਦਭਾਵ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-6",
+          "sequence": 6,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 6", "hi": "गणेशोत्सव दिन ६", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੬" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Ganesha stotra", "Evening lamp"], "hi": ["गणेश स्तोत्र", "संध्या दीप"], "pa": ["ਗਣੇਸ਼ ਸਤੋਤਰ", "ਸ਼ਾਮ ਦਾ ਦੀਵਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A day to return to clarity before the busier closing days.", "hi": "समापन के व्यस्त दिनों से पहले स्पष्टता में लौटने का दिन।", "pa": "ਅੰਤਲੇ ਰੁੱਝੇ ਦਿਨਾਂ ਤੋਂ ਪਹਿਲਾਂ ਸਪਸ਼ਟਤਾ ਵੱਲ ਮੁੜਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-7",
+          "sequence": 7,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 7", "hi": "गणेशोत्सव दिन ७", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੭" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Aarti", "Resolve obstacles"], "hi": ["आरती", "विघ्न निवेदन"], "pa": ["ਆਰਤੀ", "ਰੁਕਾਵਟਾਂ ਲਈ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A day to name obstacles and meet them with patience.", "hi": "विघ्नों को पहचानकर धैर्य से उनका सामना करने का दिन।", "pa": "ਰੁਕਾਵਟਾਂ ਨੂੰ ਪਛਾਣ ਕੇ ਧੀਰਜ ਨਾਲ ਮਿਲਣ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-8",
+          "sequence": 8,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 8", "hi": "गणेशोत्सव दिन ८", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੮" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Offer flowers", "Evening aarti"], "hi": ["फूल अर्पण", "संध्या आरती"], "pa": ["ਫੁੱਲ ਭੇਟ", "ਸ਼ਾਮ ਦੀ ਆਰਤੀ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A day for beauty, offering, and simple attention.", "hi": "सुंदरता, अर्पण और सरल ध्यान का दिन।", "pa": "ਸੁੰਦਰਤਾ, ਭੇਟ ਅਤੇ ਸਧਾਰਨ ਧਿਆਨ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-9",
+          "sequence": 9,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 9", "hi": "गणेशोत्सव दिन ९", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੯" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Thanksgiving prayer", "Prepare for farewell"], "hi": ["कृतज्ञता प्रार्थना", "विदाई की तैयारी"], "pa": ["ਕ੍ਰਿਤਜਤਾ ਅਰਦਾਸ", "ਵਿਦਾਈ ਦੀ ਤਿਆਰੀ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "The festival begins turning toward gratitude and farewell.", "hi": "उत्सव कृतज्ञता और विदाई की ओर मुड़ता है।", "pa": "ਉਤਸਵ ਕ੍ਰਿਤਜਤਾ ਅਤੇ ਵਿਦਾਈ ਵੱਲ ਮੁੜਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "ganeshotsav-day-10",
+          "sequence": 10,
+          "canonicalTitle": { "value": { "en": "Ganeshotsav Day 10", "hi": "गणेशोत्सव दिन १०", "pa": "ਗਣੇਸ਼ੋਤਸਵ ਦਿਨ ੧੦" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Final full aarti", "Community offering"], "hi": ["अंतिम पूर्ण आरती", "सामूहिक अर्पण"], "pa": ["ਅੰਤਿਮ ਪੂਰੀ ਆਰਤੀ", "ਸੰਗਤਕ ਭੇਟ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "A closing preparation day before visarjan.", "hi": "विसर्जन से पहले समापन की तैयारी का दिन।", "pa": "ਵਿਸਰਜਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮਾਪਤੀ ਦੀ ਤਿਆਰੀ ਦਾ ਦਿਨ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        },
+        {
+          "slug": "anant-chaturdashi-ganesh-visarjan",
+          "sequence": 11,
+          "canonicalTitle": { "value": { "en": "Anant Chaturdashi / Ganesh Visarjan", "hi": "अनंत चतुर्दशी / गणेश विसर्जन", "pa": "ਅਨੰਤ ਚਤੁਰਦਸ਼ੀ / ਗਣੇਸ਼ ਵਿਸਰਜਨ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Ganesh Visarjan", "Farewell prayer"], "hi": ["गणेश विसर्जन", "विदाई प्रार्थना"], "pa": ["ਗਣੇਸ਼ ਵਿਸਰਜਨ", "ਵਿਦਾਈ ਅਰਦਾਸ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" },
+          "significance": { "value": { "en": "The concluding day carries the blessing home through farewell, humility, and renewal.", "hi": "समापन दिन विदाई, विनम्रता और नवीनीकरण से आशीर्वाद को घर ले जाता है।", "pa": "ਸਮਾਪਤੀ ਦਾ ਦਿਨ ਵਿਦਾਈ, ਨਿਮਰਤਾ ਅਤੇ ਨਵੀਂ ਸ਼ੁਰੂਆਤ ਰਾਹੀਂ ਅਸੀਸ ਨੂੰ ਘਰ ਲੈ ਜਾਂਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "universal": false }, "reviewRef": "council:ganeshotsav-series-2026-v1" }
+        }
+      ]
+    },
+    {
+      "definitionKey": "chhath-puja-four-days",
+      "name": {
+        "value": { "en": "Chhath Puja", "hi": "छठ पूजा", "pa": "ਛੱਠ ਪੂਜਾ" },
+        "status": "source_backed",
+        "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }],
+        "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false },
+        "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" }
+      },
+      "tradition": "hindu",
+      "children": [
+        {
+          "slug": "chhath-nahay-khay",
+          "sequence": 1,
+          "canonicalTitle": { "value": { "en": "Nahay Khay", "hi": "नहाय खाय", "pa": "ਨਹਾਇ ਖਾਇ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Ritual bath", "Simple sattvic meal"], "hi": ["स्नान", "सात्त्विक भोजन"], "pa": ["ਇਸ਼ਨਾਨ", "ਸਾਤਵਿਕ ਭੋਜਨ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
+          "significance": { "value": { "en": "The opening day prepares body and home for the Chhath vrata.", "hi": "आरंभ का दिन शरीर और घर को छठ व्रत के लिए तैयार करता है।", "pa": "ਸ਼ੁਰੂਆਤੀ ਦਿਨ ਸਰੀਰ ਅਤੇ ਘਰ ਨੂੰ ਛੱਠ ਵਰਤ ਲਈ ਤਿਆਰ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+        },
+        {
+          "slug": "chhath-kharna",
+          "sequence": 2,
+          "canonicalTitle": { "value": { "en": "Kharna", "hi": "खरना", "pa": "ਖਰਨਾ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Daylong fast", "Evening prasad"], "hi": ["दिनभर व्रत", "संध्या प्रसाद"], "pa": ["ਦਿਨ ਭਰ ਵਰਤ", "ਸ਼ਾਮ ਦਾ ਪ੍ਰਸਾਦ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
+          "significance": { "value": { "en": "Kharna deepens restraint before the main arghya offerings.", "hi": "खरना मुख्य अर्घ्य से पहले संयम को गहरा करता है।", "pa": "ਖਰਨਾ ਮੁੱਖ ਅਰਘ ਤੋਂ ਪਹਿਲਾਂ ਸੰਯਮ ਨੂੰ ਗਹਿਰਾ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+        },
+        {
+          "slug": "chhath-puja",
+          "sequence": 3,
+          "canonicalTitle": { "value": { "en": "Sandhya Arghya / Chhath Puja", "hi": "संध्या अर्घ्य / छठ पूजा", "pa": "ਸੰਧਿਆ ਅਰਘ / ਛੱਠ ਪੂਜਾ" }, "status": "source_backed", "sourceRefs": [{ "sourceName": "Rashtriya Panchang Saka 1948", "pageOrSection": "Principal Festivals, Surya Shashthi / Chhat Bihar", "tier": 1, "confidence": "high", "usagePermitted": "academic_citation" }], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Sandhya Arghya", "Sun worship"], "hi": ["संध्या अर्घ्य", "सूर्य पूजा"], "pa": ["ਸੰਧਿਆ ਅਰਘ", "ਸੂਰਜ ਪੂਜਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
+          "significance": { "value": { "en": "The main evening offering honors Surya and Chhathi Maiya with devotion and discipline.", "hi": "मुख्य संध्या अर्घ्य सूर्य और छठी मैया को भक्ति और अनुशासन से समर्पित है।", "pa": "ਮੁੱਖ ਸ਼ਾਮ ਦਾ ਅਰਘ ਸੂਰਜ ਅਤੇ ਛੱਠੀ ਮਈਆ ਨੂੰ ਭਗਤੀ ਤੇ ਅਨੁਸ਼ਾਸਨ ਨਾਲ ਸਮਰਪਿਤ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+        },
+        {
+          "slug": "chhath-usha-arghya",
+          "sequence": 4,
+          "canonicalTitle": { "value": { "en": "Usha Arghya", "hi": "उषा अर्घ्य", "pa": "ਉਸ਼ਾ ਅਰਘ" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1", "translationStatus": { "en": "source", "hi": "reviewed_translation", "pa": "reviewed_translation" } },
+          "rituals": { "value": { "en": ["Morning arghya", "Vrata completion"], "hi": ["प्रातः अर्घ्य", "व्रत पूर्णता"], "pa": ["ਸਵੇਰ ਦਾ ਅਰਘ", "ਵਰਤ ਪੂਰਨਤਾ"] }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" },
+          "significance": { "value": { "en": "The concluding sunrise offering completes the vrata with gratitude.", "hi": "समापन का सूर्योदय अर्घ्य कृतज्ञता के साथ व्रत पूर्ण करता है।", "pa": "ਅੰਤਿਮ ਸੂਰਜੋਦਯ ਅਰਘ ਕ੍ਰਿਤਜਤਾ ਨਾਲ ਵਰਤ ਪੂਰਾ ਕਰਦਾ ਹੈ।" }, "status": "council_reviewed_editorial", "sourceRefs": [], "applicability": { "traditions": ["hindu"], "regions": ["Bihar", "Jharkhand", "Eastern Uttar Pradesh", "Nepal Terai"], "universal": false }, "reviewRef": "council:chhath-series-2026-v1" }
+        }
+      ]
     }
   ]
 }

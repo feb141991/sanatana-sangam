@@ -64,7 +64,7 @@ describe('Multi-Day Observance Series Content — Sourced Provenance & Zero Fabr
         expect(c.canonicalTitle.value.pa).toBeTruthy();
       }
     }
-    expect(count).toBe(23);
+    expect(count).toBe(38);
   });
 
   it('5. source separation: Rashtriya Panchang is NOT cited as author of narrative significance paragraphs', () => {
