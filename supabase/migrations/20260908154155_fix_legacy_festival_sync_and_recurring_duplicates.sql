@@ -160,12 +160,16 @@ set
     nullif(occurrence.review_notes, ''),
     'Withheld by 20260908154155_fix_legacy_festival_sync_and_recurring_duplicates: duplicate published recurring occurrence identity.'
   ),
-  diagnostics = array(
-    select distinct diagnostic
-    from unnest(
-      coalesce(occurrence.diagnostics, array[]::text[])
-        || array['withheld_duplicate_recurring_occurrence_cleanup_20260908']
-    ) as diagnostic
+  diagnostics = (
+    select jsonb_agg(distinct to_jsonb(diagnostic.value))
+    from jsonb_array_elements_text(
+      case
+        when jsonb_typeof(coalesce(occurrence.diagnostics, '[]'::jsonb)) = 'array'
+          then coalesce(occurrence.diagnostics, '[]'::jsonb)
+        else '[]'::jsonb
+      end
+      || '["withheld_duplicate_recurring_occurrence_cleanup_20260908"]'::jsonb
+    ) as diagnostic(value)
   ),
   updated_at = now()
 from ranked
