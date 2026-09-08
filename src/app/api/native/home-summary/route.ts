@@ -615,7 +615,7 @@ export async function GET(request: NextRequest) {
       calendarProfile: observanceCalendarProfile,
       location: observanceLocation,
     }),
-    2_500,
+    DB_TIMEOUT,
     { rows: [] as ObservanceRow[], materializationPending: true },
   );
 
